@@ -9,6 +9,7 @@ import { ChevronRight } from "lucide-react";
 import VietnameseJobCard from "@/components/jobs/VietnameseJobCard";
 import VietnameseJobDetailModal from "@/components/jobs/VietnameseJobDetailModal";
 import { vietnameseNailJobs } from "@/data/vietnameseNailJobs"; 
+import { vietnameseExpiredJobs } from "@/data/vietnameseExpiredJobs"; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const JobsPage = () => {
@@ -96,6 +97,23 @@ const JobsPage = () => {
                 />
               ))}
             </div>
+            
+            {vietnameseExpiredJobs && vietnameseExpiredJobs.length > 0 && (
+              <>
+                <h2 className="text-2xl font-serif font-medium mb-6 mt-12">
+                  Tin tuyển dụng đã hết hạn
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-75">
+                  {vietnameseExpiredJobs.map((job) => (
+                    <VietnameseJobCard
+                      key={job.id}
+                      job={job}
+                      onViewDetails={() => handleViewVietnameseJobDetails(job)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
 
             {/* Vietnamese job detail modal */}
             <VietnameseJobDetailModal

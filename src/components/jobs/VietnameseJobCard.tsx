@@ -8,6 +8,7 @@ import { Job } from '@/types/job';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { useAuth } from '@/context/auth';
 
 interface VietnameseJobCardProps {
   job: Job;
@@ -15,6 +16,8 @@ interface VietnameseJobCardProps {
 }
 
 const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
+  const { isSignedIn } = useAuth();
+  
   // Format the posted date for display
   const getPostedDate = () => {
     try {
@@ -23,20 +26,6 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
     } catch (error) {
       return "Gần đây";
     }
-  };
-
-  // Check if job has 6-month expiration
-  const isSixMonthExpiration = () => {
-    if (!job.expires_at) return false;
-    
-    const creationDate = new Date(job.created_at);
-    const expirationDate = new Date(job.expires_at);
-    
-    // Calculate difference in months
-    const diffMonths = (expirationDate.getFullYear() - creationDate.getFullYear()) * 12 + 
-                       (expirationDate.getMonth() - creationDate.getMonth());
-    
-    return diffMonths >= 5 && diffMonths <= 7; // ~6 months
   };
 
   return (
@@ -51,13 +40,6 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
           <Badge className="absolute top-3 left-3 bg-red-500 text-white">
             URGENT
           </Badge>
-        )}
-        {isSixMonthExpiration() && (
-          <div className="absolute top-3 right-3">
-            <Badge variant="destructive" className="flex items-center gap-1">
-              ⚠️ Expire in 6 months
-            </Badge>
-          </div>
         )}
       </div>
       
