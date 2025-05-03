@@ -1,7 +1,167 @@
-
 import { Salon } from '@/types/salon';
 
 export const vietnameseSalonListings: Salon[] = [
+  // NEW GOLD FEATURED LISTINGS (TOP 3)
+  {
+    id: "vn-nail-2023-01",
+    name: "Tiệm Nail Kroger",
+    title: "Tiệm nằm trong khu Mỹ trắng sang trọng",
+    vietnamese_title: "Tiệm nằm trong khu Mỹ trắng sang trọng",
+    location: "Houston, TX",
+    price: 0,
+    image: "/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png", // High-quality nail salon image
+    vietnamese_description: "Tiệm nằm trong khu Mỹ trắng sang trọng, ngay cạnh chợ Kroger và nhiều business sầm uất khác.\nKhu vực đông khách, rất thuận lợi để phát triển lâu dài.\nTiệm rộng khoảng 2000 sqft, gồm 16 ghế pedicure (có thể thêm 2 ghế ở phòng VIP), 8 bàn, 2 phòng wax/facial/eyelash, 2 phòng vệ sinh, máy giặt và máy sấy đầy đủ.",
+    contact_info: {
+      phone: "346-770-4333",
+      owner_name: "Chủ tiệm",
+      zalo: ""
+    },
+    square_feet: 2000,
+    is_vietnamese_listing: true,
+    featured: true,
+    is_featured: true,
+    isPremium: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "vn-nail-2023-02",
+    name: "Tiệm Nail Greenwood Village",
+    title: "Cần Sang Gấp Tiệm Nail Tại Greenwood Village, CO 80111",
+    vietnamese_title: "Cần Sang Gấp Tiệm Nail Tại Greenwood Village, CO 80111 – Vị Trí Đẹp, Khách Sang",
+    location: "Greenwood Village, CO 80111",
+    price: 0,
+    image: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png", // Luxury spa image
+    vietnamese_description: "Cần Sang Gấp Tiệm Nail Tại Greenwood Village, CO 80111 – Vị Trí Đẹp, Khách Sang\nDiện tích: 2000 sqft\n9 bàn, 9 ghế, 1 phòng wax, 1 restroom, phòng ăn, máy giặt sấy đầy đủ\nTiệm mới xây gần 2 năm, sạch sẽ, đầy đủ supply\nNhân sự hiện tại: 5 thợ bột full-time + eyelash\nVị trí: Khu nhà giàu, khách lịch sự, giá cao, tip hậu\nIncome 35k - 45k\nRent: $4,800/tháng\nGiá sang: Thương lượng",
+    contact_info: {
+      phone: "(720) 645-5531",
+      owner_name: "Chủ tiệm",
+      zalo: ""
+    },
+    income_range: "35k - 45k",
+    square_feet: 2000,
+    monthly_rent: 4800,
+    is_vietnamese_listing: true,
+    featured: true,
+    is_featured: true,
+    isPremium: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "vn-nail-2023-03",
+    name: "Tiệm Nail Chantilly",
+    title: "Cần Sang Gấp Tiệm Nail In Chantilly, VA",
+    vietnamese_title: "Cần Sang Gấp Tiệm Nail In Chantilly, VA",
+    location: "Chantilly, VA",
+    price: 260000,
+    image: "/lovable-uploads/955feb1d-3a31-4a0e-b6b2-44f8240519c1.png", // Modern nail salon image
+    vietnamese_description: "Cần Sang Gấp Tiệm Nail In Chantilly, VA\nTiệm mới remodel 3 năm.\nRộng 1,730 sqft, có 12 bàn, 8 ghế, 1 phòng wax, 1 phòng Facial. Đầy đủ tiện nghi.\nHiện tại đang có 8 thợ và 1 thợ Facial\nTiệm khu trung tâm, đông khách\nIncome $600k/năm\nRent $7.300\nGiá bán $260k",
+    contact_info: {
+      phone: "(919) 491-2692 or (703) 622-5269",
+      owner_name: "Chủ tiệm",
+      zalo: ""
+    },
+    yearly_revenue: "$600k",
+    square_feet: 1730,
+    monthly_rent: 7300,
+    is_vietnamese_listing: true,
+    featured: true,
+    is_featured: true,
+    isPremium: true,
+    created_at: new Date().toISOString(),
+  },
+  // REGULAR LISTINGS (REMAINING 5)
+  {
+    id: "vn-nail-2023-04",
+    name: "Tiệm Nail Grand Island",
+    title: "Tiệm nail đăng bán ở thành phố Grand Island, Nebraska",
+    vietnamese_title: "Tiệm nail đăng bán ở thành phố Grand Island, Nebraska",
+    location: "Grand Island, Nebraska",
+    price: 25000,
+    image: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png", // Nail salon image
+    vietnamese_description: "Tiệm nail đăng bán ở thành phố Grand Island, Nebraska\nTiệm 8 ghế pedicure (mới), 6 bàn làm móng, phòng wax, phòng ăn, phòng supply, storage, bathroom, máy giặt, máy sấy\nParking rộng, vị trí mặt tiền gần casino\nRent $2,300/tháng\nGiá bán: $25,000",
+    contact_info: {
+      phone: "(308)383-2696",
+      owner_name: "Chủ tiệm",
+      zalo: ""
+    },
+    monthly_rent: 2300,
+    is_vietnamese_listing: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "vn-nail-2023-05",
+    name: "Tiệm Nail Beavercreek",
+    title: "Cần Sang Gấp Tiệm Nail Tại Beavercreek, OH",
+    vietnamese_title: "Cần Sang Gấp Tiệm Nail Tại Beavercreek, OH",
+    location: "Beavercreek, OH",
+    price: 0,
+    image: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png", // Modern salon with sitting area
+    vietnamese_description: "Cần Sang Gấp Tiệm Nail Tại Beavercreek, OH\nDiện tích 11.000 sqft\n48 bàn, 45 ghế\nIncome: $1,800,000/năm\nVị trí: khu shopping, khách sang, giá cao\nGiá bán: thương lượng",
+    contact_info: {
+      phone: "(404) 723-1170",
+      owner_name: "Chủ tiệm",
+      zalo: ""
+    },
+    yearly_revenue: "$1,800,000",
+    square_feet: 11000,
+    is_vietnamese_listing: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "vn-nail-2023-06",
+    name: "Tiệm Nail Milton",
+    title: "Tiệm Nail em ở Milton, Florida 32570",
+    vietnamese_title: "Tiệm Nail em ở Milton, Florida 32570",
+    location: "Milton, Florida 32570",
+    price: 0,
+    image: "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png", // Nail salon with art gallery
+    vietnamese_description: "Tiệm Nail em ở Milton, Florida 32570\nTrong khu chợ Publix, khách đông\nCần thợ làm TCN, SNS, Bột\nGiá nail cao\n*Chỉ nhận A/C có giấy tờ*",
+    contact_info: {
+      phone: "Cody 404-434-3688",
+      owner_name: "Cody",
+      zalo: ""
+    },
+    is_vietnamese_listing: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "vn-nail-2023-07",
+    name: "Tiệm Nail Casino",
+    title: "Tiệm nằm trên đường chính, gần casino",
+    vietnamese_title: "Tiệm nằm trên đường chính, gần casino",
+    location: "Grand Island, Nebraska",
+    price: 25000,
+    image: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png", // Lash supplies
+    vietnamese_description: "Tiệm nằm trên đường chính, gần casino, ít tiệm nail xung quanh.\n2400 sqft – hoạt động lâu năm, khách ổn định\n8 ghế, 6 bàn, phòng wax, phòng ăn\nRent: $2,300\nGiá: $25,000",
+    contact_info: {
+      phone: "(308)383-2696",
+      owner_name: "Chủ tiệm",
+      zalo: ""
+    },
+    monthly_rent: 2300,
+    square_feet: 2400,
+    is_vietnamese_listing: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "vn-nail-2023-08",
+    name: "Tiệm Nail Mission Viejo",
+    title: "Sang Tiệm Nail Vị Trí Đẹp, khu sang trọng tại Mission Viejo, CA",
+    vietnamese_title: "Sang Tiệm Nail Vị Trí Đẹp, khu sang trọng tại Mission Viejo, CA",
+    location: "Mission Viejo, CA",
+    price: 68000,
+    image: "/lovable-uploads/4e42c014-9ec4-4834-ade3-2b11c8e47361.png", // Premium nail salon image
+    vietnamese_description: "Sang Tiệm Nail Vị Trí Đẹp, khu sang trọng tại Mission Viejo, CA\nTiệm rộng, sạch sẽ, setup mới đẹp\nGiá bán: $68,000",
+    contact_info: {
+      phone: "(949) 678-1123",
+      owner_name: "Chủ tiệm",
+      zalo: ""
+    },
+    is_vietnamese_listing: true,
+    created_at: new Date().toISOString(),
+  },
+  
+  // KEEP ALL EXISTING VIETNAMESE SALON LISTINGS
   {
     id: "viet-salon-1",
     name: "Tiệm Nail Cần Bán Gấp",

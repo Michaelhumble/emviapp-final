@@ -78,22 +78,30 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
             </Badge>
           ))}
         </div>
-        
-        <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-          <div className="text-xs text-gray-500 flex items-center">
-            <Calendar className="h-3.5 w-3.5 mr-1" />
-            {getPostedDate()}
+
+        {isExpired ? (
+          <div className="mt-auto pt-3 border-t border-gray-100">
+            <div className="p-2 bg-gray-50 rounded-md mb-2 text-xs text-gray-600">
+              This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.
+            </div>
           </div>
-          
-          <Button 
-            size="sm" 
-            onClick={onViewDetails}
-            className="text-xs px-2 h-8 gap-1"
-          >
-            Xem chi tiết
-            <ExternalLink className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+        ) : (
+          <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+            <div className="text-xs text-gray-500 flex items-center">
+              <Calendar className="h-3.5 w-3.5 mr-1" />
+              {getPostedDate()}
+            </div>
+            
+            <Button 
+              size="sm" 
+              onClick={onViewDetails}
+              className="text-xs px-2 h-8 gap-1"
+            >
+              Xem chi tiết
+              <ExternalLink className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
