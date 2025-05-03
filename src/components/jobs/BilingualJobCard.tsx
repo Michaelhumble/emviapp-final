@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, MapPinIcon, Phone } from "lucide-react";
+import { CalendarIcon, MapPinIcon, Phone, LockIcon } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
@@ -38,12 +38,14 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   
   // Check if job is expired (30+ days old)
   const isExpired = () => {
-    const createdDate = new Date(job.created_at);
-    const now = new Date();
-    const diffDays = Math.ceil(
-      (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return diffDays >= 30;
+    return job.status === 'expired' || (() => {
+      const createdDate = new Date(job.created_at);
+      const now = new Date();
+      const diffDays = Math.ceil(
+        (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      return diffDays >= 30;
+    })();
   };
 
   return (
@@ -90,7 +92,12 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
           
           {job.contact_info?.phone && (
             <div className="border-t border-gray-100 pt-3">
-              {isSignedIn ? (
+              {isExpired() ? (
+                <div className="text-xs text-gray-500 italic flex items-center gap-1 p-2 bg-gray-50 rounded-md">
+                  <LockIcon className="h-3 w-3" />
+                  <span>This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.</span>
+                </div>
+              ) : isSignedIn ? (
                 <div className="flex items-center">
                   <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
                   <span className="text-sm">{job.contact_info.phone}</span>
@@ -100,8 +107,9 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
                   customTitle="Sign in to see contact details"
                   onAction={() => true}
                   fallbackContent={
-                    <div className="text-xs text-gray-500 italic">
-                      Sign in to see contact details
+                    <div className="text-xs text-gray-500 italic flex items-center gap-1">
+                      <LockIcon className="h-3 w-3" />
+                      <span>Sign in to see contact details</span>
                     </div>
                   }
                 />

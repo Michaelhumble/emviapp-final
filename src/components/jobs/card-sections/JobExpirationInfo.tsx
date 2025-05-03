@@ -2,6 +2,8 @@
 import { Badge } from "@/components/ui/badge";
 import { LockIcon, Calendar } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
+import AuthAction from '@/components/common/AuthAction';
+import { useAuth } from '@/context/auth';
 
 interface JobExpirationInfoProps {
   isExpired: boolean;
@@ -13,6 +15,8 @@ interface JobExpirationInfoProps {
 }
 
 export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo }: JobExpirationInfoProps) => {
+  const { isSignedIn } = useAuth();
+  
   // Format the posted date for display
   const getPostedTimeText = () => {
     try {
@@ -39,12 +43,14 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo }: JobExpi
           </Badge>
           <span className="text-xs text-gray-500">{getPostedTimeText()}</span>
         </div>
-        <p className="text-xs text-gray-500">Thông tin liên hệ bị ẩn cho đến khi được gia hạn</p>
+        <div className="p-3 bg-gray-50 border border-gray-100 rounded-md text-sm">
+          <p className="text-gray-700">This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.</p>
+        </div>
       </div>
     );
   }
   
-  if (contactInfo?.owner_name) {
+  if (contactInfo?.owner_name && isSignedIn) {
     return (
       <div className="mb-4">
         <div className="text-xs text-gray-500 mb-2">
@@ -61,9 +67,23 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo }: JobExpi
   }
   
   return (
-    <div className="text-xs text-gray-500 mb-4">
-      <Calendar className="inline-block h-3 w-3 mr-1 align-text-bottom" />
-      {getPostedTimeText()}
+    <div className="mb-4">
+      <div className="text-xs text-gray-500 mb-2">
+        <Calendar className="inline-block h-3 w-3 mr-1 align-text-bottom" />
+        {getPostedTimeText()}
+      </div>
+      {!isSignedIn && (
+        <AuthAction
+          customTitle="Sign in to see contact details"
+          onAction={() => true}
+          fallbackContent={
+            <div className="text-xs text-gray-500 italic flex items-center gap-1">
+              <LockIcon size={12} />
+              Sign in to see contact details
+            </div>
+          }
+        />
+      )}
     </div>
   );
 };

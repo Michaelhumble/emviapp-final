@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Calendar, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Calendar, ExternalLink, Lock } from 'lucide-react';
 import { Job } from '@/types/job';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -28,8 +28,11 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
     }
   };
 
+  // Check if the job listing is expired
+  const isExpired = job.status === 'expired';
+
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
+    <Card className={`overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col ${isExpired ? 'opacity-75' : ''}`}>
       <div className="relative h-48">
         <ImageWithFallback
           src={job.image || ''}
@@ -39,6 +42,11 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
         {job.is_urgent && (
           <Badge className="absolute top-3 left-3 bg-red-500 text-white">
             URGENT
+          </Badge>
+        )}
+        {isExpired && (
+          <Badge className="absolute top-3 left-3 bg-gray-500 text-white">
+            Đã hết hạn
           </Badge>
         )}
       </div>
