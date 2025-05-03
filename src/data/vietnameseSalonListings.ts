@@ -1,440 +1,526 @@
-import { Salon } from "@/types/salon";
 
+// Vietnamese salon listings data for marketplace
+import { Salon } from '@/types/salon';
+
+// Nail image URLs from the dedicated folder
+const nailImages = [
+  "/lovable-uploads/887c837a-5c2a-44d9-a73a-d3aedfef2c84.png", // Luxury pink and white salon
+  "/lovable-uploads/9e581dd6-e5a7-4794-aa3c-b4da59e2381a.png", // Beige luxury nail salon
+  "/lovable-uploads/009c07d8-9e50-4d56-86f2-3f8662606519.png", // Classy nail salon with pedicure chairs
+  "/lovable-uploads/74b3ba02-2378-41d7-8cb5-023145e94700.png", // Modern nail salon with chairs
+  "/lovable-uploads/5371f69f-154f-450b-af8b-28774f7d4215.png", // Black and red modern salon
+  
+  // Original nail folder images
+  "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
+  "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
+  "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png",
+  "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
+  "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png",
+  "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png", 
+  "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png", 
+  "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png", 
+];
+
+// Helper function to get nail image by index with wrapping
+const getNailImage = (index: number) => {
+  return nailImages[index % nailImages.length];
+};
+
+// 8 newest Vietnamese salon listings (first 3 will be featured)
 export const vietnameseSalonListings: Salon[] = [
   {
-    id: "vn-1",
-    name: "Tiệm Nail Cao Cấp",
-    location: "Houston, TX",
-    price: 85000,
-    imageUrl: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png",
-    description: "—",
-    vietnamese_description: "Tiệm nằm trong khu Mỹ trắng sang trọng, ngay cạnh chợ Kroger và nhiều business sầm uất khác.\nKhu vực đông khách, rất thuận lợi để phát triển lâu dài.\nTiệm rộng khoảng 2000 sqft, gồm 16 ghế pedicure (có thể thêm 2 ghế ở phòng VIP), 8 bàn, 2 phòng wax/facial/eyelash, 2 phòng vệ sinh, máy giặt và máy sấy đầy đủ.",
+    id: "vn-001",
+    name: "Tiệm Nail Khu Mỹ Trắng Sang Trọng",
+    location: "Gần chợ Kroger",
+    description: "Tiệm nail sang trọng trong khu Mỹ trắng",
+    vietnamese_description: `Tiệm nằm trong khu Mỹ trắng sang trọng, ngay cạnh chợ Kroger và nhiều business sầm uất khác.  
+Khu vực đông khách, rất thuận lợi để phát triển lâu dài.  
+Tiệm rộng khoảng 2000 sqft, gồm 16 ghế pedicure (có thể thêm 2 ghế ở phòng VIP), 8 bàn, 2 phòng wax/facial/eyelash, 2 phòng vệ sinh, máy giặt và máy sấy đầy đủ.  
+Liên hệ: 346-770-4333 (vui lòng để lại tin nhắn nếu chưa kịp nghe máy).`,
+    price: "Giá thương lượng",
+    imageUrl: getNailImage(0),
     contact_info: {
-      phone: "346-770-4333",
-      owner_name: "Chủ Tiệm",
+      owner_name: "Chủ tiệm",
+      phone: "346-770-4333"
     },
+    square_feet: 2000,
     featured: true,
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    is_vietnamese_listing: true
   },
   {
-    id: "vn-2",
-    name: "Cần Sang Gấp Tiệm Nail",
+    id: "vn-002",
+    name: "Tiệm Nail Tại Greenwood Village",
     location: "Greenwood Village, CO 80111",
-    price: 45000,
-    imageUrl: "/lovable-uploads/755e1db4-6ea5-40c4-8007-81b8beba6e2b.png",
-    description: "—",
-    vietnamese_description: "Cần Sang Gấp Tiệm Nail Tại Greenwood Village, CO 80111 – Vị Trí Đẹp, Khách Sang\nDiện tích: 2000 sqft\n9 bàn, 9 ghế, 1 phòng wax, 1 restroom, phòng ăn, máy giặt sấy đầy đủ\nTiệm mới xây gần 2 năm, sạch sẽ, đầy đủ supply\nNhân sự hiện tại: 5 thợ bột full-time + eyelash\nVị trí: Khu nhà giàu, khách lịch sự, giá cao, tip hậu\nIncome 35k - 45k\nRent: $4,800/tháng\nGiá sang: Thương lượng",
-    income_range: "$35,000 - $45,000/tháng",
+    description: "Tiệm nail cao cấp trong khu nhà giàu",
+    vietnamese_description: `Cần Sang Gấp Tiệm Nail Tại Greenwood Village, CO 80111 – Vị Trí Đẹp, Khách Sang  
+Diện tích: 2000 sqft  
+9 bàn, 9 ghế, 1 phòng wax, 1 restroom, phòng ăn, máy giặt sấy đầy đủ  
+Tiệm mới xây gần 2 năm, sạch sẽ, đầy đủ supply  
+Nhân sự hiện tại: 5 thợ bột full-time + eyelash  
+Vị trí: Khu nhà giàu, khách lịch sự, giá cao, tip hậu  
+Income 35k - 45k  
+Rent: $4,800/tháng  
+Giá sang: Thương lượng  
+Liên lạc: (720) 645-5531`,
+    price: "Thương lượng",
+    imageUrl: getNailImage(1),
     contact_info: {
-      phone: "(720) 645-5531",
-      owner_name: "Chủ Tiệm",
+      owner_name: "Chủ tiệm",
+      phone: "(720) 645-5531"
     },
+    square_feet: 2000,
     featured: true,
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    is_vietnamese_listing: true
   },
   {
-    id: "vn-3",
-    name: "Tiệm Nail Chantilly",
+    id: "vn-003", 
+    name: "Tiệm Nail In Chantilly, VA",
     location: "Chantilly, VA",
-    price: 260000,
-    imageUrl: "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png",
-    description: "—",
-    vietnamese_description: "Cần Sang Gấp Tiệm Nail In Chantilly, VA\nTiệm mới remodel 3 năm.\nRộng 1,730 sqft, có 12 bàn, 8 ghế, 1 phòng wax, 1 phòng Facial. Đầy đủ tiện nghi.\nHiện tại đang có 8 thợ và 1 thợ Facial\nTiệm khu trung tâm, đông khách\nIncome $600k/năm\nRent $7.300\nGiá bán $260k",
-    income_range: "$600,000/năm",
+    description: "Tiệm nail cao cấp mới remodel",
+    vietnamese_description: `Cần Sang Gấp Tiệm Nail In Chantilly, VA  
+Tiệm mới remodel 3 năm.  
+Rộng 1,730 sqft, có 12 bàn, 8 ghế, 1 phòng wax, 1 phòng Facial. Đầy đủ tiện nghi.  
+Hiện tại đang có 8 thợ và 1 thợ Facial  
+Tiệm khu trung tâm, đông khách  
+Income $600k/năm  
+Rent $7.300  
+Giá bán $260k  
+Liên lạc: (919) 491-2692 or (703) 622-5269`,
+    price: "$260,000",
+    imageUrl: getNailImage(2),
     contact_info: {
-      phone: "(919) 491-2692 hoặc (703) 622-5269",
-      owner_name: "Chủ Tiệm",
+      owner_name: "Chủ tiệm",
+      phone: "(919) 491-2692"
     },
+    square_feet: 1730,
     featured: true,
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    is_vietnamese_listing: true
   },
   {
-    id: "vn-4",
-    name: "Tiệm Nail Grand Island",
+    id: "vn-004",
+    name: "Tiệm Nail Ở Grand Island, Nebraska",
     location: "Grand Island, Nebraska",
-    price: 25000,
-    imageUrl: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
-    description: "—",
-    vietnamese_description: "Tiệm nail đăng bán ở thành phố Grand Island, Nebraska\nTiệm 8 ghế pedicure (mới), 6 bàn làm móng, phòng wax, phòng ăn, phòng supply, storage, bathroom, máy giặt, máy sấy\nParking rộng, vị trí mặt tiền gần casino\nRent $2,300/tháng\nGiá bán: $25,000",
+    description: "Tiệm nail vị trí đẹp gần casino",
+    vietnamese_description: `Tiệm nail đăng bán ở thành phố Grand Island, Nebraska  
+Tiệm 8 ghế pedicure (mới), 6 bàn làm móng, phòng wax, phòng ăn, phòng supply, storage, bathroom, máy giặt, máy sấy  
+Parking rộng, vị trí mặt tiền gần casino  
+Rent $2,300/tháng  
+Giá bán: $25,000  
+Liên lạc: (308)383-2696`,
+    price: "$25,000",
+    imageUrl: getNailImage(3),
     contact_info: {
-      phone: "(308)383-2696",
-      owner_name: "Chủ Tiệm",
+      owner_name: "Chủ tiệm",
+      phone: "(308)383-2696"
     },
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
-    id: "vn-5",
-    name: "Tiệm Nail Beavercreek",
+    id: "vn-005",
+    name: "Tiệm Nail Lớn Tại Beavercreek",
     location: "Beavercreek, OH",
-    price: 500000,
-    imageUrl: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
-    description: "—",
-    vietnamese_description: "Cần Sang Gấp Tiệm Nail Tại Beavercreek, OH\nDiện tích 11.000 sqft\n48 bàn, 45 ghế\nIncome: $1,800,000/năm\nVị trí: khu shopping, khách sang, giá cao\nGiá bán: thương lượng",
-    income_range: "$1,800,000/năm",
+    description: "Tiệm nail cỡ lớn, doanh thu cao",
+    vietnamese_description: `Cần Sang Gấp Tiệm Nail Tại Beavercreek, OH  
+Diện tích 11.000 sqft  
+48 bàn, 45 ghế  
+Income: $1,800,000/năm  
+Vị trí: khu shopping, khách sang, giá cao  
+Giá bán: thương lượng  
+Liên lạc: (404) 723-1170`,
+    price: "Thương lượng",
+    imageUrl: getNailImage(4),
     contact_info: {
-      phone: "(404) 723-1170",
-      owner_name: "Chủ Tiệm",
+      owner_name: "Chủ tiệm",
+      phone: "(404) 723-1170"
     },
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    square_feet: 11000,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
-    id: "vn-6",
-    name: "Tiệm Nail Milton",
+    id: "vn-006",
+    name: "Tiệm Nail ở Milton, Florida",
     location: "Milton, Florida 32570",
-    price: 45000,
-    imageUrl: "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png",
-    description: "—",
-    vietnamese_description: "Tiệm Nail em ở Milton, Florida 32570\nTrong khu chợ Publix, khách đông\nCần thợ làm TCN, SNS, Bột\nGiá nail cao\n*Chỉ nhận A/C có giấy tờ*",
+    description: "Tiệm nail trong khu chợ Publix",
+    vietnamese_description: `Tiệm Nail em ở Milton, Florida 32570  
+Trong khu chợ Publix, khách đông  
+Cần thợ làm TCN, SNS, Bột  
+Giá nail cao  
+Liên hệ: Cody 404-434-3688  
+*Chỉ nhận A/C có giấy tờ*`,
+    price: "—",
+    imageUrl: getNailImage(5),
     contact_info: {
-      phone: "404-434-3688",
       owner_name: "Cody",
+      phone: "404-434-3688"
     },
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
-    id: "vn-7",
+    id: "vn-007",
     name: "Tiệm Nail Gần Casino",
     location: "Grand Island, Nebraska",
-    price: 25000,
-    imageUrl: "/lovable-uploads/a4eaaa14-64e9-4bcd-bacb-e0cc9cbabaa3.png",
-    description: "—",
-    vietnamese_description: "Tiệm nằm trên đường chính, gần casino, ít tiệm nail xung quanh.\n2400 sqft – hoạt động lâu năm, khách ổn định\n8 ghế, 6 bàn, phòng wax, phòng ăn\nRent: $2,300\nGiá: $25,000",
+    description: "Tiệm nail gần casino, ít cạnh tranh",
+    vietnamese_description: `Tiệm nằm trên đường chính, gần casino, ít tiệm nail xung quanh.  
+2400 sqft – hoạt động lâu năm, khách ổn định  
+8 ghế, 6 bàn, phòng wax, phòng ăn  
+Rent: $2,300  
+Giá: $25,000  
+Liên hệ: (308)383-2696`,
+    price: "$25,000",
+    imageUrl: getNailImage(6),
     contact_info: {
-      phone: "(308)383-2696",
-      owner_name: "Chủ Tiệm",
+      owner_name: "Chủ tiệm",
+      phone: "(308)383-2696"
     },
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    square_feet: 2400,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
-    id: "vn-8",
-    name: "Tiệm Nail Mission Viejo",
+    id: "vn-008",
+    name: "Tiệm Nail Tại Mission Viejo",
     location: "Mission Viejo, CA",
-    price: 68000,
-    imageUrl: "/lovable-uploads/74a40bcb-5fc3-49d5-b01b-67e851a0a09c.png",
-    description: "—",
-    vietnamese_description: "Sang Tiệm Nail Vị Trí Đẹp, khu sang trọng tại Mission Viejo, CA\nTiệm rộng, sạch sẽ, setup mới đẹp\nGiá bán: $68,000",
+    description: "Tiệm nail vị trí đẹp tại khu sang",
+    vietnamese_description: `Sang Tiệm Nail Vị Trí Đẹp, khu sang trọng tại Mission Viejo, CA  
+Tiệm rộng, sạch sẽ, setup mới đẹp  
+Giá bán: $68,000  
+Liên hệ: (949) 678-1123`,
+    price: "$68,000",
+    imageUrl: getNailImage(7),
     contact_info: {
-      phone: "(949) 678-1123",
-      owner_name: "Chủ Tiệm",
+      owner_name: "Chủ tiệm",
+      phone: "(949) 678-1123"
     },
-    is_vietnamese_listing: true,
-    created_at: new Date().toISOString()
+    featured: false,
+    is_vietnamese_listing: true
   },
+  
+  // Original 20 Vietnamese salon listings with updated image URLs
   {
     id: "vn-101",
-    name: "Tiệm Nail Khu Mỹ Trắng",
-    location: "Los Angeles, CA",
-    price: 120000,
-    imageUrl: "/lovable-uploads/686136f8-8023-4c9e-8b2c-11e9c4eded78.png",
-    description: "Premium nail salon in affluent area with steady clientele",
-    vietnamese_description: "Cần sang tiệm nail vị trí đẹp, khu Mỹ trắng, income cao, khách sang, tiệm rộng đẹp, giá tốt.",
+    name: "Tiệm Nail Đẹp Quận Cam",
+    location: "Orange County, CA",
+    description: "Tiệm nail cao cấp tại khu thương mại sầm uất",
+    vietnamese_description: "Cần sang tiệm nail đẹp, rộng 1800sqft, có 10 ghế spa pedicure, 8 bàn nail, 2 phòng wax. Income $45K-50K/tháng, giá $125K, rent $7200. Liên lạc A. Minh (714) 123-4567.",
+    price: "$125,000",
+    imageUrl: getNailImage(8),
     contact_info: {
-      phone: "(714) 123-4567",
-      owner_name: "Anh Tuấn",
+      owner_name: "Anh Minh",
+      phone: "(714) 123-4567"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2023-03-15T12:00:00Z"
+    square_feet: 1800,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-102",
-    name: "Tiệm Nails Sang Trọng",
+    name: "Tiệm Nail Khu Mỹ Trắng",
     location: "Houston, TX",
-    price: 95000,
-    imageUrl: "/lovable-uploads/4c3f751f-3631-43c1-b95d-c6521663f366.png",
-    description: "Luxurious nail salon with high-end clientele",
-    vietnamese_description: "Sang tiệm nail khu shopping center sang trọng, khách Mỹ trắng, tiệm net $18K/tháng, 10 ghế, 8 bàn, mới remodel.",
+    description: "Tiệm nail trong khu dân cư cao cấp",
+    vietnamese_description: "Sang tiệm nail khu Mỹ trắng, giàu, đông khách. Tiệm rộng 1400sqft, 6 bàn, 8 ghế, rent $3500/tháng all bills paid. Income $25K-30K/tháng. Giá $65K (có thể thương lượng). Liên hệ: Cô Thủy (832) 456-7890.",
+    price: "$65,000",
+    imageUrl: getNailImage(9),
     contact_info: {
-      phone: "(281) 456-7890",
-      owner_name: "Chị Hương",
+      owner_name: "Cô Thủy",
+      phone: "(832) 456-7890"
     },
-    is_vietnamese_listing: true,
-    created_at: "2023-04-20T14:30:00Z"
+    square_feet: 1400,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-103",
-    name: "Tiệm Nail & Spa",
-    location: "Atlanta, GA",
-    price: 88000,
-    imageUrl: "/lovable-uploads/7a58770c-404e-4259-b1a6-f044c8eefdc0.png",
-    description: "Full-service nail salon and spa in busy shopping center",
-    vietnamese_description: "Sang tiệm nail & spa 2,000 sqft, 12 ghế, 10 bàn, 2 phòng wax/facial. Income $45K/tháng, rent $6,500. Khu dân cư tốt.",
+    name: "Sang Tiệm Nail Florida",
+    location: "Orlando, FL",
+    description: "Tiệm nail lâu năm trong khu du lịch",
+    vietnamese_description: "Cần sang tiệm nail ở Orlando, FL. Tiệm đã hoạt động 8 năm, có 12 ghế pedicure, 10 bàn làm nail, 2 phòng wax, 1 phòng facial. Income $60K-65K/tháng. Khách tip hậu. Giá sang $195K. Liên lạc Anh Tuấn (407) 234-5678.",
+    price: "$195,000",
+    imageUrl: getNailImage(10),
     contact_info: {
-      phone: "(404) 567-8901",
-      owner_name: "Anh Minh",
+      owner_name: "Anh Tuấn",
+      phone: "(407) 234-5678"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2023-05-05T09:15:00Z"
+    square_feet: 2200,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-104",
-    name: "Tiệm Nails Mới Remodel",
-    location: "Orlando, FL",
-    price: 75000,
-    imageUrl: "/lovable-uploads/89bafcff-30b0-441e-b557-6b5a6126cbdb.png",
-    description: "Newly remodeled nail salon with growing clientele",
-    vietnamese_description: "Cần sang tiệm nails mới remodel, khu khách Mỹ trắng, 8 ghế, 6 bàn, income $30K/tháng, rent $4K, đầy đủ thợ.",
+    name: "Sang Gấp Tiệm Nail Georgia",
+    location: "Atlanta, GA",
+    description: "Cần sang gấp tiệm nail vị trí đẹp",
+    vietnamese_description: "Cần sang gấp tiệm nail ở Atlanta, GA. Tiệm mới remodel với 8 bàn, 10 ghế spa pedicure mới. Vị trí đẹp, có sẵn khách, income ổn định $35K/tháng. Rent $3,800. Giá sang $75K. Liên lạc: Chị Hương (678) 345-6789.",
+    price: "$75,000",
+    imageUrl: getNailImage(11),
     contact_info: {
-      phone: "(407) 234-5678",
-      owner_name: "Chị Lan",
+      owner_name: "Chị Hương",
+      phone: "(678) 345-6789"
     },
-    is_vietnamese_listing: true,
-    status: "expired",
-    created_at: "2022-11-10T16:45:00Z"
+    square_feet: 1600,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-105",
-    name: "Tiệm Nail Đông Khách",
-    location: "San Jose, CA",
-    price: 150000,
-    imageUrl: "/lovable-uploads/c481eb0a-4bd5-4727-8273-cd7dc4c28125.png",
-    description: "High-volume nail salon with excellent reputation",
-    vietnamese_description: "Sang tiệm nail đông khách, hoạt động 15 năm, income $60K/tháng, 15 ghế, 12 bàn, tiệm rộng 2,500 sqft.",
+    name: "Tiệm Nail Khu Shopping Center",
+    location: "Virginia Beach, VA",
+    description: "Tiệm nail trong trung tâm thương mại lớn",
+    vietnamese_description: "Cần sang tiệm nail trong khu shopping center đông khách. Tiệm có 6 bàn, 8 ghế pedicure, 1 phòng wax. Income $28K-32K/tháng. Rent $2,900/tháng. Giá bán $55K. Liên hệ: Anh Phong (757) 876-5432.",
+    price: "$55,000",
+    imageUrl: getNailImage(12),
     contact_info: {
-      phone: "(408) 901-2345",
-      owner_name: "Anh Thắng",
+      owner_name: "Anh Phong",
+      phone: "(757) 876-5432"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2023-06-22T11:20:00Z"
+    square_feet: 1200,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-106",
-    name: "Tiệm Nails Khu Shopping",
-    location: "Dallas, TX",
-    price: 115000,
-    imageUrl: "/lovable-uploads/fc2a8931-d58f-47a3-81f2-6ae43cf431c5.png",
-    description: "Well-established nail salon in prime shopping area",
-    vietnamese_description: "Cần sang tiệm nails trong khu shopping lớn, khách walk-in nhiều, income $40K/tháng, 10 ghế, 8 bàn, 3 phòng wax.",
+    name: "Tiệm Nail Khu Little Saigon",
+    location: "Westminster, CA",
+    description: "Tiệm nail trong khu Little Saigon sầm uất",
+    vietnamese_description: "Sang tiệm nail đẹp tại Little Saigon, Westminster, CA. Tiệm có 12 bàn, 14 ghế pedicure, 3 phòng làm dịch vụ. Income $70K-80K/tháng. Rent $9,500. Giá sang $230K. Liên hệ: Cô Lan (714) 987-6543.",
+    price: "$230,000",
+    imageUrl: getNailImage(13),
     contact_info: {
-      phone: "(972) 345-6789",
-      owner_name: "Anh Phong",
+      owner_name: "Cô Lan",
+      phone: "(714) 987-6543"
     },
-    is_vietnamese_listing: true,
-    created_at: "2023-07-15T13:10:00Z"
+    square_feet: 2800,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-107",
-    name: "Tiệm Nails Gần Biển",
-    location: "Miami, FL",
-    price: 130000,
-    imageUrl: "/lovable-uploads/c53c9a68-de96-40d5-9284-c1cfbb878081.png",
-    description: "Beachfront nail salon with tourist and local clientele",
-    vietnamese_description: "Sang tiệm nails gần biển, khách du lịch và địa phương, income cao mùa du lịch, 12 ghế, 10 bàn, 2 phòng spa.",
+    name: "Sang Tiệm Móng Cao Cấp",
+    location: "Las Vegas, NV",
+    description: "Tiệm nail cao cấp trong khu khách sạn nổi tiếng",
+    vietnamese_description: "Sang tiệm móng cao cấp trong khu khách sạn nổi tiếng Las Vegas. Tiệm đẹp, sang trọng, khách sang, tip hậu. Có 8 bàn, 10 ghế pedicure cao cấp, 2 phòng dịch vụ. Income $55K-65K/tháng. Rent $6,800. Giá sang $180K. Liên hệ: Anh Dũng (702) 456-7891.",
+    price: "$180,000",
+    imageUrl: getNailImage(14),
     contact_info: {
-      phone: "(305) 678-9012",
-      owner_name: "Chị Thảo",
+      owner_name: "Anh Dũng",
+      phone: "(702) 456-7891"
     },
-    is_vietnamese_listing: true,
-    created_at: "2023-08-05T15:40:00Z"
+    square_feet: 2000,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-108",
-    name: "Tiệm Nail Khu Văn Phòng",
-    location: "Seattle, WA",
-    price: 85000,
-    imageUrl: "/lovable-uploads/e84078f4-339e-4231-b027-e8cd67c8e4ae.png",
-    description: "Nail salon in business district with corporate clients",
-    vietnamese_description: "Cần sang tiệm nail trong khu văn phòng, khách hàng ổn định, income $35K/tháng, 8 ghế, 6 bàn, tiệm nhỏ gọn.",
+    name: "Tiệm Nail Vùng Seattle",
+    location: "Bellevue, WA",
+    description: "Tiệm nail khu vực giàu có gần Seattle",
+    vietnamese_description: "Sang tiệm nail khu vực giàu có Bellevue, WA. Tiệm 1500sqft, có 8 bàn, 10 ghế pedicure, 2 phòng wax, phòng breakroom riêng. Income $40K-45K/tháng. Rent $4,200. Giá bán $120K. Liên hệ: Chị Thảo (425) 678-9012.",
+    price: "$120,000",
+    imageUrl: getNailImage(15),
     contact_info: {
-      phone: "(206) 789-0123",
-      owner_name: "Chị Hà",
+      owner_name: "Chị Thảo",
+      phone: "(425) 678-9012"
     },
-    is_vietnamese_listing: true,
-    created_at: "2023-09-18T10:30:00Z"
+    square_feet: 1500,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-109",
-    name: "Tiệm Nails & Lashes",
-    location: "Chicago, IL",
-    price: 110000,
-    imageUrl: "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png",
-    description: "Nail salon with expanding lash business",
-    vietnamese_description: "Sang tiệm nails & lashes, đang phát triển mạnh, income $42K/tháng, 10 ghế, 8 bàn, 4 phòng lashes, khu trung tâm.",
+    name: "Tiệm Nail Đẹp Austin",
+    location: "Austin, TX",
+    description: "Tiệm nail sang trọng trong khu thương mại cao cấp",
+    vietnamese_description: "Cần sang tiệm nail mới remodel tại Austin, TX. Tiệm rộng 1800sqft, có 10 bàn, 12 ghế spa pedicure cao cấp, 3 phòng dịch vụ. Khách sang, tip tốt. Income $50K-55K/tháng. Rent $5,200. Giá sang $140K. Liên hệ: Anh Hải (512) 345-6789.",
+    price: "$140,000",
+    imageUrl: getNailImage(0),
     contact_info: {
-      phone: "(312) 890-1234",
-      owner_name: "Anh Trung",
+      owner_name: "Anh Hải",
+      phone: "(512) 345-6789"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2023-10-10T12:00:00Z"
+    square_feet: 1800,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-110",
-    name: "Tiệm Nail Full Service",
-    location: "Las Vegas, NV",
-    price: 175000,
-    imageUrl: "/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png",
-    description: "Full-service nail salon with tourist-heavy clientele",
-    vietnamese_description: "Cần sang gấp tiệm nail full service, khu du lịch, income $70K/tháng, 18 ghế, 15 bàn, 5 phòng dịch vụ, giá tốt.",
+    name: "Tiệm Nail Bờ Đông",
+    location: "Boston, MA",
+    description: "Tiệm nail khu trung tâm thành phố Boston",
+    vietnamese_description: "Sang tiệm nail khu trung tâm Boston, MA. Tiệm hoạt động 15 năm, khách ổn định. Có 6 bàn, 8 ghế pedicure, 1 phòng wax. Income $30K-35K/tháng. Rent $3,800. Giá sang $85K. Liên hệ: Cô Mai (617) 234-5678.",
+    price: "$85,000",
+    imageUrl: getNailImage(1),
     contact_info: {
-      phone: "(702) 901-2345",
-      owner_name: "Chị Quỳnh",
+      owner_name: "Cô Mai",
+      phone: "(617) 234-5678"
     },
-    is_vietnamese_listing: true,
-    created_at: "2023-11-25T14:15:00Z"
+    square_feet: 1300,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-111",
-    name: "Tiệm Nail Khu Cao Cấp",
-    location: "San Diego, CA",
-    price: 200000,
-    imageUrl: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
-    description: "Luxury nail salon in upscale neighborhood",
-    vietnamese_description: "Sang tiệm nail khu cao cấp, khách hàng VIP, giá dịch vụ cao, income $80K/tháng, 14 ghế, 12 bàn, decor sang trọng.",
+    name: "Tiệm Nail Đẹp Chicago",
+    location: "Chicago, IL",
+    description: "Tiệm nail cao cấp khu downtown Chicago",
+    vietnamese_description: "Cần sang tiệm nail khu downtown Chicago. Tiệm thiết kế hiện đại, sang trọng. Có 10 bàn, 12 ghế pedicure mới, 2 phòng wax, 1 phòng facial. Income $45K-50K/tháng. Rent $4,800. Giá bán $150K. Liên hệ: Anh Thắng (312) 456-7890.",
+    price: "$150,000",
+    imageUrl: getNailImage(2),
     contact_info: {
-      phone: "(619) 012-3456",
-      owner_name: "Anh Việt",
+      owner_name: "Anh Thắng",
+      phone: "(312) 456-7890"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2023-12-08T09:45:00Z"
+    square_feet: 1800,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-112",
-    name: "Tiệm Nails Sắp Hoàn Thiện",
-    location: "Phoenix, AZ",
-    price: 55000,
-    imageUrl: "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png",
-    description: "Nearly completed nail salon in growing area",
-    vietnamese_description: "Sang tiệm nails đang xây dựng 80%, khu đang phát triển, cơ hội tốt, setup 10 ghế, 8 bàn, giá đầu tư.",
+    name: "Tiệm Nail Nhỏ Phoenix",
+    location: "Scottsdale, AZ",
+    description: "Tiệm nail nhỏ xinh khu giàu có ở Arizona",
+    vietnamese_description: "Sang tiệm nail nhỏ xinh ở khu giàu Scottsdale, AZ. Tiệm có 4 bàn, 6 ghế pedicure, 1 phòng dịch vụ. Khách rất sang và tip hậu. Income $20K-25K/tháng. Rent $2,200. Giá sang $40K. Liên hệ: Cô Hồng (480) 567-8901.",
+    price: "$40,000",
+    imageUrl: getNailImage(3),
     contact_info: {
-      phone: "(480) 123-4567",
-      owner_name: "Chị Mai",
+      owner_name: "Cô Hồng",
+      phone: "(480) 567-8901"
     },
-    is_vietnamese_listing: true,
-    created_at: "2024-01-15T13:30:00Z"
+    square_feet: 900,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-113",
-    name: "Tiệm Nails Khu Dân Cư",
-    location: "Portland, OR",
-    price: 90000,
-    imageUrl: "/lovable-uploads/52b943aa-d9b3-46ce-9f7f-94f3b223cb28.png",
-    description: "Neighborhood nail salon with loyal local clientele",
-    vietnamese_description: "Cần sang tiệm nails khu dân cư, khách hàng trung thành, income $38K/tháng, 9 ghế, 7 bàn, 2 phòng wax/facial.",
+    name: "Tiệm Nail Cao Cấp Philadelphia",
+    location: "Philadelphia, PA",
+    description: "Tiệm nail cao cấp trong khu thương mại trung tâm",
+    vietnamese_description: "Sang tiệm nail cao cấp ở Philadelphia, PA. Tiệm 2000sqft, có 12 bàn, 14 ghế pedicure cao cấp, 3 phòng dịch vụ. Income $55K-65K/tháng. Rent $5,500. Giá sang $170K. Liên hệ: Anh Đức (215) 678-9012.",
+    price: "$170,000",
+    imageUrl: getNailImage(4),
     contact_info: {
-      phone: "(503) 234-5678",
-      owner_name: "Anh Tú",
+      owner_name: "Anh Đức",
+      phone: "(215) 678-9012"
     },
-    is_vietnamese_listing: true,
-    created_at: "2024-02-20T10:20:00Z"
+    square_feet: 2000,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-114",
-    name: "Tiệm Nails Mới Xây",
-    location: "Denver, CO",
-    price: 145000,
-    imageUrl: "/lovable-uploads/01ef3239-5cce-4882-b2ad-7419106e33ef.png",
-    description: "Brand new nail salon with modern equipment",
-    vietnamese_description: "Sang tiệm nails mới xây, trang thiết bị hiện đại, vị trí đẹp, income đang tăng nhanh, tiềm năng lớn, 12 ghế, 10 bàn.",
+    name: "Tiệm Nail Michigan",
+    location: "Ann Arbor, MI",
+    description: "Tiệm nail trong khu đại học sầm uất",
+    vietnamese_description: "Sang tiệm nail gần khu đại học Michigan. Tiệm có 6 bàn, 8 ghế pedicure, 1 phòng wax. Khách sinh viên và giáo sư đông đúc. Income $25K-30K/tháng. Rent $2,800. Giá sang $60K. Liên hệ: Chị Ngọc (734) 789-0123.",
+    price: "$60,000",
+    imageUrl: getNailImage(5),
     contact_info: {
-      phone: "(720) 345-6789",
-      owner_name: "Anh Đức",
+      owner_name: "Chị Ngọc",
+      phone: "(734) 789-0123"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2024-03-05T16:10:00Z"
+    square_feet: 1200,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-115",
-    name: "Tiệm Nail Trong Mall",
-    location: "Boston, MA",
-    price: 160000,
-    imageUrl: "/lovable-uploads/ca09b67d-f8b2-497c-bfd9-ac6ec0a491c7.png",
-    description: "Mall-based nail salon with exceptional foot traffic",
-    vietnamese_description: "Cần sang tiệm nail trong mall lớn, lưu lượng khách cao, income $65K/tháng, 15 ghế, 12 bàn, vị trí đẹp.",
+    name: "Tiệm Nail Vùng Dallas",
+    location: "Plano, TX",
+    description: "Tiệm nail vùng ngoại ô Dallas giàu có",
+    vietnamese_description: "Cần sang tiệm nail ở Plano, TX. Khu Mỹ trắng, giàu có. Tiệm có 8 bàn, 10 ghế pedicure cao cấp, 2 phòng dịch vụ. Income $35K-40K/tháng. Rent $3,700. Giá bán $90K. Liên hệ: Anh Tùng (972) 890-1234.",
+    price: "$90,000",
+    imageUrl: getNailImage(6),
     contact_info: {
-      phone: "(617) 456-7890",
-      owner_name: "Chị Ngọc",
+      owner_name: "Anh Tùng",
+      phone: "(972) 890-1234"
     },
-    is_vietnamese_listing: true,
-    created_at: "2024-03-20T11:30:00Z"
+    square_feet: 1500,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-116",
-    name: "Tiệm Nails & Spa VIP",
-    location: "Austin, TX",
-    price: 220000,
-    imageUrl: "/lovable-uploads/5f4b0b9e-d1c2-43ad-a85c-92c4b6c61441.png",
-    description: "VIP nail salon and spa with exclusive services",
-    vietnamese_description: "Sang tiệm nails & spa VIP, dịch vụ cao cấp, khách hàng thượng lưu, income $95K/tháng, 16 ghế, 14 bàn, 6 phòng dịch vụ.",
+    name: "Tiệm Nail New Jersey",
+    location: "Princeton, NJ",
+    description: "Tiệm nail khu học thuật cao cấp",
+    vietnamese_description: "Sang tiệm nail khu Princeton, NJ. Khách học thức, sang trọng. Tiệm có 6 bàn, 8 ghế pedicure, 1 phòng wax. Income $28K-32K/tháng. Rent $3,200. Giá sang $70K. Liên hệ: Chị Trang (609) 901-2345.",
+    price: "$70,000",
+    imageUrl: getNailImage(7),
     contact_info: {
-      phone: "(512) 567-8901",
-      owner_name: "Chị Vân",
+      owner_name: "Chị Trang",
+      phone: "(609) 901-2345"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2024-04-08T14:45:00Z"
+    square_feet: 1200,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-117",
-    name: "Tiệm Nails Kết Hợp Spa",
-    location: "Charlotte, NC",
-    price: 125000,
-    imageUrl: "/lovable-uploads/4c2d8a4c-e191-40a0-8666-147cbcc488d4.png",
-    description: "Combined nail salon and day spa with growing business",
-    vietnamese_description: "Cần sang tiệm nails kết hợp spa, đang phát triển tốt, income $50K/tháng, 12 ghế, 10 bàn, 4 phòng spa đầy đủ.",
+    name: "Tiệm Nail Nam California",
+    location: "San Diego, CA",
+    description: "Tiệm nail khu biển sang trọng",
+    vietnamese_description: "Cần sang tiệm nail khu biển San Diego. Tiệm rộng 1600sqft, có 8 bàn, 10 ghế pedicure, 2 phòng dịch vụ. Khách du lịch và dân địa phương sang trọng. Income $40K-50K/tháng. Rent $4,500. Giá sang $130K. Liên hệ: Chị Lan (619) 012-3456.",
+    price: "$130,000",
+    imageUrl: getNailImage(8),
     contact_info: {
-      phone: "(704) 678-9012",
-      owner_name: "Anh Hùng",
+      owner_name: "Chị Lan",
+      phone: "(619) 012-3456"
     },
-    is_vietnamese_listing: true,
-    created_at: "2024-04-15T09:10:00Z"
+    square_feet: 1600,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-118",
-    name: "Tiệm Nail Khu Resort",
-    location: "Tampa, FL",
-    price: 180000,
-    imageUrl: "/lovable-uploads/f9c0a9f2-e45c-4c98-8413-6fd84624a578.png",
-    description: "Resort area nail salon with year-round business",
-    vietnamese_description: "Sang tiệm nail khu resort, kinh doanh ổn định quanh năm, income $75K/tháng, 14 ghế, 12 bàn, 3 phòng dịch vụ cao cấp.",
+    name: "Sang Tiệm Đẹp Denver",
+    location: "Denver, CO",
+    description: "Tiệm nail cao cấp trong trung tâm thành phố",
+    vietnamese_description: "Sang tiệm nail đẹp khu trung tâm Denver, CO. Tiệm 1800sqft, mới remodel với 10 bàn, 12 ghế pedicure cao cấp, 2 phòng wax, 1 phòng facial. Income $45K-50K/tháng. Rent $4,800. Giá sang $145K. Liên hệ: Anh Nam (303) 123-4567.",
+    price: "$145,000",
+    imageUrl: getNailImage(9),
     contact_info: {
-      phone: "(813) 789-0123",
-      owner_name: "Chị Linh",
+      owner_name: "Anh Nam",
+      phone: "(303) 123-4567"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2024-04-25T12:30:00Z"
+    square_feet: 1800,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-119",
-    name: "Tiệm Nails Lâu Năm",
-    location: "Philadelphia, PA",
-    price: 105000,
-    imageUrl: "/lovable-uploads/d1abc88d-ed4e-4e7f-91d7-04104efd6ce6.png",
-    description: "Well-established nail salon with 15+ years in business",
-    vietnamese_description: "Cần sang tiệm nails hoạt động trên 15 năm, khách hàng trung thành, income $45K/tháng, 10 ghế, 8 bàn, vị trí đẹp.",
+    name: "Tiệm Nail Portland",
+    location: "Portland, OR",
+    description: "Tiệm nail độc đáo phong cách hiện đại",
+    vietnamese_description: "Sang tiệm nail khu Portland, OR. Tiệm thiết kế hiện đại, độc đáo, được nhiều tạp chí đăng tin. Có 6 bàn, 8 ghế pedicure đặc biệt, 2 phòng dịch vụ. Income $35K-40K/tháng. Rent $3,800. Giá sang $110K. Liên hệ: Chị Quỳnh (503) 234-5678.",
+    price: "$110,000",
+    imageUrl: getNailImage(10),
     contact_info: {
-      phone: "(215) 890-1234",
-      owner_name: "Chị Hồng",
+      owner_name: "Chị Quỳnh",
+      phone: "(503) 234-5678"
     },
-    is_vietnamese_listing: true,
-    created_at: "2024-05-01T10:00:00Z"
+    square_feet: 1400,
+    featured: false,
+    is_vietnamese_listing: true
   },
   {
     id: "vn-120",
-    name: "Tiệm Nail Organic",
-    location: "San Francisco, CA",
-    price: 195000,
-    imageUrl: "/lovable-uploads/f7491bd3-25bf-43f9-80e2-d53b137a70d7.png",
-    description: "Organic nail salon with high-end eco-friendly products",
-    vietnamese_description: "Sang tiệm nail organic, sản phẩm sinh học cao cấp, khách hàng thượng lưu, income $85K/tháng, 10 ghế, 8 bàn, concept độc đáo.",
+    name: "Tiệm Nail Nashville",
+    location: "Nashville, TN",
+    description: "Tiệm nail khu âm nhạc sôi động",
+    vietnamese_description: "Cần sang tiệm nail khu âm nhạc Nashville, TN. Tiệm có 8 bàn, 10 ghế pedicure, 1 phòng wax, 1 phòng facial. Khách nghệ sĩ và du khách đông đúc. Income $32K-38K/tháng. Rent $3,400. Giá bán $80K. Liên hệ: Anh Hiếu (615) 345-6789.",
+    price: "$80,000",
+    imageUrl: getNailImage(11),
     contact_info: {
-      phone: "(415) 901-2345",
-      owner_name: "Anh Nam",
+      owner_name: "Anh Hiếu",
+      phone: "(615) 345-6789"
     },
-    featured: true,
-    is_vietnamese_listing: true,
-    created_at: "2024-05-02T15:15:00Z"
+    square_feet: 1500,
+    featured: false,
+    is_vietnamese_listing: true
   }
 ];
+
+export default vietnameseSalonListings;
