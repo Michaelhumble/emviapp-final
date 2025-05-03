@@ -6,16 +6,27 @@
 
 // Define path constants for the uploaded nail salon images with explicit file paths
 export const NAIL_SALON_IMAGES = {
-  // New premium luxury nail salon images (2025 edition)
+  // Original premium luxury nail salon images
   luxuryLarge: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png", // Large spacious nail salon with cream chairs
   modernDeluxe: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png", // Modern salon with sitting area and large windows
   artGallery: "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png", // Nail salon with art gallery walls and hanging lights
   executiveNails: "/lovable-uploads/e1ce1662-fb69-4ad9-995a-364ee16e42f6.png", // Clean cream interior with plenty of natural light
   minimalist: "/lovable-uploads/7a58770c-404e-4259-b1a6-f044c8eefdc0.png", // Modern minimalist white interior with reception
 
-  // Additional legacy images as fallbacks (removed all external/unsecured URLs)
-  premium1: "/lovable-uploads/72875e23-d749-4521-989d-4ff82423de01.png",
-  premium2: "/lovable-uploads/3ef97ce8-eb62-44e0-842c-d10c54d23d81.png"
+  // Original uploaded images
+  originalImg1: "/lovable-uploads/8858fff4-1fa3-4803-86b1-beadca5fd1df.png",
+  originalImg2: "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png",
+  originalImg3: "/lovable-uploads/89855878-2908-47b5-98b0-1935d73cdd71.png",
+  originalImg4: "/lovable-uploads/2542d0a3-5117-433d-baee-5c0fe2bfeca2.png",
+
+  // New uploaded images
+  luxuryPink: "/lovable-uploads/0a78836f-9528-4119-a387-5442ab284cc7.png", // luxury pink salon
+  beigeWooden: "/lovable-uploads/b0eaa611-27a6-42f3-b005-b259d595db96.png", // beige wooden ceiling salon
+  pedicureChairs: "/lovable-uploads/0f5c9f01-b448-43dd-8c3a-a48589d6bf08.png", // salon with pedicure chairs
+  creamManicure: "/lovable-uploads/44caa889-1f3d-4a90-8748-d845241e0bbf.png", // cream manicure stations
+  blackRedLuxury: "/lovable-uploads/a1aec0a2-7c4c-48fe-810c-e932fcd1322c.png", // black and red luxury salon
+  beigeMirrors: "/lovable-uploads/0233127f-811c-4dee-a325-4336f95b8a77.png", // beige salon with mirrors
+  modernBar: "/lovable-uploads/291a4fac-a057-4cb2-9ab8-7ada287421c4.png", // modern salon with bar seating
 };
 
 // Store all image keys to easily select random images
@@ -154,4 +165,29 @@ export const getRandomNailSalonImage = (): string => {
   const randomIndex = Math.floor(Math.random() * IMAGE_KEYS.length);
   const key = IMAGE_KEYS[randomIndex];
   return NAIL_SALON_IMAGES[key as keyof typeof NAIL_SALON_IMAGES] || FALLBACK_IMAGE;
+};
+
+/**
+ * Returns all Vietnamese nail salon images for job listings
+ * This ensures we have a dedicated set for Vietnamese listings
+ */
+export const getVietnameseNailSalonImages = (): string[] => {
+  return [
+    NAIL_SALON_IMAGES.originalImg1,
+    NAIL_SALON_IMAGES.originalImg2,
+    NAIL_SALON_IMAGES.originalImg3,
+    NAIL_SALON_IMAGES.originalImg4,
+    NAIL_SALON_IMAGES.luxuryLarge,
+    NAIL_SALON_IMAGES.modernDeluxe, 
+    NAIL_SALON_IMAGES.artGallery,
+    NAIL_SALON_IMAGES.executiveNails,
+    NAIL_SALON_IMAGES.minimalist,
+    NAIL_SALON_IMAGES.luxuryPink,
+    NAIL_SALON_IMAGES.beigeWooden,
+    NAIL_SALON_IMAGES.pedicureChairs,
+    NAIL_SALON_IMAGES.creamManicure,
+    NAIL_SALON_IMAGES.blackRedLuxury,
+    NAIL_SALON_IMAGES.beigeMirrors,
+    NAIL_SALON_IMAGES.modernBar,
+  ];
 };

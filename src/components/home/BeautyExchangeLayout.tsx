@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { featuredNailsAds } from '@/utils/featuredNailsAds';
 import NailSalonDetailModal from './NailSalonDetailModal';
+import { Link } from 'react-router-dom';
 
 // Categories that will be displayed
 const categories = [
@@ -42,7 +43,6 @@ const BeautyExchangeLayout = () => {
             <div key={index} className="space-y-4">
               <h3 className="text-2xl font-semibold border-b pb-2">{category}</h3>
               
-              {/* Display real listings for Nails category, placeholders for other categories */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {category === "Nails" ? (
                   // Display real nail salon listings with uploaded images
@@ -64,20 +64,23 @@ const BeautyExchangeLayout = () => {
                       <div className="p-4">
                         <h4 className="font-medium mb-1 truncate">{listing.title}</h4>
                         <p className="text-gray-500 text-xs mb-2">{listing.location} • {listing.price}</p>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full flex items-center justify-center"
-                          onClick={() => handleViewDetails(listing)}
-                        >
-                          View Details
-                          <ArrowRight className="ml-1 h-3 w-3" />
-                        </Button>
+                        
+                        {/* Link to Jobs page with Vietnamese tab selected */}
+                        <Link to="/jobs">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full flex items-center justify-center"
+                          >
+                            View Jobs
+                            <ArrowRight className="ml-1 h-3 w-3" />
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   ))
                 ) : (
-                  // Show placeholder cards for other categories (unchanged)
+                  // Show placeholder cards for other categories
                   Array.from({ length: 5 }).map((_, cardIndex) => (
                     <div 
                       key={cardIndex} 
