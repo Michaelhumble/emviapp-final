@@ -51,7 +51,7 @@ const NailSalonDetailModal = ({ open, onOpenChange, listing }: NailSalonDetailMo
           </DialogHeader>
           
           <div className="mt-4">
-            <h3 className="font-medium mb-2">About this salon</h3>
+            <h3 className="font-medium mb-2">Chi tiết</h3>
             <p className="text-gray-600">{listing.description}</p>
           </div>
           
@@ -65,8 +65,8 @@ const NailSalonDetailModal = ({ open, onOpenChange, listing }: NailSalonDetailMo
           )}
           
           <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between">
-            <Button variant="outline">Send Message</Button>
-            <Button className="bg-primary hover:bg-primary/90">Book Appointment</Button>
+            <Button variant="outline">Gửi tin nhắn</Button>
+            <Button className="bg-primary hover:bg-primary/90">Đặt lịch</Button>
           </div>
         </div>
       </DialogContent>
