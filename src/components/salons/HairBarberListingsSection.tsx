@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -56,6 +56,10 @@ const HairBarberListingsSection: React.FC = () => {
                   src={listing.imageUrl}
                   alt={listing.title}
                   className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                  onError={(e) => {
+                    console.error(`Failed to load image: ${listing.imageUrl}`);
+                    e.currentTarget.src = '/placeholder.svg'; // Fallback to placeholder
+                  }}
                 />
               </div>
               
