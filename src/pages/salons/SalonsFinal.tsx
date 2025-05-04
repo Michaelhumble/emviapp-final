@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
 import { Plus, Search } from 'lucide-react';
+import HairBarberListingsSection from '@/components/salons/HairBarberListingsSection';
 
 const SalonsFinalsPage = () => {
   useEffect(() => {
@@ -91,6 +92,9 @@ const SalonsFinalsPage = () => {
               ))}
             </div>
           </div>
+
+          {/* Hair & Barber Listings Section - New section */}
+          <HairBarberListingsSection />
 
           {/* Vietnamese Nail Listings Section - Restored section */}
           <div className="mb-16 border-t pt-12">
