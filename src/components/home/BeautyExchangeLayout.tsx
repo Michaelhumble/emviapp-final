@@ -26,28 +26,22 @@ const BeautyExchangeLayout = () => {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
+        {/* Replaced the general title with the Nail Salon specific title */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-            Beauty Exchange Categories
+          <h2 className="text-3xl font-semibold text-center text-gray-900 mb-2">
+            Nail Salon Listings — Preview Spaces
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Explore listings across multiple beauty industry categories
+          <p className="text-center text-gray-500 text-base mb-10">
+            Explore premium nail salon jobs and spaces. Listings opening soon.
           </p>
         </div>
 
         <div className="space-y-12">
           {categories.map((category, index) => (
             <div key={index} className="space-y-4">
-              {/* Updated heading styling to match requested format */}
+              {/* For Nails category, don't show the heading since we've moved it to the top */}
               {category === "Nails" ? (
-                <>
-                  <h2 className="text-3xl font-semibold text-center text-gray-900 mb-2">
-                    Nail Salon Listings — Preview Spaces
-                  </h2>
-                  <p className="text-center text-gray-500 text-base mb-10">
-                    Explore premium nail salon jobs and spaces. Listings opening soon.
-                  </p>
-                </>
+                <></>
               ) : category === "Tattoo" ? (
                 <>
                   <h2 className="text-3xl font-semibold text-center text-gray-900 mb-2">
