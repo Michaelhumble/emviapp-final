@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import NailListingsSection from './NailListingsSection';
+import HairListingsSection from './HairListingsSection';
 
 const BeautyExchangeSection = () => {
   return (
@@ -65,8 +66,11 @@ const BeautyExchangeSection = () => {
           </div>
         </div>
 
-        {/* Only rendering the NailListingsSection */}
+        {/* First, render the NailListingsSection */}
         <NailListingsSection />
+        
+        {/* Next, render the HairListingsSection */}
+        <HairListingsSection />
       </div>
     </section>
   );
