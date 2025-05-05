@@ -38,7 +38,22 @@ const BeautyExchangeLayout = () => {
         <div className="space-y-12">
           {categories.map((category, index) => (
             <div key={index} className="space-y-4">
-              <h3 className="text-2xl font-semibold border-b pb-2">{category}</h3>
+              <h3 className="text-2xl font-semibold border-b pb-2">
+                {category === "Nails" ? "Nail Salon Listings — Preview Spaces" : 
+                 category === "Tattoo" ? "Tattoo Listings — Preview Spaces" : category}
+              </h3>
+              
+              {/* Add subheadline for each category */}
+              {category === "Nails" && (
+                <p className="text-gray-600 mb-4">
+                  <em>Explore premium nail salon jobs and spaces. Listings opening soon.</em>
+                </p>
+              )}
+              {category === "Tattoo" && (
+                <p className="text-gray-600 mb-4">
+                  <em>Discover top-rated tattoo studios and job opportunities. Listings opening soon.</em>
+                </p>
+              )}
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {category === "Nails" ? (
