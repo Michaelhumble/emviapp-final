@@ -7,6 +7,7 @@ import { Job } from '@/types/job';
 import { Badge } from '@/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface OpportunityCardProps {
   listing: Job & { 
@@ -32,6 +33,9 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
+  // Log image path for debugging
+  console.log(`Rendering card ${listing.title} with image:`, listing.image);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -44,10 +48,11 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
       <Card className="overflow-hidden h-full flex flex-col">
         <div className="relative aspect-video bg-gray-100">
           {listing.image ? (
-            <img 
+            <ImageWithFallback 
               src={listing.image} 
               alt={listing.title || listing.company || "Beauty opportunity"} 
               className="w-full h-full object-cover"
+              businessName={listing.title || listing.company}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">

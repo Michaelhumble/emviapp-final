@@ -7,6 +7,7 @@ import AuthAction from '@/components/common/AuthAction';
 import { Job } from '@/types/job';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/context/auth/hooks/useSession';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface TattooListingsSectionProps {
   tattooStudios: Salon[];
@@ -16,7 +17,7 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
   const navigate = useNavigate();
   const { session } = useSession();
 
-  // Define the studio images using the uploaded images - fix paths by removing "public/" prefix
+  // Define the studio images with correct paths
   const tattooStudioImages = [
     "/lovable-uploads/6af7cc02-b6cf-4c54-9c03-9510d543d3f1.png",  // Image 1
     "/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png",  // Image 2  
@@ -37,7 +38,7 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
   };
 
   // Convert Salon objects to compatible Job objects for OpportunityCard
-  // Use the new images in the mapping process
+  // Ensure images are properly assigned with absolute paths
   const jobListings = tattooStudios.map((studio, index) => ({
     id: studio.id,
     title: studio.name,
@@ -45,10 +46,14 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
     location: studio.location,
     created_at: studio.created_at || new Date().toISOString(),
     description: studio.description,
-    image: tattooStudioImages[index] || studio.imageUrl || studio.image, // Use the new image
+    image: tattooStudioImages[index % tattooStudioImages.length], // Use modulo to prevent out-of-bounds
     price: typeof studio.price === 'number' ? studio.price.toString() : studio.price,
     type: 'salon' as 'salon'
   }));
+
+  // For debugging
+  console.log("Tattoo studio images:", tattooStudioImages);
+  console.log("Job listings with images:", jobListings.map(job => job.image));
 
   return (
     <section className="py-12 bg-gray-50">
@@ -64,11 +69,34 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
               redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
               customTitle="Sign in to view full details"
               creditMessage="Create a free account to access contact information and more details."
-              // Pass the authenticated content prop to hide the link when not signed in
-              fallbackContent={<OpportunityCard listing={{...listing, hideLink: true}} index={index} />}
-              authenticatedContent={<OpportunityCard listing={listing} index={index} />}
+              fallbackContent={
+                <OpportunityCard 
+                  listing={{
+                    ...listing, 
+                    hideLink: true,
+                    image: tattooStudioImages[index % tattooStudioImages.length] // Explicitly set image here as well
+                  }} 
+                  index={index} 
+                />
+              }
+              authenticatedContent={
+                <OpportunityCard 
+                  listing={{
+                    ...listing,
+                    image: tattooStudioImages[index % tattooStudioImages.length] // Explicitly set image here as well
+                  }} 
+                  index={index} 
+                />
+              }
             >
-              <OpportunityCard listing={{...listing, hideLink: true}} index={index} />
+              <OpportunityCard 
+                listing={{
+                  ...listing, 
+                  hideLink: true,
+                  image: tattooStudioImages[index % tattooStudioImages.length] // Explicitly set image here as well
+                }} 
+                index={index} 
+              />
             </AuthAction>
           ))}
         </div>
