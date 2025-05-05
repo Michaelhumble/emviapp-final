@@ -14,7 +14,7 @@ interface NailListingsSectionProps {
 
 const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
   const navigate = useNavigate();
-  const { session } = useSession();
+  const { session, user } = useSession();
 
   const handleCardClick = (listing: Job | Salon): boolean | Promise<boolean> => {
     if (session) {
@@ -28,18 +28,37 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
   };
 
   // Convert Salon objects to compatible Job objects for OpportunityCard
-  const jobListings = nailSalons.map(salon => ({
-    id: salon.id,
-    title: salon.name,
-    company: salon.name,
-    location: salon.location,
-    created_at: salon.created_at || new Date().toISOString(),
-    description: salon.description,
-    image: salon.imageUrl || salon.image,
-    price: typeof salon.price === 'number' ? salon.price.toString() : salon.price,
-    type: 'salon' as 'salon',
-    contact_info: salon.contact_info
-  }));
+  // Conditionally include sensitive data ONLY for authenticated users
+  const jobListings = nailSalons.map(salon => {
+    // Base listing object with non-sensitive information
+    const baseListing = {
+      id: salon.id,
+      title: salon.name,
+      company: salon.name,
+      location: salon.location,
+      created_at: salon.created_at || new Date().toISOString(),
+      image: salon.imageUrl || salon.image,
+      type: 'salon' as 'salon',
+    };
+
+    // If user is authenticated, include full details
+    if (session && user) {
+      return {
+        ...baseListing,
+        description: salon.description,
+        price: typeof salon.price === 'number' ? salon.price.toString() : salon.price,
+        contact_info: salon.contact_info
+      };
+    } 
+    
+    // For non-authenticated users, provide limited information
+    return {
+      ...baseListing,
+      description: salon.description ? `${salon.description.substring(0, 80)}...` : 'Sign in to view full details.',
+      price: undefined, // No price info for non-authenticated users
+      contact_info: undefined // No contact info for non-authenticated users
+    };
+  });
 
   return (
     <section className="py-12 bg-white">
@@ -60,12 +79,7 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
                   listing={{
                     ...listing,
                     hideLink: true,
-                    // Truncate description for non-authenticated users
-                    description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined,
-                    // Remove contact info completely for non-authenticated users
-                    contact_info: undefined,
-                    // Remove price for non-authenticated users
-                    price: undefined
+                    // Non-authenticated users already have limited description from jobListings
                   }} 
                   index={index} 
                 />
@@ -82,15 +96,19 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
                 listing={{
                   ...listing,
                   hideLink: true,
-                  description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined,
-                  contact_info: undefined,
-                  price: undefined
                 }} 
                 index={index} 
               />
             </AuthAction>
           ))}
         </div>
+        
+        {!session && (
+          <div className="mt-8 text-center">
+            <p className="text-gray-600 mb-2">🔒 Contact information is locked</p>
+            <p className="text-sm text-gray-500">Sign in to view full details including contact information and prices</p>
+          </div>
+        )}
       </div>
     </section>
   );
