@@ -6,12 +6,11 @@ import { featuredNailsAds } from '@/utils/featuredNailsAds';
 import NailSalonDetailModal from './NailSalonDetailModal';
 import { Link } from 'react-router-dom';
 
-// Updated categories - removed Hair & Barber
+// Updated categories - removed Massage & Booth Rental
 const categories = [
   "Nails",
   "Tattoo", 
-  "Skincare & Spa",
-  "Massage & Booth Rental"
+  "Skincare & Spa"
 ];
 
 const BeautyExchangeLayout = () => {
