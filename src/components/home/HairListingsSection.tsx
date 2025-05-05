@@ -3,6 +3,28 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
+import ValidatedLink from '@/components/common/ValidatedLink';
+
+// Define the paths to the currently uploaded hair salon images
+const hairSalonImages = [
+  "/lovable-uploads/565dbac0-48b7-4aaf-b1ad-7c97ca38e1e9.png",
+  "/lovable-uploads/d62af349-7eeb-443d-b168-7036cabfd2ac.png",
+  "/lovable-uploads/b8f0c457-76d8-46e9-9ee6-4869928cbea6.png",
+  // Placeholders for the two remaining images to be added later
+  "", 
+  ""
+];
+
+// Define destinations for each card
+const cardDestinations = [
+  { id: "hair-1", type: "salon", path: "/salons/hair-1" },
+  { id: "hair-2", type: "job", path: "/jobs/hair-2" },
+  { id: "hair-3", type: "salon", path: "/salons/hair-3" },
+  { id: "hair-4", type: "job", path: "/jobs/hair-4" },
+  { id: "hair-5", type: "salon", path: "/salons/hair-5" }
+];
 
 const HairListingsSection: React.FC = () => {
   return (
@@ -10,10 +32,10 @@ const HairListingsSection: React.FC = () => {
       <div className="container px-4 mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-4 text-gray-900">
-            Hairdresser Listings — Preview Spaces
+            Hair Salon Listings — Premium Spaces
           </h2>
           <p className="text-lg font-inter text-gray-600 max-w-3xl mx-auto">
-            Explore premium spaces in the hair styling industry. Listings opening soon.
+            Explore luxury hair salon spaces and opportunities. Connect with premium establishments.
           </p>
         </div>
 
@@ -29,26 +51,45 @@ const HairListingsSection: React.FC = () => {
             >
               <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow">
                 <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <span className="text-gray-400 text-sm">No image yet</span>
+                  {hairSalonImages[index] ? (
+                    <img 
+                      src={hairSalonImages[index]} 
+                      alt={`Luxury Hair Salon ${index + 1}`} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-sm">Image coming soon</span>
+                  )}
                 </div>
                 
                 <CardContent className="p-5 flex flex-col flex-grow">
                   <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
-                    Preview Space {index + 1}
+                    Luxury Hair Studio {index + 1}
                   </h3>
                   
                   <p className="text-sm text-gray-500 mb-2 font-inter">
-                    Placeholder listing
+                    Premium hair salon space
                   </p>
                   
                   <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
-                    Premium hairdresser listing coming soon...
+                    Elegant salon space with high-end finishes, crystal chandeliers, and luxurious styling chairs.
                   </p>
                   
-                  <div className="flex items-center justify-start mt-auto pt-2 border-t border-gray-100">
-                    <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-full">
-                      Coming Soon
+                  <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                    <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                      Exclusive
                     </Badge>
+
+                    <ValidatedLink 
+                      to={cardDestinations[index].path}
+                      listingId={cardDestinations[index].id}
+                      listingType={cardDestinations[index].type as "salon" | "job"}
+                      className="no-underline"
+                    >
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> View Details
+                      </Button>
+                    </ValidatedLink>
                   </div>
                 </CardContent>
               </Card>
