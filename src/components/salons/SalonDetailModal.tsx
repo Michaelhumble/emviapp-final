@@ -1,263 +1,194 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Job } from '@/types/job';
-import { Salon } from '@/types/salon';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { MapPin, DollarSign, Phone, Mail, User, Calendar, Lock } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { MapPin, DollarSign, Clock, User, Mail, Phone } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useSession } from '@/context/auth/hooks/useSession';
+import { AuthAction } from '@/components/common/AuthAction';
 
-interface SalonDetailsDialogProps {
-  salon: Job | Salon | null;
+interface SalonDetailModalProps {
+  salon: Job | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
-  salon,
-  isOpen,
-  onClose,
-}) => {
-  const { session } = useSession();
-  const isAuthenticated = !!session;
+const SalonDetailModal: React.FC<SalonDetailModalProps> = ({ salon, isOpen, onClose }) => {
+  const { session, user } = useSession();
 
   if (!salon) return null;
-  
-  // Get the name/title depending on salon type
-  const getName = () => {
-    if ('name' in salon && salon.name) return salon.name;
-    if ('title' in salon && salon.title) return salon.title;
-    if ('company' in salon && salon.company) return salon.company;
-    return 'Unnamed Salon';
-  };
 
-  // Get the image URL depending on salon type
-  const getImageUrl = () => {
-    if ('image' in salon && salon.image) return salon.image;
-    if ('imageUrl' in salon && salon.imageUrl) return salon.imageUrl;
-    return '';
-  };
+  // Create a filtered version of the salon data based on authentication state
+  const filteredSalon = (() => {
+    // Base listing with non-sensitive information
+    const baseListing = {
+      ...salon,
+      description: salon.description 
+        ? session && user 
+          ? salon.description 
+          : `${salon.description.substring(0, 60)}...`
+        : 'No description available.',
+    };
 
-  // Get the formatted price with fallback - only if authenticated
-  const getFormattedPrice = () => {
-    if (!isAuthenticated) {
-      return '🔒 Sign in to view pricing';
-    }
-    
-    let price;
-    
-    if ('asking_price' in salon && salon.asking_price) {
-      price = salon.asking_price;
-    } else if ('price' in salon && salon.price) {
-      price = salon.price;
-    } else {
-      return 'Contact for Price';
-    }
-    
-    if (typeof price === 'string') {
-      // If the price already has a $ sign, return it as is
-      if (price.includes('$')) return price;
-      // Otherwise, add the $ sign
-      return `$${price}`;
-    } else if (typeof price === 'number') {
-      return `$${price.toLocaleString()}`;
-    }
-    
-    return 'Contact for Price';
-  };
-
-  // Get features list
-  const getFeaturesList = () => {
-    if ('features' in salon && Array.isArray(salon.features)) return salon.features;
-    if ('salon_features' in salon && Array.isArray(salon.salon_features)) return salon.salon_features;
-    return [];
-  };
-
-  // Get truncated description for non-authenticated users
-  const getDescription = () => {
-    const description = 'description' in salon && salon.description 
-      ? salon.description 
-      : 'No description available';
-    
-    if (isAuthenticated) {
-      return description;
-    } else {
-      const truncated = typeof description === 'string' 
-        ? `${description.substring(0, 60)}...` 
-        : 'Description preview';
-      return truncated;
-    }
-  };
-
-  // Get contact info - only if authenticated
-  const getContactInfo = () => {
-    if (!isAuthenticated) {
-      return null; // Don't even create the contact object for non-authenticated users
-    }
-    
-    if ('contact_info' in salon && salon.contact_info) {
+    // If user is authenticated, include full details
+    if (session && user) {
       return {
-        name: salon.contact_info.owner_name || 'Salon Owner',
-        phone: salon.contact_info.phone || '',
-        email: salon.contact_info.email || '',
+        ...baseListing,
+        price: salon.price,
+        contact_info: salon.contact_info
       };
     }
     
+    // For non-authenticated users, provide limited information
     return {
-      name: 'Salon Owner',
-      phone: '',
-      email: '',
+      ...baseListing,
+      price: undefined, // No price info for non-authenticated users
+      contact_info: undefined // No contact info for non-authenticated users
     };
-  };
-
-  const name = getName();
-  const imageUrl = getImageUrl();
-  const price = getFormattedPrice();
-  const features = getFeaturesList();
-  const description = getDescription();
-  const contact = getContactInfo();
-  const postedDate = 'created_at' in salon && salon.created_at 
-    ? formatDistanceToNow(new Date(salon.created_at), { addSuffix: true })
-    : '';
+  })();
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">{name}</DialogTitle>
-          <DialogDescription>
-            <div className="flex items-center text-gray-600">
-              <MapPin className="h-4 w-4 mr-1.5" />
-              <span>{salon.location}</span>
-              {postedDate && (
-                <div className="flex items-center ml-4">
-                  <Calendar className="h-4 w-4 mr-1.5" />
-                  <span>Posted {postedDate}</span>
-                </div>
-              )}
-            </div>
-          </DialogDescription>
+          <DialogTitle className="text-2xl font-serif font-bold">{filteredSalon.title || filteredSalon.company || "Salon Listing"}</DialogTitle>
         </DialogHeader>
-
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <div className="md:col-span-3">
-            <div className="rounded-md overflow-hidden">
-              <ImageWithFallback
-                src={imageUrl}
-                alt={name}
-                className="w-full aspect-video object-cover"
-                businessName={name}
-              />
-            </div>
-
-            <div className="mt-4">
-              <h3 className="font-medium text-lg mb-2">Description</h3>
-              <p className="text-gray-700 whitespace-pre-line">
-                {description}
-              </p>
+        
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Main Content - Left Side */}
+          <div className="md:col-span-2">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {filteredSalon.location && (
+                <span className="flex items-center text-sm text-gray-600">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  {filteredSalon.location}
+                </span>
+              )}
               
-              {!isAuthenticated && (
-                <div className="mt-2 p-3 rounded bg-gray-50 border border-gray-100 flex items-center text-gray-600">
-                  <Lock className="h-4 w-4 mr-2 text-gray-400" />
-                  <span>Sign in to view full description and contact details</span>
-                </div>
+              {filteredSalon.created_at && (
+                <span className="flex items-center text-sm text-gray-600">
+                  <Clock className="h-4 w-4 mr-1" />
+                  {new Date(filteredSalon.created_at).toLocaleDateString()}
+                </span>
+              )}
+              
+              <Badge variant="outline" className="ml-auto">
+                {filteredSalon.type === 'salon' ? 'Salon Space' : 'Job Opening'}
+              </Badge>
+            </div>
+            
+            {filteredSalon.image && (
+              <div className="w-full aspect-video rounded-lg overflow-hidden mb-6">
+                <img 
+                  src={filteredSalon.image} 
+                  alt={filteredSalon.title || "Salon"} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2">Description</h3>
+              <p className="text-gray-700">{filteredSalon.description}</p>
+              
+              {!session && (
+                <p className="text-orange-500 mt-2 text-sm font-medium">
+                  🔒 Sign in to read full description
+                </p>
               )}
             </div>
-
-            {features.length > 0 && (
-              <div className="mt-4">
-                <h3 className="font-medium text-lg mb-2">Features</h3>
-                <div className="flex flex-wrap gap-2">
-                  {features.map((feature, i) => (
-                    <span 
-                      key={i} 
-                      className="px-2.5 py-1 bg-gray-100 text-gray-800 rounded text-sm"
-                    >
+            
+            {/* Features list if present */}
+            {filteredSalon.salon_features && filteredSalon.salon_features.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-medium mb-2">Salon Features</h3>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {filteredSalon.salon_features.map((feature, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-orange-500 mr-2">•</span>
                       {feature}
-                    </span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
           </div>
-
-          <div className="md:col-span-2">
-            <div className="border rounded-lg p-4">
-              <div className="flex items-center text-xl font-semibold text-emerald-700 mb-4">
-                <DollarSign className="h-5 w-5 mr-1" />
-                <span>{price}</span>
+          
+          {/* Sidebar - Right Side */}
+          <div className="md:col-span-1">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              {/* Price */}
+              <div className="mb-4">
+                <h3 className="text-lg font-medium mb-1">Price</h3>
+                {filteredSalon.price ? (
+                  <p className="text-xl font-bold text-orange-600">{filteredSalon.price}</p>
+                ) : (
+                  <p className="text-gray-500">
+                    🔒 Sign in to view pricing
+                  </p>
+                )}
               </div>
-
-              {isAuthenticated && contact ? (
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Contact</h4>
-                    <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1.5 text-gray-400" />
-                      <span>{contact.name}</span>
-                    </div>
+              
+              {/* Contact Info */}
+              <div className="mb-4">
+                <h3 className="text-lg font-medium mb-1">Contact Information</h3>
+                {filteredSalon.contact_info ? (
+                  <div className="space-y-2">
+                    {filteredSalon.contact_info.owner_name && (
+                      <p className="flex items-center">
+                        <User className="h-4 w-4 mr-2 text-gray-500" />
+                        {filteredSalon.contact_info.owner_name}
+                      </p>
+                    )}
+                    {filteredSalon.contact_info.phone && (
+                      <p className="flex items-center">
+                        <Phone className="h-4 w-4 mr-2 text-gray-500" />
+                        {filteredSalon.contact_info.phone}
+                      </p>
+                    )}
+                    {filteredSalon.contact_info.email && (
+                      <p className="flex items-center">
+                        <Mail className="h-4 w-4 mr-2 text-gray-500" />
+                        {filteredSalon.contact_info.email}
+                      </p>
+                    )}
                   </div>
-
-                  {contact.phone && (
-                    <div className="flex items-center">
-                      <Phone className="h-4 w-4 mr-1.5 text-gray-400" />
-                      <a 
-                        href={`tel:${contact.phone}`} 
-                        className="text-primary hover:underline"
-                      >
-                        {contact.phone}
-                      </a>
-                    </div>
-                  )}
-
-                  {contact.email && (
-                    <div className="flex items-center">
-                      <Mail className="h-4 w-4 mr-1.5 text-gray-400" />
-                      <a 
-                        href={`mailto:${contact.email}`} 
-                        className="text-primary hover:underline"
-                      >
-                        {contact.email}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="bg-gray-50 p-4 rounded-md text-center">
-                  <Lock className="h-5 w-5 mx-auto mb-2 text-gray-400" />
-                  <p className="text-gray-600 font-medium">Contact information locked</p>
-                  <p className="text-sm text-gray-500 mt-1">Sign in to view contact details and pricing</p>
-                </div>
-              )}
+                ) : (
+                  <p className="text-gray-500">
+                    🔒 Sign in to view contact info
+                  </p>
+                )}
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="mt-4">
+                {session ? (
+                  <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                    Contact Seller
+                  </Button>
+                ) : (
+                  <AuthAction
+                    onAction={() => true}
+                    customTitle="Sign in to view full details"
+                    creditMessage="Create a free account to access contact information and more details."
+                  >
+                    <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                      View Full Details
+                    </Button>
+                  </AuthAction>
+                )}
+                
+                <Button variant="outline" className="w-full mt-2" onClick={onClose}>
+                  Close
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-
-        <DialogFooter className="mt-6">
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
-          {isAuthenticated ? (
-            <Link to={`/salons/${salon.id}`}>
-              <Button>View Full Details</Button>
-            </Link>
-          ) : (
-            <Button onClick={onClose}>Sign in to view details</Button>
-          )}
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default SalonDetailsDialog;
+export default SalonDetailModal;
