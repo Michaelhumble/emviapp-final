@@ -38,21 +38,27 @@ const BeautyExchangeLayout = () => {
         <div className="space-y-12">
           {categories.map((category, index) => (
             <div key={index} className="space-y-4">
-              <h3 className="text-2xl font-semibold border-b pb-2">
-                {category === "Nails" ? "Nail Salon Listings — Preview Spaces" : 
-                 category === "Tattoo" ? "Tattoo Listings — Preview Spaces" : category}
-              </h3>
-              
-              {/* Add subheadline for each category */}
-              {category === "Nails" && (
-                <p className="text-gray-600 mb-4">
-                  <em>Explore premium nail salon jobs and spaces. Listings opening soon.</em>
-                </p>
-              )}
-              {category === "Tattoo" && (
-                <p className="text-gray-600 mb-4">
-                  <em>Discover top-rated tattoo studios and job opportunities. Listings opening soon.</em>
-                </p>
+              {/* Updated heading styling to match requested format */}
+              {category === "Nails" ? (
+                <>
+                  <h2 className="text-3xl font-semibold text-center text-gray-900 mb-2">
+                    Nail Salon Listings — Preview Spaces
+                  </h2>
+                  <p className="text-center text-gray-500 text-base mb-10">
+                    Explore premium nail salon jobs and spaces. Listings opening soon.
+                  </p>
+                </>
+              ) : category === "Tattoo" ? (
+                <>
+                  <h2 className="text-3xl font-semibold text-center text-gray-900 mb-2">
+                    Tattoo Listings — Preview Spaces
+                  </h2>
+                  <p className="text-center text-gray-500 text-base mb-10">
+                    Discover top-rated tattoo studios and job opportunities. Listings opening soon.
+                  </p>
+                </>
+              ) : (
+                <h3 className="text-2xl font-semibold border-b pb-2">{category}</h3>
               )}
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
