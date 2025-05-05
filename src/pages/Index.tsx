@@ -14,7 +14,7 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 import HairdresserListingsSection from "@/components/home/HairdresserListingsSection";
-import BarberListingsSection from "@/components/home/BarberListingsSection";
+import BarberShowcaseSection from "@/components/home/BarberShowcaseSection";
 
 // Enhanced homepage components
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
@@ -74,8 +74,8 @@ const Index = () => {
       {/* 8. Hairdresser Listings Section - Added right after ClientSuccessStories (Jobs section) */}
       <HairdresserListingsSection />
       
-      {/* 9. Barber Listings Section - Added after HairdresserListingsSection */}
-      <BarberListingsSection />
+      {/* 9. Barber Showcase Section - New replacement for BarberListingsSection */}
+      <BarberShowcaseSection />
       
       {/* 10. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
