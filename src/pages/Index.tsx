@@ -24,7 +24,6 @@ import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 import BeautyExchangeLayout from "@/components/home/BeautyExchangeLayout";
 
 // Listing section components
-import HairdresserListingsSection from "@/components/home/HairdresserListingsSection";
 import BarberListingsSection from "@/components/home/BarberListingsSection";
 import SkincareListingsSection from "@/components/home/SkincareListingsSection";
 import MakeupListingsSection from "@/components/home/MakeupListingsSection";

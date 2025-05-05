@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import NailListingsSection from './NailListingsSection';
 import HairListingsSection from './HairListingsSection';
-import HairdresserListingsSection from './HairdresserListingsSection';
 
 const BeautyExchangeSection = () => {
   return (
@@ -72,9 +71,6 @@ const BeautyExchangeSection = () => {
         
         {/* Next, render the HairListingsSection */}
         <HairListingsSection />
-        
-        {/* Render the HairdresserListingsSection */}
-        <HairdresserListingsSection />
       </div>
     </section>
   );
