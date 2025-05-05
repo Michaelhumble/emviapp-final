@@ -15,7 +15,6 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 import HairdresserListingsSection from "@/components/home/HairdresserListingsSection";
 import BarberShowcaseSection from "@/components/home/BarberShowcaseSection";
-import EmviAppPremiumAd from "@/components/home/EmviAppPremiumAd";
 
 // Enhanced homepage components
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
@@ -54,10 +53,7 @@ const Index = () => {
       {/* 1. Hero section as first */}
       <Hero />
       
-      {/* 2. Premium Ad showcasing EmviApp */}
-      <EmviAppPremiumAd />
-      
-      {/* 3. Emvi Beauty Connections™ */}
+      {/* 2. Emvi Beauty Connections™ */}
       <BeautyExchangeSection />
       
       {/* 3. Beauty Exchange Marketplace with real-life ads */}
