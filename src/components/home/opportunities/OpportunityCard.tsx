@@ -77,6 +77,20 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
              "This opportunity is waiting to be discovered. Contact for more details."}
           </p>
           
+          {/* Only show contact information if available */}
+          {listing.contact_info && listing.contact_info.phone && (
+            <p className="text-sm text-gray-700 mb-2">
+              Contact: {listing.contact_info.phone}
+            </p>
+          )}
+          
+          {/* Only show price if available */}
+          {listing.price && (
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              {listing.price}
+            </p>
+          )}
+          
           <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
             <span className="text-xs text-gray-400">
               {listing.created_at ? formatDate(listing.created_at) : "Recently added"}
@@ -92,7 +106,7 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
             
             {listing.hideLink && (
               <Button size="sm" variant="outline" className="gap-1">
-                <Eye className="h-3.5 w-3.5" /> View Details
+                <Eye className="h-3.5 w-3.5" /> More Info
               </Button>
             )}
           </div>

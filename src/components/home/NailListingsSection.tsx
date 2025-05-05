@@ -37,7 +37,8 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
     description: salon.description,
     image: salon.imageUrl || salon.image,
     price: typeof salon.price === 'number' ? salon.price.toString() : salon.price,
-    type: 'salon' as 'salon'
+    type: 'salon' as 'salon',
+    contact_info: salon.contact_info
   }));
 
   return (
@@ -60,7 +61,11 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
                     ...listing,
                     hideLink: true,
                     // Truncate description for non-authenticated users
-                    description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined
+                    description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined,
+                    // Remove contact info completely for non-authenticated users
+                    contact_info: undefined,
+                    // Remove price for non-authenticated users
+                    price: undefined
                   }} 
                   index={index} 
                 />
@@ -77,7 +82,9 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
                 listing={{
                   ...listing,
                   hideLink: true,
-                  description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined
+                  description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined,
+                  contact_info: undefined,
+                  price: undefined
                 }} 
                 index={index} 
               />
