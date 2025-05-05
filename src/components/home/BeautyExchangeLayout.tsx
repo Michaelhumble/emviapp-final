@@ -26,13 +26,13 @@ const BeautyExchangeLayout = () => {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        {/* Replaced the general title with the Nail Salon specific title */}
+        {/* Replaced the general title with the Nail Salon specific title using Hairdresser section styling */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-semibold text-center text-gray-900 mb-2">
+          <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2">
             Nail Salon Listings — Preview Spaces
           </h2>
-          <p className="text-center text-gray-500 text-base mb-10">
-            Explore premium nail salon jobs and spaces. Listings opening soon.
+          <p className="text-gray-600">
+            <em>Explore premium nail salon jobs and spaces. Listings opening soon.</em>
           </p>
         </div>
 
@@ -44,11 +44,12 @@ const BeautyExchangeLayout = () => {
                 <></>
               ) : category === "Tattoo" ? (
                 <>
-                  <h2 className="text-3xl font-semibold text-center text-gray-900 mb-2">
+                  {/* Updated Tattoo heading to match Hairdresser styling */}
+                  <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2 text-center">
                     Tattoo Listings — Preview Spaces
                   </h2>
-                  <p className="text-center text-gray-500 text-base mb-10">
-                    Discover top-rated tattoo studios and job opportunities. Listings opening soon.
+                  <p className="text-gray-600 text-center">
+                    <em>Discover top-rated tattoo studios and job opportunities. Listings opening soon.</em>
                   </p>
                 </>
               ) : (
