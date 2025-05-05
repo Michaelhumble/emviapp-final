@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 
 const TattooListingsSection = () => {
-  // Directly use only the 5 uploaded images with correct paths
+  // Use only the 5 uploaded images with correct paths
   const tattooStudioImages = [
     "/lovable-uploads/6af7cc02-b6cf-4c54-9c03-9510d543d3f1.png",  // Image 1
     "/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png",  // Image 2  

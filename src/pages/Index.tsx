@@ -23,11 +23,12 @@ import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection"
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 import BeautyExchangeLayout from "@/components/home/BeautyExchangeLayout";
 
-// New section components
+// Listing section components
 import HairdresserListingsSection from "@/components/home/HairdresserListingsSection";
 import BarberListingsSection from "@/components/home/BarberListingsSection";
 import SkincareListingsSection from "@/components/home/SkincareListingsSection";
 import MakeupListingsSection from "@/components/home/MakeupListingsSection";
+import TattooListingsSection from "@/components/home/TattooListingsSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -62,37 +63,40 @@ const Index = () => {
       {/* 3. Beauty Exchange Marketplace with real-life ads */}
       <BeautyExchangeLayout />
       
-      {/* 4. Hairdresser Listings Section */}
+      {/* 4. Tattoo Listings Section - Added to ensure visibility */}
+      <TattooListingsSection />
+      
+      {/* 5. Hairdresser Listings Section */}
       <HairdresserListingsSection />
       
-      {/* 5. Barber Listings Section */}
+      {/* 6. Barber Listings Section */}
       <BarberListingsSection />
       
-      {/* 6. Skincare Listings Section */}
+      {/* 7. Skincare Listings Section */}
       <SkincareListingsSection />
       
-      {/* 7. Makeup Artist Listings Section */}
+      {/* 8. Makeup Artist Listings Section */}
       <MakeupListingsSection />
       
-      {/* 8. Why Artists & Salons Trust Us */}
+      {/* 9. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* 9. Let AI Do the Hard Work */}
+      {/* 10. Let AI Do the Hard Work */}
       <EnhancedAIFeatures />
       
-      {/* 10. What's Really Keeping Your Salon From Growing? */}
+      {/* 11. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
-      {/* 11. No Matter Your Craft — We Know the Struggle */}
+      {/* 12. No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* 12. Let's Experience EmviApp Together - bilingual content */}
+      {/* 13. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* 13. Founder Message */}
+      {/* 14. Founder Message */}
       <FounderMessage />
       
-      {/* 14. Final CTA */}
+      {/* 15. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
