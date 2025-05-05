@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import ValidatedLink from '@/components/common/ValidatedLink';
+import NailListingsSection from './NailListingsSection';
 
 const BeautyExchangeSection = () => {
   return (
@@ -18,7 +18,7 @@ const BeautyExchangeSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-20">
           <div className="bg-gray-50 p-6 rounded-lg text-center">
             <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">✨</span>
@@ -64,6 +64,9 @@ const BeautyExchangeSection = () => {
             </Link>
           </div>
         </div>
+
+        {/* Rendering the NailListingsSection within BeautyExchangeSection */}
+        <NailListingsSection />
       </div>
     </section>
   );

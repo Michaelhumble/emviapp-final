@@ -3,23 +3,18 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import ComingSoonModal from '@/components/common/ComingSoonModal';
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
 
 const NailListingsSection: React.FC = () => {
-  const [showComingSoonModal, setShowComingSoonModal] = React.useState(false);
-
-  const handleCardClick = () => {
-    setShowComingSoonModal(true);
-  };
-
   return (
-    <section className="py-12 bg-white">
+    <section className="py-16 bg-white">
       <div className="container px-4 mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+          <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-4 text-gray-900">
             Nail Salon Listings — Preview Spaces
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg font-inter text-gray-600 max-w-3xl mx-auto">
             Explore premium nail salon jobs and spaces. Listings opening soon.
           </p>
         </div>
@@ -32,28 +27,34 @@ const NailListingsSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              onClick={handleCardClick}
-              className="cursor-pointer"
+              className="h-full"
             >
-              <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow rounded-xl h-full">
-                <div className="relative h-44 w-full bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">Placeholder Image</span>
+              <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow">
+                <div className="relative aspect-video bg-gray-100 flex items-center justify-center">
+                  <span className="text-gray-400 text-sm font-inter">Placeholder Image</span>
                 </div>
-                <CardContent className="p-5">
-                  <h3 className="text-xl font-bold mb-1">Nail Space {index + 1}</h3>
-                  <div className="flex items-center text-gray-500 mb-3 text-sm">
-                    <span>Preview listing</span>
-                  </div>
-                  <p className="text-gray-600 mb-4 text-sm">
+                
+                <CardContent className="p-5 flex flex-col flex-grow">
+                  <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                    Nail Studio {index + 1}
+                  </h3>
+                  
+                  <p className="text-sm text-gray-500 mb-2 font-inter">
+                    Premium space
+                  </p>
+                  
+                  <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
                     Premium nail salon listing coming soon...
                   </p>
-                  <div className="flex justify-between items-center">
-                    <Badge variant="outline" className="px-3 py-1 bg-blue-50 text-blue-700 border-blue-200">
+                  
+                  <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                    <Badge className="bg-white text-black hover:bg-white rounded-full">
                       Coming Soon
                     </Badge>
-                    <div className="text-gray-500 text-sm">
-                      Contact info locked
-                    </div>
+
+                    <Button size="sm" variant="outline" className="gap-1">
+                      <Eye className="h-3.5 w-3.5" /> More Info
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -61,13 +62,6 @@ const NailListingsSection: React.FC = () => {
           ))}
         </div>
       </div>
-
-      {/* Coming Soon Modal */}
-      <ComingSoonModal
-        open={showComingSoonModal}
-        onOpenChange={setShowComingSoonModal}
-        featureName="Nail Listings"
-      />
     </section>
   );
 };
