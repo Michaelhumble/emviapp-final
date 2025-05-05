@@ -7,7 +7,6 @@ import OpportunityCard from '@/components/home/opportunities/OpportunityCard';
 import { useSession } from '@/context/auth/hooks/useSession';
 import ComingSoonModal from '@/components/common/ComingSoonModal';
 
-// Create a placeholder section that looks like the other sections but with coming soon content
 const NailListingsSection: React.FC = () => {
   const [showComingSoonModal, setShowComingSoonModal] = React.useState(false);
   const { session } = useSession();
