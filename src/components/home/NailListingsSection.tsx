@@ -24,7 +24,7 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
       return true;
     }
     // If not authenticated, AuthAction component will handle showing the login modal
-    return true;
+    return false;
   };
 
   // Convert Salon objects to compatible Job objects for OpportunityCard
@@ -54,11 +54,33 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
               redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
               customTitle="Sign in to view full details"
               creditMessage="Create a free account to access contact information and more details."
-              // Pass the authenticated content prop to hide the link when not signed in
-              fallbackContent={<OpportunityCard listing={{...listing, hideLink: true}} index={index} />}
-              authenticatedContent={<OpportunityCard listing={listing} index={index} />}
+              fallbackContent={
+                <OpportunityCard 
+                  listing={{
+                    ...listing,
+                    hideLink: true,
+                    // Truncate description for non-authenticated users
+                    description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined
+                  }} 
+                  index={index} 
+                />
+              }
+              authenticatedContent={
+                <OpportunityCard 
+                  listing={listing} 
+                  index={index} 
+                />
+              }
             >
-              <OpportunityCard listing={{...listing, hideLink: true}} index={index} />
+              {/* Child element is only used as fallback if fallbackContent is not provided */}
+              <OpportunityCard 
+                listing={{
+                  ...listing,
+                  hideLink: true,
+                  description: listing.description ? `${listing.description.substring(0, 60)}...` : undefined
+                }} 
+                index={index} 
+              />
             </AuthAction>
           ))}
         </div>

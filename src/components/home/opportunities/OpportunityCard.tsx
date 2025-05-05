@@ -9,7 +9,9 @@ import { Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface OpportunityCardProps {
-  listing: Job & { hideLink?: boolean };
+  listing: Job & { 
+    hideLink?: boolean;
+  };
   index: number;
 }
 
