@@ -18,11 +18,11 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
 
   // Define the studio images using the uploaded images
   const tattooStudioImages = [
-    "public/lovable-uploads/21774d7b-9033-44f7-9e56-1e2e500296a7.png",  // Image 1
-    "public/lovable-uploads/6e4b58ff-f4df-48fe-a85b-8d5952944719.png",  // Image 2  
-    "public/lovable-uploads/ae4945b5-1dcb-481e-926c-7246323938d0.png",  // Image 3
-    "public/lovable-uploads/b94df602-918f-4286-9a64-7e719823da6a.png",  // Image 4
-    "public/lovable-uploads/0fcc390c-fc2b-4e72-9fa9-055da1d97ad4.png",  // Image 5 (reusing the last image from what was available)
+    "public/lovable-uploads/6af7cc02-b6cf-4c54-9c03-9510d543d3f1.png",  // Image 1
+    "public/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png",  // Image 2  
+    "public/lovable-uploads/cd91684d-63c1-444f-baea-5814694edf50.png",  // Image 3
+    "public/lovable-uploads/f5696d4d-294d-42d6-b633-ab23dcacc6d2.png",  // Image 4
+    "public/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png",  // Image 5
   ];
 
   const handleCardClick = (listing: Job | Salon): boolean | Promise<boolean> => {
