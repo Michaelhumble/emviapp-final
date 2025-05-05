@@ -25,7 +25,7 @@ const barberListings: BarberListing[] = [
 
 const BarberListingsSection: React.FC = () => {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white w-full block">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-10">
           <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2">
