@@ -12,9 +12,8 @@ const hairSalonImages = [
   "/lovable-uploads/565dbac0-48b7-4aaf-b1ad-7c97ca38e1e9.png",
   "/lovable-uploads/d62af349-7eeb-443d-b168-7036cabfd2ac.png",
   "/lovable-uploads/b8f0c457-76d8-46e9-9ee6-4869928cbea6.png",
-  // Placeholders for the two remaining images to be added later
-  "", 
-  ""
+  "/lovable-uploads/05372b9b-5a24-4f86-82c8-e0681ed539eb.png", 
+  "/lovable-uploads/402f947b-3877-4d57-8ced-7191eb207b9d.png"
 ];
 
 // Define destinations for each card
@@ -51,15 +50,11 @@ const HairListingsSection: React.FC = () => {
             >
               <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow">
                 <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                  {hairSalonImages[index] ? (
-                    <img 
-                      src={hairSalonImages[index]} 
-                      alt={`Luxury Hair Salon ${index + 1}`} 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-gray-400 text-sm">Image coming soon</span>
-                  )}
+                  <img 
+                    src={hairSalonImages[index]} 
+                    alt={`Luxury Hair Salon ${index + 1}`} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 
                 <CardContent className="p-5 flex flex-col flex-grow">
