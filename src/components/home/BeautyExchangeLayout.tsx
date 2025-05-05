@@ -6,10 +6,9 @@ import { featuredNailsAds } from '@/utils/featuredNailsAds';
 import NailSalonDetailModal from './NailSalonDetailModal';
 import { Link } from 'react-router-dom';
 
-// Categories that will be displayed
+// Updated categories - removed Hair & Barber
 const categories = [
   "Nails",
-  "Hair & Barber",
   "Tattoo", 
   "Skincare & Spa",
   "Massage & Booth Rental"
