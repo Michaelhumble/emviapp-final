@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -61,43 +60,25 @@ const Index = () => {
       {/* 2. Emvi Beauty Connections™ */}
       <BeautyExchangeSection />
       
-      {/* 3. Beauty Exchange Marketplace with real-life ads */}
-      <BeautyExchangeLayout />
-      
-      {/* 4. Tattoo Listings Section - Shows uploaded images */}
-      <TattooListingsSection />
-      
-      {/* 5. Hairdresser Listings Section */}
-      <HairdresserListingsSection />
-      
-      {/* 6. Barber Listings Section */}
-      <BarberListingsSection />
-      
-      {/* 7. Skincare Listings Section */}
-      <SkincareListingsSection />
-      
-      {/* 8. Makeup Artist Listings Section */}
-      <MakeupListingsSection />
-      
-      {/* 9. Why Artists & Salons Trust Us */}
+      {/* 3. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* 10. Let AI Do the Hard Work */}
+      {/* 4. Let AI Do the Hard Work */}
       <EnhancedAIFeatures />
       
-      {/* 11. What's Really Keeping Your Salon From Growing? */}
+      {/* 5. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
-      {/* 12. No Matter Your Craft — We Know the Struggle */}
+      {/* 6. No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* 13. Let's Experience EmviApp Together - bilingual content */}
+      {/* 7. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* 14. Founder Message */}
+      {/* 8. Founder Message */}
       <FounderMessage />
       
-      {/* 15. Final CTA */}
+      {/* 9. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
