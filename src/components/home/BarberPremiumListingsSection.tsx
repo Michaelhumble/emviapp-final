@@ -5,19 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
+import ValidatedLink from '@/components/common/ValidatedLink';
 import AuthAction from '@/components/common/AuthAction';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/context/auth/hooks/useSession';
-import ValidatedLink from '@/components/common/ValidatedLink';
-
-// Define barber shop images - these will be replaced with real images when available
-const barberShopImages = [
-  "/lovable-uploads/072ab653-428c-4ec9-bd87-1bd6658d82de.png",
-  "/lovable-uploads/60aae990-d617-435c-8c05-79cc9276b6ba.png",
-  "/lovable-uploads/3016e425-432a-49f0-b106-be927292873e.png",
-  "/lovable-uploads/43b9da9d-d4a5-419c-93c9-c724e3983b19.png",
-  "/lovable-uploads/74b3ba02-2378-41d7-8cb5-023145e94700.png"
-];
 
 // Define destinations for each card
 const cardDestinations = [
@@ -46,7 +37,7 @@ const BarberPremiumListingsSection: React.FC = () => {
             Barber Shop Listings — Premium Spaces
           </h2>
           <p className="text-lg font-inter text-gray-600 max-w-3xl mx-auto">
-            Discover premium barber shops and studio spaces. Connect with elite barbering environments.
+            Explore luxury barber shop spaces and opportunities. Connect with premium establishments.
           </p>
         </div>
 
@@ -67,22 +58,14 @@ const BarberPremiumListingsSection: React.FC = () => {
                 fallbackContent={
                   <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                      {barberShopImages[index] ? (
-                        <img 
-                          src={barberShopImages[index]} 
-                          alt={`Barber Studio ${index + 1}`} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center w-full h-full text-gray-400">
-                          <span>Image coming soon</span>
-                        </div>
-                      )}
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500">Premium Space</span>
+                      </div>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
                       <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
-                        Barber Studio {index + 1}
+                        Premium Barber Studio {index + 1}
                       </h3>
                       
                       <p className="text-sm text-gray-500 mb-2 font-inter">
@@ -90,12 +73,12 @@ const BarberPremiumListingsSection: React.FC = () => {
                       </p>
                       
                       <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
-                        Modern barber studio with high-end chairs, premium styling stations, and classic atmosphere.
+                        Elegant barber shop with premium finishes and state-of-the-art equipment.
                       </p>
                       
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <Badge className="bg-amber-500 text-white hover:bg-amber-600 rounded-full">
-                          Coming Soon
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                          Premium
                         </Badge>
 
                         <Button size="sm" variant="outline" className="gap-1">
@@ -114,22 +97,14 @@ const BarberPremiumListingsSection: React.FC = () => {
                   >
                     <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                       <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                        {barberShopImages[index] ? (
-                          <img 
-                            src={barberShopImages[index]} 
-                            alt={`Barber Studio ${index + 1}`} 
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex flex-col items-center justify-center w-full h-full text-gray-400">
-                            <span>Image coming soon</span>
-                          </div>
-                        )}
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500">Premium Space</span>
+                        </div>
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
                         <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
-                          Barber Studio {index + 1}
+                          Premium Barber Studio {index + 1}
                         </h3>
                         
                         <p className="text-sm text-gray-500 mb-2 font-inter">
@@ -137,12 +112,12 @@ const BarberPremiumListingsSection: React.FC = () => {
                         </p>
                         
                         <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
-                          Modern barber studio with high-end chairs, premium styling stations, and classic atmosphere.
+                          Elegant barber shop with premium finishes and state-of-the-art equipment.
                         </p>
                         
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-600 rounded-full">
-                            Coming Soon
+                          <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                            Premium
                           </Badge>
 
                           <Button size="sm" variant="outline" className="gap-1">
