@@ -6,6 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 
+const nailSalonImages = [
+  "/lovable-uploads/17e65a2b-10a7-4b2a-a839-340a80da6903.png",
+  "/lovable-uploads/0d50d1e2-4ac5-4520-8d66-dffc59da9302.png",
+  "/lovable-uploads/b4f26c5f-97b6-4a68-9acf-1b370937ef1a.png",
+  "/lovable-uploads/323c0530-2a0b-45ee-9065-646dee476f89.png",
+  "/lovable-uploads/a59ea036-184e-4057-b4ba-8a0f2ab2c365.png"
+];
+
 const NailListingsSection: React.FC = () => {
   return (
     <section className="py-16 bg-white">
@@ -20,7 +28,7 @@ const NailListingsSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {nailSalonImages.map((imageSrc, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -30,17 +38,21 @@ const NailListingsSection: React.FC = () => {
               className="h-full"
             >
               <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow">
-                <div className="relative aspect-video bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-400 text-sm font-inter">Placeholder Image</span>
+                <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                  <img 
+                    src={imageSrc} 
+                    alt={`Nail Studio ${index + 1}`} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 
                 <CardContent className="p-5 flex flex-col flex-grow">
-                  <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                  <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
                     Nail Studio {index + 1}
                   </h3>
                   
                   <p className="text-sm text-gray-500 mb-2 font-inter">
-                    Premium space
+                    Listing opening soon
                   </p>
                   
                   <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">

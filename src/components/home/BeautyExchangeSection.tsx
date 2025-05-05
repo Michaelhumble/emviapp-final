@@ -65,7 +65,7 @@ const BeautyExchangeSection = () => {
           </div>
         </div>
 
-        {/* Rendering the NailListingsSection within BeautyExchangeSection */}
+        {/* Only rendering the NailListingsSection */}
         <NailListingsSection />
       </div>
     </section>
