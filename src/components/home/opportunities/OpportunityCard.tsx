@@ -12,6 +12,7 @@ interface OpportunityCardProps {
   listing: Job & { 
     hideLink?: boolean;
     buttonText?: string;
+    descriptionPreview?: string;
   };
   index: number;
 }
@@ -73,8 +74,14 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
             {listing.location || "Location not specified"}
           </p>
           
+          {listing.price && (
+            <p className="text-sm text-orange-600 font-medium mb-2">
+              {listing.price}
+            </p>
+          )}
+          
           <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-            {listing.description || 
+            {listing.descriptionPreview || listing.description || 
              "This opportunity is waiting to be discovered. Contact for more details."}
           </p>
           
