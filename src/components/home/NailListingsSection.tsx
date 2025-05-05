@@ -3,12 +3,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useSession } from '@/context/auth/hooks/useSession';
 import ComingSoonModal from '@/components/common/ComingSoonModal';
 
 const NailListingsSection: React.FC = () => {
   const [showComingSoonModal, setShowComingSoonModal] = React.useState(false);
-  const { session } = useSession();
 
   const handleCardClick = () => {
     setShowComingSoonModal(true);
