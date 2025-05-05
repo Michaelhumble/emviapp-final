@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 import ValidatedLink from '@/components/common/ValidatedLink';
+import AuthAction from '@/components/common/AuthAction';
+import { useNavigate } from 'react-router-dom';
+import { useSession } from '@/context/auth/hooks/useSession';
 
 const nailSalonImages = [
   "/lovable-uploads/17e65a2b-10a7-4b2a-a839-340a80da6903.png",
@@ -25,6 +28,15 @@ const cardDestinations = [
 ];
 
 const NailListingsSection: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useSession();
+  
+  const handleCardClick = (destinationPath: string) => {
+    return async () => {
+      return true; // Return true to allow navigation after auth
+    };
+  };
+
   return (
     <section className="py-16 bg-white">
       <div className="container px-4 mx-auto">
@@ -47,46 +59,88 @@ const NailListingsSection: React.FC = () => {
               transition={{ duration: 0.3, delay: index * 0.1 }}
               className="h-full"
             >
-              <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow">
-                <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={imageSrc} 
-                    alt={`Nail Studio ${index + 1}`} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                
-                <CardContent className="p-5 flex flex-col flex-grow">
-                  <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
-                    Nail Studio {index + 1}
-                  </h3>
-                  
-                  <p className="text-sm text-gray-500 mb-2 font-inter">
-                    Listing opening soon
-                  </p>
-                  
-                  <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
-                    Premium nail salon listing coming soon...
-                  </p>
-                  
-                  <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                    <Badge className="bg-white text-black hover:bg-white rounded-full">
-                      Coming Soon
-                    </Badge>
+              <AuthAction
+                onAction={handleCardClick(cardDestinations[index].path)}
+                redirectPath={cardDestinations[index].path}
+                customTitle="Sign in to view listing details"
+                fallbackContent={
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <img 
+                        src={imageSrc} 
+                        alt={`Nail Studio ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                        Nail Studio {index + 1}
+                      </h3>
+                      
+                      <p className="text-sm text-gray-500 mb-2 font-inter">
+                        Listing opening soon
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
+                        Premium nail salon listing coming soon...
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full">
+                          Coming Soon
+                        </Badge>
 
-                    <ValidatedLink 
-                      to={cardDestinations[index].path}
-                      listingId={cardDestinations[index].id}
-                      listingType={cardDestinations[index].type as "salon" | "job"}
-                      className="no-underline"
-                    >
-                      <Button size="sm" variant="outline" className="gap-1">
-                        <Eye className="h-3.5 w-3.5" /> More Info
-                      </Button>
-                    </ValidatedLink>
-                  </div>
-                </CardContent>
-              </Card>
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> More Info
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                }
+                authenticatedContent={
+                  <ValidatedLink 
+                    to={cardDestinations[index].path}
+                    listingId={cardDestinations[index].id}
+                    listingType={cardDestinations[index].type as "salon" | "job"}
+                    className="no-underline block h-full"
+                  >
+                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <img 
+                          src={imageSrc} 
+                          alt={`Nail Studio ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      
+                      <CardContent className="p-5 flex flex-col flex-grow">
+                        <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                          Nail Studio {index + 1}
+                        </h3>
+                        
+                        <p className="text-sm text-gray-500 mb-2 font-inter">
+                          Listing opening soon
+                        </p>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
+                          Premium nail salon listing coming soon...
+                        </p>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                          <Badge className="bg-white text-black hover:bg-white rounded-full">
+                            Coming Soon
+                          </Badge>
+
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Eye className="h-3.5 w-3.5" /> View Details
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </ValidatedLink>
+                }
+              />
             </motion.div>
           ))}
         </div>
