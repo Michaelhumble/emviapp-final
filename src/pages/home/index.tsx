@@ -13,6 +13,7 @@ import FinalFounderCTA from '@/components/home/FinalFounderCTA';
 import MissingPieceSection from '@/components/home/missing-piece/MissingPieceSection';
 import CallToAction from '@/components/home/CallToAction';
 import HairdresserListingsSection from '@/components/home/HairdresserListingsSection';
+import NailListingsSection from '@/components/home/NailListingsSection';
 
 const Home = () => {
   return (
@@ -46,6 +47,10 @@ const Home = () => {
       
       <FallbackBoundary errorMessage="Hairdresser listings section failed to load">
         <HairdresserListingsSection />
+      </FallbackBoundary>
+      
+      <FallbackBoundary errorMessage="Nail listings section failed to load">
+        <NailListingsSection />
       </FallbackBoundary>
       
       <FallbackBoundary errorMessage="Missing piece section failed to load">
