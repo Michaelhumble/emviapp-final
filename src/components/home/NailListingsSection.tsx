@@ -54,8 +54,11 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
               redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
               customTitle="Sign in to view full details"
               creditMessage="Create a free account to access contact information and more details."
+              // Pass the authenticated content prop to hide the link when not signed in
+              fallbackContent={<OpportunityCard listing={{...listing, hideLink: true}} index={index} />}
+              authenticatedContent={<OpportunityCard listing={listing} index={index} />}
             >
-              <OpportunityCard listing={listing} index={index} />
+              <OpportunityCard listing={{...listing, hideLink: true}} index={index} />
             </AuthAction>
           ))}
         </div>

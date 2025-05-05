@@ -9,7 +9,7 @@ import { Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface OpportunityCardProps {
-  listing: Job;
+  listing: Job & { hideLink?: boolean };
   index: number;
 }
 
@@ -80,11 +80,19 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
               {listing.created_at ? formatDate(listing.created_at) : "Recently added"}
             </span>
 
-            <Link to={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}>
+            {!listing.hideLink && (
+              <Link to={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}>
+                <Button size="sm" variant="outline" className="gap-1">
+                  <Eye className="h-3.5 w-3.5" /> View Details
+                </Button>
+              </Link>
+            )}
+            
+            {listing.hideLink && (
               <Button size="sm" variant="outline" className="gap-1">
                 <Eye className="h-3.5 w-3.5" /> View Details
               </Button>
-            </Link>
+            )}
           </div>
         </CardContent>
       </Card>
