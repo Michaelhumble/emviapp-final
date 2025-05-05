@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -12,6 +13,7 @@ import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
+import HairdresserListingsSection from "@/components/home/HairdresserListingsSection";
 
 // Enhanced homepage components
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
@@ -68,13 +70,16 @@ const Index = () => {
       {/* 7. No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* 8. Let's Experience EmviApp Together - bilingual content */}
+      {/* 8. Hairdresser Listings Section - Added right after ClientSuccessStories (Jobs section) */}
+      <HairdresserListingsSection />
+      
+      {/* 9. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* 9. Founder Message */}
+      {/* 10. Founder Message */}
       <FounderMessage />
       
-      {/* 10. Final CTA */}
+      {/* 11. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
