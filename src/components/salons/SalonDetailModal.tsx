@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,9 +12,10 @@ import {
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { MapPin, DollarSign, Phone, Mail, User, Calendar } from 'lucide-react';
+import { MapPin, DollarSign, Phone, Mail, User, Calendar, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { useSession } from '@/context/auth/hooks/useSession';
 
 interface SalonDetailsDialogProps {
   salon: Job | Salon | null;
@@ -26,6 +28,9 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { session } = useSession();
+  const isAuthenticated = !!session;
+
   if (!salon) return null;
   
   // Get the name/title depending on salon type
@@ -43,8 +48,12 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
     return '';
   };
 
-  // Get the formatted price with fallback
+  // Get the formatted price with fallback - only if authenticated
   const getFormattedPrice = () => {
+    if (!isAuthenticated) {
+      return '🔒 Sign in to view pricing';
+    }
+    
     let price;
     
     if ('asking_price' in salon && salon.asking_price) {
@@ -74,8 +83,28 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
     return [];
   };
 
-  // Get contact info
+  // Get truncated description for non-authenticated users
+  const getDescription = () => {
+    const description = 'description' in salon && salon.description 
+      ? salon.description 
+      : 'No description available';
+    
+    if (isAuthenticated) {
+      return description;
+    } else {
+      const truncated = typeof description === 'string' 
+        ? `${description.substring(0, 60)}...` 
+        : 'Description preview';
+      return truncated;
+    }
+  };
+
+  // Get contact info - only if authenticated
   const getContactInfo = () => {
+    if (!isAuthenticated) {
+      return null; // Don't even create the contact object for non-authenticated users
+    }
+    
     if ('contact_info' in salon && salon.contact_info) {
       return {
         name: salon.contact_info.owner_name || 'Salon Owner',
@@ -95,6 +124,7 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
   const imageUrl = getImageUrl();
   const price = getFormattedPrice();
   const features = getFeaturesList();
+  const description = getDescription();
   const contact = getContactInfo();
   const postedDate = 'created_at' in salon && salon.created_at 
     ? formatDistanceToNow(new Date(salon.created_at), { addSuffix: true })
@@ -133,8 +163,15 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
             <div className="mt-4">
               <h3 className="font-medium text-lg mb-2">Description</h3>
               <p className="text-gray-700 whitespace-pre-line">
-                {'description' in salon && salon.description ? salon.description : 'No description available'}
+                {description}
               </p>
+              
+              {!isAuthenticated && (
+                <div className="mt-2 p-3 rounded bg-gray-50 border border-gray-100 flex items-center text-gray-600">
+                  <Lock className="h-4 w-4 mr-2 text-gray-400" />
+                  <span>Sign in to view full description and contact details</span>
+                </div>
+              )}
             </div>
 
             {features.length > 0 && (
@@ -161,39 +198,47 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
                 <span>{price}</span>
               </div>
 
-              <div className="space-y-3">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-1">Contact</h4>
-                  <div className="flex items-center">
-                    <User className="h-4 w-4 mr-1.5 text-gray-400" />
-                    <span>{contact.name}</span>
+              {isAuthenticated && contact ? (
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Contact</h4>
+                    <div className="flex items-center">
+                      <User className="h-4 w-4 mr-1.5 text-gray-400" />
+                      <span>{contact.name}</span>
+                    </div>
                   </div>
+
+                  {contact.phone && (
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 mr-1.5 text-gray-400" />
+                      <a 
+                        href={`tel:${contact.phone}`} 
+                        className="text-primary hover:underline"
+                      >
+                        {contact.phone}
+                      </a>
+                    </div>
+                  )}
+
+                  {contact.email && (
+                    <div className="flex items-center">
+                      <Mail className="h-4 w-4 mr-1.5 text-gray-400" />
+                      <a 
+                        href={`mailto:${contact.email}`} 
+                        className="text-primary hover:underline"
+                      >
+                        {contact.email}
+                      </a>
+                    </div>
+                  )}
                 </div>
-
-                {contact.phone && (
-                  <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-1.5 text-gray-400" />
-                    <a 
-                      href={`tel:${contact.phone}`} 
-                      className="text-primary hover:underline"
-                    >
-                      {contact.phone}
-                    </a>
-                  </div>
-                )}
-
-                {contact.email && (
-                  <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-1.5 text-gray-400" />
-                    <a 
-                      href={`mailto:${contact.email}`} 
-                      className="text-primary hover:underline"
-                    >
-                      {contact.email}
-                    </a>
-                  </div>
-                )}
-              </div>
+              ) : (
+                <div className="bg-gray-50 p-4 rounded-md text-center">
+                  <Lock className="h-5 w-5 mx-auto mb-2 text-gray-400" />
+                  <p className="text-gray-600 font-medium">Contact information locked</p>
+                  <p className="text-sm text-gray-500 mt-1">Sign in to view contact details and pricing</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -202,9 +247,13 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
-          <Link to={`/salons/${salon.id}`}>
-            <Button>View Full Details</Button>
-          </Link>
+          {isAuthenticated ? (
+            <Link to={`/salons/${salon.id}`}>
+              <Button>View Full Details</Button>
+            </Link>
+          ) : (
+            <Button onClick={onClose}>Sign in to view details</Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
