@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MapPin, DollarSign, Clock, User, Mail, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useSession } from '@/context/auth/hooks/useSession';
-import { AuthAction } from '@/components/common/AuthAction';
+import AuthAction from '@/components/common/AuthAction';
 
 interface SalonDetailModalProps {
   salon: Job | null;
