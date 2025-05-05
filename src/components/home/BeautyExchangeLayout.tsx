@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MapPin, DollarSign, Lock } from 'lucide-react';
 import { featuredNailsAds } from '@/utils/featuredNailsAds';
 import NailSalonDetailModal from './NailSalonDetailModal';
 import { Link } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 // Updated categories - removed Skincare & Spa
 const categories = [
@@ -56,63 +58,118 @@ const BeautyExchangeLayout = () => {
                 <h3 className="text-2xl font-semibold border-b pb-2">{category}</h3>
               )}
               
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {/* Updated card grid for better mobile layout - one per row on mobile */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 {category === "Nails" ? (
-                  // Display real nail salon listings with uploaded images
+                  // Display real nail salon listings with upgraded card styling
                   featuredNailsAds.map((listing) => (
-                    <div 
+                    <Card 
                       key={listing.id} 
-                      className="bg-white border border-gray-200 rounded-lg shadow hover:shadow-md transition-shadow duration-300"
+                      className="overflow-hidden hover:shadow-md transition-all duration-300"
                     >
-                      {/* Listing image (first photo in the array) */}
-                      <div className="h-40 overflow-hidden rounded-t-lg">
-                        <img 
-                          src={listing.photos[0]} 
-                          alt={listing.title} 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="relative">
+                        {/* Listing image (first photo in the array) */}
+                        <div className="aspect-video overflow-hidden">
+                          <img 
+                            src={listing.photos[0]} 
+                            alt={listing.title} 
+                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                          />
+                        </div>
                       </div>
                       
                       {/* Card content */}
-                      <div className="p-4">
-                        <h4 className="font-medium mb-1 truncate">{listing.title}</h4>
-                        <p className="text-gray-500 text-xs mb-2">{listing.location} • {listing.price}</p>
+                      <CardContent className="p-4">
+                        <h3 className="font-semibold text-lg truncate">{listing.title}</h3>
                         
-                        {/* Link to Jobs page with Vietnamese tab selected */}
-                        <Link to="/jobs">
+                        <div className="flex items-center text-gray-500 my-1.5 text-sm">
+                          <MapPin className="h-4 w-4 mr-1 shrink-0" />
+                          <span className="truncate">{listing.location}</span>
+                        </div>
+                        
+                        <div className="flex items-center text-gray-500 mb-3 text-sm">
+                          <DollarSign className="h-4 w-4 mr-1 shrink-0" />
+                          <span>{listing.price}</span>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+                          {listing.description.split('.')[0]}
+                        </p>
+                        
+                        <div className="flex justify-between items-center mt-auto">
+                          <div className="flex items-center text-sm text-gray-400">
+                            <Lock className="h-3 w-3 mr-1" />
+                            <span>Contact info locked</span>
+                          </div>
+                          
                           <Button 
+                            onClick={() => handleViewDetails(listing)}
                             variant="outline" 
                             size="sm" 
-                            className="w-full flex items-center justify-center"
+                            className="flex items-center justify-center gap-1"
                           >
-                            View Jobs
-                            <ArrowRight className="ml-1 h-3 w-3" />
+                            More Info
+                            <ArrowRight className="h-3 w-3" />
                           </Button>
-                        </Link>
-                      </div>
-                    </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))
                 ) : (
-                  // Show placeholder cards for other categories
+                  // Show placeholder cards for Tattoo category with matching styling
                   Array.from({ length: 5 }).map((_, cardIndex) => (
-                    <div 
+                    <Card 
                       key={cardIndex} 
-                      className="bg-white border border-gray-200 rounded-lg shadow hover:shadow-md transition-shadow duration-300"
+                      className="overflow-hidden hover:shadow-md transition-all duration-300"
                     >
-                      {/* Placeholder image box */}
-                      <div className="h-40 bg-gray-100 rounded-t-lg flex items-center justify-center">
-                        <span className="text-gray-400 text-xs">Placeholder Image</span>
+                      <div className="relative">
+                        <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                          <span className="text-gray-400 text-xs">Tattoo Studio Image</span>
+                        </div>
+                        
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                            Coming Soon
+                          </Badge>
+                        </div>
                       </div>
                       
-                      {/* Card content */}
-                      <div className="p-4">
-                        <h4 className="font-medium mb-2">Ad Coming Soon</h4>
-                        <Button variant="outline" size="sm" className="w-full flex items-center justify-center">
-                          View Details
-                          <ArrowRight className="ml-1 h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
+                      <CardContent className="p-4">
+                        <h3 className="font-semibold text-lg truncate">Tattoo Studio {cardIndex + 1}</h3>
+                        
+                        <div className="flex items-center text-gray-500 my-1.5 text-sm">
+                          <MapPin className="h-4 w-4 mr-1 shrink-0" />
+                          <span className="truncate">Local Area, US</span>
+                        </div>
+                        
+                        <div className="flex items-center text-gray-500 mb-3 text-sm">
+                          <DollarSign className="h-4 w-4 mr-1 shrink-0" />
+                          <span>$1,800-$3,000/week</span>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+                          Premium tattoo studio space with established clientele. Excellent opportunity for talented artists.
+                        </p>
+                        
+                        <div className="flex justify-between items-center mt-auto">
+                          <div className="flex items-center text-sm text-gray-400">
+                            <Lock className="h-3 w-3 mr-1" />
+                            <span>Contact info locked</span>
+                          </div>
+                          
+                          <Link to="/jobs">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center justify-center gap-1"
+                            >
+                              More Info
+                              <ArrowRight className="h-3 w-3" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))
                 )}
               </div>
