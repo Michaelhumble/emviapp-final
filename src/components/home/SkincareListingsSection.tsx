@@ -3,16 +3,16 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const HairdresserListingsSection: React.FC = () => {
+const SkincareListingsSection: React.FC = () => {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-10">
           <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2">
-            Hairdresser Listings — Preview Spaces
+            Skincare Listings — Preview Spaces
           </h2>
           <p className="text-gray-600">
-            <em>Explore premium spaces in the hair styling industry. Listings opening soon.</em>
+            <em>Explore premium skincare clinics and spaces. Listings opening soon.</em>
           </p>
         </div>
         
@@ -32,7 +32,7 @@ const HairdresserListingsSection: React.FC = () => {
               </div>
               
               <CardContent className="p-4">
-                <h3 className="font-semibold text-lg truncate">Preview Space {index + 1}</h3>
+                <h3 className="font-semibold text-lg truncate">Skincare Space {index + 1}</h3>
                 <div className="flex items-center text-gray-500 my-1.5 text-sm">
                   <span className="opacity-75">Placeholder listing</span>
                 </div>
@@ -45,4 +45,4 @@ const HairdresserListingsSection: React.FC = () => {
   );
 };
 
-export default HairdresserListingsSection;
+export default SkincareListingsSection;

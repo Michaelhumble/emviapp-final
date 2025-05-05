@@ -23,6 +23,12 @@ import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection"
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 import BeautyExchangeLayout from "@/components/home/BeautyExchangeLayout";
 
+// New section components
+import HairdresserListingsSection from "@/components/home/HairdresserListingsSection";
+import BarberListingsSection from "@/components/home/BarberListingsSection";
+import SkincareListingsSection from "@/components/home/SkincareListingsSection";
+import MakeupListingsSection from "@/components/home/MakeupListingsSection";
+
 const Index = () => {
   const { user, userRole, loading } = useAuth();
   const navigate = useNavigate();
@@ -56,25 +62,37 @@ const Index = () => {
       {/* 3. Beauty Exchange Marketplace with real-life ads */}
       <BeautyExchangeLayout />
       
-      {/* 4. Why Artists & Salons Trust Us */}
+      {/* 4. Hairdresser Listings Section */}
+      <HairdresserListingsSection />
+      
+      {/* 5. Barber Listings Section */}
+      <BarberListingsSection />
+      
+      {/* 6. Skincare Listings Section */}
+      <SkincareListingsSection />
+      
+      {/* 7. Makeup Artist Listings Section */}
+      <MakeupListingsSection />
+      
+      {/* 8. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* 5. Let AI Do the Hard Work */}
+      {/* 9. Let AI Do the Hard Work */}
       <EnhancedAIFeatures />
       
-      {/* 6. What's Really Keeping Your Salon From Growing? */}
+      {/* 10. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
-      {/* 7. No Matter Your Craft — We Know the Struggle */}
+      {/* 11. No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* 10. Let's Experience EmviApp Together - bilingual content */}
+      {/* 12. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* 11. Founder Message */}
+      {/* 13. Founder Message */}
       <FounderMessage />
       
-      {/* 12. Final CTA */}
+      {/* 14. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
