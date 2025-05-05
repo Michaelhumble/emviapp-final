@@ -1,13 +1,14 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Job } from '@/types/job';
-import OpportunityCard from './opportunities/OpportunityCard';
-import AuthAction from '@/components/common/AuthAction';
-import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/context/auth/hooks/useSession';
+import AuthAction from '@/components/common/AuthAction';
+import { Link, useNavigate } from 'react-router-dom';
+import OpportunityCard from '@/components/home/opportunities/OpportunityCard';
+import { Job } from '@/types/job';
 
-// Vietnamese Nail Salon listings with featured flags and plan types
-const vietnameseNailListings = [
+// Nail Listings Data with featured and plan properties
+const nailListings = [
   {
     id: "clawson-mi-01",
     title: "TIM THỢ NAILS",
@@ -19,7 +20,7 @@ const vietnameseNailListings = [
     featured: true,
     plan: "yearly",
     created_at: new Date().toISOString(),
-    image: "/lovable-uploads/f2fa8004-6611-4006-9c47-23797d750523.png"
+    image: "/lovable-uploads/8858fff4-1fa3-4803-86b1-beadca5fd1df.png",
   },
   {
     id: "humble-tx-02",
@@ -32,7 +33,7 @@ const vietnameseNailListings = [
     featured: true,
     plan: "monthly",
     created_at: new Date().toISOString(),
-    image: "/lovable-uploads/5a90dfeb-f56b-4670-ad3c-222cd50cf9f9.png"
+    image: "/lovable-uploads/89855878-2908-47b5-98b0-1935d73cdd71.png",
   },
   {
     id: "south-lake-03",
@@ -45,7 +46,7 @@ const vietnameseNailListings = [
     featured: true,
     plan: "monthly",
     created_at: new Date().toISOString(),
-    image: "/lovable-uploads/11e0c15e-b017-43fa-af96-28d679bb1bbc.png"
+    image: "/lovable-uploads/2542d0a3-5117-433d-baee-5c0fe2bfeca2.png",
   },
   {
     id: "greenwood-co-04",
@@ -58,7 +59,7 @@ const vietnameseNailListings = [
     featured: true,
     plan: "yearly",
     created_at: new Date().toISOString(),
-    image: "/lovable-uploads/05b19d7b-cea2-4b04-8e12-0309816126bc.png"
+    image: "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png",
   },
   {
     id: "beavercreek-oh-05",
@@ -71,22 +72,17 @@ const vietnameseNailListings = [
     featured: true,
     plan: "yearly",
     created_at: new Date().toISOString(),
-    image: "/lovable-uploads/c88b81b8-848c-49d4-b009-3f8d800bda5b.png"
+    image: "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png",
   }
 ];
 
-interface NailListingsSectionProps {
-  // Keep the props interface even though we're not using it in this implementation
-  nailSalons?: any[];
-}
-
-const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
+const NailListingsSection: React.FC = () => {
+  const { session, user } = useSession();
   const navigate = useNavigate();
-  const { session } = useSession();
-
-  // 1. Filter to show only featured listings
-  // 2. Sort by plan priority (yearly first, then monthly)
-  const featuredListings = vietnameseNailListings
+  const isAuthenticated = !!session && !!user;
+  
+  // Sort featured listings by plan priority (yearly first, then monthly)
+  const sortedListings = [...nailListings]
     .filter(listing => listing.featured)
     .sort((a, b) => {
       if (a.plan === 'yearly' && b.plan !== 'yearly') return -1;
@@ -94,74 +90,101 @@ const NailListingsSection = ({ nailSalons }: NailListingsSectionProps) => {
       return 0;
     })
     .slice(0, 5); // Limit to 5 listings
-
-  const handleCardClick = (listing: any): boolean | Promise<boolean> => {
-    if (session) {
-      // User is authenticated, navigate to the appropriate detail page
-      const route = listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`;
-      navigate(route);
-      return true;
+  
+  const handleViewDetails = (listing: typeof nailListings[0]) => {
+    if (isAuthenticated) {
+      // If authenticated, navigate to the appropriate page based on listing type
+      if (listing.type === 'job') {
+        navigate(`/jobs/${listing.id}`);
+      } else if (listing.type === 'salon') {
+        navigate(`/salons/${listing.id}`);
+      }
     }
-    // If not authenticated, AuthAction component will handle showing the login modal
-    return false;
+    // If not authenticated, the AuthAction component will handle showing the login modal
   };
-
-  // Create preview-only listings with limited data for non-authenticated users
-  const previewListings = featuredListings.map(listing => {
-    // Get description preview (60-80 characters)
-    const descPreview = listing.description 
-      ? `${listing.description.substring(0, 70)}...`
-      : "🔒 Đăng nhập để xem chi tiết";
-
-    return {
-      id: listing.id,
-      title: listing.title,
-      location: listing.location,
-      price: listing.price, // Show teaser price info
-      created_at: listing.created_at,
-      image: listing.image,
-      type: listing.type, // This now has the correct type
-      // For non-authenticated users, limit description and add lock emoji
-      description: "🔒 Đăng nhập để xem chi tiết",
-      descriptionPreview: descPreview,
-      hideLink: true,
-      buttonText: "Xem chi tiết",
-      // No contact info is included for security
-    };
-  });
-
+  
   return (
-    <section className="py-12 bg-white">
+    <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-2">Tin Đăng Tìm Thợ Nail — Nail Salon Listings</h2>
-        <p className="text-center text-gray-600 mb-12">Những tin đăng nổi bật trong ngành Nail. Đăng nhập để xem thông tin liên hệ.</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {previewListings.map((listing, index) => (
-            <AuthAction
-              key={listing.id}
-              onAction={() => handleCardClick(listing)}
-              redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
-              customTitle="Đăng nhập để xem chi tiết"
-              creditMessage="Tạo tài khoản miễn phí để xem thông tin liên hệ và chi tiết đầy đủ."
-            >
-              <OpportunityCard 
-                listing={{
-                  ...listing,
-                  buttonText: "Xem chi tiết",
-                }} 
-                index={index} 
-              />
-            </AuthAction>
-          ))}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Tin Tuyển Thợ & Sang Tiệm Nail</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Những thông tin tuyển dụng và cơ hội kinh doanh mới nhất trong ngành nail
+          </p>
         </div>
         
-        <div className="mt-8 text-center">
-          <p className="text-gray-600 mb-2">🔒 Thông tin liên hệ đã được khóa</p>
-          <p className="text-sm text-gray-500">Đăng nhập để xem đầy đủ chi tiết và thông tin liên hệ</p>
-          <p className="text-xs text-gray-400 mt-4">
-            Chúng tôi chỉ hiển thị 5 tin nổi bật mỗi ngành nghề. Thành viên gói năm được ưu tiên hơn gói tháng.
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedListings.map((listing, index) => {
+            // For non-authenticated users, create a limited listing preview
+            const descPreview = isAuthenticated 
+              ? listing.description 
+              : `${listing.description.substring(0, 75)}...`;
+            
+            // Prepare the listing data based on authentication state
+            const listingData: Job & { 
+              hideLink?: boolean;
+              buttonText?: string;
+              descriptionPreview?: string;
+            } = isAuthenticated ? {
+              id: listing.id,
+              title: listing.title,
+              location: listing.location,
+              price: listing.price,
+              created_at: listing.created_at,
+              image: listing.image,
+              type: listing.type,
+              description: listing.description,
+              contact_info: {
+                owner_name: "Owner",
+                phone: listing.contact,
+                email: ""
+              },
+              // For authenticated users, we want to navigate directly to the full listing page
+              hideLink: false,
+              buttonText: "Xem chi tiết"
+            } : {
+              id: listing.id,
+              title: listing.title,
+              location: listing.location,
+              price: listing.price, // Show teaser price info
+              created_at: listing.created_at,
+              image: listing.image,
+              type: listing.type, 
+              description: "🔒 Đăng nhập để xem chi tiết",
+              descriptionPreview: descPreview,
+              // For non-authenticated users, hide direct links
+              hideLink: true,
+              buttonText: "Đăng nhập để xem chi tiết"
+            };
+            
+            return isAuthenticated ? (
+              <div 
+                key={listing.id} 
+                className="cursor-pointer"
+                onClick={() => handleViewDetails(listing)}
+              >
+                <OpportunityCard listing={listingData} index={index} />
+              </div>
+            ) : (
+              <AuthAction
+                key={listing.id}
+                onAction={() => true}
+                customTitle="Đăng nhập để xem thông tin chi tiết"
+                creditMessage="Tạo tài khoản miễn phí để xem thông tin liên hệ và nội dung đầy đủ."
+              >
+                <OpportunityCard listing={listingData} index={index} />
+              </AuthAction>
+            );
+          })}
+        </div>
+        
+        <div className="text-center mt-10">
+          <Link 
+            to="/jobs" 
+            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700"
+          >
+            Xem tất cả tin tuyển dụng
+          </Link>
         </div>
       </div>
     </section>
