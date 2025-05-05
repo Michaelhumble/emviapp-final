@@ -16,13 +16,13 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
   const navigate = useNavigate();
   const { session } = useSession();
 
-  // Define the studio images using the uploaded images
+  // Define the studio images using the uploaded images - fix paths by removing "public/" prefix
   const tattooStudioImages = [
-    "public/lovable-uploads/6af7cc02-b6cf-4c54-9c03-9510d543d3f1.png",  // Image 1
-    "public/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png",  // Image 2  
-    "public/lovable-uploads/cd91684d-63c1-444f-baea-5814694edf50.png",  // Image 3
-    "public/lovable-uploads/f5696d4d-294d-42d6-b633-ab23dcacc6d2.png",  // Image 4
-    "public/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png",  // Image 5
+    "/lovable-uploads/6af7cc02-b6cf-4c54-9c03-9510d543d3f1.png",  // Image 1
+    "/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png",  // Image 2  
+    "/lovable-uploads/cd91684d-63c1-444f-baea-5814694edf50.png",  // Image 3
+    "/lovable-uploads/f5696d4d-294d-42d6-b633-ab23dcacc6d2.png",  // Image 4
+    "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png",  // Image 5
   ];
 
   const handleCardClick = (listing: Job | Salon): boolean | Promise<boolean> => {
