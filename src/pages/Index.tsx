@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -63,7 +64,7 @@ const Index = () => {
       {/* 3. Beauty Exchange Marketplace with real-life ads */}
       <BeautyExchangeLayout />
       
-      {/* 4. Tattoo Listings Section - Added to ensure visibility */}
+      {/* 4. Tattoo Listings Section - Shows uploaded images */}
       <TattooListingsSection />
       
       {/* 5. Hairdresser Listings Section */}
