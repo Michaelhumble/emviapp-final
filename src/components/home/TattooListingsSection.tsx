@@ -16,13 +16,15 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
   const navigate = useNavigate();
   const { session } = useSession();
 
-  const handleCardClick = (listing: Job | Salon) => {
+  const handleCardClick = (listing: Job | Salon): boolean | Promise<boolean> => {
     if (session) {
       // User is authenticated, navigate to the appropriate detail page
-      const route = listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`;
+      const route = 'type' in listing && listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`;
       navigate(route);
+      return true;
     }
     // If not authenticated, AuthAction component will handle showing the login modal
+    return true;
   };
 
   // Convert Salon objects to compatible Job objects for OpportunityCard
