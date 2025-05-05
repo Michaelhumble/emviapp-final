@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 const nailSalonImages = [
   "/lovable-uploads/17e65a2b-10a7-4b2a-a839-340a80da6903.png",
@@ -12,6 +13,15 @@ const nailSalonImages = [
   "/lovable-uploads/b4f26c5f-97b6-4a68-9acf-1b370937ef1a.png",
   "/lovable-uploads/323c0530-2a0b-45ee-9065-646dee476f89.png",
   "/lovable-uploads/a59ea036-184e-4057-b4ba-8a0f2ab2c365.png"
+];
+
+// Define destinations for each card
+const cardDestinations = [
+  { id: "nail-1", type: "salon", path: "/salons/nail-1" },
+  { id: "nail-2", type: "job", path: "/jobs/nail-2" },
+  { id: "nail-3", type: "salon", path: "/salons/nail-3" },
+  { id: "nail-4", type: "job", path: "/jobs/nail-4" },
+  { id: "nail-5", type: "salon", path: "/salons/nail-5" }
 ];
 
 const NailListingsSection: React.FC = () => {
@@ -64,9 +74,16 @@ const NailListingsSection: React.FC = () => {
                       Coming Soon
                     </Badge>
 
-                    <Button size="sm" variant="outline" className="gap-1">
-                      <Eye className="h-3.5 w-3.5" /> More Info
-                    </Button>
+                    <ValidatedLink 
+                      to={cardDestinations[index].path}
+                      listingId={cardDestinations[index].id}
+                      listingType={cardDestinations[index].type as "salon" | "job"}
+                      className="no-underline"
+                    >
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> More Info
+                      </Button>
+                    </ValidatedLink>
                   </div>
                 </CardContent>
               </Card>
