@@ -16,6 +16,15 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
   const navigate = useNavigate();
   const { session } = useSession();
 
+  // Define the studio images using the uploaded images
+  const tattooStudioImages = [
+    "public/lovable-uploads/21774d7b-9033-44f7-9e56-1e2e500296a7.png",  // Image 1
+    "public/lovable-uploads/6e4b58ff-f4df-48fe-a85b-8d5952944719.png",  // Image 2  
+    "public/lovable-uploads/ae4945b5-1dcb-481e-926c-7246323938d0.png",  // Image 3
+    "public/lovable-uploads/b94df602-918f-4286-9a64-7e719823da6a.png",  // Image 4
+    "public/lovable-uploads/0fcc390c-fc2b-4e72-9fa9-055da1d97ad4.png",  // Image 5 (reusing the last image from what was available)
+  ];
+
   const handleCardClick = (listing: Job | Salon): boolean | Promise<boolean> => {
     if (session) {
       // User is authenticated, navigate to the appropriate detail page
@@ -28,14 +37,15 @@ const TattooListingsSection = ({ tattooStudios }: TattooListingsSectionProps) =>
   };
 
   // Convert Salon objects to compatible Job objects for OpportunityCard
-  const jobListings = tattooStudios.map(studio => ({
+  // Use the new images in the mapping process
+  const jobListings = tattooStudios.map((studio, index) => ({
     id: studio.id,
     title: studio.name,
     company: studio.name,
     location: studio.location,
     created_at: studio.created_at || new Date().toISOString(),
     description: studio.description,
-    image: studio.imageUrl || studio.image,
+    image: tattooStudioImages[index] || studio.imageUrl || studio.image, // Use the new image
     price: typeof studio.price === 'number' ? studio.price.toString() : studio.price,
     type: 'salon' as 'salon'
   }));
