@@ -40,7 +40,7 @@ export const tattooStudioImages = [
   "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png",  
 ];
 
-// Makeup studio images - Use proper image paths instead of placeholders
+// Makeup studio images
 export const makeupStudioImages = [
   "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png", 
   "/lovable-uploads/8858fff4-1fa3-4803-86b1-beadca5fd1df.png",
@@ -49,13 +49,13 @@ export const makeupStudioImages = [
   "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png"
 ];
 
-// Skincare clinic images - Use proper image paths instead of placeholders
+// Skincare clinic images
 export const skincareClinicImages = [
   "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
   "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
   "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
   "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
-  "/lovable-uploads/c54c0558-09db-483f-b844-bacb8824f789.png" || "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png" // Fallback image
+  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png" // Fixed duplicate entry
 ];
 
 // Standardized card destinations for all listing types
