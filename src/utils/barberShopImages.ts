@@ -34,26 +34,38 @@ export const isBarberShop = (name: string = "", description: string = ""): boole
 
 /**
  * Determines if a job listing is for a barber position
+ * Supports both legacy format (title, description) and object format (job)
  */
-export const isBarberJob = (job: any): boolean => {
-  if (!job) return false;
+export const isBarberJob = (jobOrTitle: any, description?: string): boolean => {
+  // Handle legacy format with two separate arguments
+  if (typeof jobOrTitle === 'string' && description !== undefined) {
+    const combinedText = (jobOrTitle + " " + description).toLowerCase();
+    return checkBarberKeywords(combinedText);
+  }
   
-  const title = (job.title || job.role || "").toLowerCase();
-  const description = (job.description || "").toLowerCase();
-  const company = (job.company || job.name || "").toLowerCase();
+  // Handle object format
+  if (!jobOrTitle) return false;
   
-  const combinedText = title + " " + description + " " + company;
+  const title = (jobOrTitle.title || jobOrTitle.role || "").toLowerCase();
+  const desc = (jobOrTitle.description || "").toLowerCase();
+  const company = (jobOrTitle.company || jobOrTitle.name || "").toLowerCase();
   
-  return (
-    combinedText.includes("barber") ||
-    combinedText.includes("barbershop") ||
-    combinedText.includes("barbers") ||
-    combinedText.includes("mens cut") ||
-    combinedText.includes("men's cut") ||
-    combinedText.includes("haircut for men") ||
-    combinedText.includes("shave") && combinedText.includes("hair")
-  );
+  const combinedText = title + " " + desc + " " + company;
+  return checkBarberKeywords(combinedText);
 };
+
+// Helper function to check for barber-related keywords
+function checkBarberKeywords(text: string): boolean {
+  return (
+    text.includes("barber") ||
+    text.includes("barbershop") ||
+    text.includes("barbers") ||
+    text.includes("mens cut") ||
+    text.includes("men's cut") ||
+    text.includes("haircut for men") ||
+    (text.includes("shave") && text.includes("hair"))
+  );
+}
 
 /**
  * Returns an appropriate barber shop image URL

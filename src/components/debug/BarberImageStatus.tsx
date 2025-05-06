@@ -35,11 +35,11 @@ const BarberImageStatus: React.FC = () => {
               <div key={key} className="border rounded p-2">
                 <p className="mb-1 font-medium">{key}:</p>
                 <img 
-                  src={url as string} 
+                  src={url} 
                   alt={`Barber image - ${key}`} 
                   className="w-full h-32 object-cover rounded"
                 />
-                <p className="mt-1 text-[10px] break-all">{url as string}</p>
+                <p className="mt-1 text-[10px] break-all">{url}</p>
               </div>
             ))}
           </div>
