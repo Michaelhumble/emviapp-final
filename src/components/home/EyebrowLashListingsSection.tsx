@@ -50,7 +50,7 @@ const EyebrowLashListingsSection = () => {
                         src={imageSrc} 
                         alt={`Eyebrow & Lash Studio ${index + 1}`} 
                         className="w-full h-full object-cover"
-                        category="lash"
+                        category="eyebrowlash"
                       />
                       
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
@@ -96,7 +96,7 @@ const EyebrowLashListingsSection = () => {
                           src={imageSrc} 
                           alt={`Eyebrow & Lash Studio ${index + 1}`} 
                           className="w-full h-full object-cover"
-                          category="lash"
+                          category="eyebrowlash"
                         />
                         
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
