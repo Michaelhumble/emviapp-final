@@ -10,6 +10,7 @@ import MakeupListingsSection from './MakeupListingsSection';
 import SkincareListingsSection from './SkincareListingsSection';
 import TattooListingsSection from './TattooListingsSection';
 import EyebrowLashListingsSection from './EyebrowLashListingsSection';
+import MassageListingsSection from './MassageListingsSection';
 
 const BeautyExchangeSection = () => {
   return (
@@ -79,6 +80,7 @@ const BeautyExchangeSection = () => {
         <SkincareListingsSection />
         <TattooListingsSection />
         <EyebrowLashListingsSection />
+        <MassageListingsSection />
       </div>
     </section>
   );

@@ -67,6 +67,15 @@ export const eyebrowLashImages = [
   "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png"  // Placeholder 5
 ];
 
+// Massage studio images - Using images from massageSalonImages.ts for placeholders
+export const massageStudioImages = [
+  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png", // Gold-accented luxury spa room
+  "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png", // Contemporary spa
+  "/lovable-uploads/ca09b67d-f8b2-497c-bfd9-ac6ec0a491c7.png", // Blue-themed spa
+  "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png", // Blue room with massage tables
+  "/lovable-uploads/e4558475-4b40-4bb4-b3ae-7ade4595c1eb.png"  // Dual massage room
+];
+
 // Standardized card destinations for all listing types
 export const cardDestinations = {
   nail: [
@@ -117,5 +126,12 @@ export const cardDestinations = {
     { id: "skincare-3", type: "salon", path: "/salons/skincare-3" },
     { id: "skincare-4", type: "job", path: "/jobs/skincare-4" },
     { id: "skincare-5", type: "salon", path: "/salons/skincare-5" }
+  ],
+  massage: [
+    { id: "massage-1", type: "salon", path: "/salons/massage-1" },
+    { id: "massage-2", type: "job", path: "/jobs/massage-2" },
+    { id: "massage-3", type: "salon", path: "/salons/massage-3" },
+    { id: "massage-4", type: "job", path: "/jobs/massage-4" },
+    { id: "massage-5", type: "salon", path: "/salons/massage-5" }
   ]
 };
