@@ -22,105 +22,102 @@ const NailListingsSection: React.FC = () => {
     };
   };
 
-  // Vietnamese featured nail job listings
-  const vietnameseNailJobs = [
-    {
-      id: 'vn-nail-001',
-      title: 'Cần Thợ Biết Làm Bột, Bao Lương $1500/tuần',
-      description: 'Tiệm Mỹ ở Chicago đang cần gấp thợ làm bột, chân tay nước. Làm full-time, khách đông, chủ dễ chịu.',
-      price: '$1500/tuần',
-      path: '/jobs/vn-nail-001',
-      type: 'job'
-    },
-    {
-      id: 'vn-nail-002',
-      title: 'Cần Thợ Full Set Giỏi – Lương Cao',
-      description: 'Khu LA, tiệm làm việc chuyên nghiệp, cần thợ giỏi làm full set, dip, gel. Lương từ $1,800 – $2,200/tuần.',
-      price: '$1,800 – $2,200/tuần',
-      path: '/jobs/vn-nail-002',
-      type: 'job'
-    },
-    {
-      id: 'vn-nail-003',
-      title: 'Cần Gấp Thợ Có Kinh Nghiệm Làm Chân Tay Nước',
-      description: 'Tiệm vùng Houston, cần 1 thợ chân tay nước có tay nghề, làm part-time hoặc full-time, lương tốt.',
-      price: 'Lương tốt',
-      path: '/jobs/vn-nail-003',
-      type: 'job'
-    },
-    {
-      id: 'vn-nail-004',
-      title: 'Tìm Người Làm Nail Ở Vùng New Jersey',
-      description: 'Bao lương $1,600/tuần, tip cao, khách ổn định. Ưu tiên biết làm bột và design đơn giản.',
-      price: '$1,600/tuần',
-      path: '/jobs/vn-nail-004',
-      type: 'job'
-    },
-    {
-      id: 'vn-nail-005',
-      title: 'Tiệm Tại Orlando Cần Thợ Làm Dip Powder',
-      description: 'Không cần quá giỏi, có training. Lương theo tay nghề. Làm trong mall, khách đi lại đông.',
-      price: 'Theo tay nghề',
-      path: '/jobs/vn-nail-005',
-      type: 'job'
-    }
-  ];
-
   return (
     <section className="py-16 bg-white">
       <div className="container px-4 mx-auto">
-        <div className="flex flex-col text-center items-center justify-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2">
-            Nail Listings — Preview Spaces
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-4 text-gray-900">
+            Tin Tuyển Dụng Mới Nhất
           </h2>
-          <p className="text-gray-600">
-            Explore premium nail salon jobs and spaces. Listings opening soon.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
-          {vietnameseNailJobs.map((job, index) => (
-            <motion.div
-              key={`vn-job-${index}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="h-full"
-            >
-              <AuthAction
-                onAction={handleCardClick(job.path)}
-                redirectPath={job.path}
-                customTitle="Sign in to view listing details"
-                fallbackContent={
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {/* First Job Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 0 }}
+            className="h-full"
+          >
+            <AuthAction
+              onAction={handleCardClick(cardDestinations.nail[0].path)}
+              redirectPath={cardDestinations.nail[0].path}
+              customTitle="Sign in to view listing details"
+              fallbackContent={
+                <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <ImageWithFallback 
+                      src={nailSalonImages[0]} 
+                      alt="Nail Salon 1" 
+                      className="w-full h-full object-cover"
+                      category="nails"
+                    />
+                    <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                      ★ FEATURED
+                    </Badge>
+                  </div>
+                  
+                  <CardContent className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-lg font-semibold mb-1">
+                      Tìm Thợ Nails Magic Naiks– Great Falls, MT
+                    </h3>
+                    
+                    <p className="text-sm text-gray-600 mb-2 font-bold">
+                      💰 $1,200–$1,500/tuần
+                    </p>
+                    
+                    <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                      Magic Nails cần thợ biết làm bột và tay chân nước. Great Falls, MT. (406) 770-3070
+                    </p>
+                    
+                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                      <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                        Nail
+                      </Badge>
+
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              }
+              authenticatedContent={
+                <ValidatedLink 
+                  to={cardDestinations.nail[0].path}
+                  listingId={cardDestinations.nail[0].id}
+                  listingType={cardDestinations.nail[0].type as "salon" | "job"}
+                  className="no-underline block h-full"
+                >
                   <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
                       <ImageWithFallback 
-                        src={nailSalonImages[index % nailSalonImages.length]} 
-                        alt={`Nail Job ${index + 1}`} 
+                        src={nailSalonImages[0]} 
+                        alt="Nail Salon 1" 
                         className="w-full h-full object-cover"
-                        category="nail"
+                        category="nails"
                       />
-                      <Badge className="absolute top-2 left-2 bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200">
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
                         ★ FEATURED
                       </Badge>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
                       <h3 className="text-lg font-semibold mb-1">
-                        {job.title}
+                        Tìm Thợ Nails Magic Naiks– Great Falls, MT
                       </h3>
                       
-                      <p className="text-sm text-gray-600 mb-2">
-                        {job.price}
+                      <p className="text-sm text-gray-600 mb-2 font-bold">
+                        💰 $1,200–$1,500/tuần
                       </p>
                       
                       <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-                        {job.description}
+                        Magic Nails cần thợ biết làm bột và tay chân nước. Great Falls, MT. (406) 770-3070
                       </p>
                       
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <Badge className="bg-white text-black hover:bg-white rounded-full">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
                           Nail
                         </Badge>
 
@@ -130,154 +127,410 @@ const NailListingsSection: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
-                }
-                authenticatedContent={
-                  <ValidatedLink 
-                    to={job.path}
-                    className="no-underline block h-full"
-                    listingId={job.id}
-                    listingType={job.type as "salon" | "job"}
-                  >
-                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                      <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <ImageWithFallback 
-                          src={nailSalonImages[index % nailSalonImages.length]} 
-                          alt={`Nail Job ${index + 1}`} 
-                          className="w-full h-full object-cover"
-                          category="nail"
-                        />
-                        <Badge className="absolute top-2 left-2 bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200">
-                          ★ FEATURED
-                        </Badge>
-                      </div>
-                      
-                      <CardContent className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-semibold mb-1">
-                          {job.title}
-                        </h3>
-                        
-                        <p className="text-sm text-gray-600 mb-2">
-                          {job.price}
-                        </p>
-                        
-                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-                          {job.description}
-                        </p>
-                        
-                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <Badge className="bg-white text-black hover:bg-white rounded-full">
-                            Nail
-                          </Badge>
+                </ValidatedLink>
+              }
+            />
+          </motion.div>
 
-                          <Button size="sm" variant="outline" className="gap-1">
-                            <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </ValidatedLink>
-                }
-              />
-            </motion.div>
-          ))}
-        </div>
+          {/* Second Job Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="h-full"
+          >
+            <AuthAction
+              onAction={handleCardClick(cardDestinations.nail[1].path)}
+              redirectPath={cardDestinations.nail[1].path}
+              customTitle="Sign in to view listing details"
+              fallbackContent={
+                <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <ImageWithFallback 
+                      src={nailSalonImages[1]} 
+                      alt="Nail Salon 2" 
+                      className="w-full h-full object-cover"
+                      category="nails"
+                    />
+                    <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                      ★ FEATURED
+                    </Badge>
+                  </div>
+                  
+                  <CardContent className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-lg font-semibold mb-1">
+                      Tuyển Thợ Nail – Clawson, MI
+                    </h3>
+                    
+                    <p className="text-sm text-gray-600 mb-2 font-bold">
+                      💰 $1,200–$1,800/tuần
+                    </p>
+                    
+                    <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                      Tiệm nhỏ, khu Mỹ trắng, tip hậu. Cần thợ làm bột, dip, gel-x. (248) 403-6472
+                    </p>
+                    
+                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                      <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                        Nail
+                      </Badge>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {nailSalonImages.map((imageSrc, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="h-full"
-            >
-              <AuthAction
-                onAction={handleCardClick(cardDestinations.nail[index].path)}
-                redirectPath={cardDestinations.nail[index].path}
-                customTitle="Sign in to view listing details"
-                fallbackContent={
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              }
+              authenticatedContent={
+                <ValidatedLink 
+                  to={cardDestinations.nail[1].path}
+                  listingId={cardDestinations.nail[1].id}
+                  listingType={cardDestinations.nail[1].type as "salon" | "job"}
+                  className="no-underline block h-full"
+                >
                   <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
                       <ImageWithFallback 
-                        src={imageSrc} 
-                        alt={`Nail Studio ${index + 1}`} 
+                        src={nailSalonImages[1]} 
+                        alt="Nail Salon 2" 
                         className="w-full h-full object-cover"
-                        category="nail"
+                        category="nails"
                       />
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                        ★ FEATURED
+                      </Badge>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
                       <h3 className="text-lg font-semibold mb-1">
-                        Nail Studio {index + 1}
+                        Tuyển Thợ Nail – Clawson, MI
                       </h3>
                       
-                      <p className="text-sm text-gray-600 mb-2">
-                        Listing opening soon
+                      <p className="text-sm text-gray-600 mb-2 font-bold">
+                        💰 $1,200–$1,800/tuần
                       </p>
                       
                       <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-                        Premium nail salon listing coming soon...
+                        Tiệm nhỏ, khu Mỹ trắng, tip hậu. Cần thợ làm bột, dip, gel-x. (248) 403-6472
                       </p>
                       
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <Badge className="bg-white text-black hover:bg-white rounded-full">
-                          Coming Soon
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                          Nail
                         </Badge>
 
                         <Button size="sm" variant="outline" className="gap-1">
-                          <Eye className="h-3.5 w-3.5" /> More Info
+                          <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
                         </Button>
                       </div>
                     </CardContent>
                   </Card>
-                }
-                authenticatedContent={
-                  <ValidatedLink 
-                    to={cardDestinations.nail[index].path}
-                    className="no-underline block h-full"
-                    listingId={cardDestinations.nail[index].id}
-                    listingType={cardDestinations.nail[index].type as "salon" | "job"}
-                  >
-                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                      <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <ImageWithFallback 
-                          src={imageSrc} 
-                          alt={`Nail Studio ${index + 1}`} 
-                          className="w-full h-full object-cover"
-                          category="nail"
-                        />
-                      </div>
-                      
-                      <CardContent className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-semibold mb-1">
-                          Nail Studio {index + 1}
-                        </h3>
-                        
-                        <p className="text-sm text-gray-600 mb-2">
-                          Listing opening soon
-                        </p>
-                        
-                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-                          Premium nail salon listing coming soon...
-                        </p>
-                        
-                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <Badge className="bg-white text-black hover:bg-white rounded-full">
-                            Coming Soon
-                          </Badge>
+                </ValidatedLink>
+              }
+            />
+          </motion.div>
 
-                          <Button size="sm" variant="outline" className="gap-1">
-                            <Eye className="h-3.5 w-3.5" /> View Details
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </ValidatedLink>
-                }
-              />
-            </motion.div>
-          ))}
+          {/* Third Job Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="h-full"
+          >
+            <AuthAction
+              onAction={handleCardClick(cardDestinations.nail[2].path)}
+              redirectPath={cardDestinations.nail[2].path}
+              customTitle="Sign in to view listing details"
+              fallbackContent={
+                <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <ImageWithFallback 
+                      src={nailSalonImages[2]} 
+                      alt="Nail Salon 3" 
+                      className="w-full h-full object-cover"
+                      category="nails"
+                    />
+                    <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                      ★ FEATURED
+                    </Badge>
+                  </div>
+                  
+                  <CardContent className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-lg font-semibold mb-1">
+                      Thợ Nail Design – Humble, TX (Milano Nail Spa)
+                    </h3>
+                    
+                    <p className="text-sm text-gray-600 mb-2 font-bold">
+                      💰 >$2,000/tuần
+                    </p>
+                    
+                    <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                      Tiệm lớn nhất khu vực, tuyển thợ bột design. Receptionist $150/ngày. (346) 398-6868
+                    </p>
+                    
+                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                      <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                        Nail
+                      </Badge>
+
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              }
+              authenticatedContent={
+                <ValidatedLink 
+                  to={cardDestinations.nail[2].path}
+                  listingId={cardDestinations.nail[2].id}
+                  listingType={cardDestinations.nail[2].type as "salon" | "job"}
+                  className="no-underline block h-full"
+                >
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <ImageWithFallback 
+                        src={nailSalonImages[2]} 
+                        alt="Nail Salon 3" 
+                        className="w-full h-full object-cover"
+                        category="nails"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                        ★ FEATURED
+                      </Badge>
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-semibold mb-1">
+                        Thợ Nail Design – Humble, TX (Milano Nail Spa)
+                      </h3>
+                      
+                      <p className="text-sm text-gray-600 mb-2 font-bold">
+                        💰 >$2,000/tuần
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Tiệm lớn nhất khu vực, tuyển thợ bột design. Receptionist $150/ngày. (346) 398-6868
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                          Nail
+                        </Badge>
+
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </ValidatedLink>
+              }
+            />
+          </motion.div>
+
+          {/* Fourth Job Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="h-full"
+          >
+            <AuthAction
+              onAction={handleCardClick(cardDestinations.nail[3].path)}
+              redirectPath={cardDestinations.nail[3].path}
+              customTitle="Sign in to view listing details"
+              fallbackContent={
+                <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <ImageWithFallback 
+                      src={nailSalonImages[3]} 
+                      alt="Nail Salon 4" 
+                      className="w-full h-full object-cover"
+                      category="nails"
+                    />
+                    <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                      ★ FEATURED
+                    </Badge>
+                  </div>
+                  
+                  <CardContent className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-lg font-semibold mb-1">
+                      Tuyển Thợ Nail – South Lake Tahoe, CA
+                    </h3>
+                    
+                    <p className="text-sm text-gray-600 mb-2 font-bold">
+                      💰 $1,600–$2,500+/tuần
+                    </p>
+                    
+                    <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                      Tiệm dễ thương, khách du lịch chịu chi. Ưu tiên biết tiếng Anh. (916) 802-1922
+                    </p>
+                    
+                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                      <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                        Nail
+                      </Badge>
+
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              }
+              authenticatedContent={
+                <ValidatedLink 
+                  to={cardDestinations.nail[3].path}
+                  listingId={cardDestinations.nail[3].id}
+                  listingType={cardDestinations.nail[3].type as "salon" | "job"}
+                  className="no-underline block h-full"
+                >
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <ImageWithFallback 
+                        src={nailSalonImages[3]} 
+                        alt="Nail Salon 4" 
+                        className="w-full h-full object-cover"
+                        category="nails"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                        ★ FEATURED
+                      </Badge>
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-semibold mb-1">
+                        Tuyển Thợ Nail – South Lake Tahoe, CA
+                      </h3>
+                      
+                      <p className="text-sm text-gray-600 mb-2 font-bold">
+                        💰 $1,600–$2,500+/tuần
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Tiệm dễ thương, khách du lịch chịu chi. Ưu tiên biết tiếng Anh. (916) 802-1922
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                          Nail
+                        </Badge>
+
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </ValidatedLink>
+              }
+            />
+          </motion.div>
+
+          {/* Fifth Job Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+            className="h-full"
+          >
+            <AuthAction
+              onAction={handleCardClick(cardDestinations.nail[4].path)}
+              redirectPath={cardDestinations.nail[4].path}
+              customTitle="Sign in to view listing details"
+              fallbackContent={
+                <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <ImageWithFallback 
+                      src={nailSalonImages[4]} 
+                      alt="Nail Salon 5" 
+                      className="w-full h-full object-cover"
+                      category="nails"
+                    />
+                    <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                      ★ FEATURED
+                    </Badge>
+                  </div>
+                  
+                  <CardContent className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-lg font-semibold mb-1">
+                      Cần Thợ Nail – Killeen, TX
+                    </h3>
+                    
+                    <p className="text-sm text-gray-600 mb-2 font-bold">
+                      💰 $1,500+/tuần
+                    </p>
+                    
+                    <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                      Tiệm lớn, giá cao, tip tốt. Gặp Johnny/Hannah: (512) 540-6173
+                    </p>
+                    
+                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                      <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                        Nail
+                      </Badge>
+
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              }
+              authenticatedContent={
+                <ValidatedLink 
+                  to={cardDestinations.nail[4].path}
+                  listingId={cardDestinations.nail[4].id}
+                  listingType={cardDestinations.nail[4].type as "salon" | "job"}
+                  className="no-underline block h-full"
+                >
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <ImageWithFallback 
+                        src={nailSalonImages[4]} 
+                        alt="Nail Salon 5" 
+                        className="w-full h-full object-cover"
+                        category="nails"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
+                        ★ FEATURED
+                      </Badge>
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-semibold mb-1">
+                        Cần Thợ Nail – Killeen, TX
+                      </h3>
+                      
+                      <p className="text-sm text-gray-600 mb-2 font-bold">
+                        💰 $1,500+/tuần
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Tiệm lớn, giá cao, tip tốt. Gặp Johnny/Hannah: (512) 540-6173
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                          Nail
+                        </Badge>
+
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </ValidatedLink>
+              }
+            />
+          </motion.div>
         </div>
       </div>
     </section>
@@ -285,3 +538,4 @@ const NailListingsSection: React.FC = () => {
 };
 
 export default NailListingsSection;
+

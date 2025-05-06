@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -27,6 +28,7 @@ import BarberListingsSection from "@/components/home/BarberListingsSection";
 import SkincareListingsSection from "@/components/home/SkincareListingsSection";
 import MakeupListingsSection from "@/components/home/MakeupListingsSection";
 import TattooListingsSection from "@/components/home/TattooListingsSection";
+import NailListingsSection from "@/components/home/NailListingsSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -54,6 +56,9 @@ const Index = () => {
     <Layout>
       {/* 1. Hero section as first */}
       <Hero />
+      
+      {/* Vietnamese Nail Listings Section */}
+      <NailListingsSection />
       
       {/* 2. Emvi Beauty Connections™ - Contains all listing sections */}
       <BeautyExchangeSection />
@@ -91,3 +96,4 @@ const Index = () => {
 };
 
 export default Index;
+
