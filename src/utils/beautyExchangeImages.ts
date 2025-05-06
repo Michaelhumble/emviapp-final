@@ -58,13 +58,13 @@ export const skincareClinicImages = [
   "/lovable-uploads/23674144-d433-4b00-a740-88128dc02396.png"
 ];
 
-// Eyebrow & Lash images
+// Eyebrow & Lash images - Updated with new uploaded images
 export const eyebrowLashImages = [
-  "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png", // Placeholder 1
-  "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png", // Placeholder 2
-  "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png", // Placeholder 3
-  "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png", // Placeholder 4
-  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png"  // Placeholder 5
+  "/lovable-uploads/5164a78a-4b28-49b1-8f83-f833c77aff12.png",
+  "/lovable-uploads/0003b2e9-4b56-4284-9fd7-56772930e035.png",
+  "/lovable-uploads/28b74b08-4367-4e39-bcda-447b1be445eb.png",
+  "/lovable-uploads/aaf764c4-1580-4842-844a-3aa4beb87245.png",
+  "/lovable-uploads/7fa90fdd-d4e6-4d07-9d3b-b00811006d23.png"
 ];
 
 // Massage studio images - Using images from massageSalonImages.ts for placeholders
