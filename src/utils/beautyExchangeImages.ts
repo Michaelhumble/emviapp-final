@@ -33,11 +33,11 @@ export const barberShopImages = [
 
 // Tattoo studio images
 export const tattooStudioImages = [
-  "/lovable-uploads/6af7cc02-b6cf-4c54-9c03-9510d543d3f1.png",  
-  "/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png",  
-  "/lovable-uploads/cd91684d-63c1-444f-baea-5814694edf50.png",  
-  "/lovable-uploads/f5696d4d-294d-42d6-b633-ab23dcacc6d2.png",  
-  "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png",  
+  "/lovable-uploads/bd8f013b-6b07-4709-858e-11495dc92392.png",
+  "/lovable-uploads/df471a22-e51f-4d40-8752-7e13301e2bab.png",
+  "/lovable-uploads/8fe0f798-c1eb-4d74-8a75-eca70a89d788.png",
+  "/lovable-uploads/d259b63a-0997-4651-899c-7fcec1139110.png",
+  "/lovable-uploads/77824612-935e-4ff6-8f80-029815b2c423.png"
 ];
 
 // Makeup studio images
