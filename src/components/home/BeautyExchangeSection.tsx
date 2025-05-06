@@ -71,46 +71,13 @@ const BeautyExchangeSection = () => {
           </div>
         </div>
 
-        {/* Nail Listings Section */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold">Nail Salon Listings — Preview Spaces</h2>
-        </div>
+        {/* All listing sections */}
         <NailListingsSection />
-
-        {/* Hair Listings Section */}
-        <div className="text-center mb-8 mt-16">
-          <h2 className="text-3xl font-bold">Hair Salon Listings — Premium Spaces</h2>
-        </div>
         <HairListingsSection />
-
-        {/* Barber Listings Section */}
-        <div className="text-center mb-8 mt-16">
-          <h2 className="text-3xl font-bold">Barber Listings — Premium Spaces</h2>
-        </div>
         <BarberListingsSection />
-
-        {/* Makeup Listings Section */}
-        <div className="text-center mb-8 mt-16">
-          <h2 className="text-3xl font-bold">Makeup Artist Listings — Preview Spaces</h2>
-        </div>
         <MakeupListingsSection />
-
-        {/* Skincare Listings Section */}
-        <div className="text-center mb-8 mt-16">
-          <h2 className="text-3xl font-bold">Skincare Listings — Preview Spaces</h2>
-        </div>
         <SkincareListingsSection />
-
-        {/* Tattoo Listings Section */}
-        <div className="text-center mb-8 mt-16">
-          <h2 className="text-3xl font-bold">Tattoo Listings — Preview Spaces</h2>
-        </div>
         <TattooListingsSection />
-
-        {/* Eyebrow & Lash Listings Section */}
-        <div className="text-center mb-8 mt-16">
-          <h2 className="text-3xl font-bold">Eyebrow & Lash Listings — Preview Spaces</h2>
-        </div>
         <EyebrowLashListingsSection />
       </div>
     </section>
