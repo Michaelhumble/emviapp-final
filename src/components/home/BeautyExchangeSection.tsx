@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -71,13 +70,40 @@ const BeautyExchangeSection = () => {
           </div>
         </div>
 
-        {/* All listing sections */}
+        {/* All listing sections with updated titles */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold">Nail Listings — Premium Spaces</h2>
+        </div>
         <NailListingsSection />
+
+        <div className="text-center mb-8 mt-16">
+          <h2 className="text-3xl font-bold">Hair Listings — Premium Spaces</h2>
+        </div>
         <HairListingsSection />
+
+        <div className="text-center mb-8 mt-16">
+          <h2 className="text-3xl font-bold">Barber Listings — Premium Spaces</h2>
+        </div>
         <BarberListingsSection />
+
+        <div className="text-center mb-8 mt-16">
+          <h2 className="text-3xl font-bold">Makeup Artist Listings — Preview Spaces</h2>
+        </div>
         <MakeupListingsSection />
+
+        <div className="text-center mb-8 mt-16">
+          <h2 className="text-3xl font-bold">Skincare Listings — Preview Spaces</h2>
+        </div>
         <SkincareListingsSection />
+
+        <div className="text-center mb-8 mt-16">
+          <h2 className="text-3xl font-bold">Tattoo Listings — Preview Spaces</h2>
+        </div>
         <TattooListingsSection />
+
+        <div className="text-center mb-8 mt-16">
+          <h2 className="text-3xl font-bold">Eyebrow & Lash Listings — Preview Spaces</h2>
+        </div>
         <EyebrowLashListingsSection />
       </div>
     </section>
