@@ -9,6 +9,7 @@ import BarberListingsSection from './BarberListingsSection';
 import MakeupListingsSection from './MakeupListingsSection';
 import SkincareListingsSection from './SkincareListingsSection';
 import TattooListingsSection from './TattooListingsSection';
+import EyebrowLashListingsSection from './EyebrowLashListingsSection';
 
 const BeautyExchangeSection = () => {
   return (
@@ -77,6 +78,7 @@ const BeautyExchangeSection = () => {
         <MakeupListingsSection />
         <SkincareListingsSection />
         <TattooListingsSection />
+        <EyebrowLashListingsSection />
       </div>
     </section>
   );

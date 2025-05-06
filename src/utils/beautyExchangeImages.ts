@@ -58,6 +58,15 @@ export const skincareClinicImages = [
   "/lovable-uploads/23674144-d433-4b00-a740-88128dc02396.png"
 ];
 
+// Eyebrow & Lash images
+export const eyebrowLashImages = [
+  "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png", // Placeholder 1
+  "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png", // Placeholder 2
+  "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png", // Placeholder 3
+  "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png", // Placeholder 4
+  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png"  // Placeholder 5
+];
+
 // Standardized card destinations for all listing types
 export const cardDestinations = {
   nail: [
@@ -87,6 +96,13 @@ export const cardDestinations = {
     { id: "tattoo-3", type: "salon", path: "/salons/tattoo-3" },
     { id: "tattoo-4", type: "job", path: "/jobs/tattoo-4" },
     { id: "tattoo-5", type: "salon", path: "/salons/tattoo-5" }
+  ],
+  eyebrowlash: [
+    { id: "eyelash-1", type: "salon", path: "/salons/eyelash-1" },
+    { id: "eyelash-2", type: "job", path: "/jobs/eyelash-2" },
+    { id: "eyelash-3", type: "salon", path: "/salons/eyelash-3" },
+    { id: "eyelash-4", type: "job", path: "/jobs/eyelash-4" },
+    { id: "eyelash-5", type: "salon", path: "/salons/eyelash-5" }
   ],
   makeup: [
     { id: "makeup-1", type: "salon", path: "/salons/makeup-1" },
