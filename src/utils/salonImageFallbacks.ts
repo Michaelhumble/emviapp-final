@@ -1,4 +1,3 @@
-
 // Define categories for salon types to ensure appropriate image selection
 export type SalonCategory = 'nail' | 'hair' | 'barber' | 'lash' | 'brow' | 'spa' | 'massage' | 'beauty' | 'generic';
 
