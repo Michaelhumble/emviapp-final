@@ -1,103 +1,62 @@
 
 /**
- * Barber shop image utilities
+ * DEPRECATED: Barber shop image utilities
  * This is a minimal replacement for the previously deleted file
  * to maintain compatibility with existing code that depends on it.
  */
 
-// Define placeholder images for barber shops
+// Define placeholder for barber shop images
 export const BARBERSHOP_IMAGES = {
-  premium1: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
-  premium2: "/lovable-uploads/c9e52825-c7f4-4923-aecf-a92a8799530b.png",
-  premium3: "/lovable-uploads/ac31083b-3861-4851-99ac-ed1bc185c4d9.png",
-  standard1: "/lovable-uploads/ac97ca70-1589-41f2-b35b-f17345583c7d.png",
-  standard2: "/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png",
-  booth1: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
-  job1: "/lovable-uploads/11d11587-a1b4-4f8f-a93b-b792a672b16b.png",
+  // Using generic fallback images
+  premium1: "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  premium2: "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  premium3: "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  standard1: "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  standard2: "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  booth1: "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  job1: "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png"
 };
 
 /**
- * Determines if a business is a barber shop based on its name and description
+ * DEPRECATED: Determines if a business is a barber shop
+ * Always returns false as barber functionality is removed
  */
-export const isBarberShop = (name: string = "", description: string = ""): boolean => {
-  const combinedText = (name + " " + description).toLowerCase();
-  
-  return (
-    combinedText.includes("barber") ||
-    combinedText.includes("barbershop") ||
-    combinedText.includes("barbers") ||
-    combinedText.includes("mens cut") ||
-    combinedText.includes("men's cut") ||
-    combinedText.includes("haircut for men")
-  );
+export const isBarberShop = (): boolean => {
+  return false;
 };
 
 /**
- * Determines if a job listing is for a barber position
- * Supports both legacy format (title, description) and object format (job)
+ * DEPRECATED: Determines if a job listing is for a barber position
+ * Always returns false as barber functionality is removed
  */
 export const isBarberJob = (jobOrTitle: any, description?: string): boolean => {
-  // Handle legacy format with two separate arguments
-  if (typeof jobOrTitle === 'string' && description !== undefined) {
-    const combinedText = (jobOrTitle + " " + description).toLowerCase();
-    return checkBarberKeywords(combinedText);
-  }
-  
-  // Handle object format
-  if (!jobOrTitle) return false;
-  
-  const title = (jobOrTitle.title || jobOrTitle.role || "").toLowerCase();
-  const desc = (jobOrTitle.description || "").toLowerCase();
-  const company = (jobOrTitle.company || jobOrTitle.name || "").toLowerCase();
-  
-  const combinedText = title + " " + desc + " " + company;
-  return checkBarberKeywords(combinedText);
+  return false;
 };
 
-// Helper function to check for barber-related keywords
-function checkBarberKeywords(text: string): boolean {
-  return (
-    text.includes("barber") ||
-    text.includes("barbershop") ||
-    text.includes("barbers") ||
-    text.includes("mens cut") ||
-    text.includes("men's cut") ||
-    text.includes("haircut for men") ||
-    (text.includes("shave") && text.includes("hair"))
-  );
-}
-
 /**
- * Returns an appropriate barber shop image URL
- * @param isPremium Whether to use a premium image
- * @param isLuxury Whether to use a luxury image (subset of premium)
+ * DEPRECATED: Returns a generic image URL
  */
-export const getBarberShopImage = (isPremium: boolean = false, isLuxury: boolean = false): string => {
-  if (isPremium) {
-    return isLuxury ? BARBERSHOP_IMAGES.premium1 : BARBERSHOP_IMAGES.premium2;
-  }
-  return BARBERSHOP_IMAGES.standard1;
+export const getBarberShopImage = (): string => {
+  return "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png";
 };
 
 /**
- * Returns an appropriate barber booth image URL
+ * DEPRECATED: Returns a generic image URL
  */
 export const getBarberBoothImage = (): string => {
-  return BARBERSHOP_IMAGES.booth1;
+  return "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png";
 };
 
 /**
- * Returns an appropriate barber job image URL
+ * DEPRECATED: Returns a generic image URL
  */
 export const getBarberJobImage = (): string => {
-  return BARBERSHOP_IMAGES.job1;
+  return "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png";
 };
 
 /**
- * Returns a random barber shop image URL
+ * DEPRECATED: Returns a generic image URL
  */
 export const getRandomBarberShopImage = (): string => {
-  const images = Object.values(BARBERSHOP_IMAGES);
-  const randomIndex = Math.floor(Math.random() * images.length);
-  return images[randomIndex];
+  return "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png";
 };

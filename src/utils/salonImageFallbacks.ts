@@ -1,8 +1,8 @@
+
 // Define categories for salon types to ensure appropriate image selection
-export type SalonCategory = 'nail' | 'hair' | 'barber' | 'lash' | 'brow' | 'spa' | 'massage' | 'beauty' | 'generic';
+export type SalonCategory = 'nail' | 'hair' | 'lash' | 'brow' | 'spa' | 'massage' | 'beauty' | 'generic';
 
 // Import our specialized image utilities
-import { getBarberShopImage, isBarberShop } from '@/utils/barberShopImages';
 import { getHairSalonImage, isHairSalon } from '@/utils/hairSalonImages';
 import { getNailSalonImage, isNailSalon } from '@/utils/nailSalonImages';
 import { getLashSalonImage, getBrowSalonImage, isLashSalon, isBrowSalon } from '@/utils/lashBrowSalonImages';
@@ -15,12 +15,7 @@ import { getMassageSalonImage, isMassageSpa } from '@/utils/massageSalonImages';
 export const determineSalonCategory = (description: string, name: string): SalonCategory => {
   const combinedText = (description + ' ' + name).toLowerCase();
   
-  // Check for barbershop indicators first
-  if (isBarberShop(name, description)) {
-    return 'barber';
-  }
-  
-  // Check for hair salon indicators next
+  // Check for hair salon indicators
   if (isHairSalon(name, description)) {
     return 'hair';
   }
@@ -66,9 +61,6 @@ export const determineSalonCategory = (description: string, name: string): Salon
 export const getDefaultSalonImage = (category: SalonCategory, isPremium: boolean = false): string => {
   // Return appropriate image based on category
   switch (category) {
-    case 'barber':
-      // Use our barbershop image utility
-      return getBarberShopImage(isPremium, isPremium);
     case 'hair':
       // Use our hair salon image utility
       return getHairSalonImage(isPremium, isPremium);
