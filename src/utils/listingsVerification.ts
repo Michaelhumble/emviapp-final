@@ -1,3 +1,4 @@
+
 import { determineSalonCategory, getDefaultSalonImage } from './salonImageFallbacks';
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
@@ -21,7 +22,10 @@ export const verifyListingImage = (
   }
   
   // If not from our uploads, suggest an appropriate image
-  const category = determineSalonCategory();
+  const category = determineSalonCategory(
+    listing.description || '',
+    listing.name || listing.title || listing.company || ''
+  );
   
   return { 
     isValid: false,
@@ -118,7 +122,10 @@ export const enhanceListingWithImage = (listing: Job): Job => {
   }
   
   // Determine listing category
-  const category = determineSalonCategory();
+  const category = determineSalonCategory(
+    enhancedListing.description || '',
+    enhancedListing.title || enhancedListing.company || ''
+  );
   
   // Assign appropriate image based on listing type
   enhancedListing.imageUrl = getDefaultSalonImage(category, !!enhancedListing.is_featured);

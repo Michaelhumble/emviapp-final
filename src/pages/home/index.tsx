@@ -6,12 +6,12 @@ import FeaturedSalons from '@/components/home/FeaturedSalons';
 import HiringSalonsShowcase from '@/components/home/HiringSalonsShowcase';
 import JobsHighlight from '@/components/home/JobsHighlight';
 import NailImageStatus from '@/components/debug/NailImageStatus';
+import BarberImageStatus from '@/components/debug/BarberImageStatus';
 import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 import BeautyExchangeSection from '@/components/home/BeautyExchangeSection';
 import FinalFounderCTA from '@/components/home/FinalFounderCTA';
 import MissingPieceSection from '@/components/home/missing-piece/MissingPieceSection';
 import CallToAction from '@/components/home/CallToAction';
-import MakeupListingsSection from '@/components/home/MakeupListingsSection';
 
 const Home = () => {
   return (
@@ -19,6 +19,7 @@ const Home = () => {
       <FallbackBoundary errorMessage="Debug components failed to load">
         <div className="container mx-auto p-4 mb-8 space-y-4">
           <NailImageStatus />
+          <BarberImageStatus />
         </div>
       </FallbackBoundary>
       
@@ -40,10 +41,6 @@ const Home = () => {
       
       <FallbackBoundary errorMessage="Jobs section failed to load">
         <JobsHighlight />
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Makeup listings section failed to load">
-        <MakeupListingsSection />
       </FallbackBoundary>
       
       <FallbackBoundary errorMessage="Missing piece section failed to load">

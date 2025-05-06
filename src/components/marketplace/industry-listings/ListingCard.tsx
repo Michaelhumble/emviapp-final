@@ -80,7 +80,10 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
       listingImage = "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png";
     } else {
       // Fall back to the generic categories system
-      const category = determineSalonCategory();
+      const category = determineSalonCategory(
+        listing.description || '', 
+        listing.title || listing.company || ''
+      );
       listingImage = getDefaultSalonImage(category, !!listing.is_featured);
     }
   }

@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -24,6 +25,7 @@ import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 import BeautyExchangeLayout from "@/components/home/BeautyExchangeLayout";
 
 // Listing section components
+import BarberListingsSection from "@/components/home/BarberListingsSection";
 import SkincareListingsSection from "@/components/home/SkincareListingsSection";
 import MakeupListingsSection from "@/components/home/MakeupListingsSection";
 import TattooListingsSection from "@/components/home/TattooListingsSection";
@@ -73,8 +75,8 @@ const Index = () => {
       {/* 7. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* Add the new Makeup Listings Section */}
-      <MakeupListingsSection />
+      {/* 8. Barber Listings Section */}
+      <BarberListingsSection />
       
       {/* 9. Founder Message */}
       <FounderMessage />

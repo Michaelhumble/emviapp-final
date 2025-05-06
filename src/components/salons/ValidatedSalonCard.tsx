@@ -32,10 +32,13 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
       return salon.imageUrl;
     
     // If no valid image exists, determine category and get appropriate image
-    const category = determineSalonCategory();
+    const category = determineSalonCategory(
+      'description' in salon ? (salon.description as string || '') : '',
+      getName()
+    );
     
     const isPremium = 'is_featured' in salon ? !!salon.is_featured : false;
-    return getDefaultSalonImage(category, isPremium);
+    return getDefaultSalonImage(category as any, isPremium);
   };
 
   // Get the formatted price with fallback
@@ -90,7 +93,10 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
   const features = getFeatureBadges();
   const name = getName();
   const imageUrl = getImageUrl();
-  const category = determineSalonCategory();
+  const category = determineSalonCategory(
+    'description' in salon && salon.description ? salon.description : '', 
+    name
+  );
   
   return (
     <Card className="overflow-hidden hover:shadow-md transition-all duration-300">

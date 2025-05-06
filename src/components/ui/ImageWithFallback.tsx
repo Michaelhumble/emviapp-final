@@ -62,7 +62,13 @@ export const ImageWithFallback = ({
     }
     
     // Otherwise use business name and alt text to determine the best fallback
-    const detectedCategory = determineSalonCategory();
+    const combinedText = `${businessName || ''} ${alt || ''}`.toLowerCase();
+    
+    // Determine the most appropriate category based on text
+    const detectedCategory = determineSalonCategory(
+      combinedText,
+      businessName || alt || ''
+    );
     
     // Get appropriate image based on detected category
     return getDefaultSalonImage(detectedCategory, showPremiumBadge);

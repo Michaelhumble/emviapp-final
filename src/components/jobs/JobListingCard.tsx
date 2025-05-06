@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Job } from "@/types/job";
@@ -79,7 +80,7 @@ const JobListingCard = ({
       jobImage = getBarberJobImage();
     } else {
       // Fallback to generic category detection
-      const category = determineSalonCategory();
+      const category = determineSalonCategory(job.description || '', job.title || job.company || '');
       jobImage = getDefaultSalonImage(category);
     }
   }
