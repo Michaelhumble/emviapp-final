@@ -1,237 +1,283 @@
 
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Phone, MapPin, DollarSign, ExternalLink, Lock } from 'lucide-react';
-import { Link } from "react-router-dom";
-import { useAuth } from '@/context/auth';
-import AuthAction from '@/components/common/AuthAction';
+import { motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
 import ValidatedLink from '@/components/common/ValidatedLink';
+import AuthAction from '@/components/common/AuthAction';
+import { useNavigate } from 'react-router-dom';
+import { useSession } from '@/context/auth/hooks/useSession';
+import { nailSalonImages, cardDestinations } from '@/utils/beautyExchangeImages';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { cn } from '@/lib/utils';
 
-const NailListingsSection = () => {
-  const { isSignedIn } = useAuth();
-
-  // Vietnamese Nail Job listings data
-  const vietnameseNailJobs = [
-    {
-      id: "vn-job-1",
-      title: "Tìm Thợ Nails Tất Cả – Great Falls, MT",
-      business: "Magic Nails cần thợ biết làm bột và tay chân nước.",
-      location: "Great Falls, MT",
-      phone: "(406) 770-3070",
-      compensation: "$1,200–$1,500/tuần",
-      image: "/lovable-uploads/20e4e48d-b84f-46a0-9b09-386a94843baf.png",
-      listingType: "job"
-    },
-    {
-      id: "vn-job-2",
-      title: "Cần Thợ Full Set Giỏi – Lương Cao",
-      business: "Khu LA, tiệm chuyên dip, gel, full set.",
-      location: "Los Angeles, CA",
-      phone: "(323) 888-8888",
-      compensation: "$1,800–$2,200/tuần",
-      image: "/lovable-uploads/34594f32-0ac4-499d-8752-7baa4ec5a944.png",
-      listingType: "job"
-    },
-    {
-      id: "vn-job-3",
-      title: "New Jersey – Cần Thợ Nail Bột",
-      business: "Ưu tiên biết làm design đơn giản.",
-      location: "New Jersey",
-      phone: "(973) 222-2222",
-      compensation: "$1,600/tuần + tip cao",
-      image: "/lovable-uploads/5984db4c-29f7-462f-8307-f45107dc257e.png",
-      listingType: "job"
-    },
-    {
-      id: "vn-job-4",
-      title: "Houston – Tuyển Gấp Thợ Tay Nước",
-      business: "Cần 1 thợ có tay nghề chân tay nước",
-      location: "Houston, TX",
-      phone: "(713) 777-7777",
-      compensation: "Làm part-time hoặc full-time, lương tốt",
-      image: "/lovable-uploads/01f5003f-86f3-484f-85af-78d16880a724.png",
-      listingType: "job"
-    },
-    {
-      id: "vn-job-5",
-      title: "Salon Chicago – Thợ Nail Chính",
-      business: "Tiệm lớn cần thợ chính tay nghề cao",
-      location: "Chicago, IL",
-      phone: "(312) 333-3333",
-      compensation: "$1,700–$2,000/tuần, khách đông",
-      image: "/lovable-uploads/3e28131f-5a40-4c66-9480-5c83bd0d07e1.png",
-      listingType: "job"
-    }
-  ];
-
-  // Vietnamese Nail Salon sale listings data
-  const vietnameseNailSalons = [
-    {
-      id: "vn-salon-1",
-      title: "Sang Tiệm Nail – Arlington TX",
-      description: "Bao khách, chủ đi định cư, thu nhập tốt",
-      location: "Arlington, TX",
-      phone: "(817) 111-1111",
-      image: "/lovable-uploads/vn-salon1.jpg",
-      listingType: "salon"
-    },
-    {
-      id: "vn-salon-2",
-      title: "Bán Tiệm Nail – Garland TX",
-      description: "Giá mềm, bao đồ nghề, sẵn khách",
-      location: "Garland, TX",
-      phone: "(972) 222-2222",
-      image: "/lovable-uploads/vn-salon2.jpg",
-      listingType: "salon"
-    },
-    {
-      id: "vn-salon-3",
-      title: "Tiệm Sang Gấp – Grand Prairie",
-      description: "Vào làm ngay, tiệm sạch, khu ổn định",
-      location: "Grand Prairie, TX",
-      phone: "(682) 333-3333",
-      image: "/lovable-uploads/vn-salon3.jpg",
-      listingType: "salon"
-    },
-    {
-      id: "vn-salon-4",
-      title: "Sang Tiệm Ở Plano – Bao Đẹp",
-      description: "Chủ cần chuyển tiểu bang, tiệm 4 bàn, 6 ghế",
-      location: "Plano, TX",
-      phone: "(469) 444-4444",
-      image: "/lovable-uploads/vn-salon4.jpg", 
-      listingType: "salon"
-    },
-    {
-      id: "vn-salon-5",
-      title: "Tiệm Gần Downtown Houston – Sang Lại",
-      description: "Giá tốt, decor đẹp, đầy đủ dụng cụ",
-      location: "Houston, TX",
-      phone: "(832) 555-5555",
-      image: "/lovable-uploads/vn-salon5.jpg",
-      listingType: "salon"
-    }
-  ];
-
-  // Card component for Vietnamese listings with conditional details
-  const VietnameseListingCard = ({ listing }) => {
-    const isJob = listing.listingType === "job";
-    const destinationPath = isJob ? "/jobs" : "/salons";
-    
-    return (
-      <Card className="overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
-        <div className="relative h-48">
-          <ImageWithFallback
-            src={listing.image}
-            alt={listing.title}
-            className="w-full h-full object-cover"
-          />
-          <Badge className="absolute top-3 left-3 bg-pink-500 text-white">
-            Featured
-          </Badge>
-        </div>
-        
-        <CardContent className="p-4 flex flex-col flex-grow">
-          <h3 className="font-bold text-lg mb-2">{listing.title}</h3>
-          
-          <p className="text-sm text-gray-700 mb-2">
-            {isJob ? listing.business : listing.description}
-          </p>
-          
-          <div className="flex items-center text-sm text-gray-500 mb-2">
-            <MapPin className="h-4 w-4 mr-1" />
-            <span>{listing.location}</span>
-          </div>
-          
-          {isSignedIn ? (
-            <>
-              <div className="flex items-center text-sm text-gray-500 mb-2">
-                <Phone className="h-4 w-4 mr-1" />
-                <span>{listing.phone}</span>
-              </div>
-              
-              {isJob && (
-                <div className="text-sm font-medium text-green-700 mb-3">
-                  <DollarSign className="h-4 w-4 inline mr-1" />
-                  {listing.compensation}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-sm italic text-purple-600 mb-3 flex items-center">
-              <Lock className="h-4 w-4 mr-1" />
-              Sign in to view contact details
-            </div>
-          )}
-          
-          <div className="mt-auto pt-3 border-t border-gray-100 flex justify-between items-center">
-            <AuthAction
-              onAction={() => true}
-              redirectPath={destinationPath}
-              customTitle="Sign in to view full details"
-            >
-              <ValidatedLink
-                to={destinationPath}
-                listingId={listing.id}
-                listingType={listing.listingType}
-                className={cn(
-                  "inline-flex items-center justify-center rounded-md text-sm font-medium",
-                  "bg-purple-600 text-white px-3 py-2 hover:bg-purple-700 transition-colors"
-                )}
-              >
-                View Details
-                <ExternalLink className="h-3.5 w-3.5 ml-1" />
-              </ValidatedLink>
-            </AuthAction>
-          </div>
-        </CardContent>
-      </Card>
-    );
+const NailListingsSection: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useSession();
+  
+  const handleCardClick = (destinationPath: string) => {
+    return async () => {
+      return true; // Return true to allow navigation after auth
+    };
   };
 
+  // Vietnamese featured nail job listings
+  const vietnameseNailJobs = [
+    {
+      id: 'vn-nail-001',
+      title: 'Cần Thợ Biết Làm Bột, Bao Lương $1500/tuần',
+      description: 'Tiệm Mỹ ở Chicago đang cần gấp thợ làm bột, chân tay nước. Làm full-time, khách đông, chủ dễ chịu.',
+      price: '$1500/tuần',
+      path: '/jobs/vn-nail-001',
+      type: 'job'
+    },
+    {
+      id: 'vn-nail-002',
+      title: 'Cần Thợ Full Set Giỏi – Lương Cao',
+      description: 'Khu LA, tiệm làm việc chuyên nghiệp, cần thợ giỏi làm full set, dip, gel. Lương từ $1,800 – $2,200/tuần.',
+      price: '$1,800 – $2,200/tuần',
+      path: '/jobs/vn-nail-002',
+      type: 'job'
+    },
+    {
+      id: 'vn-nail-003',
+      title: 'Cần Gấp Thợ Có Kinh Nghiệm Làm Chân Tay Nước',
+      description: 'Tiệm vùng Houston, cần 1 thợ chân tay nước có tay nghề, làm part-time hoặc full-time, lương tốt.',
+      price: 'Lương tốt',
+      path: '/jobs/vn-nail-003',
+      type: 'job'
+    },
+    {
+      id: 'vn-nail-004',
+      title: 'Tìm Người Làm Nail Ở Vùng New Jersey',
+      description: 'Bao lương $1,600/tuần, tip cao, khách ổn định. Ưu tiên biết làm bột và design đơn giản.',
+      price: '$1,600/tuần',
+      path: '/jobs/vn-nail-004',
+      type: 'job'
+    },
+    {
+      id: 'vn-nail-005',
+      title: 'Tiệm Tại Orlando Cần Thợ Làm Dip Powder',
+      description: 'Không cần quá giỏi, có training. Lương theo tay nghề. Làm trong mall, khách đi lại đông.',
+      price: 'Theo tay nghề',
+      path: '/jobs/vn-nail-005',
+      type: 'job'
+    }
+  ];
+
   return (
-    <section className="py-12 bg-white">
-      <div className="container mx-auto px-4">
-        {/* Vietnamese Nail Jobs Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-center">Vietnamese Featured Nail Jobs</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {vietnameseNailJobs.map((job) => (
-              <VietnameseListingCard key={job.id} listing={job} />
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Button 
-              asChild 
-              variant="default"
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <Link to="/jobs">View All Nail Jobs</Link>
-            </Button>
-          </div>
+    <section className="py-16 bg-white">
+      <div className="container px-4 mx-auto">
+        <div className="flex flex-col text-center items-center justify-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2">
+            Nail Listings — Preview Spaces
+          </h2>
+          <p className="text-gray-600">
+            Explore premium nail salon jobs and spaces. Listings opening soon.
+          </p>
         </div>
 
-        {/* Vietnamese Salons for Sale Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-center">Vietnamese Salons for Sale</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {vietnameseNailSalons.map((salon) => (
-              <VietnameseListingCard key={salon.id} listing={salon} />
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Button 
-              asChild 
-              variant="default"
-              className="bg-purple-600 hover:bg-purple-700"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
+          {vietnameseNailJobs.map((job, index) => (
+            <motion.div
+              key={`vn-job-${index}`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className="h-full"
             >
-              <Link to="/salons">View All Nail Salons for Sale</Link>
-            </Button>
-          </div>
+              <AuthAction
+                onAction={handleCardClick(job.path)}
+                redirectPath={job.path}
+                customTitle="Sign in to view listing details"
+                fallbackContent={
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <ImageWithFallback 
+                        src={nailSalonImages[index % nailSalonImages.length]} 
+                        alt={`Nail Job ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                        category="nail"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200">
+                        ★ FEATURED
+                      </Badge>
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-semibold mb-1">
+                        {job.title}
+                      </h3>
+                      
+                      <p className="text-sm text-gray-600 mb-2">
+                        {job.price}
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        {job.description}
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full">
+                          Nail
+                        </Badge>
+
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                }
+                authenticatedContent={
+                  <ValidatedLink 
+                    to={job.path}
+                    className="no-underline block h-full"
+                    listingId={job.id}
+                    listingType={job.type as "salon" | "job"}
+                  >
+                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <ImageWithFallback 
+                          src={nailSalonImages[index % nailSalonImages.length]} 
+                          alt={`Nail Job ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                          category="nail"
+                        />
+                        <Badge className="absolute top-2 left-2 bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200">
+                          ★ FEATURED
+                        </Badge>
+                      </div>
+                      
+                      <CardContent className="p-5 flex flex-col flex-grow">
+                        <h3 className="text-lg font-semibold mb-1">
+                          {job.title}
+                        </h3>
+                        
+                        <p className="text-sm text-gray-600 mb-2">
+                          {job.price}
+                        </p>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                          {job.description}
+                        </p>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                          <Badge className="bg-white text-black hover:bg-white rounded-full">
+                            Nail
+                          </Badge>
+
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Eye className="h-3.5 w-3.5" /> Xem Chi Tiết
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </ValidatedLink>
+                }
+              />
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {nailSalonImages.map((imageSrc, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className="h-full"
+            >
+              <AuthAction
+                onAction={handleCardClick(cardDestinations.nail[index].path)}
+                redirectPath={cardDestinations.nail[index].path}
+                customTitle="Sign in to view listing details"
+                fallbackContent={
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <ImageWithFallback 
+                        src={imageSrc} 
+                        alt={`Nail Studio ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                        category="nail"
+                      />
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-semibold mb-1">
+                        Nail Studio {index + 1}
+                      </h3>
+                      
+                      <p className="text-sm text-gray-600 mb-2">
+                        Listing opening soon
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Premium nail salon listing coming soon...
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full">
+                          Coming Soon
+                        </Badge>
+
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> More Info
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                }
+                authenticatedContent={
+                  <ValidatedLink 
+                    to={cardDestinations.nail[index].path}
+                    className="no-underline block h-full"
+                    listingId={cardDestinations.nail[index].id}
+                    listingType={cardDestinations.nail[index].type as "salon" | "job"}
+                  >
+                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <ImageWithFallback 
+                          src={imageSrc} 
+                          alt={`Nail Studio ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                          category="nail"
+                        />
+                      </div>
+                      
+                      <CardContent className="p-5 flex flex-col flex-grow">
+                        <h3 className="text-lg font-semibold mb-1">
+                          Nail Studio {index + 1}
+                        </h3>
+                        
+                        <p className="text-sm text-gray-600 mb-2">
+                          Listing opening soon
+                        </p>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                          Premium nail salon listing coming soon...
+                        </p>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                          <Badge className="bg-white text-black hover:bg-white rounded-full">
+                            Coming Soon
+                          </Badge>
+
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Eye className="h-3.5 w-3.5" /> View Details
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </ValidatedLink>
+                }
+              />
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
