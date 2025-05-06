@@ -69,11 +69,11 @@ const EyebrowLashListingsSection = () => {
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
-                      <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                      <h3 className="text-lg font-semibold mb-1">
                         Premium Eyebrow & Lash Listing {index + 1}
                       </h3>
                       
-                      <p className="text-sm text-gray-500 mb-2">
+                      <p className="text-sm text-gray-600 mb-2">
                         Specialized brow and lash services
                       </p>
                       
@@ -115,11 +115,11 @@ const EyebrowLashListingsSection = () => {
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                        <h3 className="text-lg font-semibold mb-1">
                           Premium Eyebrow & Lash Listing {index + 1}
                         </h3>
                         
-                        <p className="text-sm text-gray-500 mb-2">
+                        <p className="text-sm text-gray-600 mb-2">
                           Specialized brow and lash services
                         </p>
                         

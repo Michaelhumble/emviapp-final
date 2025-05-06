@@ -60,15 +60,15 @@ const HairListingsSection: React.FC = () => {
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
-                      <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                      <h3 className="text-lg font-semibold mb-1">
                         Luxury Hair Studio {index + 1}
                       </h3>
                       
-                      <p className="text-sm text-gray-500 mb-2 font-inter">
+                      <p className="text-sm text-gray-600 mb-2">
                         Premium hair salon space
                       </p>
                       
-                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
                         Elegant salon space with high-end finishes, crystal chandeliers, and luxurious styling chairs.
                       </p>
                       
@@ -102,15 +102,15 @@ const HairListingsSection: React.FC = () => {
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                        <h3 className="text-lg font-semibold mb-1">
                           Luxury Hair Studio {index + 1}
                         </h3>
                         
-                        <p className="text-sm text-gray-500 mb-2 font-inter">
+                        <p className="text-sm text-gray-600 mb-2">
                           Premium hair salon space
                         </p>
                         
-                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
                           Elegant salon space with high-end finishes, crystal chandeliers, and luxurious styling chairs.
                         </p>
                         

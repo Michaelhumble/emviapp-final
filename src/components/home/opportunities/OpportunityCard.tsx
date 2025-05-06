@@ -71,11 +71,11 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
         </div>
         
         <CardContent className="p-5 flex flex-col flex-grow">
-          <h3 className="text-lg font-bold line-clamp-2 mb-1">
+          <h3 className="text-lg font-semibold mb-1">
             {listing.title || listing.company || "Untitled Opportunity"}
           </h3>
           
-          <p className="text-sm text-gray-500 mb-2">
+          <p className="text-sm text-gray-600 mb-2">
             {listing.location || "Location not specified"}
           </p>
           

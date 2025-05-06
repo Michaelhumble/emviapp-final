@@ -69,11 +69,11 @@ const TattooListingsSection = () => {
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
-                      <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                      <h3 className="text-lg font-semibold mb-1">
                         Tattoo Studio {index + 1}
                       </h3>
                       
-                      <p className="text-sm text-gray-500 mb-2">
+                      <p className="text-sm text-gray-600 mb-2">
                         Listing opening soon
                       </p>
                       
@@ -115,11 +115,11 @@ const TattooListingsSection = () => {
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                        <h3 className="text-lg font-semibold mb-1">
                           Tattoo Studio {index + 1}
                         </h3>
                         
-                        <p className="text-sm text-gray-500 mb-2">
+                        <p className="text-sm text-gray-600 mb-2">
                           Listing opening soon
                         </p>
                         
