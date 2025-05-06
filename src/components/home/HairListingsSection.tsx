@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,14 +24,9 @@ const HairListingsSection: React.FC = () => {
   return (
     <section className="py-16 bg-white">
       <div className="container px-4 mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-4 text-gray-900">
-            Hair Salon Listings — Premium Spaces
-          </h2>
-          <p className="text-lg font-inter text-gray-600 max-w-3xl mx-auto">
-            Explore luxury hair salon spaces and opportunities. Connect with premium establishments.
-          </p>
-        </div>
+        <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-6">
+          Hair Listings — Premium Spaces
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {hairSalonImages.map((imageSrc, index) => (

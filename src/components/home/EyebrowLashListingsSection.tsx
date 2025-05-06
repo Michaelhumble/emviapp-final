@@ -25,7 +25,9 @@ const EyebrowLashListingsSection = () => {
   return (
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Eyebrow & Lash Listings — Preview Spaces</h2>
+        <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-6">
+          Eyebrow & Lash Listings — Preview Spaces
+        </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {eyebrowLashImages.map((imageSrc, index) => (

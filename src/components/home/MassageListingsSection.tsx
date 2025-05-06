@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,12 +24,9 @@ const MassageListingsSection: React.FC = () => {
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-6">
           Massage Listings — Preview Spaces
         </h2>
-        <p className="text-center text-gray-600 mb-12">
-          Explore premium massage studios and wellness spaces. Listings opening soon.
-        </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {massageStudioImages.map((imageSrc, index) => (
