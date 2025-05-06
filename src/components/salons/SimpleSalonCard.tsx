@@ -33,10 +33,7 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
       }
       
       // Only use fallbacks if truly no image is available
-      const category = salon.category || determineSalonCategory(
-        safeGetListingProperty(salon, 'description', ''),
-        safeGetListingProperty(salon, 'name', '')
-      );
+      const category = salon.category || determineSalonCategory();
       
       return getDefaultSalonImage(category, salon.isPremium || false);
     } catch (error) {

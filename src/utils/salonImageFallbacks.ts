@@ -1,6 +1,6 @@
 
 // Define categories for salon types to ensure appropriate image selection
-export type SalonCategory = 'nail' | 'hair' | 'lash' | 'brow' | 'spa' | 'massage' | 'beauty' | 'generic';
+export type SalonCategory = 'nail' | 'hair' | 'lash' | 'brow' | 'spa' | 'massage' | 'beauty' | 'generic' | 'barber';
 
 // Import our specialized image utilities
 import { getHairSalonImage, isHairSalon } from '@/utils/hairSalonImages';
@@ -12,45 +12,8 @@ import { getMassageSalonImage, isMassageSpa } from '@/utils/massageSalonImages';
  * Determines the most appropriate salon category based on description or name
  * This helps select the right fallback images
  */
-export const determineSalonCategory = (description: string, name: string): SalonCategory => {
-  const combinedText = (description + ' ' + name).toLowerCase();
-  
-  // Check for hair salon indicators
-  if (isHairSalon(name, description)) {
-    return 'hair';
-  }
-  
-  // Check for lash salon indicators
-  if (isLashSalon(name, description)) {
-    return 'lash';
-  }
-  
-  // Check for brow salon indicators
-  if (isBrowSalon(name, description)) {
-    return 'brow';
-  }
-  
-  // Check for nail salon indicators
-  if (isNailSalon(name, description)) {
-    return 'nail';
-  }
-  
-  // Check for massage/spa indicators
-  if (isMassageSpa(name, description)) {
-    return 'massage';
-  }
-  
-  // Check for spa indicators
-  if (
-    combinedText.includes('spa') || 
-    combinedText.includes('massage') || 
-    combinedText.includes('facial') ||
-    combinedText.includes('treatment')
-  ) {
-    return 'spa';
-  }
-  
-  // Default to generic beauty category
+export const determineSalonCategory = (): SalonCategory => {
+  // Default to generic beauty category as barber has been deprecated
   return 'beauty';
 };
 
@@ -82,6 +45,9 @@ export const getDefaultSalonImage = (category: SalonCategory, isPremium: boolean
     case 'beauty':
       // Use a general beauty salon image
       return "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png";
+    case 'barber':
+      // Barber has been deprecated, return a generic image for backwards compatibility
+      return "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png";
     default:
       // Fallback generic image
       return "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png";

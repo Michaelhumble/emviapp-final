@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import NailListingsSection from './NailListingsSection';
 import HairListingsSection from './HairListingsSection';
-import BarberPremiumListingsSection from './BarberPremiumListingsSection';
 
 const BeautyExchangeSection = () => {
   return (
@@ -73,8 +72,7 @@ const BeautyExchangeSection = () => {
         {/* Next, render the HairListingsSection */}
         <HairListingsSection />
         
-        {/* Then, render the new BarberPremiumListingsSection */}
-        <BarberPremiumListingsSection />
+        {/* Barber section has been removed */}
       </div>
     </section>
   );

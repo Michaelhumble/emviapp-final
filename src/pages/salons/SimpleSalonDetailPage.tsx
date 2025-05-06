@@ -1,222 +1,105 @@
 
-import React from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import { Button } from "@/components/ui/button";
-import { salonListings } from '@/data/salonData';
-import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
-import { useAuth } from '@/context/auth';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
-import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
-import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
+import SalonDetailContent from '@/components/salons/SalonDetailContent';
+import SalonListingCta from '@/components/salons/SalonListingCta';
+import SalonNotFound from '@/components/salon/SalonNotFound';
+import { Job } from '@/types/job';
+import ListingRouteGuard from '@/components/common/ListingRouteGuard';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { fetchSalonById } from '@/utils/salonFetcher';
 
-const SimpleSalonDetailPage = () => {
-  const { id } = useParams();
-  const { isSignedIn } = useAuth();
-  const location = useLocation();
-  
-  // First check Vietnamese listings, then regular listings
-  const salon = vietnameseSalonListings.find(s => s.id === id) || 
-               salonListings.find(s => s.id === id);
+/**
+ * Enhanced SalonDetailPage component with robust validation and a single data source
+ */
+const SalonDetailPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const [salon, setSalon] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
-  if (!salon) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="font-playfair text-2xl font-bold mb-4">Salon Not Found</h1>
-          <Link to="/salons">
-            <Button>Return to Listings</Button>
-          </Link>
-        </div>
-      </Layout>
-    );
-  }
+  useEffect(() => {
+    const loadSalon = async () => {
+      if (!id) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
 
-  // Use Vietnamese content when available
-  const title = salon.vietnamese_title || salon.name;
-  const description = salon.vietnamese_description || salon.description;
-  const isVietnamese = salon.is_vietnamese_listing;
-  const backToListingsText = isVietnamese ? "← Trở lại danh sách" : "← Back to Listings";
+      setLoading(true);
+      try {
+        const { salon: salonData, error: hasError, validId } = await fetchSalonById(id);
+        
+        if (hasError || !validId) {
+          setError(true);
+          toast.error('This salon listing could not be found');
+          navigate('/salon-not-found');
+        } else {
+          setSalon(salonData);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Check if this is a barbershop first (prioritize barber category)
-  const isBarber = isBarberShop(salon.name, salon.description);
-  
-  // Check if this is a hair salon second
-  const isHair = !isBarber && isHairSalon(salon.name, salon.description);
-  
-  // Then check if this is a nail salon 
-  const isNail = !isBarber && !isHair && isNailSalon(salon.name, salon.description);
+    loadSalon();
+  }, [id, navigate]);
 
-  // IMPORTANT: Use the stored imageUrl from the salon object
-  // If there's no stored imageUrl, generate one using the same logic as the listing card
-  let displayImageUrl = salon.imageUrl;
-  if (isBarber && !displayImageUrl) {
-    displayImageUrl = getBarberShopImage(salon.isPremium, salon.featured);
-  } else if (isHair && !displayImageUrl) {
-    displayImageUrl = getHairSalonImage(salon.isPremium, salon.featured);
-  } else if (isNail && !displayImageUrl) {
-    displayImageUrl = getNailSalonImage(isVietnamese, salon.isPremium, salon.featured);
-  }
+  // Enhanced loading state with skeleton
+  const LoadingState = () => (
+    <div className="container mx-auto py-12">
+      <div className="flex flex-col items-center justify-center p-8">
+        <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+        <p className="text-lg text-muted-foreground">Loading salon details...</p>
+      </div>
+    </div>
+  );
 
-  // Construct the path to return to after login
-  const currentPath = location.pathname;
+  // Back button component
+  const BackToListings = () => (
+    <div className="container mx-auto pt-6">
+      <Link to="/salons">
+        <Button variant="outline" className="mb-4 flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Listings</span>
+        </Button>
+      </Link>
+    </div>
+  );
 
   return (
-    <Layout>
-      <Helmet>
-        <title>{title} | EmviApp</title>
-        <meta name="description" content={description} />
-      </Helmet>
-
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <Link to="/salons" className="text-purple-600 hover:text-purple-700 mb-6 inline-block">
-            {backToListingsText}
-          </Link>
-          
-          <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-            {/* Hero image - Use ImageWithFallback for better consistency */}
-            {displayImageUrl ? (
-              <div className="h-64 overflow-hidden">
-                <ImageWithFallback
-                  src={displayImageUrl}
-                  alt={title || (
-                    isBarber ? "Barbershop" :
-                    isHair ? "Hair Salon" :
-                    isNail ? "Nail Salon" : "Salon"
-                  )}
-                  className="w-full h-full object-cover"
-                  priority={true}
-                />
-              </div>
-            ) : (
-              <div 
-                className="h-64 bg-cover bg-center"
-                style={{ backgroundImage: `url(${salon.imageUrl})` }}
-              />
-            )}
-            
-            {/* Content */}
-            <div className="p-6">
-              {isVietnamese && (
-                <div className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                  Vietnamese Listing
-                </div>
-              )}
-              {isBarber && (
-                <div className="inline-block bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                  Barbershop
-                </div>
-              )}
-              {isHair && (
-                <div className="inline-block bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                  Hair Salon
-                </div>
-              )}
-              
-              <h1 className="font-playfair text-3xl font-bold mb-2">{title}</h1>
-              <p className="text-gray-600 mb-4">{salon.location}</p>
-              
-              <div className="flex items-center mb-6">
-                <p className="text-2xl font-semibold text-gray-800">
-                  {salon.price === 0 ? "Giá thương lượng" : new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    maximumFractionDigits: 0,
-                  }).format(salon.price)}
-                </p>
-                {salon.income_range && (
-                  <span className="ml-3 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                    Income: {salon.income_range}
-                  </span>
-                )}
-              </div>
-              
-              <div className="prose max-w-none">
-                <p className="text-gray-700 whitespace-pre-line">{description}</p>
-              </div>
-              
-              {/* Features */}
-              {salon.features && salon.features.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="font-semibold text-lg mb-3">
-                    {isVietnamese ? "Thông tin chi tiết" : "Features"}
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {salon.features.map((feature, index) => (
-                      <span 
-                        key={index}
-                        className="bg-gray-100 rounded-full px-3 py-1 text-sm"
-                      >
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Contact info */}
-              <div className="mt-8 pt-6 border-t">
-                <h3 className="font-semibold text-lg mb-3">
-                  {isVietnamese ? "Liên hệ" : "Contact Information"}
-                </h3>
-                
-                {isSignedIn && salon.contact_info ? (
-                  <div className="bg-white p-4 rounded-lg border">
-                    {salon.contact_info.owner_name && (
-                      <p className="mb-2">
-                        <span className="text-gray-500 mr-2">
-                          {isVietnamese ? "Người bán:" : "Owner:"}
-                        </span>
-                        {salon.contact_info.owner_name}
-                      </p>
-                    )}
-                    {salon.contact_info.phone && (
-                      <p className="mb-2">
-                        <span className="text-gray-500 mr-2">
-                          {isVietnamese ? "Điện thoại:" : "Phone:"}
-                        </span>
-                        <a href={`tel:${salon.contact_info.phone}`} className="text-purple-600 hover:text-purple-800">
-                          {salon.contact_info.phone}
-                        </a>
-                      </p>
-                    )}
-                    {salon.contact_info.email && (
-                      <p className="mb-2">
-                        <span className="text-gray-500 mr-2">Email:</span>
-                        <a href={`mailto:${salon.contact_info.email}`} className="text-purple-600 hover:text-purple-800">
-                          {salon.contact_info.email}
-                        </a>
-                      </p>
-                    )}
-                    {salon.contact_info.zalo && (
-                      <p>
-                        <span className="text-gray-500 mr-2">Zalo:</span>
-                        {salon.contact_info.zalo}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-500 text-sm mb-2">
-                      {isVietnamese ? "Vui lòng đăng nhập để xem thông tin liên hệ" : "Please sign in to see contact details"}
-                    </p>
-                    <Link to={`/sign-in?redirect=${encodeURIComponent(currentPath)}`}>
-                      <Button size="sm">
-                        {isVietnamese ? "Đăng nhập" : "Sign In"}
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
+    <ListingRouteGuard 
+      listingType="salon"
+      notifyOnInvalid={true}
+      loadingComponent={
+        <Layout>
+          <div className="min-h-screen bg-background">
+            <LoadingState />
           </div>
+        </Layout>
+      }
+    >
+      <Layout>
+        <div className="min-h-screen bg-background">
+          {loading ? (
+            <LoadingState />
+          ) : error ? (
+            <SalonNotFound />
+          ) : (
+            <>
+              <BackToListings />
+              <SalonDetailContent salon={salon} />
+              <SalonListingCta />
+            </>
+          )}
         </div>
-      </div>
-    </Layout>
+      </Layout>
+    </ListingRouteGuard>
   );
 };
 
-export default SimpleSalonDetailPage;
+export default SalonDetailPage;

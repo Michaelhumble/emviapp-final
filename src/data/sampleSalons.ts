@@ -1,4 +1,3 @@
-
 import { Salon } from "@/types/salon";
 
 export const sampleSalons: Salon[] = [
@@ -90,7 +89,7 @@ export const sampleSalons: Salon[] = [
     features: ["6 barber chairs", "Waiting area", "Beverage service"],
     square_feet: 1100,
     monthly_rent: 3200,
-    category: "barber",
+    category: "beauty",
     city: "Los Angeles",
     neighborhood: "Downtown",
     rating: 4.8,
@@ -197,3 +196,6 @@ export const sampleSalons: Salon[] = [
     created_at: "2023-04-25T14:05:00Z"
   }
 ];
+
+// Export vietnameseSalonListings too to keep them available
+export { vietnameseSalonListings } from './vietnameseSalonListings';
