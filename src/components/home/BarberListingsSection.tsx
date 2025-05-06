@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
-// Define the barber shop images with all 5 uploaded images
+// Define the barber shop images with your 3 new uploaded images
 const barberShopImages = [
-  "/lovable-uploads/e46083ac-d79b-46b0-97f4-8fbec83362e2.png", // First image
-  "/lovable-uploads/baef37ea-b714-4178-8075-a9c8d181055a.png", // Second image
-  "/lovable-uploads/90e01456-efd5-4523-8034-5c1d321949be.png", // Third image
-  "/lovable-uploads/bcbd2ff0-0df4-4249-b68e-2e5e0de0fbb1.png", // Fourth image
-  "/lovable-uploads/91f0b5d3-f1ed-461a-8623-51fedf676fe2.png"  // Fifth image
+  "/lovable-uploads/9e288590-a5f0-4b19-b6ff-4c23c91dc40d.png", // First new image
+  "/lovable-uploads/cc322576-0a6c-4be9-a292-1a0cc9e21d2f.png", // Second new image
+  "/lovable-uploads/406f9179-5206-48bb-93ee-017acedaeae8.png", // Third new image
+  "/lovable-uploads/e46083ac-d79b-46b0-97f4-8fbec83362e2.png", // Previous image
+  "/lovable-uploads/baef37ea-b714-4178-8075-a9c8d181055a.png", // Previous image
 ];
 
 const BarberListingsSection: React.FC = () => {
