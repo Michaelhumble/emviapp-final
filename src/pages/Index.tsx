@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -57,9 +56,6 @@ const Index = () => {
       {/* 1. Hero section as first */}
       <Hero />
       
-      {/* Vietnamese Nail Listings Section */}
-      <NailListingsSection />
-      
       {/* 2. Emvi Beauty Connections™ - Contains all listing sections */}
       <BeautyExchangeSection />
       
@@ -96,4 +92,3 @@ const Index = () => {
 };
 
 export default Index;
-
