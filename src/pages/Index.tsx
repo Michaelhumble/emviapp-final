@@ -27,7 +27,6 @@ import BarberListingsSection from "@/components/home/BarberListingsSection";
 import SkincareListingsSection from "@/components/home/SkincareListingsSection";
 import MakeupListingsSection from "@/components/home/MakeupListingsSection";
 import TattooListingsSection from "@/components/home/TattooListingsSection";
-import NailListingsSection from "@/components/home/NailListingsSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
