@@ -1,4 +1,3 @@
-
 import { ArrowRight, Building, Calendar, MapPin, Star, TrendingUp, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,10 +48,7 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
     }
     
     // Only if no image exists, use appropriate fallback based on salon type
-    const salonCategory = determineSalonCategory(
-      salon.description?.en || '',
-      salon.name
-    );
+    const salonCategory = determineSalonCategory();
     
     // Use category-based fallback
     return `/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png`;

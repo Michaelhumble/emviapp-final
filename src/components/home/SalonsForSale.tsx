@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +14,7 @@ import ValidatedLink from '@/components/common/ValidatedLink';
 // Transform job data to match the Job type with enhanced image selection
 const transformSalonData = (job: any): Job => {
   // Determine the appropriate salon category for image selection
-  const category = determineSalonCategory(job.description || '', job.title || job.name || '');
+  const category = determineSalonCategory();
   
   // Get an appropriate image based on salon type
   let imageUrl = job.image || job.imageUrl || '';
