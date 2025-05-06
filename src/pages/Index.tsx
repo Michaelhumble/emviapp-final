@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -74,7 +73,7 @@ const Index = () => {
       {/* 7. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* Add the new Makeup Listings Section after Hair Listings Section */}
+      {/* Add the new Makeup Listings Section */}
       <MakeupListingsSection />
       
       {/* 9. Founder Message */}

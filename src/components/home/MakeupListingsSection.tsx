@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Container } from '@/components/ui/container';
 
 const MakeupListingsSection: React.FC = () => {
   // Array of makeup studio images
@@ -15,7 +16,7 @@ const MakeupListingsSection: React.FC = () => {
 
   return (
     <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
+      <Container>
         <div className="text-center max-w-3xl mx-auto mb-10">
           <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2">
             Makeup Studios & Artists
@@ -53,7 +54,7 @@ const MakeupListingsSection: React.FC = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 };
