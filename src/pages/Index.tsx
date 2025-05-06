@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -27,6 +28,7 @@ import BarberListingsSection from "@/components/home/BarberListingsSection";
 import SkincareListingsSection from "@/components/home/SkincareListingsSection";
 import MakeupListingsSection from "@/components/home/MakeupListingsSection";
 import TattooListingsSection from "@/components/home/TattooListingsSection";
+import VietnameseSalonSalesSection from "@/components/home/VietnameseSalonSalesSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -58,25 +60,28 @@ const Index = () => {
       {/* 2. Emvi Beauty Connections™ - Contains all listing sections */}
       <BeautyExchangeSection />
       
-      {/* 3. Why Artists & Salons Trust Us */}
+      {/* 3. Vietnamese Salon Sales Section - NEW */}
+      <VietnameseSalonSalesSection />
+      
+      {/* 4. Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* 4. Let AI Do the Hard Work */}
+      {/* 5. Let AI Do the Hard Work */}
       <EnhancedAIFeatures />
       
       {/* 5. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
-      {/* 6. No Matter Your Craft — We Know the Struggle */}
+      {/* 7. No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* 7. Let's Experience EmviApp Together - bilingual content */}
+      {/* 8. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* 8. Founder Message */}
+      {/* 9. Founder Message */}
       <FounderMessage />
       
-      {/* 9. Final CTA */}
+      {/* 10. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
