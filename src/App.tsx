@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -6,16 +5,13 @@ import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
-import SimpleSalonsPage from "@/pages/salons/SimpleSalonsPage";
-import SimpleSalonDetailPage from "@/pages/salons/SimpleSalonDetailPage";
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
-import SalonsFinal from "@/pages/salons/SalonsFinal";  // Import SalonsFinal directly
-import StableSalonPage from "@/pages/salons/StableSalonPage"; // Import the stable wrapper
+import StableSalonPage from "@/pages/salons/StableSalonPage"; // Keep the stable wrapper
 
 function App() {
   const location = useLocation();
@@ -37,7 +33,7 @@ function App() {
               <RouteLogger />
               <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                 <Routes>
-                  {/* Explicitly define the /salons route to use StableSalonPage which includes SalonsFinal */}
+                  {/* Explicitly define the /salons route to use StableSalonPage */}
                   <Route path="/salons" element={<StableSalonPage />} />
                   
                   {/* Keep existing routes */}

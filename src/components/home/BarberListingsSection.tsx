@@ -1,18 +1,27 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
-// Use the newly uploaded barbershop images
-const barberShopImages = [
-  "/lovable-uploads/fb41198f-fd0f-4562-8338-ee94ac01a8f8.png",
-  "/lovable-uploads/0bbbfeba-7132-4060-9a23-404a7859b082.png", 
-  "/lovable-uploads/4edfaa59-6542-4bad-9e6b-1cd0d7ae9113.png",
-  "/lovable-uploads/234cc568-7237-4f55-9ae3-272a74508d1c.png",
-  "/lovable-uploads/e65d38e6-6072-4b4b-b6ed-0a81c2e1a44e.png"
-];
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
+import ValidatedLink from '@/components/common/ValidatedLink';
+import AuthAction from '@/components/common/AuthAction';
+import { useNavigate } from 'react-router-dom';
+import { useSession } from '@/context/auth/hooks/useSession';
+import { barberShopImages, cardDestinations } from '@/utils/beautyExchangeImages';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const BarberListingsSection: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useSession();
+  
+  const handleCardClick = (destinationPath: string) => {
+    return async () => {
+      return true; // Return true to allow navigation after auth
+    };
+  };
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -27,30 +36,99 @@ const BarberListingsSection: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {barberShopImages.map((imageSrc, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-md transition-all duration-300">
-              <div className="relative">
-                <div className="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={imageSrc} 
-                    alt={`Premium Barber Space ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                
-                <div className="absolute top-2 right-2">
-                  <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
-                    Coming Soon
-                  </Badge>
-                </div>
-              </div>
-              
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-lg truncate">Premium Barber Space {index + 1}</h3>
-                <div className="flex items-center text-gray-500 my-1.5 text-sm">
-                  <span className="opacity-75">Luxury barbershop with premium finishes</span>
-                </div>
-              </CardContent>
-            </Card>
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className="h-full"
+            >
+              <AuthAction
+                onAction={handleCardClick(cardDestinations.barber[index].path)}
+                redirectPath={cardDestinations.barber[index].path}
+                customTitle="Sign in to view listing details"
+                fallbackContent={
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <ImageWithFallback 
+                        src={imageSrc} 
+                        alt={`Premium Barber Space ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                        category="barber"
+                      />
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                        Premium Barber Space {index + 1}
+                      </h3>
+                      
+                      <p className="text-sm text-gray-500 mb-2">
+                        Premium barbershop listing
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Luxury barbershop with premium finishes, custom chairs, and high-end amenities.
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                          Coming Soon
+                        </Badge>
+
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> More Info
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                }
+                authenticatedContent={
+                  <ValidatedLink 
+                    to={cardDestinations.barber[index].path}
+                    listingId={cardDestinations.barber[index].id}
+                    listingType={cardDestinations.barber[index].type as "salon" | "job"}
+                    className="no-underline block h-full"
+                  >
+                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <ImageWithFallback 
+                          src={imageSrc} 
+                          alt={`Premium Barber Space ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                          category="barber"
+                        />
+                      </div>
+                      
+                      <CardContent className="p-5 flex flex-col flex-grow">
+                        <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                          Premium Barber Space {index + 1}
+                        </h3>
+                        
+                        <p className="text-sm text-gray-500 mb-2">
+                          Premium barbershop listing
+                        </p>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                          Luxury barbershop with premium finishes, custom chairs, and high-end amenities.
+                        </p>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                          <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                            Coming Soon
+                          </Badge>
+
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Eye className="h-3.5 w-3.5" /> View Details
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </ValidatedLink>
+                }
+              />
+            </motion.div>
           ))}
         </div>
       </div>

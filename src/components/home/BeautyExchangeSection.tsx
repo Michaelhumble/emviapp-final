@@ -5,7 +5,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import NailListingsSection from './NailListingsSection';
 import HairListingsSection from './HairListingsSection';
-import BarberPremiumListingsSection from './BarberPremiumListingsSection';
+import BarberListingsSection from './BarberListingsSection';
+import MakeupListingsSection from './MakeupListingsSection';
+import SkincareListingsSection from './SkincareListingsSection';
+import TattooListingsSection from './TattooListingsSection';
 
 const BeautyExchangeSection = () => {
   return (
@@ -67,14 +70,13 @@ const BeautyExchangeSection = () => {
           </div>
         </div>
 
-        {/* First, render the NailListingsSection */}
+        {/* All listing sections */}
         <NailListingsSection />
-        
-        {/* Next, render the HairListingsSection */}
         <HairListingsSection />
-        
-        {/* Then, render the new BarberPremiumListingsSection */}
-        <BarberPremiumListingsSection />
+        <BarberListingsSection />
+        <MakeupListingsSection />
+        <SkincareListingsSection />
+        <TattooListingsSection />
       </div>
     </section>
   );

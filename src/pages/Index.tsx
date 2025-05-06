@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -22,7 +21,6 @@ import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
-import BeautyExchangeLayout from "@/components/home/BeautyExchangeLayout";
 
 // Listing section components
 import BarberListingsSection from "@/components/home/BarberListingsSection";
@@ -57,7 +55,7 @@ const Index = () => {
       {/* 1. Hero section as first */}
       <Hero />
       
-      {/* 2. Emvi Beauty Connections™ */}
+      {/* 2. Emvi Beauty Connections™ - Contains all listing sections */}
       <BeautyExchangeSection />
       
       {/* 3. Why Artists & Salons Trust Us */}
@@ -75,13 +73,10 @@ const Index = () => {
       {/* 7. Let's Experience EmviApp Together - bilingual content */}
       <MissingPieceSection />
       
-      {/* 8. Barber Listings Section */}
-      <BarberListingsSection />
-      
-      {/* 9. Founder Message */}
+      {/* 8. Founder Message */}
       <FounderMessage />
       
-      {/* 10. Final CTA */}
+      {/* 9. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (

@@ -1,9 +1,27 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
+import ValidatedLink from '@/components/common/ValidatedLink';
+import AuthAction from '@/components/common/AuthAction';
+import { useNavigate } from 'react-router-dom';
+import { useSession } from '@/context/auth/hooks/useSession';
+import { makeupStudioImages, cardDestinations } from '@/utils/beautyExchangeImages';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const MakeupListingsSection: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useSession();
+  
+  const handleCardClick = (destinationPath: string) => {
+    return async () => {
+      return true; // Return true to allow navigation after auth
+    };
+  };
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -17,27 +35,100 @@ const MakeupListingsSection: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-md transition-all duration-300">
-              <div className="relative">
-                <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-400 text-xs">Placeholder Image</span>
-                </div>
-                
-                <div className="absolute top-2 right-2">
-                  <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
-                    Coming Soon
-                  </Badge>
-                </div>
-              </div>
-              
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-lg truncate">Makeup Space {index + 1}</h3>
-                <div className="flex items-center text-gray-500 my-1.5 text-sm">
-                  <span className="opacity-75">Placeholder listing</span>
-                </div>
-              </CardContent>
-            </Card>
+          {makeupStudioImages.map((imageSrc, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className="h-full"
+            >
+              <AuthAction
+                onAction={handleCardClick(cardDestinations.makeup[index].path)}
+                redirectPath={cardDestinations.makeup[index].path}
+                customTitle="Sign in to view makeup artist details"
+                fallbackContent={
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <ImageWithFallback 
+                        src={imageSrc} 
+                        alt={`Makeup Studio ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                        category="makeup"
+                      />
+                    </div>
+                    
+                    <CardContent className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                        Makeup Studio {index + 1}
+                      </h3>
+                      
+                      <p className="text-sm text-gray-500 mb-2">
+                        Premium makeup services
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Professional makeup studio specializing in bridal, editorial, and special event makeup.
+                      </p>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                        <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                          Coming Soon
+                        </Badge>
+
+                        <Button size="sm" variant="outline" className="gap-1">
+                          <Eye className="h-3.5 w-3.5" /> More Info
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                }
+                authenticatedContent={
+                  <ValidatedLink 
+                    to={cardDestinations.makeup[index].path}
+                    listingId={cardDestinations.makeup[index].id}
+                    listingType={cardDestinations.makeup[index].type as "salon" | "job"}
+                    className="no-underline block h-full"
+                  >
+                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <ImageWithFallback 
+                          src={imageSrc} 
+                          alt={`Makeup Studio ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                          category="makeup"
+                        />
+                      </div>
+                      
+                      <CardContent className="p-5 flex flex-col flex-grow">
+                        <h3 className="text-lg font-bold line-clamp-2 mb-1">
+                          Makeup Studio {index + 1}
+                        </h3>
+                        
+                        <p className="text-sm text-gray-500 mb-2">
+                          Premium makeup services
+                        </p>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                          Professional makeup studio specializing in bridal, editorial, and special event makeup.
+                        </p>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                          <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                            Coming Soon
+                          </Badge>
+
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <Eye className="h-3.5 w-3.5" /> View Details
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </ValidatedLink>
+                }
+              />
+            </motion.div>
           ))}
         </div>
       </div>
