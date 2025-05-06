@@ -71,8 +71,6 @@ const BeautyExchangeSection = () => {
         
         {/* Next, render the HairListingsSection */}
         <HairListingsSection />
-        
-        {/* Barber section has been removed */}
       </div>
     </section>
   );
