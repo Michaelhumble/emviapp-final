@@ -1,3 +1,4 @@
+
 /**
  * Centralized storage for Beauty Exchange image paths
  * Contains arrays for all listing sections
@@ -50,11 +51,11 @@ export const makeupStudioImages = [
 
 // Skincare clinic images
 export const skincareClinicImages = [
-  "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
-  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
-  "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
-  "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
-  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png" // Fixed duplicate entry
+  "/lovable-uploads/07a52895-c8c1-4314-8dff-23302713a94c.png",
+  "/lovable-uploads/fe23ecb0-d76c-40b7-bd8d-dff3795aa7ab.png",
+  "/lovable-uploads/ed3cbc66-4a05-4cd5-af76-fb80fed1c0f7.png",
+  "/lovable-uploads/5f0aa367-9d6b-448b-83d8-021e4cb082af.png",
+  "/lovable-uploads/23674144-d433-4b00-a740-88128dc02396.png"
 ];
 
 // Standardized card destinations for all listing types
