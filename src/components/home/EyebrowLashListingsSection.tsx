@@ -58,14 +58,6 @@ const EyebrowLashListingsSection = () => {
                         className="w-full h-full object-cover"
                         category="lash"
                       />
-                      
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-                        <div className="absolute bottom-3 left-3">
-                          <Badge className="bg-white text-black hover:bg-white rounded-full">
-                            Premium
-                          </Badge>
-                        </div>
-                      </div>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
@@ -77,10 +69,14 @@ const EyebrowLashListingsSection = () => {
                         Specialized brow and lash services
                       </p>
                       
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Expert brow and lash artists offering premium services in a luxurious setting.
+                      </p>
+                      
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <span className="text-xs text-gray-400">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
                           Featured
-                        </span>
+                        </Badge>
 
                         <Button size="sm" variant="outline" className="gap-1">
                           <Eye className="h-3.5 w-3.5" /> View Details
@@ -104,14 +100,6 @@ const EyebrowLashListingsSection = () => {
                           className="w-full h-full object-cover"
                           category="lash"
                         />
-                        
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-                          <div className="absolute bottom-3 left-3">
-                            <Badge className="bg-white text-black hover:bg-white rounded-full">
-                              Premium
-                            </Badge>
-                          </div>
-                        </div>
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
@@ -123,10 +111,14 @@ const EyebrowLashListingsSection = () => {
                           Specialized brow and lash services
                         </p>
                         
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                          Expert brow and lash artists offering premium services in a luxurious setting.
+                        </p>
+                        
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <span className="text-xs text-gray-400">
+                          <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
                             Featured
-                          </span>
+                          </Badge>
 
                           <Button size="sm" variant="outline" className="gap-1">
                             <Eye className="h-3.5 w-3.5" /> View Details

@@ -36,7 +36,7 @@ const BarberPremiumListingsSection: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-4 text-gray-900">
             Barber Shop Listings — Premium Spaces
           </h2>
-          <p className="text-lg font-inter text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Explore luxury barber shop spaces and opportunities. Connect with premium establishments.
           </p>
         </div>
@@ -64,15 +64,15 @@ const BarberPremiumListingsSection: React.FC = () => {
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
-                      <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                      <h3 className="text-lg font-semibold mb-1">
                         Premium Barber Studio {index + 1}
                       </h3>
                       
-                      <p className="text-sm text-gray-500 mb-2 font-inter">
+                      <p className="text-sm text-gray-600 mb-2">
                         Premium barber shop space
                       </p>
                       
-                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
                         Elegant barber shop with premium finishes and state-of-the-art equipment.
                       </p>
                       
@@ -103,15 +103,15 @@ const BarberPremiumListingsSection: React.FC = () => {
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                        <h3 className="text-lg font-semibold mb-1">
                           Premium Barber Studio {index + 1}
                         </h3>
                         
-                        <p className="text-sm text-gray-500 mb-2 font-inter">
+                        <p className="text-sm text-gray-600 mb-2">
                           Premium barber shop space
                         </p>
                         
-                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow font-inter">
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
                           Elegant barber shop with premium finishes and state-of-the-art equipment.
                         </p>
                         

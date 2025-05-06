@@ -50,7 +50,7 @@ const TattooListingsSection = () => {
                 redirectPath={cardDestinations.tattoo[index].path}
                 customTitle="Sign in to view listing details"
                 fallbackContent={
-                  <Card className="overflow-hidden h-full flex flex-col">
+                  <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100">
                       <ImageWithFallback 
                         src={imageSrc} 
@@ -58,14 +58,6 @@ const TattooListingsSection = () => {
                         className="w-full h-full object-cover"
                         category="tattoo"
                       />
-                      
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-                        <div className="absolute bottom-3 left-3">
-                          <Badge className="bg-white text-black hover:bg-white rounded-full">
-                            Coming Soon
-                          </Badge>
-                        </div>
-                      </div>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
@@ -77,10 +69,14 @@ const TattooListingsSection = () => {
                         Listing opening soon
                       </p>
                       
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Premium tattoo studio offering custom designs and professional services.
+                      </p>
+                      
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <span className="text-xs text-gray-400">
-                          Preview
-                        </span>
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                          Coming Soon
+                        </Badge>
 
                         <Button size="sm" variant="outline" className="gap-1">
                           <Eye className="h-3.5 w-3.5" /> More Info
@@ -96,7 +92,7 @@ const TattooListingsSection = () => {
                     listingType={cardDestinations.tattoo[index].type as "salon" | "job"}
                     className="no-underline block h-full"
                   >
-                    <Card className="overflow-hidden h-full flex flex-col">
+                    <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                       <div className="relative aspect-video bg-gray-100">
                         <ImageWithFallback 
                           src={imageSrc} 
@@ -104,14 +100,6 @@ const TattooListingsSection = () => {
                           className="w-full h-full object-cover"
                           category="tattoo"
                         />
-                        
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-                          <div className="absolute bottom-3 left-3">
-                            <Badge className="bg-white text-black hover:bg-white rounded-full">
-                              Coming Soon
-                            </Badge>
-                          </div>
-                        </div>
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
@@ -123,13 +111,17 @@ const TattooListingsSection = () => {
                           Listing opening soon
                         </p>
                         
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                          Premium tattoo studio offering custom designs and professional services.
+                        </p>
+                        
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <span className="text-xs text-gray-400">
-                            Preview
-                          </span>
+                          <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+                            Coming Soon
+                          </Badge>
 
                           <Button size="sm" variant="outline" className="gap-1">
-                            <Eye className="h-3.5 w-3.5" /> More Info
+                            <Eye className="h-3.5 w-3.5" /> View Details
                           </Button>
                         </div>
                       </CardContent>

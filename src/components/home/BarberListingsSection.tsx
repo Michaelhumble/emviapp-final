@@ -73,7 +73,7 @@ const BarberListingsSection: React.FC = () => {
                       </p>
                       
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                        <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
                           Coming Soon
                         </Badge>
 
@@ -115,7 +115,7 @@ const BarberListingsSection: React.FC = () => {
                         </p>
                         
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                          <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
                             Coming Soon
                           </Badge>
 

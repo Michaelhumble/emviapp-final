@@ -57,12 +57,16 @@ const MakeupListingsSection: React.FC = () => {
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
-                      <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                      <h3 className="text-lg font-semibold mb-1">
                         Makeup Studio {index + 1}
                       </h3>
                       
-                      <p className="text-sm text-gray-500 mb-2 font-inter">
+                      <p className="text-sm text-gray-600 mb-2">
                         Premium makeup services
+                      </p>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                        Professional makeup studio specializing in bridal, editorial, and special event makeup.
                       </p>
                       
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
@@ -95,12 +99,16 @@ const MakeupListingsSection: React.FC = () => {
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold font-playfair line-clamp-2 mb-1">
+                        <h3 className="text-lg font-semibold mb-1">
                           Makeup Studio {index + 1}
                         </h3>
                         
-                        <p className="text-sm text-gray-500 mb-2 font-inter">
+                        <p className="text-sm text-gray-600 mb-2">
                           Premium makeup services
+                        </p>
+                        
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
+                          Professional makeup studio specializing in bridal, editorial, and special event makeup.
                         </p>
                         
                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">

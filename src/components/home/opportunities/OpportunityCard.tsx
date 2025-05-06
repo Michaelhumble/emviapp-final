@@ -33,9 +33,6 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
-  // Log image path for debugging
-  console.log(`Rendering card ${listing.title} with image:`, listing.image);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -60,13 +57,11 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
             </div>
           )}
           
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-            <div className="absolute bottom-3 left-3">
-              <Badge className="bg-white text-black hover:bg-white rounded-full">
-                {listing.type === 'salon' ? 'Salon' : 
-                 listing.type === 'opportunity' ? 'Booth Rental' : 'Job Opening'}
-              </Badge>
-            </div>
+          <div className="absolute bottom-3 left-3">
+            <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">
+              {listing.type === 'salon' ? 'Salon' : 
+               listing.type === 'opportunity' ? 'Booth Rental' : 'Job Opening'}
+            </Badge>
           </div>
         </div>
         
