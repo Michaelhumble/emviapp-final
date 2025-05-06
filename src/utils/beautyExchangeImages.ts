@@ -68,11 +68,11 @@ export const cardDestinations = {
     { id: "nail-5", type: "salon", path: "/salons/nail-5" }
   ],
   hair: [
-    { id: "hair-1", type: "salon", path: "/jobs/hair-1" },
+    { id: "hair-1", type: "salon", path: "/salons/hair-1" },
     { id: "hair-2", type: "job", path: "/jobs/hair-2" },
-    { id: "hair-3", type: "salon", path: "/jobs/hair-3" },
+    { id: "hair-3", type: "salon", path: "/salons/hair-3" },
     { id: "hair-4", type: "job", path: "/jobs/hair-4" },
-    { id: "hair-5", type: "salon", path: "/jobs/hair-5" }
+    { id: "hair-5", type: "salon", path: "/salons/hair-5" }
   ],
   barber: [
     { id: "barber-1", type: "salon", path: "/salons/barber-1" },

@@ -9,24 +9,8 @@ import ValidatedLink from '@/components/common/ValidatedLink';
 import AuthAction from '@/components/common/AuthAction';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/context/auth/hooks/useSession';
-
-// Define the paths to the currently uploaded hair salon images
-const hairSalonImages = [
-  "/lovable-uploads/565dbac0-48b7-4aaf-b1ad-7c97ca38e1e9.png",
-  "/lovable-uploads/d62af349-7eeb-443d-b168-7036cabfd2ac.png",
-  "/lovable-uploads/b8f0c457-76d8-46e9-9ee6-4869928cbea6.png",
-  "/lovable-uploads/05372b9b-5a24-4f86-82c8-e0681ed539eb.png", 
-  "/lovable-uploads/402f947b-3877-4d57-8ced-7191eb207b9d.png"
-];
-
-// Define destinations for each card
-const cardDestinations = [
-  { id: "hair-1", type: "salon", path: "/jobs/hair-1" },
-  { id: "hair-2", type: "job", path: "/jobs/hair-2" },
-  { id: "hair-3", type: "salon", path: "/jobs/hair-3" },
-  { id: "hair-4", type: "job", path: "/jobs/hair-4" },
-  { id: "hair-5", type: "salon", path: "/jobs/hair-5" }
-];
+import { hairSalonImages, cardDestinations } from '@/utils/beautyExchangeImages';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const HairListingsSection: React.FC = () => {
   const navigate = useNavigate();
@@ -51,7 +35,7 @@ const HairListingsSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {hairSalonImages.map((imageSrc, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -61,16 +45,17 @@ const HairListingsSection: React.FC = () => {
               className="h-full"
             >
               <AuthAction
-                onAction={handleCardClick(cardDestinations[index].path)}
-                redirectPath={cardDestinations[index].path}
+                onAction={handleCardClick(cardDestinations.hair[index].path)}
+                redirectPath={cardDestinations.hair[index].path}
                 customTitle="Sign in to view job details"
                 fallbackContent={
                   <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                      <img 
-                        src={hairSalonImages[index]} 
+                      <ImageWithFallback 
+                        src={imageSrc} 
                         alt={`Luxury Hair Salon ${index + 1}`} 
                         className="w-full h-full object-cover"
+                        category="hair"
                       />
                     </div>
                     
@@ -101,17 +86,18 @@ const HairListingsSection: React.FC = () => {
                 }
                 authenticatedContent={
                   <ValidatedLink 
-                    to={cardDestinations[index].path}
-                    listingId={cardDestinations[index].id}
-                    listingType={cardDestinations[index].type as "salon" | "job"}
+                    to={cardDestinations.hair[index].path}
+                    listingId={cardDestinations.hair[index].id}
+                    listingType={cardDestinations.hair[index].type as "salon" | "job"}
                     className="no-underline block h-full"
                   >
                     <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                       <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <img 
-                          src={hairSalonImages[index]} 
+                        <ImageWithFallback 
+                          src={imageSrc} 
                           alt={`Luxury Hair Salon ${index + 1}`} 
                           className="w-full h-full object-cover"
+                          category="hair"
                         />
                       </div>
                       
