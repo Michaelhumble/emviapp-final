@@ -16,7 +16,8 @@ const NailListingsSection = () => {
       company: 'MAGIC NAILS cần thợ biết làm tất cả',
       salary: '$1,200–$1,500/tuần',
       location: 'Great Falls, MT',
-      type: 'job'
+      type: 'job',
+      image: '/lovable-uploads/22e3fd7a-4237-43fa-bbbb-c1fafcd171ca.png'
     },
     {
       id: 'vn-job-2',
@@ -24,7 +25,8 @@ const NailListingsSection = () => {
       company: 'Khu LA, tiệm chuyên dip, gel, full set',
       salary: '$1,800–$2,200/tuần',
       location: 'Los Angeles, CA',
-      type: 'job'
+      type: 'job',
+      image: '/lovable-uploads/9fd70a92-786e-46d6-9ffd-eeacd71980a0.png'
     },
     {
       id: 'vn-job-3',
@@ -32,7 +34,8 @@ const NailListingsSection = () => {
       company: 'Ưu tiên biết làm design đơn giản',
       salary: '$1,600/tuần + tip cao',
       location: 'New Jersey',
-      type: 'job'
+      type: 'job',
+      image: '/lovable-uploads/33bd824b-1209-4c48-b67f-395aa2aeae75.png'
     },
     {
       id: 'vn-job-4',
@@ -40,7 +43,8 @@ const NailListingsSection = () => {
       company: 'Cần 1 thợ có tay nghề chân tay nước',
       salary: 'Làm part-time hoặc full-time, lương tốt',
       location: 'Houston, TX',
-      type: 'job'
+      type: 'job',
+      image: '/lovable-uploads/301796c9-b003-4355-9834-317f8cd54ad3.png'
     },
     {
       id: 'vn-job-5',
@@ -48,7 +52,8 @@ const NailListingsSection = () => {
       company: 'Tiệm lớn cần thợ chính tay nghề cao',
       salary: '$1,700–$2,000/tuần, khách đông',
       location: 'Chicago, IL',
-      type: 'job'
+      type: 'job',
+      image: '/lovable-uploads/460b3098-6079-44c3-a249-65c268c54fc8.png'
     }
   ];
 
@@ -59,46 +64,56 @@ const NailListingsSection = () => {
       title: 'Sang Tiệm Nail – Arlington TX',
       description: 'Bao khách, chủ đi định cư, thu nhập tốt',
       location: 'Arlington, TX',
-      type: 'salon'
+      type: 'salon',
+      image: '/lovable-uploads/22e3fd7a-4237-43fa-bbbb-c1fafcd171ca.png'
     },
     {
       id: 'vn-salon-2',
       title: 'Bán Tiệm Nail – Garland TX',
       description: 'Giá mềm, bao đồ nghề, sẵn khách',
       location: 'Garland, TX',
-      type: 'salon'
+      type: 'salon',
+      image: '/lovable-uploads/9fd70a92-786e-46d6-9ffd-eeacd71980a0.png'
     },
     {
       id: 'vn-salon-3',
       title: 'Tiệm Sang Gấp – Grand Prairie',
       description: 'Vào làm ngay, tiệm sạch, khu ổn định',
       location: 'Grand Prairie, TX',
-      type: 'salon'
+      type: 'salon',
+      image: '/lovable-uploads/33bd824b-1209-4c48-b67f-395aa2aeae75.png'
     },
     {
       id: 'vn-salon-4',
       title: 'Sang Tiệm Ở Plano – Bao Đẹp',
       description: 'Chủ cần chuyển tiểu bang, tiệm 4 bàn, 6 ghế',
       location: 'Plano, TX',
-      type: 'salon'
+      type: 'salon',
+      image: '/lovable-uploads/301796c9-b003-4355-9834-317f8cd54ad3.png'
     },
     {
       id: 'vn-salon-5',
       title: 'Tiệm Gần Downtown Houston – Sang Lại',
       description: 'Giá tốt, decor đẹp, đầy đủ dụng cụ',
       location: 'Houston, TX',
-      type: 'salon'
+      type: 'salon',
+      image: '/lovable-uploads/460b3098-6079-44c3-a249-65c268c54fc8.png'
     }
   ];
 
   const renderCard = (item: any, isJob: boolean) => (
     <Card key={item.id} className="overflow-hidden h-full hover:shadow-md transition-all">
-      <div className="relative pt-2 px-3">
+      <div className="relative">
+        <img 
+          src={item.image} 
+          alt={item.title}
+          className="w-full h-48 object-cover"
+        />
         <Badge className="absolute top-3 right-3 bg-pink-500 hover:bg-pink-600 text-white">
           Featured
         </Badge>
       </div>
-      <CardContent className="p-4 pt-8 flex flex-col h-full">
+      <CardContent className="p-4 pt-4 flex flex-col h-full">
         <h3 className="font-medium text-lg mb-1 line-clamp-2">{item.title}</h3>
         <p className="text-sm text-gray-600 mb-1">{isJob ? item.company : item.description}</p>
         
