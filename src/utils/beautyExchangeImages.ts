@@ -58,13 +58,13 @@ export const skincareClinicImages = [
   "/lovable-uploads/23674144-d433-4b00-a740-88128dc02396.png"
 ];
 
-// Eyebrow & Lash images - UPDATED with new uploaded images
+// Eyebrow & Lash images
 export const eyebrowLashImages = [
-  "/lovable-uploads/ca256d69-41d2-464a-9551-928612d7280a.png", 
-  "/lovable-uploads/c3534593-f76a-4ed2-b661-6f2a05c2877f.png", 
-  "/lovable-uploads/998a16b1-46d6-4dfb-8f6e-37e7fef6ef07.png", 
-  "/lovable-uploads/31746248-d36f-4a1c-9403-7f3638c613f4.png", 
-  "/lovable-uploads/c272f529-d7e3-45a9-8482-8953f28ec299.png"
+  "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png", // Placeholder 1
+  "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png", // Placeholder 2
+  "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png", // Placeholder 3
+  "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png", // Placeholder 4
+  "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png"  // Placeholder 5
 ];
 
 // Standardized card destinations for all listing types
