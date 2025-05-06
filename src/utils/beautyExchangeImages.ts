@@ -1,4 +1,3 @@
-
 /**
  * Centralized storage for Beauty Exchange image paths
  * Contains arrays for all listing sections
@@ -42,11 +41,11 @@ export const tattooStudioImages = [
 
 // Makeup studio images
 export const makeupStudioImages = [
-  "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png", 
-  "/lovable-uploads/8858fff4-1fa3-4803-86b1-beadca5fd1df.png",
-  "/lovable-uploads/89855878-2908-47b5-98b0-1935d73cdd71.png",
-  "/lovable-uploads/2542d0a3-5117-433d-baee-5c0fe2bfeca2.png",
-  "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png"
+  "/lovable-uploads/48f65a5e-bec1-4e38-99d1-97f39828966f.png", 
+  "/lovable-uploads/d9de8f5a-114b-43b3-9619-3000f44606f4.png",
+  "/lovable-uploads/9453e535-ed4c-4eb1-b021-b738636a2e08.png",
+  "/lovable-uploads/f7db7a14-49cf-4e93-b23b-f7db51cb4f03.png",
+  "/lovable-uploads/7cd30557-735c-45a6-8f90-d561717a92ff.png"
 ];
 
 // Skincare clinic images
