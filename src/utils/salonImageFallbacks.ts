@@ -5,7 +5,7 @@ export type SalonCategory = 'nail' | 'hair' | 'lash' | 'brow' | 'spa' | 'massage
 // Import our specialized image utilities
 import { getHairSalonImage, isHairSalon } from '@/utils/hairSalonImages';
 import { getNailSalonImage, isNailSalon } from '@/utils/nailSalonImages';
-import { getLashSalonImage, getBrowSalonImage, isLashSalon, isBrowSalon } from '@/utils/lashBrowSalonImages';
+import { getLashSalonImage, getBrowSalonImage, isLashSalon, isBrowSalon, getMakeupStudioImage } from '@/utils/lashBrowSalonImages';
 import { getMassageSalonImage, isMassageSpa } from '@/utils/massageSalonImages';
 
 /**
