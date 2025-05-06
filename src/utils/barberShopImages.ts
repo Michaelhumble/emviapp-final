@@ -33,6 +33,29 @@ export const isBarberShop = (name: string = "", description: string = ""): boole
 };
 
 /**
+ * Determines if a job listing is for a barber position
+ */
+export const isBarberJob = (job: any): boolean => {
+  if (!job) return false;
+  
+  const title = (job.title || job.role || "").toLowerCase();
+  const description = (job.description || "").toLowerCase();
+  const company = (job.company || job.name || "").toLowerCase();
+  
+  const combinedText = title + " " + description + " " + company;
+  
+  return (
+    combinedText.includes("barber") ||
+    combinedText.includes("barbershop") ||
+    combinedText.includes("barbers") ||
+    combinedText.includes("mens cut") ||
+    combinedText.includes("men's cut") ||
+    combinedText.includes("haircut for men") ||
+    combinedText.includes("shave") && combinedText.includes("hair")
+  );
+};
+
+/**
  * Returns an appropriate barber shop image URL
  * @param isPremium Whether to use a premium image
  * @param isLuxury Whether to use a luxury image (subset of premium)
@@ -66,4 +89,3 @@ export const getRandomBarberShopImage = (): string => {
   const randomIndex = Math.floor(Math.random() * images.length);
   return images[randomIndex];
 };
-
