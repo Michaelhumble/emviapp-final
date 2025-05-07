@@ -31,6 +31,15 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
   
   return (
     <Card className={`overflow-hidden hover:shadow-md transition-all ${isPinned ? 'border-amber-400 border-2' : ''}`}>
+      {job.image && (
+        <div className="h-32 w-full overflow-hidden">
+          <img 
+            src={job.image} 
+            alt={job.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
       <CardContent className="p-5">
         <div className="flex justify-between items-start">
           <h3 className="font-playfair font-semibold text-lg leading-tight">
@@ -40,6 +49,18 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
           {isPinned && (
             <Badge className="bg-amber-100 text-amber-800 font-medium">
               Tin Gấp
+            </Badge>
+          )}
+          
+          {job.is_urgent && !isPinned && (
+            <Badge className="bg-rose-100 text-rose-800 font-medium">
+              Gấp
+            </Badge>
+          )}
+          
+          {job.is_featured && !job.is_urgent && !isPinned && (
+            <Badge className="bg-blue-100 text-blue-800 font-medium">
+              Nổi Bật
             </Badge>
           )}
         </div>

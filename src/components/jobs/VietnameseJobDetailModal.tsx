@@ -41,11 +41,31 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
                 Tin Gấp
               </Badge>
             )}
+            {job.is_urgent && !isPinned && (
+              <Badge className="bg-rose-100 text-rose-800 font-medium">
+                Gấp
+              </Badge>
+            )}
+            {job.is_featured && !job.is_urgent && !isPinned && (
+              <Badge className="bg-blue-100 text-blue-800 font-medium">
+                Nổi Bật
+              </Badge>
+            )}
           </div>
           <DialogDescription className="text-base font-medium text-foreground">
             {job.company}
           </DialogDescription>
         </DialogHeader>
+        
+        {job.image && (
+          <div className="h-48 w-full overflow-hidden rounded-md my-2">
+            <img 
+              src={job.image} 
+              alt={job.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
         
         <div className="space-y-4 my-2">
           <div className="flex items-center text-gray-600">
