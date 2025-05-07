@@ -9,7 +9,7 @@ import { ChevronRight } from "lucide-react";
 import VietnameseJobCard from "@/components/jobs/VietnameseJobCard";
 import VietnameseJobDetailModal from "@/components/jobs/VietnameseJobDetailModal";
 import { vietnameseNailJobs } from "@/data/vietnameseNailJobs"; 
-import { vietnameseExpiredJobs } from "@/data/vietnameseExpiredJobs"; 
+import { vietnameseExpiredJobs } from "@/data/vietnameseNailJobs"; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const JobsPage = () => {
