@@ -39,8 +39,8 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
             <DialogTitle className="text-xl font-semibold font-playfair">{job.title}</DialogTitle>
             <div className="flex flex-wrap gap-1.5">
               {isPinned && isMagicNails && (
-                <Badge className="bg-amber-100 text-amber-800 font-medium flex items-center gap-1">
-                  <span className="text-amber-600">🌟</span> Top Featured
+                <Badge className="bg-[#FFD700] text-black px-3 py-1 rounded-full font-bold text-xs shadow-md animate-pulse flex items-center gap-1">
+                  <span>🌟</span> TOP FEATURED
                 </Badge>
               )}
               
@@ -105,6 +105,13 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
         <div className="font-medium text-xl text-emerald-700 my-3">
           {job.salary_range || job.compensation_details}
         </div>
+        
+        {/* Add FOMO line below salary for Magic Nails */}
+        {isPinned && isMagicNails && (
+          <div className="mt-2 mb-4 text-red-500 font-medium flex items-center">
+            🔥 Most Viewed Listing of the Month
+          </div>
+        )}
         
         <div className="space-y-3">
           <h3 className="font-medium text-lg">Mô tả công việc:</h3>

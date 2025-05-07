@@ -34,7 +34,7 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
     <Card 
       className={`
         overflow-hidden hover:shadow-lg transition-all duration-300 rounded-2xl
-        ${isPinned && isMagicNails ? 'ring-2 ring-[#FFD700] bg-[#FFF8E7]' : 'ring-1 ring-gray-100 bg-white'}
+        ${isPinned && isMagicNails ? 'ring-2 ring-[#FFD700] bg-[#FFFCF2] shadow-xl' : 'ring-1 ring-gray-100 bg-white'}
         transform hover:-translate-y-1 hover:scale-[1.01]
       `}
     >
@@ -55,8 +55,8 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
           
           <div className="flex flex-wrap gap-1">
             {isPinned && isMagicNails && (
-              <Badge className="bg-amber-100 text-amber-800 font-medium flex items-center gap-1">
-                <span className="text-amber-600">🌟</span> Top Featured
+              <Badge className="bg-[#FFD700] text-black px-3 py-1 rounded-full font-bold text-xs shadow-md animate-pulse flex items-center gap-1">
+                <span>🌟</span> TOP FEATURED
               </Badge>
             )}
             
@@ -94,6 +94,13 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
         <div className="mt-4 font-medium text-emerald-700 text-lg">
           {job.salary_range || job.compensation_details}
         </div>
+        
+        {/* Add FOMO line below salary for Magic Nails */}
+        {isPinned && isMagicNails && (
+          <div className="mt-2 text-red-500 font-medium text-sm flex items-center">
+            🔥 Most Viewed Listing of the Month
+          </div>
+        )}
         
         <div className="flex flex-wrap gap-1.5 mt-4">
           {job.specialties && job.specialties.map((specialty, index) => (
