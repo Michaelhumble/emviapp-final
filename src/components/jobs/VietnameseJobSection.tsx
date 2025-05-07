@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, DollarSign, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VietnameseJobSectionProps {
   vietnameseJobs: Job[];
@@ -18,6 +19,37 @@ const VietnameseJobSection = ({
   searchTerm = "" 
 }: VietnameseJobSectionProps) => {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(vietnameseJobs);
+  const [nailImages, setNailImages] = useState<string[]>([]);
+  
+  // Fetch nail salon images from Supabase bucket
+  useEffect(() => {
+    const fetchNailImages = async () => {
+      try {
+        const { data, error } = await supabase.storage.from('nails').list('', {
+          sortBy: { column: 'name', order: 'asc' },
+        });
+        
+        if (error) {
+          console.error('Error fetching nail images:', error);
+          return;
+        }
+        
+        if (data) {
+          // Get public URLs for all images
+          const imageUrls = data.map(file => {
+            const publicUrl = supabase.storage.from('nails').getPublicUrl(file.name).data.publicUrl;
+            return publicUrl;
+          });
+          
+          setNailImages(imageUrls);
+        }
+      } catch (err) {
+        console.error('Failed to fetch nail salon images:', err);
+      }
+    };
+    
+    fetchNailImages();
+  }, []);
   
   // Filter jobs based on search term
   useEffect(() => {
@@ -33,6 +65,23 @@ const VietnameseJobSection = ({
     
     setFilteredJobs(filtered);
   }, [vietnameseJobs, searchTerm]);
+
+  const getJobImage = (index: number, isMagicNails: boolean) => {
+    // Always use the first image for Magic Nails (featured job)
+    if (isMagicNails && nailImages.length > 0) {
+      return nailImages[0];
+    }
+    
+    // For other jobs, distribute the remaining images
+    if (nailImages.length > 0) {
+      // Use modulo to cycle through available images (skipping the first one reserved for Magic Nails)
+      const imageIndex = (index + 1) % nailImages.length;
+      return nailImages[imageIndex];
+    }
+    
+    // Fallback if no images are available
+    return "";
+  };
 
   if (!vietnameseJobs.length) return null;
 
@@ -59,6 +108,7 @@ const VietnameseJobSection = ({
         {filteredJobs.map((job, index) => {
           // Ensure Magic Nails is always first (top-left position)
           const isMagicNails = job.company?.includes('Magic Nails') || job.title?.includes('Magic Nails');
+          const jobImage = getJobImage(index, isMagicNails);
           
           return (
             <Card 
@@ -70,6 +120,15 @@ const VietnameseJobSection = ({
               {isMagicNails && (
                 <div className="absolute top-0 left-0 right-0 bg-yellow-100 text-yellow-800 py-1 px-3 text-xs font-medium">
                   ⭐ EmviApp Premium Showcase
+                </div>
+              )}
+              {jobImage && (
+                <div className="w-full h-48 overflow-hidden">
+                  <img 
+                    src={jobImage} 
+                    alt={`${job.title} at ${job.company}`}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               )}
               <CardContent className="p-6">
@@ -108,7 +167,7 @@ const VietnameseJobSection = ({
                 <Button 
                   variant="outline" 
                   className="w-full"
-                  onClick={() => onViewDetails(job)}
+                  onClick={() => onViewDetails({...job, image: jobImage})}
                 >
                   Xem Chi Tiết
                 </Button>
