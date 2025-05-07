@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   role?: string;
@@ -60,4 +61,8 @@ export interface Job {
   
   // Add pricing tier field
   pricingTier?: 'diamond' | 'premium' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
+  
+  // Add missing properties
+  featured?: boolean;
+  featured_text?: string;
 }

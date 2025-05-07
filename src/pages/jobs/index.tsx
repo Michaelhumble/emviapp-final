@@ -84,10 +84,9 @@ const JobsPage = () => {
         
         <div className="flex items-center gap-3">
           <Button 
-            as={Link} 
-            to="/"
             variant="outline"
             className="rounded-full border-[#9A7B69] text-[#9A7B69] hover:bg-[#9A7B69]/10 flex items-center gap-1"
+            onClick={() => navigate("/")}
           >
             <ArrowLeft size={16} /> Back Home
           </Button>

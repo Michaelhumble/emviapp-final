@@ -19,7 +19,7 @@ export const diamondJobs: Job[] = [
     pricingTier: "diamond",
     is_vietnamese_listing: true,
     isPinned: true,
-    featured: true,
+    is_featured: true,
     featured_text: "⭐ Featured by EmviApp"
   }
 ];
