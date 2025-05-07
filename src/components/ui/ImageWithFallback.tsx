@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
 import { getRandomNailSalonImage } from '@/utils/nailSalonImages';
@@ -121,6 +122,7 @@ export const ImageWithFallback = ({
     // After retries, use fallback - NEVER show empty state
     setImgSrc(getBestFallback());
     setIsLoading(false);
+    setHasErrored(true);
   };
   
   const handleLoad = () => {

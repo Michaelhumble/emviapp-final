@@ -55,10 +55,17 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
           src={job.image || ''}
           alt={job.title || 'Job listing'}
           className="w-full h-full object-cover"
+          businessName={job.title || 'Job listing'}
+          priority={true}
         />
         {job.is_featured && (
           <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
             Featured
+          </Badge>
+        )}
+        {job.is_urgent && (
+          <Badge className="absolute top-2 right-2 bg-red-500 text-white border-0">
+            Gấp
           </Badge>
         )}
       </div>
@@ -68,7 +75,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
           <h3 className="font-bold text-lg line-clamp-2">{job.title}</h3>
           
           <div className="flex items-center text-sm text-gray-500 mt-1">
-            <MapPinIcon className="h-3.5 w-3.5 mr-1" />
+            <MapPinIcon className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
             <span className="truncate">{job.location}</span>
           </div>
         </div>
@@ -81,7 +88,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
         
         <div className="mt-auto space-y-3">
           <div className="flex items-center text-xs text-gray-500">
-            <CalendarIcon className="h-3 w-3 mr-1" />
+            <CalendarIcon className="h-3 w-3 mr-1 flex-shrink-0" />
             <span>{getPostedDate()}</span>
             {isExpired() && (
               <Badge variant="outline" className="ml-2 text-xs border-red-200 text-red-600">
@@ -94,12 +101,12 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             <div className="border-t border-gray-100 pt-3">
               {isExpired() ? (
                 <div className="text-xs text-gray-500 italic flex items-center gap-1 p-2 bg-gray-50 rounded-md">
-                  <LockIcon className="h-3 w-3" />
+                  <LockIcon className="h-3 w-3 flex-shrink-0" />
                   <span>This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.</span>
                 </div>
               ) : isSignedIn ? (
                 <div className="flex items-center">
-                  <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
+                  <Phone className="h-3.5 w-3.5 mr-1 text-gray-500 flex-shrink-0" />
                   <span className="text-sm">{job.contact_info.phone}</span>
                 </div>
               ) : (
@@ -108,7 +115,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
                   onAction={() => true}
                   fallbackContent={
                     <div className="text-xs text-gray-500 italic flex items-center gap-1">
-                      <LockIcon className="h-3 w-3" />
+                      <LockIcon className="h-3 w-3 flex-shrink-0" />
                       <span>Sign in to see contact details</span>
                     </div>
                   }
@@ -127,7 +134,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
                   onRenew();
                 }}
                 disabled={isRenewing}
-                className="text-xs"
+                className="text-xs min-h-[32px]"
               >
                 {isRenewing ? 'Renewing...' : 'Renew Listing'}
               </Button>
@@ -138,7 +145,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             <Button 
               size="sm" 
               onClick={onViewDetails}
-              className="text-xs"
+              className="text-xs min-h-[32px]"
             >
               View Details
             </Button>
