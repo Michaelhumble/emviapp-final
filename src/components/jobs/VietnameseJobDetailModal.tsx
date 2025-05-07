@@ -29,28 +29,39 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
   };
 
   const isPinned = job.isPinned === true;
+  const isMagicNails = job.title?.includes('Magic Nails') || job.company?.includes('Magic Nails');
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto rounded-2xl bg-white border-0 shadow-xl">
+        <DialogHeader className="pb-2">
           <div className="flex justify-between items-start">
             <DialogTitle className="text-xl font-semibold font-playfair">{job.title}</DialogTitle>
-            {isPinned && (
-              <Badge className="bg-amber-100 text-amber-800 font-medium">
-                Tin Gấp
-              </Badge>
-            )}
-            {job.is_urgent && !isPinned && (
-              <Badge className="bg-rose-100 text-rose-800 font-medium">
-                Gấp
-              </Badge>
-            )}
-            {job.is_featured && !job.is_urgent && !isPinned && (
-              <Badge className="bg-blue-100 text-blue-800 font-medium">
-                Nổi Bật
-              </Badge>
-            )}
+            <div className="flex flex-wrap gap-1.5">
+              {isPinned && isMagicNails && (
+                <Badge className="bg-amber-100 text-amber-800 font-medium flex items-center gap-1">
+                  <span className="text-amber-600">🌟</span> Top Featured
+                </Badge>
+              )}
+              
+              {isPinned && !isMagicNails && (
+                <Badge className="bg-amber-100 text-amber-800 font-medium">
+                  Tin Gấp
+                </Badge>
+              )}
+              
+              {job.is_urgent && !isPinned && (
+                <Badge className="bg-rose-100 text-rose-800 font-medium">
+                  Gấp
+                </Badge>
+              )}
+              
+              {job.is_featured && !job.is_urgent && !isPinned && (
+                <Badge className="bg-blue-100 text-blue-800 font-medium">
+                  Nổi Bật
+                </Badge>
+              )}
+            </div>
           </div>
           <DialogDescription className="text-base font-medium text-foreground">
             {job.company}
@@ -58,7 +69,7 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
         </DialogHeader>
         
         {job.image && (
-          <div className="h-48 w-full overflow-hidden rounded-md my-2">
+          <div className="h-52 w-full overflow-hidden rounded-lg my-3">
             <img 
               src={job.image} 
               alt={job.title}
@@ -67,45 +78,45 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
           </div>
         )}
         
-        <div className="space-y-4 my-2">
+        <div className="space-y-4 my-3">
           <div className="flex items-center text-gray-600">
-            <MapPin className="h-4 w-4 mr-2" />
-            <span>{job.location}</span>
+            <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="font-medium">{job.location}</span>
           </div>
           
           <div className="flex items-center text-gray-600">
-            <Calendar className="h-4 w-4 mr-2" />
+            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
             <span>Đăng {formatPostedDate(job.created_at)}</span>
           </div>
           
           {user ? (
             <div className="flex items-center text-gray-600">
-              <Phone className="h-4 w-4 mr-2" />
+              <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className="font-medium">{job.contact_info?.phone}</span>
             </div>
           ) : (
-            <div className="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200">
-              <Lock className="h-4 w-4 mr-2 text-gray-500" />
+            <div className="flex items-center bg-gray-50 p-4 rounded-md border border-gray-200">
+              <Lock className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
               <span className="text-gray-700">🔒 Đăng nhập để xem số điện thoại liên hệ</span>
             </div>
           )}
         </div>
         
-        <div className="font-medium text-lg text-emerald-700 my-2">
+        <div className="font-medium text-xl text-emerald-700 my-3">
           {job.salary_range || job.compensation_details}
         </div>
         
-        <div className="space-y-2">
-          <h3 className="font-medium">Mô tả công việc:</h3>
-          <p className="whitespace-pre-line">{job.description}</p>
+        <div className="space-y-3">
+          <h3 className="font-medium text-lg">Mô tả công việc:</h3>
+          <p className="whitespace-pre-line text-gray-800">{job.description}</p>
         </div>
         
         {job.specialties && job.specialties.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-2 mt-4">
             <h3 className="font-medium">Yêu cầu kỹ năng:</h3>
             <div className="flex flex-wrap gap-2">
               {job.specialties.map((specialty, index) => (
-                <Badge key={index} variant="outline" className="bg-gray-50">
+                <Badge key={index} variant="outline" className="bg-gray-50 px-2.5 py-1">
                   {specialty}
                 </Badge>
               ))}
@@ -113,8 +124,14 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
           </div>
         )}
         
-        <div className="flex justify-end mt-4 pt-2 border-t border-gray-100">
-          <Button onClick={onClose}>Đóng</Button>
+        <div className="flex justify-end mt-6 pt-2 border-t border-gray-100">
+          <Button 
+            onClick={onClose} 
+            className="bg-[#9B51E0] hover:bg-[#8A3FD1] text-white transition-all duration-200 
+                     hover:shadow-md hover:shadow-purple-200 transform hover:scale-105"
+          >
+            Đóng
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
