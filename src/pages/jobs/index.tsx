@@ -87,7 +87,7 @@ const JobsPage = () => {
               </TabsList>
             </Tabs>
             
-            {/* New Post Job button next to tabs */}
+            {/* Post Job button next to tabs */}
             <AuthAction
               onAction={() => true}
               redirectPath="/post-job"
