@@ -11,6 +11,7 @@ import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaym
 import AuthPostGuard from '@/components/posting/AuthPostGuard';
 import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
+import { Link } from 'react-router-dom';
 
 const JobPost = () => {
   const navigate = useNavigate();
@@ -87,6 +88,11 @@ const JobPost = () => {
 
   return (
     <AuthPostGuard>
+      <div className="container mx-auto px-4">
+        <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 block">
+          ← Back to Home
+        </Link>
+      </div>
       <PostWizardLayout 
         currentStep={currentStep} 
         totalSteps={totalSteps} 

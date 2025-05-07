@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, DollarSign, Phone, Mail } from 'lucide-react';
 import { Job } from '@/types/job';
+import { Link } from 'react-router-dom';
 
 interface JobDetailModalProps {
   job: Job;
@@ -20,6 +21,9 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg md:max-w-2xl">
         <DialogHeader>
+          <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 mb-2">
+            ← Back to Home
+          </Link>
           <DialogTitle className="text-xl font-bold">{job.title}</DialogTitle>
           <DialogDescription className="text-gray-600">{job.company}</DialogDescription>
         </DialogHeader>

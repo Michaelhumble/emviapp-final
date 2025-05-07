@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
@@ -10,6 +9,7 @@ import { Container } from "@/components/ui/container";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
 import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
 import { Job } from "@/types/job";
+import ImageWithFallback from '@/components/ui/ImageWithFallback'; // Fix import statement
 
 // 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER
 const JobsPage = () => {

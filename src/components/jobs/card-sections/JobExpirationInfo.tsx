@@ -12,9 +12,10 @@ interface JobExpirationInfoProps {
     owner_name?: string; 
     phone?: string;
   };
+  pricingTier?: string;
 }
 
-export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo }: JobExpirationInfoProps) => {
+export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo, pricingTier }: JobExpirationInfoProps) => {
   const { isSignedIn } = useAuth();
   
   // Format the posted date for display
@@ -34,6 +35,9 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo }: JobExpi
     }
   };
 
+  // Check if this is a free or starter tier listing to show contact info without login
+  const isFreeOrStarterListing = pricingTier === 'free' || pricingTier === 'starter';
+
   if (isExpired) {
     return (
       <div className="mt-2 mb-4 flex flex-col gap-2">
@@ -50,7 +54,7 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo }: JobExpi
     );
   }
   
-  if (contactInfo?.owner_name && isSignedIn) {
+  if (contactInfo?.owner_name && (isSignedIn || isFreeOrStarterListing)) {
     return (
       <div className="mb-4">
         <div className="text-xs text-gray-500 mb-2">
@@ -72,14 +76,14 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo }: JobExpi
         <Calendar className="inline-block h-3 w-3 mr-1 align-text-bottom" />
         {getPostedTimeText()}
       </div>
-      {!isSignedIn && (
+      {!isSignedIn && !isFreeOrStarterListing && (
         <AuthAction
           customTitle="Sign in to see contact details"
           onAction={() => true}
           fallbackContent={
             <div className="text-xs text-gray-500 italic flex items-center gap-1">
               <LockIcon size={12} />
-              Sign in to see contact details
+              Sign in to view contact details
             </div>
           }
         />
