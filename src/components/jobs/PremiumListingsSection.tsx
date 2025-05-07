@@ -28,7 +28,9 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
       transition={{ duration: 0.5, delay: 0.1 }}
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-serif font-bold">Premium Listings</h2>
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
+          💎 Premium Listings
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -50,28 +52,28 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
 
             <CardContent className="p-6">
               <div className="mb-3">
-                <h3 className="font-bold text-lg line-clamp-2">{job.title}</h3>
+                <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
                 <p className="text-gray-600 font-medium">{job.company}</p>
               </div>
 
-              <div className="flex items-center text-sm text-gray-600 mb-2">
+              <div className="flex items-center text-base text-gray-600 mb-2">
                 <MapPin className="h-4 w-4 mr-1" /> {job.location}
               </div>
 
               {job.salary_range && (
-                <div className="flex items-center text-sm text-gray-600 mb-2">
+                <div className="flex items-center text-base text-gray-600 mb-2">
                   <span className="text-lg mr-1">💰</span> {job.salary_range}
                 </div>
               )}
 
-              <div className="flex items-center text-sm text-gray-600 mb-4">
+              <div className="flex items-center text-base text-gray-600 mb-4">
                 <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
               <div className="border-t border-gray-100 pt-3 mb-4">
                 {job.contact_info?.phone ? (
                   isSignedIn ? (
-                    <div className="flex items-center text-sm">
+                    <div className="flex items-center text-base">
                       <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
                       <span>{job.contact_info.phone}</span>
                     </div>
@@ -80,8 +82,8 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                       customTitle="Sign in to see contact details"
                       onAction={() => true}
                       fallbackContent={
-                        <div className="text-xs text-gray-500 italic flex items-center gap-1">
-                          <span className="text-xs">🔒</span>
+                        <div className="text-base text-gray-500 italic flex items-center gap-1">
+                          <span className="text-base">🔒</span>
                           <span>Sign in to see contact details</span>
                         </div>
                       }
@@ -91,7 +93,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
               </div>
 
               <Button
-                className="w-full"
+                className="w-full font-bold"
                 onClick={() => onViewDetails(job)}
               >
                 View Details

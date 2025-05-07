@@ -23,7 +23,7 @@ const FeaturedJobsSection = ({ featuredJobs, onViewDetails }: FeaturedJobsSectio
     >
       <div className="flex items-center mb-6">
         <Star className="h-5 w-5 text-yellow-500 mr-2" />
-        <h2 className="text-2xl font-serif font-bold">Featured Opportunities</h2>
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">Featured Opportunities</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -33,34 +33,36 @@ const FeaturedJobsSection = ({ featuredJobs, onViewDetails }: FeaturedJobsSectio
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-semibold text-lg">{job.title}</h3>
-                  <p className="text-gray-600">{job.company}</p>
+                  <h3 className="font-playfair font-semibold text-lg">{job.title}</h3>
+                  <p className="text-gray-600 mt-1">
+                    {job.company}
+                  </p>
                 </div>
                 <Badge className="bg-yellow-100 text-yellow-800 border-none">
                   Featured
                 </Badge>
               </div>
 
-              <div className="flex items-center text-sm text-gray-600 mb-2">
+              <div className="flex items-center text-base text-gray-600 mb-2">
                 <MapPin className="h-4 w-4 mr-1" /> {job.location}
               </div>
 
               {job.salary_range && (
-                <div className="flex items-center text-sm text-gray-600 mb-2">
+                <div className="flex items-center text-base text-gray-600 mb-2">
                   <DollarSign className="h-4 w-4 mr-1" /> {job.salary_range}
                 </div>
               )}
               
-              <div className="flex items-center text-sm text-gray-600 mb-4">
+              <div className="flex items-center text-base text-gray-600 mb-4">
                 <Clock className="h-4 w-4 mr-1" /> Posted {new Date(job.created_at).toLocaleDateString()}
               </div>
 
-              <p className="text-gray-700 mb-4 line-clamp-2">
+              <p className="text-base text-gray-700 mb-4 line-clamp-2">
                 {job.description}
               </p>
 
               <Button 
-                className="w-full"
+                className="w-full font-bold"
                 onClick={() => onViewDetails(job)}
               >
                 View Details

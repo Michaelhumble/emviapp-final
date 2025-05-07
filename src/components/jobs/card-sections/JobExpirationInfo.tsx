@@ -45,9 +45,9 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo, pricingTi
           <Badge variant="destructive" className="flex items-center justify-center gap-1 w-fit">
             <LockIcon size={12} /> Đã hết hạn
           </Badge>
-          <span className="text-xs text-gray-500">{getPostedTimeText()}</span>
+          <span className="text-base text-gray-500">{getPostedTimeText()}</span>
         </div>
-        <div className="p-3 bg-gray-50 border border-gray-100 rounded-md text-sm">
+        <div className="p-3 bg-gray-50 border border-gray-100 rounded-md text-base">
           <p className="text-gray-700">This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.</p>
         </div>
       </div>
@@ -57,11 +57,11 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo, pricingTi
   if (contactInfo?.owner_name && (isSignedIn || isFreeOrStarterListing)) {
     return (
       <div className="mb-4">
-        <div className="text-xs text-gray-500 mb-2">
+        <div className="text-base text-gray-500 mb-2">
           <Calendar className="inline-block h-3 w-3 mr-1 align-text-bottom" />
           {getPostedTimeText()}
         </div>
-        <div className="text-sm">
+        <div className="text-base">
           <span className="font-medium">Contact: </span>
           {contactInfo.owner_name}
           {contactInfo?.phone && ` - ${contactInfo.phone}`}
@@ -72,7 +72,7 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo, pricingTi
   
   return (
     <div className="mb-4">
-      <div className="text-xs text-gray-500 mb-2">
+      <div className="text-base text-gray-500 mb-2">
         <Calendar className="inline-block h-3 w-3 mr-1 align-text-bottom" />
         {getPostedTimeText()}
       </div>
@@ -81,7 +81,7 @@ export const JobExpirationInfo = ({ isExpired, createdAt, contactInfo, pricingTi
           customTitle="Sign in to see contact details"
           onAction={() => true}
           fallbackContent={
-            <div className="text-xs text-gray-500 italic flex items-center gap-1">
+            <div className="text-base text-gray-500 italic flex items-center gap-1">
               <LockIcon size={12} />
               Sign in to view contact details
             </div>

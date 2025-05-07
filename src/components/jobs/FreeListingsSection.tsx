@@ -26,10 +26,10 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
       transition={{ duration: 0.5, delay: 0.3 }}
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-serif font-bold">Free Listings</h2>
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">Free Listings</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {jobs.map((job) => (
           <Card
             key={job.id}
@@ -37,26 +37,26 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
           >
             <CardContent className="p-4">
               <div className="mb-3">
-                <h3 className="font-bold text-lg">{job.title}</h3>
+                <h3 className="font-playfair font-semibold text-lg">{job.title}</h3>
                 <p className="text-gray-600">{job.company}</p>
               </div>
 
-              <div className="flex items-center text-sm text-gray-600 mb-2">
+              <div className="flex items-center text-base text-gray-600 mb-2">
                 <MapPin className="h-4 w-4 mr-1" /> {job.location}
               </div>
 
               {job.salary_range && (
-                <div className="flex items-center text-sm text-gray-600 mb-2">
+                <div className="flex items-center text-base text-gray-600 mb-2">
                   <span className="text-lg mr-1">💰</span> {job.salary_range}
                 </div>
               )}
 
-              <div className="flex items-center text-sm text-gray-600 mb-3">
+              <div className="flex items-center text-base text-gray-600 mb-3">
                 <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
               {job.description && (
-                <p className="text-gray-700 mb-4 text-sm line-clamp-2">
+                <p className="text-base text-gray-700 mb-4 line-clamp-2">
                   {job.description}
                 </p>
               )}
@@ -64,7 +64,7 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
               <div className="flex justify-between items-center mt-3">
                 <div>
                   {job.contact_info?.phone && isSignedIn && (
-                    <div className="flex items-center text-sm">
+                    <div className="flex items-center text-base">
                       <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
                       <span>{job.contact_info.phone}</span>
                     </div>
@@ -73,7 +73,7 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
                 
                 <Button
                   variant="outline"
-                  size="sm"
+                  className="font-bold"
                   onClick={() => onViewDetails(job)}
                 >
                   View Details

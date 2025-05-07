@@ -51,10 +51,12 @@ const ExpiredListingsSection = ({
     >
       <div className="flex items-center mb-6">
         <Clock size={20} className="text-gray-400 mr-2" />
-        <h2 className="text-2xl font-serif font-bold">Expired Listings</h2>
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold text-gray-500 italic">
+          Expired Listings
+        </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {jobs.map((job) => (
           <Card
             key={job.id}
@@ -75,38 +77,36 @@ const ExpiredListingsSection = ({
 
             <CardContent className="p-4">
               <div className="mb-2">
-                <h3 className="font-medium text-base text-gray-700">{job.title}</h3>
-                <p className="text-gray-500 text-sm">{job.company}</p>
+                <h3 className="font-playfair font-medium text-base text-gray-700">{job.title}</h3>
+                <p className="text-gray-500 text-base">{job.company}</p>
               </div>
 
-              <div className="flex items-center text-xs text-gray-500 mb-1">
+              <div className="flex items-center text-base text-gray-500 mb-1">
                 <MapPin className="h-3 w-3 mr-1" /> {job.location}
               </div>
 
-              <div className="flex items-center text-xs text-gray-500 mb-3">
+              <div className="flex items-center text-base text-gray-500 mb-3">
                 <Calendar className="h-3 w-3 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
-              <div className="text-xs text-gray-400 italic mb-3">
+              <div className="text-base text-gray-400 italic mb-3">
                 <p>Contact details are hidden for expired listings</p>
               </div>
 
               <div className="flex justify-between items-center mt-2">
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={() => onRenew(job)}
                   disabled={isRenewing && renewalJobId === job.id}
-                  className="text-xs"
+                  className="text-base font-bold"
                 >
                   {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew Listing"}
                 </Button>
                 
                 <Button
                   variant="ghost"
-                  size="sm"
                   onClick={() => onViewDetails(job)}
-                  className="text-xs"
+                  className="text-base font-bold"
                 >
                   View
                 </Button>
