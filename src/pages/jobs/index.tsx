@@ -15,6 +15,12 @@ import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Import job data
+import { diamondJobs } from "@/data/jobs/diamondJobs";
+import { premiumJobs } from "@/data/jobs/premiumJobs";
+import { freeJobs } from "@/data/jobs/freeJobs";
+import { expiredJobs } from "@/data/jobs/expiredJobs";
+
 // 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER
 const JobsPage = () => {
   const navigate = useNavigate();
@@ -80,31 +86,25 @@ const JobsPage = () => {
       <div className="mt-8 space-y-12">
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <TopDiamondFeaturedSection 
-          featuredJobs={[]} 
+          featuredJobs={diamondJobs} 
           onViewDetails={viewJobDetails} 
         />
         
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <PremiumListingsSection 
-          jobs={[]} 
-          onViewDetails={viewJobDetails} 
-        />
-        
-        {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
-        <FeaturedJobsSection 
-          featuredJobs={[]} 
+          jobs={premiumJobs} 
           onViewDetails={viewJobDetails} 
         />
         
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <FreeListingsSection 
-          jobs={[]} 
+          jobs={freeJobs} 
           onViewDetails={viewJobDetails} 
         />
         
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <ExpiredListingsSection 
-          jobs={[]} 
+          jobs={expiredJobs} 
           onViewDetails={viewJobDetails} 
           onRenew={handleRenewJob}
           isRenewing={isRenewing}
