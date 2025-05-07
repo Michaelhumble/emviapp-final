@@ -22,36 +22,37 @@ const NailListingsSection: React.FC = () => {
     };
   };
 
-  const nailCardData = [
+  // Vietnamese job listing content for the cards
+  const nailJobListings = [
     {
       title: "Tìm Thợ Nails Magic Nails– Great Falls, MT",
-      salary: "$1,200–$1,500/tuần",
+      salary: "💰 $1,200–$1,500/tuần",
       description: "Magic Nails cần thợ biết làm bột và tay chân nước.",
-      location: "Great Falls, MT"
+      location: "📍Great Falls, MT"
     },
     {
       title: "Tuyển Thợ Nail – Clawson, MI",
-      salary: "$1,200–$1,800/tuần",
+      salary: "💰 $1,200–$1,800/tuần",
       description: "Tiệm nhỏ, khu Mỹ trắng, tip hậu. Cần thợ làm bột, dip, gel-x.",
-      location: "Clawson, MI"
+      location: "📍Clawson, MI"
     },
     {
       title: "Thợ Nail Design – Humble, TX (Milano Nail Spa)",
-      salary: ">$2,000/tuần",
+      salary: "💰 >$2,000/tuần",
       description: "Tiệm lớn nhất khu vực, tuyển thợ bột design. Receptionist $150/ngày.",
-      location: "Humble, TX"
+      location: "📍Humble, TX"
     },
     {
       title: "Tuyển Thợ Nail – South Lake Tahoe, CA",
-      salary: "$1,600–$2,500+/tuần",
+      salary: "💰 $1,600–$2,500+/tuần",
       description: "Tiệm dễ thương, khách du lịch chịu chi. Ưu tiên biết tiếng Anh.",
-      location: "South Lake Tahoe, CA"
+      location: "📍South Lake Tahoe, CA"
     },
     {
       title: "Cần Thợ Nail – Killeen, TX",
-      salary: "$1,500+/tuần",
+      salary: "💰 $1,500+/tuần",
       description: "Tiệm lớn, giá cao, tip tốt. Gặp Johnny/Hannah.",
-      location: "Killeen, TX"
+      location: "📍Killeen, TX"
     }
   ];
 
@@ -60,10 +61,10 @@ const NailListingsSection: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col text-center items-center justify-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-2">
-            Tin Tuyển Dụng Mới Nhất
+            Nail Listings — Preview Spaces
           </h2>
           <p className="text-gray-600">
-            Browse our curated selection of job opportunities
+            Discover premium nail salon spaces and services. Browse our listings.
           </p>
         </div>
         
@@ -78,9 +79,9 @@ const NailListingsSection: React.FC = () => {
               className="h-full"
             >
               <AuthAction
-                onAction={handleCardClick(cardDestinations.nail[index].path)}
-                redirectPath={cardDestinations.nail[index].path}
-                customTitle="Sign in to view job details"
+                onAction={handleCardClick("/jobs")}
+                redirectPath="/jobs"
+                customTitle="Sign in to view nail job details"
                 fallbackContent={
                   <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
@@ -90,46 +91,52 @@ const NailListingsSection: React.FC = () => {
                         className="w-full h-full object-cover"
                         category="nail"
                       />
-                      <Badge className="absolute top-2 left-2 bg-orange-400 hover:bg-orange-500 text-white">
+                      <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
                         ★ FEATURED
                       </Badge>
                     </div>
                     
                     <CardContent className="p-5 flex flex-col flex-grow">
                       <h3 className="text-lg font-semibold mb-1">
-                        {nailCardData[index].title}
+                        {nailJobListings[index]?.title || `Nail Studio ${index + 1}`}
                       </h3>
                       
-                      <p className="text-sm font-bold text-gray-800 mb-2">
-                        💰 {nailCardData[index].salary}
+                      <p className="text-sm font-medium mb-2">
+                        {nailJobListings[index]?.salary || "💰 $1,200-1,800/week"}
                       </p>
                       
                       <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-                        {nailCardData[index].description}
+                        {nailJobListings[index]?.description || "Premium nail salon with modern facilities and high-end clientele. Great opportunity for experienced nail technicians."}
                       </p>
                       
-                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                        <div className="flex flex-col">
-                          <span className="text-xs text-gray-500">📍{nailCardData[index].location}</span>
-                          <span className="text-xs text-gray-500">🔒 Sign in to view contact info</span>
+                      <div className="flex flex-col space-y-2 mt-auto">
+                        <p className="text-xs text-gray-500">
+                          {nailJobListings[index]?.location || "📍Location information"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          🔒 Sign in to view contact info
+                        </p>
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                          <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full">
+                            Nail
+                          </Badge>
+                          <Button 
+                            onClick={() => navigate("/jobs")} 
+                            size="sm" 
+                            className="bg-[#9B51E0] hover:bg-[#8A46C2] text-white rounded-xl ml-auto"
+                          >
+                            Xem Chi Tiết
+                          </Button>
                         </div>
-
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="gap-1 bg-[#9B51E0] text-white hover:bg-[#8A46C7]"
-                        >
-                          Xem Chi Tiết
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
                 }
                 authenticatedContent={
                   <ValidatedLink 
-                    to={cardDestinations.nail[index].path}
-                    listingId={cardDestinations.nail[index].id}
-                    listingType={cardDestinations.nail[index].type as "salon" | "job"}
+                    to="/jobs" 
+                    listingId="nails-general" 
+                    listingType="page"
                     className="no-underline block h-full"
                   >
                     <Card className="overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow cursor-pointer">
@@ -140,37 +147,42 @@ const NailListingsSection: React.FC = () => {
                           className="w-full h-full object-cover"
                           category="nail"
                         />
-                        <Badge className="absolute top-2 left-2 bg-orange-400 hover:bg-orange-500 text-white">
+                        <Badge className="absolute top-2 left-2 bg-amber-500 text-white hover:bg-amber-600">
                           ★ FEATURED
                         </Badge>
                       </div>
                       
                       <CardContent className="p-5 flex flex-col flex-grow">
                         <h3 className="text-lg font-semibold mb-1">
-                          {nailCardData[index].title}
+                          {nailJobListings[index]?.title || `Nail Studio ${index + 1}`}
                         </h3>
                         
-                        <p className="text-sm font-bold text-gray-800 mb-2">
-                          💰 {nailCardData[index].salary}
+                        <p className="text-sm font-medium mb-2">
+                          {nailJobListings[index]?.salary || "💰 $1,200-1,800/week"}
                         </p>
                         
                         <p className="text-sm text-gray-600 line-clamp-3 mb-4 flex-grow">
-                          {nailCardData[index].description}
+                          {nailJobListings[index]?.description || "Premium nail salon with modern facilities and high-end clientele. Great opportunity for experienced nail technicians."}
                         </p>
                         
-                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                          <div className="flex flex-col">
-                            <span className="text-xs text-gray-500">📍{nailCardData[index].location}</span>
-                            <span className="text-xs text-gray-500">🔒 Sign in to view contact info</span>
+                        <div className="flex flex-col space-y-2 mt-auto">
+                          <p className="text-xs text-gray-500">
+                            {nailJobListings[index]?.location || "📍Location information"}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            🔒 Sign in to view contact info
+                          </p>
+                          <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                            <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full">
+                              Nail
+                            </Badge>
+                            <Button 
+                              size="sm" 
+                              className="bg-[#9B51E0] hover:bg-[#8A46C2] text-white rounded-xl ml-auto"
+                            >
+                              Xem Chi Tiết
+                            </Button>
                           </div>
-
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="gap-1 bg-[#9B51E0] text-white hover:bg-[#8A46C7]"
-                          >
-                            Xem Chi Tiết
-                          </Button>
                         </div>
                       </CardContent>
                     </Card>
