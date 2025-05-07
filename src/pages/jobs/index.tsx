@@ -21,6 +21,7 @@ const JobsPage = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -47,6 +48,10 @@ const JobsPage = () => {
     navigate("/posting/job");
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+  };
+
   // Dummy data for expirations record
   const expirations: Record<string, boolean> = {};
 
@@ -67,7 +72,10 @@ const JobsPage = () => {
         </Button>
       </div>
       
-      <JobSearchBar />
+      <JobSearchBar 
+        onSearchChange={handleSearchChange} 
+        value={searchTerm}
+      />
       
       <div className="mt-8 space-y-12">
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
