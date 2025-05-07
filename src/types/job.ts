@@ -65,4 +65,11 @@ export interface Job {
   // Add missing properties
   featured?: boolean;
   featured_text?: string;
+  
+  // Add Vietnamese salon for sale specific fields
+  monthly_revenue?: string;
+  station_count?: string;
+  chair_count?: string;
+  sale_price?: string;
+  is_salon_for_sale?: boolean;
 }

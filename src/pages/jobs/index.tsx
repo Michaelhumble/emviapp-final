@@ -1,12 +1,13 @@
 
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
 import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
 import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
+import SalonSalesSection from "@/components/jobs/SalonSalesSection";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
 import { Job } from "@/types/job";
 import { Plus, ArrowLeft } from "lucide-react";
@@ -17,6 +18,7 @@ import { diamondJobs } from "@/data/jobs/diamondJobs";
 import { premiumJobs } from "@/data/jobs/premiumJobs";
 import { freeJobs } from "@/data/jobs/freeJobs";
 import { expiredJobs } from "@/data/jobs/expiredJobs";
+import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
 
 // 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER
 const JobsPage = () => {
@@ -72,6 +74,7 @@ const JobsPage = () => {
   const filteredPremiumJobs = filterJobs(premiumJobs);
   const filteredFreeJobs = filterJobs(freeJobs);
   const filteredExpiredJobs = filterJobs(expiredJobs);
+  const filteredSalonSales = filterJobs(vietnameseSalonSales);
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -115,6 +118,12 @@ const JobsPage = () => {
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <PremiumListingsSection 
           jobs={filteredPremiumJobs} 
+          onViewDetails={viewJobDetails} 
+        />
+        
+        {/* Vietnamese Salon Sales Section */}
+        <SalonSalesSection 
+          listings={filteredSalonSales} 
           onViewDetails={viewJobDetails} 
         />
         
