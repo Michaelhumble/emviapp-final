@@ -5,8 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Phone } from "lucide-react";
 import { motion } from "framer-motion";
-import { useAuth } from "@/context/auth";
-import AuthAction from "@/components/common/AuthAction";
 
 interface FreeListingsSectionProps {
   jobs: Job[];
@@ -14,13 +12,11 @@ interface FreeListingsSectionProps {
 }
 
 const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) => {
-  const { isSignedIn } = useAuth();
-
   if (!jobs.length) return null;
 
   return (
     <motion.section
-      className="mb-12"
+      className="mt-8 mb-12"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
@@ -63,7 +59,7 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
 
               <div className="flex justify-between items-center mt-3">
                 <div>
-                  {job.contact_info?.phone && isSignedIn && (
+                  {job.contact_info?.phone && (
                     <div className="flex items-center text-base">
                       <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
                       <span>{job.contact_info.phone}</span>

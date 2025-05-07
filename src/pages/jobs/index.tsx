@@ -3,15 +3,12 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
-import FeaturedJobsSection from "@/components/jobs/FeaturedJobsSection";
+import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
 import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
-import JobsGrid from "@/components/jobs/JobsGrid";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
-import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
 import { Job } from "@/types/job";
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -58,9 +55,6 @@ const JobsPage = () => {
     setSearchTerm(value);
   };
 
-  // Dummy data for expirations record
-  const expirations: Record<string, boolean> = {};
-
   return (
     <div className="container mx-auto px-4 py-6">
       <Helmet>
@@ -86,7 +80,7 @@ const JobsPage = () => {
       <div className="mt-8 space-y-12">
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <TopDiamondFeaturedSection 
-          featuredJobs={diamondJobs} 
+          featuredJobs={diamondJobs.slice(0, 1)} 
           onViewDetails={viewJobDetails} 
         />
         

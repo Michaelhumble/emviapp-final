@@ -19,6 +19,12 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
 
   if (!featuredJobs.length) return null;
 
+  // Get the first real job (Magic Nails)
+  const mainJob = featuredJobs[0];
+  
+  // Create placeholder cards for remaining diamond slots
+  const placeholderCards = Array(2).fill(null);
+
   return (
     <motion.section
       className="mb-12"
@@ -32,70 +38,99 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {featuredJobs.map((job) => (
-          <Card
-            key={job.id}
-            className="overflow-hidden border-2 border-amber-200 shadow-md hover:shadow-lg transition-all duration-300 group"
-          >
-            <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
+        {/* Magic Nails card - always in first position */}
+        <Card
+          key={mainJob.id}
+          className="overflow-hidden border-2 border-amber-200 shadow-md hover:shadow-lg transition-all duration-300 group"
+        >
+          <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
 
-            <div className="aspect-video relative">
-              <ImageWithFallback
-                src={job.image || ""}
-                alt={job.title || "Featured job listing"}
-                className="w-full h-full object-cover"
-              />
-              <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
-                Diamond
-              </Badge>
+          <div className="aspect-video relative">
+            <ImageWithFallback
+              src={mainJob.image || ""}
+              alt={mainJob.title || "Featured job listing"}
+              className="w-full h-full object-cover"
+            />
+            <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
+              Diamond
+            </Badge>
+          </div>
+
+          <CardContent className="p-6">
+            <div className="mb-3">
+              <h3 className="font-playfair font-semibold text-lg line-clamp-2">{mainJob.title}</h3>
+              <p className="text-gray-600 font-medium">{mainJob.company}</p>
+            </div>
+
+            <div className="flex items-center text-base text-gray-600 mb-2">
+              <MapPin className="h-4 w-4 mr-1" /> {mainJob.location}
+            </div>
+
+            <div className="flex items-center text-base text-gray-600 mb-4">
+              <Calendar className="h-4 w-4 mr-1" /> {new Date(mainJob.created_at).toLocaleDateString()}
+            </div>
+
+            <p className="text-base text-gray-700 mb-4 line-clamp-2">
+              {mainJob.description}
+            </p>
+
+            <div className="border-t border-amber-100 pt-3 mb-4">
+              {mainJob.contact_info?.phone ? (
+                isSignedIn ? (
+                  <div className="flex items-center text-base">
+                    <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
+                    <span>{mainJob.contact_info.phone}</span>
+                  </div>
+                ) : (
+                  <AuthAction
+                    customTitle="Sign in to see contact details"
+                    onAction={() => true}
+                    fallbackContent={
+                      <div className="text-base text-gray-500 italic flex items-center gap-1">
+                        <span className="text-base">🔒</span>
+                        <span>Sign in to see contact details</span>
+                      </div>
+                    }
+                  />
+                )
+              ) : null}
+            </div>
+
+            <Button
+              className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600"
+              onClick={() => onViewDetails(mainJob)}
+            >
+              View Details
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Placeholder cards for remaining diamond slots */}
+        {placeholderCards.map((_, index) => (
+          <Card
+            key={`diamond-placeholder-${index}`}
+            className="overflow-hidden border-2 border-amber-100 shadow-sm hover:shadow-md transition-all duration-300 group"
+          >
+            <div className="h-2 bg-gradient-to-r from-amber-300 to-amber-500" />
+
+            <div className="aspect-video bg-gradient-to-r from-amber-50 to-amber-100 flex items-center justify-center">
+              <Diamond className="h-12 w-12 text-amber-300" />
             </div>
 
             <CardContent className="p-6">
               <div className="mb-3">
-                <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
-                <p className="text-gray-600 font-medium">{job.company}</p>
+                <h3 className="font-playfair font-semibold text-lg">Coming Soon...</h3>
+                <p className="text-gray-500">This spot is reserved for top-tier beauty businesses.</p>
               </div>
 
-              <div className="flex items-center text-base text-gray-600 mb-2">
-                <MapPin className="h-4 w-4 mr-1" /> {job.location}
+              <div className="mt-auto pt-6">
+                <Button
+                  className="w-full font-bold bg-gradient-to-r from-amber-400 to-amber-500 opacity-70"
+                  disabled
+                >
+                  Reserve This Spot
+                </Button>
               </div>
-
-              <div className="flex items-center text-base text-gray-600 mb-4">
-                <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
-              </div>
-
-              <p className="text-base text-gray-700 mb-4 line-clamp-2">
-                {job.description}
-              </p>
-
-              <div className="border-t border-amber-100 pt-3 mb-4">
-                {job.contact_info?.phone ? (
-                  isSignedIn ? (
-                    <div className="flex items-center text-base">
-                      <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
-                      <span>{job.contact_info.phone}</span>
-                    </div>
-                  ) : (
-                    <AuthAction
-                      customTitle="Sign in to see contact details"
-                      onAction={() => true}
-                      fallbackContent={
-                        <div className="text-base text-gray-500 italic flex items-center gap-1">
-                          <span className="text-base">🔒</span>
-                          <span>Sign in to see contact details</span>
-                        </div>
-                      }
-                    />
-                  )
-                ) : null}
-              </div>
-
-              <Button
-                className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600"
-                onClick={() => onViewDetails(job)}
-              >
-                View Details
-              </Button>
             </CardContent>
           </Card>
         ))}

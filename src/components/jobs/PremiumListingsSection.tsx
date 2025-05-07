@@ -22,7 +22,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
 
   return (
     <motion.section
-      className="mb-12"
+      className="mt-8 mb-12"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
@@ -46,7 +46,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                 className="w-full h-full object-cover"
               />
               <Badge className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
-                Featured
+                Premium
               </Badge>
             </div>
 
@@ -83,7 +83,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                       onAction={() => true}
                       fallbackContent={
                         <div className="text-base text-gray-500 italic flex items-center gap-1">
-                          <span className="text-base">🔒</span>
+                          <span className="text-sm">🔒</span>
                           <span>Sign in to see contact details</span>
                         </div>
                       }
