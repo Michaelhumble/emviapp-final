@@ -6,6 +6,7 @@ import { MapPin, Phone, Calendar, Lock } from "lucide-react";
 import { Job } from "@/types/job";
 import { useAuth } from "@/context/auth";
 import { formatDistanceToNow } from "date-fns";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface VietnameseJobDetailModalProps {
   job: Job | null;
@@ -31,16 +32,31 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
   const isPinned = job.isPinned === true;
   const isMagicNails = job.title?.includes('Magic Nails') || job.company?.includes('Magic Nails');
   
+  // Get a specific image for Magic Nails
+  const magicNailsImage = isMagicNails ? 
+    "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png" : 
+    job.image;
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto rounded-2xl bg-white border-0 shadow-xl">
+      <DialogContent 
+        className={`sm:max-w-[600px] max-h-[85vh] overflow-y-auto rounded-2xl border-0 shadow-xl
+                   ${isPinned && isMagicNails ? 'bg-[#FAF3E0]' : 'bg-white'}`}
+      >
         <DialogHeader className="pb-2">
           <div className="flex justify-between items-start">
-            <DialogTitle className="text-xl font-semibold font-playfair">{job.title}</DialogTitle>
+            <div>
+              <DialogTitle className="text-xl font-semibold font-playfair">{job.title}</DialogTitle>
+              {isPinned && isMagicNails && (
+                <p className="text-emerald-700 text-sm mt-1 italic">
+                  ✨ Featured by EmviApp. Our most loved salon this month.
+                </p>
+              )}
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {isPinned && isMagicNails && (
-                <Badge className="bg-[#FFD700] text-black px-3 py-1 rounded-full font-bold text-xs shadow-md animate-pulse flex items-center gap-1">
-                  <span>🌟</span> TOP FEATURED
+                <Badge className="bg-[#FFD700] text-black px-3 py-1 rounded-full text-xs shadow-md hover:animate-pulse">
+                  🏆 EmviApp Premium Showcase
                 </Badge>
               )}
               
@@ -68,12 +84,13 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
           </DialogDescription>
         </DialogHeader>
         
-        {job.image && (
+        {(job.image || isMagicNails) && (
           <div className="h-52 w-full overflow-hidden rounded-lg my-3">
-            <img 
-              src={job.image} 
-              alt={job.title}
+            <ImageWithFallback 
+              src={magicNailsImage || job.image} 
+              alt={job.title || "Job listing"}
               className="w-full h-full object-cover"
+              fallbackImage="/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png"
             />
           </div>
         )}

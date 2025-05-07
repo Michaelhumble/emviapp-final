@@ -7,6 +7,7 @@ import { MapPin, Phone, Lock } from "lucide-react";
 import { Job } from "@/types/job";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from 'react-router-dom';
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface VietnameseJobCardProps {
   job: Job;
@@ -30,36 +31,53 @@ const VietnameseJobCard = ({ job, onViewDetails }: VietnameseJobCardProps) => {
   const isPinned = job.isPinned === true;
   const isMagicNails = job.title?.includes('Magic Nails') || job.company?.includes('Magic Nails');
   
+  // Get a specific image for Magic Nails
+  const magicNailsImage = isMagicNails ? 
+    "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png" : 
+    job.image;
+  
   return (
     <Card 
       className={`
         overflow-hidden hover:shadow-lg transition-all duration-300 rounded-2xl
-        ${isPinned && isMagicNails ? 'ring-2 ring-[#FFD700] bg-[#FFFCF2] shadow-xl' : 'ring-1 ring-gray-100 bg-white'}
+        ${isPinned && isMagicNails ? 'ring-2 ring-[#FFD700] bg-[#FAF3E0] shadow-xl' : 'ring-1 ring-gray-100 bg-white'}
         transform hover:-translate-y-1 hover:scale-[1.01]
       `}
     >
-      {job.image && (
-        <div className="h-40 w-full overflow-hidden">
-          <img 
-            src={job.image} 
-            alt={job.title}
+      {(job.image || isMagicNails) && (
+        <div className="h-40 w-full overflow-hidden relative">
+          <ImageWithFallback 
+            src={magicNailsImage || job.image} 
+            alt={job.title || "Job listing"}
             className="w-full h-full object-cover"
+            fallbackImage="/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png"
           />
+          
+          {isPinned && isMagicNails && (
+            <div className="absolute top-2 right-2">
+              <Badge className="bg-[#FFD700] text-black px-3 py-1 rounded-full text-xs shadow-md hover:animate-pulse">
+                🏆 EmviApp Premium Showcase
+              </Badge>
+            </div>
+          )}
         </div>
       )}
+      
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-playfair font-semibold text-lg leading-tight">
-            {job.title}
-          </h3>
+          <div>
+            <h3 className="font-playfair font-semibold text-lg leading-tight">
+              {job.title}
+            </h3>
+            
+            {isPinned && isMagicNails && (
+              <p className="text-emerald-700 text-sm mt-1 italic">
+                ✨ Featured by EmviApp. Our most loved salon this month.
+              </p>
+            )}
+          </div>
           
           <div className="flex flex-wrap gap-1">
-            {isPinned && isMagicNails && (
-              <Badge className="bg-[#FFD700] text-black px-3 py-1 rounded-full font-bold text-xs shadow-md animate-pulse flex items-center gap-1">
-                <span>🌟</span> TOP FEATURED
-              </Badge>
-            )}
-            
             {isPinned && !isMagicNails && (
               <Badge className="bg-amber-100 text-amber-800 font-medium">
                 Tin Gấp
