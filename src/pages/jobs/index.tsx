@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useJobsData, JobFilters } from "@/hooks/useJobsData";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -71,33 +72,35 @@ const JobsPage = () => {
           </div>
         </div>
 
-        {/* Tabs and Post Job Button */}
+        {/* Tabs and Post Job Buttons */}
         <div className="flex flex-wrap justify-between items-center mb-6">
-          <Tabs 
-            defaultValue="vietnamese" 
-            value={activeTab}
-            onValueChange={setActiveTab} 
-            className="w-auto"
-          >
-            <TabsList>
-              <TabsTrigger value="vietnamese">Vietnamese Nail Jobs</TabsTrigger>
-              <TabsTrigger value="english">English Jobs</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          
-          {/* New Post Job button */}
-          <AuthAction
-            onAction={() => true}
-            redirectPath="/post-job"
-            customTitle="Sign in to post a job"
-          >
-            <MobileButton 
-              className="bg-primary text-white ml-4" 
-              size="sm"
+          <div className="flex items-center gap-4 flex-grow">
+            <Tabs 
+              defaultValue="vietnamese" 
+              value={activeTab}
+              onValueChange={setActiveTab} 
+              className="w-auto"
             >
-              <Plus size={18} /> Post Job
-            </MobileButton>
-          </AuthAction>
+              <TabsList>
+                <TabsTrigger value="vietnamese">Vietnamese Nail Jobs</TabsTrigger>
+                <TabsTrigger value="english">English Jobs</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            {/* New Post Job button next to tabs */}
+            <AuthAction
+              onAction={() => true}
+              redirectPath="/post-job"
+              customTitle="Sign in to post a job"
+            >
+              <MobileButton 
+                className="bg-primary text-white" 
+                size="sm"
+              >
+                <Plus size={18} /> Post Job
+              </MobileButton>
+            </AuthAction>
+          </div>
         </div>
 
         {/* Search Bar */}
