@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Job } from "@/types/job";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +9,31 @@ import { motion } from "framer-motion";
 interface VietnameseJobSectionProps {
   vietnameseJobs: Job[];
   onViewDetails: (job: Job) => void;
+  searchTerm?: string; // Add searchTerm prop
 }
 
-const VietnameseJobSection = ({ vietnameseJobs, onViewDetails }: VietnameseJobSectionProps) => {
+const VietnameseJobSection = ({ 
+  vietnameseJobs, 
+  onViewDetails, 
+  searchTerm = "" 
+}: VietnameseJobSectionProps) => {
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>(vietnameseJobs);
+  
+  // Filter jobs based on search term
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredJobs(vietnameseJobs);
+      return;
+    }
+    
+    const filtered = vietnameseJobs.filter(job => 
+      job.location && 
+      job.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    setFilteredJobs(filtered);
+  }, [vietnameseJobs, searchTerm]);
+
   if (!vietnameseJobs.length) return null;
 
   return (
@@ -34,7 +56,7 @@ const VietnameseJobSection = ({ vietnameseJobs, onViewDetails }: VietnameseJobSe
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {vietnameseJobs.slice(0, 4).map((job) => (
+        {filteredJobs.slice(0, 4).map((job) => (
           <Card key={job.id} className="overflow-hidden hover:shadow-md transition-shadow duration-200">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-3">
