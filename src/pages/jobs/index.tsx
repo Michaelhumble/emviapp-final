@@ -1,152 +1,210 @@
 
-import React, { useState, useEffect } from "react";
-import { useJobsData, JobFilters } from "@/hooks/useJobsData";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
+import JobGrid from "@/components/jobs/JobGrid";
+import JobPostCTA from "./JobPostCTA";
+import useJobsData from "@/hooks/useJobsData";
+import { Job } from "@/types/job";
+import { ChevronRight } from "lucide-react";
+import VietnameseJobCard from "@/components/jobs/VietnameseJobCard";
+import VietnameseJobDetailModal from "@/components/jobs/VietnameseJobDetailModal";
+import { vietnameseNailJobs } from "@/data/vietnameseNailJobs"; 
+import { vietnameseExpiredJobs } from "@/data/vietnameseNailJobs"; 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
-import JobsGrid from "@/components/jobs/JobsGrid";
-import { MobileButton } from "@/components/ui/mobile-button";
-import { Link } from "react-router-dom";
-import AuthAction from "@/components/common/AuthAction";
-import { Plus } from "lucide-react";
+
+// Helper function to normalize text for accent-insensitive search
+const normalizeText = (text: string): string => {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+};
+
+// Helper function to check if a job matches the search query
+const jobMatchesSearch = (job: Job, searchQuery: string): boolean => {
+  if (!searchQuery.trim()) return true;
+  
+  const normalizedQuery = normalizeText(searchQuery);
+  
+  // Fields to search in
+  const searchableFields = [
+    job.title || '',
+    job.location || '',
+    job.company || '',
+    job.vietnamese_description || job.description || '',
+    job.compensation_details || '',
+    job.salary_range || ''
+  ];
+  
+  // Check if any field contains the search query
+  return searchableFields.some(field => 
+    normalizeText(field.toString()).includes(normalizedQuery)
+  );
+};
 
 const JobsPage = () => {
-  const [activeTab, setActiveTab] = useState("vietnamese");
+  const { jobs, loading, error, renewalJobId, setActiveRenewalJobId } = useJobsData();
   const [expirations, setExpirations] = useState<Record<string, boolean>>({});
+  const [selectedVietnameseJob, setSelectedVietnameseJob] = useState<Job | null>(null);
+  const [isVietnameseModalOpen, setIsVietnameseModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("vietnamese");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   
-  const { 
-    jobs, 
-    loading, 
-    error, 
-    searchTerm, 
-    updateSearchTerm, 
-    featuredJobs,
-    renewalJobId,
-    setActiveRenewalJobId
-  } = useJobsData();
-
-  const [isRenewing, setIsRenewing] = useState(false);
-  const { updateFilters } = useJobsData();
+  // Filter jobs based on search query
+  const filteredVietnameseJobs = vietnameseNailJobs.filter(job => 
+    jobMatchesSearch(job, searchQuery)
+  );
+  
+  const filteredExpiredJobs = vietnameseExpiredJobs.filter(job => 
+    jobMatchesSearch(job, searchQuery)
+  );
+  
+  const filteredEnglishJobs = jobs.filter(job => 
+    jobMatchesSearch(job, searchQuery)
+  );
 
   useEffect(() => {
-    if (activeTab === "vietnamese") {
-      updateFilters({ language: 'vietnamese' });
-    } else if (activeTab === "english") {
-      updateFilters({ language: 'english' });
-    }
-  }, [activeTab, updateFilters]);
+    // Check for expired jobs
+    const jobExpiration: Record<string, boolean> = {};
+    jobs.forEach((job) => {
+      const createdDate = new Date(job.created_at);
+      const now = new Date();
+      const diffDays = Math.ceil(
+        (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      jobExpiration[job.id] = diffDays >= 30;
+    });
+    setExpirations(jobExpiration);
+  }, [jobs]);
 
-  const handleRenewJob = async (job) => {
-    setIsRenewing(true);
+  const handleRenewJob = (job: Job) => {
     setActiveRenewalJobId(job.id);
-    
-    // Simulate renewal process (replace with actual renewal logic)
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // After successful renewal, update the expirations state
-    setExpirations(prev => ({ ...prev, [job.id]: false }));
-    setIsRenewing(false);
-    setActiveRenewalJobId(null);
+    // In a real app, this would call an API to renew the job
+    setTimeout(() => {
+      const newExpirations = { ...expirations };
+      newExpirations[job.id] = false;
+      setExpirations(newExpirations);
+      setActiveRenewalJobId(null);
+    }, 1000);
+  };
+
+  const handleViewVietnameseJobDetails = (job: Job) => {
+    setSelectedVietnameseJob(job);
+    setIsVietnameseModalOpen(true);
+  };
+
+  const closeVietnameseJobDetails = () => {
+    setIsVietnameseModalOpen(false);
+    setSelectedVietnameseJob(null);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Hero Section */}
-        <div className="mb-10 text-center">
-          <h1 className="text-3xl md:text-4xl font-serif font-semibold mb-3">
-            Beauty Industry Jobs
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Find or post job opportunities in the beauty industry
-          </p>
-          <div className="flex justify-center">
-            <AuthAction
-              onAction={() => true}
-              redirectPath="/post-job"
-              customTitle="Sign in to post a job"
-            >
-              <MobileButton className="bg-primary text-white px-6 py-3">
-                Post a Job
-              </MobileButton>
-            </AuthAction>
+    <>
+      <Helmet>
+        <title>Tin tuyển dụng thợ nail | EmviApp</title>
+        <meta name="description" content="Danh sách tin tuyển dụng mới nhất cho thợ nail. Tìm việc làm phù hợp với kỹ năng và kinh nghiệm của bạn." />
+      </Helmet>
+
+      <div className="container max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-serif font-bold mb-2">
+              Beauty Industry Jobs
+            </h1>
+            <div className="flex items-center text-sm text-gray-600">
+              <span>Home</span>
+              <ChevronRight className="h-3 w-3 mx-1" />
+              <span>Jobs</span>
+            </div>
           </div>
         </div>
 
-        {/* Tabs and Post Job Buttons */}
-        <div className="flex flex-wrap justify-between items-center mb-6">
-          <div className="flex items-center gap-4 flex-grow">
-            <Tabs 
-              defaultValue="vietnamese" 
-              value={activeTab}
-              onValueChange={setActiveTab} 
-              className="w-auto"
-            >
-              <TabsList>
-                <TabsTrigger value="vietnamese">Vietnamese Nail Jobs</TabsTrigger>
-                <TabsTrigger value="english">English Jobs</TabsTrigger>
-              </TabsList>
-            </Tabs>
+        <JobPostCTA />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="vietnamese">Vietnamese Nail Jobs</TabsTrigger>
+            <TabsTrigger value="english">English Jobs</TabsTrigger>
+          </TabsList>
+          
+          {/* Search bar positioned below tabs */}
+          <JobSearchBar 
+            value={searchQuery}
+            onSearchChange={handleSearchChange}
+            placeholder={activeTab === "vietnamese" ? "Tìm kiếm theo thành phố, loại việc làm, hoặc từ khóa..." : "Search by city, job type, or keyword..."}
+          />
+          
+          <TabsContent value="vietnamese" className="space-y-8">
+            <h2 className="text-2xl font-serif font-medium mb-6">
+              Tin tuyển dụng thợ nail mới nhất
+            </h2>
             
-            {/* Post Job button next to tabs */}
-            <AuthAction
-              onAction={() => true}
-              redirectPath="/post-job"
-              customTitle="Sign in to post a job"
-            >
-              <MobileButton 
-                className="bg-primary text-white" 
-                size="sm"
-              >
-                <Plus size={18} /> Post Job
-              </MobileButton>
-            </AuthAction>
-          </div>
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredVietnameseJobs.map((job) => (
+                <VietnameseJobCard
+                  key={job.id}
+                  job={job}
+                  onViewDetails={() => handleViewVietnameseJobDetails(job)}
+                />
+              ))}
+            </div>
+            
+            {filteredExpiredJobs && filteredExpiredJobs.length > 0 && (
+              <>
+                <h2 className="text-2xl font-serif font-medium mb-6 mt-12">
+                  Tin tuyển dụng đã hết hạn
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-75">
+                  {filteredExpiredJobs.map((job) => (
+                    <VietnameseJobCard
+                      key={job.id}
+                      job={job}
+                      onViewDetails={() => handleViewVietnameseJobDetails(job)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
 
-        {/* Search Bar */}
-        <JobSearchBar 
-          value={searchTerm} 
-          onSearchChange={updateSearchTerm} 
-        />
-
-        {/* Main Content */}
-        {activeTab === "vietnamese" && (
-          <JobsGrid 
-            jobs={jobs} 
-            expirations={expirations}
-            onRenew={handleRenewJob}
-            isRenewing={isRenewing}
-            renewalJobId={renewalJobId}
-          />
-        )}
-        {activeTab === "english" && (
-          <JobsGrid 
-            jobs={jobs}
-            expirations={expirations}
-            onRenew={handleRenewJob}
-            isRenewing={isRenewing}
-            renewalJobId={renewalJobId}
-          />
-        )}
+            {/* Vietnamese job detail modal */}
+            <VietnameseJobDetailModal
+              job={selectedVietnameseJob}
+              isOpen={isVietnameseModalOpen}
+              onClose={closeVietnameseJobDetails}
+            />
+          </TabsContent>
+          
+          <TabsContent value="english">
+            <h2 className="text-2xl font-serif font-medium mb-6">
+              Current Job Listings
+            </h2>
+            
+            {loading ? (
+              <div className="py-10 text-center">
+                <p>Loading job listings...</p>
+              </div>
+            ) : error ? (
+              <div className="py-10 text-center">
+                <p>Error loading jobs. Please try again later.</p>
+              </div>
+            ) : (
+              <JobGrid
+                jobs={filteredEnglishJobs}
+                expirations={expirations}
+                onRenew={handleRenewJob}
+                isRenewing={!!renewalJobId}
+                renewalJobId={renewalJobId}
+              />
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
-      
-      {/* Floating Post Job Button */}
-      <div className="fixed bottom-16 right-6 z-40 md:bottom-8">
-        <AuthAction
-          onAction={() => true}
-          redirectPath="/post-job"
-          customTitle="Sign in to post a job"
-        >
-          <MobileButton 
-            className="bg-primary text-white shadow-lg rounded-full h-12 w-12 md:w-auto md:px-4"
-            size="sm"
-          >
-            <Plus size={20} />
-            <span className="hidden md:inline ml-1">Post Job</span>
-          </MobileButton>
-        </AuthAction>
-      </div>
-    </div>
+    </>
   );
 };
 

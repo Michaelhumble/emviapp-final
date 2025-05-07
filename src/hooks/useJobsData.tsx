@@ -119,9 +119,11 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
       
       if (filters.language && filters.language !== 'all') {
         if (filters.language === 'vietnamese') {
-          filteredJobs = filteredJobs.filter(job => job.id.startsWith('vn-'));
+          filteredJobs = filteredJobs.filter(job => job.vietnamese_description);
         } else if (filters.language === 'english') {
-          filteredJobs = filteredJobs.filter(job => job.id.startsWith('en-'));
+          filteredJobs = filteredJobs.filter(job => job.description && !job.vietnamese_description);
+        } else if (filters.language === 'bilingual') {
+          filteredJobs = filteredJobs.filter(job => job.description && job.vietnamese_description);
         }
       }
       

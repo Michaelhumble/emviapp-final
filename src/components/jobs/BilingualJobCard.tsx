@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, MapPinIcon, Phone, LockIcon, Star } from "lucide-react";
+import { CalendarIcon, MapPinIcon, Phone, LockIcon } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
@@ -48,14 +48,8 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     })();
   };
 
-  // Check if this is Magic Nails premium featured job
-  const isPremiumFeatured = job.id === 'vn-job-premium';
-
   return (
-    <Card 
-      className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''} 
-        ${isPremiumFeatured ? 'border-amber-300 bg-amber-50' : ''}`}
-    >
+    <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
         <ImageWithFallback
           src={job.image || ''}
@@ -67,17 +61,9 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             Featured
           </Badge>
         )}
-        {isPremiumFeatured && (
-          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-amber-600/80 to-transparent p-2">
-            <div className="flex items-center text-white">
-              <Star className="h-4 w-4 mr-1 fill-amber-300 text-amber-300" />
-              <span className="text-sm font-medium">Featured by EmviApp</span>
-            </div>
-          </div>
-        )}
       </div>
       
-      <CardContent className={`p-4 flex flex-col flex-grow ${isPremiumFeatured ? 'bg-amber-50' : ''}`}>
+      <CardContent className="p-4 flex flex-col flex-grow">
         <div className="mb-3">
           <h3 className="font-bold text-lg line-clamp-2">{job.title}</h3>
           
@@ -154,7 +140,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
               onClick={onViewDetails}
               className="text-xs"
             >
-              Xem Chi Tiết
+              View Details
             </Button>
           </div>
         </div>

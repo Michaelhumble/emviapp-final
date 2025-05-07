@@ -1,27 +1,28 @@
 
 import React from 'react';
 import { Search } from 'lucide-react';
-import { Input } from "@/components/ui/input";
 
 interface JobSearchBarProps {
-  value: string;
+  placeholder?: string;
   onSearchChange: (value: string) => void;
+  value: string;
 }
 
-const JobSearchBar: React.FC<JobSearchBarProps> = ({
-  value,
-  onSearchChange
+const JobSearchBar: React.FC<JobSearchBarProps> = ({ 
+  placeholder = "Search by city, job type, or keyword...", 
+  onSearchChange,
+  value
 }) => {
   return (
-    <div className="relative mb-6">
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-4 w-4 text-gray-400" />
+    <div className="relative w-full max-w-3xl mx-auto mb-6">
+      <div className="relative flex items-center">
+        <div className="absolute left-3 flex items-center pointer-events-none text-gray-400">
+          <Search size={18} />
         </div>
-        <Input
+        <input
           type="text"
-          className="pl-10 pr-3 py-2 w-full rounded-md border border-gray-200 focus:border-primary focus:ring focus:ring-primary/20 shadow-sm"
-          placeholder="Search by city, job type, or keyword…"
+          className="w-full h-12 pl-10 pr-4 bg-white border border-gray-200 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+          placeholder={placeholder}
           value={value}
           onChange={(e) => onSearchChange(e.target.value)}
         />
