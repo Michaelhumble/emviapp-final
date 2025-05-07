@@ -16,6 +16,7 @@ export interface Job {
     phone?: string;
     email?: string;
     notes?: string;
+    zalo?: string;
   };
   for_sale?: boolean;
   asking_price?: string;
@@ -25,6 +26,8 @@ export interface Job {
   salon_features?: string[];
   specialties?: string[];
   is_featured?: boolean;
+  featured?: boolean;
+  featured_text?: string;
   status?: string;
   image?: string;
   weekly_pay?: boolean;
@@ -63,10 +66,6 @@ export interface Job {
   pricingTier?: 'diamond' | 'premium' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
   
   // Add missing properties
-  featured?: boolean;
-  featured_text?: string;
-  
-  // Add Vietnamese salon for sale specific fields
   monthly_revenue?: string;
   station_count?: string;
   chair_count?: string;

@@ -121,15 +121,15 @@ const JobsPage = () => {
           onViewDetails={viewJobDetails} 
         />
         
-        {/* Vietnamese Salon Sales Section */}
-        <SalonSalesSection 
-          listings={filteredSalonSales} 
-          onViewDetails={viewJobDetails} 
-        />
-        
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <FreeListingsSection 
           jobs={filteredFreeJobs} 
+          onViewDetails={viewJobDetails} 
+        />
+        
+        {/* Vietnamese Salon Sales Section */}
+        <SalonSalesSection 
+          listings={filteredSalonSales} 
           onViewDetails={viewJobDetails} 
         />
         
