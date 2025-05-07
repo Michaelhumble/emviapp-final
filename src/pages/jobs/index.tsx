@@ -55,6 +55,24 @@ const JobsPage = () => {
     setSearchTerm(value);
   };
 
+  // Filter jobs based on search term
+  const filterJobs = (jobs: Job[]) => {
+    if (!searchTerm.trim()) return jobs;
+    
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return jobs.filter(job => 
+      job.title?.toLowerCase().includes(lowerSearchTerm) || 
+      job.company?.toLowerCase().includes(lowerSearchTerm) ||
+      job.location.toLowerCase().includes(lowerSearchTerm) ||
+      job.description?.toLowerCase().includes(lowerSearchTerm)
+    );
+  };
+
+  const filteredDiamondJobs = filterJobs(diamondJobs);
+  const filteredPremiumJobs = filterJobs(premiumJobs);
+  const filteredFreeJobs = filterJobs(freeJobs);
+  const filteredExpiredJobs = filterJobs(expiredJobs);
+
   return (
     <div className="container mx-auto px-4 py-6">
       <Helmet>
@@ -80,25 +98,25 @@ const JobsPage = () => {
       <div className="mt-8 space-y-12">
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <TopDiamondFeaturedSection 
-          featuredJobs={diamondJobs.slice(0, 1)} 
+          featuredJobs={filteredDiamondJobs.slice(0, 1)} 
           onViewDetails={viewJobDetails} 
         />
         
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <PremiumListingsSection 
-          jobs={premiumJobs} 
+          jobs={filteredPremiumJobs} 
           onViewDetails={viewJobDetails} 
         />
         
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <FreeListingsSection 
-          jobs={freeJobs} 
+          jobs={filteredFreeJobs} 
           onViewDetails={viewJobDetails} 
         />
         
         {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
         <ExpiredListingsSection 
-          jobs={expiredJobs} 
+          jobs={filteredExpiredJobs} 
           onViewDetails={viewJobDetails} 
           onRenew={handleRenewJob}
           isRenewing={isRenewing}

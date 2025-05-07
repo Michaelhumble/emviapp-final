@@ -1,22 +1,23 @@
 
 import { Job } from "@/types/job";
-import { featuredNailsAds } from "@/utils/featuredNailsAds";
 
-// Convert featured nail ads to Job format
-export const diamondJobs: Job[] = featuredNailsAds.map((ad, index) => ({
-  id: ad.id || `diamond-job-${index}`,
-  title: ad.title,
-  company: ad.title,
-  location: ad.location,
-  created_at: new Date().toISOString(),
-  description: ad.description,
-  image: ad.photos?.[0] || "",
-  contact_info: {
-    phone: ad.contact,
-    owner_name: ad.title
-  },
-  salary_range: ad.price,
-  pricingTier: "diamond",
-  is_vietnamese_listing: true,
-  isPinned: index === 0, // Magic Nails (first item) is pinned
-}));
+// Single diamond job - Magic Nails (protected listing)
+export const diamondJobs: Job[] = [
+  {
+    id: "magic-nails-diamond-1",
+    title: "Tìm Thợ Nails – Magic Nails, Great Falls, MT",
+    company: "Magic Nails",
+    location: "Great Falls, MT",
+    created_at: new Date().toISOString(),
+    description: "Magic Nails cần thợ biết làm bột và tay chân nước.",
+    image: "/lovable-uploads/74b3ba02-2378-41d7-8cb5-023145e94700.png", 
+    contact_info: {
+      phone: "(406) 770-3070",
+      owner_name: "Magic Nails Owner"
+    },
+    salary_range: "$1,200–$1,500/tuần",
+    pricingTier: "diamond",
+    is_vietnamese_listing: true,
+    isPinned: true,
+  }
+];
