@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -11,7 +12,8 @@ import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
-import StableSalonPage from "@/pages/salons/StableSalonPage"; // Keep the stable wrapper
+import StableSalonPage from "@/pages/salons/StableSalonPage";
+import Layout from "@/components/layout/Layout";
 
 function App() {
   const location = useLocation();

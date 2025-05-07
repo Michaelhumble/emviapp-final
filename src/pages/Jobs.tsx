@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import JobsPage from './jobs';
 import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
 
 const Jobs = () => {
   useEffect(() => {
@@ -11,7 +12,7 @@ const Jobs = () => {
   }, []);
 
   return (
-    <>
+    <Layout>
       <Helmet>
         <title>Beauty Industry Jobs | EmviApp</title>
         <meta 
@@ -20,7 +21,7 @@ const Jobs = () => {
         />
       </Helmet>
       <JobsPage />
-    </>
+    </Layout>
   );
 };
 

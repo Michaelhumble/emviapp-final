@@ -1,5 +1,5 @@
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
@@ -8,7 +8,6 @@ import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
 import LanguageToggle from "@/components/layout/LanguageToggle";
-import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();

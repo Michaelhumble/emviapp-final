@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Navbar from './Navbar';
-// Swap to new nav bar:
 import SuperMobileBottomNavBar from './SuperMobileBottomNavBar';
 
 interface LayoutProps {

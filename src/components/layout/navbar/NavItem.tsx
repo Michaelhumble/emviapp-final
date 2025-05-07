@@ -1,7 +1,6 @@
 
 import { Link } from "react-router-dom";
 import { NavigationItem } from "./types";
-import { motion } from "framer-motion";
 
 interface NavItemProps {
   item: NavigationItem;
