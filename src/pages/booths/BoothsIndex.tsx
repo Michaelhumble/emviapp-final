@@ -1,205 +1,51 @@
-
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import React from 'react';
+import { Container } from '@/components/ui/container';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { MapPin, DollarSign } from 'lucide-react';
 import { getAllBooths } from '@/utils/featuredContent';
-import { Job } from '@/types/job';
-import { isNailJob, getNailBoothImage } from '@/utils/nailSalonImages';
-import { isBarberJob, getBarberBoothImage } from '@/utils/barberShopImages';
-import { isHairJob, getHairBoothImage } from '@/utils/hairSalonImages';
 
 const BoothsIndex = () => {
-  const [booths, setBooths] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBooths = () => {
-      try {
-        // Use our premium booths data
-        const premiumBooths = getAllBooths();
-        
-        // Assign appropriate images to each booth
-        premiumBooths.forEach(booth => {
-          // Determine if a booth is for barber services - check this first
-          const isBarber = isBarberJob(booth.title || '', booth.description || '') || 
-                         (booth.specialties?.some(s => s.toLowerCase().includes('barber')) ?? false);
-          
-          // Determine if a booth is for hair stylist services - check second
-          const isHair = !isBarber && (isHairJob(booth.title || '', booth.description || '') || 
-                       (booth.specialties?.some(s => s.toLowerCase().includes('hair') || s.toLowerCase().includes('stylist')) ?? false));
-                         
-          // Determine if a booth is for nail services - check last
-          const isNail = !isBarber && !isHair && (isNailJob(booth.title || '', booth.description || '') || 
-                       (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false));
-                       
-          // Assign and store appropriate image
-          if (isBarber) {
-            booth.imageUrl = getBarberBoothImage();
-          } else if (isHair) {
-            booth.imageUrl = getHairBoothImage();
-          } else if (isNail) {
-            booth.imageUrl = getNailBoothImage();
-          }
-        });
-        
-        setBooths(premiumBooths);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading booths:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchBooths();
-  }, []);
-
-  // Determine if a booth is for barber services - check this first
-  const isBarberBooth = (booth: Job): boolean => {
-    return isBarberJob(booth.title || '', booth.description || '') || 
-           (booth.specialties?.some(s => s.toLowerCase().includes('barber')) ?? false);
-  };
-
-  // Determine if a booth is for hair stylist services - check second
-  const isHairBooth = (booth: Job): boolean => {
-    return !isBarberBooth(booth) && (
-      isHairJob(booth.title || '', booth.description || '') || 
-      (booth.specialties?.some(s => s.toLowerCase().includes('hair') || s.toLowerCase().includes('stylist')) ?? false)
-    );
-  };
-
-  // Determine if a booth is for nail services - check last
-  const isNailBooth = (booth: Job): boolean => {
-    return !isBarberBooth(booth) && !isHairBooth(booth) && (
-      isNailJob(booth.title || '', booth.description || '') || 
-      (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false)
-    );
-  };
+  const booths = getAllBooths();
 
   return (
-    <Layout>
-      <div className="container mx-auto py-10 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Booth Rentals</h1>
-          <p className="text-muted-foreground mt-2">
-            Find the perfect salon booth to rent for your beauty business
-          </p>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="h-96 bg-gray-100 animate-pulse rounded-lg"></div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {booths.map(booth => {
-              // Check for barber booth first, then hair booth, then nail booth
-              const isBarber = isBarberBooth(booth);
-              const isHair = !isBarber && isHairBooth(booth);
-              const isNail = !isBarber && !isHair && isNailBooth(booth);
-              
-              return (
-                <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
-                  <div className="aspect-video w-full overflow-hidden">
-                    {booth.imageUrl ? (
-                      <ImageWithFallback
-                        src={booth.imageUrl}
-                        alt={booth.title || (
-                          isBarber ? "Barber Booth Rental" : 
-                          isHair ? "Hair Stylist Booth Rental" : 
-                          isNail ? "Nail Booth Rental" : 
-                          "Booth Rental"
-                        )}
-                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                        priority={true}
-                      />
-                    ) : isBarber ? (
-                      <ImageWithFallback
-                        src={getBarberBoothImage()}
-                        alt={booth.title || "Barber Booth Rental"}
-                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                        priority={true}
-                      />
-                    ) : isHair ? (
-                      <ImageWithFallback
-                        src={getHairBoothImage()}
-                        alt={booth.title || "Hair Stylist Booth Rental"}
-                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                        priority={true}
-                      />
-                    ) : isNail ? (
-                      <ImageWithFallback
-                        src={getNailBoothImage()}
-                        alt={booth.title || "Nail Booth Rental"}
-                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                        priority={true}
-                      />
-                    ) : (
-                      <ImageWithFallback
-                        src={booth.image}
-                        alt={booth.title || "Booth Rental"}
-                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                        businessName={booth.company || "Salon Booth"}
-                      />
-                    )}
-                  </div>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl">{booth.title || "Booth Rental"}</CardTitle>
-                      <Badge 
-                        variant={booth.status === "active" ? "outline" : "secondary"} 
-                        className={booth.status === "active" ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}
-                      >
-                        {booth.status === "active" ? 'Available' : 'Unavailable'}
-                      </Badge>
-                    </div>
-                    <CardDescription className="flex items-center mt-1">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {booth.location}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <div className="flex items-center text-lg font-semibold">
-                      <DollarSign className="h-5 w-5 text-primary" />
-                      {booth.compensation_details || "Contact for pricing"}
-                    </div>
-                    
-                    <p className="mt-3 text-sm text-gray-600 line-clamp-3">
-                      {booth.description?.split('\n')[0] || "Beautiful booth available in a premium salon location."}
-                    </p>
-                    
-                    {booth.company && (
-                      <div className="mt-3 flex items-center text-sm">
-                        <span className="font-medium">At: </span>
-                        <span className="ml-1 text-primary">{booth.company}</span>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter>
-                    <Link to={`/booths/${booth.id}`} className="w-full">
-                      <Button className="w-full">View Details</Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+    <Container className="py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold font-serif mb-2">Booth Rentals</h1>
+        <p className="text-gray-600">Find booth rental opportunities in your area.</p>
       </div>
-    </Layout>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {booths.map((booth) => (
+          <Card key={booth.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="relative">
+              <div className="aspect-video bg-gray-100">
+                <ImageWithFallback
+                  src={booth.image || ""}
+                  alt={booth.title || "Booth Rental"}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <Badge className="absolute top-2 left-2 bg-white text-black rounded-full">{booth.type}</Badge>
+            </div>
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-2">{booth.title}</h3>
+              <div className="flex items-center text-gray-500 mb-2">
+                <MapPin className="h-4 w-4 mr-1" />
+                {booth.location}
+              </div>
+              <div className="flex items-center text-gray-700 font-medium">
+                <DollarSign className="h-4 w-4 mr-1" />
+                {booth.price} / month
+              </div>
+              <Button variant="outline" className="mt-4 w-full">View Details</Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Container>
   );
 };
 

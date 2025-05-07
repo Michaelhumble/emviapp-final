@@ -11,7 +11,7 @@ import { isNailSalon, isNailJob, getNailSalonImage, getNailJobImage } from "@/ut
 import { isLashSalon, isBrowSalon, isLashBrowJob, getLashSalonImage, getBrowSalonImage, getLashBrowJobImage } from "@/utils/lashBrowSalonImages";
 import { isMassageJob, getMassageJobImage } from '@/utils/massageSalonImages';
 import { isBarberJob, getBarberJobImage } from '@/utils/barberShopImages';
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface ListingCardProps {

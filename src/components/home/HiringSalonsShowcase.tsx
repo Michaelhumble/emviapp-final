@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import jobsData from '@/data/jobsData';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { Job } from '@/types/job';
 import ValidatedLink from '@/components/common/ValidatedLink';
 

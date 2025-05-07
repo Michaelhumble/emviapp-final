@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -9,7 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { getFeaturedJobs } from "@/utils/featuredContent";
 import { isNailJob, getNailJobImage } from "@/utils/nailSalonImages";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const TopBeautyJobs = () => {
   const isMobile = useIsMobile();

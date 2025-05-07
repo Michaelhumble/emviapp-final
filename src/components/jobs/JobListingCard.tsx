@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Job } from "@/types/job";
@@ -18,7 +17,7 @@ import { isNailJob, getNailJobImage, NAIL_SALON_IMAGES } from "@/utils/nailSalon
 import { isBarberJob, getBarberJobImage } from "@/utils/barberShopImages";
 import { isMassageJob, getMassageJobImage } from "@/utils/massageSalonImages";
 import { isLashBrowJob, getLashBrowJobImage } from "@/utils/lashBrowSalonImages";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface JobListingCardProps {
