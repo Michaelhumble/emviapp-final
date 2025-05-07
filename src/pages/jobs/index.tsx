@@ -6,6 +6,7 @@ import { generateVietnameseNailJobs } from "@/utils/jobs/vietnameseNailJobSample
 import JobGrid from "@/components/jobs/JobGrid";
 import useSampleJobsData from "@/hooks/useSampleJobsData";
 import { Container } from "@/components/ui/container";
+import JobDetailModal from "@/components/jobs/JobDetailModal";
 
 const JobsPage = () => {
   const { jobs, loading, error, featuredJobs, updateSearchTerm } = useSampleJobsData();
@@ -14,6 +15,7 @@ const JobsPage = () => {
   const [expirations, setExpirations] = useState<Record<string, boolean>>({});
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
   const [isRenewing, setIsRenewing] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value);
@@ -33,6 +35,14 @@ const JobsPage = () => {
       setIsRenewing(false);
       setRenewalJobId(null);
     }, 1000);
+  };
+
+  const handleViewJobDetails = (job: any) => {
+    setSelectedJob(job);
+  };
+
+  const handleCloseJobDetails = () => {
+    setSelectedJob(null);
   };
 
   return (
@@ -57,10 +67,10 @@ const JobsPage = () => {
         onSearchChange={handleSearchChange} 
       />
 
-      {/* Pass the search term to the VietnameseJobSection */}
+      {/* Pass the search term and view details handler to the VietnameseJobSection */}
       <VietnameseJobSection 
         vietnameseJobs={vietnameseJobs} 
-        onViewDetails={(job) => console.log("View details", job.id)}
+        onViewDetails={handleViewJobDetails}
         searchTerm={searchValue}
       />
 
@@ -72,6 +82,15 @@ const JobsPage = () => {
         isRenewing={isRenewing}
         renewalJobId={renewalJobId}
       />
+
+      {/* Add job detail modal for Vietnamese job listings */}
+      {selectedJob && (
+        <JobDetailModal
+          job={selectedJob}
+          isOpen={!!selectedJob}
+          onClose={handleCloseJobDetails}
+        />
+      )}
     </Container>
   );
 };

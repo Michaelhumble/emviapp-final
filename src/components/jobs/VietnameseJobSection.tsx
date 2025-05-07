@@ -20,11 +20,13 @@ const VietnameseJobSection = ({
 }: VietnameseJobSectionProps) => {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(vietnameseJobs);
   const [nailImages, setNailImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
   
   // Fetch nail salon images from Supabase bucket
   useEffect(() => {
     const fetchNailImages = async () => {
       try {
+        setLoading(true);
         const { data, error } = await supabase.storage.from('nails').list('', {
           sortBy: { column: 'name', order: 'asc' },
         });
@@ -45,6 +47,8 @@ const VietnameseJobSection = ({
         }
       } catch (err) {
         console.error('Failed to fetch nail salon images:', err);
+      } finally {
+        setLoading(false);
       }
     };
     
