@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Phone, LockIcon } from "lucide-react";
 import { useAuth } from "@/context/auth";
@@ -5,16 +6,16 @@ import AuthAction from "@/components/common/AuthAction";
 
 interface JobCardContactProps {
   phoneNumber?: string;
-  showAlways?: boolean;
+  showAlways?: boolean; // This prop will be ignored as per new requirements
 }
 
-const JobCardContact = ({ phoneNumber, showAlways = false }: JobCardContactProps) => {
+const JobCardContact = ({ phoneNumber }: JobCardContactProps) => {
   const { isSignedIn } = useAuth();
   
   if (!phoneNumber) return null;
 
-  // Show contact info if user is signed in or if showAlways is true
-  if (isSignedIn || showAlways) {
+  // Only show contact info if user is signed in
+  if (isSignedIn) {
     return (
       <div className="flex items-center text-base">
         <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
