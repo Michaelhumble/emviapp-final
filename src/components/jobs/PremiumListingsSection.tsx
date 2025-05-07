@@ -4,11 +4,10 @@ import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Phone } from "lucide-react";
+import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
-import { useAuth } from "@/context/auth";
-import AuthAction from "@/components/common/AuthAction";
+import JobCardContact from "./JobCardContact";
 
 interface PremiumListingsSectionProps {
   jobs: Job[];
@@ -16,8 +15,6 @@ interface PremiumListingsSectionProps {
 }
 
 const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionProps) => {
-  const { isSignedIn } = useAuth();
-
   if (!jobs.length) return null;
 
   return (
@@ -71,25 +68,9 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
               </div>
 
               <div className="border-t border-gray-100 pt-3 mb-4">
-                {job.contact_info?.phone ? (
-                  isSignedIn ? (
-                    <div className="flex items-center text-base">
-                      <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
-                      <span>{job.contact_info.phone}</span>
-                    </div>
-                  ) : (
-                    <AuthAction
-                      customTitle="Sign in to see contact details"
-                      onAction={() => true}
-                      fallbackContent={
-                        <div className="text-base text-gray-500 italic flex items-center gap-1">
-                          <span className="text-sm">🔒</span>
-                          <span>Sign in to see contact details</span>
-                        </div>
-                      }
-                    />
-                  )
-                ) : null}
+                {job.contact_info?.phone && (
+                  <JobCardContact phoneNumber={job.contact_info.phone} />
+                )}
               </div>
 
               <Button

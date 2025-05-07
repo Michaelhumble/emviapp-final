@@ -3,11 +3,10 @@ import { Job } from "@/types/job";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Phone, Diamond } from "lucide-react";
+import { MapPin, Calendar, Diamond } from "lucide-react";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { motion } from "framer-motion";
-import { useAuth } from "@/context/auth";
-import AuthAction from "@/components/common/AuthAction";
+import JobCardContact from "./JobCardContact";
 
 interface TopDiamondFeaturedSectionProps {
   featuredJobs: Job[];
@@ -15,8 +14,6 @@ interface TopDiamondFeaturedSectionProps {
 }
 
 const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFeaturedSectionProps) => {
-  const { isSignedIn } = useAuth();
-
   if (!featuredJobs.length) return null;
 
   // Get the first real job (Magic Nails)
@@ -60,6 +57,9 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
             <div className="mb-3">
               <h3 className="font-playfair font-semibold text-lg line-clamp-2">{mainJob.title}</h3>
               <p className="text-gray-600 font-medium">{mainJob.company}</p>
+              {mainJob.featured_text && (
+                <p className="text-amber-600 text-sm mt-1">{mainJob.featured_text}</p>
+              )}
             </div>
 
             <div className="flex items-center text-base text-gray-600 mb-2">
@@ -75,25 +75,9 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
             </p>
 
             <div className="border-t border-amber-100 pt-3 mb-4">
-              {mainJob.contact_info?.phone ? (
-                isSignedIn ? (
-                  <div className="flex items-center text-base">
-                    <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
-                    <span>{mainJob.contact_info.phone}</span>
-                  </div>
-                ) : (
-                  <AuthAction
-                    customTitle="Sign in to see contact details"
-                    onAction={() => true}
-                    fallbackContent={
-                      <div className="text-base text-gray-500 italic flex items-center gap-1">
-                        <span className="text-base">🔒</span>
-                        <span>Sign in to see contact details</span>
-                      </div>
-                    }
-                  />
-                )
-              ) : null}
+              {mainJob.contact_info?.phone && (
+                <JobCardContact phoneNumber={mainJob.contact_info.phone} />
+              )}
             </div>
 
             <Button

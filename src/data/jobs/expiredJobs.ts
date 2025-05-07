@@ -45,5 +45,38 @@ export const expiredJobs: Job[] = [
     },
     status: "expired",
     pricingTier: "expired"
+  },
+  // Two additional Vietnamese expired listings
+  {
+    id: "expired-4",
+    title: "Cần Thợ Nails Gấp - Bao Lương",
+    company: "Sunshine Nails",
+    location: "Portland, OR",
+    created_at: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tiệm đông khách, cần thợ nails biết làm đủ thứ, bột, chân tay nước. Bao lương $1000-$1200/tuần.",
+    image: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
+    contact_info: {
+      owner_name: "Hoa",
+      phone: "(503) 555-1234"
+    },
+    status: "expired",
+    pricingTier: "expired",
+    is_vietnamese_listing: true
+  },
+  {
+    id: "expired-5",
+    title: "Cần Thợ Nail - $1300/Tuần",
+    company: "Lucky Nails & Spa",
+    location: "San Jose, CA",
+    created_at: new Date(Date.now() - 150 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tiệm khu Mỹ trắng, đông khách tip cao. Cần thợ bột và thợ chân tay nước, kinh nghiệm trên 2 năm.",
+    image: "/lovable-uploads/9c17ae10-5590-4c10-a59f-0830de25f070.png",
+    contact_info: {
+      owner_name: "Tuấn",
+      phone: "(408) 555-8765"
+    },
+    status: "expired",
+    pricingTier: "expired",
+    is_vietnamese_listing: true
   }
 ];

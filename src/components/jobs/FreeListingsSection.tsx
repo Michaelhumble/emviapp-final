@@ -3,8 +3,9 @@ import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Phone } from "lucide-react";
+import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import JobCardContact from "./JobCardContact";
 
 interface FreeListingsSectionProps {
   jobs: Job[];
@@ -60,10 +61,7 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
               <div className="flex justify-between items-center mt-3">
                 <div>
                   {job.contact_info?.phone && (
-                    <div className="flex items-center text-base">
-                      <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
-                      <span>{job.contact_info.phone}</span>
-                    </div>
+                    <JobCardContact phoneNumber={job.contact_info.phone} showAlways={true} />
                   )}
                 </div>
                 

@@ -9,7 +9,7 @@ import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
 import { Job } from "@/types/job";
-import { Plus } from "lucide-react";
+import { Plus, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Import job data
@@ -82,12 +82,23 @@ const JobsPage = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl lg:text-4xl font-playfair font-semibold">Beauty Industry Jobs</h1>
         
-        <Button 
-          onClick={goToPostJob} 
-          className="rounded-full bg-gradient-to-r from-[#9A7B69] to-[#FFB199] hover:scale-105 transition-transform font-semibold flex items-center gap-2"
-        >
-          <Plus size={18} /> Add Job
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            as={Link} 
+            to="/"
+            variant="outline"
+            className="rounded-full border-[#9A7B69] text-[#9A7B69] hover:bg-[#9A7B69]/10 flex items-center gap-1"
+          >
+            <ArrowLeft size={16} /> Back Home
+          </Button>
+          
+          <Button 
+            onClick={goToPostJob} 
+            className="rounded-full bg-gradient-to-r from-[#9A7B69] to-[#FFB199] hover:scale-105 transition-transform font-semibold flex items-center gap-2"
+          >
+            <Plus size={18} /> Add Job
+          </Button>
+        </div>
       </div>
       
       <JobSearchBar 
