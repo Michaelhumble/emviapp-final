@@ -1,3 +1,4 @@
+
 import { Job } from '@/types/job';
 
 // Current active Vietnamese job listings 
@@ -60,7 +61,7 @@ export const vietnameseNailJobs: Job[] = [
     created_at: new Date().toISOString()
   },
   
-  // Adding the 9 new job listings below
+  // Adding the 9 new job listings with images
   {
     id: 'vn-job-4',
     title: 'Tuyển Thợ Nail – Clawson, MI',
@@ -72,7 +73,8 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(248) 403-6472 | (248) 525-9911'
     },
     specialties: ['Bột', 'Dip', 'Gel-X'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/858af941-13ac-412a-9747-38bc7a6f0e19.png'
   },
   {
     id: 'vn-job-5',
@@ -85,7 +87,8 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(346) 398-6868 (gặp Nhi)'
     },
     specialties: ['Nail Design', 'Receptionist'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/bd877b0a-2f98-45fb-8e1a-37ad868ae786.png'
   },
   {
     id: 'vn-job-6',
@@ -98,7 +101,8 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(916) 802-1922'
     },
     specialties: ['Nail Technician'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/abbd160d-295b-46cd-9777-d590aab8ddb0.png'
   },
   {
     id: 'vn-job-7',
@@ -111,7 +115,8 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(512) 540-6173 | (806) 777-0526'
     },
     specialties: ['Nail Technician'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/59818517-3985-420d-9aa9-3d1af667c11f.png'
   },
   {
     id: 'vn-job-8',
@@ -124,7 +129,8 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(551) 333-5678'
     },
     specialties: ['Bột', 'Design'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/b939e509-7f6f-4322-a0f5-b269fa617531.png'
   },
   {
     id: 'vn-job-9',
@@ -138,7 +144,8 @@ export const vietnameseNailJobs: Job[] = [
     },
     specialties: ['Chân Tay Nước'],
     created_at: new Date().toISOString(),
-    is_urgent: true
+    is_urgent: true,
+    image: '/lovable-uploads/858af941-13ac-412a-9747-38bc7a6f0e19.png'
   },
   {
     id: 'vn-job-10',
@@ -151,7 +158,8 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(206) 888-1234'
     },
     specialties: ['Nail Technician'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/bd877b0a-2f98-45fb-8e1a-37ad868ae786.png'
   },
   {
     id: 'vn-job-11',
@@ -164,7 +172,8 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(407) 777-9898'
     },
     specialties: ['Dip Powder'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/abbd160d-295b-46cd-9777-d590aab8ddb0.png'
   },
   {
     id: 'vn-job-12',
@@ -177,11 +186,12 @@ export const vietnameseNailJobs: Job[] = [
       phone: '(323) 555-9012'
     },
     specialties: ['Full Set'],
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    image: '/lovable-uploads/59818517-3985-420d-9aa9-3d1af667c11f.png'
   }
 ];
 
-// Expired job listings (unchanged)
+// Expired job listings
 export const vietnameseExpiredJobs: Job[] = [
   {
     id: 'vn-expired-1',
