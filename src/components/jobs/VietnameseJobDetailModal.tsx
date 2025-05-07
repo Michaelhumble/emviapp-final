@@ -1,13 +1,10 @@
-
-import React from "react";
-import { useAuth } from "@/context/auth";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Job } from "@/types/job";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Phone, DollarSign } from "lucide-react";
+import { MapPin, Phone, Calendar, Lock } from "lucide-react";
+import { Job } from "@/types/job";
+import { useAuth } from "@/context/auth";
 import { formatDistanceToNow } from "date-fns";
-import AuthAction from "@/components/common/AuthAction";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface VietnameseJobDetailModalProps {
@@ -16,156 +13,182 @@ interface VietnameseJobDetailModalProps {
   onClose: () => void;
 }
 
-const VietnameseJobDetailModal: React.FC<VietnameseJobDetailModalProps> = ({ job, isOpen, onClose }) => {
-  const { isSignedIn } = useAuth();
+const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailModalProps) => {
+  const { user } = useAuth();
   
   if (!job) return null;
-  
-  // Format the date
-  const getPostedDate = () => {
+
+  // Format the posted date
+  const formatPostedDate = (dateString: string) => {
     try {
-      const date = new Date(job.created_at);
-      const distanceText = formatDistanceToNow(date, { addSuffix: true });
-      return distanceText;
+      const date = new Date(dateString);
+      return formatDistanceToNow(date, { addSuffix: true });
     } catch (error) {
-      return "Mới đăng";
+      return "Recently";
+    }
+  };
+
+  const isPinned = job.isPinned === true;
+  const isMagicNails = job.title?.includes('Magic Nails') || job.company?.includes('Magic Nails');
+  const isExpired = job.status === 'expired';
+  
+  // Get job image based on job ID - ensuring each job has a unique image in the detail view
+  const getJobDetailImage = () => {
+    // If it's Magic Nails (pinned showcase), keep its specific image
+    if (isMagicNails) {
+      return "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png";
+    }
+    
+    // For other jobs, assign a unique image based on job ID or index
+    const jobId = job.id;
+    
+    // Map specific job IDs to unique nail salon images
+    switch(jobId) {
+      // Active jobs with unique images
+      case "job-001": return "/lovable-uploads/c1533abd-8de5-4ec3-8ee5-868538a5d6dd.png";
+      case "job-002": return "/lovable-uploads/11925359-6327-46e7-b52e-79b4a4111e34.png";
+      case "job-003": return "/lovable-uploads/1575b88f-f835-4d89-9109-bf518fc4cfb1.png";
+      case "job-004": return "/lovable-uploads/7a729a53-192a-40cd-a28f-e28023529d8f.png";
+      case "job-005": return "/lovable-uploads/19f9a395-4b4e-4e60-bd13-e0cde9064550.png";
+      
+      // Expired jobs with unique images
+      case "job-006": return "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png";
+      case "job-007": return "/lovable-uploads/8858fff4-1fa3-4803-86b1-beadca5fd1df.png";
+      case "job-008": return "/lovable-uploads/2542d0a3-5117-433d-baee-5c0fe2bfeca2.png";
+      case "job-009": return "/lovable-uploads/89855878-2908-47b5-98b0-1935d73cdd71.png";
+      
+      // Default in case of any other job ID
+      default: return job.image || "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png";
     }
   };
   
-  // Get image based on job ID for display
-  const getJobImage = (jobId: string) => {
-    const imageMap: Record<string, string> = {
-      '1': '/lovable-uploads/5f0aa367-9d6b-448b-83d8-021e4cb082af.png',
-      '2': '/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png',
-      '3': '/lovable-uploads/4edfaa59-6542-4bad-9e6b-1cd0d7ae9113.png',
-      '4': '/lovable-uploads/89bafcff-30b0-441e-b557-6b5a6126cbdb.png',
-      '5': '/lovable-uploads/90e01456-efd5-4523-8034-5c1d321949be.png',
-      '101': '/lovable-uploads/55fac081-9f6d-4220-a212-94ee2720bde9.png',
-      '102': '/lovable-uploads/4c4050d4-4a79-4610-8d47-bf6cc92bf8a3.png',
-      '103': '/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png',
-      'featured': '/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png',
-    };
-    
-    return imageMap[jobId] || '/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png';
-  };
+  const jobImage = getJobDetailImage();
   
-  const isExpired = () => {
-    return job.status === 'expired' || (() => {
-      const createdDate = new Date(job.created_at);
-      const now = new Date();
-      const diffDays = Math.ceil(
-        (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      return diffDays >= 30;
-    })();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div>
-          <div className="relative mb-4 aspect-video">
-            <ImageWithFallback 
-              src={getJobImage(job.id)}
-              alt={job.title || "Tin tuyển dụng"}
-              className="w-full h-full object-cover rounded-md"
-              businessName={job.title || "Tin tuyển dụng"}
-              priority={true}
-            />
-            {isExpired() && (
-              <Badge 
-                variant="outline" 
-                className="absolute top-3 right-3 bg-white/80 text-red-600 border-red-200 backdrop-blur-sm"
-              >
-                Hết Hạn
-              </Badge>
-            )}
-          </div>
-          
-          <div className="flex items-start justify-between mb-4">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent 
+        className={`sm:max-w-[600px] max-h-[85vh] overflow-y-auto rounded-2xl border-0 shadow-xl
+                   ${isPinned && isMagicNails ? 'bg-[#FAF3E0]' : 'bg-white'}`}
+      >
+        <DialogHeader className="pb-2">
+          <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-2xl font-bold">{job.title}</h2>
-              {job.company && <p className="text-gray-700 mt-1">{job.company}</p>}
+              <DialogTitle className="text-xl font-semibold font-playfair">{job.title}</DialogTitle>
+              {isPinned && isMagicNails && (
+                <p className="text-emerald-700 text-sm mt-1 italic">
+                  ✨ Featured by EmviApp. Our most loved salon this month.
+                </p>
+              )}
             </div>
-            <div>
-              {job.is_featured && (
-                <Badge className="bg-amber-500 text-white border-0 mr-2">
-                  Nổi Bật
+            <div className="flex flex-wrap gap-1.5">
+              {isPinned && isMagicNails && (
+                <Badge className="bg-[#FFD700] text-black px-3 py-1 rounded-full text-xs shadow-md hover:animate-pulse">
+                  🏆 EmviApp Premium Showcase
                 </Badge>
               )}
-              {job.is_urgent && (
-                <Badge className="bg-red-500 text-white border-0">
+              
+              {isExpired && (
+                <Badge className="bg-red-100 text-red-800 font-medium">
+                  Đã hết hạn
+                </Badge>
+              )}
+              
+              {isPinned && !isMagicNails && !isExpired && (
+                <Badge className="bg-amber-100 text-amber-800 font-medium">
+                  Tin Gấp
+                </Badge>
+              )}
+              
+              {job.is_urgent && !isPinned && !isExpired && (
+                <Badge className="bg-rose-100 text-rose-800 font-medium">
                   Gấp
                 </Badge>
               )}
+              
+              {job.is_featured && !job.is_urgent && !isPinned && !isExpired && (
+                <Badge className="bg-blue-100 text-blue-800 font-medium">
+                  Nổi Bật
+                </Badge>
+              )}
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="flex items-center">
-              <MapPin className="h-5 w-5 mr-2 text-gray-500" />
-              <span>{job.location}</span>
-            </div>
-            <div className="flex items-center">
-              <Calendar className="h-5 w-5 mr-2 text-gray-500" />
-              <span>{getPostedDate()}</span>
-            </div>
-            {job.salary_range && (
-              <div className="flex items-center">
-                <DollarSign className="h-5 w-5 mr-2 text-gray-500" />
-                <span>{job.salary_range}</span>
-              </div>
-            )}
+          <DialogDescription className="text-base font-medium text-foreground">
+            {job.company}
+          </DialogDescription>
+        </DialogHeader>
+        
+        {jobImage && (
+          <div className="h-52 w-full overflow-hidden rounded-lg my-3">
+            <ImageWithFallback 
+              src={jobImage} 
+              alt={job.title || "Job listing"}
+              className="w-full h-full object-cover"
+              fallbackImage="/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png"
+            />
+          </div>
+        )}
+        
+        <div className="space-y-4 my-3">
+          <div className="flex items-center text-gray-600">
+            <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="font-medium">{job.location}</span>
           </div>
           
-          {job.vietnamese_description && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-2">Chi tiết công việc</h3>
-              <div className="text-gray-700 whitespace-pre-line">
-                {job.vietnamese_description}
-              </div>
+          <div className="flex items-center text-gray-600">
+            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span>Đăng {formatPostedDate(job.created_at)}</span>
+          </div>
+          
+          {user ? (
+            <div className="flex items-center text-gray-600">
+              <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span className="font-medium">{job.contact_info?.phone}</span>
+            </div>
+          ) : (
+            <div className="flex items-center bg-gray-50 p-4 rounded-md border border-gray-200">
+              <Lock className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
+              <span className="text-gray-700">🔒 Đăng nhập để xem số điện thoại liên hệ</span>
             </div>
           )}
-          
-          <div className="border-t pt-4 mt-4">
-            {isExpired() ? (
-              <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded-md">
-                Tin đã hết hạn. Đăng ký để xem tin mới và đăng tin dễ dàng.
-              </div>
-            ) : job.contact_info?.phone ? (
-              isSignedIn ? (
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Thông tin liên hệ</h3>
-                  <div className="flex items-center mb-2">
-                    <Phone className="h-5 w-5 mr-2 text-gray-500" />
-                    <span className="text-lg">{job.contact_info.phone}</span>
-                  </div>
-                  {job.contact_info.notes && (
-                    <p className="text-sm text-gray-600 mt-2">{job.contact_info.notes}</p>
-                  )}
-                </div>
-              ) : (
-                <AuthAction
-                  customTitle="Đăng nhập để xem thông tin liên hệ"
-                  onAction={() => true}
-                  buttonClassNames="w-full"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <Phone className="h-5 w-5" />
-                    <span>Đăng nhập để xem thông tin liên hệ</span>
-                  </div>
-                </AuthAction>
-              )
-            ) : (
-              <p className="text-gray-500 italic">Không có thông tin liên hệ.</p>
-            )}
+        </div>
+        
+        <div className="font-medium text-xl text-emerald-700 my-3">
+          {job.salary_range || job.compensation_details}
+        </div>
+        
+        {/* Add FOMO line below salary for Magic Nails */}
+        {isPinned && isMagicNails && (
+          <div className="mt-2 mb-4 text-red-500 font-medium flex items-center">
+            🔥 Most Viewed Listing of the Month
           </div>
-          
-          <div className="flex justify-end mt-6">
-            <Button variant="outline" onClick={onClose}>
-              Đóng
-            </Button>
+        )}
+        
+        <div className="space-y-3">
+          <h3 className="font-medium text-lg">Mô tả công việc:</h3>
+          <p className="whitespace-pre-line text-gray-800">{job.description}</p>
+        </div>
+        
+        {job.specialties && job.specialties.length > 0 && (
+          <div className="space-y-2 mt-4">
+            <h3 className="font-medium">Yêu cầu kỹ năng:</h3>
+            <div className="flex flex-wrap gap-2">
+              {job.specialties.map((specialty, index) => (
+                <Badge key={index} variant="outline" className="bg-gray-50 px-2.5 py-1">
+                  {specialty}
+                </Badge>
+              ))}
+            </div>
           </div>
+        )}
+        
+        <div className="flex justify-end mt-6 pt-2 border-t border-gray-100">
+          <Button 
+            onClick={onClose} 
+            className="bg-[#9B51E0] hover:bg-[#8A3FD1] text-white transition-all duration-200 
+                     hover:shadow-md hover:shadow-purple-200 transform hover:scale-105"
+          >
+            Đóng
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

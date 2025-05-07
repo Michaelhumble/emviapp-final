@@ -11,7 +11,6 @@ import VietnameseJobDetailModal from "@/components/jobs/VietnameseJobDetailModal
 import { vietnameseNailJobs } from "@/data/vietnameseNailJobs"; 
 import { vietnameseExpiredJobs } from "@/data/vietnameseNailJobs"; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PremiumJobShowcase from "@/components/jobs/PremiumJobShowcase";
 
 const JobsPage = () => {
   const { jobs, loading, error, renewalJobId, setActiveRenewalJobId } = useJobsData();
@@ -19,23 +18,6 @@ const JobsPage = () => {
   const [selectedVietnameseJob, setSelectedVietnameseJob] = useState<Job | null>(null);
   const [isVietnameseModalOpen, setIsVietnameseModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("vietnamese");
-
-  // Premium showcase job data
-  const premiumJob: Job = {
-    id: "featured",
-    title: "Magic Nails – Great Falls, MT",
-    location: "Great Falls, Montana 59405",
-    created_at: new Date().toISOString(),
-    vietnamese_description: "Cần thợ nail gấp. Magic Nails cần thợ biết làm bột và tay chân nước.\n💰 $1,200–$1,500/tuần\nBao lương hoặc ăn chia tùy khả năng thợ.\nCó chỗ này rất tốt cho thợ muốn tích góp tiền.\nTiệm rộng rãi, chủ vui vẻ.",
-    is_featured: true,
-    is_urgent: true,
-    contact_info: {
-      phone: "(406) 770-3070"
-    },
-    image: "/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png",
-    status: "active",
-    is_vietnamese_listing: true
-  };
 
   useEffect(() => {
     // Check for expired jobs
@@ -105,12 +87,6 @@ const JobsPage = () => {
             <h2 className="text-2xl font-serif font-medium mb-6">
               Tin tuyển dụng thợ nail mới nhất
             </h2>
-            
-            {/* Premium Showcase - Magic Nails */}
-            <PremiumJobShowcase 
-              job={premiumJob} 
-              onViewDetails={() => handleViewVietnameseJobDetails(premiumJob)}
-            />
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vietnameseNailJobs.map((job) => (
