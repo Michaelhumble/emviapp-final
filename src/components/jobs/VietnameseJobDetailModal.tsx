@@ -31,11 +31,18 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
 
   const isPinned = job.isPinned === true;
   const isMagicNails = job.title?.includes('Magic Nails') || job.company?.includes('Magic Nails');
+  const isExpired = job.status === 'expired';
   
   // Get a specific image for Magic Nails
   const magicNailsImage = isMagicNails ? 
     "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png" : 
     job.image;
+  
+  // Get a nail salon image from our collection if the job doesn't have one
+  const jobImage = job.image || 
+    isMagicNails ? 
+      "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png" : 
+      "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png";
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -60,19 +67,25 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
                 </Badge>
               )}
               
-              {isPinned && !isMagicNails && (
+              {isExpired && (
+                <Badge className="bg-red-100 text-red-800 font-medium">
+                  Đã hết hạn
+                </Badge>
+              )}
+              
+              {isPinned && !isMagicNails && !isExpired && (
                 <Badge className="bg-amber-100 text-amber-800 font-medium">
                   Tin Gấp
                 </Badge>
               )}
               
-              {job.is_urgent && !isPinned && (
+              {job.is_urgent && !isPinned && !isExpired && (
                 <Badge className="bg-rose-100 text-rose-800 font-medium">
                   Gấp
                 </Badge>
               )}
               
-              {job.is_featured && !job.is_urgent && !isPinned && (
+              {job.is_featured && !job.is_urgent && !isPinned && !isExpired && (
                 <Badge className="bg-blue-100 text-blue-800 font-medium">
                   Nổi Bật
                 </Badge>
@@ -84,10 +97,10 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
           </DialogDescription>
         </DialogHeader>
         
-        {(job.image || isMagicNails) && (
+        {jobImage && (
           <div className="h-52 w-full overflow-hidden rounded-lg my-3">
             <ImageWithFallback 
-              src={magicNailsImage || job.image} 
+              src={jobImage} 
               alt={job.title || "Job listing"}
               className="w-full h-full object-cover"
               fallbackImage="/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png"
