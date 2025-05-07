@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,16 +32,37 @@ const VietnameseJobDetailModal = ({ job, isOpen, onClose }: VietnameseJobDetailM
   const isMagicNails = job.title?.includes('Magic Nails') || job.company?.includes('Magic Nails');
   const isExpired = job.status === 'expired';
   
-  // Get a specific image for Magic Nails
-  const magicNailsImage = isMagicNails ? 
-    "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png" : 
-    job.image;
+  // Get job image based on job ID - ensuring each job has a unique image in the detail view
+  const getJobDetailImage = () => {
+    // If it's Magic Nails (pinned showcase), keep its specific image
+    if (isMagicNails) {
+      return "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png";
+    }
+    
+    // For other jobs, assign a unique image based on job ID or index
+    const jobId = job.id;
+    
+    // Map specific job IDs to unique nail salon images
+    switch(jobId) {
+      // Active jobs with unique images
+      case "job-001": return "/lovable-uploads/c1533abd-8de5-4ec3-8ee5-868538a5d6dd.png";
+      case "job-002": return "/lovable-uploads/11925359-6327-46e7-b52e-79b4a4111e34.png";
+      case "job-003": return "/lovable-uploads/1575b88f-f835-4d89-9109-bf518fc4cfb1.png";
+      case "job-004": return "/lovable-uploads/7a729a53-192a-40cd-a28f-e28023529d8f.png";
+      case "job-005": return "/lovable-uploads/19f9a395-4b4e-4e60-bd13-e0cde9064550.png";
+      
+      // Expired jobs with unique images
+      case "job-006": return "/lovable-uploads/8283328c-3a93-4562-be8b-32c35c31a600.png";
+      case "job-007": return "/lovable-uploads/8858fff4-1fa3-4803-86b1-beadca5fd1df.png";
+      case "job-008": return "/lovable-uploads/2542d0a3-5117-433d-baee-5c0fe2bfeca2.png";
+      case "job-009": return "/lovable-uploads/89855878-2908-47b5-98b0-1935d73cdd71.png";
+      
+      // Default in case of any other job ID
+      default: return job.image || "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png";
+    }
+  };
   
-  // Get a nail salon image from our collection if the job doesn't have one
-  const jobImage = job.image || 
-    isMagicNails ? 
-      "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png" : 
-      "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png";
+  const jobImage = getJobDetailImage();
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
