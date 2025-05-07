@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
@@ -7,6 +8,11 @@ import JobGrid from "@/components/jobs/JobGrid";
 import useSampleJobsData from "@/hooks/useSampleJobsData";
 import { Container } from "@/components/ui/container";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
+import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
+import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
+import SmartDealsSection from "@/components/jobs/SmartDealsSection";
+import FreeListingsSection from "@/components/jobs/FreeListingsSection";
+import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 
 const JobsPage = () => {
   const { jobs, loading, error, featuredJobs, updateSearchTerm } = useSampleJobsData();
@@ -45,6 +51,12 @@ const JobsPage = () => {
     setSelectedJob(null);
   };
 
+  // Split jobs into different categories for the new layout
+  const premiumJobs = jobs.filter(job => job.is_featured && !job.status?.includes('expired'));
+  const smartDealJobs = jobs.filter(job => !job.is_featured && job.image && !job.status?.includes('expired'));
+  const freeJobs = jobs.filter(job => !job.image && !job.status?.includes('expired'));
+  const expiredJobs = jobs.filter(job => job.status?.includes('expired'));
+
   return (
     <Container className="py-8">
       <Helmet>
@@ -67,20 +79,38 @@ const JobsPage = () => {
         onSearchChange={handleSearchChange} 
       />
 
-      {/* Pass the search term and view details handler to the VietnameseJobSection */}
-      <VietnameseJobSection 
+      {/* Top Diamond Featured Section (locked row) */}
+      <TopDiamondFeaturedSection 
         vietnameseJobs={vietnameseJobs} 
         onViewDetails={handleViewJobDetails}
         searchTerm={searchValue}
       />
-
-      {/* Keep the rest of the page unchanged */}
-      <JobGrid 
-        jobs={jobs}
-        expirations={expirations}
+      
+      {/* Premium Listings Section */}
+      <PremiumListingsSection 
+        jobs={premiumJobs}
+        onViewDetails={handleViewJobDetails}
+      />
+      
+      {/* Smart Deals Section */}
+      <SmartDealsSection 
+        jobs={smartDealJobs}
+        onViewDetails={handleViewJobDetails}
+      />
+      
+      {/* Free Listings Section */}
+      <FreeListingsSection 
+        jobs={freeJobs}
+        onViewDetails={handleViewJobDetails}
+      />
+      
+      {/* Expired Listings Section */}
+      <ExpiredListingsSection 
+        jobs={expiredJobs}
         onRenew={handleRenew}
         isRenewing={isRenewing}
         renewalJobId={renewalJobId}
+        onViewDetails={handleViewJobDetails}
       />
 
       {/* Add job detail modal for Vietnamese job listings */}
