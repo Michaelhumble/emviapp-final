@@ -30,3 +30,32 @@ export interface JobPricingOption {
   duration: number; // in days
   popular?: boolean;
 }
+
+// Add missing types
+export type PostType = 'job' | 'salon' | 'booth' | 'supply';
+
+export interface PricingOptions {
+  isFirstPost?: boolean;
+  isRenewal?: boolean;
+  isNationwide?: boolean;
+  fastSalePackage?: boolean;
+  showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
+  hasReferrals?: boolean;
+  isHotListing?: boolean;
+  isUrgent?: boolean;
+  bundleWithSalonPost?: boolean;
+  boostVisibility?: boolean;
+  featuredListing?: boolean;
+  extendedDuration?: boolean;
+  featuredPost?: boolean;
+}
+
+export interface UserPostingStats {
+  jobPostCount: number;
+  salonPostCount: number;
+  boothPostCount: number;
+  supplyPostCount: number;
+  totalPostCount: number;
+  hasReferrals: boolean;
+}
