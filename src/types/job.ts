@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   role?: string;
@@ -53,12 +52,12 @@ export interface Job {
   is_remote?: boolean;
   role_normalized?: string;
   is_urgent?: boolean;
-  isPinned?: boolean; // Added this property
+  isPinned?: boolean;
   type?: 'salon' | 'job' | 'opportunity';
-  // Add name field for compatibility with Salon type
   name?: string;
-  // Add imageUrl property that's needed for consistent image handling
   imageUrl?: string;
-  // Add the missing property
   is_vietnamese_listing?: boolean;
+  
+  // Add pricing tier field
+  pricingTier?: 'diamond' | 'premium' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
 }
