@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 interface ImageWithFallbackProps {
@@ -9,6 +8,8 @@ interface ImageWithFallbackProps {
   category?: string;
   fallbackImage?: string;
   style?: React.CSSProperties;
+  showPremiumBadge?: boolean;
+  priority?: boolean;
 }
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({ 
@@ -18,7 +19,9 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   businessName,
   category,
   fallbackImage,
-  style
+  style,
+  showPremiumBadge,
+  priority
 }) => {
   const [error, setError] = useState(false);
 
@@ -49,6 +52,9 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
         {category && (
           <span className="text-xs absolute bottom-2 right-2 bg-black/30 text-white px-1 rounded">{category}</span>
         )}
+        {showPremiumBadge && (
+          <span className="text-xs absolute top-2 left-2 bg-amber-500 text-white px-1.5 py-0.5 rounded-full">Premium</span>
+        )}
       </div>
     );
   }
@@ -60,6 +66,8 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       className={className}
       style={style}
       onError={() => setError(true)}
+      // The priority attribute isn't valid for regular HTML img elements
+      // We're keeping it in the props for compatibility but not using it directly
     />
   );
 };
