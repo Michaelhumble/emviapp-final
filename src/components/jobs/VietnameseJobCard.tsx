@@ -47,12 +47,29 @@ const VietnameseJobCard: React.FC<VietnameseJobCardProps> = ({
       return diffDays >= 30;
     })();
   };
+  
+  // Get image based on job ID for consistent display
+  const getJobImage = (jobId: string) => {
+    const imageMap: Record<string, string> = {
+      '1': '/lovable-uploads/5f0aa367-9d6b-448b-83d8-021e4cb082af.png',
+      '2': '/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png',
+      '3': '/lovable-uploads/4edfaa59-6542-4bad-9e6b-1cd0d7ae9113.png',
+      '4': '/lovable-uploads/89bafcff-30b0-441e-b557-6b5a6126cbdb.png',
+      '5': '/lovable-uploads/90e01456-efd5-4523-8034-5c1d321949be.png',
+      '101': '/lovable-uploads/55fac081-9f6d-4220-a212-94ee2720bde9.png',
+      '102': '/lovable-uploads/4c4050d4-4a79-4610-8d47-bf6cc92bf8a3.png',
+      '103': '/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png',
+      'featured': '/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png',
+    };
+    
+    return imageMap[jobId] || '/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png';
+  };
 
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
         <ImageWithFallback
-          src={job.image || ''}
+          src={getJobImage(job.id)}
           alt={job.title || 'Tin tuyển dụng'}
           className="w-full h-full object-cover"
           businessName={job.title || 'Tin tuyển dụng'}
