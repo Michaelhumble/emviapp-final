@@ -11,6 +11,37 @@ import VietnameseJobDetailModal from "@/components/jobs/VietnameseJobDetailModal
 import { vietnameseNailJobs } from "@/data/vietnameseNailJobs"; 
 import { vietnameseExpiredJobs } from "@/data/vietnameseNailJobs"; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import JobSearchBar from "@/components/jobs/JobSearchBar";
+
+// Helper function to normalize text for accent-insensitive search
+const normalizeText = (text: string): string => {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+};
+
+// Helper function to check if a job matches the search query
+const jobMatchesSearch = (job: Job, searchQuery: string): boolean => {
+  if (!searchQuery.trim()) return true;
+  
+  const normalizedQuery = normalizeText(searchQuery);
+  
+  // Fields to search in
+  const searchableFields = [
+    job.title || '',
+    job.location || '',
+    job.company || '',
+    job.vietnamese_description || job.description || '',
+    job.compensation_details || '',
+    job.salary_range || ''
+  ];
+  
+  // Check if any field contains the search query
+  return searchableFields.some(field => 
+    normalizeText(field.toString()).includes(normalizedQuery)
+  );
+};
 
 const JobsPage = () => {
   const { jobs, loading, error, renewalJobId, setActiveRenewalJobId } = useJobsData();
@@ -18,6 +49,20 @@ const JobsPage = () => {
   const [selectedVietnameseJob, setSelectedVietnameseJob] = useState<Job | null>(null);
   const [isVietnameseModalOpen, setIsVietnameseModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("vietnamese");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  
+  // Filter jobs based on search query
+  const filteredVietnameseJobs = vietnameseNailJobs.filter(job => 
+    jobMatchesSearch(job, searchQuery)
+  );
+  
+  const filteredExpiredJobs = vietnameseExpiredJobs.filter(job => 
+    jobMatchesSearch(job, searchQuery)
+  );
+  
+  const filteredEnglishJobs = jobs.filter(job => 
+    jobMatchesSearch(job, searchQuery)
+  );
 
   useEffect(() => {
     // Check for expired jobs
@@ -54,6 +99,10 @@ const JobsPage = () => {
     setSelectedVietnameseJob(null);
   };
 
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
     <>
       <Helmet>
@@ -83,13 +132,20 @@ const JobsPage = () => {
             <TabsTrigger value="english">English Jobs</TabsTrigger>
           </TabsList>
           
+          {/* Search bar positioned below tabs */}
+          <JobSearchBar 
+            value={searchQuery}
+            onSearchChange={handleSearchChange}
+            placeholder={activeTab === "vietnamese" ? "Tìm kiếm theo thành phố, loại việc làm, hoặc từ khóa..." : "Search by city, job type, or keyword..."}
+          />
+          
           <TabsContent value="vietnamese" className="space-y-8">
             <h2 className="text-2xl font-serif font-medium mb-6">
               Tin tuyển dụng thợ nail mới nhất
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {vietnameseNailJobs.map((job) => (
+              {filteredVietnameseJobs.map((job) => (
                 <VietnameseJobCard
                   key={job.id}
                   job={job}
@@ -98,13 +154,13 @@ const JobsPage = () => {
               ))}
             </div>
             
-            {vietnameseExpiredJobs && vietnameseExpiredJobs.length > 0 && (
+            {filteredExpiredJobs && filteredExpiredJobs.length > 0 && (
               <>
                 <h2 className="text-2xl font-serif font-medium mb-6 mt-12">
                   Tin tuyển dụng đã hết hạn
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-75">
-                  {vietnameseExpiredJobs.map((job) => (
+                  {filteredExpiredJobs.map((job) => (
                     <VietnameseJobCard
                       key={job.id}
                       job={job}
@@ -138,7 +194,7 @@ const JobsPage = () => {
               </div>
             ) : (
               <JobGrid
-                jobs={jobs}
+                jobs={filteredEnglishJobs}
                 expirations={expirations}
                 onRenew={handleRenewJob}
                 isRenewing={!!renewalJobId}
