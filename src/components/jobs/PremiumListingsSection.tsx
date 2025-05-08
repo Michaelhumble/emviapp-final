@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,6 @@ import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import JobCardContact from "./JobCardContact";
-import { supabase } from "@/integrations/supabase/client";
 
 interface PremiumListingsSectionProps {
   jobs: Job[];
@@ -16,37 +15,6 @@ interface PremiumListingsSectionProps {
 }
 
 const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionProps) => {
-  const [nailImages, setNailImages] = useState<string[]>([]);
-  
-  // Fetch nail salon images from Supabase bucket
-  useEffect(() => {
-    const fetchNailImages = async () => {
-      try {
-        const { data, error } = await supabase.storage.from('nails').list('', {
-          sortBy: { column: 'name', order: 'asc' },
-        });
-        
-        if (error) {
-          console.error('Error fetching nail images:', error);
-          return;
-        }
-        
-        if (data) {
-          // Get public URLs for all images
-          const imageUrls = data.map(file => {
-            return supabase.storage.from('nails').getPublicUrl(file.name).data.publicUrl;
-          });
-          
-          setNailImages(imageUrls);
-        }
-      } catch (err) {
-        console.error('Failed to fetch nail salon images:', err);
-      }
-    };
-    
-    fetchNailImages();
-  }, []);
-  
   // Create extra premium placeholders to reach required number for balanced rows
   const premiumJobs = [...jobs];
   
@@ -55,11 +23,8 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
   const remainingCount = rowSize - (jobs.length % rowSize);
   if (remainingCount !== rowSize) {
     for (let i = 0; i < remainingCount; i++) {
-      // Use the Supabase images directly with proper URL construction
-      const imageIndex = 15 + (i % 5);
-      const imageUrl = supabase.storage
-        .from('nails')
-        .getPublicUrl(`nail-salon-${imageIndex}.jpg`).data.publicUrl;
+      // Direct Supabase URL construction for placeholders
+      const fallbackImageUrl = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-" + (15 + i) + ".jpg";
       
       premiumJobs.push({
         id: `premium-placeholder-${i}`,
@@ -68,7 +33,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
         location: "United States",
         created_at: new Date().toISOString(),
         description: "This premium position will make your business stand out. Reach thousands of potential customers or employees.",
-        image: imageUrl,
+        image: fallbackImageUrl,
         pricingTier: "premium" as const
       });
     }
