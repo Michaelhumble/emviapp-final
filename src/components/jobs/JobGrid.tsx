@@ -43,13 +43,12 @@ const JobGrid = ({
         ))}
       </div>
       
-      {selectedJob && (
-        <JobDetailModal
-          job={selectedJob}
-          isOpen={!!selectedJob}
-          onClose={closeJobDetails}
-        />
-      )}
+      {/* Updated modal visibility logic */}
+      <JobDetailModal
+        job={selectedJob}
+        isOpen={selectedJob !== null}
+        onClose={closeJobDetails}
+      />
     </>
   );
 };
