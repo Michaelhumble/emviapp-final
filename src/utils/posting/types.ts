@@ -1,24 +1,61 @@
 
-export type PostType = 'job' | 'salon' | 'booth';
+export interface JobPosting {
+  id: string;
+  title: string;
+  company?: string;
+  location: string;
+  salary?: string;
+  description?: string;
+  requirements?: string[];
+  benefits?: string[];
+  contactInfo?: {
+    phone?: string;
+    email?: string;
+    website?: string;
+  };
+  posted?: string;
+  expires?: string;
+  isPinned?: boolean; // New property for pinned jobs
+}
+
+export type JobPricingTier = 'basic' | 'premium' | 'featured';
+
+export interface JobPricingOption {
+  id: string;
+  name: string;
+  tier: JobPricingTier;
+  price: number;
+  description: string;
+  features: string[];
+  duration: number; // in days
+  popular?: boolean;
+}
+
+// Add missing types
+export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
 export interface PricingOptions {
   isFirstPost?: boolean;
+  isRenewal?: boolean;
   isNationwide?: boolean;
   fastSalePackage?: boolean;
   showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
+  hasReferrals?: boolean;
   isHotListing?: boolean;
   isUrgent?: boolean;
-  bundleWithJobPost?: boolean;
   bundleWithSalonPost?: boolean;
   boostVisibility?: boolean;
   featuredListing?: boolean;
   extendedDuration?: boolean;
-  hasReferrals?: boolean;
-  pricingTier?: string; // This will hold the tier from PRICING_TIERS
+  featuredPost?: boolean;
 }
 
-export interface PricingSummary {
-  lineItems: string[];
-  totalPrice: number;
-  originalPrice?: number;
+export interface UserPostingStats {
+  jobPostCount: number;
+  salonPostCount: number;
+  boothPostCount: number;
+  supplyPostCount: number;
+  totalPostCount: number;
+  hasReferrals: boolean;
 }

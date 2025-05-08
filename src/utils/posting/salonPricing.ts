@@ -1,58 +1,96 @@
 
-import { PricingOptions } from './types';
-import { PRICING_TIERS } from './jobPricing';
+import { PricingOptions, UserPostingStats } from "./types";
+import { 
+  getBasePrice, 
+  getNationwidePrice, 
+  getFastSalePackagePrice, 
+  getShowAtTopPrice,
+  getJobPostBundlePrice,
+  getPriceWithDiscount
+} from "./promotionalText";
 
-/**
- * Calculate the price for a salon post based on selected options
- */
-export const calculateSalonPostPrice = (options: PricingOptions): number => {
-  let basePrice = 149.99; // Default base price for salon listings
+export const calculateSalonPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
+  // Default to first post if stats not provided
+  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
+  const isRenewal = options.isRenewal ?? false;
   
-  if (options.fastSalePackage) {
-    basePrice += 99.99;
-  }
+  // Base price depends on whether it's the first post
+  let price = isRenewal ? 5 : getBasePrice('salon', isFirstPost);
   
+  // Add nationwide visibility if selected
   if (options.isNationwide) {
-    basePrice += 49.99;
+    price += getNationwidePrice('salon');
   }
   
+  // Add fast sale package if selected
+  if (options.fastSalePackage) {
+    price += getFastSalePackagePrice('salon');
+  }
+  
+  // Add show at top if selected
   if (options.showAtTop) {
-    basePrice += 79.99;
+    price += getShowAtTopPrice('salon');
   }
   
-  if (options.isFirstPost) {
-    basePrice = Math.max(0, basePrice - 49.99);
+  // Add job post bundle if selected
+  if (options.bundleWithJobPost) {
+    price += getJobPostBundlePrice('salon');
   }
   
-  return Math.round(basePrice * 100) / 100;
+  // Apply discount if user has referrals
+  if (options.hasReferrals) {
+    price = getPriceWithDiscount(price, true);
+  }
+  
+  return price;
 };
 
-/**
- * Generate a pricing summary for salon posts
- */
-export const getSalonPostPricingSummary = (options: PricingOptions): string[] => {
-  const summary = [];
+export const getSalonPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
+  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
+  const isRenewal = options.isRenewal ?? false;
   
-  summary.push(`Salon Listing: $149.99`);
+  const summary: string[] = [];
   
-  if (options.fastSalePackage) {
-    summary.push(`Fast Sale Package: $99.99`);
+  // Base price line
+  if (isRenewal) {
+    summary.push(`Salon Listing Renewal: $5`);
+  } else {
+    const basePrice = getBasePrice('salon', isFirstPost);
+    summary.push(`${isFirstPost ? "First" : "Standard"} Salon Listing: $${basePrice}`);
   }
   
+  // Add nationwide visibility if selected
   if (options.isNationwide) {
-    summary.push(`Nationwide Visibility: $49.99`);
+    const nationwidePrice = getNationwidePrice('salon');
+    summary.push(`Nationwide Visibility: +$${nationwidePrice}`);
   }
   
+  // Add fast sale package if selected
+  if (options.fastSalePackage) {
+    const fastSalePrice = getFastSalePackagePrice('salon');
+    summary.push(`Premium Promotion: +$${fastSalePrice}`);
+  }
+  
+  // Add show at top if selected
   if (options.showAtTop) {
-    summary.push(`Top Placement: $79.99`);
+    const showAtTopPrice = getShowAtTopPrice('salon');
+    summary.push(`Featured Placement: +$${showAtTopPrice}`);
   }
   
-  if (options.isFirstPost) {
-    summary.push(`First Post Discount: -$49.99`);
+  // Add job post bundle if selected
+  if (options.bundleWithJobPost) {
+    const jobBundlePrice = getJobPostBundlePrice('salon');
+    summary.push(`Job Post Bundle: +$${jobBundlePrice}`);
   }
   
-  const totalPrice = calculateSalonPostPrice(options);
-  summary.push(`Total: $${totalPrice.toFixed(2)}`);
+  // Show discount if applicable
+  if (options.hasReferrals) {
+    summary.push(`Referral Discount: -20%`);
+  }
+  
+  // Total line
+  const totalPrice = calculateSalonPostPrice(options, stats);
+  summary.push(`Total: $${totalPrice}`);
   
   return summary;
 };

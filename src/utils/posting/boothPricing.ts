@@ -1,57 +1,96 @@
 
-import { PricingOptions } from './types';
+import { PricingOptions, UserPostingStats } from "./types";
+import { 
+  getBasePrice, 
+  getNationwidePrice, 
+  getFastSalePackagePrice, 
+  getShowAtTopPrice,
+  getJobPostBundlePrice,
+  getPriceWithDiscount
+} from "./promotionalText";
 
-/**
- * Calculate the price for a booth rental post based on selected options
- */
-export const calculateBoothPostPrice = (options: PricingOptions): number => {
-  let basePrice = 79.99; // Default base price for booth rental listings
+export const calculateBoothPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
+  // Default to first post if stats not provided
+  const isFirstPost = options.isFirstPost ?? (stats ? stats.boothPostCount === 0 : true);
+  const isRenewal = options.isRenewal ?? false;
   
-  if (options.bundleWithJobPost) {
-    basePrice += 29.99;
+  // Base price depends on whether it's the first post
+  let price = isRenewal ? 5 : getBasePrice('booth', isFirstPost);
+  
+  // Add nationwide visibility if selected
+  if (options.isNationwide) {
+    price += getNationwidePrice('booth');
   }
   
-  if (options.bundleWithSalonPost) {
-    basePrice += 39.99;
+  // Add fast sale package if selected
+  if (options.fastSalePackage) {
+    price += getFastSalePackagePrice('booth');
   }
   
+  // Add show at top if selected
   if (options.showAtTop) {
-    basePrice += 49.99;
+    price += getShowAtTopPrice('booth');
   }
   
-  if (options.isFirstPost) {
-    basePrice = Math.max(0, basePrice - 29.99);
+  // Add job post bundle if selected
+  if (options.bundleWithJobPost) {
+    price += getJobPostBundlePrice('booth');
   }
   
-  return Math.round(basePrice * 100) / 100;
+  // Apply discount if user has referrals
+  if (options.hasReferrals) {
+    price = getPriceWithDiscount(price, true);
+  }
+  
+  return price;
 };
 
-/**
- * Generate a pricing summary for booth rental posts
- */
-export const getBoothPostPricingSummary = (options: PricingOptions): string[] => {
-  const summary = [];
+export const getBoothPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
+  const isFirstPost = options.isFirstPost ?? (stats ? stats.boothPostCount === 0 : true);
+  const isRenewal = options.isRenewal ?? false;
   
-  summary.push(`Booth Rental Listing: $79.99`);
+  const summary: string[] = [];
   
-  if (options.bundleWithJobPost) {
-    summary.push(`Job Post Bundle: $29.99`);
+  // Base price line
+  if (isRenewal) {
+    summary.push(`Booth Rental Renewal: $5`);
+  } else {
+    const basePrice = getBasePrice('booth', isFirstPost);
+    summary.push(`${isFirstPost ? "First" : "Standard"} Booth Rental: $${basePrice}`);
   }
   
-  if (options.bundleWithSalonPost) {
-    summary.push(`Salon Listing Bundle: $39.99`);
+  // Add nationwide visibility if selected
+  if (options.isNationwide) {
+    const nationwidePrice = getNationwidePrice('booth');
+    summary.push(`Nationwide Visibility: +$${nationwidePrice}`);
   }
   
+  // Add fast sale package if selected
+  if (options.fastSalePackage) {
+    const fastSalePrice = getFastSalePackagePrice('booth');
+    summary.push(`Premium Promotion: +$${fastSalePrice}`);
+  }
+  
+  // Add show at top if selected
   if (options.showAtTop) {
-    summary.push(`Top Placement: $49.99`);
+    const showAtTopPrice = getShowAtTopPrice('booth');
+    summary.push(`Featured Placement: +$${showAtTopPrice}`);
   }
   
-  if (options.isFirstPost) {
-    summary.push(`First Post Discount: -$29.99`);
+  // Add job post bundle if selected
+  if (options.bundleWithJobPost) {
+    const jobBundlePrice = getJobPostBundlePrice('booth');
+    summary.push(`Job Post Bundle: +$${jobBundlePrice}`);
   }
   
-  const totalPrice = calculateBoothPostPrice(options);
-  summary.push(`Total: $${totalPrice.toFixed(2)}`);
+  // Show discount if applicable
+  if (options.hasReferrals) {
+    summary.push(`Referral Discount: -20%`);
+  }
+  
+  // Total line
+  const totalPrice = calculateBoothPostPrice(options, stats);
+  summary.push(`Total: $${totalPrice}`);
   
   return summary;
 };

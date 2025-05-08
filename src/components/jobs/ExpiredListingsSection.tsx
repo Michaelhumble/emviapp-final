@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Clock } from "lucide-react";
 import { motion } from "framer-motion";
-import { differenceInDays } from 'date-fns';
+import { differenceInDays } from "date-fns";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ExpiredListingsSectionProps {
