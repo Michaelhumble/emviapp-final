@@ -34,7 +34,7 @@ export const premiumJobs: Job[] = [
       phone: "(346) 398-6868 (gặp Nhi)"
     },
     salary_range: ">$2,000/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   },
   {
@@ -49,7 +49,7 @@ export const premiumJobs: Job[] = [
       phone: "(916) 802-1922"
     },
     salary_range: "$1,600–$2,500+/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   },
   {
@@ -64,7 +64,7 @@ export const premiumJobs: Job[] = [
       phone: "(512) 540-6173 | (806) 777-0526"
     },
     salary_range: "$1,500+/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   },
   {
@@ -79,7 +79,7 @@ export const premiumJobs: Job[] = [
       phone: "(248) 403-6472 | (248) 525-9911"
     },
     salary_range: "$1,200–$1,800/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   },
   {
@@ -94,7 +94,7 @@ export const premiumJobs: Job[] = [
       phone: "703-980-6551"
     },
     salary_range: "$1,200/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   },
   {
@@ -109,7 +109,7 @@ export const premiumJobs: Job[] = [
       phone: "817-841-5157"
     },
     salary_range: "$1,400/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   },
   {
@@ -124,7 +124,7 @@ export const premiumJobs: Job[] = [
       phone: "779-475-0679"
     },
     salary_range: "$1,400/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   },
   {
@@ -139,7 +139,7 @@ export const premiumJobs: Job[] = [
       phone: "402-617-8806"
     },
     salary_range: "$1,300/tuần",
-    pricingTier: "premium",
+    pricingTier: "premium" as const,
     is_vietnamese_listing: true
   }
 ].sort((a, b) => {
