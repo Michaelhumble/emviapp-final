@@ -9,7 +9,7 @@ export const premiumJobs: Job[] = [
     location: "Clawson, MI",
     created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần tuyển thợ nail có kinh nghiệm. Lương cao, tiệm đông khách.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-5.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-15.jpg",
     contact_info: {
       phone: "(248) 403-6472"
     },
@@ -24,7 +24,7 @@ export const premiumJobs: Job[] = [
     location: "Humble, TX",
     created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần thợ nail design chuyên nghiệp, thợ bột, và thợ chân tay nước.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-6.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-16.jpg",
     contact_info: {
       phone: "(346) 398-6868"
     },
@@ -39,7 +39,7 @@ export const premiumJobs: Job[] = [
     location: "South Lake Tahoe, CA",
     created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần thợ làm bột, chân tay nước, và wax.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-7.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-17.jpg",
     contact_info: {
       phone: "(916) 802-1922"
     },
@@ -54,7 +54,7 @@ export const premiumJobs: Job[] = [
     location: "Killeen, TX",
     created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần thợ bột và chân tay nước, full-time hoặc part-time.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-8.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-18.jpg",
     contact_info: {
       phone: "(512) 540-6173"
     },
@@ -69,7 +69,7 @@ export const premiumJobs: Job[] = [
     location: "New Jersey",
     created_at: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Tìm thợ làm bột và gel. Bao lương nếu thợ có kinh nghiệm.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-9.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-19.jpg",
     contact_info: {
       phone: "(551) 333-5678"
     },
@@ -84,11 +84,41 @@ export const premiumJobs: Job[] = [
     location: "Boston, MA",
     created_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Tuyển thợ làm full-time, kinh nghiệm 2+ năm, có bằng tiểu bang.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-10.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-20.jpg",
     contact_info: {
       phone: "(617) 555-1234"
     },
     salary_range: "$1,700-$2,200/tuần",
+    pricingTier: "premium",
+    is_vietnamese_listing: true
+  },
+  {
+    id: "premium-7",
+    title: "Tuyển Thợ Nail – Seattle, WA",
+    company: "Seattle Nail Lounge",
+    location: "Seattle, WA",
+    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Cần thợ có kinh nghiệm làm bột và chân tay nước. Lương cao, tip hậu.",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-21.jpg",
+    contact_info: {
+      phone: "(206) 987-6543"
+    },
+    salary_range: "$1,800-$2,400/tuần",
+    pricingTier: "premium",
+    is_vietnamese_listing: true
+  },
+  {
+    id: "premium-8",
+    title: "Cần Thợ Bột – Portland, OR",
+    company: "Portland Nail Arts",
+    location: "Portland, OR",
+    created_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tìm thợ bột chuyên nghiệp. Môi trường làm việc thoải mái, thu nhập ổn định.",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-22.jpg",
+    contact_info: {
+      phone: "(503) 222-3333"
+    },
+    salary_range: "$1,700-$2,300/tuần",
     pricingTier: "premium",
     is_vietnamese_listing: true
   }

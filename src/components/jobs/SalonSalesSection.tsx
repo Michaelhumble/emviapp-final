@@ -30,7 +30,7 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
         location: "United States",
         created_at: new Date().toISOString(),
         description: "Get maximum visibility for your salon listing on EmviApp.",
-        image: `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 12}.jpg`,
+        image: `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${27 + i}.jpg`,
         for_sale: true,
         is_salon_for_sale: true,
         pricingTier: "premium"
@@ -88,7 +88,7 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
                   </p>
                 )}
                 
-                {salon.monthly_revenue || salon.revenue && (
+                {(salon.monthly_revenue || salon.revenue) && (
                   <p className="text-sm text-gray-700 flex items-center">
                     <DollarSign className="h-3.5 w-3.5 mr-1 text-green-600" /> 
                     Revenue: {salon.monthly_revenue || salon.revenue}

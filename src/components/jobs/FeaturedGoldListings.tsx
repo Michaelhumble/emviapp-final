@@ -20,8 +20,9 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
 
   // Add placeholder jobs to ensure balanced rows (4 cards per row)
   const balancedJobs = [...jobs];
-  const remainingCount = 4 - (jobs.length % 4);
-  if (remainingCount !== 4) {
+  const rowSize = 4;
+  const remainingCount = rowSize - (jobs.length % rowSize);
+  if (remainingCount !== rowSize) {
     // Generate placeholder jobs using metadata from existing jobs
     for (let i = 0; i < remainingCount; i++) {
       balancedJobs.push({
@@ -31,7 +32,7 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
         location: "United States",
         created_at: new Date().toISOString(),
         description: "Reach thousands of potential employees with a Gold Featured listing.",
-        image: `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 11}.jpg`,
+        image: `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${11 + i}.jpg`,
         pricingTier: "gold" as const
       });
     }

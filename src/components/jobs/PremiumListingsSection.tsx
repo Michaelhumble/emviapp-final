@@ -50,8 +50,8 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
   // Create extra premium placeholders to reach required number for balanced rows
   const premiumJobs = [...jobs];
   
-  // Calculate how many more items we need for a balanced grid of 3 cards per row
-  const rowSize = 3;
+  // Calculate how many more items we need for a balanced grid of 4 cards per row
+  const rowSize = 4;
   const remainingCount = rowSize - (jobs.length % rowSize);
   if (remainingCount !== rowSize) {
     for (let i = 0; i < remainingCount; i++) {
@@ -62,7 +62,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
         imageUrl = nailImages[(jobs.length + i) % nailImages.length] || "";
       } else {
         // Fallback direct URLs if the nailImages haven't loaded yet
-        imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 13}.jpg`;
+        imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 15}.jpg`;
       }
       
       premiumJobs.push({
@@ -91,7 +91,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {premiumJobs.map((job, index) => (
           <Card
             key={job.id}
