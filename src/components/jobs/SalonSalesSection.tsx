@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,6 +16,22 @@ interface SalonSalesSectionProps {
 
 const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) => {
   if (!listings.length) return null;
+
+  // This function ensures we have a valid image URL
+  const getValidImageUrl = (job: Job): string => {
+    if (!job.image) {
+      // If no image provided, use a default from Supabase
+      return `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/generated(27).png`;
+    }
+    
+    // If image URL already starts with the correct Supabase path, use it
+    if (job.image.startsWith('https://wwhqbjrhbajpabfdwnip.supabase.co/')) {
+      return job.image;
+    }
+    
+    // Otherwise, assume it's a relative path and convert to full URL
+    return `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${job.image}`;
+  };
 
   return (
     <motion.section
@@ -42,11 +57,12 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
           >
             <div className="aspect-video relative">
               <ImageWithFallback
-                src={salon.image || ""}
+                src={getValidImageUrl(salon)}
                 alt={salon.title || "Salon for sale"}
                 className="w-full h-full object-cover"
                 businessName={salon.company || "Salon"}
                 showPremiumBadge={true}
+                priority={true}
               />
               <Badge className="absolute top-2 right-2 bg-orange-500 text-white border-0">
                 For Sale

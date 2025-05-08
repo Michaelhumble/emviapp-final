@@ -33,6 +33,19 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     src.startsWith('data:')
   ) && !src.includes('undefined') && !src.includes('null');
 
+  // Function to get a fallback Supabase image for Vietnamese jobs
+  const getSupabaseImage = () => {
+    // Array of valid Supabase image filenames
+    const validImages = [
+      'generated(01).png', 'generated(04).png', 'generated(08).png', 'generated(12).png',
+      'generated(15).png', 'generated(21).png', 'generated(27).png', 'generated(33).png'
+    ];
+    
+    // Choose a random image from the valid options
+    const randomImage = validImages[Math.floor(Math.random() * validImages.length)];
+    return `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${randomImage}`;
+  };
+
   if (!isValidImageUrl || error) {
     // Use fallbackImage if provided
     if (fallbackImage) {
@@ -42,6 +55,22 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
           alt={alt}
           className={className}
           style={style}
+        />
+      );
+    }
+    
+    // For Vietnamese listings, use the Supabase image
+    if (alt.includes('Vietnamese') || alt.includes('nail') || alt.toLowerCase().includes('tiệm')) {
+      return (
+        <img
+          src={getSupabaseImage()}
+          alt={alt}
+          className={className}
+          style={style}
+          onError={() => {
+            console.log('Fallback Supabase image failed to load');
+            setError(true);
+          }}
         />
       );
     }
