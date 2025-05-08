@@ -8,7 +8,7 @@ import PremiumListingsSection from '@/components/jobs/PremiumListingsSection';
 import ExpiredListingsSection from '@/components/jobs/ExpiredListingsSection';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, ArrowLeft } from 'lucide-react';
 import { Job } from '@/types/job';
 import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
 import DiamondFeaturedSection from '@/components/jobs/DiamondFeaturedSection';
@@ -89,8 +89,8 @@ const JobsPage = () => {
   };
 
   const handleViewJobDetails = (job: Job) => {
-    console.log('View job details:', job);
-    // Navigate to job details page or open a modal
+    // This will open the modal with job details
+    setSelectedJob(job);
   };
 
   const handleRenewJob = (job: Job) => {
@@ -127,6 +127,13 @@ const JobsPage = () => {
     }, 1500);
   };
 
+  // State for job detail modal
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+
+  const closeJobDetails = () => {
+    setSelectedJob(null);
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -138,6 +145,16 @@ const JobsPage = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">
+        {/* Back to Home Button */}
+        <Button 
+          variant="ghost" 
+          className="mb-6 flex items-center gap-1 text-gray-600 hover:text-gray-800"
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft size={16} />
+          Back to Home
+        </Button>
+
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -151,6 +168,7 @@ const JobsPage = () => {
             <JobSearchBar 
               value={searchTerm} 
               onSearchChange={handleSearchChange} 
+              onSearch={handleSearchChange}
             />
             <Button 
               className="flex gap-2 items-center bg-gradient-to-r from-purple-500 to-pink-500"
@@ -201,6 +219,15 @@ const JobsPage = () => {
           isRenewing={isRenewing}
           renewalJobId={renewalJobId}
         />
+
+        {/* Job Detail Modal */}
+        {selectedJob && (
+          <JobDetailModal
+            job={selectedJob}
+            isOpen={!!selectedJob}
+            onClose={closeJobDetails}
+          />
+        )}
       </div>
     </Layout>
   );

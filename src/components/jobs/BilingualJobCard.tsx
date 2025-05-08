@@ -9,6 +9,7 @@ import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
+import { useNavigate } from 'react-router-dom';
 
 interface BilingualJobCardProps {
   job: Job;
@@ -24,6 +25,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   isRenewing = false,
 }) => {
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
   
   // For displaying the posted date
   const getPostedDate = () => {
@@ -50,6 +52,18 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
 
   // Check if this is a free or starter tier listing to show contact info without login
   const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
+
+  const handleViewDetails = () => {
+    if (isSignedIn) {
+      onViewDetails();
+    } else {
+      // If not signed in, stay on the jobs page
+      // The modal will show a sign-in prompt
+      onViewDetails();
+      // Navigate to the current page - effectively refresh
+      // navigate('/jobs');
+    }
+  };
 
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
@@ -140,7 +154,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             
             <Button 
               size="sm" 
-              onClick={onViewDetails}
+              onClick={handleViewDetails}
               className="text-xs"
             >
               View Details
