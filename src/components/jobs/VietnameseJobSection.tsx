@@ -6,9 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, DollarSign, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
 
 interface VietnameseJobSectionProps {
   vietnameseJobs: Job[];
@@ -24,8 +21,6 @@ const VietnameseJobSection = ({
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(vietnameseJobs);
   const [nailImages, setNailImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
   
   // Fetch nail salon images from Supabase bucket
   useEffect(() => {
@@ -77,20 +72,6 @@ const VietnameseJobSection = ({
 
   // Filter jobs that are salons for sale
   const salonSaleJobs = filteredJobs.filter(job => job.is_salon_for_sale === true);
-
-  const handleViewDetails = (job: Job) => {
-    if (!isSignedIn) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to view full salon details",
-        variant: "destructive",
-      });
-      navigate('/signin');
-      return;
-    }
-    
-    onViewDetails(job);
-  };
 
   if (!salonSaleJobs.length) return null;
 
@@ -154,7 +135,7 @@ const VietnameseJobSection = ({
 
               <Button
                 className="w-full font-bold bg-emerald-500 hover:bg-emerald-600 text-white mt-2"
-                onClick={() => handleViewDetails(job)}
+                onClick={() => onViewDetails(job)}
               >
                 Xem Chi Tiết
               </Button>

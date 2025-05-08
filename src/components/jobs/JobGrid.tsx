@@ -6,29 +6,23 @@ import JobDetailModal from "@/components/jobs/JobDetailModal";
 
 interface JobGridProps {
   jobs: Job[];
-  expirations?: Record<string, boolean>;
-  onRenew?: (job: Job) => void;
-  isRenewing?: boolean;
-  renewalJobId?: string | null;
-  onViewDetails?: (job: Job) => void;
+  expirations: Record<string, boolean>;
+  onRenew: (job: Job) => void;
+  isRenewing: boolean;
+  renewalJobId: string | null;
 }
 
 const JobGrid = ({ 
   jobs, 
-  expirations = {}, 
+  expirations, 
   onRenew, 
-  isRenewing = false,
-  renewalJobId = null,
-  onViewDetails
+  isRenewing,
+  renewalJobId
 }: JobGridProps) => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const viewJobDetails = (job: Job) => {
-    if (onViewDetails) {
-      onViewDetails(job);
-    } else {
-      setSelectedJob(job);
-    }
+    setSelectedJob(job);
   };
 
   const closeJobDetails = () => {
@@ -43,9 +37,8 @@ const JobGrid = ({
             key={job.id}
             job={job}
             onViewDetails={() => viewJobDetails(job)} 
-            onRenew={onRenew ? () => onRenew(job) : undefined}
+            onRenew={() => onRenew(job)}
             isRenewing={isRenewing && renewalJobId === job.id}
-            variant={expirations[job.id] ? "expired" : "standard"}
           />
         ))}
       </div>

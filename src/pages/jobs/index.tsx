@@ -7,8 +7,8 @@ import JobSearchBar from '@/components/jobs/JobSearchBar';
 import PremiumListingsSection from '@/components/jobs/PremiumListingsSection';
 import ExpiredListingsSection from '@/components/jobs/ExpiredListingsSection';
 import { Button } from '@/components/ui/button';
-import { useNavigate, Link } from 'react-router-dom';
-import { PlusCircle, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { PlusCircle } from 'lucide-react';
 import { Job } from '@/types/job';
 import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
 import DiamondFeaturedSection from '@/components/jobs/DiamondFeaturedSection';
@@ -75,12 +75,6 @@ const JobsPage = () => {
     setSearchTerm(term);
   };
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    console.log('Searching for:', term);
-    // Implement search logic here if needed
-  };
-
   const handlePostJob = () => {
     if (isSignedIn) {
       navigate('/post-job');
@@ -96,15 +90,6 @@ const JobsPage = () => {
 
   const handleViewJobDetails = (job: Job) => {
     console.log('View job details:', job);
-    if (!isSignedIn) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to view full job details",
-        variant: "destructive",
-      });
-      navigate('/signin');
-      return;
-    }
     // Navigate to job details page or open a modal
   };
 
@@ -153,15 +138,6 @@ const JobsPage = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">
-        {/* Back to Home Button */}
-        <Link 
-          to="/" 
-          className="flex items-center gap-1 text-gray-600 hover:text-purple-600 transition-colors mb-6"
-        >
-          <ArrowLeft size={18} />
-          <span>Back to Home</span>
-        </Link>
-
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -174,8 +150,7 @@ const JobsPage = () => {
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <JobSearchBar 
               value={searchTerm} 
-              onSearchChange={handleSearchChange}
-              onSearch={handleSearch} 
+              onSearchChange={handleSearchChange} 
             />
             <Button 
               className="flex gap-2 items-center bg-gradient-to-r from-purple-500 to-pink-500"
@@ -226,24 +201,6 @@ const JobsPage = () => {
           isRenewing={isRenewing}
           renewalJobId={renewalJobId}
         />
-
-        {/* View All Buttons (optional) */}
-        <div className="flex justify-center gap-4 mt-12 mb-4">
-          <Button 
-            variant="outline" 
-            className="border-purple-300 hover:bg-purple-50"
-            onClick={() => navigate('/salons')}
-          >
-            View All Salons
-          </Button>
-          <Button 
-            variant="outline"
-            className="border-emerald-300 hover:bg-emerald-50"
-            onClick={() => navigate('/jobs')}
-          >
-            View All Nail Jobs
-          </Button>
-        </div>
       </div>
     </Layout>
   );

@@ -1,156 +1,154 @@
 
-import { useState } from "react";
-import { Job } from "@/types/job";
-import { MapPin, Clock, DollarSign } from "lucide-react";
+import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { CalendarIcon, MapPinIcon, Phone, LockIcon } from "lucide-react";
+import { formatDistanceToNow } from 'date-fns';
+import { Job } from '@/types/job';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { useAuth } from '@/context/auth';
+import AuthAction from '@/components/common/AuthAction';
 
 interface BilingualJobCardProps {
   job: Job;
   onViewDetails: () => void;
   onRenew?: () => void;
   isRenewing?: boolean;
-  variant?: "standard" | "expired";
 }
 
-const BilingualJobCard = ({
-  job,
+const BilingualJobCard: React.FC<BilingualJobCardProps> = ({ 
+  job, 
   onViewDetails,
   onRenew,
   isRenewing = false,
-  variant = "standard"
-}: BilingualJobCardProps) => {
-  const [isHovering, setIsHovering] = useState(false);
+}) => {
   const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
   
-  const handleViewDetails = (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    if (!isSignedIn) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to view job details",
-        variant: "destructive",
-      });
-      navigate('/signin');
-      return;
+  // For displaying the posted date
+  const getPostedDate = () => {
+    try {
+      const date = new Date(job.created_at);
+      const distanceText = formatDistanceToNow(date, { addSuffix: true });
+      return distanceText;
+    } catch (error) {
+      return "Recently posted";
     }
-    
-    onViewDetails();
+  };
+  
+  // Check if job is expired (30+ days old)
+  const isExpired = () => {
+    return job.status === 'expired' || (() => {
+      const createdDate = new Date(job.created_at);
+      const now = new Date();
+      const diffDays = Math.ceil(
+        (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      return diffDays >= 30;
+    })();
   };
 
-  const isExpired = variant === "expired";
-  const cardClasses = isExpired 
-    ? "border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm hover:shadow-md transition-all duration-300 bg-gray-50" 
-    : "border border-gray-200 rounded-lg overflow-hidden h-full shadow-sm hover:shadow-md transition-all duration-300";
-
-  const imageClasses = isExpired
-    ? "w-full h-48 object-cover grayscale transition-transform duration-300"
-    : "w-full h-48 object-cover transition-transform duration-300";
+  // Check if this is a free or starter tier listing to show contact info without login
+  const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
   return (
-    <div 
-      className={cardClasses}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      {/* Image Container */}
-      <div className="relative overflow-hidden">
-        <img 
-          src={job.image || "https://via.placeholder.com/400x300"} 
-          alt={job.title || "Job Listing"} 
-          className={imageClasses}
-          style={{ transform: isHovering ? 'scale(1.05)' : 'scale(1)' }}
+    <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
+      <div className="aspect-video relative">
+        <ImageWithFallback
+          src={job.image || ''}
+          alt={job.title || 'Job listing'}
+          className="w-full h-full object-cover"
         />
-        
-        {/* Premium Badge - Show only for non-expired jobs */}
-        {job.is_featured && !isExpired && (
-          <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
-            ✓ Premium
-          </div>
-        )}
-        
-        {/* Expired Badge */}
-        {isExpired && (
-          <div className="absolute top-2 left-2 bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded">
-            Expired
-          </div>
+        {job.is_featured && (
+          <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
+            Featured
+          </Badge>
         )}
       </div>
       
-      {/* Card Content */}
-      <div className="p-4">
-        {/* Job Title - English */}
-        <h3 className={`font-medium text-lg mb-1 ${isExpired ? 'text-gray-500' : 'text-gray-800'}`}>
-          {job.title || "Nail Technician Job"}
-        </h3>
+      <CardContent className="p-4 flex flex-col flex-grow">
+        <div className="mb-3">
+          <h3 className="font-bold text-lg line-clamp-2">{job.title}</h3>
+          
+          <div className="flex items-center text-sm text-gray-500 mt-1">
+            <MapPinIcon className="h-3.5 w-3.5 mr-1" />
+            <span className="truncate">{job.location}</span>
+          </div>
+        </div>
         
-        {/* Job Title - Vietnamese */}
-        {job.vietnamese_description && (
-          <p className={`text-sm mb-3 ${isExpired ? 'text-gray-400' : 'text-gray-600'}`}>
-            Thợ {job.role?.includes('Powder') ? 'Bột' : 'Nail'}
+        {(job.vietnamese_description || job.description) && (
+          <p className="text-sm text-gray-600 line-clamp-3 mb-3">
+            {job.vietnamese_description || job.description}
           </p>
         )}
         
-        {/* Location */}
-        <div className={`flex items-center text-sm mb-2 ${isExpired ? 'text-gray-400' : 'text-gray-600'}`}>
-          <MapPin className="h-4 w-4 mr-1" />
-          {job.location || "Houston, TX"}
-        </div>
-        
-        {/* Posted Date */}
-        <div className={`flex items-center text-sm mb-2 ${isExpired ? 'text-gray-400' : 'text-gray-600'}`}>
-          <Clock className="h-4 w-4 mr-1" />
-          {isExpired ? "Over 30 days ago" : `Posted ${new Date(job.created_at).toLocaleDateString()}`}
-        </div>
-        
-        {/* Salary - Only for non-expired */}
-        {!isExpired && job.salary_range && (
-          <div className="flex items-center text-sm mb-3 text-emerald-600">
-            <DollarSign className="h-4 w-4 mr-1" />
-            {job.salary_range}
-          </div>
-        )}
-        
-        {/* Benefits/Features - Only for non-expired */}
-        {!isExpired && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {job.weekly_pay && (
-              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Weekly Pay</span>
-            )}
-            {job.has_housing && (
-              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Housing</span>
-            )}
-            {job.owner_will_train && (
-              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Training</span>
+        <div className="mt-auto space-y-3">
+          <div className="flex items-center text-xs text-gray-500">
+            <CalendarIcon className="h-3 w-3 mr-1" />
+            <span>{getPostedDate()}</span>
+            {isExpired() && (
+              <Badge variant="outline" className="ml-2 text-xs border-red-200 text-red-600">
+                Expired
+              </Badge>
             )}
           </div>
-        )}
-        
-        {/* Action Button */}
-        <div className="mt-auto pt-2">
-          {isExpired && onRenew ? (
-            <Button 
-              onClick={onRenew} 
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-              disabled={isRenewing}
-            >
-              {isRenewing ? "Renewing..." : "Renew Listing"}
-            </Button>
-          ) : (
-            <Button 
-              onClick={handleViewDetails} 
-              className="w-full"
-            >
-              {job.vietnamese_description ? "Xem Chi Tiết" : "View Details"}
-            </Button>
+          
+          {job.contact_info?.phone && (
+            <div className="border-t border-gray-100 pt-3">
+              {isExpired() ? (
+                <div className="text-xs text-gray-500 italic flex items-center gap-1 p-2 bg-gray-50 rounded-md">
+                  <LockIcon className="h-3 w-3" />
+                  <span>This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.</span>
+                </div>
+              ) : isSignedIn || isFreeOrStarterListing ? (
+                <div className="flex items-center">
+                  <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
+                  <span className="text-sm">{job.contact_info.phone}</span>
+                </div>
+              ) : (
+                <AuthAction
+                  customTitle="Sign in to see contact details"
+                  onAction={() => true}
+                  fallbackContent={
+                    <div className="text-xs text-gray-500 italic flex items-center gap-1">
+                      <LockIcon className="h-3 w-3" />
+                      <span>Sign in to see contact details</span>
+                    </div>
+                  }
+                />
+              )}
+            </div>
           )}
+          
+          <div className="flex items-center justify-between pt-2">
+            {isExpired() && onRenew ? (
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRenew();
+                }}
+                disabled={isRenewing}
+                className="text-xs"
+              >
+                {isRenewing ? 'Renewing...' : 'Renew Listing'}
+              </Button>
+            ) : (
+              <span></span>
+            )}
+            
+            <Button 
+              size="sm" 
+              onClick={onViewDetails}
+              className="text-xs"
+            >
+              View Details
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
