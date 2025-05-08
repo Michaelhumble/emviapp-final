@@ -2,8 +2,11 @@
 import React, { createContext, useState, useEffect } from "react";
 import { AuthContextType, UserRole } from "./types";
 
-// Export this context so useAuth can import it directly from here
+// Create and export the auth context with undefined as default value
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Add display name for easier debugging
+AuthContext.displayName = 'AuthContext';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSignedIn, setIsSignedIn] = useState(false);
