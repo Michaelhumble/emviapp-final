@@ -61,16 +61,15 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
               <div className="flex justify-between items-center mt-3">
                 <div>
                   {job.contact_info?.phone && (
-                    <JobCardContact phoneNumber={job.contact_info.phone} showAlways={true} />
+                    <JobCardContact phoneNumber={job.contact_info.phone} />
                   )}
                 </div>
                 
                 <Button
-                  variant="outline"
-                  className="font-bold"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
                   onClick={() => onViewDetails(job)}
                 >
-                  View Details
+                  Xem Chi Tiết
                 </Button>
               </div>
             </CardContent>

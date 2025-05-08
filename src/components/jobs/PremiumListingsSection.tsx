@@ -34,7 +34,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
         {jobs.map((job) => (
           <Card
             key={job.id}
-            className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 group"
+            className="overflow-hidden border border-purple-200 shadow-md hover:shadow-lg transition-all duration-300 group"
           >
             <div className="aspect-video relative">
               <ImageWithFallback
@@ -73,12 +73,14 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                 )}
               </div>
 
-              <Button
-                className="w-full font-bold"
-                onClick={() => onViewDetails(job)}
-              >
-                View Details
-              </Button>
+              <div className="flex justify-end">
+                <Button
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                  onClick={() => onViewDetails(job)}
+                >
+                  Xem Chi Tiết
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}

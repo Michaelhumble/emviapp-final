@@ -104,11 +104,10 @@ const ExpiredListingsSection = ({
                 </Button>
                 
                 <Button
-                  variant="ghost"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
                   onClick={() => onViewDetails(job)}
-                  className="text-base font-bold"
                 >
-                  View
+                  Xem Chi Tiết
                 </Button>
               </div>
             </CardContent>
