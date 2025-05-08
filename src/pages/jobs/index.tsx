@@ -20,8 +20,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import SalonSalesSection from "@/components/jobs/SalonSalesSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const JobsPage: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     jobs, 
     loading, 
@@ -73,6 +77,17 @@ const JobsPage: React.FC = () => {
 
   return (
     <Container className="py-8 max-w-7xl">
+      {/* Back to Home button */}
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={16} /> Back to Home
+        </Button>
+      </div>
+      
       <h1 className="text-3xl font-playfair font-bold mb-6">
         Beauty Industry Jobs
       </h1>
