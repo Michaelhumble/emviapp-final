@@ -36,7 +36,7 @@ export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
 export interface PricingOptions {
   isFirstPost?: boolean;
-  isRenewal?: boolean;
+  isRenewal?: boolean; // Added the missing property
   isNationwide?: boolean;
   fastSalePackage?: boolean;
   showAtTop?: boolean;
@@ -51,6 +51,7 @@ export interface PricingOptions {
   featuredPost?: boolean;
 }
 
+// Added the missing interface
 export interface UserPostingStats {
   jobPostCount: number;
   salonPostCount: number;
