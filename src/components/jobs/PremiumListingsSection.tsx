@@ -26,7 +26,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
-          💎 Premiere Featured
+          🌟 Premiere Featured
         </h2>
       </div>
 
@@ -76,7 +76,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
 
               <div className="flex justify-end">
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs"
                   onClick={() => onViewDetails(job)}
                 >
                   Xem Chi Tiết

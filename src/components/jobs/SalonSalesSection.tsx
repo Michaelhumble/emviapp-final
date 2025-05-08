@@ -90,7 +90,7 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
 
               <div className="flex justify-end">
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs"
                   onClick={() => onViewDetails(salon)}
                 >
                   Xem Chi Tiết
