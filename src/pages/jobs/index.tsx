@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
@@ -8,7 +7,7 @@ import PremiumListingsSection from '@/components/jobs/PremiumListingsSection';
 import ExpiredListingsSection from '@/components/jobs/ExpiredListingsSection';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, ArrowLeft } from 'lucide-react';
 import { Job } from '@/types/job';
 import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
 import DiamondFeaturedSection from '@/components/jobs/DiamondFeaturedSection';
@@ -127,6 +126,10 @@ const JobsPage = () => {
     }, 1500);
   };
 
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -138,6 +141,22 @@ const JobsPage = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mb-6"
+        >
+          <Button 
+            variant="ghost" 
+            className="mb-4 flex items-center text-gray-600 hover:text-purple-600"
+            onClick={handleBackToHome}
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            <span>Back to Home</span>
+          </Button>
+        </motion.div>
+        
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

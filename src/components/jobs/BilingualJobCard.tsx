@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, MapPinIcon, Phone, LockIcon } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
@@ -9,6 +8,7 @@ import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
+import { JobCardActions } from './card-sections/JobCardActions';
 
 interface BilingualJobCardProps {
   job: Job;
@@ -120,32 +120,13 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             </div>
           )}
           
-          <div className="flex items-center justify-between pt-2">
-            {isExpired() && onRenew ? (
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRenew();
-                }}
-                disabled={isRenewing}
-                className="text-xs"
-              >
-                {isRenewing ? 'Renewing...' : 'Renew Listing'}
-              </Button>
-            ) : (
-              <span></span>
-            )}
-            
-            <Button 
-              size="sm" 
-              onClick={onViewDetails}
-              className="text-xs"
-            >
-              View Details
-            </Button>
-          </div>
+          <JobCardActions
+            isExpired={isExpired()}
+            isOwner={false}
+            onViewDetails={onViewDetails}
+            onRenew={onRenew || (() => {})}
+            isRenewing={isRenewing}
+          />
         </div>
       </CardContent>
     </Card>
