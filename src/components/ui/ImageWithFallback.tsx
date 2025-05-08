@@ -26,12 +26,12 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 }) => {
   const [error, setError] = useState(false);
   
-  // Additional safety check for valid image URL
+  // Enhanced validation for image URL
   const isValidImageUrl = src && (
     src.startsWith('http') || 
     src.startsWith('/') || 
     src.startsWith('data:')
-  );
+  ) && !src.includes('undefined') && !src.includes('null');
 
   if (!isValidImageUrl || error) {
     // Use fallbackImage if provided
@@ -74,8 +74,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       className={className}
       style={style}
       onError={() => setError(true)}
-      // The priority attribute isn't valid for regular HTML img elements
-      // We're keeping it in the props for compatibility but not using it directly
+      loading={priority ? "eager" : "lazy"}
     />
   );
 };
