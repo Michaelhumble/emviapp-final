@@ -108,7 +108,7 @@ const JobsPage: React.FC = () => {
 
       {error && (
         <Alert className="mb-8 bg-red-50 border-red-200">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
 
