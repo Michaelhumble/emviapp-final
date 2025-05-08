@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -15,6 +14,7 @@ import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import Layout from "@/components/layout/Layout";
 import JobPost from "@/pages/posting/JobPost";
+import Jobs from "@/pages/Jobs";  // Make sure Jobs is explicitly imported
 
 function App() {
   const location = useLocation();
@@ -42,9 +42,12 @@ function App() {
                   {/* Add our new job post route */}
                   <Route path="/post-job" element={<JobPost />} />
                   
+                  {/* Explicitly add the /jobs route to ensure it uses the correct component */}
+                  <Route path="/jobs" element={<Jobs />} />
+                  
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
-                    route.path !== "/salons" && (
+                    (route.path !== "/salons" && route.path !== "/jobs") && (
                       <Route 
                         key={index}
                         path={route.path}
