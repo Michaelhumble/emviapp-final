@@ -19,7 +19,7 @@ export const vietnameseJobs: Job[] = [
     weekly_pay: true,
     has_housing: true,
     owner_will_train: false,
-    pricingTier: "gold",
+    pricingTier: "featured",
     is_vietnamese_listing: true,
     image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-1.jpg"
   },
@@ -39,7 +39,7 @@ export const vietnameseJobs: Job[] = [
     weekly_pay: true,
     has_housing: true,
     owner_will_train: true,
-    pricingTier: "gold",
+    pricingTier: "featured",
     is_vietnamese_listing: true,
     image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-2.jpg"
   },
@@ -59,7 +59,7 @@ export const vietnameseJobs: Job[] = [
     weekly_pay: true,
     has_housing: false,
     owner_will_train: true,
-    pricingTier: "gold",
+    pricingTier: "featured",
     is_vietnamese_listing: true,
     image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-3.jpg"
   },
@@ -79,7 +79,7 @@ export const vietnameseJobs: Job[] = [
     weekly_pay: false,
     has_housing: false,
     owner_will_train: true,
-    pricingTier: "gold",
+    pricingTier: "featured",
     is_vietnamese_listing: true,
     image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-4.jpg"
   },
@@ -99,7 +99,7 @@ export const vietnameseJobs: Job[] = [
     weekly_pay: true,
     has_housing: true,
     owner_will_train: false,
-    pricingTier: "gold",
+    pricingTier: "featured",
     is_vietnamese_listing: true,
     image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-5.jpg"
   },
@@ -119,7 +119,7 @@ export const vietnameseJobs: Job[] = [
     weekly_pay: true,
     has_housing: false,
     owner_will_train: true,
-    pricingTier: "gold",
+    pricingTier: "featured",
     is_vietnamese_listing: true,
     image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-6.jpg"
   }

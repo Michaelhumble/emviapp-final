@@ -12,8 +12,14 @@ import { Job } from "@/types/job";
 import { diamondJobs } from "@/data/jobs/diamondJobs";
 import { premiumJobs } from "@/data/jobs/premiumJobs";
 import { goldJobs } from "@/data/protected/vietnameseJobs";
+import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
+import { freeJobs } from "@/data/jobs/freeJobs";
+import { expiredJobs } from "@/data/jobs/expiredJobs";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import SalonSalesSection from "@/components/jobs/SalonSalesSection";
+import FreeListingsSection from "@/components/jobs/FreeListingsSection";
+import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 
 const JobsPage: React.FC = () => {
   const { 
@@ -77,22 +83,43 @@ const JobsPage: React.FC = () => {
         placeholder="Tìm kiếm việc làm theo thành phố, bang, hoặc từ khóa..."
       />
       
-      {/* Diamond jobs at the top */}
+      {/* Diamond jobs at the top - 2 cards per row, 6 total */}
       <TopDiamondFeaturedSection 
         featuredJobs={diamondJobs} 
         onViewDetails={viewJobDetails} 
       />
       
-      {/* Premium Jobs Section */}
+      {/* Premium Jobs Section - 3 cards per row, 9 total */}
       <PremiumListingsSection 
         jobs={premiumJobs}
         onViewDetails={viewJobDetails}
       />
 
-      {/* Gold Jobs Section */}
+      {/* Gold Jobs Section - 4 cards per row, 16 total */}
       <FeaturedGoldListings
         jobs={goldJobs}
         onViewDetails={viewJobDetails}
+      />
+
+      {/* Salon Sales Section - 4 cards in total */}
+      <SalonSalesSection
+        listings={vietnameseSalonSales}
+        onViewDetails={viewJobDetails}
+      />
+
+      {/* Free Listings Section - 2 cards per row */}
+      <FreeListingsSection
+        jobs={freeJobs}
+        onViewDetails={viewJobDetails}
+      />
+
+      {/* Expired Listings Section */}
+      <ExpiredListingsSection
+        jobs={expiredJobs}
+        onViewDetails={viewJobDetails}
+        onRenew={handleRenew}
+        isRenewing={isRenewing}
+        renewalJobId={renewalJobId}
       />
 
       <Tabs defaultValue="all" className="mb-8">

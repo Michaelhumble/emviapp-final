@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { differenceInDays } from "date-fns";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ExpiredListingsSectionProps {
   jobs: Job[];
@@ -56,27 +55,21 @@ const ExpiredListingsSection = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {jobs.map((job) => (
           <Card
             key={job.id}
             className="overflow-hidden border border-gray-200 opacity-75 hover:opacity-85 transition-all duration-300"
           >
-            <div className="aspect-video relative grayscale hover:grayscale-[0.7] transition-all duration-300">
-              <ImageWithFallback
-                src={job.image || ""}
-                alt={job.title || "Expired job listing"}
-                className="w-full h-full object-cover"
-                businessName={job.company}
-              />
-              <Badge className="absolute top-2 right-2 bg-gray-500 text-white border-0">
+            <div className="pt-2 px-2">
+              <Badge className="bg-gray-500 text-white border-0 text-xs">
                 {getExpirationLabel(job)}
               </Badge>
             </div>
 
             <CardContent className="p-4">
               <div className="mb-2">
-                <h3 className="font-playfair font-medium text-base text-gray-700">{job.title}</h3>
+                <h3 className="font-playfair font-medium text-base text-gray-700 line-clamp-2">{job.title}</h3>
                 <p className="text-gray-500 text-base">{job.company}</p>
               </div>
 
@@ -88,22 +81,18 @@ const ExpiredListingsSection = ({
                 <Calendar className="h-3 w-3 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
-              <div className="text-base text-gray-400 italic mb-3">
-                <p>Contact details are hidden for expired listings</p>
-              </div>
-
-              <div className="flex justify-between items-center mt-2">
+              <div className="flex justify-between items-center mt-2 space-x-2">
                 <Button
                   variant="outline"
                   onClick={() => onRenew(job)}
                   disabled={isRenewing && renewalJobId === job.id}
-                  className="text-base font-bold"
+                  className="text-xs py-1 px-2 h-auto"
                 >
-                  {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew Listing"}
+                  {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew"}
                 </Button>
                 
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                  className="text-xs py-1 px-2 h-auto bg-purple-500 hover:bg-purple-600 text-white"
                   onClick={() => onViewDetails(job)}
                 >
                   Xem Chi Tiết

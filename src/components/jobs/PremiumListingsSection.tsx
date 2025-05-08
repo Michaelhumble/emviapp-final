@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import JobCardContact from "./JobCardContact";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PremiumListingsSectionProps {
   jobs: Job[];
@@ -15,7 +16,53 @@ interface PremiumListingsSectionProps {
 }
 
 const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionProps) => {
-  if (!jobs.length) return null;
+  const [nailImages, setNailImages] = useState<string[]>([]);
+  
+  // Fetch nail salon images from Supabase bucket
+  useEffect(() => {
+    const fetchNailImages = async () => {
+      try {
+        const { data, error } = await supabase.storage.from('nails').list('', {
+          sortBy: { column: 'name', order: 'asc' },
+        });
+        
+        if (error) {
+          console.error('Error fetching nail images:', error);
+          return;
+        }
+        
+        if (data) {
+          // Get public URLs for all images
+          const imageUrls = data.map(file => {
+            return supabase.storage.from('nails').getPublicUrl(file.name).data.publicUrl;
+          });
+          
+          setNailImages(imageUrls);
+        }
+      } catch (err) {
+        console.error('Failed to fetch nail salon images:', err);
+      }
+    };
+    
+    fetchNailImages();
+  }, []);
+  
+  // Create extra premium placeholders to reach 9 total
+  const premiumJobs = [...jobs];
+  const remainingCount = Math.max(0, 9 - jobs.length);
+  
+  for (let i = 0; i < remainingCount; i++) {
+    premiumJobs.push({
+      id: `premium-placeholder-${i}`,
+      title: "Premium Position Available",
+      company: "Your Business Here",
+      location: "United States",
+      created_at: new Date().toISOString(),
+      description: "This premium position will make your business stand out. Reach thousands of potential customers or employees.",
+      image: nailImages[(jobs.length + i) % nailImages.length] || "",
+      pricingTier: "premium" as const
+    });
+  }
 
   return (
     <motion.section
@@ -31,7 +78,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {jobs.map((job) => (
+        {premiumJobs.map((job, index) => (
           <Card
             key={job.id}
             className="overflow-hidden border border-purple-200 shadow-md hover:shadow-lg transition-all duration-300 group"
@@ -40,10 +87,10 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
               <ImageWithFallback
                 src={job.image || ""}
                 alt={job.title || "Job listing"}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${index >= jobs.length ? 'opacity-70' : ''}`}
                 businessName={job.company}
               />
-              <Badge className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+              <Badge className={`absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 ${index >= jobs.length ? 'opacity-70' : ''}`}>
                 Premium
               </Badge>
             </div>
@@ -68,19 +115,28 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                 <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
-              <div className="border-t border-gray-100 pt-3 mb-4">
-                {job.contact_info?.phone && (
+              {index < jobs.length && job.contact_info?.phone && (
+                <div className="border-t border-gray-100 pt-3 mb-4">
                   <JobCardContact phoneNumber={job.contact_info.phone} />
-                )}
-              </div>
+                </div>
+              )}
 
               <div className="flex justify-end">
-                <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
-                  onClick={() => onViewDetails(job)}
-                >
-                  Xem Chi Tiết
-                </Button>
+                {index < jobs.length ? (
+                  <Button
+                    className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                    onClick={() => onViewDetails(job)}
+                  >
+                    Xem Chi Tiết
+                  </Button>
+                ) : (
+                  <Button
+                    className="font-bold bg-purple-400 text-white opacity-70"
+                    disabled
+                  >
+                    Premium Position
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
