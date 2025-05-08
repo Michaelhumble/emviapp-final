@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import JobsPage from './jobs';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
