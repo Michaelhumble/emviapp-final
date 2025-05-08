@@ -6,14 +6,14 @@ const SUPABASE_URL = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object
 
 // Use exact filenames as specified, properly encoded
 const IMAGE_FILENAMES = [
-  "_A%20long%2C%20luxurious%20nail%20salon-10.png",
-  "_A%20long%2C%20luxurious%20nail%20salon-11.png",
-  "_A%20long%2C%20luxurious%20nail%20salon-12.png",
-  "_A%20long%2C%20luxurious%20nail%20salon-13.png",
-  "_A%20long%2C%20luxurious%20nail%20salon-14.png",
-  "_A%20long%2C%20luxurious%20nail%20salon-15.png",
-  "_A%20long%2C%20luxurious%20nail%20salon-16.png",
-  "_A%20long%2C%20luxurious%20nail%20salon-17.png"
+  "_A%20long%2C%20luxurious%20nail%20salon-21.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-22.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-23.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-24.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-25.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-26.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-27.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-28.png"
 ];
 
 // Helper function to get direct Supabase image URL with encoding
