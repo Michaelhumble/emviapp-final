@@ -40,7 +40,9 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       'generated(01).png', 'generated(04).png', 'generated(08).png', 'generated(12).png',
       'generated(15).png', 'generated(21).png', 'generated(27).png', 'generated(33).png',
       '_A long, luxurious nail salon-10.png', '_A long, luxurious nail salon-11.png',
-      '_A long, luxurious nail salon-12.png', '_A long, luxurious nail salon-13.png'
+      '_A long, luxurious nail salon-12.png', '_A long, luxurious nail salon-13.png',
+      '_A long, luxurious nail salon-14.png', '_A long, luxurious nail salon-15.png',
+      '_A long, luxurious nail salon-16.png', '_A long, luxurious nail salon-17.png'
     ];
     
     // Choose a random image from the valid options
