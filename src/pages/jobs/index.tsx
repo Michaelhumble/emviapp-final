@@ -16,6 +16,7 @@ import GoldFeaturedSection from '@/components/jobs/GoldFeaturedSection';
 import FreeListingsSection from '@/components/jobs/FreeListingsSection';
 import { useAuth } from '@/context/auth';
 import { toast } from '@/components/ui/use-toast';
+import VietnameseJobSection from '@/components/jobs/VietnameseJobSection';
 
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,13 +40,10 @@ const JobsPage = () => {
     const loadJobs = async () => {
       try {
         // Get Vietnamese job listings and add pricing tier
-        const allJobs = vietnameseJobs.map((job, index) => ({
+        const allJobs = vietnameseJobs.map((job) => ({
           ...job,
-          // Assign pricing tiers: diamond for 1st, premium for 2-7, gold for 8-15, free for 16-25, expired for rest
-          pricingTier: index === 0 ? 'diamond' : 
-                      index < 7 ? 'premium' : 
-                      index < 15 ? 'gold' :
-                      index < 25 ? 'free' : 'expired'
+          // Use pricing tier from data if available
+          pricingTier: job.pricingTier || 'free'
         }));
 
         // Create random expiration states for all jobs
@@ -73,7 +71,7 @@ const JobsPage = () => {
     loadJobs();
   }, []);
 
-  const handleSearch = (term: string) => {
+  const handleSearchChange = (term: string) => {
     setSearchTerm(term);
   };
 
@@ -150,7 +148,10 @@ const JobsPage = () => {
             Beauty Industry Jobs
           </h1>
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-            <JobSearchBar onSearch={handleSearch} />
+            <JobSearchBar 
+              value={searchTerm} 
+              onSearchChange={handleSearchChange} 
+            />
             <Button 
               className="flex gap-2 items-center bg-gradient-to-r from-purple-500 to-pink-500"
               onClick={handlePostJob}
@@ -177,6 +178,13 @@ const JobsPage = () => {
         <GoldFeaturedSection 
           jobs={goldJobs} 
           onViewDetails={handleViewJobDetails} 
+        />
+        
+        {/* Vietnamese Job Section - Salons for Sale */}
+        <VietnameseJobSection
+          vietnameseJobs={vietnameseJobs.filter(job => job.is_salon_for_sale === true)}
+          onViewDetails={handleViewJobDetails}
+          searchTerm={searchTerm}
         />
         
         {/* Free Listings */}
