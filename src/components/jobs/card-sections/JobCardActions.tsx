@@ -25,7 +25,7 @@ export const JobCardActions = ({
     if (isSignedIn) {
       onViewDetails();
     } else {
-      navigate("/jobs");
+      navigate("/signin"); // Redirect users clearly to Sign In page if not authenticated
     }
   };
 
