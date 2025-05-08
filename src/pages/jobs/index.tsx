@@ -14,7 +14,6 @@ import { premiumJobs } from "@/data/jobs/premiumJobs";
 import { goldJobs } from "@/data/protected/vietnameseJobs";
 import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
 import { freeJobs } from "@/data/jobs/freeJobs";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import SalonSalesSection from "@/components/jobs/SalonSalesSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
@@ -36,8 +35,6 @@ const JobsPage: React.FC = () => {
   } = useJobsData();
   
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [expirations, setExpirations] = useState<Record<string, boolean>>({});
-  const [jobType, setJobType] = useState<"all" | "active" | "expired">("all");
 
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -50,13 +47,6 @@ const JobsPage: React.FC = () => {
   const handleSearchChange = (value: string) => {
     updateSearchTerm(value);
   };
-
-  // Filter jobs based on jobType
-  const filteredJobs = jobs.filter(job => {
-    if (jobType === "active") return !expirations[job.id];
-    if (jobType === "expired") return expirations[job.id];
-    return true;
-  });
 
   return (
     <Container className="py-8 max-w-7xl">
@@ -116,24 +106,20 @@ const JobsPage: React.FC = () => {
         onViewDetails={viewJobDetails}
       />
 
-      <Tabs defaultValue="all" className="mb-8">
-        <TabsList>
-          <TabsTrigger value="all" onClick={() => setJobType("all")}>
-            All Jobs
-          </TabsTrigger>
-          <TabsTrigger value="active" onClick={() => setJobType("active")}>
-            Active Jobs
-          </TabsTrigger>
-          <TabsTrigger value="expired" onClick={() => setJobType("expired")}>
-            Expired
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {error && (
+        <Alert className="mb-8 bg-red-50 border-red-200">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-      {filteredJobs.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : jobs.length > 0 ? (
         <JobsGrid 
-          jobs={filteredJobs} 
-          expirations={expirations}
+          jobs={jobs} 
+          expirations={{}}
           onRenew={() => {}} 
           isRenewing={false}
           renewalJobId={renewalJobId}
