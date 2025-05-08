@@ -107,13 +107,13 @@ const JobsPage: React.FC = () => {
         onViewDetails={viewJobDetails}
       />
 
-      {/* Free Listings Section - 2 cards per row */}
+      {/* Free Listings Section - 5 cards per row */}
       <FreeListingsSection
         jobs={freeJobs}
         onViewDetails={viewJobDetails}
       />
 
-      {/* Expired Listings Section */}
+      {/* Expired Listings Section - 5 cards per row */}
       <ExpiredListingsSection
         jobs={expiredJobs}
         onViewDetails={viewJobDetails}

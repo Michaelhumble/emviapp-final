@@ -46,7 +46,6 @@ export const expiredJobs: Job[] = [
     status: "expired",
     pricingTier: "expired"
   },
-  // Two additional Vietnamese expired listings
   {
     id: "expired-4",
     title: "Cần Thợ Nails Gấp - Bao Lương",
