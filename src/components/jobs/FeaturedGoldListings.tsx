@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +17,30 @@ interface FeaturedGoldListingsProps {
 const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps) => {
   // Ensure we have jobs to display
   if (!jobs.length) return null;
+
+  // Function to get valid Supabase image URLs
+  const getValidImageUrl = (job: Job, index: number): string => {
+    // If job already has a valid image URL, use it
+    if (job.image && !job.image.includes('undefined') && !job.image.includes('null') && 
+        job.image.startsWith('https://')) {
+      return job.image;
+    }
+    
+    // Otherwise, use one of our valid images with rotation
+    const validImages = [
+      '_A long, luxurious nail salon-10.png',
+      '_A long, luxurious nail salon-11.png',
+      '_A long, luxurious nail salon-12.png', 
+      '_A long, luxurious nail salon-13.png',
+      '_A long, luxurious nail salon-14.png',
+      '_A long, luxurious nail salon-15.png',
+      '_A long, luxurious nail salon-16.png',
+      '_A long, luxurious nail salon-17.png'
+    ];
+    
+    const imageIndex = index % validImages.length;
+    return `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${validImages[imageIndex]}`;
+  };
 
   // Add placeholder jobs to ensure balanced rows (4 cards per row)
   const balancedJobs = [...jobs];
@@ -63,10 +86,11 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
           >
             <div className="aspect-video relative">
               <ImageWithFallback
-                src={job.image || ""}
+                src={getValidImageUrl(job, index)}
                 alt={job.title || "Job listing"}
                 className={`w-full h-full object-cover ${index >= jobs.length ? 'opacity-70' : ''}`}
                 businessName={job.company}
+                priority={true}
               />
               <Badge className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-amber-400 text-white border-0">
                 Gold

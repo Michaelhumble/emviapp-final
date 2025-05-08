@@ -74,7 +74,7 @@ export const premiumJobs: Job[] = [
     location: "Clawson, MI",
     created_at: new Date("2025-05-05").toISOString(),
     description: "Tiệm nhỏ khu Mỹ trắng, tip hậu. Cần thợ làm bột, dip, gel-x.",
-    image: `${SUPABASE_URL}/generated-26.png`,
+    image: `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-14.png`,
     contact_info: {
       phone: "(248) 403-6472 | (248) 525-9911"
     },
@@ -89,7 +89,7 @@ export const premiumJobs: Job[] = [
     location: "Clinton, MD",
     created_at: new Date("2025-05-04").toISOString(),
     description: "Khách dễ chịu, tip cao.",
-    image: `${SUPABASE_URL}/generated%20(04).png`,
+    image: `${SUPABASE_URL}/generated%20(4).png`,
     contact_info: {
       phone: "703-980-6551"
     },
@@ -104,7 +104,7 @@ export const premiumJobs: Job[] = [
     location: "Fort Worth, TX",
     created_at: new Date("2025-05-02").toISOString(),
     description: "Làm đủ thứ. Môi trường vui vẻ.",
-    image: `${SUPABASE_URL}/generated%20(1)0.png`,
+    image: `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-15.png`,
     contact_info: {
       phone: "817-841-5157"
     },
@@ -119,7 +119,7 @@ export const premiumJobs: Job[] = [
     location: "Chicago, IL",
     created_at: new Date("2025-05-02").toISOString(),
     description: "Cần thợ bột, dipping tại Chicago.",
-    image: `${SUPABASE_URL}/generated%20(2).png`,
+    image: `${SUPABASE_URL}/generated%20(5).png`,
     contact_info: {
       phone: "779-475-0679"
     },
@@ -134,7 +134,7 @@ export const premiumJobs: Job[] = [
     location: "Iowa",
     created_at: new Date("2025-05-02").toISOString(),
     description: "Full set, chân tay nước.",
-    image: `${SUPABASE_URL}/generated%20(5).png`,
+    image: `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-16.png`,
     contact_info: {
       phone: "402-617-8806"
     },

@@ -26,7 +26,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: "9",
     station_count: "7",
     square_feet: "1,200",
-    image: getSupabaseImageUrl("generated(01).png"),
+    image: getSupabaseImageUrl("_A long, luxurious nail salon-10.png"),
     pricingTier: "premium"
   },
   {
@@ -47,7 +47,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: "8",
     station_count: "9",
     square_feet: "2,500",
-    image: getSupabaseImageUrl("generated(04).png"),
+    image: getSupabaseImageUrl("_A long, luxurious nail salon-11.png"),
     pricingTier: "premium"
   },
   {
@@ -68,7 +68,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: "8",
     station_count: "8",
     square_feet: "1,400",
-    image: getSupabaseImageUrl("generated(08).png"),
+    image: getSupabaseImageUrl("_A long, luxurious nail salon-12.png"),
     pricingTier: "premium"
   },
   {
@@ -90,7 +90,7 @@ export const vietnameseSalonSales: Job[] = [
     is_salon_for_sale: true,
     chair_count: "8",
     station_count: "8",
-    image: getSupabaseImageUrl("generated(12).png"),
+    image: getSupabaseImageUrl("_A long, luxurious nail salon-13.png"),
     pricingTier: "premium"
   }
 ];
