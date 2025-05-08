@@ -13,25 +13,49 @@ interface PaymentSummaryProps {
 }
 
 const PaymentSummary = ({ postType, pricingOptions, isFirstPost = false }: PaymentSummaryProps) => {
-  // Get summary array based on post type
+  // Get summary based on post type
   const getSummaryItems = () => {
-    const options = { ...pricingOptions, isFirstPost };
-    
     switch (postType) {
-      case 'job':
-        return getJobPostPricingSummary(options);
+      case 'job': {
+        // Job pricing uses a different format (returns object)
+        const selectedTier = pricingOptions.featuredPost ? 'premium' : 
+                             pricingOptions.featuredListing ? 'standard' : 'free';
+        
+        const extras = {
+          featuredPlacement: !!pricingOptions.featuredListing,
+          extendedDuration: !!pricingOptions.extendedDuration,
+          highlightedListing: !!pricingOptions.boostVisibility
+        };
+        
+        return getJobPostPricingSummary(selectedTier, extras);
+      }
       case 'salon':
-        return getSalonPostPricingSummary(options);
+        // Salon pricing returns string[]
+        return getSalonPostPricingSummary(pricingOptions);
       case 'booth':
-        return getBoothPostPricingSummary(options);
+        // Booth pricing returns string[]
+        return getBoothPostPricingSummary(pricingOptions);
       default:
+        // Default fallback
         return ['Basic Post: $5', 'Total: $5'];
     }
   };
   
   const summaryItems = getSummaryItems();
-  const totalPrice = summaryItems[summaryItems.length - 1];
-  const lineItems = summaryItems.slice(0, -1);
+  
+  // Handle different return types (object vs string array)
+  let lineItems: string[] = [];
+  let totalPrice: string = '';
+  
+  if (Array.isArray(summaryItems)) {
+    // Handle string array return type (salon, booth)
+    totalPrice = summaryItems[summaryItems.length - 1];
+    lineItems = summaryItems.slice(0, -1);
+  } else {
+    // Handle object return type (job)
+    totalPrice = `Total: $${summaryItems.total.toFixed(2)}`;
+    lineItems = summaryItems.lineItems.map(item => `${item.name}: $${item.price.toFixed(2)}`);
+  }
   
   return (
     <Card>
