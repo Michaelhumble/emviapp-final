@@ -60,3 +60,62 @@ export const jobPricingOptions: JobPricingOption[] = [
     duration: 365, // days
   },
 ];
+
+// Function to get pricing summary for job posts
+export const getJobPostPricingSummary = (
+  selectedPricingId: string,
+  extras: Record<string, boolean> = {}
+): { total: number; lineItems: Array<{ name: string; price: number }> } => {
+  // Find the selected pricing option
+  const selectedOption = jobPricingOptions.find(option => option.id === selectedPricingId);
+  
+  if (!selectedOption) {
+    return {
+      total: 0,
+      lineItems: []
+    };
+  }
+
+  // Start with the base pricing
+  const lineItems = [
+    {
+      name: `${selectedOption.name} Job Posting`,
+      price: selectedOption.price
+    }
+  ];
+
+  // Add any extras (can be expanded in the future)
+  Object.entries(extras).forEach(([key, isSelected]) => {
+    if (isSelected) {
+      switch (key) {
+        case 'featuredPlacement':
+          lineItems.push({
+            name: 'Featured Placement Upgrade',
+            price: 29.99
+          });
+          break;
+        case 'extendedDuration':
+          lineItems.push({
+            name: 'Extended Duration (+14 days)',
+            price: 14.99
+          });
+          break;
+        case 'highlightedListing':
+          lineItems.push({
+            name: 'Highlighted Listing',
+            price: 9.99
+          });
+          break;
+        // Add more extras as needed
+      }
+    }
+  });
+
+  // Calculate total
+  const total = lineItems.reduce((sum, item) => sum + item.price, 0);
+
+  return {
+    total,
+    lineItems
+  };
+};
