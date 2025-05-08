@@ -1,42 +1,79 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Job } from "@/types/job";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Building } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MapPin, DollarSign, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
-import JobCardContact from "./JobCardContact";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VietnameseJobSectionProps {
   vietnameseJobs: Job[];
   onViewDetails: (job: Job) => void;
-  searchTerm: string;
+  searchTerm?: string;
 }
 
 const VietnameseJobSection = ({ 
   vietnameseJobs, 
   onViewDetails, 
-  searchTerm 
+  searchTerm = "" 
 }: VietnameseJobSectionProps) => {
-  // Filter for salon for sale only
-  const salonJobs = vietnameseJobs.filter(job => job.is_salon_for_sale === true);
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>(vietnameseJobs);
+  const [nailImages, setNailImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // If no salon jobs or empty after filtering, return null
-  if (!salonJobs.length) return null;
-  
-  // Filter by search term if needed
-  const filteredJobs = searchTerm 
-    ? salonJobs.filter(job => 
-        job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.location?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : salonJobs;
+  // Fetch nail salon images from Supabase bucket
+  useEffect(() => {
+    const fetchNailImages = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase.storage.from('nails').list('', {
+          sortBy: { column: 'name', order: 'asc' },
+        });
+        
+        if (error) {
+          console.error('Error fetching nail images:', error);
+          return;
+        }
+        
+        if (data) {
+          // Get public URLs for all images
+          const imageUrls = data.map(file => {
+            const publicUrl = supabase.storage.from('nails').getPublicUrl(file.name).data.publicUrl;
+            return publicUrl;
+          });
+          
+          setNailImages(imageUrls);
+        }
+      } catch (err) {
+        console.error('Failed to fetch nail salon images:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
     
-  // If filtered to nothing, return null
-  if (!filteredJobs.length) return null;
+    fetchNailImages();
+  }, []);
+  
+  // Filter jobs based on search term
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredJobs(vietnameseJobs);
+      return;
+    }
+    
+    const filtered = vietnameseJobs.filter(job => 
+      job.location && 
+      job.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    setFilteredJobs(filtered);
+  }, [vietnameseJobs, searchTerm]);
+
+  // Filter jobs that are salons for sale
+  const salonSaleJobs = filteredJobs.filter(job => job.is_salon_for_sale === true);
+
+  if (!salonSaleJobs.length) return null;
 
   return (
     <motion.section
@@ -47,73 +84,61 @@ const VietnameseJobSection = ({
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
-          🏢 Featured Nail Salons for Sale
+          💼 Salons For Sale
         </h2>
+        <Button variant="outline" className="hidden md:flex">
+          View All
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredJobs.slice(0, 4).map((salon) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {salonSaleJobs.map((job) => (
           <Card
-            key={salon.id}
-            className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 group"
+            key={job.id}
+            className="overflow-hidden border border-emerald-100 shadow-md hover:shadow-lg transition-all duration-300"
           >
             <div className="aspect-video relative">
-              <ImageWithFallback
-                src={salon.image || ""}
-                alt={salon.title || "Salon for sale"}
+              <img
+                src={job.image}
+                alt={job.title}
                 className="w-full h-full object-cover"
-                businessName={salon.company}
               />
-              <Badge className="absolute top-2 right-2 bg-orange-500 text-white border-0">
-                For Sale
-              </Badge>
             </div>
 
-            <CardContent className="p-4">
-              <div className="mb-2">
-                <h3 className="font-playfair font-semibold text-lg line-clamp-2">{salon.title}</h3>
-                <p className="text-gray-600 flex items-center mb-1">
-                  <MapPin className="h-3.5 w-3.5 mr-1" /> {salon.location}
-                </p>
+            <CardContent className="p-6">
+              <div className="mb-3">
+                <h3 className="font-playfair font-semibold text-lg">{job.title}</h3>
+                <p className="text-gray-600">{job.location}</p>
               </div>
 
-              <div className="flex flex-col space-y-1 mb-3">
-                {salon.sale_price && (
-                  <p className="text-sm text-gray-700 flex items-center">
-                    <span className="text-green-600 font-bold mr-1">$</span> 
-                    Asking: {salon.sale_price}
-                  </p>
-                )}
-                
-                {salon.monthly_revenue && (
-                  <p className="text-sm text-gray-700 flex items-center">
-                    <span className="text-green-600 font-bold mr-1">$</span> 
-                    Revenue: {salon.monthly_revenue}/month
-                  </p>
-                )}
-                
-                {(salon.chair_count || salon.station_count) && (
-                  <p className="text-sm text-gray-700 flex items-center">
-                    <Building className="h-3.5 w-3.5 mr-1 text-gray-500" /> 
-                    {salon.chair_count || salon.station_count} stations
-                  </p>
-                )}
+              {job.sale_price && (
+                <div className="flex items-center text-emerald-600 font-semibold text-lg mb-2">
+                  <DollarSign className="h-5 w-5 mr-1" /> {job.sale_price || "290,000"}
+                </div>
+              )}
+
+              <div className="flex items-center text-sm text-gray-600 mb-3">
+                <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
-              <div className="border-t border-gray-100 pt-3 mb-3">
-                {salon.contact_info?.phone && (
-                  <JobCardContact phoneNumber={salon.contact_info.phone} />
-                )}
-              </div>
+              {job.station_count && (
+                <div className="text-sm text-gray-700 mb-1">
+                  <span className="font-medium">Stations:</span> {job.station_count || "10"}
+                </div>
+              )}
 
-              <div className="flex justify-end">
-                <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
-                  onClick={() => onViewDetails(salon)}
-                >
-                  Xem Chi Tiết
-                </Button>
-              </div>
+              {job.monthly_revenue && (
+                <div className="text-sm text-gray-700 mb-3">
+                  <span className="font-medium">Monthly Revenue:</span> {job.monthly_revenue || "$25,000"}
+                </div>
+              )}
+
+              <Button
+                className="w-full font-bold bg-emerald-500 hover:bg-emerald-600 text-white mt-2"
+                onClick={() => onViewDetails(job)}
+              >
+                Xem Chi Tiết
+              </Button>
             </CardContent>
           </Card>
         ))}

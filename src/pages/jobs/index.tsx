@@ -17,7 +17,6 @@ import FreeListingsSection from '@/components/jobs/FreeListingsSection';
 import { useAuth } from '@/context/auth';
 import { toast } from '@/components/ui/use-toast';
 import VietnameseJobSection from '@/components/jobs/VietnameseJobSection';
-import JobDetailModal from '@/components/jobs/JobDetailModal';
 
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,8 +29,6 @@ const JobsPage = () => {
   const [expirations, setExpirations] = useState<Record<string, boolean>>({});
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const { isSignedIn } = useAuth();
 
@@ -78,13 +75,6 @@ const JobsPage = () => {
     setSearchTerm(term);
   };
 
-  const handleSearch = (term: string) => {
-    console.log('Searching for:', term);
-    // Filter jobs based on search term
-    // Implementation would depend on your needs
-    setSearchTerm(term);
-  };
-
   const handlePostJob = () => {
     if (isSignedIn) {
       navigate('/post-job');
@@ -94,13 +84,13 @@ const JobsPage = () => {
         description: "Please sign in to post a job listing",
         variant: "destructive",
       });
-      navigate('/signin', { state: { from: '/post-job' } });
+      navigate('/signin');
     }
   };
 
   const handleViewJobDetails = (job: Job) => {
-    setSelectedJob(job);
-    setIsModalOpen(true);
+    console.log('View job details:', job);
+    // Navigate to job details page or open a modal
   };
 
   const handleRenewJob = (job: Job) => {
@@ -110,7 +100,7 @@ const JobsPage = () => {
         description: "Please sign in to renew this listing",
         variant: "destructive",
       });
-      navigate('/signin', { state: { from: `/jobs/renew/${job.id}` } });
+      navigate('/signin');
       return;
     }
 
@@ -160,8 +150,7 @@ const JobsPage = () => {
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <JobSearchBar 
               value={searchTerm} 
-              onSearchChange={handleSearchChange}
-              onSearch={handleSearch}
+              onSearchChange={handleSearchChange} 
             />
             <Button 
               className="flex gap-2 items-center bg-gradient-to-r from-purple-500 to-pink-500"
@@ -213,15 +202,6 @@ const JobsPage = () => {
           renewalJobId={renewalJobId}
         />
       </div>
-
-      {/* Job Detail Modal */}
-      {selectedJob && (
-        <JobDetailModal
-          job={selectedJob}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
     </Layout>
   );
 };
