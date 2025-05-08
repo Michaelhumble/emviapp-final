@@ -1,3 +1,4 @@
+
 import { Job } from "@/types/job";
 
 // Build direct Supabase URLs for the images
@@ -6,14 +7,13 @@ const SUPABASE_URL = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object
 // Use exact filenames as specified, properly encoded
 const IMAGE_FILENAMES = [
   "_A%20long%2C%20luxurious%20nail%20salon-10.png",
-  "generated%20(01).png",
-  "generated02.png",
-  "generated%20(003).png",
-  // Keep more fallbacks for additional cards if needed
-  "nail-salon-15.jpg",
-  "nail-salon-16.jpg",
-  "nail-salon-17.jpg",
-  "nail-salon-18.jpg"
+  "_A%20long%2C%20luxurious%20nail%20salon-11.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-12.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-13.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-14.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-15.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-16.png",
+  "_A%20long%2C%20luxurious%20nail%20salon-17.png"
 ];
 
 // Helper function to get direct Supabase image URL with encoding
