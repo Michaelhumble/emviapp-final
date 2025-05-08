@@ -136,7 +136,7 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
             Close
           </Button>
           {job.contact_info?.email && isSignedIn && (
-            <Button className="font-bold">Apply Now</Button>
+            <Button className="font-bold bg-purple-500 hover:bg-purple-600 text-white">Apply Now</Button>
           )}
         </div>
       </DialogContent>

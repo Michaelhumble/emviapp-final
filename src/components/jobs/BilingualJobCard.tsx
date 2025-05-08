@@ -48,9 +48,6 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     })();
   };
 
-  // Check if this is a free or starter tier listing to show contact info without login
-  const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
-
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
@@ -100,7 +97,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
                   <LockIcon className="h-3 w-3" />
                   <span>This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.</span>
                 </div>
-              ) : isSignedIn || isFreeOrStarterListing ? (
+              ) : isSignedIn ? (
                 <div className="flex items-center">
                   <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
                   <span className="text-sm">{job.contact_info.phone}</span>
@@ -141,9 +138,9 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             <Button 
               size="sm" 
               onClick={onViewDetails}
-              className="text-xs"
+              className="text-xs bg-purple-500 hover:bg-purple-600 text-white"
             >
-              View Details
+              Xem Chi Tiết
             </Button>
           </div>
         </div>

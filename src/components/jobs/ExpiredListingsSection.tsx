@@ -56,7 +56,7 @@ const ExpiredListingsSection = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {jobs.map((job) => (
           <Card
             key={job.id}
@@ -97,13 +97,13 @@ const ExpiredListingsSection = ({
                   variant="outline"
                   onClick={() => onRenew(job)}
                   disabled={isRenewing && renewalJobId === job.id}
-                  className="text-base font-bold"
+                  className="text-xs font-bold"
                 >
                   {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew Listing"}
                 </Button>
                 
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs"
                   onClick={() => onViewDetails(job)}
                 >
                   Xem Chi Tiết
