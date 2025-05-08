@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 interface ImageWithFallbackProps {
@@ -24,8 +25,15 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   priority
 }) => {
   const [error, setError] = useState(false);
+  
+  // Additional safety check for valid image URL
+  const isValidImageUrl = src && (
+    src.startsWith('http') || 
+    src.startsWith('/') || 
+    src.startsWith('data:')
+  );
 
-  if (!src || error) {
+  if (!isValidImageUrl || error) {
     // Use fallbackImage if provided
     if (fallbackImage) {
       return (

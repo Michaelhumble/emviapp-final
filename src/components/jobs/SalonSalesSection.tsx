@@ -38,7 +38,7 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
         {listings.map((salon) => (
           <Card
             key={salon.id}
-            className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 group"
+            className="overflow-hidden border border-purple-200 shadow-md hover:shadow-lg transition-all duration-300 group"
           >
             <div className="aspect-video relative">
               <ImageWithFallback
@@ -46,6 +46,7 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
                 alt={salon.title || "Salon for sale"}
                 className="w-full h-full object-cover"
                 businessName={salon.company || "Salon"}
+                showPremiumBadge={true}
               />
               <Badge className="absolute top-2 right-2 bg-orange-500 text-white border-0">
                 For Sale
@@ -78,7 +79,11 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
                 {(salon.chair_count || salon.station_count) && (
                   <p className="text-sm text-gray-700 flex items-center">
                     <Building className="h-3.5 w-3.5 mr-1 text-gray-500" /> 
-                    {salon.chair_count || salon.station_count} stations
+                    {salon.chair_count && salon.station_count 
+                      ? `${salon.chair_count} chairs, ${salon.station_count} stations` 
+                      : salon.chair_count 
+                        ? `${salon.chair_count} chairs` 
+                        : `${salon.station_count} stations`}
                   </p>
                 )}
               </div>
