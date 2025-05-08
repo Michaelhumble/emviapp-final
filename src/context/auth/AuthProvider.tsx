@@ -21,9 +21,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isError: false,
     isNewUser,
     clearIsNewUser: () => setIsNewUser(false),
-    signIn: async () => ({ success: true }),
-    signUp: async () => ({ success: true }),
-    signOut: async () => {},
+    signIn: async () => {
+      setIsSignedIn(true);
+      return { success: true };
+    },
+    signUp: async () => { 
+      setIsSignedIn(true);
+      return { success: true };
+    },
+    signOut: async () => {
+      setIsSignedIn(false);
+    },
     refreshUserProfile: async () => true,
     updateUserRole: async () => {},
     updateProfile: async () => ({ success: true }),

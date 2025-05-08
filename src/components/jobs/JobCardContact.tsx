@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Phone } from 'lucide-react';
+import { Phone, LockIcon } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 
 interface JobCardContactProps {
@@ -13,7 +13,7 @@ const JobCardContact: React.FC<JobCardContactProps> = ({ phoneNumber }) => {
   if (!isSignedIn) {
     return (
       <div className="text-xs text-gray-500 italic flex items-center gap-1">
-        <Phone className="h-3 w-3" />
+        <LockIcon className="h-3 w-3" />
         <span>Sign in to see phone number</span>
       </div>
     );

@@ -1,206 +1,195 @@
 
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
 import JobSearchBar from '@/components/jobs/JobSearchBar';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { Job } from '@/types/job';
-import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
+import { useJobsData } from '@/hooks/useJobsData';
+import JobsGrid from '@/components/jobs/JobsGrid';
+import { toast } from 'sonner';
+import { useAuth } from '@/context/auth';
 import VietnameseJobSection from '@/components/jobs/VietnameseJobSection';
 import JobDetailModal from '@/components/jobs/JobDetailModal';
+import { Job } from '@/types/job';
+import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useAuth } from '@/context/auth';
 
-const JobsPage = () => {
-  const [activeJobs, setActiveJobs] = useState<Job[]>([]);
-  const [featuredJobs, setFeaturedJobs] = useState<Job[]>([]);
-  const [expiredJobs, setExpiredJobs] = useState<Job[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [isRenewing, setIsRenewing] = useState(false);
-  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+const JobsPage: React.FC = () => {
   const { isSignedIn } = useAuth();
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isJobModalOpen, setIsJobModalOpen] = useState(false);
+  
+  const { 
+    jobs, 
+    loading,
+    error,
+    updateSearchTerm,
+    featuredJobs,
+    renewalJobId,
+    setActiveRenewalJobId
+  } = useJobsData();
+  
   useEffect(() => {
-    console.log("Jobs page loaded, processing job listings");
-    
-    // Filter jobs into active, featured, and expired
-    const active: Job[] = [];
-    const featured: Job[] = [];
-    const expired: Job[] = [];
-    
-    vietnameseJobs.forEach(job => {
-      if (job.status === 'expired' || job.pricingTier === 'expired') {
-        expired.push(job);
-        return;
-      }
-      
-      if (job.is_featured || 
-          job.pricingTier === 'premium' || 
-          job.pricingTier === 'diamond' || 
-          job.pricingTier === 'gold') {
-        featured.push(job);
-      } else {
-        active.push(job);
-      }
-    });
-    
-    setActiveJobs(active);
-    setFeaturedJobs(featured);
-    setExpiredJobs(expired);
+    document.title = "Vietnamese Jobs Board | EmviApp";
   }, []);
   
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
+  // Handle search term changes
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    updateSearchTerm(value);
   };
   
-  const handleViewJobDetails = (job: Job) => {
-    // If user is not signed in, we still allow them to view job details
-    // but will restrict contact information in the modal
-    setSelectedJob(job);
-  };
-  
-  const closeJobDetails = () => {
-    setSelectedJob(null);
-  };
-  
+  // Handle job renewals
   const handleRenewJob = (job: Job) => {
     if (!isSignedIn) {
-      // If not signed in, direct to auth page or show sign-in modal
-      console.log("User needs to sign in to renew a job");
+      toast.error("Please sign in to renew job listings.");
       return;
     }
     
-    setIsRenewing(true);
-    setRenewalJobId(job.id);
+    setActiveRenewalJobId(job.id);
     
-    // In a real app, this would interact with your renewal flow
-    // For now, we'll simulate the process with a timeout
+    // Simulate API call for renewal
     setTimeout(() => {
-      console.log(`Job ${job.id} renewal requested`);
-      setIsRenewing(false);
-      setRenewalJobId(null);
+      toast.success("Job listing renewed successfully!");
+      setActiveRenewalJobId(null);
     }, 1500);
   };
   
-  // Get premium jobs for the top row (if any)
-  const premiumJobs = featuredJobs.filter(job => 
-    job.pricingTier === 'premium' || job.pricingTier === 'diamond'
+  // Job Detail View Handling
+  const viewJobDetails = (job: Job) => {
+    setSelectedJob(job);
+    setIsJobModalOpen(true);
+  };
+
+  const closeJobDetails = () => {
+    setIsJobModalOpen(false);
+  };
+  
+  // Create memoized job expirations lookup
+  const expirations: Record<string, boolean> = {};
+  jobs.forEach(job => {
+    const createdDate = new Date(job.created_at);
+    const now = new Date();
+    const diffDays = Math.ceil(
+      (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    expirations[job.id] = diffDays >= 30;
+  });
+  
+  // Filter Vietnamese jobs from the dataset
+  const vietnameseJobs = jobs.filter(job => 
+    job.vietnamese_description && job.vietnamese_description.length > 0
   );
   
-  // Define expirations object for compatibility with JobsGrid component
-  const expirations: Record<string, boolean> = {};
-  expiredJobs.forEach(job => {
-    expirations[job.id] = true;
-  });
+  // Filter standard job listings 
+  const standardJobs = jobs.filter(job => 
+    !job.vietnamese_description || job.vietnamese_description.length === 0
+  );
+  
+  // Filter featured jobs
+  const featuredJobsFiltered = standardJobs.filter(job => job.is_featured || job.featured);
+  
+  // Filter regular jobs
+  const regularJobs = standardJobs.filter(job => !job.is_featured && !job.featured);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-2">Error loading jobs</h2>
+          <p>{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Link to="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          <span>Back to Home</span>
-        </Link>
-        <h1 className="text-3xl font-playfair font-bold mb-2">Beauty Industry Jobs</h1>
-        <p className="text-gray-600">Find your next opportunity in the beauty industry</p>
-      </div>
-      
-      <JobSearchBar 
-        value={searchTerm} 
-        onSearchChange={setSearchTerm}
-        onSearch={handleSearch} 
-      />
-      
-      {/* Premium Featured Jobs Row */}
-      {premiumJobs.length > 0 && (
-        <div className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
-              ✨ Premium Featured Listings
-            </h2>
-            <Button variant="outline" className="hidden md:flex">
-              View All
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* First card is special "Reserve this spot" promo */}
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-lg shadow-md p-6 flex flex-col justify-between">
-              <div>
-                <div className="text-amber-500 font-semibold mb-2">Top Diamond Featured</div>
-                <h3 className="text-xl font-playfair font-bold mb-3">Reserve This Premium Spot</h3>
-                <p className="text-gray-700 mb-4">
-                  Place your job listing in this highly visible position. 
-                  Get up to 5x more applications.
-                </p>
-                <div className="flex items-center text-amber-700 mb-4">
-                  <span className="text-lg font-semibold">$99</span>
-                  <span className="text-sm ml-2">/ 30 days</span>
-                </div>
-              </div>
-              
-              <Button className="w-full bg-amber-500 hover:bg-amber-600">
-                Reserve This Spot
-              </Button>
-            </div>
-            
-            {/* Display up to 2 premium jobs */}
-            {premiumJobs.slice(0, 2).map(job => (
-              <div 
-                key={job.id} 
-                className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden"
-              >
-                {job.image && (
-                  <div className="aspect-video relative">
-                    <img 
-                      src={job.image} 
-                      alt={job.title || 'Job listing'} 
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 left-2 bg-amber-500 text-white text-xs px-2 py-1 rounded">
-                      {job.pricingTier === 'diamond' ? 'Diamond' : 'Premium'}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="p-5">
-                  <h3 className="font-playfair font-semibold text-lg mb-2">
-                    {job.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-3">
-                    {job.location}
-                  </p>
-                  
-                  <div className="mt-4">
-                    <Button 
-                      onClick={() => handleViewJobDetails(job)} 
-                      className="w-full"
-                    >
-                      Xem Chi Tiết
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Vietnamese job listings section */}
-      <VietnameseJobSection 
-        vietnameseJobs={vietnameseJobs.filter(job => !job.is_salon_for_sale)} 
-        onViewDetails={handleViewJobDetails}
-        searchTerm={searchTerm}
-      />
-      
-      {/* Job Detail Modal */}
-      {selectedJob && (
-        <JobDetailModal
-          job={selectedJob}
-          isOpen={!!selectedJob}
-          onClose={closeJobDetails}
+    <Layout>
+      <Helmet>
+        <title>Job Board | EmviApp</title>
+        <meta 
+          name="description" 
+          content="Find jobs in the beauty industry, with listings for nail technicians, hair stylists, and more."
         />
-      )}
-    </div>
+      </Helmet>
+      
+      <div className="container mx-auto px-4 py-8">
+        {/* Back to Home button */}
+        <div className="mb-6">
+          <Link to="/" className="flex items-center text-gray-600 hover:text-primary transition-colors w-fit">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+        </div>
+        
+        {/* Job Search Bar */}
+        <JobSearchBar 
+          value={searchTerm} 
+          onSearchChange={handleSearch}
+          onSearch={handleSearch}
+        />
+        
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {/* Vietnamese Job Listings Section */}
+            {vietnameseJobs.length > 0 && (
+              <VietnameseJobSection 
+                vietnameseJobs={vietnameseJobs} 
+                onViewDetails={viewJobDetails} 
+                searchTerm={searchTerm}
+              />
+            )}
+            
+            {/* Featured Job Listings */}
+            {featuredJobsFiltered.length > 0 && (
+              <section>
+                <h2 className="text-2xl lg:text-3xl font-playfair font-semibold mb-6">
+                  ✨ Featured Opportunities
+                </h2>
+                
+                <JobsGrid 
+                  jobs={featuredJobsFiltered}
+                  expirations={expirations}
+                  onRenew={handleRenewJob}
+                  isRenewing={!!renewalJobId}
+                  renewalJobId={renewalJobId}
+                />
+              </section>
+            )}
+            
+            {/* Standard Job Listings */}
+            {regularJobs.length > 0 && (
+              <section>
+                <h2 className="text-2xl lg:text-3xl font-playfair font-semibold mb-6">
+                  📋 Latest Opportunities
+                </h2>
+                
+                <JobsGrid 
+                  jobs={regularJobs}
+                  expirations={expirations}
+                  onRenew={handleRenewJob}
+                  isRenewing={!!renewalJobId}
+                  renewalJobId={renewalJobId}
+                />
+              </section>
+            )}
+          </div>
+        )}
+        
+        {/* Job Detail Modal */}
+        {selectedJob && (
+          <JobDetailModal 
+            job={selectedJob}
+            isOpen={isJobModalOpen}
+            onClose={closeJobDetails}
+          />
+        )}
+      </div>
+    </Layout>
   );
 };
 

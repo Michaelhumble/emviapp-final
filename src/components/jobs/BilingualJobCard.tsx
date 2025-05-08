@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,17 +50,17 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   };
 
   // Check if this is a free or starter tier listing to show contact info without login
-  const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
+  const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter' || job.pricingTier === 'gold';
 
   const handleViewDetails = () => {
+    // Open modal if signed in, otherwise stay on jobs page
     if (isSignedIn) {
       onViewDetails();
     } else {
-      // If not signed in, stay on the jobs page
-      // The modal will show a sign-in prompt
+      // First call onViewDetails to show modal with limited info
       onViewDetails();
-      // Navigate to the current page - effectively refresh
-      // navigate('/jobs');
+      // Then stay on the jobs page
+      navigate('/jobs');
     }
   };
 
