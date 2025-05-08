@@ -97,7 +97,7 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
 
         {/* Card #2 - EmviApp Internal Ad - FREE */}
         <Card
-          className="overflow-hidden border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
+          className="overflow-hidden border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg flex flex-col"
           style={{
             background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(253,248,232,1) 100%)",
             boxShadow: "0 10px 25px -5px rgba(251, 191, 36, 0.4)"
@@ -121,15 +121,17 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
             </Badge>
           </div>
 
-          <CardContent className="p-6">
-            <h3 className="font-playfair font-bold text-xl text-amber-900 mb-3">Claim the Most Powerful Spot on EmviApp</h3>
-            
-            <p className="text-base text-gray-700 mb-6 font-medium">
-              Reach Unlimited Employees and Customers Every Day.<br />
-              First Come, First Served – Unmatched Visibility.
-            </p>
+          <CardContent className="p-6 flex flex-col flex-grow">
+            <div className="flex-grow">
+              <h3 className="font-playfair font-bold text-xl text-amber-900 mb-3">Claim the Most Powerful Spot on EmviApp</h3>
+              
+              <p className="text-base text-gray-700 mb-6 font-medium">
+                Reach Unlimited Employees and Customers Every Day.<br />
+                First Come, First Served – Unmatched Visibility.
+              </p>
+            </div>
 
-            <Link to="/post-job" className="block w-full">
+            <Link to="/post-job" className="block w-full mt-auto">
               <Button
                 className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 py-6"
                 size="lg"
