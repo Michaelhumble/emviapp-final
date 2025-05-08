@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import useSampleJobsData, { JobFilters } from "./useSampleJobsData";
 
 // This is a wrapper hook that will eventually use real data from an API
@@ -30,6 +30,10 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
         return ratingB - ratingA;
       });
     }
+    
+    // Filter out expired jobs from the main jobs grid to prevent duplication 
+    // since we're showing them in the ExpiredListingsSection component
+    sortedResults = sortedResults.filter(job => job.status !== 'expired');
     
     setFilteredResults(sortedResults);
   }, [sortOption, sampleData.jobs]);

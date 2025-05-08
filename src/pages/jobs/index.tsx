@@ -112,25 +112,8 @@ const JobsPage: React.FC = () => {
         </Alert>
       )}
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      ) : jobs.length > 0 ? (
-        <JobsGrid 
-          jobs={jobs} 
-          expirations={{}}
-          onRenew={() => {}} 
-          isRenewing={false}
-          renewalJobId={renewalJobId}
-        />
-      ) : (
-        <Alert className="bg-muted">
-          <AlertDescription>
-            No jobs found matching your search criteria. Please try different keywords.
-          </AlertDescription>
-        </Alert>
-      )}
+      {/* Remove the outdated jobs grid that's showing expired jobs */}
+      {/* This was likely the source of the duplicate expired listings */}
       
       {selectedJob && (
         <JobDetailModal
