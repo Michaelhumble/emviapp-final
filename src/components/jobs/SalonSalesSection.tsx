@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
