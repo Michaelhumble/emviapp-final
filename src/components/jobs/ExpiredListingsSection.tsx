@@ -38,6 +38,12 @@ const ExpiredListingsSection = ({
     const days = getExpiredDaysCount(job);
     if (days > 365) {
       return "Over 1 year ago";
+    } else if (days > 90) {
+      return "Over 3 months ago";
+    } else if (days > 60) {
+      return "Over 2 months ago";
+    } else if (days > 30) {
+      return "Over 30 days ago";
     }
     return "Expired";
   };
