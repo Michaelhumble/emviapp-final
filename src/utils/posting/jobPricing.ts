@@ -1,84 +1,83 @@
-
-import { PricingOptions, UserPostingStats } from "./types";
-import { 
-  getBasePrice, 
-  getNationwidePrice, 
-  getFastSalePackagePrice, 
-  getShowAtTopPrice,
-  getPriceWithDiscount
-} from "./promotionalText";
-
-export const calculateJobPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
-  // Default to first post if stats not provided
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.jobPostCount === 0 : true);
-  const isRenewal = options.isRenewal ?? false;
-  
-  // Base price depends on whether it's the first post
-  let price = isRenewal ? 10 : getBasePrice('job', isFirstPost);
-  
-  // Add nationwide visibility if selected
-  if (options.isNationwide) {
-    price += getNationwidePrice('job');
-  }
-  
-  // Add fast sale package if selected
-  if (options.fastSalePackage) {
-    price += getFastSalePackagePrice('job');
-  }
-  
-  // Add show at top if selected
-  if (options.showAtTop || options.featuredPost) {
-    price += getShowAtTopPrice('job');
-  }
-  
-  // Apply discount if user has referrals
-  if (options.hasReferrals) {
-    price = getPriceWithDiscount(price, true);
-  }
-  
-  return price;
+// Job listing pricing tiers
+export const PRICING_TIERS = {
+  DIAMOND: 'diamond',
+  PREMIUM: 'premium',
+  GOLD: 'gold', 
+  FEATURED: 'featured',
+  STANDARD: 'standard',
+  STARTER: 'starter',
+  FREE: 'free',
+  EXPIRED: 'expired'
 };
 
-export const getJobPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.jobPostCount === 0 : true);
-  const isRenewal = options.isRenewal ?? false;
-  
-  const summary: string[] = [];
-  
-  // Base price line
-  if (isRenewal) {
-    summary.push(`Job Post Renewal: $10`);
-  } else {
-    const basePrice = getBasePrice('job', isFirstPost);
-    summary.push(`${isFirstPost ? "First" : "Standard"} Job Post: $${basePrice}`);
-  }
-  
-  // Add nationwide visibility if selected
-  if (options.isNationwide) {
-    const nationwidePrice = getNationwidePrice('job');
-    summary.push(`Nationwide Visibility: +$${nationwidePrice}`);
-  }
-  
-  // Add fast sale package if selected
-  if (options.fastSalePackage) {
-    const fastSalePrice = getFastSalePackagePrice('job');
-    summary.push(`Fast Sale Package: +$${fastSalePrice}`);
-  }
-  
-  // Add show at top if selected
-  if (options.showAtTop || options.featuredPost) {
-    const showAtTopPrice = getShowAtTopPrice('job');
-    summary.push(`Featured Placement: +$${showAtTopPrice}`);
-  }
-  
-  // Show discount if applicable
-  if (options.hasReferrals) {
-    summary.push(`Referral Discount: -20%`);
-  }
-  
-  // Total line
-  const totalPrice = calculateJobPostPrice(options, stats);
-  summary.push(`Total: $${totalPrice}`);
-  
-  return summary;
+// Annual pricing for each tier
+export const TIER_PRICING = {
+  [PRICING_TIERS.DIAMOND]: 999.99,
+  [PRICING_TIERS.PREMIUM]: 499.99,
+  [PRICING_TIERS.GOLD]: 249.99,
+  [PRICING_TIERS.FEATURED]: 149.99,
+  [PRICING_TIERS.STANDARD]: 99.99,
+  [PRICING_TIERS.STARTER]: 49.99,
+  [PRICING_TIERS.FREE]: 0,
+};
+
+// Value proposition text for each tier
+export const TIER_VALUE_PROPS = {
+  [PRICING_TIERS.DIAMOND]: [
+    'Top placement above all other listings',
+    'Permanent Diamond badge of trust',
+    'Full contact visibility for all users',
+    'Premium visual styling and emphasis',
+    'Guaranteed 500% more views',
+    'Full year of exposure (365 days)'
+  ],
+  [PRICING_TIERS.PREMIUM]: [
+    'High placement in search results',
+    'Premium badge of trust',
+    'Enhanced visual styling',
+    'Increased visibility',
+    'Six months of exposure (180 days)'
+  ],
+  [PRICING_TIERS.GOLD]: [
+    'Good placement in search results',
+    'Gold badge of trust',
+    'Standard visual styling',
+    'Improved visibility',
+    'Three months of exposure (90 days)'
+  ],
+  [PRICING_TIERS.FEATURED]: [
+    'Featured placement in search results',
+    'Featured badge',
+    'Basic visual styling',
+    'Good visibility',
+    'One month of exposure (30 days)'
+  ],
+  [PRICING_TIERS.STANDARD]: [
+    'Standard placement in search results',
+    'No badge',
+    'Basic visual styling',
+    'Standard visibility',
+    'One month of exposure (30 days)'
+  ],
+  [PRICING_TIERS.STARTER]: [
+    'Basic placement in search results',
+    'No badge',
+    'Basic visual styling',
+    'Limited visibility',
+    'Two weeks of exposure (14 days)'
+  ],
+  [PRICING_TIERS.FREE]: [
+    'Basic placement in search results',
+    'No badge',
+    'Basic visual styling',
+    'Very limited visibility',
+    'One week of exposure (7 days)'
+  ],
+  [PRICING_TIERS.EXPIRED]: [
+    'Listing is expired',
+    'No badge',
+    'Basic visual styling',
+    'No visibility',
+    'No exposure (0 days)'
+  ],
 };
