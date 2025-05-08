@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { AuthContextType, UserRole } from "./types";
 
-// Create a default auth context
+// Export this context so useAuth can import it directly from here
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -11,7 +11,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isNewUser, setIsNewUser] = useState(false);
   
   // This is a minimal implementation just to make buttons work
-  // We're not touching the real auth system as instructed
   const authContextValue: AuthContextType = {
     user: null,
     userProfile: null,
