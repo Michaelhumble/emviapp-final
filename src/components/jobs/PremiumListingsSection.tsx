@@ -62,7 +62,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
         imageUrl = nailImages[(jobs.length + i) % nailImages.length] || "";
       } else {
         // Fallback direct URLs if the nailImages haven't loaded yet
-        imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 1}.jpg`;
+        imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 13}.jpg`;
       }
       
       premiumJobs.push({

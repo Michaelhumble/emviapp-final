@@ -76,5 +76,20 @@ export const premiumJobs: Job[] = [
     salary_range: "$1,600/tuần + tip",
     pricingTier: "premium",
     is_vietnamese_listing: true
+  },
+  {
+    id: "premium-6",
+    title: "Cần Thợ Nail Có Kinh Nghiệm – Boston, MA",
+    company: "Boston Luxury Nails",
+    location: "Boston, MA",
+    created_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Tuyển thợ làm full-time, kinh nghiệm 2+ năm, có bằng tiểu bang.",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-10.jpg",
+    contact_info: {
+      phone: "(617) 555-1234"
+    },
+    salary_range: "$1,700-$2,200/tuần",
+    pricingTier: "premium",
+    is_vietnamese_listing: true
   }
 ];
