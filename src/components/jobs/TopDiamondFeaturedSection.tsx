@@ -49,7 +49,7 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
 
           <div className="aspect-video relative">
             <img
-              src={"/lovable-uploads/74b3ba02-2378-41d7-8cb5-023145e94700.png"}
+              src={"/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png"}
               alt="Magic Nails"
               className="w-full h-full object-cover"
             />
@@ -124,6 +124,8 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
           <CardContent className="p-6 flex flex-col flex-grow">
             <div className="flex-grow">
               <h3 className="font-playfair font-bold text-xl text-amber-900 mb-3">Claim the Most Powerful Spot on EmviApp</h3>
+              
+              <p className="text-amber-700 font-semibold text-lg mb-2 text-center">✨ $999.99/year ✨</p>
               
               <p className="text-base text-gray-700 mb-6 font-medium">
                 Reach Unlimited Employees and Customers Every Day.<br />

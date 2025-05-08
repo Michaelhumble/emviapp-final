@@ -10,7 +10,7 @@ export const diamondJobs: Job[] = [
     location: "Great Falls, MT",
     created_at: new Date().toISOString(),
     description: "Magic Nails cần thợ biết làm bột và tay chân nước.",
-    image: "/lovable-uploads/74b3ba02-2378-41d7-8cb5-023145e94700.png", 
+    image: "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png", 
     contact_info: {
       phone: "(406) 770-3070",
       owner_name: "Magic Nails Owner"
