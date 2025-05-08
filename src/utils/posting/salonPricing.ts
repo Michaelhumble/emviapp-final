@@ -1,96 +1,58 @@
 
-import { PricingOptions, UserPostingStats } from "./types";
-import { 
-  getBasePrice, 
-  getNationwidePrice, 
-  getFastSalePackagePrice, 
-  getShowAtTopPrice,
-  getJobPostBundlePrice,
-  getPriceWithDiscount
-} from "./promotionalText";
+import { PricingOptions } from './types';
+import { PRICING_TIERS } from './jobPricing';
 
-export const calculateSalonPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
-  // Default to first post if stats not provided
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
-  const isRenewal = options.isRenewal ?? false;
+/**
+ * Calculate the price for a salon post based on selected options
+ */
+export const calculateSalonPostPrice = (options: PricingOptions): number => {
+  let basePrice = 149.99; // Default base price for salon listings
   
-  // Base price depends on whether it's the first post
-  let price = isRenewal ? 5 : getBasePrice('salon', isFirstPost);
-  
-  // Add nationwide visibility if selected
-  if (options.isNationwide) {
-    price += getNationwidePrice('salon');
-  }
-  
-  // Add fast sale package if selected
   if (options.fastSalePackage) {
-    price += getFastSalePackagePrice('salon');
+    basePrice += 99.99;
   }
   
-  // Add show at top if selected
+  if (options.isNationwide) {
+    basePrice += 49.99;
+  }
+  
   if (options.showAtTop) {
-    price += getShowAtTopPrice('salon');
+    basePrice += 79.99;
   }
   
-  // Add job post bundle if selected
-  if (options.bundleWithJobPost) {
-    price += getJobPostBundlePrice('salon');
+  if (options.isFirstPost) {
+    basePrice = Math.max(0, basePrice - 49.99);
   }
   
-  // Apply discount if user has referrals
-  if (options.hasReferrals) {
-    price = getPriceWithDiscount(price, true);
-  }
-  
-  return price;
+  return Math.round(basePrice * 100) / 100;
 };
 
-export const getSalonPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
-  const isRenewal = options.isRenewal ?? false;
+/**
+ * Generate a pricing summary for salon posts
+ */
+export const getSalonPostPricingSummary = (options: PricingOptions): string[] => {
+  const summary = [];
   
-  const summary: string[] = [];
+  summary.push(`Salon Listing: $149.99`);
   
-  // Base price line
-  if (isRenewal) {
-    summary.push(`Salon Listing Renewal: $5`);
-  } else {
-    const basePrice = getBasePrice('salon', isFirstPost);
-    summary.push(`${isFirstPost ? "First" : "Standard"} Salon Listing: $${basePrice}`);
-  }
-  
-  // Add nationwide visibility if selected
-  if (options.isNationwide) {
-    const nationwidePrice = getNationwidePrice('salon');
-    summary.push(`Nationwide Visibility: +$${nationwidePrice}`);
-  }
-  
-  // Add fast sale package if selected
   if (options.fastSalePackage) {
-    const fastSalePrice = getFastSalePackagePrice('salon');
-    summary.push(`Premium Promotion: +$${fastSalePrice}`);
+    summary.push(`Fast Sale Package: $99.99`);
   }
   
-  // Add show at top if selected
+  if (options.isNationwide) {
+    summary.push(`Nationwide Visibility: $49.99`);
+  }
+  
   if (options.showAtTop) {
-    const showAtTopPrice = getShowAtTopPrice('salon');
-    summary.push(`Featured Placement: +$${showAtTopPrice}`);
+    summary.push(`Top Placement: $79.99`);
   }
   
-  // Add job post bundle if selected
-  if (options.bundleWithJobPost) {
-    const jobBundlePrice = getJobPostBundlePrice('salon');
-    summary.push(`Job Post Bundle: +$${jobBundlePrice}`);
+  if (options.isFirstPost) {
+    summary.push(`First Post Discount: -$49.99`);
   }
   
-  // Show discount if applicable
-  if (options.hasReferrals) {
-    summary.push(`Referral Discount: -20%`);
-  }
-  
-  // Total line
-  const totalPrice = calculateSalonPostPrice(options, stats);
-  summary.push(`Total: $${totalPrice}`);
+  const totalPrice = calculateSalonPostPrice(options);
+  summary.push(`Total: $${totalPrice.toFixed(2)}`);
   
   return summary;
 };
