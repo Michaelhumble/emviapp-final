@@ -47,21 +47,35 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
     fetchNailImages();
   }, []);
   
-  // Create extra premium placeholders to reach 9 total
+  // Create extra premium placeholders to reach required number for balanced rows
   const premiumJobs = [...jobs];
-  const remainingCount = Math.max(0, 9 - jobs.length);
   
-  for (let i = 0; i < remainingCount; i++) {
-    premiumJobs.push({
-      id: `premium-placeholder-${i}`,
-      title: "Premium Position Available",
-      company: "Your Business Here",
-      location: "United States",
-      created_at: new Date().toISOString(),
-      description: "This premium position will make your business stand out. Reach thousands of potential customers or employees.",
-      image: nailImages[(jobs.length + i) % nailImages.length] || "",
-      pricingTier: "premium" as const
-    });
+  // Calculate how many more items we need for a balanced grid of 3 cards per row
+  const rowSize = 3;
+  const remainingCount = rowSize - (jobs.length % rowSize);
+  if (remainingCount !== rowSize) {
+    for (let i = 0; i < remainingCount; i++) {
+      // Use the new Supabase images
+      let imageUrl = "";
+      if (nailImages.length > 0) {
+        // Select from new images with higher index to get the new uploads
+        imageUrl = nailImages[(jobs.length + i) % nailImages.length] || "";
+      } else {
+        // Fallback direct URLs if the nailImages haven't loaded yet
+        imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 1}.jpg`;
+      }
+      
+      premiumJobs.push({
+        id: `premium-placeholder-${i}`,
+        title: "Premium Position Available",
+        company: "Your Business Here",
+        location: "United States",
+        created_at: new Date().toISOString(),
+        description: "This premium position will make your business stand out. Reach thousands of potential customers or employees.",
+        image: imageUrl,
+        pricingTier: "premium" as const
+      });
+    }
   }
 
   return (

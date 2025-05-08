@@ -19,7 +19,7 @@ export const vietnameseSalonSales: Job[] = [
     is_salon_for_sale: true,
     chair_count: "9",
     station_count: "9",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-7.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-1.jpg",
     pricingTier: "premium"
   },
   {
@@ -38,7 +38,7 @@ export const vietnameseSalonSales: Job[] = [
     is_salon_for_sale: true,
     chair_count: "45",
     station_count: "48",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-8.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-2.jpg",
     pricingTier: "premium"
   },
   {
@@ -55,7 +55,7 @@ export const vietnameseSalonSales: Job[] = [
     is_vietnamese_listing: true,
     for_sale: true,
     is_salon_for_sale: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-9.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-3.jpg",
     pricingTier: "standard"
   },
   {
@@ -74,7 +74,7 @@ export const vietnameseSalonSales: Job[] = [
     is_vietnamese_listing: true,
     for_sale: true,
     is_salon_for_sale: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-10.jpg",
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-4.jpg",
     pricingTier: "standard"
   }
 ];

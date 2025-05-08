@@ -18,6 +18,26 @@ interface SalonSalesSectionProps {
 const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) => {
   if (!listings.length) return null;
 
+  // Ensure we have exactly 4 cards by adding placeholders if needed
+  const displayListings = [...listings];
+  const remainingCount = 4 - listings.length;
+  
+  if (remainingCount > 0) {
+    for (let i = 0; i < remainingCount; i++) {
+      displayListings.push({
+        id: `salon-sale-placeholder-${i}`,
+        title: "List Your Salon For Sale",
+        location: "United States",
+        created_at: new Date().toISOString(),
+        description: "Get maximum visibility for your salon listing on EmviApp.",
+        image: `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 6}.jpg`,
+        for_sale: true,
+        is_salon_for_sale: true,
+        pricingTier: "premium"
+      });
+    }
+  }
+
   return (
     <motion.section
       className="mt-8 mb-12"
@@ -35,7 +55,7 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {listings.slice(0, 4).map((salon) => (
+        {displayListings.map((salon, index) => (
           <Card
             key={salon.id}
             className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 group"
@@ -44,7 +64,8 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
               <ImageWithFallback
                 src={salon.image || ""}
                 alt={salon.title || "Salon for sale"}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${index >= listings.length ? 'opacity-70' : ''}`}
+                businessName={salon.title || "Salon"}
               />
               <Badge className="absolute top-2 right-2 bg-orange-500 text-white border-0">
                 For Sale
@@ -82,19 +103,30 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
                 )}
               </div>
 
-              <div className="border-t border-gray-100 pt-3 mb-3">
-                {salon.contact_info?.phone && (
-                  <JobCardContact phoneNumber={salon.contact_info.phone} />
-                )}
-              </div>
+              {index < listings.length && (
+                <div className="border-t border-gray-100 pt-3 mb-3">
+                  {salon.contact_info?.phone && (
+                    <JobCardContact phoneNumber={salon.contact_info.phone} />
+                  )}
+                </div>
+              )}
 
               <div className="flex justify-end">
-                <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
-                  onClick={() => onViewDetails(salon)}
-                >
-                  Xem Chi Tiết
-                </Button>
+                {index < listings.length ? (
+                  <Button
+                    className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                    onClick={() => onViewDetails(salon)}
+                  >
+                    Xem Chi Tiết
+                  </Button>
+                ) : (
+                  <Button
+                    className="font-bold bg-purple-400 text-white opacity-70"
+                    onClick={() => window.location.href = '/post-job'}
+                  >
+                    List Your Salon
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
