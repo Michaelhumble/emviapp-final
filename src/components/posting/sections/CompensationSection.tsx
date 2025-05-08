@@ -1,10 +1,15 @@
 
 import React from 'react';
 import { Job } from '@/types/job';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface CompensationSectionProps {
   details: Partial<Job>;
@@ -14,79 +19,60 @@ interface CompensationSectionProps {
 const CompensationSection = ({ details, onChange }: CompensationSectionProps) => {
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Compensation</h2>
-      <p className="text-muted-foreground">Details about payment and benefits</p>
+      <h2 className="text-2xl font-bold">Compensation Details</h2>
+      <p className="text-muted-foreground">Provide compensation information to attract qualified candidates</p>
       
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <Label>Compensation Type</Label>
-          <RadioGroup 
-            value={details.compensation_type || 'hourly'} 
-            onValueChange={(value) => onChange({ 
-              ...details, 
-              compensation_type: value
-            })}
-            className="flex flex-col space-y-1"
+          <Label htmlFor="compensation-type">Compensation Type</Label>
+          <Select 
+            value={details.compensation_type || 'hourly'}
+            onValueChange={(value) => onChange({ ...details, compensation_type: value })}
           >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="hourly" id="hourly" />
-              <Label htmlFor="hourly" className="cursor-pointer">Hourly</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="commission" id="commission" />
-              <Label htmlFor="commission" className="cursor-pointer">Commission</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="salary" id="salary" />
-              <Label htmlFor="salary" className="cursor-pointer">Salary</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="mixed" id="mixed" />
-              <Label htmlFor="mixed" className="cursor-pointer">Mixed (base + commission)</Label>
-            </div>
-          </RadioGroup>
+            <SelectTrigger id="compensation-type">
+              <SelectValue placeholder="Select compensation type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="hourly">Hourly</SelectItem>
+              <SelectItem value="commission">Commission</SelectItem>
+              <SelectItem value="salary">Salary</SelectItem>
+              <SelectItem value="mixed">Mixed (Salary + Commission)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         
         <div className="grid gap-2">
           <Label htmlFor="compensation-details">Compensation Details</Label>
-          <Input
+          <Input 
             id="compensation-details"
             value={details.compensation_details || ''}
             onChange={(e) => onChange({ ...details, compensation_details: e.target.value })}
-            placeholder="e.g. $20-25/hr or 60% commission"
-            required
+            placeholder="e.g. $25-35/hr or 60% commission"
           />
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="salary-range">Salary Range</Label>
-          <Input
-            id="salary-range"
-            value={details.salary_range || ''}
-            onChange={(e) => onChange({ ...details, salary_range: e.target.value })}
-            placeholder="e.g. $800-$1,200/week"
-          />
+          <Label htmlFor="weekly-pay">
+            <div className="flex items-center gap-2">
+              <input 
+                type="checkbox" 
+                id="weekly-pay"
+                checked={details.weekly_pay || false}
+                onChange={(e) => onChange({ ...details, weekly_pay: e.target.checked })}
+                className="rounded border-gray-300"
+              />
+              <span>Weekly Pay Available</span>
+            </div>
+          </Label>
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="tip-range">Expected Tips (optional)</Label>
-          <Input
+          <Label htmlFor="tip-range">Expected Tip Range (Optional)</Label>
+          <Input 
             id="tip-range"
             value={details.tip_range || ''}
             onChange={(e) => onChange({ ...details, tip_range: e.target.value })}
-            placeholder="e.g. $100-$200/day"
-          />
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <Label htmlFor="weekly-pay" className="cursor-pointer">
-            Weekly Pay
-            <p className="text-sm text-muted-foreground">Payouts are made weekly</p>
-          </Label>
-          <Switch
-            id="weekly-pay"
-            checked={details.weekly_pay || false}
-            onCheckedChange={(checked) => onChange({ ...details, weekly_pay: checked })}
+            placeholder="e.g. $100-200/day"
           />
         </div>
       </div>

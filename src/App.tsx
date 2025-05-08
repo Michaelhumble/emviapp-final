@@ -14,6 +14,7 @@ import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFall
 import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import Layout from "@/components/layout/Layout";
+import JobPost from "@/pages/posting/JobPost";
 
 function App() {
   const location = useLocation();
@@ -37,6 +38,9 @@ function App() {
                 <Routes>
                   {/* Explicitly define the /salons route to use StableSalonPage */}
                   <Route path="/salons" element={<StableSalonPage />} />
+                  
+                  {/* Add our new job post route */}
+                  <Route path="/post-job" element={<JobPost />} />
                   
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (

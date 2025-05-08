@@ -9,6 +9,12 @@ import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -22,9 +28,7 @@ const Navbar = () => {
   };
 
   const onPostJobClick = () => {
-    // This function will be implemented later
-    // For now, it does nothing as requested
-    console.log("Post job button clicked");
+    navigate("/post-job");
   };
 
   return (
@@ -43,21 +47,30 @@ const Navbar = () => {
         {/* Auth buttons or user menu with language toggle and Post Job button */}
         <div className="flex items-center gap-2 md:gap-3">
           {/* Post Job Button - visible on all screen sizes */}
-          {user ? (
-            <Button 
-              onClick={onPostJobClick} 
-              className="bg-primary text-white hover:bg-primary/90"
-            >
-              Đăng Tin Tuyển Thợ
-            </Button>
-          ) : (
-            <Button 
-              onClick={() => navigate("/sign-in")}
-              className="bg-primary text-white hover:bg-primary/90"
-            >
-              Đăng Tin Tuyển Thợ
-            </Button>
-          )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {user ? (
+                  <Button 
+                    onClick={onPostJobClick} 
+                    className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                  >
+                    Post a Job for Free
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => navigate("/sign-in")}
+                    className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                  >
+                    Post a Job for Free
+                  </Button>
+                )}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Limited time – was $29.99!</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           
           {/* Language toggle always visible on desktop */}
           <div className="hidden md:block">

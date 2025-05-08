@@ -22,10 +22,8 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const navigate = useNavigate();
   
   const onPostJobClick = () => {
-    // This function will be implemented later
-    // For now, it does nothing as requested
     setOpen(false);
-    console.log("Post job button clicked from mobile menu");
+    navigate("/post-job");
   };
 
   return (
@@ -56,9 +54,9 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
             {user ? (
               <Button 
                 onClick={onPostJobClick} 
-                className="bg-primary text-white hover:bg-primary/90 w-full"
+                className="bg-purple-600 text-white hover:bg-purple-700 w-full"
               >
-                Đăng Tin Tuyển Thợ
+                Post a Job for Free
               </Button>
             ) : (
               <Button 
@@ -66,9 +64,9 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                   setOpen(false);
                   navigate("/sign-in");
                 }}
-                className="bg-primary text-white hover:bg-primary/90 w-full"
+                className="bg-purple-600 text-white hover:bg-purple-700 w-full"
               >
-                Đăng Tin Tuyển Thợ
+                Post a Job for Free
               </Button>
             )}
           </div>
