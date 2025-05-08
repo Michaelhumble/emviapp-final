@@ -22,6 +22,7 @@ const JobGrid = ({
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const viewJobDetails = (job: Job) => {
+    console.log("Opening job details for:", job.title);
     setSelectedJob(job);
   };
 
@@ -43,7 +44,6 @@ const JobGrid = ({
         ))}
       </div>
       
-      {/* Updated modal visibility logic */}
       <JobDetailModal
         job={selectedJob}
         isOpen={selectedJob !== null}
