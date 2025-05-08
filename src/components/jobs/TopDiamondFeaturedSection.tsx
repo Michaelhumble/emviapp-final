@@ -1,14 +1,15 @@
 
+import React, { useState } from "react";
 import { Job } from "@/types/job";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Diamond } from "lucide-react";
+import { MapPin, Calendar, Diamond, Lock } from "lucide-react";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { motion } from "framer-motion";
 import JobCardContact from "./JobCardContact";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface TopDiamondFeaturedSectionProps {
   featuredJobs: Job[];
@@ -16,54 +17,12 @@ interface TopDiamondFeaturedSectionProps {
 }
 
 const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFeaturedSectionProps) => {
-  const [nailImages, setNailImages] = useState<string[]>([]);
+  const { user } = useAuth();
+  const [isHovered, setIsHovered] = useState(false);
   
-  // Fetch nail salon images from Supabase bucket
-  useEffect(() => {
-    const fetchNailImages = async () => {
-      try {
-        const { data, error } = await supabase.storage.from('nails').list('', {
-          sortBy: { column: 'name', order: 'asc' },
-        });
-        
-        if (error) {
-          console.error('Error fetching nail images:', error);
-          return;
-        }
-        
-        if (data) {
-          // Get public URLs for all images
-          const imageUrls = data.map(file => {
-            return supabase.storage.from('nails').getPublicUrl(file.name).data.publicUrl;
-          });
-          
-          setNailImages(imageUrls);
-        }
-      } catch (err) {
-        console.error('Failed to fetch nail salon images:', err);
-      }
-    };
-    
-    fetchNailImages();
-  }, []);
-
   // Get the first real job (Magic Nails)
   const mainJob = featuredJobs[0];
   
-  // Create 5 more diamond featured cards (total 6)
-  const diamondPlaceholders = Array(5).fill(null).map((_, index) => ({
-    id: `diamond-placeholder-${index}`,
-    title: "Premium Diamond Listing",
-    company: "Available For Your Business",
-    location: "United States",
-    created_at: new Date().toISOString(),
-    description: "This premium Diamond position will make your business stand out. Reach thousands of potential customers or employees.",
-    image: nailImages[index % nailImages.length] || "",
-    pricingTier: "diamond" as const,
-    isPinned: true,
-    is_featured: true
-  }));
-
   return (
     <motion.section
       className="mb-12"
@@ -73,35 +32,36 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
     >
       <div className="flex items-center mb-6">
         <Diamond className="h-6 w-6 text-amber-500 mr-2" />
-        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">Top Diamond Featured</h2>
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold text-amber-800">Exclusive Diamond Featured</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Magic Nails card - always in first position */}
+        {/* Card #1 - Brother's Salon - PAID */}
         <Card
           key={mainJob.id}
-          className="overflow-hidden border-2 border-amber-200 shadow-md hover:shadow-lg transition-all duration-300 group"
+          className="overflow-hidden border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
+          style={{
+            background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(253,248,232,1) 100%)",
+            boxShadow: "0 10px 25px -5px rgba(251, 191, 36, 0.4)"
+          }}
         >
           <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
 
           <div className="aspect-video relative">
-            <ImageWithFallback
-              src={mainJob.image || ""}
-              alt={mainJob.title || "Featured job listing"}
+            <img
+              src={"/lovable-uploads/df831531-bb40-4bcf-9a8c-c18030e1bc1a.png"}
+              alt="Brother's Salon"
               className="w-full h-full object-cover"
             />
-            <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
-              Diamond
+            <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-medium">
+              ✨ Top Diamond Exclusive
             </Badge>
           </div>
 
           <CardContent className="p-6">
             <div className="mb-3">
-              <h3 className="font-playfair font-semibold text-lg line-clamp-2">{mainJob.title}</h3>
-              <p className="text-gray-600 font-medium">{mainJob.company}</p>
-              {mainJob.featured_text && (
-                <p className="text-amber-600 text-sm mt-1">{mainJob.featured_text}</p>
-              )}
+              <h3 className="font-playfair font-semibold text-xl text-amber-900">Brother's Salon</h3>
+              <p className="text-amber-800 font-medium text-lg">$999.99/year</p>
             </div>
 
             <div className="flex items-center text-base text-gray-600 mb-2">
@@ -112,18 +72,20 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
               <Calendar className="h-4 w-4 mr-1" /> {new Date(mainJob.created_at).toLocaleDateString()}
             </div>
 
-            <p className="text-base text-gray-700 mb-4 line-clamp-2">
-              {mainJob.description}
-            </p>
-
             <div className="border-t border-amber-100 pt-3 mb-4">
-              {mainJob.contact_info?.phone && (
-                <JobCardContact phoneNumber={mainJob.contact_info.phone} />
+              {user ? (
+                mainJob.contact_info?.phone && (
+                  <JobCardContact phoneNumber={mainJob.contact_info.phone} />
+                )
+              ) : (
+                <div className="flex items-center text-amber-700 font-medium">
+                  <Lock size={16} className="mr-2" /> Contact details hidden (sign in to view)
+                </div>
               )}
             </div>
 
             <Button
-              className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600"
+              className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700"
               onClick={() => onViewDetails(mainJob)}
             >
               Xem Chi Tiết
@@ -131,52 +93,49 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
           </CardContent>
         </Card>
 
-        {/* Placeholder cards for diamond slots */}
-        {diamondPlaceholders.map((job) => (
-          <Card
-            key={job.id}
-            className="overflow-hidden border-2 border-amber-100 shadow-sm hover:shadow-md transition-all duration-300 group"
-          >
-            <div className="h-2 bg-gradient-to-r from-amber-300 to-amber-500" />
+        {/* Card #2 - EmviApp Internal Ad - FREE */}
+        <Card
+          className="overflow-hidden border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
+          style={{
+            background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(253,248,232,1) 100%)",
+            boxShadow: "0 10px 25px -5px rgba(251, 191, 36, 0.4)"
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
 
-            <div className="aspect-video relative">
-              {job.image ? (
-                <ImageWithFallback
-                  src={job.image}
-                  alt={job.title}
-                  className="w-full h-full object-cover opacity-70"
-                />
-              ) : (
-                <div className="aspect-video bg-gradient-to-r from-amber-50 to-amber-100 flex items-center justify-center">
-                  <Diamond className="h-12 w-12 text-amber-300" />
-                </div>
-              )}
-              <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0 opacity-70">
-                Diamond
-              </Badge>
-            </div>
+          <div className="aspect-video relative">
+            <img
+              src={"/lovable-uploads/d98977ed-9565-4629-b2e7-fc4cf3f93a7f.png"}
+              alt="Premium Listing Opportunity"
+              className="w-full h-full object-cover transition-transform duration-700"
+              style={{
+                transform: isHovered ? 'scale(1.05)' : 'scale(1)'
+              }}
+            />
+            <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-medium">
+              ✨ Be Seen by Thousands
+            </Badge>
+          </div>
 
-            <CardContent className="p-6">
-              <div className="mb-3">
-                <h3 className="font-playfair font-semibold text-lg">{job.title}</h3>
-                <p className="text-gray-500">{job.company}</p>
-              </div>
+          <CardContent className="p-6">
+            <h3 className="font-playfair font-bold text-xl text-amber-900 mb-3">Premium Diamond Position Available</h3>
+            
+            <p className="text-base text-gray-700 mb-6 font-medium">
+              <strong>Secure the top spot and attract unlimited employees and customers. Limited Availability—first come, first serve.</strong>
+            </p>
 
-              <p className="text-base text-gray-500 mb-4 line-clamp-2">
-                {job.description}
-              </p>
-
-              <div className="mt-auto pt-3">
-                <Button
-                  className="w-full font-bold bg-gradient-to-r from-amber-400 to-amber-500 opacity-70"
-                  disabled
-                >
-                  Premium Position Available
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+            <Link to="/post-job" className="block w-full">
+              <Button
+                className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 py-6"
+                size="lg"
+              >
+                Claim Your Premium Spot
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </motion.section>
   );
