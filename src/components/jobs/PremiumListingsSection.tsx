@@ -23,7 +23,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
   const remainingCount = rowSize - (jobs.length % rowSize);
   if (remainingCount !== rowSize) {
     for (let i = 0; i < remainingCount; i++) {
-      // Direct URL construction for placeholders using the same pattern as premium jobs
+      // Direct URL construction for placeholders
       const fallbackImageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${18 + i}.png`;
       
       premiumJobs.push({
