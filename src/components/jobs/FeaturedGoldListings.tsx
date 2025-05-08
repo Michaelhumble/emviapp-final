@@ -8,6 +8,7 @@ import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import JobCardContact from "./JobCardContact";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FeaturedGoldListingsProps {
   jobs: Job[];
@@ -25,6 +26,10 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
   if (remainingCount !== rowSize) {
     // Generate placeholder jobs using metadata from existing jobs
     for (let i = 0; i < remainingCount; i++) {
+      const imageUrl = supabase.storage
+        .from('nails')
+        .getPublicUrl(`nail-salon-${11 + i}.jpg`).data.publicUrl;
+        
       balancedJobs.push({
         id: `gold-placeholder-${i}`,
         title: "Gold Listing Available",
@@ -32,7 +37,7 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
         location: "United States",
         created_at: new Date().toISOString(),
         description: "Reach thousands of potential employees with a Gold Featured listing.",
-        image: `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${11 + i}.jpg`,
+        image: imageUrl,
         pricingTier: "gold" as const
       });
     }

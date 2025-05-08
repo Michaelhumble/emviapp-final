@@ -1,5 +1,11 @@
 
 import { Job } from "@/types/job";
+import { supabase } from "@/integrations/supabase/client";
+
+// Helper function to get Supabase image URL
+const getSupabaseImageUrl = (filename: string) => {
+  return supabase.storage.from('nails').getPublicUrl(filename).data.publicUrl;
+};
 
 export const premiumJobs: Job[] = [
   {
@@ -9,7 +15,7 @@ export const premiumJobs: Job[] = [
     location: "Clawson, MI",
     created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần tuyển thợ nail có kinh nghiệm. Lương cao, tiệm đông khách.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-15.jpg",
+    image: getSupabaseImageUrl("nail-salon-15.jpg"),
     contact_info: {
       phone: "(248) 403-6472"
     },
@@ -24,7 +30,7 @@ export const premiumJobs: Job[] = [
     location: "Humble, TX",
     created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần thợ nail design chuyên nghiệp, thợ bột, và thợ chân tay nước.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-16.jpg",
+    image: getSupabaseImageUrl("nail-salon-16.jpg"),
     contact_info: {
       phone: "(346) 398-6868"
     },
@@ -39,7 +45,7 @@ export const premiumJobs: Job[] = [
     location: "South Lake Tahoe, CA",
     created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần thợ làm bột, chân tay nước, và wax.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-17.jpg",
+    image: getSupabaseImageUrl("nail-salon-17.jpg"),
     contact_info: {
       phone: "(916) 802-1922"
     },
@@ -54,7 +60,7 @@ export const premiumJobs: Job[] = [
     location: "Killeen, TX",
     created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần thợ bột và chân tay nước, full-time hoặc part-time.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-18.jpg",
+    image: getSupabaseImageUrl("nail-salon-18.jpg"),
     contact_info: {
       phone: "(512) 540-6173"
     },
@@ -69,7 +75,7 @@ export const premiumJobs: Job[] = [
     location: "New Jersey",
     created_at: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Tìm thợ làm bột và gel. Bao lương nếu thợ có kinh nghiệm.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-19.jpg",
+    image: getSupabaseImageUrl("nail-salon-19.jpg"),
     contact_info: {
       phone: "(551) 333-5678"
     },
@@ -84,7 +90,7 @@ export const premiumJobs: Job[] = [
     location: "Boston, MA",
     created_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Tuyển thợ làm full-time, kinh nghiệm 2+ năm, có bằng tiểu bang.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-20.jpg",
+    image: getSupabaseImageUrl("nail-salon-20.jpg"),
     contact_info: {
       phone: "(617) 555-1234"
     },
@@ -99,7 +105,7 @@ export const premiumJobs: Job[] = [
     location: "Seattle, WA",
     created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Cần thợ có kinh nghiệm làm bột và chân tay nước. Lương cao, tip hậu.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-21.jpg",
+    image: getSupabaseImageUrl("nail-salon-21.jpg"),
     contact_info: {
       phone: "(206) 987-6543"
     },
@@ -114,7 +120,7 @@ export const premiumJobs: Job[] = [
     location: "Portland, OR",
     created_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
     description: "Tìm thợ bột chuyên nghiệp. Môi trường làm việc thoải mái, thu nhập ổn định.",
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-22.jpg",
+    image: getSupabaseImageUrl("nail-salon-22.jpg"),
     contact_info: {
       phone: "(503) 222-3333"
     },

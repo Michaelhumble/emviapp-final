@@ -55,15 +55,11 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
   const remainingCount = rowSize - (jobs.length % rowSize);
   if (remainingCount !== rowSize) {
     for (let i = 0; i < remainingCount; i++) {
-      // Use the new Supabase images
-      let imageUrl = "";
-      if (nailImages.length > 0) {
-        // Select from new images with higher index to get the new uploads
-        imageUrl = nailImages[(jobs.length + i) % nailImages.length] || "";
-      } else {
-        // Fallback direct URLs if the nailImages haven't loaded yet
-        imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-${(i % 5) + 15}.jpg`;
-      }
+      // Use the Supabase images directly with proper URL construction
+      const imageIndex = 15 + (i % 5);
+      const imageUrl = supabase.storage
+        .from('nails')
+        .getPublicUrl(`nail-salon-${imageIndex}.jpg`).data.publicUrl;
       
       premiumJobs.push({
         id: `premium-placeholder-${i}`,
