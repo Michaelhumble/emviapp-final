@@ -25,11 +25,9 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
   
   if (remainingCount > 0) {
     for (let i = 0; i < remainingCount; i++) {
-      // Generate proper Supabase URLs for the images
-      const imageIndex = 27 + i;
-      const imageUrl = supabase.storage
-        .from('nails')
-        .getPublicUrl(`nail-salon-${imageIndex}.jpg`).data.publicUrl;
+      // Generate proper Supabase URLs for the images with correct file naming pattern
+      const imageIndex = 21 + i;
+      const imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${imageIndex}.png`;
       
       displayListings.push({
         id: `salon-sale-placeholder-${i}`,
@@ -71,9 +69,7 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
             // Extract the filename if it's a storage path
             const filename = imageUrl.split('/').pop();
             if (filename) {
-              imageUrl = supabase.storage
-                .from('nails')
-                .getPublicUrl(filename).data.publicUrl;
+              imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${filename}`;
             }
           }
           

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Helper function to get Supabase image URL
 const getSupabaseImageUrl = (filename: string) => {
-  return supabase.storage.from('nails').getPublicUrl(filename).data.publicUrl;
+  return `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${filename}`;
 };
 
 // Vietnamese salon for sale listings
@@ -25,7 +25,7 @@ export const vietnameseSalonSales: Job[] = [
     is_salon_for_sale: true,
     chair_count: "9",
     station_count: "9",
-    image: getSupabaseImageUrl("nail-salon-23.jpg"),
+    image: getSupabaseImageUrl("_A%20long%2C%20luxurious%20nail%20salon-17.png"),
     pricingTier: "premium"
   },
   {
@@ -44,7 +44,7 @@ export const vietnameseSalonSales: Job[] = [
     is_salon_for_sale: true,
     chair_count: "45",
     station_count: "48",
-    image: getSupabaseImageUrl("nail-salon-24.jpg"),
+    image: getSupabaseImageUrl("_A%20long%2C%20luxurious%20nail%20salon-18.png"),
     pricingTier: "premium"
   },
   {
@@ -61,7 +61,7 @@ export const vietnameseSalonSales: Job[] = [
     is_vietnamese_listing: true,
     for_sale: true,
     is_salon_for_sale: true,
-    image: getSupabaseImageUrl("nail-salon-25.jpg"),
+    image: getSupabaseImageUrl("_A%20long%2C%20luxurious%20nail%20salon-19.png"),
     pricingTier: "standard"
   },
   {
@@ -80,7 +80,7 @@ export const vietnameseSalonSales: Job[] = [
     is_vietnamese_listing: true,
     for_sale: true,
     is_salon_for_sale: true,
-    image: getSupabaseImageUrl("nail-salon-26.jpg"),
+    image: getSupabaseImageUrl("_A%20long%2C%20luxurious%20nail%20salon-20.png"),
     pricingTier: "standard"
   }
 ];

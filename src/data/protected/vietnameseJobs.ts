@@ -21,7 +21,7 @@ export const vietnameseJobs: Job[] = [
     owner_will_train: false,
     pricingTier: "featured",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-1.jpg"
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-10.png"
   },
   {
     id: "viet-job-2",
@@ -41,7 +41,7 @@ export const vietnameseJobs: Job[] = [
     owner_will_train: true,
     pricingTier: "featured",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-2.jpg"
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-11.png"
   },
   {
     id: "viet-job-3",
@@ -61,7 +61,7 @@ export const vietnameseJobs: Job[] = [
     owner_will_train: true,
     pricingTier: "featured",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-3.jpg"
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-12.png"
   },
   {
     id: "viet-job-4",
@@ -81,7 +81,7 @@ export const vietnameseJobs: Job[] = [
     owner_will_train: true,
     pricingTier: "featured",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-4.jpg"
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-13.png"
   },
   {
     id: "viet-job-5",
@@ -101,7 +101,7 @@ export const vietnameseJobs: Job[] = [
     owner_will_train: false,
     pricingTier: "featured",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-5.jpg"
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-14.png"
   },
   {
     id: "viet-job-6",
@@ -121,7 +121,7 @@ export const vietnameseJobs: Job[] = [
     owner_will_train: true,
     pricingTier: "featured",
     is_vietnamese_listing: true,
-    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/nail-salon-6.jpg"
+    image: "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-15.png"
   }
 ];
 

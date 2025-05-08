@@ -26,9 +26,8 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
   if (remainingCount !== rowSize) {
     // Generate placeholder jobs using metadata from existing jobs
     for (let i = 0; i < remainingCount; i++) {
-      const imageUrl = supabase.storage
-        .from('nails')
-        .getPublicUrl(`nail-salon-${11 + i}.jpg`).data.publicUrl;
+      // Use the correct naming pattern for placeholder images
+      const imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${16 + i}.png`;
         
       balancedJobs.push({
         id: `gold-placeholder-${i}`,
