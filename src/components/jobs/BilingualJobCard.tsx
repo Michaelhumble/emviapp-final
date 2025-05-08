@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
-import { useNavigate } from 'react-router-dom';
 
 interface BilingualJobCardProps {
   job: Job;
@@ -24,7 +24,6 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   isRenewing = false,
 }) => {
   const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
   
   // For displaying the posted date
   const getPostedDate = () => {
@@ -50,19 +49,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   };
 
   // Check if this is a free or starter tier listing to show contact info without login
-  const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter' || job.pricingTier === 'gold';
-
-  const handleViewDetails = () => {
-    // Open modal if signed in, otherwise stay on jobs page
-    if (isSignedIn) {
-      onViewDetails();
-    } else {
-      // First call onViewDetails to show modal with limited info
-      onViewDetails();
-      // Then stay on the jobs page
-      navigate('/jobs');
-    }
-  };
+  const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
@@ -153,7 +140,7 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
             
             <Button 
               size="sm" 
-              onClick={handleViewDetails}
+              onClick={onViewDetails}
               className="text-xs"
             >
               View Details

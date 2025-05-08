@@ -2,7 +2,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, DollarSign, Phone, Mail, ArrowLeft } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, Phone, Mail } from 'lucide-react';
 import { Job } from '@/types/job';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -25,8 +25,8 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg md:max-w-2xl">
         <DialogHeader>
-          <Link to="/" className="flex items-center text-sm text-gray-500 hover:text-purple-600 mb-2">
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back to Home
+          <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 mb-2">
+            ← Back to Home
           </Link>
           <DialogTitle className="text-2xl font-playfair font-semibold">{job.title}</DialogTitle>
           <DialogDescription className="text-gray-600">{job.company}</DialogDescription>
@@ -94,17 +94,7 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
               <h3 className="font-playfair font-medium mb-2">Contact Information</h3>
               <div className="space-y-2">
                 {job.contact_info.phone && (
-                  isSignedIn ? (
-                    <div className="flex items-center">
-                      <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                      <span>{job.contact_info.phone}</span>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-gray-500 italic flex items-center gap-1">
-                      <Phone className="h-3 w-3" />
-                      <span>Sign in to see phone number</span>
-                    </div>
-                  )
+                  <JobCardContact phoneNumber={job.contact_info.phone} />
                 )}
                 
                 {job.contact_info.email && (

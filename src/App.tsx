@@ -28,7 +28,6 @@ function App() {
 
   return (
     <GeneralErrorBoundary>
-      {/* Single, root-level AuthProvider that wraps the entire app */}
       <AuthProvider>
         <SalonProvider>
           <SubscriptionProvider>
