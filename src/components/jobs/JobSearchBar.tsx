@@ -6,24 +6,15 @@ interface JobSearchBarProps {
   placeholder?: string;
   onSearchChange: (value: string) => void;
   value: string;
-  onSearch?: (term: string) => void; // Add the missing property
 }
 
 const JobSearchBar: React.FC<JobSearchBarProps> = ({ 
   placeholder = "Search by city, job type, or keyword...", 
   onSearchChange,
-  value,
-  onSearch
+  value
 }) => {
   const handleClear = () => {
     onSearchChange('');
-    if (onSearch) onSearch(''); // Call onSearch with empty string if it exists
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    onSearchChange(newValue);
-    if (onSearch) onSearch(newValue); // Call onSearch with new value if it exists
   };
 
   return (
@@ -37,7 +28,7 @@ const JobSearchBar: React.FC<JobSearchBarProps> = ({
           className="w-full h-12 pl-10 pr-12 bg-white border border-gray-200 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all"
           placeholder={placeholder}
           value={value}
-          onChange={handleChange}
+          onChange={(e) => onSearchChange(e.target.value)}
           aria-label="Search jobs"
         />
         {value && (

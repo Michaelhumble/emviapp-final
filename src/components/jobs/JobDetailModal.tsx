@@ -2,9 +2,9 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, DollarSign, Phone, Mail, ArrowLeft } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, Phone, Mail } from 'lucide-react';
 import { Job } from '@/types/job';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import JobCardContact from './JobCardContact';
 
@@ -16,30 +16,18 @@ interface JobDetailModalProps {
 
 const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
   const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
   
   if (!job) return null;
 
   const isVietnameseJob = job.vietnamese_description && job.vietnamese_description.length > 0;
-  
-  const handleBackToHome = () => {
-    navigate('/');
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg md:max-w-2xl">
         <DialogHeader>
-          <div className="flex items-center mb-2">
-            <Button 
-              variant="ghost" 
-              className="p-0 h-auto flex items-center text-gray-500 hover:text-purple-600"
-              onClick={handleBackToHome}
-            >
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              <span className="text-sm">Back to Home</span>
-            </Button>
-          </div>
+          <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 mb-2">
+            ← Back to Home
+          </Link>
           <DialogTitle className="text-2xl font-playfair font-semibold">{job.title}</DialogTitle>
           <DialogDescription className="text-gray-600">{job.company}</DialogDescription>
         </DialogHeader>

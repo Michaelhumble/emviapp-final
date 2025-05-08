@@ -1,7 +1,5 @@
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
 
 interface JobCardActionsProps {
   isExpired: boolean;
@@ -18,21 +16,10 @@ export const JobCardActions = ({
   onRenew, 
   isRenewing 
 }: JobCardActionsProps) => {
-  const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
-  
-  const handleViewDetails = () => {
-    if (isSignedIn) {
-      onViewDetails();
-    } else {
-      navigate("/signin"); // Redirect users clearly to Sign In page if not authenticated
-    }
-  };
-
   return (
     <div className="mt-auto pt-4 flex justify-between items-center">
       <Button 
-        onClick={handleViewDetails}
+        onClick={onViewDetails}
         className={`flex-grow mr-2 ${isExpired ? 'opacity-90' : ''}`}
       >
         Xem Chi Tiết

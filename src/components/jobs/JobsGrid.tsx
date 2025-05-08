@@ -49,7 +49,6 @@ const JobsGrid = ({
   };
 
   const viewJobDetails = (job: Job) => {
-    console.log("Opening job details for:", job.title);
     setSelectedJob(job);
   };
 
@@ -73,11 +72,13 @@ const JobsGrid = ({
         ))}
       </div>
       
-      <JobDetailModal
-        job={selectedJob}
-        isOpen={selectedJob !== null}
-        onClose={closeJobDetails}
-      />
+      {selectedJob && (
+        <JobDetailModal
+          job={selectedJob}
+          isOpen={!!selectedJob}
+          onClose={closeJobDetails}
+        />
+      )}
     </>
   );
 };
