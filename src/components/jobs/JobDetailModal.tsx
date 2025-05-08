@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, DollarSign, Phone, Mail } from 'lucide-react';
 import { Job } from '@/types/job';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/auth';
-import JobCardContact from './JobCardContact';
 
 interface JobDetailModalProps {
   job: Job;
@@ -15,8 +13,6 @@ interface JobDetailModalProps {
 }
 
 const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
-  const { isSignedIn } = useAuth();
-  
   if (!job) return null;
 
   const isVietnameseJob = job.vietnamese_description && job.vietnamese_description.length > 0;
@@ -94,36 +90,20 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
               <h3 className="font-playfair font-medium mb-2">Contact Information</h3>
               <div className="space-y-2">
                 {job.contact_info.phone && (
-                  <JobCardContact phoneNumber={job.contact_info.phone} />
-                )}
-                
-                {job.contact_info.email && (
                   <div className="flex items-center">
-                    {isSignedIn ? (
-                      <>
-                        <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                        <span>{job.contact_info.email}</span>
-                      </>
-                    ) : (
-                      <div className="text-xs text-gray-500 italic flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        <span>Sign in to see email address</span>
-                      </div>
-                    )}
+                    <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                    <span>{job.contact_info.phone}</span>
                   </div>
                 )}
-                
+                {job.contact_info.email && (
+                  <div className="flex items-center">
+                    <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                    <span>{job.contact_info.email}</span>
+                  </div>
+                )}
                 {job.contact_info.owner_name && (
                   <div className="text-base">
-                    {isSignedIn ? (
-                      <>
-                        <span className="text-gray-500">Contact:</span> {job.contact_info.owner_name}
-                      </>
-                    ) : (
-                      <div className="text-xs text-gray-500 italic">
-                        <span>Sign in to see contact name</span>
-                      </div>
-                    )}
+                    <span className="text-gray-500">Contact:</span> {job.contact_info.owner_name}
                   </div>
                 )}
               </div>
@@ -135,8 +115,8 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
           <Button variant="outline" onClick={onClose} className="font-bold">
             Close
           </Button>
-          {job.contact_info?.email && isSignedIn && (
-            <Button className="font-bold bg-purple-500 hover:bg-purple-600 text-white">Apply Now</Button>
+          {job.contact_info?.email && (
+            <Button className="font-bold">Apply Now</Button>
           )}
         </div>
       </DialogContent>

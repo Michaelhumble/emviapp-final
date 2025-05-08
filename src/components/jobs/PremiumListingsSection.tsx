@@ -26,11 +26,11 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
-          💎 Premiere Featured
+          💎 Premium Listings
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {jobs.map((job) => (
           <Card
             key={job.id}
@@ -41,7 +41,6 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                 src={job.image || ""}
                 alt={job.title || "Job listing"}
                 className="w-full h-full object-cover"
-                businessName={job.company}
               />
               <Badge className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
                 Premium

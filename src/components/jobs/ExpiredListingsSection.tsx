@@ -38,12 +38,6 @@ const ExpiredListingsSection = ({
     const days = getExpiredDaysCount(job);
     if (days > 365) {
       return "Over 1 year ago";
-    } else if (days > 90) {
-      return "Over 3 months ago";
-    } else if (days > 60) {
-      return "Over 2 months ago";
-    } else if (days > 30) {
-      return "Over 30 days ago";
     }
     return "Expired";
   };
@@ -62,23 +56,24 @@ const ExpiredListingsSection = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {jobs.map((job) => (
           <Card
             key={job.id}
             className="overflow-hidden border border-gray-200 opacity-75 hover:opacity-85 transition-all duration-300"
           >
-            <div className="aspect-video relative grayscale hover:grayscale-[0.7] transition-all duration-300">
-              <ImageWithFallback
-                src={job.image || ""}
-                alt={job.title || "Expired job listing"}
-                className="w-full h-full object-cover"
-                businessName={job.company}
-              />
-              <Badge className="absolute top-2 right-2 bg-gray-500 text-white border-0">
-                {getExpirationLabel(job)}
-              </Badge>
-            </div>
+            {job.image && (
+              <div className="aspect-video relative grayscale hover:grayscale-[0.7] transition-all duration-300">
+                <ImageWithFallback
+                  src={job.image || ""}
+                  alt={job.title || "Expired job listing"}
+                  className="w-full h-full object-cover"
+                />
+                <Badge className="absolute top-2 right-2 bg-gray-500 text-white border-0">
+                  {getExpirationLabel(job)}
+                </Badge>
+              </div>
+            )}
 
             <CardContent className="p-4">
               <div className="mb-2">
@@ -103,13 +98,13 @@ const ExpiredListingsSection = ({
                   variant="outline"
                   onClick={() => onRenew(job)}
                   disabled={isRenewing && renewalJobId === job.id}
-                  className="text-xs font-bold"
+                  className="text-base font-bold"
                 >
                   {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew Listing"}
                 </Button>
                 
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
                   onClick={() => onViewDetails(job)}
                 >
                   Xem Chi Tiết

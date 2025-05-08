@@ -23,14 +23,14 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
       transition={{ duration: 0.5, delay: 0.3 }}
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">🆓 Free Listings</h2>
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">Free Listings</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {jobs.map((job) => (
           <Card
             key={job.id}
-            className="border border-gray-200 hover:border-gray-300 transition-all duration-300 overflow-hidden"
+            className="border border-gray-200 hover:border-gray-300 transition-all duration-300"
           >
             <CardContent className="p-4">
               <div className="mb-3">
@@ -38,22 +38,22 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
                 <p className="text-gray-600">{job.company}</p>
               </div>
 
-              <div className="flex items-center text-sm text-gray-600 mb-2">
+              <div className="flex items-center text-base text-gray-600 mb-2">
                 <MapPin className="h-4 w-4 mr-1" /> {job.location}
               </div>
 
               {job.salary_range && (
-                <div className="flex items-center text-sm text-gray-600 mb-2">
+                <div className="flex items-center text-base text-gray-600 mb-2">
                   <span className="text-lg mr-1">💰</span> {job.salary_range}
                 </div>
               )}
 
-              <div className="flex items-center text-sm text-gray-600 mb-3">
+              <div className="flex items-center text-base text-gray-600 mb-3">
                 <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
               {job.description && (
-                <p className="text-sm text-gray-700 mb-4 line-clamp-2">
+                <p className="text-base text-gray-700 mb-4 line-clamp-2">
                   {job.description}
                 </p>
               )}
@@ -66,7 +66,7 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
                 </div>
                 
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
                   onClick={() => onViewDetails(job)}
                 >
                   Xem Chi Tiết
