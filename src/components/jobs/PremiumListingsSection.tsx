@@ -41,6 +41,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                 src={job.image || ""}
                 alt={job.title || "Job listing"}
                 className="w-full h-full object-cover"
+                businessName={job.company}
               />
               <Badge className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
                 Premium

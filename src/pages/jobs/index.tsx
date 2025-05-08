@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
@@ -12,6 +12,7 @@ import JobDetailModal from "@/components/jobs/JobDetailModal";
 import { Job } from "@/types/job";
 import { Plus, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 // Import job data
 import { diamondJobs } from "@/data/jobs/diamondJobs";
@@ -27,6 +28,87 @@ const JobsPage = () => {
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [nailImages, setNailImages] = useState<string[]>([]);
+  const [jobsWithImages, setJobsWithImages] = useState<{
+    diamond: Job[],
+    premium: Job[],
+    free: Job[],
+    expired: Job[],
+    salonSales: Job[]
+  }>({
+    diamond: [],
+    premium: [],
+    free: [],
+    expired: [],
+    salonSales: []
+  });
+  
+  // Fetch nail salon images from Supabase bucket
+  useEffect(() => {
+    const fetchNailImages = async () => {
+      try {
+        const { data, error } = await supabase.storage.from('nails').list('', {
+          sortBy: { column: 'name', order: 'asc' },
+        });
+        
+        if (error) {
+          console.error('Error fetching nail images:', error);
+          return;
+        }
+        
+        if (data) {
+          // Get public URLs for all images
+          const imageUrls = data.map(file => {
+            const publicUrl = supabase.storage.from('nails').getPublicUrl(file.name).data.publicUrl;
+            return publicUrl;
+          });
+          
+          // Shuffle the array for randomness
+          const shuffledImages = [...imageUrls].sort(() => Math.random() - 0.5);
+          setNailImages(shuffledImages);
+        }
+      } catch (err) {
+        console.error('Failed to fetch nail salon images:', err);
+      }
+    };
+    
+    fetchNailImages();
+  }, []);
+
+  // Apply images to job listings once we have them
+  useEffect(() => {
+    if (nailImages.length === 0) return;
+    
+    let imageIndex = 0;
+    const getNextImage = () => {
+      const image = nailImages[imageIndex];
+      imageIndex = (imageIndex + 1) % nailImages.length;
+      return image;
+    };
+
+    // Preserve the Magic Nails image in diamond jobs
+    const updatedDiamondJobs = diamondJobs.map((job, index) => {
+      // Don't change Magic Nails image
+      if (job.company === "Magic Nails") {
+        return job;
+      }
+      return { ...job, image: getNextImage() };
+    });
+    
+    // Apply images to other job types
+    const updatedPremiumJobs = premiumJobs.map(job => ({ ...job, image: getNextImage() }));
+    const updatedFreeJobs = freeJobs.map(job => ({ ...job, image: getNextImage() }));
+    const updatedExpiredJobs = expiredJobs.map(job => ({ ...job, image: getNextImage() }));
+    const updatedSalonSales = vietnameseSalonSales.map(job => ({ ...job, image: getNextImage() }));
+    
+    setJobsWithImages({
+      diamond: updatedDiamondJobs,
+      premium: updatedPremiumJobs,
+      free: updatedFreeJobs,
+      expired: updatedExpiredJobs,
+      salonSales: updatedSalonSales
+    });
+  }, [nailImages]);
   
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -70,11 +152,12 @@ const JobsPage = () => {
     );
   };
 
-  const filteredDiamondJobs = filterJobs(diamondJobs);
-  const filteredPremiumJobs = filterJobs(premiumJobs);
-  const filteredFreeJobs = filterJobs(freeJobs);
-  const filteredExpiredJobs = filterJobs(expiredJobs);
-  const filteredSalonSales = filterJobs(vietnameseSalonSales);
+  // Use the jobsWithImages state for rendering, or fallback to original data if images haven't loaded
+  const filteredDiamondJobs = filterJobs(jobsWithImages.diamond.length > 0 ? jobsWithImages.diamond : diamondJobs);
+  const filteredPremiumJobs = filterJobs(jobsWithImages.premium.length > 0 ? jobsWithImages.premium : premiumJobs);
+  const filteredFreeJobs = filterJobs(jobsWithImages.free.length > 0 ? jobsWithImages.free : freeJobs);
+  const filteredExpiredJobs = filterJobs(jobsWithImages.expired.length > 0 ? jobsWithImages.expired : expiredJobs);
+  const filteredSalonSales = filterJobs(jobsWithImages.salonSales.length > 0 ? jobsWithImages.salonSales : vietnameseSalonSales);
 
   return (
     <div className="container mx-auto px-4 py-6">
