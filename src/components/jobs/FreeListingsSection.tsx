@@ -27,13 +27,12 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
         <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">Free Listings</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {jobs.map((job) => (
           <Card
             key={job.id}
             className="border border-gray-200 hover:border-gray-300 transition-all duration-300 overflow-hidden"
           >
-            {/* Add image section */}
             <div className="aspect-video relative">
               <ImageWithFallback
                 src={job.image || ""}
@@ -44,40 +43,40 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
             </div>
             
             <CardContent className="p-4">
-              <div className="mb-3">
-                <h3 className="font-playfair font-semibold text-lg">{job.title}</h3>
-                <p className="text-gray-600">{job.company}</p>
+              <div className="mb-2">
+                <h3 className="font-playfair font-semibold text-sm line-clamp-1">{job.title}</h3>
+                <p className="text-gray-600 text-xs">{job.company}</p>
               </div>
 
-              <div className="flex items-center text-base text-gray-600 mb-2">
-                <MapPin className="h-4 w-4 mr-1" /> {job.location}
+              <div className="flex items-center text-xs text-gray-600 mb-1">
+                <MapPin className="h-3 w-3 mr-1" /> {job.location}
               </div>
 
               {job.salary_range && (
-                <div className="flex items-center text-base text-gray-600 mb-2">
-                  <span className="text-lg mr-1">💰</span> {job.salary_range}
+                <div className="flex items-center text-xs text-gray-600 mb-1">
+                  <span className="text-xs mr-1">💰</span> {job.salary_range}
                 </div>
               )}
 
-              <div className="flex items-center text-base text-gray-600 mb-3">
-                <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
+              <div className="flex items-center text-xs text-gray-600 mb-2">
+                <Calendar className="h-3 w-3 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
               {job.description && (
-                <p className="text-base text-gray-700 mb-4 line-clamp-2">
+                <p className="text-xs text-gray-700 mb-2 line-clamp-1">
                   {job.description}
                 </p>
               )}
 
-              <div className="flex justify-between items-center mt-3">
-                <div>
+              <div className="flex justify-between items-center mt-2">
+                <div className="text-xs">
                   {job.contact_info?.phone && (
                     <JobCardContact phoneNumber={job.contact_info.phone} />
                   )}
                 </div>
                 
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs h-7 px-2"
                   onClick={() => onViewDetails(job)}
                 >
                   Xem Chi Tiết

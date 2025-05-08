@@ -1,26 +1,24 @@
 
+import React from "react";
 import { Job } from "@/types/job";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Diamond } from "lucide-react";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { motion } from "framer-motion";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import JobCardContact from "./JobCardContact";
 
-interface TopDiamondFeaturedSectionProps {
-  featuredJobs: Job[];
+interface DiamondFeaturedSectionProps {
+  jobs: Job[];
   onViewDetails: (job: Job) => void;
 }
 
-const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFeaturedSectionProps) => {
-  if (!featuredJobs.length) return null;
+const DiamondFeaturedSection = ({ jobs, onViewDetails }: DiamondFeaturedSectionProps) => {
+  // Magic Nails card is the first job
+  const mainJob = jobs[0];
 
-  // Get the first real job (Magic Nails)
-  const mainJob = featuredJobs[0];
-  
-  // Create placeholder cards for remaining diamond slots
-  const placeholderCards = Array(2).fill(null);
+  if (!mainJob) return null;
 
   return (
     <motion.section
@@ -31,10 +29,10 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
     >
       <div className="flex items-center mb-6">
         <Diamond className="h-6 w-6 text-amber-500 mr-2" />
-        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">Top Diamond Featured</h2>
+        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">💎 Diamond Featured</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Magic Nails card - always in first position */}
         <Card
           key={mainJob.id}
@@ -50,6 +48,9 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
             />
             <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
               Diamond
+            </Badge>
+            <Badge className="absolute top-2 right-2 bg-gradient-to-r from-amber-400 to-amber-600 text-white border-0">
+              ✨ Featured by EmviApp
             </Badge>
           </div>
 
@@ -84,43 +85,49 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
               className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600"
               onClick={() => onViewDetails(mainJob)}
             >
-              View Details
+              Xem Chi Tiết
             </Button>
           </CardContent>
         </Card>
 
-        {/* Placeholder cards for remaining diamond slots */}
-        {placeholderCards.map((_, index) => (
-          <Card
-            key={`diamond-placeholder-${index}`}
-            className="overflow-hidden border-2 border-amber-100 shadow-sm hover:shadow-md transition-all duration-300 group"
-          >
-            <div className="h-2 bg-gradient-to-r from-amber-300 to-amber-500" />
+        {/* Promotional "Coming Soon" card for second diamond slot */}
+        <Card
+          className="overflow-hidden border-2 border-amber-100 shadow-sm hover:shadow-md transition-all duration-300 group"
+        >
+          <div className="h-2 bg-gradient-to-r from-amber-300 to-amber-500" />
 
-            <div className="aspect-video bg-gradient-to-r from-amber-50 to-amber-100 flex items-center justify-center">
-              <Diamond className="h-12 w-12 text-amber-300" />
+          <div className="aspect-video relative">
+            <ImageWithFallback
+              src="/lovable-uploads/0003b2e9-4b56-4284-9fd7-56772930e035.png"
+              alt="Vietnamese Nail Salon Spotlight"
+              className="w-full h-full object-cover"
+            />
+            <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
+              Available Slot
+            </Badge>
+          </div>
+
+          <CardContent className="p-6">
+            <div className="mb-3">
+              <h3 className="font-playfair font-semibold text-lg">Vietnamese Nail Salon Spotlight</h3>
+              <p className="text-gray-600">Only one Diamond slot left. Make your salon unforgettable.</p>
             </div>
 
-            <CardContent className="p-6">
-              <div className="mb-3">
-                <h3 className="font-playfair font-semibold text-lg">Coming Soon...</h3>
-                <p className="text-gray-500">This spot is reserved for top-tier beauty businesses.</p>
-              </div>
+            <p className="text-lg font-bold text-amber-600 mb-2">$999.99/year — No tax.</p>
+            <p className="text-base text-gray-700 mb-6">
+              Reserve it now and let EmviApp advertise your job all year for free.
+            </p>
 
-              <div className="mt-auto pt-6">
-                <Button
-                  className="w-full font-bold bg-gradient-to-r from-amber-400 to-amber-500 opacity-70"
-                  disabled
-                >
-                  Reserve This Spot
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+            <Button
+              className="w-full font-bold bg-gradient-to-r from-amber-400 to-amber-500"
+            >
+              Reserve This Spot
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </motion.section>
   );
 };
 
-export default TopDiamondFeaturedSection;
+export default DiamondFeaturedSection;

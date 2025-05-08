@@ -1,239 +1,200 @@
 
-import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
-import JobSearchBar from "@/components/jobs/JobSearchBar";
-import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
-import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
-import FreeListingsSection from "@/components/jobs/FreeListingsSection";
-import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
-import SalonSalesSection from "@/components/jobs/SalonSalesSection";
-import JobDetailModal from "@/components/jobs/JobDetailModal";
-import { Job } from "@/types/job";
-import { Plus, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
+import { motion } from 'framer-motion';
+import JobSearchBar from '@/components/jobs/JobSearchBar';
+import PremiumListingsSection from '@/components/jobs/PremiumListingsSection';
+import ExpiredListingsSection from '@/components/jobs/ExpiredListingsSection';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { PlusCircle } from 'lucide-react';
+import { Job } from '@/types/job';
+import { vietnameseJobs } from '@/data/protected/vietnameseJobs';
+import DiamondFeaturedSection from '@/components/jobs/DiamondFeaturedSection';
+import GoldFeaturedSection from '@/components/jobs/GoldFeaturedSection';
+import FreeListingsSection from '@/components/jobs/FreeListingsSection';
+import { useAuth } from '@/context/auth';
+import { toast } from '@/components/ui/use-toast';
 
-// Import job data
-import { diamondJobs } from "@/data/jobs/diamondJobs";
-import { premiumJobs } from "@/data/jobs/premiumJobs";
-import { freeJobs } from "@/data/jobs/freeJobs";
-import { expiredJobs } from "@/data/jobs/expiredJobs";
-import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
-
-// 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER
 const JobsPage = () => {
-  const navigate = useNavigate();
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [premiumJobs, setPremiumJobs] = useState<Job[]>([]);
+  const [goldJobs, setGoldJobs] = useState<Job[]>([]);
+  const [freeJobs, setFreeJobs] = useState<Job[]>([]);
+  const [expiredJobs, setExpiredJobs] = useState<Job[]>([]);
+  const [diamondJobs, setDiamondJobs] = useState<Job[]>([]);
+  const [expirations, setExpirations] = useState<Record<string, boolean>>({});
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [nailImages, setNailImages] = useState<string[]>([]);
-  const [jobsWithImages, setJobsWithImages] = useState<{
-    diamond: Job[],
-    premium: Job[],
-    free: Job[],
-    expired: Job[],
-    salonSales: Job[]
-  }>({
-    diamond: [],
-    premium: [],
-    free: [],
-    expired: [],
-    salonSales: []
-  });
-  
-  // Fetch nail salon images from Supabase bucket
+  const navigate = useNavigate();
+  const { isSignedIn } = useAuth();
+
   useEffect(() => {
-    const fetchNailImages = async () => {
+    // Set page title
+    document.title = "Job Listings | EmviApp";
+    
+    // Simulate loading jobs data
+    const loadJobs = async () => {
       try {
-        const { data, error } = await supabase.storage.from('nails').list('', {
-          sortBy: { column: 'name', order: 'asc' },
+        // Get Vietnamese job listings and add pricing tier
+        const allJobs = vietnameseJobs.map((job, index) => ({
+          ...job,
+          // Assign pricing tiers: diamond for 1st, premium for 2-7, gold for 8-15, free for 16-25, expired for rest
+          pricingTier: index === 0 ? 'diamond' : 
+                      index < 7 ? 'premium' : 
+                      index < 15 ? 'gold' :
+                      index < 25 ? 'free' : 'expired'
+        }));
+
+        // Create random expiration states for all jobs
+        const jobExpirations: Record<string, boolean> = {};
+        allJobs.forEach(job => {
+          // Make all expired tier jobs actually expired
+          jobExpirations[job.id] = job.pricingTier === 'expired';
         });
         
-        if (error) {
-          console.error('Error fetching nail images:', error);
-          return;
-        }
-        
-        if (data) {
-          // Get public URLs for all images
-          const imageUrls = data.map(file => {
-            const publicUrl = supabase.storage.from('nails').getPublicUrl(file.name).data.publicUrl;
-            return publicUrl;
-          });
-          
-          // Shuffle the array for randomness
-          const shuffledImages = [...imageUrls].sort(() => Math.random() - 0.5);
-          setNailImages(shuffledImages);
-        }
-      } catch (err) {
-        console.error('Failed to fetch nail salon images:', err);
+        setExpirations(jobExpirations);
+
+        // Filter jobs by pricing tier
+        setDiamondJobs(allJobs.filter(job => job.pricingTier === 'diamond'));
+        setPremiumJobs(allJobs.filter(job => job.pricingTier === 'premium'));
+        setGoldJobs(allJobs.filter(job => job.pricingTier === 'gold'));
+        setFreeJobs(allJobs.filter(job => job.pricingTier === 'free'));
+        setExpiredJobs(allJobs.filter(job => job.pricingTier === 'expired'));
+        setJobs(allJobs);
+
+      } catch (error) {
+        console.error('Error loading jobs:', error);
       }
     };
-    
-    fetchNailImages();
+
+    loadJobs();
   }, []);
 
-  // Apply images to job listings once we have them
-  useEffect(() => {
-    if (nailImages.length === 0) return;
-    
-    let imageIndex = 0;
-    const getNextImage = () => {
-      const image = nailImages[imageIndex];
-      imageIndex = (imageIndex + 1) % nailImages.length;
-      return image;
-    };
-
-    // Preserve the Magic Nails image in diamond jobs
-    const updatedDiamondJobs = diamondJobs.map((job, index) => {
-      // Don't change Magic Nails image
-      if (job.company === "Magic Nails") {
-        return job;
-      }
-      return { ...job, image: getNextImage() };
-    });
-    
-    // Apply images to other job types
-    const updatedPremiumJobs = premiumJobs.map(job => ({ ...job, image: getNextImage() }));
-    const updatedFreeJobs = freeJobs.map(job => ({ ...job, image: getNextImage() }));
-    const updatedExpiredJobs = expiredJobs.map(job => ({ ...job, image: getNextImage() }));
-    const updatedSalonSales = vietnameseSalonSales.map(job => ({ ...job, image: getNextImage() }));
-    
-    setJobsWithImages({
-      diamond: updatedDiamondJobs,
-      premium: updatedPremiumJobs,
-      free: updatedFreeJobs,
-      expired: updatedExpiredJobs,
-      salonSales: updatedSalonSales
-    });
-  }, [nailImages]);
-  
-  const viewJobDetails = (job: Job) => {
-    setSelectedJob(job);
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
   };
 
-  const closeJobDetails = () => {
-    setSelectedJob(null);
+  const handlePostJob = () => {
+    if (isSignedIn) {
+      navigate('/post-job');
+    } else {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to post a job listing",
+        variant: "destructive",
+      });
+      navigate('/signin');
+    }
+  };
+
+  const handleViewJobDetails = (job: Job) => {
+    console.log('View job details:', job);
+    // Navigate to job details page or open a modal
   };
 
   const handleRenewJob = (job: Job) => {
+    if (!isSignedIn) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to renew this listing",
+        variant: "destructive",
+      });
+      navigate('/signin');
+      return;
+    }
+
+    // Simulate renewal process
     setIsRenewing(true);
     setRenewalJobId(job.id);
-    
-    // Simulate API call for renewal
+
+    // Simulate API call
     setTimeout(() => {
-      console.log(`Renewing job: ${job.id}`);
+      // Update job status in the UI
+      const updatedExpirations = { ...expirations };
+      updatedExpirations[job.id] = false;
+      setExpirations(updatedExpirations);
+
+      toast({
+        title: "Listing renewed!",
+        description: "Your job listing has been successfully renewed.",
+        variant: "default",
+      });
+
+      // Reset loading state
       setIsRenewing(false);
       setRenewalJobId(null);
-      // In a real app, we'd update the job status here
     }, 1500);
   };
 
-  const goToPostJob = () => {
-    navigate("/posting/job");
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-  };
-
-  // Filter jobs based on search term
-  const filterJobs = (jobs: Job[]) => {
-    if (!searchTerm.trim()) return jobs;
-    
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    return jobs.filter(job => 
-      job.title?.toLowerCase().includes(lowerSearchTerm) || 
-      job.company?.toLowerCase().includes(lowerSearchTerm) ||
-      job.location.toLowerCase().includes(lowerSearchTerm) ||
-      job.description?.toLowerCase().includes(lowerSearchTerm)
-    );
-  };
-
-  // Use the jobsWithImages state for rendering, or fallback to original data if images haven't loaded
-  const filteredDiamondJobs = filterJobs(jobsWithImages.diamond.length > 0 ? jobsWithImages.diamond : diamondJobs);
-  const filteredPremiumJobs = filterJobs(jobsWithImages.premium.length > 0 ? jobsWithImages.premium : premiumJobs);
-  const filteredFreeJobs = filterJobs(jobsWithImages.free.length > 0 ? jobsWithImages.free : freeJobs);
-  const filteredExpiredJobs = filterJobs(jobsWithImages.expired.length > 0 ? jobsWithImages.expired : expiredJobs);
-  const filteredSalonSales = filterJobs(jobsWithImages.salonSales.length > 0 ? jobsWithImages.salonSales : vietnameseSalonSales);
-
   return (
-    <div className="container mx-auto px-4 py-6">
+    <Layout>
       <Helmet>
-        <title>Browse Job Opportunities | EmviApp</title>
+        <title>Job Listings | EmviApp</title>
+        <meta 
+          name="description" 
+          content="Find and post job opportunities in the beauty industry. Salon jobs, technician positions and more."
+        />
       </Helmet>
-      
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl lg:text-4xl font-playfair font-semibold">Beauty Industry Jobs</h1>
-        
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="outline"
-            className="rounded-full border-[#9A7B69] text-[#9A7B69] hover:bg-[#9A7B69]/10 flex items-center gap-1"
-            onClick={() => navigate("/")}
-          >
-            <ArrowLeft size={16} /> Back Home
-          </Button>
-          
-          <Button 
-            onClick={goToPostJob} 
-            className="rounded-full bg-gradient-to-r from-[#9A7B69] to-[#FFB199] hover:scale-105 transition-transform font-semibold flex items-center gap-2"
-          >
-            <Plus size={18} /> Add Job
-          </Button>
-        </div>
-      </div>
-      
-      <JobSearchBar 
-        onSearchChange={handleSearchChange} 
-        value={searchTerm}
-      />
-      
-      <div className="mt-8 space-y-12">
-        {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
-        <TopDiamondFeaturedSection 
-          featuredJobs={filteredDiamondJobs.slice(0, 1)} 
-          onViewDetails={viewJobDetails} 
+
+      <div className="container mx-auto px-4 py-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col md:flex-row justify-between items-center mb-8"
+        >
+          <h1 className="font-playfair text-3xl md:text-4xl font-bold mb-4 md:mb-0">
+            Beauty Industry Jobs
+          </h1>
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <JobSearchBar onSearch={handleSearch} />
+            <Button 
+              className="flex gap-2 items-center bg-gradient-to-r from-purple-500 to-pink-500"
+              onClick={handlePostJob}
+            >
+              <PlusCircle size={18} />
+              Post a Job
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Diamond Featured Section */}
+        <DiamondFeaturedSection 
+          jobs={diamondJobs} 
+          onViewDetails={handleViewJobDetails} 
         />
-        
-        {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
+
+        {/* Premium Listings */}
         <PremiumListingsSection 
-          jobs={filteredPremiumJobs} 
-          onViewDetails={viewJobDetails} 
+          jobs={premiumJobs} 
+          onViewDetails={handleViewJobDetails} 
         />
         
-        {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
+        {/* Gold Featured Section */}
+        <GoldFeaturedSection 
+          jobs={goldJobs} 
+          onViewDetails={handleViewJobDetails} 
+        />
+        
+        {/* Free Listings */}
         <FreeListingsSection 
-          jobs={filteredFreeJobs} 
-          onViewDetails={viewJobDetails} 
+          jobs={freeJobs} 
+          onViewDetails={handleViewJobDetails} 
         />
         
-        {/* Vietnamese Salon Sales Section */}
-        <SalonSalesSection 
-          listings={filteredSalonSales} 
-          onViewDetails={viewJobDetails} 
-        />
-        
-        {/* 🚫 DO NOT MODIFY — PROTECTED MARKETING TIER */}
+        {/* Expired Listings */}
         <ExpiredListingsSection 
-          jobs={filteredExpiredJobs} 
-          onViewDetails={viewJobDetails} 
+          jobs={expiredJobs}
+          onViewDetails={handleViewJobDetails}
           onRenew={handleRenewJob}
           isRenewing={isRenewing}
           renewalJobId={renewalJobId}
         />
       </div>
-      
-      {selectedJob && (
-        <JobDetailModal
-          job={selectedJob}
-          isOpen={!!selectedJob}
-          onClose={closeJobDetails}
-        />
-      )}
-    </div>
+    </Layout>
   );
 };
 

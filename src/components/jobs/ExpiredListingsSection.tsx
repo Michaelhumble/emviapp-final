@@ -36,10 +36,10 @@ const ExpiredListingsSection = ({
   // Get appropriate expiration label
   const getExpirationLabel = (job: Job): string => {
     const days = getExpiredDaysCount(job);
-    if (days > 365) {
-      return "Over 1 year ago";
+    if (days > 60) {
+      return "Over 2 months ago";
     }
-    return "Expired";
+    return "Over 30 days ago";
   };
 
   return (
@@ -56,7 +56,7 @@ const ExpiredListingsSection = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {jobs.map((job) => (
           <Card
             key={job.id}
@@ -76,19 +76,19 @@ const ExpiredListingsSection = ({
 
             <CardContent className="p-4">
               <div className="mb-2">
-                <h3 className="font-playfair font-medium text-base text-gray-700">{job.title}</h3>
-                <p className="text-gray-500 text-base">{job.company}</p>
+                <h3 className="font-playfair font-medium text-sm text-gray-700 line-clamp-1">{job.title}</h3>
+                <p className="text-gray-500 text-xs">{job.company}</p>
               </div>
 
-              <div className="flex items-center text-base text-gray-500 mb-1">
+              <div className="flex items-center text-xs text-gray-500 mb-1">
                 <MapPin className="h-3 w-3 mr-1" /> {job.location}
               </div>
 
-              <div className="flex items-center text-base text-gray-500 mb-3">
+              <div className="flex items-center text-xs text-gray-500 mb-2">
                 <Calendar className="h-3 w-3 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
               </div>
 
-              <div className="text-base text-gray-400 italic mb-3">
+              <div className="text-xs text-gray-400 italic mb-2">
                 <p>Contact details are hidden for expired listings</p>
               </div>
 
@@ -97,14 +97,16 @@ const ExpiredListingsSection = ({
                   variant="outline"
                   onClick={() => onRenew(job)}
                   disabled={isRenewing && renewalJobId === job.id}
-                  className="text-base font-bold"
+                  className="text-xs font-medium h-7 px-2"
+                  size="sm"
                 >
-                  {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew Listing"}
+                  {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew"}
                 </Button>
                 
                 <Button
-                  className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                  className="font-bold bg-gray-500 hover:bg-gray-600 text-white h-7 px-2 text-xs"
                   onClick={() => onViewDetails(job)}
+                  size="sm"
                 >
                   Xem Chi Tiết
                 </Button>
