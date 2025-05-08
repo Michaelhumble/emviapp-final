@@ -1,6 +1,5 @@
 
 import { Job } from "@/types/job";
-import { supabase } from "@/integrations/supabase/client";
 
 // Helper function to get Supabase image URL
 const getSupabaseImageUrl = (filename: string) => {

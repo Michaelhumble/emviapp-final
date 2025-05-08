@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +9,6 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import JobCardContact from "./JobCardContact";
-import { supabase } from "@/integrations/supabase/client";
 
 interface SalonSalesSectionProps {
   listings: Job[];
@@ -70,6 +70,12 @@ const SalonSalesSection = ({ listings, onViewDetails }: SalonSalesSectionProps) 
             if (filename) {
               imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${filename}`;
             }
+          }
+          
+          // If there's still no image URL or it's invalid, use a fallback based on index
+          if (!imageUrl || imageUrl === "undefined") {
+            const fallbackIndex = 25 + index; // Use different range to avoid conflicts
+            imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${fallbackIndex}.png`;
           }
           
           return (
