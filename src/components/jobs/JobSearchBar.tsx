@@ -6,7 +6,7 @@ interface JobSearchBarProps {
   placeholder?: string;
   onSearchChange: (value: string) => void;
   value: string;
-  onSearch?: (term: string) => void; // Add the missing property
+  onSearch?: (term: string) => void;
 }
 
 const JobSearchBar: React.FC<JobSearchBarProps> = ({ 
@@ -17,13 +17,19 @@ const JobSearchBar: React.FC<JobSearchBarProps> = ({
 }) => {
   const handleClear = () => {
     onSearchChange('');
-    if (onSearch) onSearch(''); // Call onSearch with empty string if it exists
+    if (onSearch) onSearch('');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onSearchChange(newValue);
-    if (onSearch) onSearch(newValue); // Call onSearch with new value if it exists
+    if (onSearch) onSearch(newValue);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onSearch) {
+      onSearch(value);
+    }
   };
 
   return (
@@ -38,6 +44,7 @@ const JobSearchBar: React.FC<JobSearchBarProps> = ({
           placeholder={placeholder}
           value={value}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           aria-label="Search jobs"
         />
         {value && (

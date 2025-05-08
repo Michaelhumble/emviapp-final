@@ -1,5 +1,12 @@
+// Import the function but don't re-export it
+import { 
+  getPriceTier, 
+  generatePromotionalText,
+  // Don't import the duplicate function
+} from './posting';
 
-// Re-export everything from the new module structure
-export * from './posting';
-export * from './posting/promotionalText';
-// Remove the duplicate export of generatePromotionalText2
+// Re-export only the non-duplicated functions
+export { getPriceTier, generatePromotionalText };
+
+// Other exports or code in this file
+// ... keep existing code
