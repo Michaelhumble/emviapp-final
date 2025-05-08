@@ -62,18 +62,17 @@ const ExpiredListingsSection = ({
             key={job.id}
             className="overflow-hidden border border-gray-200 opacity-75 hover:opacity-85 transition-all duration-300"
           >
-            {job.image && (
-              <div className="aspect-video relative grayscale hover:grayscale-[0.7] transition-all duration-300">
-                <ImageWithFallback
-                  src={job.image || ""}
-                  alt={job.title || "Expired job listing"}
-                  className="w-full h-full object-cover"
-                />
-                <Badge className="absolute top-2 right-2 bg-gray-500 text-white border-0">
-                  {getExpirationLabel(job)}
-                </Badge>
-              </div>
-            )}
+            <div className="aspect-video relative grayscale hover:grayscale-[0.7] transition-all duration-300">
+              <ImageWithFallback
+                src={job.image || ""}
+                alt={job.title || "Expired job listing"}
+                className="w-full h-full object-cover"
+                businessName={job.company}
+              />
+              <Badge className="absolute top-2 right-2 bg-gray-500 text-white border-0">
+                {getExpirationLabel(job)}
+              </Badge>
+            </div>
 
             <CardContent className="p-4">
               <div className="mb-2">

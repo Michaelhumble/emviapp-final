@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import JobCardContact from "./JobCardContact";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface FreeListingsSectionProps {
   jobs: Job[];
@@ -30,8 +31,18 @@ const FreeListingsSection = ({ jobs, onViewDetails }: FreeListingsSectionProps) 
         {jobs.map((job) => (
           <Card
             key={job.id}
-            className="border border-gray-200 hover:border-gray-300 transition-all duration-300"
+            className="border border-gray-200 hover:border-gray-300 transition-all duration-300 overflow-hidden"
           >
+            {/* Add image section */}
+            <div className="aspect-video relative">
+              <ImageWithFallback
+                src={job.image || ""}
+                alt={job.title || "Job listing"}
+                className="w-full h-full object-cover"
+                businessName={job.company}
+              />
+            </div>
+            
             <CardContent className="p-4">
               <div className="mb-3">
                 <h3 className="font-playfair font-semibold text-lg">{job.title}</h3>
