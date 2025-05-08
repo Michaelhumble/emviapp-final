@@ -1,247 +1,342 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '@/context/auth';
-import { Job } from '@/types/job';
-import { Button } from '@/components/ui/button';
-import { Helmet } from 'react-helmet';
-import TopDiamondFeaturedSection from '@/components/jobs/TopDiamondFeaturedSection';
-import PremiumListingsSection from '@/components/jobs/PremiumListingsSection';
-import GoldListingsSection from '@/components/jobs/GoldListingsSection';
-import FreeListingsSection from '@/components/jobs/FreeListingsSection';
-import ExpiredListingsSection from '@/components/jobs/ExpiredListingsSection';
-import JobDetailModal from '@/components/jobs/JobDetailModal';
-import { Link } from 'react-router-dom';
-import { toast } from 'sonner';
-
-// Sample data - would come from API in production
-import sampleJobs from '@/data/jobsData';
+import React, { useState, useEffect } from 'react';
+import { Container } from "@/components/ui/container";
+import { diamondJobs } from "@/data/jobs/diamondJobs";
+import { premiumJobs } from "@/data/jobs/premiumJobs";
+import { freeJobs } from "@/data/jobs/freeJobs";
+import { expiredJobs } from "@/data/jobs/expiredJobs";
+import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
+import { Job } from "@/types/job";
+import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
+import GoldListingsSection from "@/components/jobs/GoldListingsSection";
+import FreeListingsSection from "@/components/jobs/FreeListingsSection";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
+import JobDetailModal from "@/components/jobs/JobDetailModal";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { assignImagesToEntities } from '@/utils/randomImageSelector';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, Calendar } from "lucide-react"; // Import MapPin from lucide-react
+import JobCardContact from "@/components/jobs/JobCardContact";
 
 const JobsPage = () => {
-  const { isSignedIn, user } = useAuth();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  
+  // States for each job category
+  const [diamondListings, setDiamondListings] = useState<Job[]>([]);
+  const [premiumListings, setPremiumListings] = useState<Job[]>([]);
+  const [goldListings, setGoldListings] = useState<Job[]>([]);
+  const [freeListings, setFreeListings] = useState<Job[]>([]);
+  const [expiredListings, setExpiredListings] = useState<Job[]>([]);
+  const [salonSales, setSalonSales] = useState<Job[]>([]);
+  
+  // For renewal functionality
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadJobs = async () => {
-      try {
-        // In production, this would be an API call
-        // For now, transform the sample data
-        const transformedJobs = sampleJobs.map(job => ({
-          id: job.id.toString(),
-          title: job.title,
-          company: job.company,
-          location: job.location,
-          created_at: job.posted || new Date().toISOString(),
-          description: job.description,
-          salary_range: job.salary || job.price,
-          image: job.image || '',
-          contact_info: {
-            phone: '(555) 123-4567',
-            email: 'contact@emviapp.com',
-          },
-          is_featured: job.featured || false,
-          status: job.featured ? 'active' : Math.random() > 0.7 ? 'expired' : 'active',
-          // Assign pricing tiers
-          pricingTier: job.featured 
-            ? Math.random() > 0.5 ? 'diamond' : 'premium' 
-            : Math.random() > 0.3 ? 'gold' : 'free'
-        }));
-
-        // Ensure Magic Nails is the first entry and diamond tier
-        const magicNailsIndex = transformedJobs.findIndex(j => j.company.includes('Magic Nails'));
-        if (magicNailsIndex >= 0) {
-          const magicNails = {...transformedJobs[magicNailsIndex], pricingTier: 'diamond', status: 'active'};
-          transformedJobs.splice(magicNailsIndex, 1);
-          transformedJobs.unshift(magicNails);
-        }
-        
-        // Add more expired listings to reach 28
-        const expiredListings = Array(28 - transformedJobs.filter(j => j.status === 'expired').length)
-          .fill(null)
-          .map((_, idx) => ({
-            id: `expired-${idx}`,
-            title: `Expired Nail Technician Position ${idx + 1}`,
-            company: `Former Salon ${idx + 1}`,
-            location: 'California',
-            created_at: new Date(Date.now() - (40 + idx) * 24 * 60 * 60 * 1000).toISOString(),
-            description: 'This position is no longer available.',
-            salary_range: '$25-30/hr',
-            image: '',
-            contact_info: {
-              phone: '(555) 123-4567',
-              email: 'expired@example.com',
-            },
-            is_featured: false,
-            status: 'expired',
-            pricingTier: 'expired'
-          }));
-
-        setJobs([...transformedJobs, ...expiredListings]);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error loading jobs:', error);
-        toast.error('Failed to load job listings');
-        setIsLoading(false);
-      }
-    };
-
-    loadJobs();
-  }, []);
-
-  // Filter jobs by tier
-  const diamondJobs = useMemo(() => jobs.filter(job => job.pricingTier === 'diamond' && job.status !== 'expired'), [jobs]);
-  const premiumJobs = useMemo(() => jobs.filter(job => job.pricingTier === 'premium' && job.status !== 'expired'), [jobs]);
-  const goldJobs = useMemo(() => jobs.filter(job => job.pricingTier === 'gold' && job.status !== 'expired'), [jobs]);
-  const freeJobs = useMemo(() => jobs.filter(job => job.pricingTier === 'free' && job.status !== 'expired'), [jobs]);
-  const expiredJobs = useMemo(() => jobs.filter(job => job.status === 'expired'), [jobs]);
   
-  // Salon listings for sale - using a subset of the jobs data for demo
-  const salonListings = useMemo(() => jobs.slice(0, 4).map(job => ({
-    ...job,
-    type: 'salon',
-    isSalonForSale: true,
-    price: `$${Math.floor(Math.random() * 50 + 100)}k`,
-  })), [jobs]);
-
+  useEffect(() => {
+    // Load and assign random images to jobs
+    // Preserve Magic Nails diamond image by setting preserveFirst to true
+    const assignedDiamondJobs = assignImagesToEntities(diamondJobs, true);
+    setDiamondListings(assignedDiamondJobs);
+    
+    const assignedPremiumJobs = assignImagesToEntities(premiumJobs);
+    setPremiumListings(assignedPremiumJobs);
+    
+    // Create gold tier listings with premium styling but lower in hierarchy
+    // We need to cast to the proper pricingTier type
+    const goldJobs = premiumJobs.map(job => ({
+      ...job,
+      id: `gold-${job.id}`,
+      pricingTier: "featured" as "diamond" | "premium" | "featured" | "standard" | "starter" | "free" | "expired"
+    }));
+    const assignedGoldJobs = assignImagesToEntities(goldJobs);
+    setGoldListings(assignedGoldJobs);
+    
+    const assignedFreeJobs = assignImagesToEntities(freeJobs);
+    setFreeListings(assignedFreeJobs);
+    
+    const assignedExpiredJobs = assignImagesToEntities(expiredJobs);
+    setExpiredListings(assignedExpiredJobs);
+    
+    const assignedSalonSales = assignImagesToEntities(vietnameseSalonSales);
+    setSalonSales(assignedSalonSales);
+  }, []);
+  
   const handleViewDetails = (job: Job) => {
     setSelectedJob(job);
+    setIsDetailModalOpen(true);
   };
-
-  const handleRenew = (job: Job) => {
-    if (!isSignedIn) {
-      toast.error('You must be signed in to renew a listing');
-      return;
-    }
-    
+  
+  const handleCloseDetails = () => {
+    setIsDetailModalOpen(false);
+    setSelectedJob(null);
+  };
+  
+  const handleRenewListing = (job: Job) => {
     setIsRenewing(true);
     setRenewalJobId(job.id);
-    
-    // Simulate renewal API call
+    // In a real app, this would trigger the renewal flow
     setTimeout(() => {
-      setJobs(prevJobs => 
-        prevJobs.map(j => 
-          j.id === job.id 
-            ? {...j, status: 'active', created_at: new Date().toISOString(), pricingTier: 'free'} 
-            : j
-        )
-      );
-      
-      toast.success('Listing renewed successfully!');
       setIsRenewing(false);
       setRenewalJobId(null);
-    }, 1500);
+    }, 2000);
+  };
+  
+  const goToSalonsPage = () => {
+    navigate("/salons");
   };
 
-  if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Loading jobs...</div>;
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Helmet>
-        <title>Beauty Industry Jobs | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Browse beauty industry job opportunities. Find positions for nail technicians, hair stylists, and more."
-        />
-      </Helmet>
-      
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-4">Beauty Industry Jobs</h1>
-        <p className="text-gray-600 mb-8">
-          Find your perfect position in the beauty industry or post your job opening.
-        </p>
-        
-        <div className="flex flex-wrap gap-3">
-          <Button className="bg-purple-600 hover:bg-purple-700">
-            Post a Job
-          </Button>
-          <Button variant="outline">
-            Search Jobs
-          </Button>
-        </div>
+    <Container className="py-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-playfair font-bold mb-2">Beauty Industry Jobs</h1>
+        <p className="text-gray-600">Find the perfect job opportunity in the beauty industry</p>
       </div>
       
-      {/* Diamond Featured Section - 6 cards (3 rows x 2 cards) */}
-      <TopDiamondFeaturedSection featuredJobs={diamondJobs} onViewDetails={handleViewDetails} />
+      {/* Diamond Tier Listings - 3 rows of 2 cards each */}
+      {diamondListings.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-2xl lg:text-3xl font-playfair font-semibold mb-6">
+            💎 Diamond Featured
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {diamondListings.slice(0, 6).map((job) => (
+              <Card
+                key={job.id}
+                className="overflow-hidden border border-amber-200 shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                <div className="aspect-video relative">
+                  <img
+                    src={job.image || "/lovable-uploads/74b3ba02-2378-41d7-8cb5-023145e94700.png"}
+                    alt={job.title || "Job listing"}
+                    className="w-full h-full object-cover"
+                  />
+                  <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-yellow-300 text-white border-0">
+                    Diamond
+                  </Badge>
+                  {job.featured_text && (
+                    <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+                      {job.featured_text}
+                    </Badge>
+                  )}
+                </div>
+                <CardContent className="p-6">
+                  <div className="mb-3">
+                    <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
+                    <p className="text-gray-600 font-medium">{job.company}</p>
+                  </div>
+
+                  <div className="flex items-center text-base text-gray-600 mb-2">
+                    <MapPin className="h-4 w-4 mr-1" /> {job.location}
+                  </div>
+
+                  {job.salary_range && (
+                    <div className="flex items-center text-base text-gray-600 mb-2">
+                      <span className="text-lg mr-1">💰</span> {job.salary_range}
+                    </div>
+                  )}
+
+                  <div className="flex items-center text-base text-gray-600 mb-4">
+                    <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
+                  </div>
+
+                  <div className="border-t border-gray-100 pt-3 mb-4">
+                    {job.contact_info?.phone && (
+                      <JobCardContact 
+                        phoneNumber={job.contact_info.phone}
+                        showAlways={false}
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      className="font-bold bg-purple-500 hover:bg-purple-600 text-white"
+                      onClick={() => handleViewDetails(job)}
+                    >
+                      Xem Chi Tiết
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
       
-      {/* Premium Listings Section - 9 cards (3 rows x 3 cards) */}
-      <PremiumListingsSection jobs={premiumJobs.slice(0, 9)} onViewDetails={handleViewDetails} />
+      {/* Premium Listings - 3 rows of 3 cards each */}
+      {premiumListings.length > 0 && (
+        <PremiumListingsSection 
+          jobs={premiumListings} 
+          onViewDetails={handleViewDetails} 
+        />
+      )}
       
-      {/* Gold Listings Section - 16 cards (4 rows x 4 cards) */}
-      <GoldListingsSection jobs={goldJobs.slice(0, 16)} onViewDetails={handleViewDetails} />
+      {/* Gold Tier Listings - 4 rows of 4 cards each */}
+      {goldListings.length > 0 && (
+        <GoldListingsSection 
+          jobs={goldListings.slice(0, 16)} 
+          onViewDetails={handleViewDetails} 
+        />
+      )}
       
       {/* Featured Nail Salons for Sale */}
-      <section className="mb-12">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">🏠 Featured Nail Salons For Sale</h2>
-          <Link to="/salons" className="text-purple-600 hover:text-purple-800 font-medium">
-            View All
-          </Link>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {salonListings.map((salon) => (
-            <div key={salon.id} className="card border border-orange-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-              <div className="aspect-video relative">
-                <img
-                  src={salon.image || "https://via.placeholder.com/300x200"}
-                  alt={salon.title || "Salon for sale"}
-                  className="w-full h-full object-cover"
-                />
-                <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
-                  For Sale
-                </span>
-              </div>
+      {salonSales.length > 0 && (
+        <section className="mt-8 mb-12 relative">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
+              🏠 Featured Nail Salons for Sale
+            </h2>
+            <Button 
+              onClick={goToSalonsPage} 
+              variant="outline" 
+              className="absolute top-0 right-0"
+            >
+              View All
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {salonSales.slice(0, 4).map((salon) => {
+              // For salon sales, handle type compatibility by casting
+              const job: Job = {
+                ...salon,
+                type: "salon" as "salon" | "job" | "opportunity"
+              };
               
-              <div className="p-4">
-                <h3 className="font-bold text-lg mb-1">{salon.title}</h3>
-                <p className="text-gray-600 mb-2">
-                  <span className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-1" /> {salon.location}
-                  </span>
-                </p>
-                
-                <div className="flex justify-between items-center mt-4">
-                  <div className="font-bold text-green-700">{salon.price}</div>
-                  <Button 
-                    size="sm" 
-                    onClick={() => handleViewDetails(salon)}
-                    className="bg-purple-500 hover:bg-purple-600 text-white text-xs"
-                  >
-                    View Details
-                  </Button>
+              return (
+                <Card
+                  key={salon.id}
+                  className="overflow-hidden border border-orange-100 shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <div className="aspect-video relative">
+                    <img
+                      src={salon.image || ""}
+                      alt={salon.title || "Salon for sale"}
+                      className="w-full h-full object-cover"
+                    />
+                    <Badge className="absolute top-2 left-2 bg-gradient-to-r from-orange-400 to-orange-500 text-white border-0">
+                      For Sale
+                    </Badge>
+                  </div>
+                  <CardContent className="p-4">
+                    <div className="mb-3">
+                      <h3 className="font-playfair font-semibold text-lg line-clamp-2">{salon.title}</h3>
+                      <p className="text-gray-600">{salon.location}</p>
+                    </div>
+                    
+                    {salon.sale_price && (
+                      <div className="flex items-center text-sm text-gray-600 mb-2">
+                        <span className="text-base mr-1">💰</span> ${salon.sale_price}
+                      </div>
+                    )}
+                    
+                    <div className="border-t border-orange-50 pt-3 mb-3">
+                      {salon.contact_info?.phone && (
+                        <JobCardContact phoneNumber={salon.contact_info.phone} />
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <Button
+                        className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs"
+                        onClick={() => handleViewDetails(job)}
+                      >
+                        Xem Chi Tiết
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+      )}
+      
+      {/* Free Listings Section - No Images */}
+      {freeListings.length > 0 && (
+        <FreeListingsSection 
+          jobs={freeListings} 
+          onViewDetails={handleViewDetails} 
+        />
+      )}
+      
+      {/* Expired Listings Section */}
+      {expiredListings.length > 0 && (
+        <section className="mt-8 mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
+              🕓 Expired Listings
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {expiredListings.map((job) => (
+              <Card
+                key={job.id}
+                className="overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-300 opacity-70 grayscale"
+              >
+                <div className="aspect-video relative">
+                  <img
+                    src={job.image || ""}
+                    alt={job.title || "Job listing"}
+                    className="w-full h-full object-cover"
+                  />
+                  <Badge className="absolute top-2 left-2 bg-red-500 text-white border-0">
+                    Expired
+                  </Badge>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+                <CardContent className="p-4">
+                  <div className="mb-3">
+                    <h3 className="font-playfair font-semibold text-lg line-clamp-2">{job.title}</h3>
+                    <p className="text-gray-600">{job.company}</p>
+                  </div>
+                  
+                  <div className="flex items-center text-sm text-gray-600 mb-2">
+                    <MapPin className="h-4 w-4 mr-1" /> {job.location}
+                  </div>
+                  
+                  <div className="flex items-center text-sm text-gray-600 mb-3">
+                    <Calendar className="h-4 w-4 mr-1" /> {new Date(job.created_at).toLocaleDateString()}
+                  </div>
+                  
+                  <div className="flex justify-between items-center mt-3">
+                    <Button
+                      variant="outline"
+                      className="font-medium text-xs"
+                      onClick={() => handleRenewListing(job)}
+                      disabled={isRenewing && renewalJobId === job.id}
+                    >
+                      {isRenewing && renewalJobId === job.id ? "Renewing..." : "Renew Listing"}
+                    </Button>
+                    
+                    <Button
+                      className="font-bold bg-purple-500 hover:bg-purple-600 text-white text-xs"
+                      onClick={() => handleViewDetails(job)}
+                    >
+                      Xem Chi Tiết
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
       
-      {/* Free Listings Section - Text only */}
-      <FreeListingsSection jobs={freeJobs} onViewDetails={handleViewDetails} />
-      
-      {/* Expired Listings Section - 28 cards (5 per row) */}
-      <ExpiredListingsSection 
-        jobs={expiredJobs} 
-        onViewDetails={handleViewDetails} 
-        onRenew={handleRenew}
-        isRenewing={isRenewing}
-        renewalJobId={renewalJobId}
-      />
-      
-      {/* Job Detail Modal */}
       {selectedJob && (
         <JobDetailModal
           job={selectedJob}
-          isOpen={!!selectedJob}
-          onClose={() => setSelectedJob(null)}
+          isOpen={isDetailModalOpen}
+          onClose={handleCloseDetails}
         />
       )}
-    </div>
+    </Container>
   );
 };
 
