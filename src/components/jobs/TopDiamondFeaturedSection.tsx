@@ -36,7 +36,7 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Card #1 - Brother's Salon - PAID */}
+        {/* Card #1 - Magic Nails - PAID */}
         <Card
           key={mainJob.id}
           className="overflow-hidden border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
@@ -49,8 +49,8 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
 
           <div className="aspect-video relative">
             <img
-              src={"/lovable-uploads/df831531-bb40-4bcf-9a8c-c18030e1bc1a.png"}
-              alt="Brother's Salon"
+              src={"/lovable-uploads/74b3ba02-2378-41d7-8cb5-023145e94700.png"}
+              alt="Magic Nails"
               className="w-full h-full object-cover"
             />
             <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-medium">
@@ -60,8 +60,8 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
 
           <CardContent className="p-6">
             <div className="mb-3">
-              <h3 className="font-playfair font-semibold text-xl text-amber-900">Brother's Salon</h3>
-              <p className="text-amber-800 font-medium text-lg">$999.99/year</p>
+              <h3 className="font-playfair font-semibold text-xl text-amber-900">Tìm Thợ Nails – Magic Nails, Great Falls, MT</h3>
+              <p className="text-amber-800 font-medium text-lg">$1,200–$1,500/tuần</p>
             </div>
 
             <div className="flex items-center text-base text-gray-600 mb-2">
@@ -71,6 +71,8 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
             <div className="flex items-center text-base text-gray-600 mb-4">
               <Calendar className="h-4 w-4 mr-1" /> {new Date(mainJob.created_at).toLocaleDateString()}
             </div>
+
+            <p className="text-gray-700 mb-4">Magic Nails cần thợ biết làm bột và tay chân nước.</p>
 
             <div className="border-t border-amber-100 pt-3 mb-4">
               {user ? (
@@ -120,10 +122,11 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
           </div>
 
           <CardContent className="p-6">
-            <h3 className="font-playfair font-bold text-xl text-amber-900 mb-3">Premium Diamond Position Available</h3>
+            <h3 className="font-playfair font-bold text-xl text-amber-900 mb-3">Claim the Most Powerful Spot on EmviApp</h3>
             
             <p className="text-base text-gray-700 mb-6 font-medium">
-              <strong>Secure the top spot and attract unlimited employees and customers. Limited Availability—first come, first serve.</strong>
+              Reach Unlimited Employees and Customers Every Day.<br />
+              First Come, First Served – Unmatched Visibility.
             </p>
 
             <Link to="/post-job" className="block w-full">
