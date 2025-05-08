@@ -61,6 +61,7 @@ export interface Job {
   name?: string;
   imageUrl?: string;
   is_vietnamese_listing?: boolean;
+  industry?: string;
   
   // Updated pricing tier field to include 'gold'
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';

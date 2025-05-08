@@ -14,7 +14,6 @@ import { premiumJobs } from "@/data/jobs/premiumJobs";
 import { goldJobs } from "@/data/protected/vietnameseJobs";
 import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
 import { freeJobs } from "@/data/jobs/freeJobs";
-import { expiredJobs } from "@/data/jobs/expiredJobs";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import SalonSalesSection from "@/components/jobs/SalonSalesSection";
@@ -39,7 +38,6 @@ const JobsPage: React.FC = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [expirations, setExpirations] = useState<Record<string, boolean>>({});
   const [jobType, setJobType] = useState<"all" | "active" | "expired">("all");
-  const [isRenewing, setIsRenewing] = useState(false);
 
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -47,21 +45,6 @@ const JobsPage: React.FC = () => {
 
   const closeJobDetails = () => {
     setSelectedJob(null);
-  };
-
-  const handleRenew = (job: Job) => {
-    setIsRenewing(true);
-    setActiveRenewalJobId(job.id);
-    
-    // Simulate renewal process
-    setTimeout(() => {
-      setExpirations(prev => ({
-        ...prev,
-        [job.id]: false
-      }));
-      setIsRenewing(false);
-      setActiveRenewalJobId(null);
-    }, 2000);
   };
 
   const handleSearchChange = (value: string) => {
@@ -128,13 +111,9 @@ const JobsPage: React.FC = () => {
         onViewDetails={viewJobDetails}
       />
 
-      {/* Expired Listings Section - 5 cards per row */}
+      {/* Expired Listings Section - our new unified section with 5 cards per row */}
       <ExpiredListingsSection
-        jobs={expiredJobs}
         onViewDetails={viewJobDetails}
-        onRenew={handleRenew}
-        isRenewing={isRenewing}
-        renewalJobId={renewalJobId}
       />
 
       <Tabs defaultValue="all" className="mb-8">
@@ -155,8 +134,8 @@ const JobsPage: React.FC = () => {
         <JobsGrid 
           jobs={filteredJobs} 
           expirations={expirations}
-          onRenew={handleRenew}
-          isRenewing={isRenewing}
+          onRenew={() => {}} 
+          isRenewing={false}
           renewalJobId={renewalJobId}
         />
       ) : (
