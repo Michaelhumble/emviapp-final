@@ -14,7 +14,8 @@ import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import Layout from "@/components/layout/Layout";
 import JobPost from "@/pages/posting/JobPost";
-import Jobs from "@/pages/Jobs";  // Make sure Jobs is explicitly imported
+import Jobs from "@/pages/Jobs";
+import About from "@/pages/About"; // Import the new About page
 
 function App() {
   const location = useLocation();
@@ -45,9 +46,12 @@ function App() {
                   {/* Explicitly add the /jobs route to ensure it uses the correct component */}
                   <Route path="/jobs" element={<Jobs />} />
                   
+                  {/* Add the new About page route */}
+                  <Route path="/about" element={<About />} />
+                  
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
-                    (route.path !== "/salons" && route.path !== "/jobs") && (
+                    (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about") && (
                       <Route 
                         key={index}
                         path={route.path}
