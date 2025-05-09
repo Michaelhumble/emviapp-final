@@ -1,3 +1,4 @@
+
 import { JobPricingOption, JobPricingTier } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [
@@ -10,9 +11,9 @@ export const jobPricingOptions: JobPricingOption[] = [
     description: 'Simple & quick post. Limited reach.',
     vietnameseDescription: 'Tin đơn giản – Không có hình ảnh',
     features: [
-      '🪧 Listed in standard row',
-      '📆 Expires in 30 days',
-      '🧾 No image or contact shown'
+      '📄 Listed in standard row',
+      '⏳ Expires in 30 days',
+      '🚫 No image or contact shown'
     ],
     duration: 30, // days
     tag: '⚪ Was $9.99 – Now Free!'
@@ -27,8 +28,8 @@ export const jobPricingOptions: JobPricingOption[] = [
     vietnameseDescription: 'Hiển thị đầy đủ với hình ảnh + số điện thoại',
     features: [
       '🖼️ Show image',
-      '📱 Show contact info',
-      '🏷️ Gold row placement'
+      '📞 Show contact info',
+      '🪙 Gold row placement'
     ],
     duration: 30, // days
     tag: '🟢 Save Big – Limited Time'
@@ -59,8 +60,8 @@ export const jobPricingOptions: JobPricingOption[] = [
     description: 'Homepage power. Best for speed.',
     vietnameseDescription: 'Ưu tiên trên trang chính – Khách thấy bạn đầu tiên',
     features: [
-      '🏠 Homepage pinning',
-      '📌 Top visibility',
+      '📌 Homepage pinning',
+      '📈 Top visibility',
       '💬 VIP support'
     ],
     duration: 30, // days
@@ -76,7 +77,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     vietnameseDescription: 'Vị trí đặc biệt – Chỉ 3 chỗ duy nhất',
     features: [
       '🥇 1 of only 3',
-      '🏠 Homepage pinned',
+      '📌 Homepage pinned',
       '👥 Unlimited team'
     ],
     duration: 365, // days
@@ -141,5 +142,44 @@ export const getJobPostPricingSummary = (
   return {
     total,
     lineItems
+  };
+};
+
+// Function to calculate price with duration discount
+export const calculatePriceWithDuration = (
+  basePrice: number,
+  durationMonths: number,
+  autoRenew: boolean = false
+): {
+  monthlyPrice: number;
+  totalPrice: number;
+  savings: number;
+  discountPercentage: number;
+} => {
+  let discountPercentage = 0;
+  
+  // Apply duration-based discounts
+  if (durationMonths === 3) {
+    discountPercentage = 15;
+  } else if (durationMonths === 6) {
+    discountPercentage = 25;
+  } else if (durationMonths === 12) {
+    discountPercentage = 40;
+  }
+  
+  // Add auto-renew discount
+  if (autoRenew) {
+    discountPercentage += 20;
+  }
+  
+  const monthlyPrice = basePrice * (1 - discountPercentage / 100);
+  const totalPrice = monthlyPrice * durationMonths;
+  const savings = basePrice * durationMonths - totalPrice;
+  
+  return {
+    monthlyPrice,
+    totalPrice,
+    savings,
+    discountPercentage
   };
 };

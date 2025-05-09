@@ -10,7 +10,6 @@ import { jobPricingOptions } from "@/utils/posting/jobPricing";
 import PricingDisplay from "@/components/posting/PricingDisplay";
 import PaymentSummary from "@/components/posting/PaymentSummary";
 import PricingCards from "@/components/posting/PricingCards";
-import { DurationOption } from '@/types/pricing';
 import { AlertCircle } from 'lucide-react';
 
 interface ReviewAndPaymentSectionProps {
@@ -98,50 +97,29 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         </TabsContent>
         
         <TabsContent value="payment" className="space-y-6 pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Select a Plan</CardTitle>
-                  <CardDescription>
-                    Choose the listing option that works best for you
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <PricingCards 
-                    pricingOptions={jobPricingOptions}
-                    selectedPricing={selectedPricing}
-                    onChange={setSelectedPricing}
-                    selectedDuration={selectedDuration}
-                    onDurationChange={handleDurationChange}
-                  />
-                </CardContent>
-              </Card>
-              
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  🕒 All listings expire after 30 days. Auto-renew saves up to {selectedDuration >= 12 ? "30" : selectedDuration >= 6 ? "20" : selectedDuration >= 3 ? "10" : "0"}%.
-                </AlertDescription>
-              </Alert>
-            </div>
+          <div className="grid grid-cols-1 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Select a Plan</CardTitle>
+                <CardDescription>
+                  Choose the listing option that works best for you
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PricingCards 
+                  pricingOptions={jobPricingOptions}
+                  selectedPricing={selectedPricing}
+                  onChange={setSelectedPricing}
+                  selectedDuration={selectedDuration}
+                  onDurationChange={handleDurationChange}
+                />
+              </CardContent>
+            </Card>
             
-            <div>
-              <PaymentSummary 
-                postType={postType}
-                pricingOptions={{
-                  ...pricingOptions,
-                  isFirstPost: isFirstPost
-                }}
-              />
-              
-              <Button className="w-full mt-4">
+            <div className="flex justify-end">
+              <Button className="px-8">
                 Continue to Checkout
               </Button>
-              
-              <div className="mt-6 pt-4 text-center text-sm text-muted-foreground border-t">
-                <p>Need help? <a href="#" className="text-primary underline">Contact support</a></p>
-              </div>
             </div>
           </div>
         </TabsContent>
