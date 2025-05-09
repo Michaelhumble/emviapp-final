@@ -51,7 +51,7 @@ const ContactForm = () => {
       // Simulate API call (replace with your actual submission logic)
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Form submitted:', values);
-      toast.success('Thank you for your message! We'll get back to you soon.', {
+      toast.success("Thank you for your message! We'll get back to you soon.", {
         duration: 5000,
       });
       form.reset();
@@ -149,7 +149,7 @@ const ContactForm = () => {
                       </div>
                       <h3 className="font-medium">I Found a Bug</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground">Help us squash it. We'll fix it faster than you expect.</p>
+                    <p className="text-sm text-muted-foreground">Help us squash it. We&apos;ll fix it faster than you expect.</p>
                   </div>
 
                   <div 
@@ -164,7 +164,7 @@ const ContactForm = () => {
                       </div>
                       <h3 className="font-medium">I Want to Leave a Review</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground">Love what we're building? Say it loud. Inspire others.</p>
+                    <p className="text-sm text-muted-foreground">Love what we&apos;re building? Say it loud. Inspire others.</p>
                   </div>
 
                   <div 
@@ -177,9 +177,9 @@ const ContactForm = () => {
                       <div className="bg-purple-100 p-2 rounded-md text-purple-600">
                         <Brain className="w-5 h-5" />
                       </div>
-                      <h3 className="font-medium">I'm an Investor</h3>
+                      <h3 className="font-medium">I&apos;m an Investor</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground">Let's talk scale, equity, and revolutionizing the beauty industry.</p>
+                    <p className="text-sm text-muted-foreground">Let&apos;s talk scale, equity, and revolutionizing the beauty industry.</p>
                   </div>
 
                   <div 
@@ -194,7 +194,7 @@ const ContactForm = () => {
                       </div>
                       <h3 className="font-medium">I Just Want to Say Something</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground">A story. A thank-you. A whisper. We'll hear it.</p>
+                    <p className="text-sm text-muted-foreground">A story. A thank-you. A whisper. We&apos;ll hear it.</p>
                   </div>
 
                   <div 
@@ -209,7 +209,7 @@ const ContactForm = () => {
                       </div>
                       <h3 className="font-medium">Other...</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground">Didn't see your reason? Doesn't matter. If it's on your heart, it belongs here.</p>
+                    <p className="text-sm text-muted-foreground">Didn&apos;t see your reason? Doesn&apos;t matter. If it&apos;s on your heart, it belongs here.</p>
                   </div>
                 </div>
                 <input 
