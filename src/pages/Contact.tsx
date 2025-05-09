@@ -38,9 +38,9 @@ const ContactPage = () => {
             Together, we'll make something unforgettable.
           </p>
           
-          {/* Updated Sunshine quote with better styling and visibility */}
-          <div className="py-4 px-2 mx-auto max-w-md">
-            <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+          {/* Enhanced Sunshine quote with better visibility and gradient styling */}
+          <div className="py-4 px-4 mx-auto max-w-md">
+            <p className="text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent">
               "This project wouldn't exist without Sunshine." ☀️
             </p>
           </div>

@@ -1,12 +1,12 @@
 
 import React, { useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { mainNavigation } from "./config/navigationItems";
-import LanguageToggle from "@/components/layout/LanguageToggle";
+import { Globe } from "lucide-react";
 
 type MobileMenuProps = {
   user: any | null;
@@ -30,101 +30,129 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
 
   return (
     <div className="md:hidden">
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="relative">
             <Menu className="h-5 w-5" />
           </Button>
-        </DrawerTrigger>
-        <DrawerContent className="pt-2 pb-6">
-          <div className="px-4">
-            {/* Language toggle in mobile menu */}
-            <div className="flex justify-center my-4">
-              <LanguageToggle minimal={false} />
+        </SheetTrigger>
+        <SheetContent side="right" className="w-[80%] px-6 py-4 rounded-l-xl shadow-lg">
+          <div className="flex flex-col gap-6 h-full">
+            {/* Post Job Button */}
+            <Button 
+              className="w-full rounded-full font-medium flex gap-2 items-center justify-center bg-purple-600 hover:bg-purple-700 text-white py-6"
+              onClick={() => handleLinkClick("/post-job")}
+            >
+              <Flame className="h-5 w-5" />
+              {t("Post a Job for Free", "Đăng việc miễn phí")}
+            </Button>
+            
+            {/* Language section */}
+            <div className="mt-2">
+              <h3 className="text-base font-medium text-purple-500 mb-3">Language</h3>
+              <Button 
+                variant="outline"
+                className="w-full justify-start gap-2 rounded-md"
+                onClick={() => {
+                  // Toggle language
+                }}
+              >
+                <Globe className="h-5 w-5" />
+                <span>Tiếng Việt</span>
+              </Button>
             </div>
             
-            {/* Main navigation items */}
-            <div className="flex flex-col space-y-3 mt-4">
-              {mainNavigation.map((item) => (
-                <Button 
-                  key={item.path}
-                  variant="ghost"
-                  className="justify-start hover:bg-accent"
-                  onClick={() => handleLinkClick(item.path)}
-                >
-                  {item.label}
-                </Button>
-              ))}
+            {/* Navigation section */}
+            <div>
+              <h3 className="text-base font-medium text-purple-500 mb-3">Navigation</h3>
+              <div className="flex flex-col space-y-1">
+                {mainNavigation.map((item) => {
+                  const Icon = item.icon || (() => null);
+                  return (
+                    <Button 
+                      key={item.path}
+                      variant="ghost"
+                      className="justify-start hover:bg-gray-100/80 text-gray-700"
+                      onClick={() => handleLinkClick(item.path)}
+                    >
+                      <Icon className="mr-2 h-5 w-5" />
+                      {item.label}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
             
-            <div className="mt-6 border-t border-gray-200 pt-6">
-              {user ? (
-                <>
-                  <Button 
-                    variant="ghost"
-                    className="w-full justify-start mb-2 hover:bg-accent"
-                    onClick={() => handleLinkClick("/dashboard")}
-                  >
-                    {t({
-                      english: "Dashboard",
-                      vietnamese: "Bảng điều khiển"
-                    })}
-                  </Button>
-                  <Button 
-                    variant="ghost"
-                    className="w-full justify-start mb-2 hover:bg-accent"
-                    onClick={() => handleLinkClick("/profile")}
-                  >
-                    {t({
-                      english: "Profile",
-                      vietnamese: "Hồ sơ"
-                    })}
-                  </Button>
-                  <Button 
-                    variant="ghost"
-                    className="w-full justify-start mb-2 hover:bg-accent"
-                    onClick={handleSignOutClick}
-                  >
-                    {t({
-                      english: "Sign Out",
-                      vietnamese: "Đăng xuất"
-                    })}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button 
-                    variant="ghost"
-                    className="w-full justify-start mb-2 hover:bg-accent"
-                    onClick={() => handleLinkClick("/sign-in")}
-                  >
-                    {t({
-                      english: "Sign In",
-                      vietnamese: "Đăng nhập"
-                    })}
-                  </Button>
-                  <Button
-                    className="w-full mb-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full"
-                    onClick={() => handleLinkClick("/sign-up")}
-                  >
-                    {t({
-                      english: "Sign Up",
-                      vietnamese: "Đăng ký"
-                    })}
-                  </Button>
-                </>
-              )}
+            {/* Account section */}
+            <div>
+              <h3 className="text-base font-medium text-red-400 mb-3">Account</h3>
+              <div className="flex flex-col space-y-1">
+                {user ? (
+                  <>
+                    <Button 
+                      variant="ghost"
+                      className="justify-start hover:bg-gray-100/80 text-gray-700"
+                      onClick={() => handleLinkClick("/dashboard")}
+                    >
+                      <span className="mr-2">👤</span>
+                      {t({
+                        english: "Dashboard",
+                        vietnamese: "Bảng điều khiển"
+                      })}
+                    </Button>
+                    <Button 
+                      variant="ghost"
+                      className="justify-start hover:bg-gray-100/80 text-gray-700"
+                      onClick={handleSignOutClick}
+                    >
+                      <span className="mr-2">🚪</span>
+                      {t({
+                        english: "Sign Out",
+                        vietnamese: "Đăng xuất"
+                      })}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="ghost"
+                      className="justify-start hover:bg-gray-100/80 text-gray-700"
+                      onClick={() => handleLinkClick("/sign-in")}
+                    >
+                      <span className="mr-2">🔑</span>
+                      {t({
+                        english: "Sign In",
+                        vietnamese: "Đăng nhập"
+                      })}
+                    </Button>
+                    <Button 
+                      variant="ghost"
+                      className="justify-start hover:bg-gray-100/80 text-gray-700"
+                      onClick={() => handleLinkClick("/sign-up")}
+                    >
+                      <span className="mr-2">✨</span>
+                      {t({
+                        english: "Sign Up",
+                        vietnamese: "Đăng ký"
+                      })}
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
             
-            {/* Enhanced "Inspired by Sunshine" text with more elegant styling */}
-            <div className="mt-8 pt-4 text-center">
-              <p className="text-base font-medium bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent opacity-90">
+            {/* Flexible space to push the footer to bottom */}
+            <div className="flex-grow"></div>
+            
+            {/* Sunshine quote footer with gradient text */}
+            <div className="flex justify-center mb-4 mt-auto">
+              <p className="text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent px-2 py-1">
                 Inspired by Sunshine ☀️
               </p>
             </div>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

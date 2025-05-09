@@ -45,14 +45,14 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="border-t border-gray-200 pt-6 mt-6 text-center text-sm text-gray-500">
-          {/* Add "Inspired by Sunshine" credit above copyright with improved styling */}
-          <p className="mb-3">
-            <span className="text-sm text-purple-500 font-medium">
+        <div className="border-t border-gray-200 pt-6 mt-6 text-center">
+          {/* Enhanced "Inspired by Sunshine" credit with gradient text */}
+          <p className="mb-4">
+            <span className="text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent">
               Inspired by Sunshine ☀️
             </span>
           </p>
-          <p>© {new Date().getFullYear()} EmviApp. All rights reserved.</p>
+          <p className="text-gray-500 text-sm">© {new Date().getFullYear()} EmviApp. All rights reserved.</p>
         </div>
       </div>
     </footer>
