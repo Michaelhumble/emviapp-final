@@ -18,7 +18,7 @@ const PricingCards = ({ pricingOptions, selectedPricing, onChange }: PricingCard
       <RadioGroup 
         value={selectedPricing} 
         onValueChange={onChange}
-        className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-6 overflow-x-auto pb-4 snap-x scrollbar-thin"
+        className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-6 lg:gap-8 overflow-x-auto pb-4 snap-x scrollbar-thin"
       >
         {pricingOptions.map((option) => (
           <div key={option.id} className="min-w-[280px] snap-center">
@@ -29,9 +29,9 @@ const PricingCards = ({ pricingOptions, selectedPricing, onChange }: PricingCard
               <Card className={`h-full transition-all border-2 hover:border-primary hover:shadow-lg ${
                 selectedPricing === option.id ? 'border-primary bg-primary/5' : 'border-muted'
               }`}>
-                <CardHeader className="pb-1 space-y-3">
+                <CardHeader className="pb-1 space-y-3 md:px-5">
                   {option.tag && (
-                    <Badge variant="secondary" className={`text-xs px-2.5 py-1 font-medium mb-1 whitespace-nowrap inline-flex items-center 
+                    <Badge variant="outline" className={`text-xs px-2.5 py-1 font-medium mb-1 whitespace-nowrap inline-flex items-center 
                     ${option.id === 'diamond' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 
                       option.id === 'premium' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 
                       option.id === 'gold' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 
@@ -53,7 +53,7 @@ const PricingCards = ({ pricingOptions, selectedPricing, onChange }: PricingCard
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="pb-3 pt-1">
+                <CardContent className="pb-3 pt-1 md:px-5">
                   <div className="mb-2 font-medium leading-snug">{option.description}</div>
                   <div className="text-sm text-muted-foreground mb-3 italic">{option.vietnameseDescription}</div>
                   <ul className="space-y-2.5">
@@ -64,7 +64,7 @@ const PricingCards = ({ pricingOptions, selectedPricing, onChange }: PricingCard
                     ))}
                   </ul>
                 </CardContent>
-                <CardFooter className="pt-1">
+                <CardFooter className="pt-1 md:px-5">
                   <div className="flex items-center w-full justify-between">
                     <RadioGroupItem
                       id={option.id}

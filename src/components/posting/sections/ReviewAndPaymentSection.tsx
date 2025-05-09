@@ -56,8 +56,8 @@ const ReviewAndPaymentSection = ({
         </p>
       </div>
       
-      {/* Pricing Cards */}
-      <div className="overflow-hidden">
+      {/* Pricing Cards - Wrapped in a container with improved spacing */}
+      <div className="overflow-hidden px-2 md:px-4 lg:px-6 -mx-2 md:-mx-4">
         <PricingCards 
           pricingOptions={jobPricingOptions}
           selectedPricing={selectedPricing}
