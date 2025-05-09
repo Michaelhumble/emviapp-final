@@ -4,60 +4,90 @@ import { JobPricingOption, JobPricingTier } from './types';
 export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Free Post',
+    name: '🎁 Free Post',
     tier: 'basic' as JobPricingTier,
     price: 0,
-    description: 'Great for casual hiring',
+    wasPrice: 9.99,
+    description: 'Basic listing. No image. Limited visibility.',
+    vietnameseDescription: 'Tin đơn giản – Không có hình ảnh.',
     features: [
       'Visible in Standard section',
       'No image',
       'Shows for 3 days',
       'Standard placement'
     ],
-    duration: 3, // days
+    duration: 30, // days
+    tag: '⚪ Was $9.99 – Now Free!'
   },
   {
     id: 'standard',
-    name: 'Standard',
+    name: '✅ Standard',
     tier: 'premium' as JobPricingTier,
-    price: 19.99,
-    description: '3x more visibility',
+    price: 9.99,
+    wasPrice: 29.99,
+    description: 'Full listing with image & contact info.',
+    vietnameseDescription: 'Hiển thị hình ảnh và số điện thoại.',
     features: [
       'Includes image',
       'Visible for 2 weeks',
       'Listed in Gold section',
       'Better placement'
     ],
-    duration: 14, // days
-    popular: true
+    duration: 30, // days
+    tag: '🟢 Save Big – Limited Time'
+  },
+  {
+    id: 'gold',
+    name: '🏆 Gold Featured',
+    tier: 'featured' as JobPricingTier,
+    price: 19.99,
+    wasPrice: 39.99,
+    description: 'Appear in 🏆 Featured Row.',
+    vietnameseDescription: 'Hiển thị trong mục nổi bật. Ấn tượng hơn.',
+    features: [
+      'Featured row placement',
+      'Visible for 30 days',
+      'Priority in search',
+      'Enhanced visibility'
+    ],
+    duration: 30, // days
+    popular: true,
+    tag: '🟡 Smart Pick'
   },
   {
     id: 'premium',
-    name: 'Premium',
+    name: '✨ Premium',
     tier: 'featured' as JobPricingTier,
     price: 49.99,
-    description: 'Best for urgent hiring',
+    wasPrice: 99.99,
+    description: 'Show up First. Homepage Love.',
+    vietnameseDescription: 'Ưu tiên trên trang chính – Khách hàng thấy đầu tiên.',
     features: [
       'Pinned for 1 week',
-      'Visible longer',
-      'Shows on homepage',
-      'Priority placement'
+      'Homepage placement',
+      'Priority visibility',
+      'VIP support'
     ],
     duration: 30, // days
+    tag: '🟠 Today Only – 50% OFF'
   },
   {
     id: 'diamond',
-    name: 'Diamond Featured',
+    name: '💎 Diamond Featured',
     tier: 'featured' as JobPricingTier,
     price: 999.99,
-    description: 'Maximum trust & exposure',
+    wasPrice: 1499.99,
+    description: 'Top 3 Spot. Forever Trusted.',
+    vietnameseDescription: 'Vị trí đặc biệt – Chỉ 3 chỗ duy nhất.',
     features: [
       'Top 3 spots',
       '1-year duration',
       'Only 3 available',
-      'Premium placement'
+      'Homepage pinning'
     ],
     duration: 365, // days
+    tag: '🔥 Only 3 Available',
+    note: 'Includes homepage pinning, unlimited team members, and highest visibility.'
   },
 ];
 

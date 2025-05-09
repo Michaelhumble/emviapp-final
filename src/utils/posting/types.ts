@@ -1,4 +1,3 @@
-
 export interface JobPosting {
   id: string;
   title: string;
@@ -25,10 +24,14 @@ export interface JobPricingOption {
   name: string;
   tier: JobPricingTier;
   price: number;
+  wasPrice?: number; // Add the 'was' price
   description: string;
+  vietnameseDescription?: string; // Add Vietnamese description
   features: string[];
   duration: number; // in days
   popular?: boolean;
+  tag?: string; // Add tag for promotional display
+  note?: string; // Add note for additional information
 }
 
 // Add missing types

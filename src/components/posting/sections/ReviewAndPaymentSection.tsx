@@ -43,6 +43,16 @@ const ReviewAndPaymentSection = ({
     return basePrice.toFixed(2);
   };
 
+  const formatPrice = (price: number) => {
+    if (price === 0) return "$0";
+    return `$${price.toFixed(2)}`;
+  };
+
+  // Helper to determine if a plan is monthly or yearly
+  const getPricingPeriod = (optionId: string) => {
+    return optionId === 'diamond' ? '/ year' : '/ month';
+  };
+
   return (
     <div className="space-y-8">
       <div>
@@ -50,43 +60,61 @@ const ReviewAndPaymentSection = ({
         <p className="text-muted-foreground mt-1">Select how you want your job posting to be displayed</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {jobPricingOptions.map((option) => (
           <Card 
             key={option.id}
-            className={`cursor-pointer transition-all ${
+            className={`cursor-pointer transition-all h-full flex flex-col ${
               selectedTier === option.id 
                 ? 'border-primary shadow-md ring-2 ring-primary ring-opacity-50' 
                 : 'hover:border-gray-300'
             }`}
             onClick={() => setSelectedTier(option.id)}
           >
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-2 space-y-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle>{option.name}</CardTitle>
-                  {option.id === 'free' && (
-                    <div className="text-xs text-muted-foreground line-through">was $29.99</div>
-                  )}
+                  <CardTitle className="font-serif">{option.name}</CardTitle>
+                  <div className="flex items-baseline space-x-2 mt-1">
+                    {option.wasPrice && (
+                      <div className="text-xs text-muted-foreground line-through">was ${option.wasPrice.toFixed(2)}</div>
+                    )}
+                    <CardDescription className="font-medium text-base">
+                      {formatPrice(option.price)} {option.price > 0 && getPricingPeriod(option.id)}
+                    </CardDescription>
+                  </div>
                 </div>
-                {option.popular && <Badge>Popular</Badge>}
+                {option.tag && (
+                  <Badge variant="outline" className="text-xs whitespace-nowrap bg-opacity-10 font-medium">
+                    {option.tag}
+                  </Badge>
+                )}
               </div>
-              <CardDescription className="mt-2 font-medium">
-                {option.price > 0 ? `$${option.price}` : 'FREE'}
-              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm mb-4">{option.description}</p>
-              <ul className="text-sm space-y-2">
-                {option.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-green-500">✓</span> {feature}
-                  </li>
-                ))}
-              </ul>
+            <CardContent className="flex-grow flex flex-col justify-between">
+              <div>
+                <p className="text-sm mb-1 font-medium">{option.description}</p>
+                <p className="text-xs text-muted-foreground italic mb-3">{option.vietnameseDescription}</p>
+                <ul className="text-xs space-y-1.5">
+                  {option.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-1.5">
+                      <span className="text-green-500 mt-0.5">✓</span> {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {option.note && (
+                <div className="mt-3 text-xs text-muted-foreground bg-muted p-1.5 rounded">
+                  {option.note}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
+      </div>
+      
+      <div className="text-center text-sm text-muted-foreground bg-muted/50 p-2 rounded-md">
+        📅 Each post lasts 30 days. You can renew or upgrade anytime.
       </div>
       
       {selectedTier !== 'free' && (
@@ -99,6 +127,7 @@ const ReviewAndPaymentSection = ({
                 id="nationwide"
                 checked={pricingOptions.isNationwide}
                 disabled={selectedTier === 'free'}
+                onChange={() => pricingOptions.isNationwide = !pricingOptions.isNationwide}
                 className="rounded border-gray-300"
               />
               <label htmlFor="nationwide">
@@ -113,6 +142,7 @@ const ReviewAndPaymentSection = ({
                 id="fastSale"
                 checked={pricingOptions.fastSalePackage}
                 disabled={selectedTier === 'free'}
+                onChange={() => pricingOptions.fastSalePackage = !pricingOptions.fastSalePackage}
                 className="rounded border-gray-300"
               />
               <label htmlFor="fastSale">
@@ -127,6 +157,7 @@ const ReviewAndPaymentSection = ({
                 id="showAtTop"
                 checked={pricingOptions.showAtTop}
                 disabled={selectedTier === 'free'}
+                onChange={() => pricingOptions.showAtTop = !pricingOptions.showAtTop}
                 className="rounded border-gray-300"
               />
               <label htmlFor="showAtTop">
