@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Menu, Flame } from "lucide-react";
+import { Menu, Flame, Home, Briefcase, Store, Scissors, Users, Info, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -11,6 +11,17 @@ import { Globe } from "lucide-react";
 type MobileMenuProps = {
   user: any | null;
   handleSignOut: () => Promise<void>;
+};
+
+// Map of navigation paths to their corresponding icons
+const iconMap: Record<string, React.FC<{ className?: string }>> = {
+  '/': Home,
+  '/jobs': Briefcase,
+  '/salons': Store,
+  '/artists': Scissors,
+  '/freelancers': Users,
+  '/about': Info,
+  '/contact': Mail,
 };
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
@@ -67,7 +78,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
               <h3 className="text-base font-medium text-purple-500 mb-3">Navigation</h3>
               <div className="flex flex-col space-y-1">
                 {mainNavigation.map((item) => {
-                  const Icon = item.icon || (() => null);
+                  const IconComponent = iconMap[item.path] || Home;
                   return (
                     <Button 
                       key={item.path}
@@ -75,7 +86,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                       className="justify-start hover:bg-gray-100/80 text-gray-700"
                       onClick={() => handleLinkClick(item.path)}
                     >
-                      <Icon className="mr-2 h-5 w-5" />
+                      <IconComponent className="mr-2 h-5 w-5" />
                       {item.label}
                     </Button>
                   );
