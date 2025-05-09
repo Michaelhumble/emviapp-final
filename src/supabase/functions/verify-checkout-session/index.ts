@@ -1,4 +1,8 @@
 
+// @ts-nocheck
+// ^ This comment disables TypeScript checking for this file since it uses Deno types
+// that aren't available in the browser/Node.js environment
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
