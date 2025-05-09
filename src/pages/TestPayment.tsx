@@ -21,7 +21,6 @@ const TestPayment = () => {
         email: email
       }, {
         selectedPricingTier: 'premium',
-        price: 4999, // $49.99
         durationMonths: 1,
         priceId: 'price_test_123' // This would be your actual Stripe price ID in production
       });
