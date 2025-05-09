@@ -14,6 +14,8 @@ interface PaymentConfirmationModalProps {
   price: number;
   options: PricingOptions;
   originalPrice?: number;
+  discountPercentage?: number;
+  duration?: number;
   onSuccess: () => void;
 }
 
@@ -24,11 +26,43 @@ const PaymentConfirmationModal = ({
   price,
   options,
   originalPrice,
+  discountPercentage = 0,
+  duration = 1,
   onSuccess
 }: PaymentConfirmationModalProps) => {
   const [isPaid, setIsPaid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isFree = price === 0;
+  
+  // Calculate actual price with discount
+  const isDiamondPlan = options.selectedPricingTier === 'diamond';
+  
+  // Apply duration-based discount
+  let durationDiscount = 0;
+  if (!isDiamondPlan) {
+    if (duration === 3) durationDiscount = 10;
+    else if (duration === 6) durationDiscount = 20;
+    else if (duration === 12) durationDiscount = 30;
+  }
+  
+  // Calculate final price with discounts
+  let finalPrice: number;
+  if (isDiamondPlan) {
+    // Diamond plan has a fixed price
+    finalPrice = price;
+  } else {
+    // For other plans, calculate based on duration and apply discount
+    const subtotal = price * duration;
+    finalPrice = durationDiscount > 0 
+      ? subtotal * (1 - durationDiscount/100) 
+      : subtotal;
+  }
+  
+  // Format prices
+  const formattedFinalPrice = finalPrice.toFixed(2);
+  const formattedOriginalPrice = isDiamondPlan 
+    ? null 
+    : (price * duration).toFixed(2);
   
   // Mock user stats for promotional text
   const mockUserStats = {
@@ -100,6 +134,14 @@ const PaymentConfirmationModal = ({
       details.push('Top Position in Search');
     }
     
+    if (!isDiamondPlan && duration > 1) {
+      details.push(`${duration}-month subscription ${durationDiscount > 0 ? `(${durationDiscount}% discount)` : ''}`);
+    }
+    
+    if (isDiamondPlan) {
+      details.push('12-month Diamond Featured Plan');
+    }
+    
     return details;
   };
   
@@ -146,12 +188,12 @@ const PaymentConfirmationModal = ({
                 <div className="border-t pt-2 flex justify-between font-medium">
                   <span>Total</span>
                   <div className="flex flex-col items-end">
-                    {originalPrice && originalPrice > price ? (
+                    {!isDiamondPlan && durationDiscount > 0 && formattedOriginalPrice && finalPrice < price * duration && (
                       <span className="text-xs text-gray-500 line-through">
-                        ${originalPrice}
+                        ${formattedOriginalPrice}
                       </span>
-                    ) : null}
-                    <span>{isFree ? 'FREE' : `$${price}`}</span>
+                    )}
+                    <span>{isFree ? 'FREE' : `$${formattedFinalPrice}`}</span>
                   </div>
                 </div>
                 {isFree && (
@@ -172,7 +214,7 @@ const PaymentConfirmationModal = ({
                   </Button>
                 ) : (
                   <StripeCheckout 
-                    amount={price * 100} // Convert to cents for Stripe
+                    amount={finalPrice * 100} // Convert to cents for Stripe
                     productName={`EmviApp - ${getPostTypeTitle()}`}
                     buttonText="Pay and Publish"
                     onSuccess={handlePaymentSuccess}

@@ -1,3 +1,4 @@
+
 import { CheckCircle, DollarSign, AlertCircle } from "lucide-react";
 import { PricingOptions, PostType } from "@/utils/posting/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -31,19 +32,44 @@ const PricingDisplay = ({
   
   // Calculate total price based on duration
   let actualPrice = price;
-  if (!isDiamondPlan && discountPercentage && discountPercentage > 0) {
-    actualPrice = price * (1 - discountPercentage/100) * duration;
-  } else {
-    // For Diamond, it's always a fixed yearly price
-    actualPrice = isDiamondPlan ? price : price * duration;
+  let durationDiscount = 0;
+  
+  // Set discount percentage based on duration (for non-Diamond plans)
+  if (!isDiamondPlan) {
+    if (duration === 3) durationDiscount = 10;
+    else if (duration === 6) durationDiscount = 20;
+    else if (duration === 12) durationDiscount = 30;
   }
   
-  const totalFormattedPrice = actualPrice.toFixed(2);
+  // Calculate actual price with discounts
+  if (isDiamondPlan) {
+    // Diamond plan has fixed yearly price
+    actualPrice = price;
+  } else {
+    // For other plans, calculate based on duration and apply discount
+    const subtotal = price * duration;
+    actualPrice = durationDiscount > 0 
+      ? subtotal * (1 - durationDiscount/100) 
+      : subtotal;
+  }
+  
+  // Format the price to show whole numbers when possible
+  const totalFormattedPrice = actualPrice % 1 === 0 
+    ? actualPrice.toFixed(0) 
+    : actualPrice.toFixed(2);
+  
+  // Calculate full price before discount (for display purposes)
+  const fullPriceBeforeDiscount = isDiamondPlan ? null : price * duration;
+  const formattedFullPrice = fullPriceBeforeDiscount 
+    ? (fullPriceBeforeDiscount % 1 === 0 
+      ? fullPriceBeforeDiscount.toFixed(0) 
+      : fullPriceBeforeDiscount.toFixed(2)) 
+    : null;
   
   // For Diamond plan, show special duration text
   const durationText = isDiamondPlan 
     ? `${t('Annual plan', 'Gói thường niên')}`
-    : (duration > 1 ? `${t('for', 'trong')} ${duration} ${t('months', 'tháng')}` : '');
+    : (duration > 1 ? `${t('for', 'cho')} ${duration} ${t('months', 'tháng')}` : '');
   
   return (
     <div className="border rounded-lg overflow-hidden">
@@ -52,14 +78,14 @@ const PricingDisplay = ({
           <h3 className="font-medium">{t('Total', 'Tổng cộng')}</h3>
           <div className="flex flex-col items-end">
             <div className="flex items-baseline gap-2">
-              {formattedOriginalPrice && Number(formattedOriginalPrice) > Number(formattedPrice) && (
-                <span className="text-sm line-through text-red-500">${formattedOriginalPrice}</span>
+              {!isDiamondPlan && durationDiscount > 0 && formattedFullPrice && (
+                <span className="text-sm line-through text-red-500">${formattedFullPrice}</span>
               )}
               <span className="text-xl font-bold">${totalFormattedPrice}</span>
             </div>
-            {!isDiamondPlan && discountPercentage && discountPercentage > 0 && (
+            {!isDiamondPlan && durationDiscount > 0 && (
               <span className="text-xs text-green-600 font-medium">
-                {t('Saving', 'Tiết kiệm')}: {discountPercentage}%
+                {t('Saving', 'Tiết kiệm')}: {durationDiscount}%
               </span>
             )}
           </div>

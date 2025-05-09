@@ -1,179 +1,161 @@
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { PricingOptions, PostType } from "@/utils/posting/types";
-import { Job } from "@/types/job";
-import { jobPricingOptions } from "@/utils/posting/jobPricing";
-import PricingDisplay from "@/components/posting/PricingDisplay";
-import PaymentSummary from "@/components/posting/PaymentSummary";
-import PricingCards from "@/components/posting/PricingCards";
-import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PricingOptions, PostType } from '@/utils/posting/types';
+import { Card } from '@/components/ui/card';
+import PricingDisplay from '../PricingDisplay';
+import PricingCards from '../PricingCards';
+import PaymentConfirmationModal from '../PaymentConfirmationModal';
 import { useTranslation } from '@/hooks/useTranslation';
+import { jobPricingOptions } from '@/utils/posting/jobPricing';
 
 interface ReviewAndPaymentSectionProps {
-  formData: any;
   postType: PostType;
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
+  formData: any;
+  onNextStep: () => void;
+  onPrevStep: () => void;
   isFirstPost?: boolean;
-  pricingOptions?: PricingOptions;
-  onPricingChange?: (pricingId: string) => void;
+  pricingOptions: PricingOptions;
+  onPricingChange: (pricingTier: string) => void;
 }
 
-const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
-  formData,
+const ReviewAndPaymentSection = ({
   postType,
+  formData,
   onNextStep,
   onPrevStep,
   isFirstPost = false,
-  pricingOptions = {},
+  pricingOptions,
   onPricingChange
-}) => {
-  const { t, isVietnamese } = useTranslation();
+}: ReviewAndPaymentSectionProps) => {
+  const { t } = useTranslation();
+  const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(1);
   
-  const [activeTab, setActiveTab] = useState("review");
-  const [selectedPricing, setSelectedPricing] = useState(pricingOptions?.selectedPricingTier || "standard");
-  const [selectedDuration, setSelectedDuration] = useState(1); // Default to 1 month
-  
-  // If Diamond plan is selected, force the duration to 12 months
+  // Update parent component when pricing changes
+  useEffect(() => {
+    onPricingChange(selectedPricing);
+  }, [selectedPricing, onPricingChange]);
+
+  // Ensure Diamond plan always uses 12 months
   useEffect(() => {
     if (selectedPricing === 'diamond' && selectedDuration !== 12) {
       setSelectedDuration(12);
     }
   }, [selectedPricing]);
-  
-  const handleDurationChange = (months: number) => {
-    setSelectedDuration(months);
-  };
-  
+
   const handlePricingChange = (pricingId: string) => {
     setSelectedPricing(pricingId);
     
-    // If Diamond plan is selected, force the duration to 12 months
+    // If switching to Diamond plan, force 12 month duration
     if (pricingId === 'diamond') {
       setSelectedDuration(12);
     }
-    
-    if (onPricingChange) {
-      onPricingChange(pricingId);
-    }
   };
   
-  // Map job field mapping
-  const jobFields = {
-    title: t("Job Title", "Chức danh"),
-    location: t("Location", "Địa điểm"),
-    employment_type: t("Employment Type", "Loại việc làm"),
-    description: t("Job Description", "Mô tả công việc"),
-    requirements: t("Requirements", "Yêu cầu"),
-    compensation_details: t("Compensation Details", "Chi tiết lương"),
-    compensation_type: t("Compensation Type", "Hình thức trả lương"),
-  };
-
-  // Format data for the summary
-  const formatData = () => {
-    if (postType === 'job') {
-      // Format job data
-      return Object.entries(formData)
-        .filter(([key]) => key in jobFields && formData[key])
-        .map(([key, value]) => ({
-          label: jobFields[key as keyof typeof jobFields],
-          value: Array.isArray(value) ? (value as string[]).join(", ") : value as string
-        }));
+  const handleDurationChange = (duration: number) => {
+    // Don't allow changing Diamond plan duration from 12 months
+    if (selectedPricing === 'diamond' && duration !== 12) {
+      return;
     }
-    
-    // Default empty format
-    return [];
+    setSelectedDuration(duration);
   };
-
-  const formattedData = formatData();
   
-  // Get the selected pricing option details
+  const handleContinue = () => {
+    setShowPaymentModal(true);
+  };
+  
+  const handlePaymentSuccess = () => {
+    // Close payment modal and proceed to next step
+    setShowPaymentModal(false);
+    onNextStep();
+  };
+  
+  // Find the selected pricing option
   const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
+  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
+  
+  // Calculate duration-based discount
+  let discountPercentage = 0;
+  if (selectedPricing !== 'diamond') {
+    if (selectedDuration === 3) discountPercentage = 10;
+    else if (selectedDuration === 6) discountPercentage = 20;
+    else if (selectedDuration === 12) discountPercentage = 30;
+  }
+  
+  // Calculate original price before discount (for displaying strikethrough)
+  const originalPrice = selectedPricing === 'diamond' ? null : basePrice * selectedDuration;
+  
+  // Diamond plan price is always fixed regardless of duration
+  const actualPrice = selectedPricing === 'diamond' 
+    ? basePrice 
+    : discountPercentage > 0 
+      ? basePrice * selectedDuration * (1 - discountPercentage/100) 
+      : basePrice * selectedDuration;
 
   return (
-    <div className="space-y-8">
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="review">{t("Review", "Xem lại")}</TabsTrigger>
-          <TabsTrigger value="payment">{t("Payment", "Thanh toán")}</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="review" className="space-y-6 pt-4">
-          <h3 className="text-lg font-medium">{t("Review your submission", "Xem lại thông tin")}</h3>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-semibold">{t('Choose Listing Type', 'Chọn Loại Tin')}</h2>
+        <p className="text-muted-foreground">{t('Select how you want your post to appear', 'Chọn cách hiển thị tin của bạn')}</p>
+      </div>
+
+      <Card className="p-6">
+        <div className="space-y-6">
+          <PricingCards 
+            pricingOptions={jobPricingOptions}
+            selectedPricing={selectedPricing}
+            onChange={handlePricingChange}
+            selectedDuration={selectedDuration}
+            onDurationChange={handleDurationChange}
+          />
           
-          <div className="space-y-4">
-            {formattedData.map((item, i) => (
-              <div key={i} className="border-b pb-3">
-                <p className="text-sm text-muted-foreground">{item.label}</p>
-                <p>{item.value}</p>
-              </div>
-            ))}
+          <div className="border-t border-gray-200 pt-6">
+            <PricingDisplay 
+              postType={postType}
+              price={basePrice}
+              options={{
+                ...pricingOptions,
+                isFirstPost
+              }}
+              originalPrice={originalPrice || undefined}
+              discountPercentage={discountPercentage}
+              duration={selectedDuration}
+              pricingId={selectedPricing}
+            />
           </div>
           
-          <div className="pt-4 flex justify-end">
-            <Button variant="outline" className="mr-2" onClick={onPrevStep}>
-              {t("Edit Information", "Sửa thông tin")}
+          <div className="flex justify-between pt-4">
+            <Button
+              variant="outline"
+              onClick={onPrevStep}
+            >
+              {t('Back', 'Quay lại')}
             </Button>
-            <Button onClick={() => setActiveTab("payment")}>
-              {t("Continue to Payment", "Tiếp tục thanh toán")}
+            
+            <Button onClick={handleContinue}>
+              {t('Continue', 'Tiếp tục')}
             </Button>
           </div>
-        </TabsContent>
-        
-        <TabsContent value="payment" className="space-y-6 pt-4">
-          <div className="grid grid-cols-1 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("Select a Plan", "Chọn gói")}</CardTitle>
-                <CardDescription>
-                  {t("Choose the listing option that works best for you", "Chọn lựa chọn đăng tin phù hợp nhất với bạn")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PricingCards 
-                  pricingOptions={jobPricingOptions}
-                  selectedPricing={selectedPricing}
-                  onChange={handlePricingChange}
-                  selectedDuration={selectedDuration}
-                  onDurationChange={handleDurationChange}
-                />
-              </CardContent>
-            </Card>
-            
-            {selectedPricingOption && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("Your Selection", "Lựa chọn của bạn")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <PricingDisplay 
-                    postType="job" 
-                    price={selectedPricingOption.price}
-                    options={{...pricingOptions, selectedPricingTier: selectedPricing}}
-                    originalPrice={selectedPricingOption.wasPrice}
-                    duration={selectedDuration}
-                    discountPercentage={selectedDuration === 3 ? 15 : selectedDuration === 6 ? 25 : 0}
-                    promotionalText={t(
-                      "This plan includes all you need to reach the right candidates quickly.",
-                      "Gói này bao gồm tất cả những gì bạn cần để tiếp cận ứng viên phù hợp một cách nhanh chóng."
-                    )}
-                    pricingId={selectedPricing}
-                  />
-                </CardContent>
-              </Card>
-            )}
-            
-            <div className="flex justify-end">
-              <Button className="px-8" onClick={onNextStep}>
-                {t("Continue to Checkout", "Tiếp tục thanh toán")}
-              </Button>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </Card>
+      
+      <PaymentConfirmationModal 
+        open={showPaymentModal}
+        onOpenChange={setShowPaymentModal}
+        postType={postType}
+        price={basePrice}
+        options={{
+          ...pricingOptions,
+          isFirstPost,
+          selectedPricingTier: selectedPricing
+        }}
+        originalPrice={originalPrice || undefined}
+        discountPercentage={discountPercentage}
+        duration={selectedDuration}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };

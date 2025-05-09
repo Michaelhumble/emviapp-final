@@ -160,16 +160,16 @@ export const calculatePriceWithDuration = (
   
   // Apply duration-based discounts
   if (durationMonths === 3) {
-    discountPercentage = 15;
+    discountPercentage = 10;
   } else if (durationMonths === 6) {
-    discountPercentage = 25;
+    discountPercentage = 20;
   } else if (durationMonths === 12) {
-    discountPercentage = 40;
+    discountPercentage = 30;
   }
   
   // Add auto-renew discount
   if (autoRenew) {
-    discountPercentage += 20;
+    discountPercentage += 5;
   }
   
   const monthlyPrice = basePrice * (1 - discountPercentage / 100);
@@ -180,6 +180,41 @@ export const calculatePriceWithDuration = (
     monthlyPrice,
     totalPrice,
     savings,
+    discountPercentage
+  };
+};
+
+// Helper function to calculate final price with all discounts applied
+export const calculateFinalPrice = (
+  basePrice: number,
+  durationMonths: number,
+  pricingId: string
+): {
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
+} => {
+  // Diamond plan has fixed price regardless of duration
+  if (pricingId === 'diamond') {
+    return {
+      originalPrice: basePrice,
+      finalPrice: basePrice,
+      discountPercentage: 0
+    };
+  }
+  
+  // Calculate duration-based discount
+  let discountPercentage = 0;
+  if (durationMonths === 3) discountPercentage = 10;
+  else if (durationMonths === 6) discountPercentage = 20;
+  else if (durationMonths === 12) discountPercentage = 30;
+  
+  const originalPrice = basePrice * durationMonths;
+  const finalPrice = originalPrice * (1 - discountPercentage / 100);
+  
+  return {
+    originalPrice,
+    finalPrice,
     discountPercentage
   };
 };
