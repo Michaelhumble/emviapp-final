@@ -1,238 +1,96 @@
 
-import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { CreditCard, CheckCircle, AlertCircle, Zap, Globe, TrendingUp } from "lucide-react";
-import StripeCheckout from "@/components/payments/StripeCheckout";
-import { generatePromotionalText2 } from "@/utils/posting/promotionalText";
-import { PricingOptions, PostType } from "@/utils/posting/types";
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils';
+import { PricingOptions } from '@/utils/posting/types';
+import { useTranslation } from '@/hooks/useTranslation';
 
-interface PaymentConfirmationModalProps {
+export interface PaymentConfirmationModalProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  postType: PostType;
-  price: number;
+  onClose: () => void;  // Added this missing property
+  onConfirmPayment: () => void;
+  amount: number;
   options: PricingOptions;
-  originalPrice?: number;
-  discountPercentage?: number;
-  duration?: number;
-  onSuccess: () => void;
+  originalPrice: number;
+  discountPercentage: number;
 }
 
-const PaymentConfirmationModal = ({
+const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
   open,
-  onOpenChange,
-  postType,
-  price,
+  onClose,  // Added this parameter to the component
+  onConfirmPayment,
+  amount,
   options,
   originalPrice,
-  discountPercentage = 0,
-  duration = 1,
-  onSuccess
-}: PaymentConfirmationModalProps) => {
-  const [isPaid, setIsPaid] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const isFree = price === 0;
-  
-  // Calculate actual price with discount
-  const isDiamondPlan = options.selectedPricingTier === 'diamond';
-  
-  // Apply duration-based discount
-  let durationDiscount = 0;
-  if (!isDiamondPlan) {
-    if (duration === 3) durationDiscount = 10;
-    else if (duration === 6) durationDiscount = 20;
-    else if (duration === 12) durationDiscount = 30;
-  }
-  
-  // Calculate final price with discounts
-  let finalPrice: number;
-  if (isDiamondPlan) {
-    // Diamond plan has a fixed price
-    finalPrice = price;
-  } else {
-    // For other plans, calculate based on duration and apply discount
-    const subtotal = price * duration;
-    finalPrice = durationDiscount > 0 
-      ? subtotal * (1 - durationDiscount/100) 
-      : subtotal;
-  }
-  
-  // Format prices
-  const formattedFinalPrice = finalPrice.toFixed(2);
-  const formattedOriginalPrice = isDiamondPlan 
-    ? null 
-    : (price * duration).toFixed(2);
-  
-  // Mock user stats for promotional text
-  const mockUserStats = {
-    jobPostCount: 0,
-    salonPostCount: 0,
-    boothPostCount: 0,
-    supplyPostCount: 0,
-    totalPostCount: options.isFirstPost ? 0 : 1,
-    hasReferrals: options.hasReferrals || false
-  };
-  
-  // Reset state when modal opens
-  useEffect(() => {
-    if (open) {
-      setIsPaid(false);
-      setIsLoading(false);
-    }
-  }, [open]);
-  
-  const handlePaymentSuccess = () => {
-    setIsPaid(true);
-    setTimeout(() => {
-      onSuccess();
-      onOpenChange(false);
-    }, 1500);
-  };
-  
-  const handleFreePost = () => {
-    setIsLoading(true);
-    // Simulate processing of free post
-    setTimeout(() => {
-      handlePaymentSuccess();
-    }, 1000);
-  };
-  
-  const getPostTypeTitle = () => {
-    switch (postType) {
-      case 'job':
-        return 'Job Post';
-      case 'salon':
-        return 'Salon For Sale Listing';
-      case 'booth':
-        return 'Booth Rental';
-      default:
-        return 'Post';
-    }
-  };
-  
-  const getPostDetails = () => {
-    const details = [];
-    
-    if (options.isNationwide) {
-      details.push('Nationwide Visibility');
-    } else {
-      details.push('Local Visibility');
-    }
-    
-    if (postType === 'salon' && options.fastSalePackage) {
-      details.push('Fast Sale Package');
-      details.push('Premium Placement');
-      details.push('30-Day Featured Pin');
-    }
-    
-    if (postType === 'booth' && options.bundleWithJobPost) {
-      details.push('Bundled with Job Post');
-    }
-    
-    if (postType === 'booth' && options.showAtTop) {
-      details.push('Top Position in Search');
-    }
-    
-    if (!isDiamondPlan && duration > 1) {
-      details.push(`${duration}-month subscription ${durationDiscount > 0 ? `(${durationDiscount}% discount)` : ''}`);
-    }
-    
-    if (isDiamondPlan) {
-      details.push('12-month Diamond Featured Plan');
-    }
-    
-    return details;
-  };
-  
-  const getPromotionalText = () => {
-    return generatePromotionalText2(postType, mockUserStats, options);
-  };
-  
+  discountPercentage
+}) => {
+  const { t } = useTranslation();
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (!isOpen) onClose();
+    }}>
       <DialogContent className="sm:max-w-[425px]">
-        {isPaid ? (
-          <div className="py-6 flex flex-col items-center justify-center">
-            <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-            <DialogTitle className="text-2xl text-center mb-2">Payment Successful!</DialogTitle>
-            <DialogDescription className="text-center">
-              Your post will be live shortly. Thank you for using EmviApp!
-            </DialogDescription>
-          </div>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-xl">
-                {isFree ? 'Add Payment Method' : `Complete Payment: ${getPostTypeTitle()}`}
-              </DialogTitle>
-              <DialogDescription>
-                {isFree 
-                  ? options.isFirstPost 
-                    ? 'Your first post is free. We still need to add your payment method for future posts.'
-                    : 'Please add a payment method to continue.'
-                  : 'Please complete payment to publish your post.'}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="py-4">
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <h3 className="font-medium text-lg mb-2">Order Summary</h3>
-                <div className="space-y-1 mb-4">
-                  {getPostDetails().map((detail, idx) => (
-                    <div key={idx} className="flex justify-between text-sm">
-                      <span className="text-gray-600">• {detail}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t pt-2 flex justify-between font-medium">
-                  <span>Total</span>
-                  <div className="flex flex-col items-end">
-                    {!isDiamondPlan && durationDiscount > 0 && formattedOriginalPrice && finalPrice < price * duration && (
-                      <span className="text-xs text-gray-500 line-through">
-                        ${formattedOriginalPrice}
-                      </span>
-                    )}
-                    <span>{isFree ? 'FREE' : `$${formattedFinalPrice}`}</span>
-                  </div>
-                </div>
-                {isFree && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    Note: Your payment method will be saved for future posts, but you won't be charged for this post.
-                  </p>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-3">
-                {isFree ? (
-                  <Button 
-                    onClick={handleFreePost}
-                    disabled={isLoading}
-                    className="w-full"
-                  >
-                    {isLoading ? "Processing..." : "Continue with Free Post"}
-                  </Button>
-                ) : (
-                  <StripeCheckout 
-                    amount={finalPrice * 100} // Convert to cents for Stripe
-                    productName={`EmviApp - ${getPostTypeTitle()}`}
-                    buttonText="Pay and Publish"
-                    onSuccess={handlePaymentSuccess}
-                  />
-                )}
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                  <CreditCard className="h-4 w-4" />
-                  <span>Secure payment processed by Stripe</span>
-                </div>
+        <DialogHeader>
+          <DialogTitle>{t('Confirm Payment', 'Xác nhận thanh toán')}</DialogTitle>
+          <DialogDescription>
+            {t('Please review your selection before proceeding.', 'Vui lòng xem lại lựa chọn của bạn trước khi tiếp tục.')}
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div className="border rounded-md p-4">
+            <h3 className="font-medium mb-2">{t('Payment Details', 'Chi tiết thanh toán')}</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>{t('Plan', 'Gói')}: </span>
+                <span className="font-medium">
+                  {options.selectedPricingTier === 'standard' ? t('Standard', 'Tiêu chuẩn') :
+                   options.selectedPricingTier === 'gold' ? t('Gold Featured', 'Nổi bật Vàng') :
+                   options.selectedPricingTier === 'premium' ? t('Premium', 'Cao cấp') : 
+                   options.selectedPricingTier === 'diamond' ? t('Diamond Featured', 'Nổi bật Kim cương') : 
+                   t('Free', 'Miễn phí')}
+                </span>
               </div>
               
-              {/* Added promotional message */}
-              <div className="mt-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg text-sm text-center text-gray-700">
-                {getPromotionalText()}
+              {options.autoRenew && (
+                <div className="flex justify-between text-sm">
+                  <span>{t('Auto-renew', 'Tự động gia hạn')}: </span>
+                  <span className="text-green-600">{t('Enabled (5% discount)', 'Đã bật (giảm 5%)')}</span>
+                </div>
+              )}
+              
+              {discountPercentage > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span>{t('Discount', 'Giảm giá')}: </span>
+                  <span className="text-green-600">-{discountPercentage}%</span>
+                </div>
+              )}
+              
+              {discountPercentage > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span>{t('Original price', 'Giá gốc')}: </span>
+                  <span className="line-through text-gray-500">{formatCurrency(originalPrice)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between font-bold border-t pt-2 mt-2">
+                <span>{t('Total', 'Tổng cộng')}: </span>
+                <span>{formatCurrency(amount)}</span>
               </div>
             </div>
-          </>
-        )}
+          </div>
+          
+          <div className="flex justify-end space-x-2 pt-2">
+            <Button variant="outline" onClick={onClose}>
+              {t('Cancel', 'Hủy')}
+            </Button>
+            <Button onClick={onConfirmPayment}>
+              {t('Confirm & Pay', 'Xác nhận & Thanh toán')}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
