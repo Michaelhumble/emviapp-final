@@ -41,7 +41,9 @@ const SalonPost = () => {
       owner_name: '',
       phone: '',
       email: ''
-    }
+    },
+    // Add gallery property to the Salon interface if needed
+    gallery: [] as any[]
   });
   
   // Pricing options state
@@ -97,7 +99,7 @@ const SalonPost = () => {
   };
 
   const handleGalleryChange = (gallery: any[]) => {
-    setSalonDetails({ ...salonDetails, gallery: gallery });
+    setSalonDetails(prev => ({ ...prev, gallery }));
   };
 
   const handleContactChange = (contactInfo: Salon['contact_info']) => {

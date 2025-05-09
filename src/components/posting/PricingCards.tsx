@@ -28,6 +28,11 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     }
   }, [selectedPricing, selectedDuration, onDurationChange]);
   
+  // Add null check for pricingOptions
+  if (!pricingOptions || pricingOptions.length === 0) {
+    return null;
+  }
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto pb-2">
