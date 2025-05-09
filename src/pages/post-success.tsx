@@ -27,6 +27,7 @@ const PostSuccess: React.FC = () => {
   
   const sessionId = searchParams.get('session_id');
   const paymentLogId = searchParams.get('payment_log_id');
+  const isFreePost = searchParams.get('free') === 'true';
   
   useEffect(() => {
     // If we have payment info in the URL, fetch the details
@@ -47,10 +48,10 @@ const PostSuccess: React.FC = () => {
             // Cast to avoid type errors
             const typedData = data as any;
             setPostData({
-              post_id: typedData.related_id,
+              post_id: typedData.listing_id,
               expires_at: typedData.expires_at,
-              post_type: typedData.payment_type,
-              pricing_tier: typedData.pricing_tier,
+              post_type: typedData.plan_type,
+              pricing_tier: 'free',
               payment_log_id: typedData.id
             });
           }
@@ -71,9 +72,16 @@ const PostSuccess: React.FC = () => {
               payment_log_id: data.payment_log_id
             });
           }
+        } else if (isFreePost) {
+          // For free posts without specific IDs
+          setPostData({
+            post_type: searchParams.get('post_type') || 'job',
+            pricing_tier: 'free',
+            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          });
         } else {
           // No identifiers, probably direct navigation
-          console.warn('No session_id or payment_log_id found in URL');
+          console.warn('No session_id, payment_log_id or free flag found in URL');
         }
       } catch (err) {
         console.error('Error fetching post details:', err);
@@ -83,7 +91,7 @@ const PostSuccess: React.FC = () => {
     };
     
     fetchPostDetails();
-  }, [paymentLogId, sessionId]);
+  }, [paymentLogId, sessionId, isFreePost, searchParams]);
   
   const navigateToDashboard = () => {
     navigate('/dashboard');

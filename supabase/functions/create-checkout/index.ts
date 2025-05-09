@@ -162,7 +162,6 @@ serve(async (req) => {
         user_id: user.id,
         listing_id: temporaryJobId || null,
         plan_type: postType,
-        pricing_tier: pricingOptions?.selectedPricingTier,
         payment_status: 'pending',
         expires_at: expiresAt.toISOString(),
         stripe_payment_id: session.id,
