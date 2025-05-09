@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,6 +53,7 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({ pricingOptions, set
     return {
       jobPostCount: totalJobPosts,
       salonPostCount: totalSalonPosts,
+      featuredPostCount: 0, // Add this missing property
       boothPostCount: totalBoothPosts,
       supplyPostCount: totalSupplyPosts,
       totalPostCount: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
