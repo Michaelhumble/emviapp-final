@@ -20,6 +20,7 @@ interface ReviewAndPaymentSectionProps {
   onPrevStep?: () => void;
   isFirstPost?: boolean;
   pricingOptions?: PricingOptions;
+  onPricingChange?: (pricingId: string) => void;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -28,12 +29,13 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   onNextStep,
   onPrevStep,
   isFirstPost = false,
-  pricingOptions = {}
+  pricingOptions = {},
+  onPricingChange
 }) => {
   const { t, isVietnamese } = useTranslation();
   
   const [activeTab, setActiveTab] = useState("review");
-  const [selectedPricing, setSelectedPricing] = useState("standard");
+  const [selectedPricing, setSelectedPricing] = useState(pricingOptions?.selectedPricingTier || "standard");
   const [selectedDuration, setSelectedDuration] = useState(1); // Default to 1 month
   
   const handleDurationChange = (months: number) => {
@@ -42,6 +44,9 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   
   const handlePricingChange = (pricingId: string) => {
     setSelectedPricing(pricingId);
+    if (onPricingChange) {
+      onPricingChange(pricingId);
+    }
   };
   
   // Map job field mapping
@@ -135,7 +140,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
                   <PricingDisplay 
                     postType="job" 
                     price={selectedPricingOption.price}
-                    options={pricingOptions}
+                    options={{...pricingOptions, selectedPricingTier: selectedPricing}}
                     originalPrice={selectedPricingOption.wasPrice}
                     duration={selectedDuration}
                     discountPercentage={selectedDuration === 3 ? 15 : selectedDuration === 6 ? 25 : 0}

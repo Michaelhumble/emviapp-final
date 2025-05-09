@@ -150,6 +150,7 @@ const JobPost = () => {
             onPrevStep={prevStep}
             isFirstPost={pricingOptions.isFirstPost}
             pricingOptions={pricingOptions}
+            onPricingChange={handlePricingChange}
           />
         )}
       </PostWizardLayout>

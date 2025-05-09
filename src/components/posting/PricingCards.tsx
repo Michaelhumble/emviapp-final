@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Check } from 'lucide-react';
@@ -23,6 +23,17 @@ const PricingCards: React.FC<PricingCardsProps> = ({
 }) => {
   const { t, isVietnamese } = useTranslation();
 
+  // Ensure the selectedPricing is valid
+  useEffect(() => {
+    if (!selectedPricing && pricingOptions.length > 0) {
+      onChange(pricingOptions[0].id);
+    }
+  }, [selectedPricing, pricingOptions, onChange]);
+
+  const handleCardClick = (optionId: string) => {
+    onChange(optionId);
+  };
+
   return (
     <div className="space-y-6">
       <RadioGroup 
@@ -40,6 +51,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
             <label
               htmlFor={option.id}
               className="cursor-pointer block h-full"
+              onClick={() => handleCardClick(option.id)}
             >
               <Card 
                 className={`hover:border-primary transition-colors h-full ${
@@ -120,6 +132,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
             className={`border rounded-md p-3 flex flex-col items-center text-center cursor-pointer transition-colors ${
               selectedDuration === 1 ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
             }`}
+            onClick={() => onDurationChange(1)}
           >
             <RadioGroupItem value="1" id="duration-1" className="sr-only" />
             <span className="font-medium">{t('1 Month', '1 Tháng')}</span>
@@ -131,6 +144,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
             className={`border rounded-md p-3 flex flex-col items-center text-center cursor-pointer transition-colors ${
               selectedDuration === 3 ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
             }`}
+            onClick={() => onDurationChange(3)}
           >
             <RadioGroupItem value="3" id="duration-3" className="sr-only" />
             <span className="font-medium">{t('3 Months', '3 Tháng')}</span>
@@ -142,6 +156,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
             className={`border rounded-md p-3 flex flex-col items-center text-center cursor-pointer transition-colors ${
               selectedDuration === 6 ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
             }`}
+            onClick={() => onDurationChange(6)}
           >
             <RadioGroupItem value="6" id="duration-6" className="sr-only" />
             <span className="font-medium">{t('6 Months', '6 Tháng')}</span>
