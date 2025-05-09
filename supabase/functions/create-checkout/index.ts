@@ -17,9 +17,12 @@ serve(async (req) => {
   }
 
   try {
+    console.log("🔄 create-checkout function started");
+    
     // Get authorization header from request
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
+      console.error("❌ Missing authorization header");
       return new Response(JSON.stringify({ error: "Not authorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -47,24 +50,27 @@ serve(async (req) => {
     // Get the user from the auth header
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
+      console.error("❌ User authentication failed:", userError);
       return new Response(JSON.stringify({ error: "Unable to get user" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    console.log("✅ User authenticated:", user.id);
+
     // Parse the request body
     const { postType, postDetails, pricingOptions } = await req.json();
     
-    console.log("Post type:", postType);
-    console.log("Pricing tier:", pricingOptions?.selectedPricingTier);
+    console.log("📝 Post type:", postType);
+    console.log("📝 Pricing tier:", pricingOptions?.selectedPricingTier);
 
     // Get origin for success and cancel URLs
     const origin = req.headers.get("origin") || "http://localhost:3000";
 
     // Handle free tier immediately without creating a Stripe session
     if (pricingOptions?.selectedPricingTier === "free") {
-      console.log("Free tier selected, bypassing Stripe");
+      console.log("💰 Free tier selected, bypassing Stripe");
       
       // Free tier logic should be handled by create-free-post function
       return new Response(
@@ -80,8 +86,11 @@ serve(async (req) => {
     // Initialize Stripe
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
+      console.error("❌ Stripe key missing");
       throw new Error("STRIPE_SECRET_KEY is not configured");
     }
+    
+    console.log("🔑 Stripe key loaded successfully");
     
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
@@ -114,14 +123,14 @@ serve(async (req) => {
           .single();
           
         if (jobError) {
-          console.error("Temporary job creation error:", jobError);
+          console.error("❌ Temporary job creation error:", jobError);
         } else if (jobData) {
           temporaryJobId = jobData.id;
-          console.log("Created temporary job with ID:", temporaryJobId);
+          console.log("✅ Created temporary job with ID:", temporaryJobId);
         }
       }
     } catch (error) {
-      console.error("Error creating temporary job:", error);
+      console.error("❌ Error creating temporary job:", error);
     }
 
     // Calculate expiration date (30 days for standard, longer for other tiers)
@@ -139,7 +148,7 @@ serve(async (req) => {
       post_id: temporaryJobId || ""
     };
     
-    console.log("Creating checkout session with metadata:", metadata);
+    console.log("📋 Creating checkout session with metadata:", metadata);
 
     // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -162,7 +171,7 @@ serve(async (req) => {
       cancel_url: `${origin}/post-canceled`,
     });
     
-    console.log("Stripe session created:", session.id, "with URL:", session.url);
+    console.log("✅ Stripe session created:", session.id, "with URL:", session.url);
 
     // Save payment log entry
     const { error: paymentLogError } = await supabaseAdmin
@@ -179,7 +188,15 @@ serve(async (req) => {
       });
 
     if (paymentLogError) {
-      console.error("Error creating payment log:", paymentLogError);
+      console.error("❌ Error creating payment log:", paymentLogError);
+    }
+
+    if (!session.url) {
+      console.error("❌ No URL in session response:", session);
+      return new Response(JSON.stringify({ error: "No checkout URL provided by Stripe" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Return the checkout session URL
@@ -187,7 +204,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Stripe checkout error:", error);
+    console.error("❌ Stripe checkout error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

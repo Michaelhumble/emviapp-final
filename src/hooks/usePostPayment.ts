@@ -11,6 +11,7 @@ export const usePostPayment = () => {
 
   const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
     setIsLoading(true);
+    console.log("🔍 Payment initiation started for:", postType, "with options:", pricingOptions);
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
 
@@ -45,6 +46,7 @@ export const usePostPayment = () => {
       } 
       
       // For paid listings, create a Stripe checkout session
+      console.log("Creating Stripe checkout for paid listing...");
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           postType,
@@ -55,13 +57,22 @@ export const usePostPayment = () => {
 
       if (error) {
         console.error("Edge function error:", error);
+        toast.error(t("Payment service error", "Lỗi dịch vụ thanh toán"), {
+          description: error.message || t("Could not connect to payment provider", "Không thể kết nối với nhà cung cấp dịch vụ thanh toán")
+        });
         throw error;
       }
       
-      console.log("Checkout response:", data);
+      console.log("Checkout response received:", data);
+      
+      if (!data) {
+        console.error("No data returned from checkout");
+        toast.error(t("Invalid response from payment service", "Phản hồi không hợp lệ từ dịch vụ thanh toán"));
+        throw new Error('No data returned from payment service');
+      }
       
       if (data?.url) {
-        console.log("Redirecting to Stripe checkout URL:", data.url);
+        console.log("✅ Redirecting to Stripe checkout URL:", data.url);
         // Instead of returning the URL, directly redirect
         window.location.href = data.url;
         
@@ -72,11 +83,14 @@ export const usePostPayment = () => {
           data: data
         };
       } else {
-        console.error("No checkout URL received");
+        console.error("⛔ No checkout URL received in response:", data);
+        toast.error(t("Missing payment URL", "URL thanh toán bị thiếu"), {
+          description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
+        });
         throw new Error('No checkout URL received from Stripe');
       }
     } catch (error: any) {
-      console.error('Payment initiation error:', error);
+      console.error('❌ Payment initiation error:', error);
       toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
         description: error.message || t("Please try again.", "Vui lòng thử lại.")
       });
