@@ -1,4 +1,3 @@
-
 import { PricingOptions, UserPostingStats } from "./types";
 import { 
   getBasePrice, 
@@ -11,7 +10,7 @@ import {
 
 export const calculateBoothPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
   // Default to first post if stats not provided
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.boothPostCount === 0 : true);
+  const isFirstPost = options.isFirstPost ?? (stats ? stats?.boothPostCount === 0 : true);
   const isRenewal = options.isRenewal ?? false;
   
   // Base price depends on whether it's the first post
@@ -46,7 +45,7 @@ export const calculateBoothPostPrice = (options: PricingOptions, stats?: UserPos
 };
 
 export const getBoothPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.boothPostCount === 0 : true);
+  const isFirstPost = options.isFirstPost ?? (stats ? stats?.boothPostCount === 0 : true);
   const isRenewal = options.isRenewal ?? false;
   
   const summary: string[] = [];

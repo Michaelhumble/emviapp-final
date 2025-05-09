@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, AlertCircle, CalendarClock, RefreshCw } from 'lucide-react';
@@ -172,7 +171,7 @@ const PostSuccess = () => {
                       />
                     </div>
                     
-                    <Alert variant="info" className="bg-blue-50 text-blue-800 text-sm">
+                    <Alert variant="default" className="mb-4">
                       <AlertDescription>
                         You can cancel auto-renewal anytime from your dashboard.
                       </AlertDescription>
