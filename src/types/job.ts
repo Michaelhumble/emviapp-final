@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   role?: string;
@@ -62,7 +61,7 @@ export interface Job {
   imageUrl?: string;
   is_vietnamese_listing?: boolean;
   industry?: string;
-  post_type?: string; // Added missing field
+  post_type?: string; 
   
   // Updated pricing tier field to include 'gold'
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
