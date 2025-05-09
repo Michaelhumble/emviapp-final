@@ -7,10 +7,9 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { Link, useNavigate } from "react-router-dom";
 import { mainNavigation } from "./config/navigationItems";
 import LanguageToggle from "@/components/layout/LanguageToggle";
-import { UserType } from "@/context/auth/types";
 
 type MobileMenuProps = {
-  user: UserType | null;
+  user: any | null;
   handleSignOut: () => Promise<void>;
 };
 
