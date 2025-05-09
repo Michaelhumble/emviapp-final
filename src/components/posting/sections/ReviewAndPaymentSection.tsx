@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import PricingCards from '@/components/posting/PricingCards';
 import { jobPricingOptions, calculateFinalPrice } from '@/utils/posting/jobPricing';
@@ -18,6 +19,7 @@ export interface ReviewAndPaymentSectionProps {
   onNextStep: () => void;
   onPrevStep: () => void;
   jobData?: Partial<Job>; // Add this prop to fix the JobPost.tsx error
+  isFirstPost?: boolean; // Add this property to fix the type error in JobPost.tsx
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -27,7 +29,8 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   onUpdatePricing,
   onNextStep,
   onPrevStep,
-  jobData
+  jobData,
+  isFirstPost
 }) => {
   const { t } = useTranslation();
   const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
@@ -38,6 +41,8 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   useEffect(() => {
     if (selectedPricing === 'free') {
       setIsFreePlan(true);
+      // Automatically turn off auto-renew for the free plan
+      setAutoRenew(false);
     } else {
       setIsFreePlan(false);
     }
@@ -53,6 +58,11 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const handlePricingChange = (pricingId: string) => {
     setSelectedPricing(pricingId);
     onPricingChange(pricingId);
+    
+    // When switching to free plan, disable auto-renew
+    if (pricingId === 'free') {
+      setAutoRenew(false);
+    }
   };
   
   const handleDurationChange = (duration: number) => {
@@ -86,7 +96,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         onDurationChange={handleDurationChange}
       />
       
-      {selectedPricing !== 'free' && (
+      {selectedPricing !== 'free' ? (
         <div className="flex items-center justify-between">
           <Label htmlFor="auto-renew">{t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}</Label>
           <Switch 
@@ -94,6 +104,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
             checked={autoRenew} 
             onCheckedChange={handleAutoRenewChange} 
           />
+        </div>
+      ) : (
+        <div className="text-sm text-gray-500 italic">
+          {t('This plan does not renew. First-time post only.', 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.')}
         </div>
       )}
       
@@ -111,6 +125,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       <PricingDisplay 
         basePrice={basePrice}
         duration={selectedDuration}
+        pricingId={selectedPricing}
         autoRenew={autoRenew}
         originalPrice={originalPrice}
         finalPrice={finalPrice}

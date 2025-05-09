@@ -8,15 +8,23 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 interface PricingDisplayProps {
   basePrice: number;
   duration: number;
-  pricingId: string;
+  pricingId?: string;
   autoRenew?: boolean;
+  // Add the following properties to fix the type error
+  originalPrice?: number;
+  finalPrice?: number;
+  discountPercentage?: number;
 }
 
 const PricingDisplay: React.FC<PricingDisplayProps> = ({ 
   basePrice, 
   duration, 
-  pricingId,
-  autoRenew = false
+  pricingId = '',
+  autoRenew = false,
+  // Handle the new props with defaults
+  originalPrice: providedOriginalPrice,
+  finalPrice: providedFinalPrice,
+  discountPercentage: providedDiscountPercentage
 }) => {
   const { t } = useTranslation();
   
@@ -32,13 +40,14 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
     );
   }
   
-  // Calculate price with discount
-  const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
-    basePrice, 
-    duration,
-    pricingId,
-    autoRenew
-  );
+  // Calculate price with discount if not provided
+  const { 
+    originalPrice = providedOriginalPrice, 
+    finalPrice = providedFinalPrice, 
+    discountPercentage = providedDiscountPercentage 
+  } = providedOriginalPrice !== undefined ? 
+    { originalPrice: providedOriginalPrice, finalPrice: providedFinalPrice, discountPercentage: providedDiscountPercentage } : 
+    calculateFinalPrice(basePrice, duration, pricingId, autoRenew);
   
   // For diamond plan, show special messaging
   if (pricingId === 'diamond') {

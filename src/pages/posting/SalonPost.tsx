@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -41,7 +42,7 @@ const SalonPost = () => {
       phone: '',
       email: ''
     },
-    gallery: [] // Now this is valid since we added it to the Salon interface
+    gallery: [] // This is now valid since we added it to the Salon interface
   });
   
   // Pricing options state
@@ -151,6 +152,7 @@ const SalonPost = () => {
             onUpdatePricing={handleUpdatePricing}
             onNextStep={nextStep}
             onPrevStep={prevStep}
+            isFirstPost={pricingOptions.isFirstPost}
           />
         )}
       </PostWizardLayout>
