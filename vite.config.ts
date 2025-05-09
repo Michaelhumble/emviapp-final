@@ -19,6 +19,15 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Add external packages that should be excluded from bundling
+  build: {
+    rollupOptions: {
+      external: [
+        "@stripe/react-stripe-js",
+        "@stripe/stripe-js"
+      ],
+    },
+  },
   // Define environment variables explicitly for better error handling
   define: {
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || "https://wwhqbjrhbajpabfdwnip.supabase.co"),

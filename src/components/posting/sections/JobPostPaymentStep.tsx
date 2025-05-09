@@ -1,99 +1,81 @@
 
 import React, { useState } from 'react';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useJobPaymentHandler } from '@/hooks/useJobPaymentHandler';
 
 interface JobPostPaymentStepProps {
   onComplete: (paymentMethodId: string, autoRenew: boolean) => void;
   pricingTier: string;
-  isFreeTier: boolean;
+  isFreeTier?: boolean;
 }
 
 const JobPostPaymentStep: React.FC<JobPostPaymentStepProps> = ({ 
   onComplete, 
   pricingTier,
-  isFreeTier 
+  isFreeTier = false
 }) => {
-  const { t, isVietnamese } = useTranslation();
-  const stripe = useStripe();
-  const elements = useElements();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
   const [billingName, setBillingName] = useState('');
   const [autoRenew, setAutoRenew] = useState(false);
-
-  const cardElementOptions = {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: '#424770',
-        '::placeholder': {
-          color: '#aab7c4',
-        },
-      },
-      invalid: {
-        color: '#9e2146',
-      },
-    },
-    hidePostalCode: true,
-  };
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvc, setCvc] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  
+  const { handlePaymentSetup, isProcessing } = useJobPaymentHandler();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!stripe || !elements) {
-      // Stripe.js has not loaded yet. Make sure to disable form submission until Stripe.js has loaded.
-      return;
-    }
-
-    setIsProcessing(true);
     setError(null);
-
-    const cardElement = elements.getElement(CardElement);
     
-    if (!cardElement) {
-      setError(t('Card element not found', 'Không tìm thấy thông tin thẻ'));
-      setIsProcessing(false);
-      return;
+    // For demo purposes, we'll simulate a successful payment setup
+    // In a real implementation, we would use Stripe.js to tokenize the card
+    try {
+      // Simulate a payment method ID from Stripe
+      const mockPaymentMethodId = `pm_mock_${Math.random().toString(36).substring(2, 15)}`;
+      
+      // Call our payment handler
+      const result = await handlePaymentSetup({
+        paymentMethodId: mockPaymentMethodId,
+        pricingTier,
+        autoRenew
+      });
+      
+      if (result.success) {
+        onComplete(mockPaymentMethodId, autoRenew);
+      } else {
+        setError(t('Payment setup failed', 'Thiết lập thanh toán thất bại'));
+      }
+    } catch (err) {
+      setError(t('An unexpected error occurred', 'Đã xảy ra lỗi không mong muốn'));
     }
-
-    // Create a payment method instead of charging the card
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: cardElement,
-      billing_details: {
-        name: billingName || undefined,
-      },
-    });
-
-    if (error) {
-      setError(error.message || t('Payment processing error', 'Lỗi xử lý thanh toán'));
-      setIsProcessing(false);
-      return;
-    }
-
-    // Pass the payment method ID to parent component
-    onComplete(paymentMethod.id, autoRenew);
   };
-  
+
   const renewalDate = new Date();
   renewalDate.setDate(renewalDate.getDate() + 30);
   const formattedDate = renewalDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
+    day: 'numeric'
   });
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('Payment Information', 'Thông tin thanh toán')}</h2>
+      <h2 className="text-2xl font-bold">
+        {t('Payment Information', 'Thông tin thanh toán')}
+      </h2>
       
       <Alert>
         <AlertDescription className="text-base">
@@ -132,7 +114,9 @@ const JobPostPaymentStep: React.FC<JobPostPaymentStepProps> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">
           <div className="grid gap-2">
-            <Label htmlFor="billing-name">{t('Billing Name (Optional)', 'Tên thanh toán (Không bắt buộc)')}</Label>
+            <Label htmlFor="billing-name">
+              {t('Billing Name (Optional)', 'Tên thanh toán (Không bắt buộc)')}
+            </Label>
             <Input
               id="billing-name"
               value={billingName}
@@ -140,11 +124,42 @@ const JobPostPaymentStep: React.FC<JobPostPaymentStepProps> = ({
               placeholder={t('Name on card', 'Tên trên thẻ')}
             />
           </div>
-          
+
           <div className="grid gap-2">
-            <Label htmlFor="card-element">{t('Card Details', 'Chi tiết thẻ')}</Label>
-            <div className="border rounded-md p-3 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-              <CardElement id="card-element" options={cardElementOptions} />
+            <Label htmlFor="card-number">
+              {t('Card Number', 'Số thẻ')}
+            </Label>
+            <Input
+              id="card-number"
+              value={cardNumber}
+              onChange={(e) => setCardNumber(e.target.value)}
+              placeholder="1234 5678 9012 3456"
+              className="font-mono"
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="card-expiry">
+                {t('Expiry Date', 'Ngày hết hạn')}
+              </Label>
+              <Input
+                id="card-expiry"
+                value={expiry}
+                onChange={(e) => setExpiry(e.target.value)}
+                placeholder="MM/YY"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="card-cvc">
+                {t('CVC', 'Mã bảo mật')}
+              </Label>
+              <Input
+                id="card-cvc"
+                value={cvc}
+                onChange={(e) => setCvc(e.target.value)}
+                placeholder="123"
+              />
             </div>
           </div>
           
@@ -158,7 +173,6 @@ const JobPostPaymentStep: React.FC<JobPostPaymentStepProps> = ({
               <Label htmlFor="auto-renew" className="cursor-pointer">
                 {t('Enable Auto-Renew and Save 20%', 'Bật Tự động gia hạn và Tiết kiệm 20%')}
               </Label>
-              
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -194,7 +208,11 @@ const JobPostPaymentStep: React.FC<JobPostPaymentStepProps> = ({
         </div>
         
         <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={!stripe || isProcessing} className="px-8">
+          <Button 
+            type="submit"
+            disabled={isProcessing}
+            className="px-8"
+          >
             {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

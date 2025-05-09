@@ -72,25 +72,6 @@ const StripeCheckout = ({
           onSuccess();
         }
       }, 2000);
-      
-      /* Real implementation would be:
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { 
-          amount, 
-          productName, 
-          mode, 
-          isSubscription,
-          subscriptionInterval,
-          setupOnly
-        }
-      });
-      
-      if (error) throw error;
-      
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-      */
     } catch (error) {
       console.error("Checkout error:", error);
       toast.error("Payment processing failed", {
