@@ -1,370 +1,328 @@
 
-import React, { useState } from 'react';
-import { Mail, Bulb, Bug, Brain, Star, Heart, User } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Layout from '@/components/layout/Layout';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from '@/hooks/use-toast';
+import React, { useState } from "react";
+import { Layout } from "@/components/layout/Layout";
+import { Lightbulb, Bug, Brain, Star, Heart, HelpCircle, SendHorizonal } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
 
-type MessageCategory = 'feature' | 'bug' | 'investor' | 'review' | 'message' | 'other';
+// Message category types
+type MessageCategory = 
+  | "feature"
+  | "bug"
+  | "investor"
+  | "review"
+  | "general"
+  | "other";
 
-interface ContactFormValues {
-  name: string;
-  email: string;
-  message: string;
-  category: MessageCategory;
-  tone: string;
-  featureOnHomepage: boolean;
-}
+// Schema for form validation
+const contactFormSchema = z.object({
+  name: z.string().optional(),
+  email: z.string().email().optional().or(z.literal('')),
+  category: z.string().min(1, { message: "Please select a category" }),
+  message: z.string().min(3, { message: "Message must be at least 3 characters" }),
+  tone: z.string().optional(),
+  featured: z.boolean().default(false),
+});
+
+// Form values type
+type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<MessageCategory>('message');
+  const [selectedCategory, setSelectedCategory] = useState<MessageCategory | null>(null);
   
+  // Initialize the form
   const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      message: '',
-      category: 'message',
-      tone: 'casual',
-      featureOnHomepage: false,
-    }
+      name: "",
+      email: "",
+      category: "",
+      message: "",
+      tone: "casual",
+      featured: false,
+    },
   });
 
-  const handleCategorySelect = (category: MessageCategory) => {
-    setSelectedCategory(category);
-    form.setValue('category', category);
-  };
-  
-  const onSubmit = async (data: ContactFormValues) => {
-    setIsSubmitting(true);
-    
-    // Auto-tag keywords for AI sorting (would be implemented in backend)
-    const keywords = extractKeywords(data.message);
-    console.log('Extracted keywords:', keywords);
-    
-    try {
-      // This would be an API call in production
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setShowThankYou(true);
-      form.reset();
-    } catch (error) {
-      toast({
-        title: t("Something went wrong", "Có lỗi xảy ra"),
-        description: t("Please try again later", "Vui lòng thử lại sau"),
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  // Simple keyword extraction - would be more sophisticated in production
-  const extractKeywords = (text: string) => {
-    const commonKeywords = ['feature', 'idea', 'bug', 'invest', 'review', 'suggestion', 'improve'];
-    return commonKeywords.filter(keyword => text.toLowerCase().includes(keyword));
-  };
-
+  // Get the category icon based on selection
   const getCategoryIcon = (category: MessageCategory) => {
     switch (category) {
-      case 'feature': return <Bulb size={20} />;
-      case 'bug': return <Bug size={20} />;
-      case 'investor': return <Brain size={20} />;
-      case 'review': return <Star size={20} />;
-      case 'message': return <Heart size={20} />;
-      case 'other': return <Mail size={20} />;
-      default: return <Mail size={20} />;
+      case "feature":
+        return <Lightbulb className="h-5 w-5" />;
+      case "bug":
+        return <Bug className="h-5 w-5" />;
+      case "investor":
+        return <Brain className="h-5 w-5" />;
+      case "review":
+        return <Star className="h-5 w-5" />;
+      case "general":
+        return <Heart className="h-5 w-5" />;
+      case "other":
+        return <HelpCircle className="h-5 w-5" />;
+      default:
+        return null;
     }
   };
 
-  const isEmailRequired = selectedCategory === 'investor';
+  // Handle form submission
+  const onSubmit = (values: ContactFormValues) => {
+    setIsSubmitting(true);
+    
+    // Simulate sending the message to the backend
+    setTimeout(() => {
+      console.log("Form submitted:", values);
+      
+      // Show thank you dialog
+      setShowThankYou(true);
+      setIsSubmitting(false);
+      
+      // Reset the form
+      form.reset();
+      setSelectedCategory(null);
+    }, 1500);
+  };
+
+  // Select a category
+  const handleCategorySelect = (category: MessageCategory) => {
+    setSelectedCategory(category);
+    form.setValue("category", category);
+  };
+
+  // Close the thank you dialog
+  const handleCloseThankYou = () => {
+    setShowThankYou(false);
+  };
 
   return (
     <Layout>
-      <div className="relative py-12 md:py-16 lg:py-24 bg-gradient-to-b from-white to-gray-50">
-        <div className="container max-w-4xl mx-auto px-4">
-          {/* Decorative elements */}
-          <div className="absolute top-24 left-10 w-20 h-20 bg-purple-100 rounded-full opacity-20 -z-10" />
-          <div className="absolute bottom-24 right-10 w-32 h-32 bg-pink-100 rounded-full opacity-30 -z-10" />
-          
-          {/* Header */}
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h1 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 leading-tight">
-              {t("Your Voice Shapes Our Future", "Tiếng Nói Của Bạn Định Hình Tương Lai Chúng Ta")}
-            </h1>
-            <p className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
+      <div className="container mx-auto px-4 py-16 md:py-24 max-w-4xl">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-500 bg-clip-text text-transparent mb-4">
+            {t("We Read Everything. This Is Your Moment.", "Chúng Tôi Đọc Tất Cả. Đây Là Khoảnh Khắc Của Bạn.")}
+          </h1>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-lg text-gray-700 mb-6">
               {t(
-                "Every message goes straight to our founding team. We're building EmviApp with you—and for you. Your thoughts matter deeply to us.",
-                "Mỗi tin nhắn đều được gửi trực tiếp đến đội ngũ sáng lập. Chúng tôi đang xây dựng EmviApp với bạn và cho bạn. Ý kiến của bạn rất quan trọng đối với chúng tôi."
+                "Every message goes straight to our founding team. We're building EmviApp with you—your voice matters, whether you're an artist, salon owner, customer, or potential partner.",
+                "Mỗi tin nhắn sẽ được gửi trực tiếp đến đội ngũ sáng lập của chúng tôi. Chúng tôi đang xây dựng EmviApp cùng với bạn—tiếng nói của bạn rất quan trọng, dù bạn là một nghệ sĩ, chủ salon, khách hàng hay đối tác tiềm năng."
               )}
             </p>
-          </motion.div>
-          
-          <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 relative overflow-hidden">
-            {/* Subtle gradient overlay */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-400 via-pink-300 to-purple-400"></div>
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                {/* Category selection */}
-                <div className="space-y-4">
-                  <h2 className="text-xl font-medium text-gray-800">
-                    {t("What would you like to share?", "Bạn muốn chia sẻ điều gì?")}
-                  </h2>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {[
-                      { id: 'feature', label: t("I have a feature idea", "Tôi có ý tưởng tính năng"), icon: <Bulb size={20} /> },
-                      { id: 'bug', label: t("I want to report a bug", "Tôi muốn báo lỗi"), icon: <Bug size={20} /> },
-                      { id: 'investor', label: t("I'm an investor", "Tôi là nhà đầu tư"), icon: <Brain size={20} /> },
-                      { id: 'review', label: t("I want to leave a review", "Tôi muốn để lại đánh giá"), icon: <Star size={20} /> },
-                      { id: 'message', label: t("I just want to say something", "Tôi chỉ muốn nói điều gì đó"), icon: <Heart size={20} /> },
-                      { id: 'other', label: t("Other...", "Khác..."), icon: <Mail size={20} /> },
-                    ].map((category) => (
-                      <button
-                        key={category.id}
-                        type="button"
-                        onClick={() => handleCategorySelect(category.id as MessageCategory)}
-                        className={`flex items-center justify-center gap-2 p-3 rounded-lg border border-gray-200 text-sm font-medium transition-all hover:border-purple-400 hover:bg-purple-50 ${
-                          selectedCategory === category.id 
-                            ? 'bg-purple-50 border-purple-400 text-purple-700' 
-                            : 'bg-white text-gray-600'
-                        }`}
-                      >
-                        {category.icon}
-                        <span>{category.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          </div>
+        </div>
 
-                {/* Contact information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center space-x-2 mb-1.5">
-                          <User size={16} className="text-gray-400" />
-                          <Label htmlFor="name" className="text-gray-700">
-                            {t("Your name", "Tên của bạn")} {t("(optional)", "(tùy chọn)")}
-                          </Label>
-                        </div>
-                        <FormControl>
-                          <Input
-                            id="name"
-                            placeholder={t("How should we call you?", "Chúng tôi nên gọi bạn thế nào?")}
-                            {...field}
-                            className="bg-gray-50 border-gray-200 focus:bg-white"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center space-x-2 mb-1.5">
-                          <Mail size={16} className="text-gray-400" />
-                          <Label htmlFor="email" className="text-gray-700">
-                            {t("Your email", "Email của bạn")} 
-                            {isEmailRequired ? '' : t(" (optional)", " (tùy chọn)")}
-                          </Label>
-                        </div>
-                        <FormControl>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder={t("For us to get back to you", "Để chúng tôi có thể liên hệ lại")}
-                            required={isEmailRequired}
-                            {...field}
-                            className="bg-gray-50 border-gray-200 focus:bg-white"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+        {/* Contact Form */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              {t("What's on your mind?", "Bạn đang nghĩ gì?")}
+            </h2>
+            <p className="text-gray-600">
+              {t(
+                "Choose a category that best describes your message.",
+                "Chọn danh mục mô tả tốt nhất tin nhắn của bạn."
+              )}
+            </p>
+          </div>
 
-                {/* Message */}
+          {/* Category Selection */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-10">
+            {[
+              { id: "feature", label: t("I have a feature idea 💡", "Tôi có một ý tưởng tính năng 💡"), icon: <Lightbulb className="h-5 w-5" /> },
+              { id: "bug", label: t("I want to report a bug 🐞", "Tôi muốn báo cáo lỗi 🐞"), icon: <Bug className="h-5 w-5" /> },
+              { id: "investor", label: t("I'm an investor 🧠", "Tôi là nhà đầu tư 🧠"), icon: <Brain className="h-5 w-5" /> },
+              { id: "review", label: t("I want to leave a review ⭐️", "Tôi muốn để lại đánh giá ⭐️"), icon: <Star className="h-5 w-5" /> },
+              { id: "general", label: t("I just want to say something ❤️", "Tôi chỉ muốn nói điều gì đó ❤️"), icon: <Heart className="h-5 w-5" /> },
+              { id: "other", label: t("Other...", "Khác..."), icon: <HelpCircle className="h-5 w-5" /> },
+            ].map((category) => (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? "default" : "outline"}
+                className={`flex flex-col items-center justify-center h-24 gap-2 text-sm transition-all ${
+                  selectedCategory === category.id 
+                    ? "border-2 border-purple-500 bg-purple-50 text-purple-700" 
+                    : "hover:bg-purple-50 hover:border-purple-300"
+                }`}
+                onClick={() => handleCategorySelect(category.id as MessageCategory)}
+              >
+                <div className={`p-2 rounded-full ${selectedCategory === category.id ? "bg-purple-100" : "bg-gray-100"}`}>
+                  {category.icon}
+                </div>
+                <span className="text-center">{category.label}</span>
+              </Button>
+            ))}
+          </div>
+
+          {/* Contact Form */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
-                  name="message"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center space-x-2 mb-1.5">
-                        {getCategoryIcon(selectedCategory)}
-                        <Label htmlFor="message" className="text-gray-700">
-                          {t("Your message", "Tin nhắn của bạn")}
-                        </Label>
-                      </div>
+                      <FormLabel>{t("Name (optional)", "Tên (không bắt buộc)")}</FormLabel>
                       <FormControl>
-                        <Textarea
-                          id="message"
-                          required
-                          placeholder={t("What's on your mind? We're here to listen.", "Bạn đang nghĩ gì? Chúng tôi đang lắng nghe.")}
-                          className="min-h-[150px] bg-gray-50 border-gray-200 focus:bg-white"
-                          {...field}
-                        />
+                        <Input placeholder={t("Your name", "Tên của bạn")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Message tone */}
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="tone"
-                    render={({ field }) => (
-                      <FormItem className="space-y-1">
-                        <Label className="text-gray-700">
-                          {t("How are you feeling?", "Bạn đang cảm thấy thế nào?")}
-                        </Label>
-                        <FormControl>
-                          <RadioGroup 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                            className="flex flex-wrap gap-2 mt-2"
-                          >
-                            {[
-                              { value: 'excited', label: '😄 ' + t("Excited", "Phấn khích") },
-                              { value: 'curious', label: '🤔 ' + t("Curious", "Tò mò") },
-                              { value: 'casual', label: '😊 ' + t("Casual", "Bình thường") },
-                              { value: 'serious', label: '🧐 ' + t("Serious", "Nghiêm túc") },
-                              { value: 'concerned', label: '😟 ' + t("Concerned", "Lo lắng") },
-                            ].map((tone) => (
-                              <div key={tone.value} className="flex items-center">
-                                <RadioGroupItem
-                                  value={tone.value}
-                                  id={`tone-${tone.value}`}
-                                  className="peer sr-only"
-                                />
-                                <Label
-                                  htmlFor={`tone-${tone.value}`}
-                                  className="flex px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm font-medium peer-data-[state=checked]:bg-purple-50 peer-data-[state=checked]:border-purple-300 peer-data-[state=checked]:text-purple-700 cursor-pointer transition-all duration-200 hover:bg-gray-50"
-                                >
-                                  {tone.label}
-                                </Label>
-                              </div>
-                            ))}
-                          </RadioGroup>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Feature on homepage checkbox */}
                 <FormField
                   control={form.control}
-                  name="featureOnHomepage"
+                  name="email"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormItem>
+                      <FormLabel>
+                        {selectedCategory === "investor" 
+                          ? t("Email (required)", "Email (bắt buộc)") 
+                          : t("Email (optional)", "Email (không bắt buộc)")}
+                      </FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          id="featureOnHomepage"
+                        <Input 
+                          placeholder={t("your@email.com", "email@của.bạn")} 
+                          type="email" 
+                          {...field} 
                         />
                       </FormControl>
-                      <Label
-                        htmlFor="featureOnHomepage"
-                        className="text-sm font-normal text-gray-600"
-                      >
-                        {t(
-                          "I'd like my message to be considered for featuring on the homepage",
-                          "Tôi muốn tin nhắn của mình được xem xét để hiển thị trên trang chủ"
-                        )}
-                      </Label>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
-                
-                {/* Submit button */}
-                <div className="pt-2">
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting}
-                    className="w-full md:w-auto px-8 py-6 h-auto bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-base"
-                  >
-                    {isSubmitting ? (
-                      <span>{t("Sending...", "Đang gửi...")}</span>
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        {t("Send Message", "Gửi Tin Nhắn")} 
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </span>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-          
-          {/* Additional info */}
-          <div className="mt-12 text-center">
-            <p className="text-gray-500 text-sm">
-              {t(
-                "Questions about how we handle your information? See our Privacy Policy.",
-                "Câu hỏi về cách chúng tôi xử lý thông tin của bạn? Xem Chính sách Quyền riêng tư của chúng tôi."
-              )}
-            </p>
-          </div>
-        </div>
-
-        {/* Thank you dialog */}
-        <Dialog open={showThankYou} onOpenChange={setShowThankYou}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="text-center text-2xl font-playfair">
-                {t("Thank You", "Cảm Ơn Bạn")}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              <div className="flex justify-center">
-                <div className="rounded-full bg-purple-100 p-3">
-                  <Heart className="h-6 w-6 text-purple-500" />
-                </div>
               </div>
-              <p className="text-center px-6">
+
+              <FormField
+                control={form.control}
+                name="tone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("Message tone", "Tông giọng")}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("Select tone", "Chọn tông giọng")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="casual">{t("Casual", "Thân mật")}</SelectItem>
+                        <SelectItem value="excited">{t("Excited", "Phấn khích")}</SelectItem>
+                        <SelectItem value="serious">{t("Serious", "Nghiêm túc")}</SelectItem>
+                        <SelectItem value="urgent">{t("Urgent", "Khẩn cấp")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("Your message", "Tin nhắn của bạn")}</FormLabel>
+                    <FormControl>
+                      <textarea
+                        className="flex h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder={t("Tell us what you're thinking...", "Hãy cho chúng tôi biết bạn đang nghĩ gì...")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="featured"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 mt-1"
+                        checked={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        {t("I want my review or idea featured on the homepage!", "Tôi muốn đánh giá hoặc ý tưởng của mình được hiển thị trên trang chủ!")}
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <Button 
+                type="submit" 
+                className="w-full md:w-auto h-12 px-10 text-base"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    <span>{t("Sending...", "Đang gửi...")}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <SendHorizonal className="h-5 w-5" />
+                    <span>{t("Send Message", "Gửi Tin Nhắn")}</span>
+                  </div>
+                )}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </div>
+
+      {/* Thank You Dialog */}
+      <Dialog open={showThankYou} onOpenChange={handleCloseThankYou}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="text-center p-4">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
+                <Heart className="h-6 w-6 text-green-600" />
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                {t("Thank you for reaching out!", "Cảm ơn bạn đã liên hệ!")}
+              </h2>
+              <p className="text-gray-600">
                 {t(
                   "We might not reply to every message, but we feel every one. Your voice is now part of EmviApp's story.",
-                  "Chúng tôi có thể không trả lời mọi tin nhắn, nhưng chúng tôi cảm nhận được tất cả. Tiếng nói của bạn giờ đây đã trở thành một phần trong câu chuyện của EmviApp."
+                  "Chúng tôi có thể không trả lời mọi tin nhắn, nhưng chúng tôi cảm nhận được tất cả. Tiếng nói của bạn giờ đây là một phần trong câu chuyện của EmviApp."
                 )}
               </p>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <Button onClick={handleCloseThankYou}>
+              {t("Close", "Đóng")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
