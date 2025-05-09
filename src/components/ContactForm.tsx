@@ -1,213 +1,270 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Toggle } from '@/components/ui/toggle';
-import { useToast } from "@/components/ui/use-toast";
-import { Lightbulb, Bug, Brain, Star, Volume2, HelpCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
+import { 
+  Lightbulb, Bug, Star, Brain, MessageSquare, HelpCircle, Mail, ArrowRight 
+} from 'lucide-react';
 
-interface CategoryOption {
-  id: string;
-  icon: React.ReactNode;
-  label: string;
-}
+// Define contact form schema
+const formSchema = z.object({
+  name: z.string().min(2, { message: 'Please enter your name' }),
+  email: z.string().email({ message: 'Please enter a valid email' }),
+  category: z.string().min(1, { message: 'Please select a category' }),
+  message: z.string().min(10, { message: 'Message must be at least 10 characters' }),
+});
 
-const categories: CategoryOption[] = [
-  { id: 'feature', icon: <Lightbulb className="h-5 w-5" />, label: "I have a feature idea" },
-  { id: 'bug', icon: <Bug className="h-5 w-5" />, label: "I want to report a bug" },
-  { id: 'investor', icon: <Brain className="h-5 w-5" />, label: "I'm an investor" },
-  { id: 'review', icon: <Star className="h-5 w-5" />, label: "I want to leave a review" },
-  { id: 'feedback', icon: <Volume2 className="h-5 w-5" />, label: "I just want to say something" },
-  { id: 'other', icon: <HelpCircle className="h-5 w-5" />, label: "Other..." },
-];
+type FormValues = z.infer<typeof formSchema>;
 
 const ContactForm = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
-  const [message, setMessage] = useState('');
-  const [allowFollowUp, setAllowFollowUp] = useState(true);
-  const [stayAnonymous, setStayAnonymous] = useState(false);
-  const { toast } = useToast();
-
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Initialize form with react-hook-form
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      category: '',
+      message: '',
+    },
+  });
+  
+  // Handle form submission
+  const onSubmit = async (values: FormValues) => {
+    setIsSubmitting(true);
+    try {
+      // Simulate API call (replace with your actual submission logic)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Form submitted:', values);
+      toast.success('Thank you for your message! We'll get back to you soon.', {
+        duration: 5000,
+      });
+      form.reset();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const detectLanguage = (text: string) => {
-    // Simple Vietnamese detection based on diacritics
-    const vietnamesePattern = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
-    return vietnamesePattern.test(text) ? 'vi' : 'en';
-  };
-
-  const isVietnamese = detectLanguage(message) === 'vi';
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Form validation
-    if (!selectedCategory) {
-      toast({
-        title: "Please select a category",
-        description: "Let us know what type of message you're sending.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!message.trim()) {
-      toast({
-        title: "Message is required",
-        description: "Please tell us what's on your mind.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // TODO: In future phase, integrate with Supabase to store submissions
-    console.log({
-      category: selectedCategory,
-      name: stayAnonymous ? 'Anonymous' : name,
-      contact: stayAnonymous ? '' : contact,
-      message,
-      allowFollowUp,
-    });
-
-    toast({
-      title: "Message received!",
-      description: "Thank you for sharing your thoughts with us. We'll review your message soon.",
-    });
-
-    // Reset form
-    setSelectedCategory(null);
-    setName('');
-    setContact('');
-    setMessage('');
-    setAllowFollowUp(true);
-    setStayAnonymous(false);
+  const categoryIcons: Record<string, React.ReactNode> = {
+    'feature': <Lightbulb className="w-5 h-5" />,
+    'bug': <Bug className="w-5 h-5" />,
+    'review': <Star className="w-5 h-5" />,
+    'investor': <Brain className="w-5 h-5" />,
+    'general': <MessageSquare className="w-5 h-5" />,
+    'other': <HelpCircle className="w-5 h-5" />,
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-md">
-      <CardContent className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Categories Section */}
-          {!selectedCategory && (
-            <div className="space-y-4">
-              <h2 className="text-lg font-medium">Select a category:</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => handleCategorySelect(category.id)}
-                    className="flex items-center gap-2 px-4 py-3 rounded-full border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
+    <div className="w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-medium">Name</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Your name" 
+                      className="border-gray-300 focus:border-primary" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-medium">Email</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="your.email@example.com" 
+                      type="email"
+                      className="border-gray-300 focus:border-primary" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium">🔮 Choose a reason</FormLabel>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md flex flex-col ${
+                      field.value === 'feature' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'
+                    }`}
+                    onClick={() => form.setValue('category', 'feature')}
                   >
-                    <span className="text-xl">{category.icon}</span>
-                    <span>{category.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="bg-blue-100 p-2 rounded-md text-blue-600">
+                        <Lightbulb className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-medium">I Have a Feature Idea</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Your vision matters. What should EmviApp do next?</p>
+                  </div>
 
-          {/* Form Fields */}
-          {selectedCategory && (
-            <>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory(null)}
-                  className="text-sm text-muted-foreground hover:text-primary"
-                >
-                  ← Change category
-                </button>
-                <span className="text-sm font-medium">
-                  {categories.find(c => c.id === selectedCategory)?.label}
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md flex flex-col ${
+                      field.value === 'bug' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'
+                    }`}
+                    onClick={() => form.setValue('category', 'bug')}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="bg-red-100 p-2 rounded-md text-red-600">
+                        <Bug className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-medium">I Found a Bug</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Help us squash it. We'll fix it faster than you expect.</p>
+                  </div>
+
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md flex flex-col ${
+                      field.value === 'review' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'
+                    }`}
+                    onClick={() => form.setValue('category', 'review')}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="bg-yellow-100 p-2 rounded-md text-yellow-600">
+                        <Star className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-medium">I Want to Leave a Review</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Love what we're building? Say it loud. Inspire others.</p>
+                  </div>
+
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md flex flex-col ${
+                      field.value === 'investor' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'
+                    }`}
+                    onClick={() => form.setValue('category', 'investor')}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="bg-purple-100 p-2 rounded-md text-purple-600">
+                        <Brain className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-medium">I'm an Investor</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Let's talk scale, equity, and revolutionizing the beauty industry.</p>
+                  </div>
+
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md flex flex-col ${
+                      field.value === 'general' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'
+                    }`}
+                    onClick={() => form.setValue('category', 'general')}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="bg-green-100 p-2 rounded-md text-green-600">
+                        <MessageSquare className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-medium">I Just Want to Say Something</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">A story. A thank-you. A whisper. We'll hear it.</p>
+                  </div>
+
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md flex flex-col ${
+                      field.value === 'other' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'
+                    }`}
+                    onClick={() => form.setValue('category', 'other')}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="bg-gray-100 p-2 rounded-md text-gray-600">
+                        <HelpCircle className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-medium">Other...</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Didn't see your reason? Doesn't matter. If it's on your heart, it belongs here.</p>
+                  </div>
+                </div>
+                <input 
+                  type="hidden" 
+                  {...field} 
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium">Your Message</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Share your thoughts, ideas, or feedback with us..." 
+                    className="min-h-[150px] border-gray-300 focus:border-primary" 
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="pt-2">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white transition-all"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Sending...
                 </span>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <Input
-                    placeholder="Your name..."
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={stayAnonymous}
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <Input
-                    placeholder="Phone or Zalo..."
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                    disabled={stayAnonymous}
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <Textarea
-                    placeholder="Type your message..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="w-full min-h-[120px]"
-                    required
-                  />
-                </div>
-
-                {isVietnamese && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-2">We detected Vietnamese. Would you like to provide an English translation?</div>
-                    <Textarea
-                      placeholder="English translation (optional)..."
-                      className="w-full min-h-[80px]"
-                    />
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex items-center gap-2">
-                    <Toggle
-                      pressed={allowFollowUp}
-                      onPressedChange={setAllowFollowUp}
-                      disabled={stayAnonymous}
-                    />
-                    <label className="text-sm cursor-pointer select-none">
-                      I'm open to follow-up
-                    </label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Toggle
-                      pressed={stayAnonymous}
-                      onPressedChange={(value) => {
-                        setStayAnonymous(value);
-                        if (value) setAllowFollowUp(false);
-                      }}
-                    />
-                    <label className="text-sm cursor-pointer select-none">
-                      I want to stay anonymous
-                    </label>
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-primary hover:bg-primary/90"
-                >
-                  Send Message ✉️
-                </Button>
-              </div>
-            </>
-          )}
+              ) : (
+                <span className="flex items-center">
+                  <Mail className="mr-2 h-4 w-4" />
+                  Send Message
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </span>
+              )}
+            </Button>
+          </div>
         </form>
-      </CardContent>
-    </Card>
+      </Form>
+    </div>
   );
 };
 
