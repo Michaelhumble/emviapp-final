@@ -46,7 +46,7 @@ const ReviewAndPaymentSection = ({
     : undefined;
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto px-4">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-semibold mb-3">
           Select Your Listing Package
@@ -57,15 +57,17 @@ const ReviewAndPaymentSection = ({
       </div>
       
       {/* Pricing Cards */}
-      <PricingCards 
-        pricingOptions={jobPricingOptions}
-        selectedPricing={selectedPricing}
-        onChange={handlePricingChange}
-      />
+      <div className="overflow-hidden">
+        <PricingCards 
+          pricingOptions={jobPricingOptions}
+          selectedPricing={selectedPricing}
+          onChange={handlePricingChange}
+        />
+      </div>
       
       {/* Summary Card */}
       <div className="mt-12">
-        <Card className="border-primary/20">
+        <Card className="border-primary/20 max-w-xl mx-auto">
           <CardContent className="pt-6">
             <PricingDisplay 
               postType={postType}

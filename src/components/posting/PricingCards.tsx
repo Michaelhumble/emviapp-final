@@ -18,10 +18,10 @@ const PricingCards = ({ pricingOptions, selectedPricing, onChange }: PricingCard
       <RadioGroup 
         value={selectedPricing} 
         onValueChange={onChange}
-        className="grid grid-cols-1 md:grid-cols-5 gap-3 md:gap-4 overflow-x-auto pb-4 snap-x scrollbar-thin"
+        className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-6 overflow-x-auto pb-4 snap-x scrollbar-thin"
       >
         {pricingOptions.map((option) => (
-          <div key={option.id} className="min-w-[260px] snap-center">
+          <div key={option.id} className="min-w-[280px] snap-center">
             <Label
               htmlFor={option.id}
               className="cursor-pointer block h-full"
@@ -47,7 +47,7 @@ const PricingCards = ({ pricingOptions, selectedPricing, onChange }: PricingCard
                       <span className="text-sm font-normal ml-0.5">{option.id === 'diamond' ? '/yr' : '/mo'}</span>
                     </span>
                     {option.wasPrice && (
-                      <span className="text-sm text-red-600 line-through font-medium">
+                      <span className="text-sm text-red-500 line-through font-medium">
                         ${option.wasPrice.toFixed(2)}
                       </span>
                     )}
