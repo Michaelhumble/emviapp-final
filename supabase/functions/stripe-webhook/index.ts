@@ -129,20 +129,19 @@ serve(async (req) => {
           }
         }
       }
-    } else if (event.type === 'checkout.session.expired') {
-      const session = event.data.object;
-      const paymentLogId = session.metadata?.payment_log_id;
+    } else if (event.type === 'payment_intent.succeeded') {
+      const paymentIntent = event.data.object;
+      console.log(`PaymentIntent succeeded: ${paymentIntent.id}`);
       
-      if (paymentLogId) {
-        // Update payment log for expired session
-        await supabase
-          .from('payment_logs')
-          .update({ 
-            status: 'expired',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', paymentLogId);
-      }
+      // Additional processing for payment_intent.succeeded can be added here
+      
+    } else if (event.type === 'payment_intent.failed') {
+      const paymentIntent = event.data.object;
+      console.log(`PaymentIntent failed: ${paymentIntent.id}`);
+      
+      // Handle payment failure
+      // Find associated payment log by metadata if relevant
+      // Update status to failed
     }
 
     return new Response(JSON.stringify({ received: true }), {

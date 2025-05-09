@@ -21,10 +21,10 @@ const TestPayment = () => {
     setSuccess(false);
     setResponseData(null);
     
-    console.log("🧪 Test payment initiated");
+    console.log("🧪 Live payment test initiated");
     
     try {
-      // This is a simplified payment flow just for testing
+      // This is a simplified payment flow for testing the live environment
       const result = await initiatePayment('job', {
         title: "Test Job Post",
         email: email
@@ -39,7 +39,6 @@ const TestPayment = () => {
       if (result?.success) {
         setSuccess(true);
         // The redirect happens inside the initiatePayment function
-        // We'll see this message briefly before redirect
         toast.success(t("Payment setup successful", "Thiết lập thanh toán thành công"), {
           description: t("Redirecting to checkout...", "Đang chuyển hướng đến thanh toán...")
         });
@@ -50,7 +49,7 @@ const TestPayment = () => {
         });
       }
     } catch (error: any) {
-      console.error("❌ Test payment error:", error);
+      console.error("❌ Live payment test error:", error);
       setError(error.message || "Unknown error occurred");
       toast.error(t("Payment test failed", "Kiểm tra thanh toán thất bại"));
     }
@@ -60,9 +59,9 @@ const TestPayment = () => {
     <div className="container mx-auto py-10 space-y-6">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
-          <CardTitle>Test Stripe Payment</CardTitle>
+          <CardTitle>Test Live Stripe Payment</CardTitle>
           <CardDescription>
-            This is a simple test page for Stripe payments
+            This is a test page for live Stripe payments
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -77,9 +76,8 @@ const TestPayment = () => {
               </ul>
             </div>
             <div className="text-sm text-muted-foreground border-t pt-2">
-              <p className="font-medium">Test Card Info:</p>
-              <p>Card number: 4242 4242 4242 4242</p>
-              <p>Any future expiration & CVC</p>
+              <p className="font-medium">This will use the live environment:</p>
+              <p>Please use a real card for testing the live environment</p>
             </div>
           </div>
         </CardContent>
@@ -89,7 +87,7 @@ const TestPayment = () => {
             onClick={handlePaymentClick} 
             disabled={isLoading}
           >
-            {isLoading ? t("Processing...", "Đang xử lý...") : t("Proceed to Payment", "Tiến hành Thanh toán")}
+            {isLoading ? t("Processing...", "Đang xử lý...") : t("Test Live Payment", "Kiểm tra thanh toán thật")}
           </Button>
           
           {error && (

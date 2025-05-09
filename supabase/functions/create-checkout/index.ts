@@ -18,22 +18,19 @@ serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
       console.error("STRIPE_SECRET_KEY is not set in environment variables");
-      throw new Error("STRIPE_SECRET_KEY is not set");
+      throw new Error("Missing Stripe secret key in environment");
     }
     
-    // Log that we have a valid key (without revealing the key itself)
-    console.log("✅ STRIPE_SECRET_KEY found, length:", stripeKey.length);
-    
-    // Initialize Stripe
+    // Initialize Stripe with the live key
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
     // Parse request body
     const { postType = "job", postDetails, pricingOptions } = await req.json();
-    console.log("Request received:", { postType, pricingDetails: !!postDetails, pricingOptions });
+    console.log("Payment request received:", { postType, postDetails: !!postDetails, pricingOptions });
     
     // Get user info from auth token
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
+    if (!authHeader) throw new Error("Authorization header missing");
     
     const token = authHeader.replace("Bearer ", "");
     const supabase = createClient(
@@ -46,17 +43,7 @@ serve(async (req) => {
     
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
-    console.log("User authenticated:", { id: user.id, email: user.email });
-    
-    // Test Stripe connection
-    try {
-      // Make a simple API call to validate the Stripe key works
-      await stripe.customers.list({ limit: 1 });
-      console.log("✅ Successfully connected to Stripe API");
-    } catch (stripeError) {
-      console.error("❌ Stripe connection test failed:", stripeError.message);
-      throw new Error(`Stripe connection failed: ${stripeError.message}`);
-    }
+    console.log("Authenticated user:", { id: user.id, email: user.email });
     
     // Check if the user already exists as a Stripe customer
     let customerId: string | undefined;
@@ -102,7 +89,7 @@ serve(async (req) => {
     }
     
     // Create Stripe checkout session
-    console.log("Creating Stripe checkout session...");
+    console.log("Creating live Stripe checkout session...");
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ["card"],
@@ -118,13 +105,13 @@ serve(async (req) => {
         quantity: 1
       }],
       success_url: `${req.headers.get("origin") || "https://emviapp.app"}/post-success?payment_log_id=${paymentLog.id}`,
-      cancel_url: `${req.headers.get("origin") || "https://emviapp.app"}/post-cancelled`,
+      cancel_url: `${req.headers.get("origin") || "https://emviapp.app"}/post-job`,
       metadata: {
         payment_log_id: paymentLog.id,
         user_id: user.id
       }
     });
-    console.log("✅ Stripe checkout session created:", session.id);
+    console.log("Stripe checkout session created:", session.id);
     
     // Update payment log with session ID
     await supabaseAdmin
