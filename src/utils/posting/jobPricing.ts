@@ -160,11 +160,11 @@ export const calculatePriceWithDuration = (
   
   // Apply duration-based discounts
   if (durationMonths === 3) {
-    discountPercentage = 10;
+    discountPercentage = 5;
   } else if (durationMonths === 6) {
-    discountPercentage = 20;
+    discountPercentage = 10;
   } else if (durationMonths === 12) {
-    discountPercentage = 30;
+    discountPercentage = 20;
   }
   
   // Add auto-renew discount
@@ -211,18 +211,18 @@ export const calculateFinalPrice = (
     } else {
       // All other durations show full price with no discount
       return {
-        originalPrice: yearlyPrice,
-        finalPrice: yearlyPrice,
+        originalPrice: yearlyPrice * durationMonths,
+        finalPrice: yearlyPrice * durationMonths,
         discountPercentage: 0
       };
     }
   }
   
-  // Regular pricing logic for other plans (unchanged)
+  // Regular pricing logic for other plans
   let discountPercentage = 0;
-  if (durationMonths === 3) discountPercentage = 10;
-  else if (durationMonths === 6) discountPercentage = 20;
-  else if (durationMonths === 12) discountPercentage = 30;
+  if (durationMonths === 3) discountPercentage = 5;
+  else if (durationMonths === 6) discountPercentage = 10;
+  else if (durationMonths === 12) discountPercentage = 20;
   
   // Add auto-renew discount if enabled (only for non-Diamond plans)
   if (autoRenew) {

@@ -18,8 +18,8 @@ export interface ReviewAndPaymentSectionProps {
   onUpdatePricing: (options: Partial<PricingOptions>) => void;
   onNextStep: () => void;
   onPrevStep: () => void;
-  jobData?: Partial<Job>; // Add this prop to fix the JobPost.tsx error
-  isFirstPost?: boolean; // Add this property to fix the type error in JobPost.tsx
+  jobData?: Partial<Job>;
+  isFirstPost?: boolean;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -51,9 +51,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   useEffect(() => {
     onUpdatePricing({ 
       selectedPricingTier: selectedPricing,
-      autoRenew: autoRenew
+      autoRenew: autoRenew,
+      durationMonths: selectedDuration
     });
-  }, [selectedPricing, autoRenew, onUpdatePricing]);
+  }, [selectedPricing, autoRenew, selectedDuration, onUpdatePricing]);
   
   const handlePricingChange = (pricingId: string) => {
     setSelectedPricing(pricingId);
@@ -96,7 +97,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         onDurationChange={handleDurationChange}
       />
       
-      {selectedPricing !== 'free' ? (
+      {selectedPricing !== 'free' && (
         <div className="flex items-center justify-between">
           <Label htmlFor="auto-renew">{t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}</Label>
           <Switch 
@@ -105,7 +106,9 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
             onCheckedChange={handleAutoRenewChange} 
           />
         </div>
-      ) : (
+      )}
+      
+      {selectedPricing === 'free' && (
         <div className="text-sm text-gray-500 italic">
           {t('This plan does not renew. First-time post only.', 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.')}
         </div>

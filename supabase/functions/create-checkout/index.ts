@@ -42,7 +42,13 @@ serve(async (req) => {
     }
 
     // Parse the request body
-    const { postType, listingId, planType, autoRenew } = await req.json();
+    const { 
+      postType, 
+      listingId, 
+      planType, 
+      autoRenew, 
+      durationMonths = 1 
+    } = await req.json();
     
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -66,8 +72,22 @@ serve(async (req) => {
       unitAmount = 4999; // $49.99
       productName = "Premium Job Post";
     } else if (planType === 'diamond') {
-      unitAmount = 149999; // $1499.99
+      unitAmount = durationMonths === 12 ? 99999 : 149999; // $999.99 or $1499.99
       productName = "Diamond Featured Job Post";
+    }
+    
+    // Apply duration-based discounts (except for Diamond plan which has special pricing)
+    if (planType !== 'diamond' && planType !== 'free') {
+      let discountPercentage = 0;
+      if (durationMonths === 3) discountPercentage = 5;
+      else if (durationMonths === 6) discountPercentage = 10;
+      else if (durationMonths === 12) discountPercentage = 20;
+      
+      // Add auto-renew discount
+      if (autoRenew) discountPercentage += 5;
+      
+      // Apply discount
+      unitAmount = Math.round(unitAmount * (1 - discountPercentage / 100));
     }
     
     // Add metadata to track payment details
@@ -76,28 +96,77 @@ serve(async (req) => {
       post_type: postType,
       listing_id: listingId || '',
       plan_type: planType,
+      duration_months: String(durationMonths),
       auto_renew: autoRenew ? 'true' : 'false'
     };
 
-    // Create Stripe session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: unitAmount === 0 ? [] : [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: productName,
+    // Calculate expiration date based on duration
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + (durationMonths * 30)); // Approximate months as 30 days
+
+    // Different checkout configuration based on auto-renew selection
+    let session;
+    
+    if (autoRenew && unitAmount > 0) {
+      // Create a subscription for auto-renew
+      const interval = durationMonths === 1 ? 'month' : 
+                        durationMonths === 3 ? 'quarter' : 
+                        durationMonths === 6 ? 'half_year' : 'year';
+      
+      // Convert interval to Stripe format (only month and year are supported)
+      const stripeInterval = interval === 'month' ? 'month' : 
+                              interval === 'quarter' || interval === 'half_year' ? 'month' : 'year';
+      
+      // Adjust interval count for quarter and half-year
+      const intervalCount = interval === 'quarter' ? 3 : 
+                            interval === 'half_year' ? 6 : 1;
+      
+      session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${productName} (${durationMonths} month${durationMonths > 1 ? 's' : ''})`,
+            },
+            unit_amount: unitAmount,
+            recurring: {
+              interval: stripeInterval,
+              interval_count: intervalCount
+            }
           },
-          unit_amount: unitAmount,
-        },
-        quantity: 1,
-      }],
-      mode: unitAmount === 0 ? 'setup' : 'payment',
-      success_url: `${req.headers.get('origin')}/post-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/post-canceled`,
-      metadata: metadata,
-      customer_email: user.email
-    });
+          quantity: 1,
+        }],
+        mode: 'subscription',
+        success_url: `${req.headers.get('origin')}/post-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.get('origin')}/post-canceled`,
+        metadata: metadata,
+        customer_email: user.email,
+        subscription_data: {
+          metadata: metadata
+        }
+      });
+    } else {
+      // Create one-time payment for non-auto-renew
+      session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: unitAmount === 0 ? [] : [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${productName} (${durationMonths} month${durationMonths > 1 ? 's' : ''})`,
+            },
+            unit_amount: unitAmount,
+          },
+          quantity: 1,
+        }],
+        mode: unitAmount === 0 ? 'setup' : 'payment',
+        success_url: `${req.headers.get('origin')}/post-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.get('origin')}/post-canceled`,
+        metadata: metadata,
+        customer_email: user.email
+      });
+    }
 
     // For free posts, log the "payment" directly
     if (unitAmount === 0) {
@@ -112,7 +181,8 @@ serve(async (req) => {
         plan_type: "Free",
         payment_status: "success",
         stripe_payment_id: session.id,
-        auto_renew_enabled: false
+        auto_renew_enabled: false,
+        expires_at: expiresAt.toISOString()
       });
     }
 

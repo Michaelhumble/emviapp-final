@@ -1,100 +1,91 @@
 
 import React from 'react';
-import { formatCurrency } from '@/lib/utils';
-import { calculateFinalPrice } from '@/utils/posting/jobPricing';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { format, addMonths } from 'date-fns';
+import { CalendarIcon, CheckCircle2, RefreshCw } from 'lucide-react';
 
 interface PricingDisplayProps {
   basePrice: number;
   duration: number;
-  pricingId?: string;
-  autoRenew?: boolean;
-  // Add the following properties to fix the type error
-  originalPrice?: number;
-  finalPrice?: number;
-  discountPercentage?: number;
+  pricingId: string;
+  autoRenew: boolean;
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
 }
 
-const PricingDisplay: React.FC<PricingDisplayProps> = ({ 
-  basePrice, 
-  duration, 
-  pricingId = '',
-  autoRenew = false,
-  // Handle the new props with defaults
-  originalPrice: providedOriginalPrice,
-  finalPrice: providedFinalPrice,
-  discountPercentage: providedDiscountPercentage
+const PricingDisplay: React.FC<PricingDisplayProps> = ({
+  basePrice,
+  duration,
+  pricingId,
+  autoRenew,
+  originalPrice,
+  finalPrice,
+  discountPercentage
 }) => {
-  const { t } = useTranslation();
-  
-  // Skip discount calculation for free tier
-  if (basePrice === 0) {
-    return (
-      <div className="text-right">
-        <div className="text-lg font-semibold">{formatCurrency(0)}</div>
-        <div className="text-sm text-gray-500">
-          {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
-        </div>
-      </div>
-    );
-  }
-  
-  // Calculate price with discount if not provided
-  const { 
-    originalPrice = providedOriginalPrice, 
-    finalPrice = providedFinalPrice, 
-    discountPercentage = providedDiscountPercentage 
-  } = providedOriginalPrice !== undefined ? 
-    { originalPrice: providedOriginalPrice, finalPrice: providedFinalPrice, discountPercentage: providedDiscountPercentage } : 
-    calculateFinalPrice(basePrice, duration, pricingId, autoRenew);
-  
-  // For diamond plan, show special messaging
-  if (pricingId === 'diamond') {
-    const isYearly = duration === 12;
-    
-    return (
-      <div className="text-right">
-        {isYearly && originalPrice > finalPrice && (
-          <div className="text-sm text-gray-400 line-through">
-            {formatCurrency(originalPrice)}
-          </div>
-        )}
-        <div className="text-lg font-semibold">{formatCurrency(finalPrice)}</div>
-        <div className="text-sm text-gray-500">
-          {t('annual subscription', 'gói đặc biệt')}
-        </div>
-        {isYearly && autoRenew && (
-          <div className="text-xs text-green-600 mt-1">
-            {t('Keep this price locked in each year. Cancel anytime.', 'Giữ giá này mỗi năm. Hủy bất kỳ lúc nào.')}
-          </div>
-        )}
-      </div>
-    );
-  }
-  
-  // Show discount if applicable
-  const hasDiscount = discountPercentage > 0;
+  const futureDate = addMonths(new Date(), duration);
+  const formattedDate = format(futureDate, 'MMM d, yyyy');
+  const isFreePlan = pricingId === 'free';
   
   return (
-    <div className="text-right">
-      {hasDiscount && (
-        <div className="text-sm text-gray-400 line-through">
-          {formatCurrency(originalPrice)}
-        </div>
-      )}
-      <div className="text-lg font-semibold">
-        {formatCurrency(finalPrice)}
-        {hasDiscount && (
-          <span className="text-xs text-green-600 ml-2">
-            (-{discountPercentage}%)
-          </span>
-        )}
-      </div>
-      <div className="text-sm text-gray-500">
-        {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
-        {autoRenew && (
-          <span className="text-green-600 ml-1">{t('(auto-renew)', '(tự động gia hạn)')}</span>
+    <div className="rounded-lg border bg-card p-4 mt-6">
+      <h3 className="font-semibold text-md mb-4">Listing Summary</h3>
+      
+      <div className="space-y-3 text-sm">
+        {isFreePlan ? (
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+              <span>Free listing</span>
+            </div>
+            <span>30 days</span>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                <span>Listing duration</span>
+              </div>
+              <span>{duration} {duration === 1 ? 'month' : 'months'}</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <CalendarIcon className="h-4 w-4 mr-2 text-slate-500" />
+                <span>Expires on</span>
+              </div>
+              <span>{formattedDate}</span>
+            </div>
+            
+            {autoRenew && (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <RefreshCw className="h-4 w-4 mr-2 text-blue-500" />
+                  <span>Auto-renew</span>
+                </div>
+                <span>Enabled</span>
+              </div>
+            )}
+            
+            <div className="border-t pt-2 mt-2">
+              <div className="flex justify-between items-center">
+                <span>Standard price</span>
+                <span>${originalPrice.toFixed(2)}</span>
+              </div>
+              
+              {discountPercentage > 0 && (
+                <div className="flex justify-between items-center text-green-600">
+                  <span>Discount ({discountPercentage}%)</span>
+                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center font-semibold mt-1">
+                <span>Total</span>
+                <span>${finalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>

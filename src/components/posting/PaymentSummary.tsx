@@ -1,13 +1,15 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { formatCurrency } from '@/lib/utils';
+import { Card, CardContent } from '@/components/ui/card';
+import { format, addMonths } from 'date-fns';
 
 interface PaymentSummaryProps {
   basePrice: number;
   duration: number;
-  autoRenew?: boolean;
+  autoRenew: boolean;
   originalPrice: number;
   finalPrice: number;
   discountPercentage: number;
@@ -18,7 +20,7 @@ interface PaymentSummaryProps {
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   basePrice,
   duration,
-  autoRenew = false,
+  autoRenew,
   originalPrice,
   finalPrice,
   discountPercentage,
@@ -26,116 +28,98 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   isFreePlan = false
 }) => {
   const { t } = useTranslation();
-
-  // For free plans, we show a simplified summary
-  if (isFreePlan) {
-    return (
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">{t('Payment Summary', 'Tóm tắt thanh toán')}</h3>
+  const expiryDate = addMonths(new Date(), duration);
+  
+  return (
+    <Card className="border border-gray-200">
+      <CardContent className="p-4 space-y-4">
+        <h3 className="font-semibold text-lg">
+          {isFreePlan 
+            ? t('Free Listing Summary', 'Tóm tắt đăng tin miễn phí') 
+            : t('Payment Summary', 'Tóm tắt thanh toán')}
+        </h3>
         
-        <div className="space-y-2 divide-y">
-          {/* Base price line */}
-          <div className="flex justify-between py-2">
-            <span>{t('Base price', 'Giá cơ bản')}:</span>
-            <span>{formatCurrency(0)}</span>
-          </div>
-          
-          {/* Duration line */}
-          <div className="flex justify-between py-2">
-            <span>{t('Duration', 'Thời hạn')}:</span>
-            <span>{duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}</span>
-          </div>
-          
-          {/* Total section */}
-          <div className="flex justify-between py-3 font-semibold">
-            <span>{t('Total', 'Tổng cộng')}:</span>
-            <div className="text-right">
-              <div className="text-xl">{formatCurrency(0)}</div>
-              <div className="text-xs text-gray-500">
-                {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
+        {isFreePlan ? (
+          <div className="space-y-3">
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
+              <div>
+                <p className="font-medium">{t('Free listing valid for 30 days', 'Đăng tin miễn phí có hiệu lực trong 30 ngày')}</p>
+                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
+              <Shield className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
+              <div>
+                <p className="font-medium">{t('Limited visibility', 'Hiển thị hạn chế')}</p>
+                <p className="text-sm text-gray-600">{t('Standard placement in listings', 'Vị trí tiêu chuẩn trong danh sách')}</p>
               </div>
             </div>
           </div>
-        </div>
-        
-        <Button 
-          className="w-full mt-4" 
-          onClick={onProceedToPayment}
-        >
-          {t('Continue', 'Tiếp tục')}
-        </Button>
-      </div>
-    );
-  }
-
-  // Standard payment summary for paid plans
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{t('Payment Summary', 'Tóm tắt thanh toán')}</h3>
-      
-      <div className="space-y-2 divide-y">
-        {/* Base price line */}
-        <div className="flex justify-between py-2">
-          <span>{t('Base price', 'Giá cơ bản')}:</span>
-          <span>{formatCurrency(basePrice)}/mo</span>
-        </div>
-        
-        {/* Duration line */}
-        <div className="flex justify-between py-2">
-          <span>{t('Duration', 'Thời hạn')}:</span>
-          <span>{duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}</span>
-        </div>
-        
-        {/* Show original price if discount applies */}
-        {discountPercentage > 0 && (
-          <div className="flex justify-between py-2">
-            <span>{t('Subtotal', 'Tạm tính')}:</span>
-            <span className="text-gray-500 line-through">{formatCurrency(originalPrice)}</span>
-          </div>
-        )}
-        
-        {/* Auto-renew discount if enabled */}
-        {autoRenew && (
-          <div className="flex justify-between py-2">
-            <span>{t('Auto-renew discount', 'Giảm giá gia hạn tự động')}:</span>
-            <span className="text-green-600">-5%</span>
-          </div>
-        )}
-        
-        {/* Duration discount if applicable */}
-        {duration > 1 && (
-          <div className="flex justify-between py-2">
-            <span>{t('Duration discount', 'Giảm giá theo thời hạn')}:</span>
-            <span className="text-green-600">
-              {duration === 3 ? '-10%' : duration === 6 ? '-20%' : '-30%'}
-            </span>
-          </div>
-        )}
-        
-        {/* Total section */}
-        <div className="flex justify-between py-3 font-semibold">
-          <span>{t('Total', 'Tổng cộng')}:</span>
-          <div className="text-right">
-            <div className="text-xl">{formatCurrency(finalPrice)}</div>
-            {discountPercentage > 0 && (
-              <div className="text-sm text-green-600">
-                {t('You save', 'Bạn tiết kiệm')}: {formatCurrency(originalPrice - finalPrice)} ({discountPercentage}%)
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-start">
+              <CalendarClock className="h-5 w-5 text-purple-500 mt-0.5 mr-2" /> 
+              <div>
+                <p className="font-medium">
+                  {duration === 1 
+                    ? t('1 month listing', '1 tháng đăng tin')
+                    : t(`${duration} months listing`, `${duration} tháng đăng tin`)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {t('Expires on', 'Hết hạn vào')}: {format(expiryDate, 'MMMM d, yyyy')}
+                </p>
+              </div>
+            </div>
+            
+            {autoRenew && (
+              <div className="flex items-start">
+                <RefreshCw className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
+                <div>
+                  <p className="font-medium">{t('Auto-renewal enabled', 'Tự động gia hạn được bật')}</p>
+                  <p className="text-sm text-gray-600">
+                    {t(
+                      'Your subscription will automatically renew on', 
+                      'Đăng ký của bạn sẽ tự động gia hạn vào'
+                    )}: {format(expiryDate, 'MMMM d, yyyy')}
+                  </p>
+                </div>
               </div>
             )}
-            <div className="text-xs text-gray-500">
-              {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
+            
+            <div className="border-t border-gray-200 pt-3 space-y-1">
+              <div className="flex justify-between">
+                <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
+                <span className="text-gray-600">${originalPrice.toFixed(2)}</span>
+              </div>
+              
+              {discountPercentage > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
+                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between font-semibold text-lg">
+                <span>{t('Total', 'Tổng cộng')}:</span>
+                <span>${finalPrice.toFixed(2)}</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      
-      <Button 
-        className="w-full mt-4" 
-        onClick={onProceedToPayment}
-      >
-        {t('Proceed to Payment', 'Tiến hành thanh toán')}
-      </Button>
-    </div>
+        )}
+        
+        <Button 
+          onClick={onProceedToPayment} 
+          className="w-full"
+        >
+          {isFreePlan 
+            ? t('Complete Free Listing', 'Hoàn tất đăng tin miễn phí')
+            : t('Proceed to Payment', 'Tiến hành thanh toán')}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -21,9 +21,9 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
   className,
   durations = [
     { months: 1, label: '1 Month', vietnameseLabel: '1 tháng', discount: 0 },
-    { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 10 },
-    { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 20 },
-    { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 30 }
+    { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 5 },
+    { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 10 },
+    { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 20 }
   ],
   disableSelection = false,
   selectedPricing
