@@ -15,11 +15,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   
   const handleSignOut = async () => {
     await signOut();
@@ -30,6 +32,11 @@ const Navbar = () => {
   const onPostJobClick = () => {
     navigate("/post-job");
   };
+
+  const tooltipText = t(
+    "Was $29.99 – Free for a limited time!",
+    "Giá gốc $29.99 – Hiện đang miễn phí!"
+  );
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
@@ -48,26 +55,26 @@ const Navbar = () => {
         <div className="flex items-center gap-2 md:gap-3">
           {/* Post Job Button - visible on all screen sizes */}
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={300}>
               <TooltipTrigger asChild>
                 {user ? (
                   <Button 
                     onClick={onPostJobClick} 
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                   >
-                    Post a Job for Free
+                    {t("Post a Job for Free", "Đăng việc miễn phí")}
                   </Button>
                 ) : (
                   <Button 
                     onClick={() => navigate("/sign-in")}
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                   >
-                    Post a Job for Free
+                    {t("Post a Job for Free", "Đăng việc miễn phí")}
                   </Button>
                 )}
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Limited time – was $29.99!</p>
+              <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                <p>{tooltipText}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

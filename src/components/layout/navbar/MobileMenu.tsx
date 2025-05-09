@@ -10,7 +10,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import LanguageToggle from "@/components/layout/LanguageToggle";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface MobileMenuProps {
   user: any;
@@ -20,11 +27,17 @@ interface MobileMenuProps {
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const onPostJobClick = () => {
     setOpen(false);
     navigate("/post-job");
   };
+
+  const tooltipText = t(
+    "Was $29.99 – Free for a limited time!",
+    "Giá gốc $29.99 – Hiện đang miễn phí!"
+  );
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -52,34 +65,52 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           {/* Post Job Button - mobile */}
           <div className="mb-4">
             {user ? (
-              <Button 
-                onClick={onPostJobClick} 
-                className="bg-purple-600 text-white hover:bg-purple-700 w-full"
-              >
-                Post a Job for Free
-              </Button>
+              <TooltipProvider>
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      onClick={onPostJobClick} 
+                      className="bg-purple-600 text-white hover:bg-purple-700 w-full"
+                    >
+                      {t("Post a Job for Free", "Đăng việc miễn phí")}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                    <p>{tooltipText}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ) : (
-              <Button 
-                onClick={() => {
-                  setOpen(false);
-                  navigate("/sign-in");
-                }}
-                className="bg-purple-600 text-white hover:bg-purple-700 w-full"
-              >
-                Post a Job for Free
-              </Button>
+              <TooltipProvider>
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      onClick={() => {
+                        setOpen(false);
+                        navigate("/sign-in");
+                      }}
+                      className="bg-purple-600 text-white hover:bg-purple-700 w-full"
+                    >
+                      {t("Post a Job for Free", "Đăng việc miễn phí")}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                    <p>{tooltipText}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
           
           {/* Language toggle */}
           <div className="mb-2">
-            <p className="text-sm font-medium mb-2">Language</p>
+            <p className="text-sm font-medium mb-2">{t("Language", "Ngôn ngữ")}</p>
             <LanguageToggle />
           </div>
           
           {/* Auth/Account links */}
           <div>
-            <p className="text-sm font-medium mb-2">Account</p>
+            <p className="text-sm font-medium mb-2">{t("Account", "Tài khoản")}</p>
             {user ? (
               <div className="space-y-2">
                 <Link
@@ -128,28 +159,28 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           
           {/* Navigation Menu */}
           <div>
-            <p className="text-sm font-medium mb-2">Navigation</p>
+            <p className="text-sm font-medium mb-2">{t("Navigation", "Điều hướng")}</p>
             <nav className="space-y-2">
               <Link
                 to="/"
                 className="block p-2 hover:bg-accent rounded-md menu-item-enter transition-all"
                 onClick={() => setOpen(false)}
               >
-                Home
+                {t("Home", "Trang chủ")}
               </Link>
               <Link
                 to="/jobs"
                 className="block p-2 hover:bg-accent rounded-md menu-item-enter transition-all"
                 onClick={() => setOpen(false)}
               >
-                Jobs
+                {t("Jobs", "Việc làm")}
               </Link>
               <Link
                 to="/salons"
                 className="block p-2 hover:bg-accent rounded-md menu-item-enter transition-all"
                 onClick={() => setOpen(false)}
               >
-                Salons
+                {t("Salons", "Tiệm")}
               </Link>
             </nav>
           </div>
