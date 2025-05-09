@@ -1,196 +1,141 @@
-import { useEffect, useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle, AlertCircle, CalendarClock, RefreshCw } from 'lucide-react';
-import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { toast } from "sonner";
-import { supabase } from '@/integrations/supabase/client';
-import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Layout } from "@/components/layout";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle } from "lucide-react";
 import { format, addDays } from 'date-fns';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useTranslation } from '@/hooks/useTranslation';
 
-interface PaymentInfo {
-  autoRenewEnabled: boolean;
-  expiresAt: string;
-  planType: string;
-  paymentStatus: string;
-  stripePaymentId: string;
-}
-
-const PostSuccess = () => {
-  const [searchParams] = useSearchParams();
+const PostSuccessPage = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
-  const [cancellingSubscription, setCancellingSubscription] = useState(false);
+  const [searchParams] = useSearchParams();
+  const { t, isVietnamese } = useTranslation();
+  
+  const [purchaseDetails, setPurchaseDetails] = useState({
+    listingType: searchParams.get('tier') || 'standard',
+    autoRenew: searchParams.get('autoRenew') === 'true',
+    purchaseDate: new Date(),
+    expirationDate: addDays(new Date(), 30),
+  });
+  
+  // Format dates for display
+  const formatDate = (date: Date) => {
+    return format(date, 'MMMM dd, yyyy');
+  };
 
-  useEffect(() => {
-    const sessionId = searchParams.get('session_id');
-    if (!sessionId) {
-      navigate('/');
-      return;
-    }
+  // Navigate to dashboard
+  const handleGoToDashboard = () => {
+    navigate('/dashboard');
+  };
 
-    // Verify the payment and retrieve payment details
-    const verifyPayment = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('payment_logs')
-          .select('*')
-          .eq('stripe_payment_id', sessionId)
-          .single();
+  // Toggle auto-renew (non-functional for now as specified)
+  const handleToggleAutoRenew = () => {
+    // This function is intentionally left empty as specified in requirements
+    // In the future, this would call an API to toggle auto-renew status
+  };
 
-        if (error || !data) {
-          // Try legacy table as fallback
-          const { data: legacyData, error: legacyError } = await supabase
-            .from('payments')
-            .select('*')
-            .eq('stripe_session_id', sessionId)
-            .single();
-            
-          if (legacyError || !legacyData) {
-            throw new Error('Payment verification failed');
-          }
-          
-          // Payment verified through legacy table
-          setPaymentInfo({
-            autoRenewEnabled: false,
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            planType: legacyData.payment_type || 'standard',
-            paymentStatus: 'success',
-            stripePaymentId: legacyData.stripe_session_id
-          });
-        } else {
-          // Payment verified through payment_logs table
-          setPaymentInfo({
-            autoRenewEnabled: data.auto_renew_enabled,
-            expiresAt: data.expires_at,
-            planType: data.plan_type,
-            paymentStatus: data.payment_status,
-            stripePaymentId: data.stripe_payment_id
-          });
-        }
-
-        toast.success("Payment successful!", {
-          description: "Your post is now live."
-        });
-      } catch (error) {
-        console.error('Payment verification error:', error);
-        toast.error("Payment verification failed");
-        navigate('/');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verifyPayment();
-  }, [navigate, searchParams]);
-
-  const toggleAutoRenew = async () => {
-    if (!paymentInfo?.autoRenewEnabled || !paymentInfo?.stripePaymentId) {
-      return;
-    }
-
-    setCancellingSubscription(true);
-    try {
-      // Call Supabase Edge Function to cancel subscription
-      const { data, error } = await supabase.functions.invoke('cancel-subscription', {
-        body: { stripePaymentId: paymentInfo.stripePaymentId }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      // Update local state
-      setPaymentInfo(prev => prev ? { ...prev, autoRenewEnabled: false } : null);
-      
-      toast.success("Auto-renewal disabled", {
-        description: "Your subscription will not renew automatically."
-      });
-    } catch (error) {
-      console.error('Error cancelling subscription:', error);
-      toast.error("Failed to cancel auto-renewal");
-    } finally {
-      setCancellingSubscription(false);
+  // Get tier display name
+  const getTierDisplayName = (tier: string) => {
+    switch (tier.toLowerCase()) {
+      case 'featured':
+        return 'Gold Featured';
+      case 'premium':
+        return 'Premium';
+      case 'free':
+        return 'Free';
+      case 'diamond':
+        return 'Top Diamond';
+      default:
+        return 'Standard';
     }
   };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-24">
-        <Card className="max-w-md mx-auto p-6">
-          <CardContent className="pt-6 space-y-6">
-            <div className="text-center">
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold mb-4">Payment Successful!</h1>
-              <p className="text-gray-600 mb-6">
-                Your payment has been processed and your post is now active.
-              </p>
+      <div className="container max-w-3xl mx-auto px-4 py-12">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-playfair mb-4">
+            {t(
+              "Your post has been submitted successfully!",
+              "Tin của bạn đã đăng thành công!"
+            )}
+          </h1>
+          <Alert variant="success" className="bg-green-50 border-green-200">
+            <CheckCircle className="h-5 w-5 text-green-600" />
+            <AlertDescription className="ml-2 text-green-700">
+              {isVietnamese ? 
+                "Chúc mừng! Tin của bạn đã được đăng thành công và hiện đã hiển thị trực tuyến." : 
+                "Congratulations! Your listing has been successfully posted and is now visible online."}
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        <Card className="mb-6 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-medium">
+              {t("Purchase Summary", "Thông tin mua hàng")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-2 py-2 border-b">
+              <span className="text-gray-600">{t("Listing Type", "Loại tin đăng")}:</span>
+              <span className="font-medium">{getTierDisplayName(purchaseDetails.listingType)}</span>
             </div>
             
-            {paymentInfo && (
-              <div className="space-y-4 border-t pt-4">
-                <h2 className="font-medium text-lg">Post Details</h2>
-                
-                <div className="flex items-center gap-3">
-                  <CalendarClock className="h-5 w-5 text-purple-600" />
-                  <div>
-                    <p className="text-sm text-gray-500">Expires On</p>
-                    <p className="font-medium">{format(new Date(paymentInfo.expiresAt), 'MMMM d, yyyy')}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="text-sm text-gray-500">Plan Type</p>
-                    <p className="font-medium capitalize">{paymentInfo.planType}</p>
-                  </div>
-                </div>
-                
-                {paymentInfo.autoRenewEnabled && (
-                  <div className="border p-4 rounded-lg space-y-3">
-                    <div className="flex items-center gap-3">
-                      <RefreshCw className="h-5 w-5 text-amber-600" />
-                      <div>
-                        <p className="font-medium">Auto-Renewal Active</p>
-                        <p className="text-sm text-gray-500">
-                          Your subscription will automatically renew on {format(new Date(paymentInfo.expiresAt), 'MMMM d, yyyy')}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="text-sm font-medium">Auto-Renew</span>
-                      <Switch 
-                        checked={true} 
-                        onCheckedChange={toggleAutoRenew} 
-                        disabled={cancellingSubscription} 
-                      />
-                    </div>
-                    
-                    <Alert variant="default" className="mb-4">
-                      <AlertDescription>
-                        You can cancel auto-renewal anytime from your dashboard.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="grid grid-cols-2 gap-2 py-2 border-b">
+              <span className="text-gray-600">{t("Purchase Date", "Ngày mua")}:</span>
+              <span>{formatDate(purchaseDetails.purchaseDate)}</span>
+            </div>
             
-            <div className="pt-4">
-              <Button onClick={() => navigate('/dashboard')} className="w-full">
-                Go to Dashboard
-              </Button>
+            <div className="grid grid-cols-2 gap-2 py-2 border-b">
+              <span className="text-gray-600">{t("Expiration Date", "Ngày hết hạn")}:</span>
+              <span>{formatDate(purchaseDetails.expirationDate)}</span>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 py-2">
+              <span className="text-gray-600">{t("Auto-Renew", "Tự động gia hạn")}:</span>
+              <span className={`font-medium ${purchaseDetails.autoRenew ? 'text-green-600' : 'text-gray-600'}`}>
+                {purchaseDetails.autoRenew ? t("ON", "BẬT") : t("OFF", "TẮT")}
+              </span>
             </div>
           </CardContent>
         </Card>
+
+        {purchaseDetails.autoRenew && (
+          <Card className="mb-6 bg-blue-50 border-blue-200">
+            <CardContent className="pt-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <p className="text-blue-800 font-medium mb-1">
+                    {t("Next billing date", "Ngày thanh toán tiếp theo")}: {formatDate(addDays(purchaseDetails.purchaseDate, 30))}
+                  </p>
+                  <p className="text-sm text-blue-700">
+                    {t("Your listing will be automatically renewed to maintain visibility", "Tin đăng của bạn sẽ được tự động gia hạn để duy trì hiển thị")}
+                  </p>
+                </div>
+                <Button 
+                  onClick={handleToggleAutoRenew}
+                  variant="outline" 
+                  className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                >
+                  {t("Turn off Auto-Renew", "Tắt tự động gia hạn")}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="flex justify-center mt-8">
+          <Button onClick={handleGoToDashboard} className="px-8">
+            {t("Go to My Dashboard", "Đi đến bảng điều khiển")}
+          </Button>
+        </div>
       </div>
     </Layout>
   );
 };
 
-export default PostSuccess;
+export default PostSuccessPage;
