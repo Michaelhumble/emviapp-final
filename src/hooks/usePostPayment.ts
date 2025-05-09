@@ -32,6 +32,9 @@ export const usePostPayment = () => {
         throw new Error(`Unsupported post type: ${postType}`);
       }
 
+      // Debug the raw response
+      console.log("Raw payment result:", result);
+
       // Check if we got a successful result with redirect URL
       if (result?.success && result?.redirect) {
         console.log("✅ Payment initiation successful, redirecting to:", result.redirect);
