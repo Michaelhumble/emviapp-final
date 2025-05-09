@@ -45,6 +45,7 @@ const Footer = () => {
           </div>
         </div>
         
+        {/* Added additional legal links at the bottom */}
         <div className="border-t border-gray-200 pt-6 mt-6 text-center">
           {/* Enhanced "Inspired by Sunshine" credit with gradient text */}
           <p className="mb-4">
@@ -52,6 +53,20 @@ const Footer = () => {
               Inspired by Sunshine ☀️
             </span>
           </p>
+          
+          {/* New legal links row */}
+          <div className="flex flex-wrap justify-center gap-6 mb-4">
+            <Link to="/terms" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">📄</span> Terms of Service
+            </Link>
+            <Link to="/refund" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">💸</span> Refund Policy
+            </Link>
+            <Link to="/contact" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">📬</span> Contact Us
+            </Link>
+          </div>
+          
           <p className="text-gray-500 text-sm">© {new Date().getFullYear()} EmviApp. All rights reserved.</p>
         </div>
       </div>
