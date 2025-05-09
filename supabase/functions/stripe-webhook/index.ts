@@ -1,285 +1,261 @@
 
-// @ts-nocheck
-// ^ This comment disables TypeScript checking for this file since it uses Deno types
-// that aren't available in the browser/Node.js environment
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.24.0";
+import Stripe from "https://esm.sh/stripe@12.1.1";
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
-
+// Define CORS headers for preflight requests
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, stripe-signature',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
   }
 
   try {
-    // Get the raw request body
-    const rawBody = await req.text();
-    console.log("Received webhook event");
-
-    // Initialize Stripe with the secret key
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-08-16",
-    });
-
-    // Get the stripe signature from the headers
-    const sig = req.headers.get("stripe-signature");
-    if (!sig) {
-      console.error("No Stripe signature found in request headers");
-      return new Response(JSON.stringify({ error: "No Stripe signature" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    console.log("🔔 Stripe webhook received");
+    
+    // Get environment variables
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+    const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+    
+    if (!stripeSecretKey) {
+      throw new Error('Missing STRIPE_SECRET_KEY');
     }
-
-    // Verify the webhook signature using STRIPE_WEBHOOK_SECRET
+    
+    if (!webhookSecret) {
+      throw new Error('Missing STRIPE_WEBHOOK_SECRET');
+    }
+    
+    // Initialize Stripe
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-08-16',
+    });
+    
+    // Get the raw body and signature header
+    const rawBody = await req.text();
+    const sig = req.headers.get('stripe-signature');
+    
+    if (!sig) {
+      throw new Error('No Stripe signature found in request headers');
+    }
+    
+    console.log("🔐 Verifying webhook signature...");
+    
+    // Verify webhook signature
     let event;
     try {
-      event = stripe.webhooks.constructEvent(
-        rawBody,
-        sig,
-        Deno.env.get("STRIPE_WEBHOOK_SECRET") || ""
-      );
-      console.log(`✅ Verified webhook signature, event type: ${event.type}`);
+      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+      console.log(`✅ Webhook verified: ${event.type}`);
     } catch (err) {
-      console.error(`❌ Webhook signature verification failed: ${err.message}`);
-      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+      console.error(`⚠️ Webhook signature verification failed:`, err);
+      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
-
-    // Initialize Supabase client with service role for admin operations
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
-      { auth: { persistSession: false } }
+    
+    // Initialize Supabase client with service role key
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') || '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
     );
-
-    // Process the event based on type
-    console.log(`Processing event: ${event.type}, ID: ${event.id}`);
-
-    // Handle checkout.session.completed
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      console.log(`🛒 Checkout session completed: ${session.id}`);
-
-      // Extract metadata from the session
-      const metadata = session.metadata || {};
-      const postId = metadata.post_id;
-      const postType = metadata.post_type;
-      const expiresAt = metadata.expires_at;
-      const pricingTier = metadata.pricing_tier;
+    
+    // Extract metadata from the event
+    const eventId = event.id;
+    const eventType = event.type;
+    const eventObject = event.data.object;
+    
+    console.log(`📊 Processing Stripe event: ${eventType} (${eventId})`);
+    console.log(`🧾 Event data:`, JSON.stringify(eventObject, null, 2));
+    
+    // Log the event in the database regardless of event type
+    const { error: logError } = await supabase
+      .from('payment_logs')
+      .insert({
+        stripe_event_id: eventId,
+        event_type: eventType,
+        payload: event.data.object,
+        processed_at: new Date().toISOString()
+      });
       
-      console.log(`Session metadata: postId=${postId}, type=${postType}, tier=${pricingTier}, expires=${expiresAt}`);
-
-      // Update payment log status
-      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-        .from("payment_logs")
-        .select("*")
-        .eq("stripe_payment_id", session.id)
-        .single();
-
-      if (paymentLogError) {
-        console.error(`Error fetching payment log for session ${session.id}:`, paymentLogError);
-      } else if (paymentLog) {
-        console.log(`Found payment log: ${paymentLog.id}`);
+    if (logError) {
+      console.error('❌ Error logging Stripe event to database:', logError);
+    } else {
+      console.log('✅ Stripe event logged to database');
+    }
+    
+    // Handle specific event types
+    switch (eventType) {
+      case 'checkout.session.completed': {
+        const session = eventObject;
+        console.log(`💰 Checkout completed: ${session.id}`);
         
-        // Update payment log status
-        const { error: updateLogError } = await supabaseAdmin
-          .from("payment_logs")
-          .update({ 
-            payment_status: "success",
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", paymentLog.id);
-
-        if (updateLogError) {
-          console.error(`Error updating payment log ${paymentLog.id}:`, updateLogError);
-        } else {
-          console.log(`✅ Updated payment log ${paymentLog.id} status to success`);
-        }
-      }
-
-      // If we have a post_id, update its status based on the post type
-      if (postId && postType) {
-        let updateTable;
+        // Extract metadata from the session
+        const postId = session.metadata?.post_id;
+        const postType = session.metadata?.post_type;
+        const userId = session.metadata?.user_id;
         
-        if (postType === "job") {
-          updateTable = "jobs";
-        } else if (postType === "salon") {
-          updateTable = "salons";
-        } else if (postType === "booth") {
-          updateTable = "booths";
-        } else if (postType === "supply") {
-          updateTable = "supplies";
-        }
-        
-        if (updateTable) {
-          const { error: updatePostError } = await supabaseAdmin
-            .from(updateTable)
+        if (postId && postType) {
+          console.log(`🏷️ Post metadata found: ${postType} post ID ${postId}`);
+          
+          // Update post status based on post type
+          if (postType === 'job') {
+            const { error: jobError } = await supabase
+              .from('jobs')
+              .update({ 
+                status: 'active',
+                payment_confirmed_at: new Date().toISOString(),
+                stripe_session_id: session.id
+              })
+              .eq('id', postId);
+              
+            if (jobError) {
+              console.error(`❌ Error updating job status:`, jobError);
+            } else {
+              console.log(`✅ Job post ${postId} activated successfully`);
+            }
+          } else if (postType === 'salon') {
+            const { error: salonError } = await supabase
+              .from('salons')
+              .update({ 
+                status: 'active',
+                payment_confirmed_at: new Date().toISOString(),
+                stripe_session_id: session.id
+              })
+              .eq('id', postId);
+              
+            if (salonError) {
+              console.error(`❌ Error updating salon status:`, salonError);
+            } else {
+              console.log(`✅ Salon post ${postId} activated successfully`);
+            }
+          }
+          
+          // Update payment log with successful payment
+          const { error: updateError } = await supabase
+            .from('payment_logs')
             .update({
-              status: "active",
-              expires_at: expiresAt,
-              pricingTier: pricingTier || "standard",
-              is_featured: pricingTier?.includes("premium") || pricingTier?.includes("diamond"),
+              status: 'completed',
+              post_id: postId,
+              user_id: userId,
+              completed_at: new Date().toISOString()
+            })
+            .eq('stripe_session_id', session.id);
+          
+          if (updateError) {
+            console.error('❌ Error updating payment log:', updateError);
+          } else {
+            console.log('✅ Payment log updated successfully');
+          }
+        } else {
+          console.warn('⚠️ Missing post metadata in checkout session');
+        }
+        break;
+      }
+      
+      case 'checkout.session.expired': {
+        const session = eventObject;
+        console.log(`⏰ Checkout expired: ${session.id}`);
+        
+        // Extract metadata
+        const postId = session.metadata?.post_id;
+        const postType = session.metadata?.post_type;
+        
+        if (postId && postType) {
+          // Update post status based on post type
+          if (postType === 'job') {
+            const { error: jobError } = await supabase
+              .from('jobs')
+              .update({ 
+                status: 'payment_failed',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', postId);
+              
+            if (jobError) {
+              console.error(`❌ Error updating job status for expired session:`, jobError);
+            }
+          } else if (postType === 'salon') {
+            const { error: salonError } = await supabase
+              .from('salons')
+              .update({ 
+                status: 'payment_failed',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', postId);
+              
+            if (salonError) {
+              console.error(`❌ Error updating salon status for expired session:`, salonError);
+            }
+          }
+          
+          // Update payment log
+          const { error: updateError } = await supabase
+            .from('payment_logs')
+            .update({
+              status: 'expired',
               updated_at: new Date().toISOString()
             })
-            .eq("id", postId);
-
-          if (updatePostError) {
-            console.error(`Error updating ${postType} post ${postId}:`, updatePostError);
-          } else {
-            console.log(`✅ Updated ${postType} post ${postId} to active status`);
+            .eq('stripe_session_id', session.id);
+            
+          if (updateError) {
+            console.error('❌ Error updating payment log for expired session:', updateError);
           }
         }
+        break;
       }
-    } 
-    // Handle checkout.session.expired
-    else if (event.type === "checkout.session.expired") {
-      const session = event.data.object;
-      console.log(`🕒 Checkout session expired: ${session.id}`);
-
-      // Extract metadata from the session
-      const metadata = session.metadata || {};
-      const postId = metadata.post_id;
-      const postType = metadata.post_type;
       
-      // Log payment failure
-      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-        .from("payment_logs")
-        .select("*")
-        .eq("stripe_payment_id", session.id)
-        .single();
-
-      if (paymentLogError) {
-        console.error(`Error fetching payment log for expired session ${session.id}:`, paymentLogError);
-      } else if (paymentLog) {
-        // Update payment log status
-        const { error: updateLogError } = await supabaseAdmin
-          .from("payment_logs")
-          .update({ 
-            payment_status: "expired",
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", paymentLog.id);
-
-        if (updateLogError) {
-          console.error(`Error updating expired payment log ${paymentLog.id}:`, updateLogError);
-        } else {
-          console.log(`✅ Updated payment log ${paymentLog.id} status to expired`);
-        }
+      case 'payment_intent.succeeded': {
+        const paymentIntent = eventObject;
+        console.log(`💵 Payment intent succeeded: ${paymentIntent.id}`);
+        // Handle payment intent success (if needed beyond session handling)
+        break;
       }
-    }
-    // Handle checkout.session.async_payment_succeeded
-    else if (event.type === "checkout.session.async_payment_succeeded") {
-      const session = event.data.object;
-      console.log(`💲 Async payment succeeded for session: ${session.id}`);
       
-      // Similar logic to checkout.session.completed
-      const metadata = session.metadata || {};
-      const postId = metadata.post_id;
-      const postType = metadata.post_type;
-      const expiresAt = metadata.expires_at;
-      
-      // Update payment log
-      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-        .from("payment_logs")
-        .select("*")
-        .eq("stripe_payment_id", session.id)
-        .single();
-
-      if (!paymentLogError && paymentLog) {
-        await supabaseAdmin
-          .from("payment_logs")
-          .update({ 
-            payment_status: "success",
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", paymentLog.id);
-        
-        console.log(`✅ Updated payment log ${paymentLog.id} after async payment success`);
+      case 'payment_intent.failed': {
+        const paymentIntent = eventObject;
+        console.log(`❌ Payment intent failed: ${paymentIntent.id}`);
+        // Handle payment intent failure
+        break;
       }
-    }
-    // Handle checkout.session.async_payment_failed
-    else if (event.type === "checkout.session.async_payment_failed") {
-      const session = event.data.object;
-      console.log(`❌ Async payment failed for session: ${session.id}`);
       
-      // Update payment log
-      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-        .from("payment_logs")
-        .select("*")
-        .eq("stripe_payment_id", session.id)
-        .single();
-
-      if (!paymentLogError && paymentLog) {
-        await supabaseAdmin
-          .from("payment_logs")
-          .update({ 
-            payment_status: "failed",
-            updated_at: new Date().toISOString() 
-          })
-          .eq("id", paymentLog.id);
-        
-        console.log(`✅ Updated payment log ${paymentLog.id} after async payment failure`);
+      case 'checkout.session.async_payment_succeeded': {
+        const session = eventObject;
+        console.log(`✅ Async payment succeeded: ${session.id}`);
+        // Similar logic to checkout.session.completed
+        break;
       }
-    }
-    // Handle payment_intent.succeeded
-    else if (event.type === "payment_intent.succeeded") {
-      const paymentIntent = event.data.object;
-      console.log(`💰 Payment intent succeeded: ${paymentIntent.id}`);
       
-      // Log successful payment
-      await supabaseAdmin
-        .from("payment_logs")
-        .insert({
-          payment_type: "stripe_intent",
-          stripe_payment_id: paymentIntent.id,
-          payment_status: "success",
-          amount: paymentIntent.amount,
-          currency: paymentIntent.currency,
-          metadata: paymentIntent.metadata
-        });
+      case 'checkout.session.async_payment_failed': {
+        const session = eventObject;
+        console.log(`❌ Async payment failed: ${session.id}`);
+        // Handle async payment failure
+        break;
+      }
+      
+      default:
+        console.log(`⏩ Unhandled event type: ${eventType}`);
     }
-    // Handle payment_intent.failed
-    else if (event.type === "payment_intent.failed") {
-      const paymentIntent = event.data.object;
-      console.log(`❌ Payment intent failed: ${paymentIntent.id}`);
-
-      // Log failed payment
-      await supabaseAdmin
-        .from("payment_logs")
-        .insert({
-          payment_type: "stripe_intent",
-          stripe_payment_id: paymentIntent.id,
-          payment_status: "failed",
-          amount: paymentIntent.amount,
-          currency: paymentIntent.currency,
-          metadata: paymentIntent.metadata,
-          error_message: paymentIntent.last_payment_error?.message
-        });
-    }
-    // Log other events
-    else {
-      console.log(`📝 Other webhook event received: ${event.type}`);
-    }
-
+    
+    // Return success
     return new Response(JSON.stringify({ received: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
+    
   } catch (error) {
-    console.error(`❌ Error processing webhook:`, error);
+    console.error('💥 Error processing webhook:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 });
