@@ -78,7 +78,12 @@ serve(async (req) => {
     }
 
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+    
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
 
@@ -133,6 +138,8 @@ serve(async (req) => {
       auto_renew: pricingOptions?.autoRenew ? "true" : "false",
       post_id: temporaryJobId || ""
     };
+    
+    console.log("Creating checkout session with metadata:", metadata);
 
     // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -154,6 +161,8 @@ serve(async (req) => {
       success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/post-canceled`,
     });
+    
+    console.log("Stripe session created:", session.id, "with URL:", session.url);
 
     // Save payment log entry
     const { error: paymentLogError } = await supabaseAdmin
@@ -165,7 +174,8 @@ serve(async (req) => {
         payment_status: 'pending',
         expires_at: expiresAt.toISOString(),
         stripe_payment_id: session.id,
-        auto_renew_enabled: pricingOptions?.autoRenew || false
+        auto_renew_enabled: pricingOptions?.autoRenew || false,
+        pricing_tier: pricingOptions?.selectedPricingTier
       });
 
     if (paymentLogError) {

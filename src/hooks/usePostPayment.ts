@@ -36,7 +36,9 @@ export const usePostPayment = () => {
           description: t("You can view it in your dashboard now", "Bạn có thể xem nó trong bảng điều khiển của bạn ngay bây giờ")
         });
         
-        return { success: true, redirect: '/post-success', data: postData };
+        // Redirect to success page
+        window.location.href = `/post-success?payment_log_id=${postData?.payment_log_id}&free=true`;
+        return { success: true };
       } 
       
       // For paid listings, create a Stripe checkout session
@@ -56,18 +58,18 @@ export const usePostPayment = () => {
       console.log("Checkout response:", data);
       
       if (data?.url) {
-        console.log("Redirecting to:", data.url);
-        // Redirect directly to Stripe's hosted checkout
+        console.log("Redirecting to Stripe checkout URL:", data.url);
+        // Redirect to Stripe's hosted checkout
         window.location.href = data.url;
-        return { success: true, redirect: data.url };
+        return { success: true };
       } else {
         console.error("No checkout URL received");
-        throw new Error('No checkout URL received');
+        throw new Error('No checkout URL received from Stripe');
       }
     } catch (error: any) {
       console.error('Payment initiation error:', error);
       toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
-        description: t("Please try again.", "Vui lòng thử lại.")
+        description: error.message || t("Please try again.", "Vui lòng thử lại.")
       });
       return { success: false };
     } finally {

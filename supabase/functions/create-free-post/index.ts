@@ -27,8 +27,8 @@ serve(async (req) => {
 
     // Create Supabase client with anonymous key (for user authentication)
     const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_ANON_KEY") || "",
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
           headers: { Authorization: authHeader },
@@ -38,8 +38,8 @@ serve(async (req) => {
 
     // Create Admin Supabase client with service role (for database operations)
     const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       { auth: { persistSession: false } }
     );
 
@@ -91,58 +91,67 @@ serve(async (req) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30); // 30 days for free tier
 
-    // Create the post
-    const { data: newPost, error: postError } = await supabaseAdmin
-      .from('jobs')
-      .insert({
-        ...postDetails,
-        user_id: user.id,
-        status: 'active',
-        post_type: postType,
-        pricingTier: 'free',
-        expires_at: expiresAt.toISOString()
-      })
-      .select('id')
-      .single();
-      
-    if (postError) {
-      console.error("Error creating free post:", postError);
-      return new Response(JSON.stringify({ error: "Failed to create free post" }), {
+    try {
+      // Create the post
+      const { data: newPost, error: postError } = await supabaseAdmin
+        .from('jobs')
+        .insert({
+          ...postDetails,
+          user_id: user.id,
+          status: 'active',
+          post_type: postType,
+          pricingTier: 'free',
+          expires_at: expiresAt.toISOString()
+        })
+        .select('id')
+        .single();
+        
+      if (postError) {
+        console.error("Error creating free post:", postError);
+        return new Response(JSON.stringify({ error: "Failed to create free post" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Create payment log entry for the free post
+      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
+        .from('payment_logs')
+        .insert({
+          user_id: user.id,
+          listing_id: newPost.id,
+          plan_type: postType,
+          payment_status: 'free',
+          expires_at: expiresAt.toISOString(),
+          auto_renew_enabled: false,
+          pricing_tier: 'free'
+        })
+        .select('id')
+        .single();
+
+      if (paymentLogError) {
+        console.error("Error creating payment log for free post:", paymentLogError);
+      }
+
+      // Return success with post data
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          post_id: newPost.id,
+          payment_log_id: paymentLog?.id,
+          expires_at: expiresAt.toISOString()
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    } catch (dbError) {
+      console.error("Database error:", dbError);
+      return new Response(JSON.stringify({ error: "Database operation failed: " + dbError.message }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Create payment log entry for the free post
-    const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-      .from('payment_logs')
-      .insert({
-        user_id: user.id,
-        listing_id: newPost.id,
-        plan_type: postType,
-        payment_status: 'free',
-        expires_at: expiresAt.toISOString(),
-        auto_renew_enabled: false
-      })
-      .select('id')
-      .single();
-
-    if (paymentLogError) {
-      console.error("Error creating payment log for free post:", paymentLogError);
-    }
-
-    // Return success with post data
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        post_id: newPost.id,
-        payment_log_id: paymentLog?.id,
-        expires_at: expiresAt.toISOString()
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
   } catch (error) {
     console.error("Free post creation error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
