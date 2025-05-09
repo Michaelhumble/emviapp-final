@@ -1,354 +1,285 @@
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.24.0";
-import Stripe from "https://esm.sh/stripe@12.1.1";
+// @ts-nocheck
+// ^ This comment disables TypeScript checking for this file since it uses Deno types
+// that aren't available in the browser/Node.js environment
 
-// Logging utility for better debugging
-const log = (message: string, data?: any) => {
-  const logEntry = data ? `${message}: ${JSON.stringify(data)}` : message;
-  console.log(`[WEBHOOK] ${logEntry}`);
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, stripe-signature',
-  };
-
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Get request body as text for signature verification
-  const rawBody = await req.text();
-  
   try {
-    log("Received webhook request");
-    
-    // Verify environment variables
-    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
-    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-    
-    if (!stripeSecretKey || !webhookSecret) {
-      throw new Error("Missing Stripe environment variables");
+    // Get the raw request body
+    const rawBody = await req.text();
+    console.log("Received webhook event");
+
+    // Initialize Stripe with the secret key
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2023-08-16",
+    });
+
+    // Get the stripe signature from the headers
+    const sig = req.headers.get("stripe-signature");
+    if (!sig) {
+      console.error("No Stripe signature found in request headers");
+      return new Response(JSON.stringify({ error: "No Stripe signature" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Initialize Stripe with the correct API version
-    const stripe = new Stripe(stripeSecretKey, { apiVersion: "2023-08-16" });
-    
-    // Extract signature from headers
-    const sig = req.headers.get("stripe-signature");
-    
-    if (!sig) {
-      log("No Stripe signature found");
-      return new Response(JSON.stringify({ error: "No signature provided" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    
-    // Verify webhook signature
+    // Verify the webhook signature using STRIPE_WEBHOOK_SECRET
     let event;
     try {
-      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
-      log("Validated webhook signature", { eventId: event.id, type: event.type });
+      event = stripe.webhooks.constructEvent(
+        rawBody,
+        sig,
+        Deno.env.get("STRIPE_WEBHOOK_SECRET") || ""
+      );
+      console.log(`✅ Verified webhook signature, event type: ${event.type}`);
     } catch (err) {
-      log("Webhook signature verification failed", { error: err.message });
-      return new Response(JSON.stringify({ error: `Webhook Error: ${err.message}` }), {
+      console.error(`❌ Webhook signature verification failed: ${err.message}`);
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    
-    // Initialize Supabase client using service role key for DB operations
+
+    // Initialize Supabase client with service role for admin operations
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
       { auth: { persistSession: false } }
     );
-    
-    // Process different event types
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        log("Processing checkout.session.completed", { sessionId: session.id });
+
+    // Process the event based on type
+    console.log(`Processing event: ${event.type}, ID: ${event.id}`);
+
+    // Handle checkout.session.completed
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+      console.log(`🛒 Checkout session completed: ${session.id}`);
+
+      // Extract metadata from the session
+      const metadata = session.metadata || {};
+      const postId = metadata.post_id;
+      const postType = metadata.post_type;
+      const expiresAt = metadata.expires_at;
+      const pricingTier = metadata.pricing_tier;
+      
+      console.log(`Session metadata: postId=${postId}, type=${postType}, tier=${pricingTier}, expires=${expiresAt}`);
+
+      // Update payment log status
+      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
+        .from("payment_logs")
+        .select("*")
+        .eq("stripe_payment_id", session.id)
+        .single();
+
+      if (paymentLogError) {
+        console.error(`Error fetching payment log for session ${session.id}:`, paymentLogError);
+      } else if (paymentLog) {
+        console.log(`Found payment log: ${paymentLog.id}`);
         
-        // For successful checkouts, update the listing and create payment log
-        const metadata = session.metadata || {};
+        // Update payment log status
+        const { error: updateLogError } = await supabaseAdmin
+          .from("payment_logs")
+          .update({ 
+            payment_status: "success",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", paymentLog.id);
+
+        if (updateLogError) {
+          console.error(`Error updating payment log ${paymentLog.id}:`, updateLogError);
+        } else {
+          console.log(`✅ Updated payment log ${paymentLog.id} status to success`);
+        }
+      }
+
+      // If we have a post_id, update its status based on the post type
+      if (postId && postType) {
+        let updateTable;
         
-        // Store in payment logs
-        await logPaymentEvent(supabaseAdmin, {
-          event_type: event.type,
-          event_id: event.id,
-          session_id: session.id,
-          user_id: metadata.user_id,
-          listing_id: metadata.listing_id,
-          post_type: metadata.post_type,
-          pricing_tier: metadata.pricing_tier,
-          duration_months: parseInt(metadata.duration_months || "0", 10),
-          auto_renew: metadata.auto_renew === "true",
-          status: "success",
-          amount: session.amount_total
-        });
-        
-        // Update listing status if applicable
-        if (metadata.listing_id && metadata.post_type) {
-          await updateListingStatus(
-            supabaseAdmin, 
-            metadata.listing_id, 
-            metadata.post_type, 
-            "active", 
-            parseInt(metadata.duration_months || "1", 10)
-          );
-          log("Updated listing status to active", { listingId: metadata.listing_id });
+        if (postType === "job") {
+          updateTable = "jobs";
+        } else if (postType === "salon") {
+          updateTable = "salons";
+        } else if (postType === "booth") {
+          updateTable = "booths";
+        } else if (postType === "supply") {
+          updateTable = "supplies";
         }
         
-        break;
-      }
-      
-      case "checkout.session.expired": {
-        const session = event.data.object;
-        log("Processing checkout.session.expired", { sessionId: session.id });
-        
-        const metadata = session.metadata || {};
-        
-        // Log the expired checkout
-        await logPaymentEvent(supabaseAdmin, {
-          event_type: event.type,
-          event_id: event.id,
-          session_id: session.id,
-          user_id: metadata.user_id,
-          listing_id: metadata.listing_id,
-          post_type: metadata.post_type,
-          status: "expired",
-          amount: session.amount_total
-        });
-        
-        // If temporary listing created, update its status to expired
-        if (metadata.listing_id && metadata.post_type) {
-          await updateListingStatus(
-            supabaseAdmin, 
-            metadata.listing_id, 
-            metadata.post_type, 
-            "expired"
-          );
-          log("Updated listing status to expired", { listingId: metadata.listing_id });
-        }
-        
-        break;
-      }
-      
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        log("Processing payment_intent.succeeded", { paymentIntentId: paymentIntent.id });
-        
-        // Store successful payment intent
-        await logPaymentEvent(supabaseAdmin, {
-          event_type: event.type,
-          event_id: event.id,
-          payment_intent_id: paymentIntent.id,
-          user_id: paymentIntent.metadata?.user_id,
-          status: "success",
-          amount: paymentIntent.amount
-        });
-        
-        break;
-      }
-      
-      case "payment_intent.failed": {
-        const paymentIntent = event.data.object;
-        log("Processing payment_intent.failed", { paymentIntentId: paymentIntent.id });
-        
-        await logPaymentEvent(supabaseAdmin, {
-          event_type: event.type,
-          event_id: event.id,
-          payment_intent_id: paymentIntent.id,
-          user_id: paymentIntent.metadata?.user_id,
-          status: "failed",
-          amount: paymentIntent.amount,
-          failure_reason: paymentIntent.last_payment_error?.message || "Unknown failure"
-        });
-        
-        break;
-      }
-      
-      case "checkout.session.async_payment_succeeded": {
-        const session = event.data.object;
-        log("Processing async payment success", { sessionId: session.id });
-        
-        const metadata = session.metadata || {};
-        
-        await logPaymentEvent(supabaseAdmin, {
-          event_type: event.type,
-          event_id: event.id,
-          session_id: session.id,
-          user_id: metadata.user_id,
-          listing_id: metadata.listing_id,
-          post_type: metadata.post_type,
-          status: "success",
-          amount: session.amount_total
-        });
-        
-        // Update listing status if applicable
-        if (metadata.listing_id && metadata.post_type) {
-          await updateListingStatus(
-            supabaseAdmin, 
-            metadata.listing_id, 
-            metadata.post_type, 
-            "active", 
-            parseInt(metadata.duration_months || "1", 10)
-          );
-          log("Updated listing status to active", { listingId: metadata.listing_id });
-        }
-        
-        break;
-      }
-      
-      case "checkout.session.async_payment_failed": {
-        const session = event.data.object;
-        log("Processing async payment failure", { sessionId: session.id });
-        
-        const metadata = session.metadata || {};
-        
-        await logPaymentEvent(supabaseAdmin, {
-          event_type: event.type,
-          event_id: event.id,
-          session_id: session.id,
-          user_id: metadata.user_id,
-          listing_id: metadata.listing_id,
-          post_type: metadata.post_type,
-          status: "failed",
-          amount: session.amount_total
-        });
-        
-        // If there's a listing ID, update its status to failed
-        if (metadata.listing_id && metadata.post_type) {
-          await updateListingStatus(
-            supabaseAdmin, 
-            metadata.listing_id, 
-            metadata.post_type, 
-            "payment_failed"
-          );
-          log("Updated listing status to payment_failed", { listingId: metadata.listing_id });
-        }
-        
-        break;
-      }
-      
-      case "customer.subscription.created": 
-      case "customer.subscription.updated": {
-        const subscription = event.data.object;
-        log(`Processing ${event.type}`, { subscriptionId: subscription.id });
-        
-        await logPaymentEvent(supabaseAdmin, {
-          event_type: event.type,
-          event_id: event.id,
-          subscription_id: subscription.id,
-          user_id: subscription.metadata?.user_id,
-          status: subscription.status,
-          amount: subscription.items.data[0]?.price.unit_amount,
-          additional_data: {
-            current_period_start: subscription.current_period_start,
-            current_period_end: subscription.current_period_end,
-            cancel_at_period_end: subscription.cancel_at_period_end
+        if (updateTable) {
+          const { error: updatePostError } = await supabaseAdmin
+            .from(updateTable)
+            .update({
+              status: "active",
+              expires_at: expiresAt,
+              pricingTier: pricingTier || "standard",
+              is_featured: pricingTier?.includes("premium") || pricingTier?.includes("diamond"),
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", postId);
+
+          if (updatePostError) {
+            console.error(`Error updating ${postType} post ${postId}:`, updatePostError);
+          } else {
+            console.log(`✅ Updated ${postType} post ${postId} to active status`);
           }
-        });
-        
-        break;
+        }
       }
+    } 
+    // Handle checkout.session.expired
+    else if (event.type === "checkout.session.expired") {
+      const session = event.data.object;
+      console.log(`🕒 Checkout session expired: ${session.id}`);
+
+      // Extract metadata from the session
+      const metadata = session.metadata || {};
+      const postId = metadata.post_id;
+      const postType = metadata.post_type;
       
-      default:
-        // Log unhandled event types for future reference
-        log("Unhandled webhook event type", { type: event.type });
+      // Log payment failure
+      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
+        .from("payment_logs")
+        .select("*")
+        .eq("stripe_payment_id", session.id)
+        .single();
+
+      if (paymentLogError) {
+        console.error(`Error fetching payment log for expired session ${session.id}:`, paymentLogError);
+      } else if (paymentLog) {
+        // Update payment log status
+        const { error: updateLogError } = await supabaseAdmin
+          .from("payment_logs")
+          .update({ 
+            payment_status: "expired",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", paymentLog.id);
+
+        if (updateLogError) {
+          console.error(`Error updating expired payment log ${paymentLog.id}:`, updateLogError);
+        } else {
+          console.log(`✅ Updated payment log ${paymentLog.id} status to expired`);
+        }
+      }
     }
-    
-    // Return a 200 response to acknowledge receipt of the event
-    return new Response(JSON.stringify({ received: true, eventType: event.type }), {
-      status: 200,
+    // Handle checkout.session.async_payment_succeeded
+    else if (event.type === "checkout.session.async_payment_succeeded") {
+      const session = event.data.object;
+      console.log(`💲 Async payment succeeded for session: ${session.id}`);
+      
+      // Similar logic to checkout.session.completed
+      const metadata = session.metadata || {};
+      const postId = metadata.post_id;
+      const postType = metadata.post_type;
+      const expiresAt = metadata.expires_at;
+      
+      // Update payment log
+      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
+        .from("payment_logs")
+        .select("*")
+        .eq("stripe_payment_id", session.id)
+        .single();
+
+      if (!paymentLogError && paymentLog) {
+        await supabaseAdmin
+          .from("payment_logs")
+          .update({ 
+            payment_status: "success",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", paymentLog.id);
+        
+        console.log(`✅ Updated payment log ${paymentLog.id} after async payment success`);
+      }
+    }
+    // Handle checkout.session.async_payment_failed
+    else if (event.type === "checkout.session.async_payment_failed") {
+      const session = event.data.object;
+      console.log(`❌ Async payment failed for session: ${session.id}`);
+      
+      // Update payment log
+      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
+        .from("payment_logs")
+        .select("*")
+        .eq("stripe_payment_id", session.id)
+        .single();
+
+      if (!paymentLogError && paymentLog) {
+        await supabaseAdmin
+          .from("payment_logs")
+          .update({ 
+            payment_status: "failed",
+            updated_at: new Date().toISOString() 
+          })
+          .eq("id", paymentLog.id);
+        
+        console.log(`✅ Updated payment log ${paymentLog.id} after async payment failure`);
+      }
+    }
+    // Handle payment_intent.succeeded
+    else if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object;
+      console.log(`💰 Payment intent succeeded: ${paymentIntent.id}`);
+      
+      // Log successful payment
+      await supabaseAdmin
+        .from("payment_logs")
+        .insert({
+          payment_type: "stripe_intent",
+          stripe_payment_id: paymentIntent.id,
+          payment_status: "success",
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          metadata: paymentIntent.metadata
+        });
+    }
+    // Handle payment_intent.failed
+    else if (event.type === "payment_intent.failed") {
+      const paymentIntent = event.data.object;
+      console.log(`❌ Payment intent failed: ${paymentIntent.id}`);
+
+      // Log failed payment
+      await supabaseAdmin
+        .from("payment_logs")
+        .insert({
+          payment_type: "stripe_intent",
+          stripe_payment_id: paymentIntent.id,
+          payment_status: "failed",
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          metadata: paymentIntent.metadata,
+          error_message: paymentIntent.last_payment_error?.message
+        });
+    }
+    // Log other events
+    else {
+      console.log(`📝 Other webhook event received: ${event.type}`);
+    }
+
+    return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
     });
-    
-  } catch (err) {
-    // Catch any unexpected errors
-    log("Unexpected webhook error", { error: err.message });
-    return new Response(JSON.stringify({ error: `Webhook error: ${err.message}` }), {
+  } catch (error) {
+    console.error(`❌ Error processing webhook:`, error);
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
-
-// Helper function to log payment events
-async function logPaymentEvent(supabase, data) {
-  try {
-    // Insert into webhook_logs table
-    const { error: logError } = await supabase
-      .from('webhook_logs')
-      .insert({
-        event_type: data.event_type,
-        event_id: data.event_id,
-        status: data.status || 'unknown',
-        details: {
-          session_id: data.session_id,
-          payment_intent_id: data.payment_intent_id,
-          subscription_id: data.subscription_id,
-          user_id: data.user_id,
-          listing_id: data.listing_id,
-          post_type: data.post_type,
-          pricing_tier: data.pricing_tier,
-          duration_months: data.duration_months,
-          auto_renew: data.auto_renew,
-          amount: data.amount,
-          failure_reason: data.failure_reason,
-          ...data.additional_data
-        }
-      });
-    
-    if (logError) {
-      console.error("Failed to log webhook event:", logError);
-    }
-  } catch (e) {
-    console.error("Error logging payment event:", e);
-  }
-}
-
-// Helper function to update a listing status
-async function updateListingStatus(supabase, listingId, postType, status, durationMonths = 1) {
-  try {
-    // For job posts
-    if (postType === 'job') {
-      const expiresAt = new Date();
-      expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
-      
-      const { error } = await supabase
-        .from('jobs')
-        .update({
-          status: status,
-          updated_at: new Date().toISOString(),
-          expires_at: expiresAt.toISOString()
-        })
-        .eq('id', listingId);
-        
-      if (error) {
-        console.error(`Failed to update job listing status: ${error.message}`);
-      }
-    }
-    // For salon posts (if applicable)
-    else if (postType === 'salon') {
-      const { error } = await supabase
-        .from('salons')
-        .update({
-          status: status,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', listingId);
-        
-      if (error) {
-        console.error(`Failed to update salon listing status: ${error.message}`);
-      }
-    }
-  } catch (e) {
-    console.error("Error updating listing status:", e);
-  }
-}

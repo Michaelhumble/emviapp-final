@@ -72,6 +72,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   }, [selectedPricing, autoRenew, selectedDuration, onUpdatePricing]);
   
   const handlePricingChange = (pricingId: string) => {
+    console.log("Pricing changed to:", pricingId);
     setSelectedPricing(pricingId);
     onPricingChange(pricingId);
     
@@ -87,10 +88,13 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   };
   
   const handleDurationChange = (duration: number) => {
+    console.log("Duration changed to:", duration);
     setSelectedDuration(duration);
   };
   
   const handleAutoRenewChange = (checked: boolean) => {
+    console.log("Auto-renew changed to:", checked);
+    
     // Only Diamond plan can have auto-renew and must be 12 months
     if (selectedPricing === 'diamond' && selectedDuration !== 12) {
       setSelectedDuration(12);
@@ -126,7 +130,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       />
       
       {showDiamondWarning && (
-        <Alert variant="default" className="bg-amber-50 border-amber-200">
+        <Alert variant="warning" className="bg-amber-50 border-amber-200">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <AlertDescription>
             {t(
