@@ -3,6 +3,7 @@ import React from 'react';
 import { formatCurrency } from '@/lib/utils';
 import { calculateFinalPrice } from '@/utils/posting/jobPricing';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PricingDisplayProps {
   basePrice: number;
@@ -39,14 +40,26 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
     autoRenew
   );
   
-  // For diamond plan, show as annual only
+  // For diamond plan, show special messaging
   if (pricingId === 'diamond') {
+    const isYearly = duration === 12;
+    
     return (
       <div className="text-right">
+        {isYearly && originalPrice > finalPrice && (
+          <div className="text-sm text-gray-400 line-through">
+            {formatCurrency(originalPrice)}
+          </div>
+        )}
         <div className="text-lg font-semibold">{formatCurrency(finalPrice)}</div>
         <div className="text-sm text-gray-500">
           {t('annual subscription', 'gói đặc biệt')}
         </div>
+        {isYearly && autoRenew && (
+          <div className="text-xs text-green-600 mt-1">
+            {t('Keep this price locked in each year. Cancel anytime.', 'Giữ giá này mỗi năm. Hủy bất kỳ lúc nào.')}
+          </div>
+        )}
       </div>
     );
   }

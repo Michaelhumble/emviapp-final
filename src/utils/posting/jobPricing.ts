@@ -1,4 +1,3 @@
-
 import { JobPricingOption, JobPricingTier } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [
@@ -71,8 +70,8 @@ export const jobPricingOptions: JobPricingOption[] = [
     id: 'diamond',
     name: '💎 Diamond Featured',
     tier: 'featured' as JobPricingTier,
-    price: 999.99,
-    wasPrice: 1499.99,
+    price: 1499.99,
+    wasPrice: 1999.99,
     description: 'Top 3 Spots. Forever Trusted.',
     vietnameseDescription: 'Vị trí đặc biệt – Chỉ 3 chỗ duy nhất',
     features: [
@@ -82,7 +81,8 @@ export const jobPricingOptions: JobPricingOption[] = [
     ],
     duration: 365, // days
     tag: '🔥 Only 3 Available',
-    note: 'Includes homepage pinning, unlimited team members, and highest visibility.'
+    note: 'Includes homepage pinning, unlimited team members, and highest visibility.',
+    yearlyDiscountPrice: 999.99 // New property for yearly discount
   },
 ];
 
@@ -184,7 +184,7 @@ export const calculatePriceWithDuration = (
   };
 };
 
-// Helper function to calculate final price with all discounts applied
+// Updated calculateFinalPrice function with special Diamond plan logic
 export const calculateFinalPrice = (
   basePrice: number,
   durationMonths: number,
@@ -195,22 +195,36 @@ export const calculateFinalPrice = (
   finalPrice: number;
   discountPercentage: number;
 } => {
-  // Diamond plan has fixed price regardless of duration
+  // Special Diamond plan pricing logic
   if (pricingId === 'diamond') {
-    return {
-      originalPrice: basePrice,
-      finalPrice: basePrice,
-      discountPercentage: 0
-    };
+    const selectedOption = jobPricingOptions.find(option => option.id === 'diamond');
+    const yearlyPrice = selectedOption?.price || 1499.99;
+    const yearlyDiscountPrice = selectedOption?.yearlyDiscountPrice || 999.99;
+    
+    // If 12 month plan, apply the special discount price
+    if (durationMonths === 12) {
+      return {
+        originalPrice: yearlyPrice,
+        finalPrice: yearlyDiscountPrice, 
+        discountPercentage: Math.round(((yearlyPrice - yearlyDiscountPrice) / yearlyPrice) * 100)
+      };
+    } else {
+      // All other durations show full price with no discount
+      return {
+        originalPrice: yearlyPrice,
+        finalPrice: yearlyPrice,
+        discountPercentage: 0
+      };
+    }
   }
   
-  // Calculate duration-based discount
+  // Regular pricing logic for other plans (unchanged)
   let discountPercentage = 0;
   if (durationMonths === 3) discountPercentage = 10;
   else if (durationMonths === 6) discountPercentage = 20;
   else if (durationMonths === 12) discountPercentage = 30;
   
-  // Add auto-renew discount if enabled
+  // Add auto-renew discount if enabled (only for non-Diamond plans)
   if (autoRenew) {
     discountPercentage += 5;
   }

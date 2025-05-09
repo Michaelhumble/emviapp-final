@@ -33,6 +33,7 @@ export interface JobPricingOption {
   popular?: boolean;
   tag?: string;
   note?: string;
+  yearlyDiscountPrice?: number; // Added for Diamond tier special pricing
 }
 
 // Add missing types
