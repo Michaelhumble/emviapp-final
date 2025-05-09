@@ -5,20 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
 import { format, addDays } from 'date-fns';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAutoRenew } from '@/hooks/payments/useAutoRenew';
 
 const PostSuccessPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t, isVietnamese } = useTranslation();
+  const { toggleAutoRenew, isUpdating } = useAutoRenew();
   
   const [purchaseDetails, setPurchaseDetails] = useState({
     listingType: searchParams.get('tier') || 'standard',
     autoRenew: searchParams.get('autoRenew') === 'true',
     purchaseDate: new Date(),
     expirationDate: addDays(new Date(), 30),
+    stripePaymentId: searchParams.get('payment_intent') || null,
   });
   
   // Format dates for display
@@ -31,10 +34,24 @@ const PostSuccessPage = () => {
     navigate('/dashboard');
   };
 
-  // Toggle auto-renew (non-functional for now as specified)
-  const handleToggleAutoRenew = () => {
-    // This function is intentionally left empty as specified in requirements
-    // In the future, this would call an API to toggle auto-renew status
+  // Toggle auto-renew
+  const handleToggleAutoRenew = async () => {
+    if (!purchaseDetails.stripePaymentId) {
+      return; // Cannot toggle without payment ID
+    }
+    
+    const newAutoRenewState = await toggleAutoRenew(
+      purchaseDetails.stripePaymentId, 
+      !purchaseDetails.autoRenew
+    );
+    
+    // Only update state if we got a valid response
+    if (newAutoRenewState !== null) {
+      setPurchaseDetails(prev => ({
+        ...prev,
+        autoRenew: newAutoRenewState
+      }));
+    }
   };
 
   // Get tier display name
@@ -104,7 +121,7 @@ const PostSuccessPage = () => {
           </CardContent>
         </Card>
 
-        {purchaseDetails.autoRenew && (
+        {purchaseDetails.autoRenew && purchaseDetails.listingType !== 'free' && (
           <Card className="mb-6 bg-blue-50 border-blue-200">
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -119,9 +136,49 @@ const PostSuccessPage = () => {
                 <Button 
                   onClick={handleToggleAutoRenew}
                   variant="outline" 
+                  disabled={isUpdating || !purchaseDetails.stripePaymentId}
                   className="border-blue-300 text-blue-700 hover:bg-blue-100"
                 >
-                  {t("Turn off Auto-Renew", "Tắt tự động gia hạn")}
+                  {isUpdating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("Processing...", "Đang xử lý...")}
+                    </>
+                  ) : (
+                    t("Turn off Auto-Renew", "Tắt tự động gia hạn")
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
+        {!purchaseDetails.autoRenew && purchaseDetails.listingType !== 'free' && purchaseDetails.stripePaymentId && (
+          <Card className="mb-6 bg-gray-50 border-gray-200">
+            <CardContent className="pt-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <p className="text-gray-800 font-medium mb-1">
+                    {t("Your listing will expire on", "Tin của bạn sẽ hết hạn vào")}: {formatDate(purchaseDetails.expirationDate)}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t("Enable auto-renew to keep your listing visible", "Bật tự động gia hạn để giữ tin của bạn hiển thị")}
+                  </p>
+                </div>
+                <Button 
+                  onClick={handleToggleAutoRenew}
+                  variant="outline" 
+                  disabled={isUpdating}
+                  className="border-gray-300 hover:bg-gray-100"
+                >
+                  {isUpdating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("Processing...", "Đang xử lý...")}
+                    </>
+                  ) : (
+                    t("Enable Auto-Renew", "Bật tự động gia hạn")
+                  )}
                 </Button>
               </div>
             </CardContent>

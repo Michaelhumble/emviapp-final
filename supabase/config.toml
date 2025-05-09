@@ -10,3 +10,6 @@ verify_jwt = false
 
 [functions.cancel-subscription]
 verify_jwt = true
+
+[functions.toggle-auto-renew]
+verify_jwt = true
