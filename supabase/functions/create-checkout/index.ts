@@ -1,5 +1,6 @@
 
 // @ts-nocheck
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
@@ -10,175 +11,130 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // Handle CORS preflight request
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Parse request body
-    const { postType, postDetails, pricingOptions } = await req.json();
-    
-    // Get authentication header for user identification
+    // Get authorization header from request
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: "Not authorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const token = authHeader.replace("Bearer ", "");
 
-    // Initialize Supabase client for user authentication
+    // Create Supabase client with anonymous key
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_ANON_KEY") || "",
       {
         global: {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: authHeader },
         },
       }
     );
 
-    // Get authenticated user
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Authentication failed" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Handle free tier directly without going to Stripe
-    if (pricingOptions?.selectedPricingTier === 'free') {
-      // Create the service role client for database operations
-      const supabaseAdmin = createClient(
-        Deno.env.get("SUPABASE_URL") || "",
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
-        { auth: { persistSession: false } }
-      );
-      
-      // Calculate expiration date (30 days for free tier)
-      const expires_at = new Date();
-      expires_at.setDate(expires_at.getDate() + 30);
-      
-      // Create the job post
-      const { data: jobData, error: jobError } = await supabaseAdmin
-        .from('jobs')
-        .insert({
-          ...postDetails,
-          user_id: user.id,
-          status: 'active',
-          pricingTier: 'free',
-          expires_at: expires_at.toISOString(),
-          created_at: new Date().toISOString(),
-        })
-        .select()
-        .single();
-        
-      if (jobError) {
-        console.error("Job creation error:", jobError);
-        return new Response(JSON.stringify({ error: "Failed to create free job post" }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      
-      // Create payment log entry for the free post
-      await supabaseAdmin
-        .from('payment_logs')
-        .insert({
-          user_id: user.id,
-          listing_id: jobData.id,
-          plan_type: postType,
-          payment_status: 'success',
-          pricing_tier: 'free',
-          expires_at: expires_at.toISOString()
-        });
-        
-      return new Response(JSON.stringify({ 
-        success: true, 
-        post_id: jobData.id,
-        expires_at: expires_at.toISOString()
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Initialize Stripe with secret key
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
-    });
-
-    // Define line items based on pricing tier
-    const priceMap = {
-      'starter': 1000, // $10.00
-      'standard': 3000, // $30.00
-      'premium': 5000, // $50.00
-      'gold': 7000,    // $70.00
-      'diamond': 9900  // $99.00
-    };
-
-    // Get price based on selected tier, default to standard
-    const selectedTier = pricingOptions?.selectedPricingTier || 'standard';
-    const basePrice = priceMap[selectedTier] || priceMap.standard;
-    
-    // Apply duration multiplier (if applicable)
-    const durationMonths = pricingOptions?.durationMonths || 1;
-    
-    // Calculate discount (5% for auto-renew)
-    let finalPrice = basePrice * durationMonths;
-    if (pricingOptions?.autoRenew) {
-      finalPrice = Math.round(finalPrice * 0.95); // 5% discount
-    }
-    
-    // Format product name based on tier
-    const tierDisplay = selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1);
-    
-    // Create a temporary post record to get the ID
+    // Create Admin Supabase client with service role
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
       { auth: { persistSession: false } }
     );
 
-    // Calculate expiration date based on duration
-    const expires_at = new Date();
-    expires_at.setDate(expires_at.getDate() + (30 * durationMonths));
-
-    // Create temporary job record with pending status
-    const { data: jobData, error: jobError } = await supabaseAdmin
-      .from('jobs')
-      .insert({
-        ...postDetails,
-        user_id: user.id,
-        status: 'pending',
-        pricingTier: selectedTier,
-        expires_at: expires_at.toISOString(),
-        created_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-      
-    if (jobError) {
-      console.error("Temporary job creation error:", jobError);
-      return new Response(JSON.stringify({ error: "Failed to create temporary job record" }), {
-        status: 500,
+    // Get the user from the auth header
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Unable to get user" }), {
+        status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Create metadata for the session
-    const metadata = {
-      user_id: user.id,
-      post_id: jobData.id,
-      post_type: postType,
-      pricing_tier: selectedTier,
-      auto_renew: pricingOptions?.autoRenew ? "true" : "false",
-      expires_at: expires_at.toISOString()
+    // Parse the request body
+    const { postType, postDetails, pricingOptions } = await req.json();
+    
+    console.log("Post type:", postType);
+    console.log("Pricing tier:", pricingOptions?.selectedPricingTier);
+
+    // Get origin for success and cancel URLs
+    const origin = req.headers.get("origin") || "http://localhost:3000";
+
+    // Handle free tier immediately without creating a Stripe session
+    if (pricingOptions?.selectedPricingTier === "free") {
+      console.log("Free tier selected, bypassing Stripe");
+      
+      // Free tier logic should be handled by create-free-post function
+      return new Response(
+        JSON.stringify({ 
+          url: `${origin}/post-success?free=true&post_type=${postType}` 
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Initialize Stripe
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2023-10-16",
+    });
+
+    // Get pricing based on tier
+    const pricingMap = {
+      "standard": 2999, // $29.99
+      "premium": 4999,  // $49.99
+      "gold": 7999,     // $79.99
+      "diamond": 14999, // $149.99
     };
 
-    // Create Stripe Checkout session
+    const priceInCents = pricingMap[pricingOptions?.selectedPricingTier] || 4999;
+    
+    // Create a temporary job to associate with the payment
+    let temporaryJobId;
+    try {
+      if (postDetails) {
+        const { data: jobData, error: jobError } = await supabaseAdmin
+          .from('jobs')
+          .insert({
+            ...postDetails,
+            user_id: user.id,
+            status: 'pending_payment',
+            post_type: postType,
+            pricingTier: pricingOptions?.selectedPricingTier
+          })
+          .select('id')
+          .single();
+          
+        if (jobError) {
+          console.error("Temporary job creation error:", jobError);
+        } else if (jobData) {
+          temporaryJobId = jobData.id;
+          console.log("Created temporary job with ID:", temporaryJobId);
+        }
+      }
+    } catch (error) {
+      console.error("Error creating temporary job:", error);
+    }
+
+    // Calculate expiration date (30 days for standard, longer for other tiers)
+    const durationDays = pricingOptions?.durationMonths ? pricingOptions.durationMonths * 30 : 30;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + durationDays);
+
+    // Prepare metadata for the Stripe session
+    const metadata = {
+      user_id: user.id,
+      post_type: postType,
+      pricing_tier: pricingOptions?.selectedPricingTier,
+      expires_at: expiresAt.toISOString(),
+      auto_renew: pricingOptions?.autoRenew ? "true" : "false",
+      post_id: temporaryJobId || ""
+    };
+
+    // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -187,38 +143,42 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `EmviApp ${tierDisplay} ${postType.charAt(0).toUpperCase() + postType.slice(1)} Post`,
-              description: `${durationMonths}-month ${tierDisplay} tier posting${pricingOptions?.autoRenew ? " (auto-renew)" : ""}`,
+              name: `EmviApp ${postType === 'salon' ? 'Salon' : 'Job'} Post – ${pricingOptions?.selectedPricingTier?.charAt(0).toUpperCase() + pricingOptions?.selectedPricingTier?.slice(1)}`,
             },
-            unit_amount: finalPrice,
+            unit_amount: priceInCents,
           },
           quantity: 1,
         },
       ],
-      metadata,
-      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/post/${postType}`,
+      metadata: metadata,
+      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/post-job`,
     });
 
-    // Create payment log entry
-    await supabaseAdmin
+    // Save payment log entry
+    const { error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
       .insert({
         user_id: user.id,
-        listing_id: jobData.id,
-        stripe_payment_id: session.id,
+        listing_id: temporaryJobId || null,
         plan_type: postType,
+        pricing_tier: pricingOptions?.selectedPricingTier,
         payment_status: 'pending',
-        pricing_tier: selectedTier,
-        auto_renew_enabled: pricingOptions?.autoRenew || false,
-        expires_at: expires_at.toISOString()
+        expires_at: expiresAt.toISOString(),
+        stripe_payment_id: session.id,
+        auto_renew_enabled: pricingOptions?.autoRenew || false
       });
 
+    if (paymentLogError) {
+      console.error("Error creating payment log:", paymentLogError);
+    }
+
+    // Return the checkout session URL
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error creating checkout session:", error);
+    console.error("Stripe checkout error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -1,5 +1,4 @@
 
-
 [functions.create-checkout]
 verify_jwt = true
 
@@ -20,4 +19,3 @@ verify_jwt = true
 
 [functions.verify-checkout-session]
 verify_jwt = true
-

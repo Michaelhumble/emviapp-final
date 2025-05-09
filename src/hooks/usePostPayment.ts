@@ -12,8 +12,11 @@ export const usePostPayment = () => {
   const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
     setIsLoading(true);
     try {
+      console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
+
       // Handle free listings directly without going to Stripe
       if (pricingOptions?.selectedPricingTier === 'free') {
+        console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
           body: { 
@@ -42,11 +45,20 @@ export const usePostPayment = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw error;
+      }
+      
+      console.log("Checkout response:", data);
+      
       if (data?.url) {
-        // This redirects directly to Stripe's hosted checkout
+        console.log("Redirecting to:", data.url);
+        // Redirect directly to Stripe's hosted checkout
+        window.location.href = data.url;
         return { success: true, redirect: data.url };
       } else {
+        console.error("No checkout URL received");
         throw new Error('No checkout URL received');
       }
     } catch (error) {
