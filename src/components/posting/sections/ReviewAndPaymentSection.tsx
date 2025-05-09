@@ -95,11 +95,11 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   // Original price before discount
   const originalPrice = basePrice * selectedDuration;
   
-  // Calculate renewal date (30 days from today)
+  // Format dates for renewal info
   const today = new Date();
   const renewalDate = addDays(today, 30);
   const formattedRenewalDate = format(renewalDate, 'MMMM d, yyyy');
-  const formattedRenewalDateVi = format(renewalDate, 'd 'tháng' M, yyyy');
+  const formattedRenewalDateVi = format(renewalDate, "d 'tháng' M, yyyy");
   
   // Calculate renewal price with 20% off for auto-renewal
   const renewalDiscount = 0.2; // 20% off
