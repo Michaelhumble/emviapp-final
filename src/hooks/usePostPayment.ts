@@ -26,7 +26,10 @@ export const usePostPayment = () => {
           }
         });
 
-        if (postError) throw postError;
+        if (postError) {
+          console.error("Free post creation error:", postError);
+          throw postError;
+        }
 
         toast.success(
           t("Your free post has been submitted", "Tin miễn phí của bạn đã được đăng"), {
@@ -61,7 +64,7 @@ export const usePostPayment = () => {
         console.error("No checkout URL received");
         throw new Error('No checkout URL received');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Payment initiation error:', error);
       toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
         description: t("Please try again.", "Vui lòng thử lại.")

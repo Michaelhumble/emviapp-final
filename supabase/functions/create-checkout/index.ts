@@ -152,7 +152,7 @@ serve(async (req) => {
       ],
       metadata: metadata,
       success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/post-job`,
+      cancel_url: `${origin}/post-canceled`,
     });
 
     // Save payment log entry
