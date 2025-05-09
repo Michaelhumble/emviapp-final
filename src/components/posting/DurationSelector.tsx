@@ -21,9 +21,9 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
   className,
   durations = [
     { months: 1, label: '1 Month', vietnameseLabel: '1 tháng', discount: 0 },
-    { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 10 },
-    { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 20 },
-    { months: 12, label: '1 Year', vietnameseLabel: '1 năm', discount: 30 }
+    { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 5 },
+    { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 10 },
+    { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 20 }
   ],
   disableSelection = false,
   selectedPricing
@@ -80,7 +80,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                         )}
                         {isDiamondPlan && duration.months === 12 && (
                           <span className="text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 px-1.5 py-0.5 rounded-full ml-1">
-                            Save 33%
+                            -33%
                           </span>
                         )}
                       </Label>
@@ -88,7 +88,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                   </TooltipTrigger>
                   {isDiamondNonYearly && (
                     <TooltipContent side="top" className="p-2 max-w-xs text-center">
-                      <p>Diamond Featured listings require a 12-month commitment for the special pricing.</p>
+                      <p>Only 12-month plan unlocks special discount pricing.</p>
                     </TooltipContent>
                   )}
                 </Tooltip>

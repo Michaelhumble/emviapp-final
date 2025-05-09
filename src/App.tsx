@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -23,9 +24,6 @@ import Privacy from "@/pages/Privacy";
 import Cookies from "@/pages/Cookies";
 import CheckoutFallback from "@/pages/CheckoutFallback";
 import PostSuccess from "@/pages/post-success";
-import { Helmet } from 'react-helmet';
-import { BrowserRouter } from 'react-router-dom';
-import TestPayment from '@/pages/TestPayment';
 
 function App() {
   const location = useLocation();
@@ -77,13 +75,6 @@ function App() {
                   {/* Add the Privacy and Cookies page routes */}
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/cookies" element={<Cookies />} />
-                  
-                  {/* Test Payment route */}
-                  <Route path="/test-payment" element={
-                    <Layout>
-                      <TestPayment />
-                    </Layout>
-                  } />
                   
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
