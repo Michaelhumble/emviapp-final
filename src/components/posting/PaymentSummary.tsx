@@ -12,6 +12,7 @@ interface PaymentSummaryProps {
   finalPrice: number;
   discountPercentage: number;
   onProceedToPayment: () => void;
+  isFreePlan?: boolean;
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
@@ -21,10 +22,53 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   originalPrice,
   finalPrice,
   discountPercentage,
-  onProceedToPayment
+  onProceedToPayment,
+  isFreePlan = false
 }) => {
   const { t } = useTranslation();
 
+  // For free plans, we show a simplified summary
+  if (isFreePlan) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">{t('Payment Summary', 'Tóm tắt thanh toán')}</h3>
+        
+        <div className="space-y-2 divide-y">
+          {/* Base price line */}
+          <div className="flex justify-between py-2">
+            <span>{t('Base price', 'Giá cơ bản')}:</span>
+            <span>{formatCurrency(0)}</span>
+          </div>
+          
+          {/* Duration line */}
+          <div className="flex justify-between py-2">
+            <span>{t('Duration', 'Thời hạn')}:</span>
+            <span>{duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}</span>
+          </div>
+          
+          {/* Total section */}
+          <div className="flex justify-between py-3 font-semibold">
+            <span>{t('Total', 'Tổng cộng')}:</span>
+            <div className="text-right">
+              <div className="text-xl">{formatCurrency(0)}</div>
+              <div className="text-xs text-gray-500">
+                {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <Button 
+          className="w-full mt-4" 
+          onClick={onProceedToPayment}
+        >
+          {t('Continue', 'Tiếp tục')}
+        </Button>
+      </div>
+    );
+  }
+
+  // Standard payment summary for paid plans
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{t('Payment Summary', 'Tóm tắt thanh toán')}</h3>
