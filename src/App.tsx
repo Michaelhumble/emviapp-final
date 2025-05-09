@@ -21,6 +21,7 @@ import Terms from "@/pages/Terms";
 import Refund from "@/pages/Refund";
 import Privacy from "@/pages/Privacy";
 import Cookies from "@/pages/Cookies";
+import CheckoutFallback from "@/pages/CheckoutFallback";
 
 function App() {
   const location = useLocation();
@@ -42,6 +43,9 @@ function App() {
               <RouteLogger />
               <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                 <Routes>
+                  {/* Add our custom fallback for the checkout route */}
+                  <Route path="/checkout" element={<CheckoutFallback />} />
+                  
                   {/* Explicitly define the /salons route to use StableSalonPage */}
                   <Route path="/salons" element={<StableSalonPage />} />
                   

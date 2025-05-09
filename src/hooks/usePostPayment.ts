@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
+import { useTranslation } from '@/hooks/useTranslation';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const initiatePayment = async (postType: 'job' | 'salon') => {
     setIsLoading(true);
@@ -15,13 +17,18 @@ export const usePostPayment = () => {
 
       if (error) throw error;
       if (data?.url) {
+        // This redirects directly to Stripe's hosted checkout
         window.location.href = data.url;
+        return true;
+      } else {
+        throw new Error('No checkout URL received');
       }
     } catch (error) {
       console.error('Payment initiation error:', error);
-      toast.error("Failed to initiate payment", {
-        description: "Please try again."
+      toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
+        description: t("Please try again.", "Vui lòng thử lại.")
       });
+      return false;
     } finally {
       setIsLoading(false);
     }

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -13,11 +12,14 @@ import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/hooks/useTranslation';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { toast } from 'sonner';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
   const { t } = useTranslation();
+  const { initiatePayment, isLoading } = usePostPayment();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [jobDetails, setJobDetails] = useState<Partial<Job>>({
@@ -98,14 +100,22 @@ const JobPost = () => {
   };
 
   const handleSubmit = async () => {
-    // Here we would submit both job details and pricing options
-    // For now, we'll just navigate to checkout
-    navigate('/checkout', { 
-      state: { 
-        jobDetails,
-        pricingOptions
+    // Instead of navigating to /checkout, we directly initiate the Stripe payment
+    if (pricingOptions.selectedPricingTier !== 'free') {
+      const success = await initiatePayment('job');
+      if (!success) {
+        // Payment initiation failed, don't proceed
+        toast.error(t("Payment could not be initiated", "Không thể bắt đầu thanh toán"), {
+          description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
+        });
+        return;
       }
-    });
+      // The redirect to Stripe happens in initiatePayment()
+    } else {
+      // For free listings, just show a success message and redirect to dashboard
+      toast.success(t("Your job post has been submitted", "Tin tuyển dụng của bạn đã được đăng"));
+      navigate('/dashboard');
+    }
   };
 
   return (

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -9,6 +8,8 @@ import { PricingOptions } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import PaymentConfirmationModal from '@/components/posting/PaymentConfirmationModal';
 import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { toast } from 'sonner';
 
 // Mock sections that would normally be imported
 const SalonDetailsSection = ({ details, onChange }: any) => (
@@ -30,6 +31,7 @@ const ContactInformationSection = ({ contactInfo, onChange }: any) => (
 const SalonPost = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { initiatePayment, isLoading } = usePostPayment();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -87,10 +89,25 @@ const SalonPost = () => {
     setPricingOptions({ ...pricingOptions, ...options });
   };
   
-  const handlePaymentConfirmation = () => {
+  const handlePaymentConfirmation = async () => {
     setShowPaymentModal(false);
-    // Process payment and submit salon
-    navigate('/salon-post-success');
+    
+    // Process payment via Stripe directly
+    if (pricingOptions.selectedPricingTier !== 'free') {
+      const success = await initiatePayment('salon');
+      if (!success) {
+        // Payment initiation failed
+        toast.error(t("Payment could not be initiated", "Không thể bắt đầu thanh toán"), {
+          description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
+        });
+        return;
+      }
+      // The redirect to Stripe happens in initiatePayment()
+    } else {
+      // For free listings, just show a success message and redirect
+      toast.success(t("Your salon post has been submitted", "Tin salon của bạn đã được đăng"));
+      navigate('/salon-post-success');
+    }
   };
   
   const handleAmenitiesChange = (amenities: string[]) => {
