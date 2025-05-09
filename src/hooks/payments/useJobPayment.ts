@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { JobDetailsSubmission, PricingOptions } from '@/types/job';
 import { useTranslation } from '@/hooks/useTranslation';
-import { StripeCheckoutResponse } from '@/types/pricing';
 
 export const useJobPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +67,7 @@ export const useJobPayment = () => {
         body: payload
       });
 
-      console.log("📥 Stripe checkout raw response:", data);
+      console.log("📥 Stripe checkout full response:", data);
       
       if (error) {
         console.error("Edge function error:", error);
@@ -83,8 +82,6 @@ export const useJobPayment = () => {
         toast.error(t("Invalid response from payment service", "Phản hồi không hợp lệ từ dịch vụ thanh toán"));
         throw new Error('No data returned from payment service');
       }
-      
-      console.log("📥 Full checkout response data:", JSON.stringify(data, null, 2));
       
       // Explicitly validate the URL
       if (!data.url) {

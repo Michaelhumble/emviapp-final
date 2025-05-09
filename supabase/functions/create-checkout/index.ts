@@ -3,144 +3,134 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
+// Important CORS headers for browser requests
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-  // Handle CORS preflight request
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
-
+  
   try {
-    console.log("Checkout function called");
-    // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured in Supabase secrets");
+    }
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Get the request body
-    const body = await req.json();
-    console.log("Request body:", body);
+    // Initialize Stripe with the secret key
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: "2023-10-16",
+    });
     
-    // Get user info from JWT token
+    // Get request body
+    const { postType, postDetails, pricingOptions } = await req.json();
+    console.log("Request received:", { postType, pricingDetails: !!postDetails, pricingOptions });
+    
+    if (!postType || !pricingOptions) {
+      throw new Error("Missing required fields in request body");
+    }
+    
+    // Create Supabase client with service role key to access restricted resources
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") || "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+      { auth: { persistSession: false } }
+    );
+    
+    // Get user information from auth header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing Authorization header" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      throw new Error("No authorization header");
     }
     
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      console.error("Auth error:", authError);
-      return new Response(
-        JSON.stringify({ error: "Authentication failed" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Initialize Stripe
-    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeSecretKey) {
-      console.error("Missing STRIPE_SECRET_KEY environment variable");
-      return new Response(
-        JSON.stringify({ error: "Server configuration error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    console.log("Initializing Stripe with key length:", stripeSecretKey.length);
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: "2023-10-16",
-    });
-
-    // Extract data from request body
-    const { postType, postDetails, pricingOptions } = body;
-
-    if (!postType || !pricingOptions || !pricingOptions.selectedPricingTier) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Calculate price based on tier and duration
-    let priceAmount = 0;
-    let durationMonths = pricingOptions.durationMonths || 1;
-    
-    // This is just an example - your actual pricing logic would go here
-    switch (pricingOptions.selectedPricingTier) {
-      case 'premium':
-        priceAmount = 9900; // $99.00
-        break;
-      case 'featured':
-        priceAmount = 4900; // $49.00
-        break;
-      case 'standard':
-        priceAmount = 2900; // $29.00
-        break;
-      default:
-        priceAmount = 1900; // $19.00
+    const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);
+    if (userError || !userData.user) {
+      throw new Error("Invalid user token");
     }
     
-    // Apply duration multiplier and any discounts
-    if (durationMonths > 1) {
-      // Simple duration discount example
-      const discount = durationMonths >= 6 ? 0.2 : durationMonths >= 3 ? 0.1 : 0;
-      priceAmount = Math.round(priceAmount * durationMonths * (1 - discount));
+    const user = userData.user;
+    console.log("User authenticated:", { id: user.id, email: user.email });
+    
+    // Determine pricing based on selected options
+    let amount = 4900; // Default price $49.00
+    let productName = "Standard Listing";
+    
+    if (pricingOptions.selectedPricingTier === "premium") {
+      amount = 9900; // $99.00
+      productName = "Premium Listing";
+    } else if (pricingOptions.selectedPricingTier === "diamond") {
+      amount = 14900; // $149.00
+      productName = "Diamond Listing";
     }
-
-    // Create or retrieve customer
+    
+    // Apply duration discount if applicable
+    if (pricingOptions.durationMonths && pricingOptions.durationMonths > 1) {
+      // 10% discount for 3 months, 15% for 6 months, 20% for 12 months
+      const discountPercent = pricingOptions.durationMonths >= 12 ? 0.2 : 
+                             pricingOptions.durationMonths >= 6 ? 0.15 : 
+                             pricingOptions.durationMonths >= 3 ? 0.1 : 0;
+      
+      if (discountPercent > 0) {
+        // Apply discount and adjust for multiple months
+        const discountedMonthly = Math.round(amount * (1 - discountPercent));
+        amount = discountedMonthly * pricingOptions.durationMonths;
+      } else {
+        // Just multiply by months if no discount
+        amount = amount * pricingOptions.durationMonths;
+      }
+    }
+    
+    // Create or retrieve Stripe customer
     let customerId;
+    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
-    // Look for existing customer
-    const { data: customers } = await stripe.customers.list({
-      email: user.email,
-      limit: 1
-    });
-    
-    if (customers && customers.length > 0) {
-      customerId = customers[0].id;
-      console.log("Using existing customer:", customerId);
+    if (customers.data.length > 0) {
+      customerId = customers.data[0].id;
+      console.log("Found existing Stripe customer:", customerId);
     } else {
-      // Create a new customer
       const newCustomer = await stripe.customers.create({
         email: user.email,
         metadata: {
-          user_id: user.id
-        }
+          user_id: user.id,
+        },
       });
       customerId = newCustomer.id;
-      console.log("Created new customer:", customerId);
+      console.log("Created new Stripe customer:", customerId);
     }
-
-    // First, create a payment log entry
-    const { data: paymentLog, error: paymentLogError } = await supabase
+    
+    // Store payment intent in database for tracking
+    const { data: paymentLogData, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
       .insert({
         user_id: user.id,
-        payment_type: postType,
-        amount: priceAmount,
+        post_type: postType,
+        amount: amount,
         status: 'pending',
-        tier: pricingOptions.selectedPricingTier,
-        duration_months: durationMonths
+        pricing_tier: pricingOptions.selectedPricingTier,
+        post_details: postDetails || {},
+        pricing_options: pricingOptions
       })
-      .select()
+      .select('id')
       .single();
       
     if (paymentLogError) {
       console.error("Error creating payment log:", paymentLogError);
-    } else {
-      console.log("Created payment log:", paymentLog);
+      throw new Error("Failed to create payment record");
     }
-
+    
+    const payment_log_id = paymentLogData.id;
+    console.log("Created payment log:", { payment_log_id });
+    
+    // Success and cancel URLs with payment log ID
+    const origin = new URL(req.url).origin;
+    const success_url = new URL('/post-success', origin).toString();
+    const cancel_url = new URL('/post-canceled', origin).toString();
+    
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -150,58 +140,61 @@ serve(async (req) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `${postType.toUpperCase()} - ${pricingOptions.selectedPricingTier} (${durationMonths} month${durationMonths > 1 ? 's' : ''})`,
-              description: `${durationMonths} month${durationMonths > 1 ? 's' : ''} of ${pricingOptions.selectedPricingTier} visibility`,
+              name: `${productName} - ${postType.charAt(0).toUpperCase() + postType.slice(1)}`,
+              description: `${pricingOptions.durationMonths || 1} month${pricingOptions.durationMonths > 1 ? 's' : ''} listing`,
             },
-            unit_amount: priceAmount,
+            unit_amount: amount,
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.get("origin")}/post-success?session_id={CHECKOUT_SESSION_ID}&payment_log_id=${paymentLog?.id}`,
-      cancel_url: `${req.headers.get("origin")}/${postType === 'job' ? 'post-job' : 'post-salon'}`,
+      success_url: `${success_url}?payment_log_id=${payment_log_id}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${cancel_url}?payment_log_id=${payment_log_id}`,
       metadata: {
-        user_id: user.id,
+        payment_log_id: payment_log_id,
         post_type: postType,
         pricing_tier: pricingOptions.selectedPricingTier,
-        duration_months: durationMonths,
-        payment_log_id: paymentLog?.id || '',
+        user_id: user.id,
       },
     });
-
-    console.log("Created Stripe session:", session.id);
-    console.log("Session URL:", session.url);
     
-    // Update the payment log with the session ID
-    if (paymentLog) {
-      const { error: updateError } = await supabase
-        .from('payment_logs')
-        .update({
-          stripe_session_id: session.id
-        })
-        .eq('id', paymentLog.id);
-        
-      if (updateError) {
-        console.error("Error updating payment log:", updateError);
-      }
-    }
-
-    // Return the checkout URL to the client
+    console.log("Checkout session created:", { id: session.id, url: session.url });
+    
+    // Update payment log with session ID
+    await supabaseAdmin
+      .from('payment_logs')
+      .update({ 
+        stripe_session_id: session.id,
+        checkout_url: session.url
+      })
+      .eq('id', payment_log_id);
+    
+    // Return success with URL for redirection
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
+        success: true,
         url: session.url,
         session_id: session.id,
-        payment_log_id: paymentLog?.id
+        payment_log_id: payment_log_id
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      }
     );
-    
   } catch (error) {
-    console.error("Error in checkout function:", error);
+    console.error("Error in create-checkout:", error);
+    
     return new Response(
-      JSON.stringify({ error: error.message || "Unknown error occurred" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({
+        success: false,
+        error: error.message || "Unknown error occurred",
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      }
     );
   }
 });

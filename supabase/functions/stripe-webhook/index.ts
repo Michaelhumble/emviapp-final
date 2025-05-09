@@ -14,192 +14,149 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
   
-  const signature = req.headers.get("stripe-signature");
-  if (!signature) {
-    console.error("Missing Stripe signature");
-    return new Response(
-      JSON.stringify({ error: "Missing stripe signature" }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-  
   try {
-    // Get request body for webhook verification
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+    
+    if (!stripeKey || !webhookSecret) {
+      throw new Error("Required Stripe configuration is missing");
+    }
+
+    // Get the signature from the header
+    const signature = req.headers.get("stripe-signature");
+    if (!signature) {
+      throw new Error("No stripe signature in request");
+    }
+
+    // Get raw body for webhook signature verification
     const body = await req.text();
     
-    // Initialize Stripe with webhook secret for verification
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    // Initialize Stripe
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
-    
-    const stripeWebhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-    if (!stripeWebhookSecret) {
-      console.error("Missing STRIPE_WEBHOOK_SECRET");
-      return new Response(
-        JSON.stringify({ error: "Server configuration error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    
+
     // Verify webhook signature
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
-      stripeWebhookSecret
+      webhookSecret
     );
     
-    console.log(`Received Stripe webhook event: ${event.type}`);
+    // Initialize Supabase client with service role key
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") || "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+      { auth: { persistSession: false } }
+    );
     
-    // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    console.log(`Webhook event received: ${event.type}`);
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
-    // Log the webhook event
-    const { data: logData, error: logError } = await supabase
+    // Log webhook event
+    await supabase
       .from('webhook_logs')
       .insert({
         event_type: event.type,
-        payload: event
+        payload: event.data.object,
+        source: 'stripe'
       });
       
-    if (logError) {
-      console.error("Error logging webhook:", logError);
-    }
-    
     // Process different event types
-    switch (event.type) {
-      case 'checkout.session.completed': {
-        const session = event.data.object;
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const paymentLogId = session.metadata?.payment_log_id;
+      
+      if (paymentLogId) {
+        console.log(`Processing completed payment for log: ${paymentLogId}`);
         
         // Update payment log status
         const { error: updateError } = await supabase
           .from('payment_logs')
-          .update({
+          .update({ 
             status: 'completed',
-            stripe_payment_id: session.payment_intent,
-            completed_at: new Date().toISOString()
+            completed_at: new Date().toISOString(),
+            payment_details: session
           })
-          .eq('stripe_session_id', session.id);
+          .eq('id', paymentLogId);
           
         if (updateError) {
           console.error("Error updating payment log:", updateError);
         }
         
-        // Create post if it doesn't exist yet
-        if (session.metadata?.post_type && session.metadata?.payment_log_id) {
-          const { data: existingPost } = await supabase
-            .from('posts')
-            .select('id')
-            .eq('payment_log_id', session.metadata.payment_log_id)
-            .single();
-            
-          if (!existingPost) {
-            // Calculate expiration date based on duration
-            const durationMonths = parseInt(session.metadata.duration_months || '1');
-            const expiresAt = new Date();
-            expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
-            
-            // Create new post record
-            const { error: postError } = await supabase
-              .from('posts')
-              .insert({
-                user_id: session.metadata.user_id,
-                post_type: session.metadata.post_type,
-                status: 'active',
-                pricing_tier: session.metadata.pricing_tier,
-                payment_log_id: session.metadata.payment_log_id,
-                expires_at: expiresAt.toISOString()
-              });
-              
-            if (postError) {
-              console.error("Error creating post:", postError);
-            }
-          }
-        }
-        
-        break;
-      }
-      
-      case 'checkout.session.expired': {
-        const session = event.data.object;
-        
-        // Update payment log status
-        const { error: updateError } = await supabase
+        // Get payment details for post creation
+        const { data: paymentLog } = await supabase
           .from('payment_logs')
-          .update({
-            status: 'expired'
-          })
-          .eq('stripe_session_id', session.id);
-          
-        if (updateError) {
-          console.error("Error updating payment log:", updateError);
-        }
-        
-        break;
-      }
-      
-      case 'payment_intent.succeeded': {
-        const paymentIntent = event.data.object;
-        
-        // Find related payment log by payment intent ID
-        const { data: paymentLog, error: paymentLogError } = await supabase
-          .from('payment_logs')
-          .select('id, status')
-          .eq('stripe_payment_id', paymentIntent.id)
+          .select('*')
+          .eq('id', paymentLogId)
           .single();
           
-        if (paymentLogError) {
-          console.error("Error finding payment log:", paymentLogError);
-        } else if (paymentLog && paymentLog.status !== 'completed') {
-          // Update payment log status if not already completed
-          const { error: updateError } = await supabase
-            .from('payment_logs')
-            .update({
-              status: 'completed',
-              completed_at: new Date().toISOString()
-            })
-            .eq('id', paymentLog.id);
+        if (paymentLog) {
+          // Create the actual post based on the payment
+          const { post_type, post_details, pricing_options, user_id } = paymentLog;
+          
+          // Calculate expiration date based on duration months
+          const months = pricing_options.durationMonths || 1;
+          const expiresAt = new Date();
+          expiresAt.setMonth(expiresAt.getMonth() + months);
+          
+          // Create post record
+          const postData = {
+            ...post_details,
+            user_id,
+            status: 'active',
+            post_type,
+            pricingTier: pricing_options.selectedPricingTier,
+            payment_id: paymentLogId,
+            expires_at: expiresAt.toISOString()
+          };
+          
+          const { data: post, error: postError } = await supabase
+            .from('posts')
+            .insert(postData)
+            .select('id')
+            .single();
             
-          if (updateError) {
-            console.error("Error updating payment log:", updateError);
+          if (postError) {
+            console.error("Error creating post:", postError);
+          } else {
+            console.log(`Created post: ${post.id} with expiration: ${expiresAt.toISOString()}`);
+            
+            // Link post ID back to payment log
+            await supabase
+              .from('payment_logs')
+              .update({ post_id: post.id })
+              .eq('id', paymentLogId);
           }
         }
-        
-        break;
       }
+    } else if (event.type === 'checkout.session.expired') {
+      const session = event.data.object;
+      const paymentLogId = session.metadata?.payment_log_id;
       
-      case 'payment_intent.payment_failed': {
-        const paymentIntent = event.data.object;
-        
-        // Update payment log status
-        const { error: updateError } = await supabase
+      if (paymentLogId) {
+        // Update payment log for expired session
+        await supabase
           .from('payment_logs')
-          .update({
-            status: 'failed',
-            error_message: paymentIntent.last_payment_error?.message || 'Payment failed'
+          .update({ 
+            status: 'expired',
+            updated_at: new Date().toISOString()
           })
-          .eq('stripe_payment_id', paymentIntent.id);
-          
-        if (updateError) {
-          console.error("Error updating payment log:", updateError);
-        }
-        
-        break;
+          .eq('id', paymentLogId);
       }
     }
-    
-    // Return a success response
-    return new Response(
-      JSON.stringify({ received: true }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+
+    return new Response(JSON.stringify({ received: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
   } catch (error) {
-    console.error(`Error handling webhook: ${error.message}`);
+    console.error(`Webhook error: ${error.message}`);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400 
+      }
     );
   }
 });

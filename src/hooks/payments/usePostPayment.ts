@@ -27,11 +27,11 @@ export const usePostPayment = () => {
       if (postType === 'job') {
         console.log("Calling initiateJobPayment...");
         result = await initiateJobPayment(postDetails, pricingOptions);
-        console.log("Full job payment result:", result); // Log complete result
+        console.log("Full job payment result:", result);
       } else if (postType === 'salon') {
         console.log("Calling initiateSalonPayment...");
         result = await initiateSalonPayment(postDetails, pricingOptions);
-        console.log("Full salon payment result:", result); // Log complete result
+        console.log("Full salon payment result:", result);
       } else {
         throw new Error(`Unsupported post type: ${postType}`);
       }
@@ -60,18 +60,11 @@ export const usePostPayment = () => {
           throw new Error('Invalid redirect URL format');
         }
         
-        // For paid plans, redirect to Stripe checkout with delay to ensure logs are visible
+        // For paid plans, redirect to Stripe checkout immediately
         console.log("🔄 Redirecting to Stripe checkout URL:", result.redirect);
         
-        // Don't use timeout, redirect immediately with valid URL
-        if (result.redirect) {
-          window.location.href = result.redirect;
-        } else {
-          console.error("❌ Redirect URL suddenly became undefined");
-          toast.error(t("Checkout redirect failed", "Chuyển hướng thanh toán thất bại"), {
-            description: t("Please try again", "Vui lòng thử lại")
-          });
-        }
+        // Redirect immediately without using setTimeout
+        window.location.href = result.redirect;
         
         return result;
       } else {
