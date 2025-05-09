@@ -1,17 +1,10 @@
-
 import React, { useState } from "react";
-import { Menu, Flame, Home, Briefcase, Store, Scissors, Users, Info, Mail } from "lucide-react";
+import { Menu, Flame, Home, Briefcase, Store, Scissors, Users, Info, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { mainNavigation } from "./config/navigationItems";
-import { Globe } from "lucide-react";
-
-type MobileMenuProps = {
-  user: any | null;
-  handleSignOut: () => Promise<void>;
-};
 
 // Map of navigation paths to their corresponding icons
 const iconMap: Record<string, React.FC<{ className?: string }>> = {

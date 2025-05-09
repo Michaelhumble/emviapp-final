@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
 import { Globe, Check, X } from 'lucide-react';
 import { setLanguagePreference, getLanguagePreference, addLanguageChangeListener } from '@/utils/languagePreference';
@@ -31,8 +30,8 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
     }
   };
 
-  // Enhanced language drawer for mobile
-  const renderMobileDrawer = () => (
+  // Enhanced language drawer - more compact
+  const renderLanguageDrawer = () => (
     <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
       <DrawerTrigger asChild>
         <Button 
@@ -46,9 +45,9 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
           </span>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="px-4 pb-6 pt-2">
-        <div className="flex justify-between items-center mb-3 pt-2">
-          <h3 className="text-lg font-medium text-center flex-1">Choose Language</h3>
+      <DrawerContent className="px-4 pb-4 pt-2 max-h-48">
+        <div className="flex justify-between items-center mb-2 pt-2">
+          <h3 className="text-base font-medium text-center flex-1">Choose Language</h3>
           <DrawerClose asChild>
             <Button variant="ghost" size="sm" className="rounded-full w-8 h-8 p-0">
               <X className="h-4 w-4" />
@@ -56,10 +55,10 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
             </Button>
           </DrawerClose>
         </div>
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-2">
           <Button
             variant={language === 'en' ? 'default' : 'outline'}
-            className="w-full h-14 justify-start text-lg font-medium"
+            className="w-full h-10 justify-start text-base font-medium"
             onClick={() => handleLanguageChange('en')}
           >
             <span className="mr-2">🇺🇸</span> English
@@ -67,7 +66,7 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
           </Button>
           <Button
             variant={language === 'vi' ? 'default' : 'outline'}
-            className="w-full h-14 justify-start text-lg font-medium"
+            className="w-full h-10 justify-start text-base font-medium"
             onClick={() => handleLanguageChange('vi')}
           >
             <span className="mr-2">🇻🇳</span> Tiếng Việt
@@ -78,32 +77,9 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
     </Drawer>
   );
 
-  // Minimal version (for navbar)
-  if (minimal) {
-    return (
-      <div className={`flex items-center ${className}`}>
-        {renderMobileDrawer()}
-      </div>
-    );
-  }
-
-  // Full version (for mobile menu)
   return (
     <div className={`flex items-center ${className}`}>
-      <div className="hidden md:block">
-        <ToggleGroup type="single" value={language} onValueChange={handleLanguageChange} className="flex flex-wrap">
-          <ToggleGroupItem value="en" className="text-xs px-3 py-1.5 min-h-[40px]">
-            <span className="mr-1">🇺🇸</span> English
-          </ToggleGroupItem>
-          <ToggleGroupItem value="vi" className="text-xs px-3 py-1.5 min-h-[40px]">
-            <span className="mr-1">🇻🇳</span> Tiếng Việt
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-      
-      <div className="md:hidden">
-        {renderMobileDrawer()}
-      </div>
+      {renderLanguageDrawer()}
     </div>
   );
 };
