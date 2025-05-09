@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -100,21 +101,48 @@ const JobPost = () => {
   };
 
   const handleSubmit = async () => {
-    // Instead of navigating to /checkout, we directly initiate the Stripe payment
-    if (pricingOptions.selectedPricingTier !== 'free') {
-      const success = await initiatePayment('job');
-      if (!success) {
-        // Payment initiation failed, don't proceed
-        toast.error(t("Payment could not be initiated", "Không thể bắt đầu thanh toán"), {
-          description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
-        });
-        return;
+    try {
+      // Show loading state
+      toast.loading(
+        t("Processing your submission...", "Đang xử lý đơn của bạn..."),
+        { id: "job-submission" }
+      );
+      
+      // Pass both job details and pricing options to the payment hook
+      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      
+      // Clear loading state
+      toast.dismiss("job-submission");
+
+      if (result.success) {
+        if (result.redirect) {
+          // For free posts, navigate to success page
+          if (result.redirect === '/post-success') {
+            navigate('/post-success', { 
+              state: { 
+                postType: 'job',
+                postDetails: jobDetails,
+                pricingDetails: pricingOptions,
+                postData: result.data
+              } 
+            });
+          } else {
+            // For paid posts, redirect to Stripe
+            window.location.href = result.redirect;
+          }
+        }
+      } else {
+        toast.error(
+          t("There was a problem with your submission", "Có vấn đề với việc gửi đơn của bạn"),
+          { description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ") }
+        );
       }
-      // The redirect to Stripe happens in initiatePayment()
-    } else {
-      // For free listings, just show a success message and redirect to dashboard
-      toast.success(t("Your job post has been submitted", "Tin tuyển dụng của bạn đã được đăng"));
-      navigate('/dashboard');
+    } catch (error) {
+      console.error("Job post submission error:", error);
+      toast.error(
+        t("Submission error", "Lỗi khi gửi đơn"),
+        { description: t("Please check your details and try again", "Vui lòng kiểm tra thông tin của bạn và thử lại") }
+      );
     }
   };
 
@@ -132,6 +160,7 @@ const JobPost = () => {
         onNext={nextStep}
         onPrev={prevStep}
         onSubmit={handleSubmit}
+        isSubmitting={isLoading}
       >
         {currentStep === 1 && (
           <JobDetailsSection 
@@ -167,6 +196,7 @@ const JobPost = () => {
             pricingOptions={pricingOptions}
             onPricingChange={handlePricingChange}
             onUpdatePricing={handleUpdatePricing}
+            isSubmitting={isLoading}
           />
         )}
       </PostWizardLayout>

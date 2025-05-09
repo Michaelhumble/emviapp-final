@@ -1,198 +1,187 @@
-
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Layout } from "@/components/layout";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle, Loader2 } from "lucide-react";
-import { format, addDays } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useAutoRenew } from '@/hooks/payments/useAutoRenew';
+import { Button } from '@/components/ui/button';
+import { Loader2, CheckCircle, Share2, Home } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-const PostSuccessPage = () => {
+const PostSuccess = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { t, isVietnamese } = useTranslation();
-  const { toggleAutoRenew, isUpdating } = useAutoRenew();
+  const { t } = useTranslation();
+  const { userProfile } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [postDetails, setPostDetails] = useState<any>(null);
   
-  const [purchaseDetails, setPurchaseDetails] = useState({
-    listingType: searchParams.get('tier') || 'standard',
-    autoRenew: searchParams.get('autoRenew') === 'true',
-    purchaseDate: new Date(),
-    expirationDate: addDays(new Date(), 30),
-    stripePaymentId: searchParams.get('payment_intent') || null,
-  });
-  
-  // Format dates for display
-  const formatDate = (date: Date) => {
-    return format(date, 'MMMM dd, yyyy');
-  };
-
-  // Navigate to dashboard
-  const handleGoToDashboard = () => {
-    navigate('/dashboard');
-  };
-
-  // Toggle auto-renew
-  const handleToggleAutoRenew = async () => {
-    if (!purchaseDetails.stripePaymentId) {
-      return; // Cannot toggle without payment ID
-    }
+  useEffect(() => {
+    const checkPostStatus = async () => {
+      setIsLoading(true);
+      
+      try {
+        // Check if we have state from free post creation
+        if (location.state && location.state.postType) {
+          setPostDetails({
+            type: location.state.postType,
+            details: location.state.postDetails,
+            pricing: location.state.pricingDetails,
+            data: location.state.postData
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Otherwise, check URL parameters for Stripe redirect
+        const params = new URLSearchParams(location.search);
+        const referenceId = params.get('reference');
+        const status = params.get('status');
+        
+        if (referenceId && status === 'success') {
+          // Fetch checkout session details from our database
+          const { data: checkoutData, error: checkoutError } = await supabase
+            .from('checkout_sessions')
+            .select('*')
+            .eq('reference_id', referenceId)
+            .single();
+          
+          if (checkoutError || !checkoutData) {
+            console.error('Error fetching checkout data:', checkoutError);
+            toast.error(t('Could not verify your payment', 'Không thể xác nhận thanh toán của bạn'));
+            navigate('/');
+            return;
+          }
+          
+          // Fetch the created post details
+          const tableName = checkoutData.post_type === 'job' ? 'jobs' : 'salons';
+          const { data: postData, error: postError } = await supabase
+            .from(tableName)
+            .select('*')
+            .eq('user_id', userProfile?.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          
+          if (postError || !postData) {
+            console.error('Error fetching post data:', postError);
+            // Don't block the success page if we can't fetch post details
+          }
+          
+          setPostDetails({
+            type: checkoutData.post_type,
+            checkout: checkoutData,
+            post: postData
+          });
+        } else {
+          // If no reference or state, redirect to home
+          navigate('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error in post success page:', error);
+        toast.error(t('An error occurred', 'Đã xảy ra lỗi'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    const newAutoRenewState = await toggleAutoRenew(
-      purchaseDetails.stripePaymentId, 
-      !purchaseDetails.autoRenew
+    checkPostStatus();
+  }, [location, navigate, userProfile, t]);
+  
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-600 mb-4" />
+        <p>{t('Verifying your submission...', 'Đang xác nhận đơn của bạn...')}</p>
+      </div>
     );
-    
-    // Only update state if we got a valid response
-    if (newAutoRenewState !== null) {
-      setPurchaseDetails(prev => ({
-        ...prev,
-        autoRenew: newAutoRenewState
-      }));
-    }
-  };
-
-  // Get tier display name
-  const getTierDisplayName = (tier: string) => {
-    switch (tier.toLowerCase()) {
-      case 'featured':
-        return 'Gold Featured';
-      case 'premium':
-        return 'Premium';
-      case 'free':
-        return 'Free';
-      case 'diamond':
-        return 'Top Diamond';
-      default:
-        return 'Standard';
-    }
-  };
+  }
+  
+  const postType = postDetails?.type === 'job' ? 
+    t('job post', 'tin tuyển dụng') : 
+    t('salon post', 'tin salon');
+  
+  const isPaidPost = postDetails?.pricing?.selectedPricingTier !== 'free' && 
+                     postDetails?.checkout?.pricing_tier !== 'free';
+  
+  const autoRenewEnabled = postDetails?.pricing?.autoRenew || 
+                           postDetails?.checkout?.auto_renew || 
+                           false;
 
   return (
-    <Layout>
-      <div className="container max-w-3xl mx-auto px-4 py-12">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-playfair mb-4">
-            {t(
-              "Your post has been submitted successfully!",
-              "Tin của bạn đã đăng thành công!"
-            )}
-          </h1>
-          <Alert variant="default" className="bg-green-50 border-green-200">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            <AlertDescription className="ml-2 text-green-700">
-              {isVietnamese ? 
-                "Chúc mừng! Tin của bạn đã được đăng thành công và hiện đã hiển thị trực tuyến." : 
-                "Congratulations! Your listing has been successfully posted and is now visible online."}
-            </AlertDescription>
-          </Alert>
-        </div>
-
-        <Card className="mb-6 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium">
-              {t("Purchase Summary", "Thông tin mua hàng")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-2 py-2 border-b">
-              <span className="text-gray-600">{t("Listing Type", "Loại tin đăng")}:</span>
-              <span className="font-medium">{getTierDisplayName(purchaseDetails.listingType)}</span>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 py-2 border-b">
-              <span className="text-gray-600">{t("Purchase Date", "Ngày mua")}:</span>
-              <span>{formatDate(purchaseDetails.purchaseDate)}</span>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 py-2 border-b">
-              <span className="text-gray-600">{t("Expiration Date", "Ngày hết hạn")}:</span>
-              <span>{formatDate(purchaseDetails.expirationDate)}</span>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 py-2">
-              <span className="text-gray-600">{t("Auto-Renew", "Tự động gia hạn")}:</span>
-              <span className={`font-medium ${purchaseDetails.autoRenew ? 'text-green-600' : 'text-gray-600'}`}>
-                {purchaseDetails.autoRenew ? t("ON", "BẬT") : t("OFF", "TẮT")}
+    <div className="container mx-auto px-4 py-16 max-w-3xl">
+      <div className="text-center mb-12">
+        <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
+        <h1 className="text-3xl font-bold mb-4">
+          {t('Post Published Successfully!', 'Đăng tin thành công!')}
+        </h1>
+        <p className="text-gray-600 text-lg">
+          {t(
+            `Your ${postType} has been published and is now live.`,
+            `${postType.charAt(0).toUpperCase() + postType.slice(1)} của bạn đã được xuất bản và hiển thị công khai.`
+          )}
+        </p>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">
+          {t('Post Details', 'Chi tiết tin đăng')}
+        </h2>
+        
+        <div className="space-y-3">
+          <div className="flex justify-between py-2 border-b">
+            <span className="text-gray-600">{t('Plan', 'Gói')}</span>
+            <span className="font-medium">{postDetails?.pricing?.selectedPricingTier || postDetails?.checkout?.pricing_tier || 'Standard'}</span>
+          </div>
+          
+          <div className="flex justify-between py-2 border-b">
+            <span className="text-gray-600">{t('Duration', 'Thời hạn')}</span>
+            <span className="font-medium">
+              {postDetails?.pricing?.durationMonths || postDetails?.checkout?.duration_months || 1} {t('months', 'tháng')}
+            </span>
+          </div>
+          
+          {isPaidPost && (
+            <div className="flex justify-between py-2 border-b">
+              <span className="text-gray-600">{t('Auto-Renew', 'Tự động gia hạn')}</span>
+              <span className="font-medium">
+                {autoRenewEnabled ? 
+                  t('Enabled', 'Bật') : 
+                  t('Disabled', 'Tắt')}
               </span>
             </div>
-          </CardContent>
-        </Card>
-
-        {purchaseDetails.autoRenew && purchaseDetails.listingType !== 'free' && (
-          <Card className="mb-6 bg-blue-50 border-blue-200">
-            <CardContent className="pt-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <p className="text-blue-800 font-medium mb-1">
-                    {t("Next billing date", "Ngày thanh toán tiếp theo")}: {formatDate(addDays(purchaseDetails.purchaseDate, 30))}
-                  </p>
-                  <p className="text-sm text-blue-700">
-                    {t("Your listing will be automatically renewed to maintain visibility", "Tin đăng của bạn sẽ được tự động gia hạn để duy trì hiển thị")}
-                  </p>
-                </div>
-                <Button 
-                  onClick={handleToggleAutoRenew}
-                  variant="outline" 
-                  disabled={isUpdating || !purchaseDetails.stripePaymentId}
-                  className="border-blue-300 text-blue-700 hover:bg-blue-100"
-                >
-                  {isUpdating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("Processing...", "Đang xử lý...")}
-                    </>
-                  ) : (
-                    t("Turn off Auto-Renew", "Tắt tự động gia hạn")
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        
-        {!purchaseDetails.autoRenew && purchaseDetails.listingType !== 'free' && purchaseDetails.stripePaymentId && (
-          <Card className="mb-6 bg-gray-50 border-gray-200">
-            <CardContent className="pt-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <p className="text-gray-800 font-medium mb-1">
-                    {t("Your listing will expire on", "Tin của bạn sẽ hết hạn vào")}: {formatDate(purchaseDetails.expirationDate)}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {t("Enable auto-renew to keep your listing visible", "Bật tự động gia hạn để giữ tin của bạn hiển thị")}
-                  </p>
-                </div>
-                <Button 
-                  onClick={handleToggleAutoRenew}
-                  variant="outline" 
-                  disabled={isUpdating}
-                  className="border-gray-300 hover:bg-gray-100"
-                >
-                  {isUpdating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("Processing...", "Đang xử lý...")}
-                    </>
-                  ) : (
-                    t("Enable Auto-Renew", "Bật tự động gia hạn")
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="flex justify-center mt-8">
-          <Button onClick={handleGoToDashboard} className="px-8">
-            {t("Go to My Dashboard", "Đi đến bảng điều khiển")}
-          </Button>
+          )}
+          
+          <div className="flex justify-between py-2 border-b">
+            <span className="text-gray-600">{t('Status', 'Trạng thái')}</span>
+            <span className="font-medium text-green-600">{t('Active', 'Hoạt động')}</span>
+          </div>
         </div>
       </div>
-    </Layout>
+      
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button 
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={() => navigate('/dashboard')}
+        >
+          <Home className="h-4 w-4" />
+          {t('Go to Dashboard', 'Đến Bảng Điều Khiển')}
+        </Button>
+        
+        <Button 
+          className="flex items-center gap-2"
+          onClick={() => {
+            // Here you could add share functionality
+            toast.info(t('Share functionality coming soon', 'Chức năng chia sẻ sẽ sớm ra mắt'));
+          }}
+        >
+          <Share2 className="h-4 w-4" />
+          {t('Share Your Post', 'Chia Sẻ Tin')}
+        </Button>
+      </div>
+    </div>
   );
 };
 
-export default PostSuccessPage;
+export default PostSuccess;

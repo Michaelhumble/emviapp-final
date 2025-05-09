@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -89,24 +90,49 @@ const SalonPost = () => {
     setPricingOptions({ ...pricingOptions, ...options });
   };
   
-  const handlePaymentConfirmation = async () => {
-    setShowPaymentModal(false);
-    
-    // Process payment via Stripe directly
-    if (pricingOptions.selectedPricingTier !== 'free') {
-      const success = await initiatePayment('salon');
-      if (!success) {
-        // Payment initiation failed
-        toast.error(t("Payment could not be initiated", "Không thể bắt đầu thanh toán"), {
-          description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
-        });
-        return;
+  const handleSubmit = async () => {
+    try {
+      // Show loading state
+      toast.loading(
+        t("Processing your submission...", "Đang xử lý đơn của bạn..."),
+        { id: "salon-submission" }
+      );
+      
+      // Pass both salon details and pricing options to the payment hook
+      const result = await initiatePayment('salon', salonDetails, pricingOptions);
+      
+      // Clear loading state
+      toast.dismiss("salon-submission");
+
+      if (result.success) {
+        if (result.redirect) {
+          // For free posts, navigate to success page
+          if (result.redirect === '/post-success') {
+            navigate('/post-success', { 
+              state: { 
+                postType: 'salon',
+                postDetails: salonDetails,
+                pricingDetails: pricingOptions,
+                postData: result.data
+              } 
+            });
+          } else {
+            // For paid posts, redirect to Stripe
+            window.location.href = result.redirect;
+          }
+        }
+      } else {
+        toast.error(
+          t("There was a problem with your submission", "Có vấn đề với việc gửi đơn của bạn"),
+          { description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ") }
+        );
       }
-      // The redirect to Stripe happens in initiatePayment()
-    } else {
-      // For free listings, just show a success message and redirect
-      toast.success(t("Your salon post has been submitted", "Tin salon của bạn đã được đăng"));
-      navigate('/salon-post-success');
+    } catch (error) {
+      console.error("Salon post submission error:", error);
+      toast.error(
+        t("Submission error", "Lỗi khi gửi đơn"),
+        { description: t("Please check your details and try again", "Vui lòng kiểm tra thông tin của bạn và thử lại") }
+      );
     }
   };
   
@@ -135,7 +161,8 @@ const SalonPost = () => {
         title={t("Post Your Salon", "Đăng Tin Salon")}
         onNext={() => setCurrentStep(prev => prev + 1)}
         onPrev={() => setCurrentStep(prev => prev - 1)}
-        onSubmit={() => console.log("Submitting salon details...")}
+        onSubmit={handleSubmit}
+        isSubmitting={isLoading}
       >
         {currentStep === 1 && (
           <SalonDetailsSection
@@ -170,6 +197,7 @@ const SalonPost = () => {
             onNextStep={nextStep}
             onPrevStep={prevStep}
             isFirstPost={pricingOptions.isFirstPost}
+            isSubmitting={isLoading}
           />
         )}
       </PostWizardLayout>
@@ -178,7 +206,7 @@ const SalonPost = () => {
         open={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
         onOpenChange={setShowPaymentModal}
-        onConfirmPayment={handlePaymentConfirmation}
+        onConfirmPayment={handleSubmit}
         amount={100} // Replace with actual calculated price
         options={pricingOptions}
         originalPrice={150} // Replace with actual original price

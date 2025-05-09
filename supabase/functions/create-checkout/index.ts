@@ -1,200 +1,216 @@
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.24.0";
-import Stripe from "https://esm.sh/stripe@12.1.1";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get auth header
-    const authHeader = req.headers.get('Authorization');
+    // Parse request body
+    const { postType, postDetails, pricingOptions } = await req.json();
+    
+    // Authentication check
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'No authorization header' }), {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     
+    // Extract token from Auth header
+    const token = authHeader.replace("Bearer ", "");
+    
     // Initialize Supabase client
-    const supabase = createClient(
+    const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_ANON_KEY") || "",
       {
-        global: { headers: { Authorization: authHeader } }
+        global: {
+          headers: { Authorization: `Bearer ${token}` },
+        },
       }
     );
     
-    // Get the user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Get the authenticated user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: 'User not found or not authenticated' }), {
+      return new Response(JSON.stringify({ error: "Authentication failed" }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Parse the request body
-    const { 
-      postType, 
-      listingId, 
-      planType, 
-      autoRenew, 
-      durationMonths = 1 
-    } = await req.json();
     
-    // Initialize Stripe
+    console.log(`Creating checkout for ${postType} by user: ${user.id}`);
+
+    // Initialize Stripe with the secret key
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16"
+      apiVersion: "2023-10-16", 
+    });
+
+    // Check if user already exists as a Stripe customer
+    let customerId;
+    const customers = await stripe.customers.list({
+      email: user.email,
+      limit: 1,
     });
     
-    // Determine price based on plan type and post type
-    let unitAmount = 9999; // Default $99.99
-    let productName = "Standard Listing";
-    
-    if (planType === 'free') {
-      unitAmount = 0;
-      productName = "Free Job Post";
-    } else if (planType === 'standard') {
-      unitAmount = 999; // $9.99
-      productName = "Standard Job Post";
-    } else if (planType === 'gold') {
-      unitAmount = 1999; // $19.99
-      productName = "Gold Featured Job Post";
-    } else if (planType === 'premium') {
-      unitAmount = 4999; // $49.99
-      productName = "Premium Job Post";
-    } else if (planType === 'diamond') {
-      unitAmount = durationMonths === 12 ? 99999 : 149999; // $999.99 or $1499.99
-      productName = "Diamond Featured Job Post";
+    if (customers.data.length > 0) {
+      customerId = customers.data[0].id;
+      console.log(`Found existing customer: ${customerId}`);
+    } else {
+      // Create a new customer if one doesn't exist
+      const newCustomer = await stripe.customers.create({
+        email: user.email,
+        metadata: {
+          user_id: user.id,
+        }
+      });
+      customerId = newCustomer.id;
+      console.log(`Created new customer: ${customerId}`);
     }
     
-    // Apply duration-based discounts (except for Diamond plan which has special pricing)
-    if (planType !== 'diamond' && planType !== 'free') {
-      let discountPercentage = 0;
-      if (durationMonths === 3) discountPercentage = 5;
-      else if (durationMonths === 6) discountPercentage = 10;
-      else if (durationMonths === 12) discountPercentage = 20;
-      
-      // Add auto-renew discount
-      if (autoRenew) discountPercentage += 5;
-      
-      // Apply discount
-      unitAmount = Math.round(unitAmount * (1 - discountPercentage / 100));
+    // Get pricing details from pricingOptions
+    const selectedPricingTier = pricingOptions.selectedPricingTier;
+    const autoRenewEnabled = pricingOptions.autoRenew || false;
+    const durationMonths = pricingOptions.durationMonths || 1;
+    
+    // Determine price based on selected tier
+    let amount = 0;
+    let planName = '';
+    
+    switch (selectedPricingTier) {
+      case 'standard':
+        amount = 999; // $9.99
+        planName = 'Standard';
+        break;
+      case 'gold':
+        amount = 1999; // $19.99
+        planName = 'Gold Featured';
+        break;
+      case 'premium':
+        amount = 4999; // $49.99
+        planName = 'Premium';
+        break;
+      case 'diamond':
+        amount = 149999; // $1,499.99
+        planName = 'Diamond Featured';
+        break;
+      default:
+        amount = 999; // Default to standard if not specified
+        planName = 'Standard';
     }
     
-    // Add metadata to track payment details
+    // Apply duration multiplier
+    amount = amount * durationMonths;
+    
+    // Generate a unique reference ID for this transaction
+    const referenceId = `${postType}_${user.id}_${Date.now()}`;
+    
+    // Create metadata to track this transaction
     const metadata = {
       user_id: user.id,
       post_type: postType,
-      listing_id: listingId || '',
-      plan_type: planType,
-      duration_months: String(durationMonths),
-      auto_renew: autoRenew ? 'true' : 'false'
+      pricing_tier: selectedPricingTier,
+      auto_renew: autoRenewEnabled.toString(),
+      duration_months: durationMonths.toString(),
+      reference_id: referenceId
     };
-
-    // Calculate expiration date based on duration
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + (durationMonths * 30)); // Approximate months as 30 days
-
-    // Different checkout configuration based on auto-renew selection
-    let session;
     
-    if (autoRenew && unitAmount > 0) {
-      // Create a subscription for auto-renew
-      const interval = durationMonths === 1 ? 'month' : 
-                        durationMonths === 3 ? 'quarter' : 
-                        durationMonths === 6 ? 'half_year' : 'year';
-      
-      // Convert interval to Stripe format (only month and year are supported)
-      const stripeInterval = interval === 'month' ? 'month' : 
-                              interval === 'quarter' || interval === 'half_year' ? 'month' : 'year';
-      
-      // Adjust interval count for quarter and half-year
-      const intervalCount = interval === 'quarter' ? 3 : 
-                            interval === 'half_year' ? 6 : 1;
-      
-      session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `${productName} (${durationMonths} month${durationMonths > 1 ? 's' : ''})`,
-            },
-            unit_amount: unitAmount,
-            recurring: {
-              interval: stripeInterval,
-              interval_count: intervalCount
-            }
-          },
-          quantity: 1,
-        }],
-        mode: 'subscription',
-        success_url: `${req.headers.get('origin')}/post-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.get('origin')}/post-canceled`,
-        metadata: metadata,
-        customer_email: user.email,
-        subscription_data: {
-          metadata: metadata
+    // Determine checkout mode based on auto-renew setting
+    const mode = autoRenewEnabled ? 'subscription' : 'payment';
+    
+    // Set the success and cancel URLs
+    const origin = req.headers.get("origin") || "http://localhost:3000";
+    const successUrl = `${origin}/post-success?reference=${referenceId}&status=success`;
+    const cancelUrl = `${origin}/post-job?reference=${referenceId}&status=canceled`;
+    
+    // Create line items for the checkout session
+    const lineItems = [];
+    
+    if (mode === 'subscription') {
+      // Create or retrieve a price for the subscription
+      const price = await stripe.prices.create({
+        unit_amount: amount,
+        currency: 'usd',
+        recurring: {
+          interval: 'month',
+          interval_count: durationMonths
+        },
+        product_data: {
+          name: `${planName} ${postType.charAt(0).toUpperCase() + postType.slice(1)} Post - Auto-Renew`,
+          description: `${durationMonths}-month subscription with auto-renewal`
         }
       });
-    } else {
-      // Create one-time payment for non-auto-renew
-      session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: unitAmount === 0 ? [] : [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `${productName} (${durationMonths} month${durationMonths > 1 ? 's' : ''})`,
-            },
-            unit_amount: unitAmount,
-          },
-          quantity: 1,
-        }],
-        mode: unitAmount === 0 ? 'setup' : 'payment',
-        success_url: `${req.headers.get('origin')}/post-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.get('origin')}/post-canceled`,
-        metadata: metadata,
-        customer_email: user.email
-      });
-    }
-
-    // For free posts, log the "payment" directly
-    if (unitAmount === 0) {
-      const supabaseAdmin = createClient(
-        Deno.env.get("SUPABASE_URL") || "",
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
-      );
       
-      await supabaseAdmin.from('payment_logs').insert({
-        user_id: user.id,
-        listing_id: listingId || null,
-        plan_type: "Free",
-        payment_status: "success",
-        stripe_payment_id: session.id,
-        auto_renew_enabled: false,
-        expires_at: expiresAt.toISOString()
+      lineItems.push({
+        price: price.id,
+        quantity: 1
+      });
+    } else {
+      // One-time payment
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `${planName} ${postType.charAt(0).toUpperCase() + postType.slice(1)} Post`,
+            description: `${durationMonths}-month listing`
+          },
+          unit_amount: amount,
+        },
+        quantity: 1,
       });
     }
-
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
+    
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: mode,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: metadata,
     });
-
+    
+    // Save checkout session information to Supabase for later reference
+    const { data: checkoutData, error: checkoutError } = await supabaseClient.from('checkout_sessions').insert({
+      user_id: user.id,
+      stripe_session_id: session.id,
+      post_type: postType,
+      pricing_tier: selectedPricingTier,
+      auto_renew: autoRenewEnabled,
+      duration_months: durationMonths,
+      reference_id: referenceId,
+      amount: amount / 100, // Convert to dollars for readability
+      status: 'pending'
+    });
+    
+    if (checkoutError) {
+      console.error("Error saving checkout session:", checkoutError);
+      // Don't fail the entire operation if only the checkout log fails
+    }
+    
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
+    console.error("Checkout error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

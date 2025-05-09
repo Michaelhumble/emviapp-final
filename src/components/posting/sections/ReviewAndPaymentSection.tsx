@@ -20,6 +20,7 @@ export interface ReviewAndPaymentSectionProps {
   onPrevStep: () => void;
   jobData?: Partial<Job>;
   isFirstPost?: boolean;
+  isSubmitting?: boolean;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -30,7 +31,8 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   onNextStep,
   onPrevStep,
   jobData,
-  isFirstPost
+  isFirstPost,
+  isSubmitting = false
 }) => {
   const { t } = useTranslation();
   const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
@@ -123,6 +125,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         discountPercentage={discountPercentage}
         onProceedToPayment={onNextStep}
         isFreePlan={isFreePlan}
+        isSubmitting={isSubmitting}
       />
       
       <PricingDisplay 

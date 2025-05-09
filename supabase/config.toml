@@ -13,3 +13,6 @@ verify_jwt = true
 
 [functions.toggle-auto-renew]
 verify_jwt = true
+
+[functions.create-free-post]
+verify_jwt = true
