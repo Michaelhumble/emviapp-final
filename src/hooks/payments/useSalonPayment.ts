@@ -12,7 +12,7 @@ export const useSalonPayment = () => {
 
   const initiateSalonPayment = async (
     salonDetails: any, // Type as needed
-    pricingOptions: PricingOptions
+    pricingOptions?: PricingOptions
   ) => {
     setIsLoading(true);
     console.log("🔍 Salon payment initiation started with options:", pricingOptions);
@@ -68,7 +68,8 @@ export const useSalonPayment = () => {
         body: payload
       });
 
-      console.log("📥 Stripe checkout response:", data, "Error:", error);
+      console.log("📥 Stripe checkout raw response:", data);
+      console.log("📥 Stripe checkout error:", error);
 
       if (error) {
         console.error("Edge function error:", error);
@@ -86,6 +87,7 @@ export const useSalonPayment = () => {
       
       // Explicitly validate the URL
       const checkoutResponse = data as StripeCheckoutResponse;
+      console.log("Checkout response data structure:", JSON.stringify(checkoutResponse));
       
       if (!checkoutResponse.url) {
         console.error("⛔ No checkout URL received in response:", data);

@@ -25,19 +25,21 @@ export const usePostPayment = () => {
       
       // Route to the appropriate payment handler based on post type
       if (postType === 'job') {
+        console.log("Calling initiateJobPayment...");
         result = await initiateJobPayment(postDetails, pricingOptions);
       } else if (postType === 'salon') {
+        console.log("Calling initiateSalonPayment...");
         result = await initiateSalonPayment(postDetails, pricingOptions);
       } else {
         throw new Error(`Unsupported post type: ${postType}`);
       }
 
       // Debug the raw response
-      console.log("Raw payment result:", result);
+      console.log("🧪 Raw payment result:", result);
 
       // Check if we got a successful result with redirect URL
       if (result?.success && result?.redirect) {
-        console.log("✅ Payment initiation successful, redirecting to:", result.redirect);
+        console.log("✅ Payment initiation successful, redirect URL:", result.redirect);
         
         // For free plans, navigate to success page
         if (pricingOptions?.selectedPricingTier === 'free') {
@@ -45,14 +47,30 @@ export const usePostPayment = () => {
           return result;
         }
         
-        // For paid plans, redirect to Stripe checkout
-        console.log("🔄 Redirecting to Stripe checkout URL...");
+        // Enhanced validation for redirect URL
+        if (!result.redirect || !result.redirect.startsWith('http')) {
+          console.error("⚠️ Invalid redirect URL format:", result.redirect);
+          toast.error(t("Invalid payment URL", "URL thanh toán không hợp lệ"), {
+            description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
+          });
+          throw new Error('Invalid redirect URL format');
+        }
+        
+        // For paid plans, redirect to Stripe checkout with delay to ensure logs are visible
+        console.log("🔄 Redirecting to Stripe checkout URL:", result.redirect);
         
         // Use timeout to ensure logs are visible and give toast a chance to show
         setTimeout(() => {
-          // Redirect to Stripe checkout
-          window.location.href = result.redirect;
-        }, 100);
+          // Ensure URL exists before redirecting
+          if (result.redirect) {
+            window.location.href = result.redirect;
+          } else {
+            console.error("❌ Redirect URL suddenly became undefined");
+            toast.error(t("Checkout redirect failed", "Chuyển hướng thanh toán thất bại"), {
+              description: t("Please try again", "Vui lòng thử lại")
+            });
+          }
+        }, 500);
         
         return result;
       } else {
