@@ -21,8 +21,7 @@ const TestPayment = () => {
         email: email
       }, {
         selectedPricingTier: 'premium',
-        durationMonths: 1,
-        priceId: 'price_test_123' // This would be your actual Stripe price ID in production
+        durationMonths: 1
       });
 
       console.log("Payment result:", result);
