@@ -9,3 +9,10 @@ export interface DurationOption {
 export interface DurationSelection {
   [pricingId: string]: number; // months
 }
+
+// New interface for maintaining consistent pricing calculations
+export interface PricingWithDuration {
+  basePricePerMonth: number;
+  durationMonths: number;
+  discountPercentage: number;
+}

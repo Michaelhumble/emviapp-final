@@ -1,166 +1,170 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { JobPricingOption } from '@/utils/posting/types';
+import { CheckCircle } from 'lucide-react';
+import { JobPricingOption, JobPricingTier } from '@/utils/posting/types';
+import { formatCurrency } from '@/lib/utils';
+import { DurationOption } from '@/types/pricing';
 
-interface PricingCardsProps {
+export interface PricingCardsProps {
   pricingOptions: JobPricingOption[];
   selectedPricing: string;
-  onChange: (value: string) => void;
+  onChange: (pricingId: string) => void;
+  className?: string; // Added className prop to fix the TS error
+  selectedDuration?: number; // Add duration support
+  onDurationChange?: (months: number) => void;
 }
 
-const PricingCards = ({ pricingOptions, selectedPricing, onChange }: PricingCardsProps) => {
-  // Split options into premium (top) and standard (bottom) tiers
-  const premiumOptions = pricingOptions.filter(option => 
-    option.id === 'premium' || option.id === 'diamond'
-  );
+// Duration options 
+const durations: DurationOption[] = [
+  { months: 1, label: '1 Month', vietnameseLabel: '1 tháng', discount: 0 },
+  { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 10 },
+  { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 20 },
+  { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 30 }
+];
+
+const PricingCards: React.FC<PricingCardsProps> = ({ 
+  pricingOptions, 
+  selectedPricing, 
+  onChange,
+  className,
+  selectedDuration = 1,
+  onDurationChange
+}) => {
+  const calculateDiscountedPrice = (price: number, discountPercent: number) => {
+    return price - (price * discountPercent / 100);
+  };
+
+  // Calculate total price based on duration and discount
+  const getTotalPrice = (basePrice: number, months: number) => {
+    const duration = durations.find(d => d.months === months);
+    if (!duration) return basePrice * months;
+    
+    return calculateDiscountedPrice(basePrice * months, duration.discount);
+  };
+
+  // Show duration options for all tiers except free and diamond
+  const shouldShowDurationOptions = (tier: JobPricingTier, id: string) => {
+    return tier !== 'basic' && id !== 'diamond';
+  };
   
-  const standardOptions = pricingOptions.filter(option => 
-    option.id === 'free' || option.id === 'standard' || option.id === 'gold'
-  );
-
   return (
-    <div className="w-full space-y-8">
-      <RadioGroup 
-        value={selectedPricing} 
-        onValueChange={onChange}
-        className="flex flex-col space-y-8"
-      >
-        {/* Premium tier (top row) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-          {premiumOptions.map((option) => (
-            <div key={option.id} className="min-w-[280px]">
-              <Label
-                htmlFor={option.id}
-                className="cursor-pointer block h-full"
+    <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", className)}>
+      {pricingOptions.map((option) => (
+        <Card 
+          key={option.id}
+          className={cn(
+            "flex flex-col transition-all duration-200 overflow-hidden",
+            selectedPricing === option.id && "ring-2 ring-primary ring-offset-2",
+            option.popular && "shadow-lg scale-[1.02]"
+          )}
+          onClick={() => onChange(option.id)}
+        >
+          <CardHeader className="pb-3">
+            {option.tag && (
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "mb-2 whitespace-nowrap",
+                  option.tier === 'premium' && "bg-orange-50 text-orange-600 border-orange-200",
+                  option.tier === 'featured' && option.id === 'gold' && "bg-amber-50 text-amber-600 border-amber-200",
+                  option.tier === 'featured' && option.id === 'diamond' && "bg-red-50 text-red-600 border-red-200",
+                  option.tier === 'basic' && "bg-green-50 text-green-600 border-green-200"
+                )}
               >
-                <Card className={`h-full transition-all border-2 hover:border-primary hover:shadow-lg ${
-                  selectedPricing === option.id ? 'border-primary bg-primary/5' : 'border-muted'
-                }`}>
-                  <CardHeader className="pb-1 space-y-3 md:px-5">
-                    {option.tag && (
-                      <Badge variant="outline" className={`text-xs px-2.5 py-1 font-medium mb-1 whitespace-nowrap inline-flex items-center 
-                      ${option.id === 'diamond' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 
-                        option.id === 'premium' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 
-                        option.id === 'gold' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 
-                        option.id === 'standard' ? 'bg-green-500 hover:bg-green-600 text-white' : 
-                        'bg-gray-200 hover:bg-gray-300 text-gray-700'}`}>
-                        {option.tag}
-                      </Badge>
-                    )}
-                    <CardTitle className="text-lg leading-tight">{option.name}</CardTitle>
-                    <div className="flex items-baseline flex-wrap gap-2 mb-1">
-                      <span className="text-xl font-bold">
-                        ${option.price === 0 ? '0' : option.price.toFixed(2)}
-                        <span className="text-sm font-normal ml-0.5">{option.id === 'diamond' ? '/yr' : '/mo'}</span>
-                      </span>
-                      {option.wasPrice && (
-                        <span className="text-sm text-red-500 line-through font-medium">
-                          ${option.wasPrice.toFixed(2)}
-                        </span>
+                {option.tag}
+              </Badge>
+            )}
+            <CardTitle className="text-lg">
+              {option.name}
+            </CardTitle>
+            <CardDescription className="line-clamp-2 h-10">
+              {option.vietnameseDescription || option.description}
+            </CardDescription>
+            <div className="mt-2 space-y-1">
+              <div className="flex items-baseline">
+                {option.wasPrice && option.wasPrice > option.price && (
+                  <span className="text-sm line-through text-red-500 mr-2">
+                    ${option.wasPrice.toFixed(2)}
+                  </span>
+                )}
+                <span className="text-2xl font-bold">${option.price.toFixed(2)}</span>
+                <span className="text-sm text-muted-foreground ml-1">/mo</span>
+              </div>
+              
+              {shouldShowDurationOptions(option.tier, option.id) && onDurationChange && (
+                <div className="pt-2">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {durations.map((duration) => (
+                      <button
+                        key={duration.months}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDurationChange(duration.months);
+                        }}
+                        className={cn(
+                          "px-2 py-1 rounded-full text-xs font-medium transition-all",
+                          selectedDuration === duration.months
+                            ? "bg-purple-600 text-white"
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        )}
+                        title={duration.discount > 0 ? `Save ${duration.discount}% when you commit longer 💰` : undefined}
+                      >
+                        {duration.label}
+                        {duration.discount > 0 && (
+                          <span className="ml-1 text-xs">-{duration.discount}%</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="text-xs text-center text-muted-foreground mt-1">
+                    {durations.find(d => d.months === selectedDuration)?.vietnameseLabel}
+                  </div>
+                  
+                  {/* Show total price with discount */}
+                  {selectedDuration > 1 && (
+                    <div className="mt-2 text-center">
+                      <div className="text-sm">
+                        Total: <span className="font-medium">${getTotalPrice(option.price, selectedDuration).toFixed(2)}</span>
+                      </div>
+                      {selectedDuration > 1 && (
+                        <div className="text-xs text-green-600">
+                          Tiết kiệm: {durations.find(d => d.months === selectedDuration)?.discount}%
+                        </div>
                       )}
                     </div>
-                  </CardHeader>
-                  <CardContent className="pb-3 pt-1 md:px-5">
-                    <div className="mb-2 font-medium leading-snug">{option.description}</div>
-                    <div className="text-sm text-muted-foreground mb-3 italic">{option.vietnameseDescription}</div>
-                    <ul className="space-y-2.5">
-                      {option.features.map((feature, idx) => (
-                        <li key={idx} className="text-sm flex items-start leading-tight">
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter className="pt-1 md:px-5">
-                    <div className="flex items-center w-full justify-between">
-                      <RadioGroupItem
-                        id={option.id}
-                        value={option.id}
-                        className="data-[state=checked]:border-primary data-[state=checked]:border-2"
-                      />
-                      <Label htmlFor={option.id} className="text-sm font-medium">
-                        Select
-                      </Label>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Label>
+                  )}
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-
-        {/* Standard tier (bottom row) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-          {standardOptions.map((option) => (
-            <div key={option.id} className="min-w-[280px]">
-              <Label
-                htmlFor={option.id}
-                className="cursor-pointer block h-full"
-              >
-                <Card className={`h-full transition-all border-2 hover:border-primary hover:shadow-lg ${
-                  selectedPricing === option.id ? 'border-primary bg-primary/5' : 'border-muted'
-                }`}>
-                  <CardHeader className="pb-1 space-y-3 md:px-5">
-                    {option.tag && (
-                      <Badge variant="outline" className={`text-xs px-2.5 py-1 font-medium mb-1 whitespace-nowrap inline-flex items-center 
-                      ${option.id === 'diamond' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 
-                        option.id === 'premium' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 
-                        option.id === 'gold' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 
-                        option.id === 'standard' ? 'bg-green-500 hover:bg-green-600 text-white' : 
-                        'bg-gray-200 hover:bg-gray-300 text-gray-700'}`}>
-                        {option.tag}
-                      </Badge>
-                    )}
-                    <CardTitle className="text-lg leading-tight">{option.name}</CardTitle>
-                    <div className="flex items-baseline flex-wrap gap-2 mb-1">
-                      <span className="text-xl font-bold">
-                        ${option.price === 0 ? '0' : option.price.toFixed(2)}
-                        <span className="text-sm font-normal ml-0.5">{option.id === 'diamond' ? '/yr' : '/mo'}</span>
-                      </span>
-                      {option.wasPrice && (
-                        <span className="text-sm text-red-500 line-through font-medium">
-                          ${option.wasPrice.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pb-3 pt-1 md:px-5">
-                    <div className="mb-2 font-medium leading-snug">{option.description}</div>
-                    <div className="text-sm text-muted-foreground mb-3 italic">{option.vietnameseDescription}</div>
-                    <ul className="space-y-2.5">
-                      {option.features.map((feature, idx) => (
-                        <li key={idx} className="text-sm flex items-start leading-tight">
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter className="pt-1 md:px-5">
-                    <div className="flex items-center w-full justify-between">
-                      <RadioGroupItem
-                        id={option.id}
-                        value={option.id}
-                        className="data-[state=checked]:border-primary data-[state=checked]:border-2"
-                      />
-                      <Label htmlFor={option.id} className="text-sm font-medium">
-                        Select
-                      </Label>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Label>
+          </CardHeader>
+          
+          <CardContent className="flex-grow">
+            <ul className="space-y-2 text-sm">
+              {option.features.map((feature, i) => (
+                <li key={i} className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+          
+          <CardFooter className="pt-2 pb-4 text-xs text-center bg-gray-50">
+            <div className="w-full">
+              {option.note ? (
+                <p className="text-muted-foreground">{option.note}</p>
+              ) : (
+                <p className="text-muted-foreground">
+                  🕒 Listings expire after 30 days. Auto-renew available.
+                </p>
+              )}
             </div>
-          ))}
-        </div>
-      </RadioGroup>
-      
-      <div className="text-center text-sm text-muted-foreground mt-6 py-2 border-t border-gray-100">
-        All listings expire after 30 days. Auto-renew saves you up to 20%.
-      </div>
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 };

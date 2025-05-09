@@ -3,25 +3,26 @@ import React from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { DurationOption } from '@/types/pricing';
 
 interface DurationSelectorProps {
   selectedDuration: number;
   onChange: (duration: number) => void;
   className?: string;
+  durations?: DurationOption[];
 }
 
 const DurationSelector: React.FC<DurationSelectorProps> = ({ 
   selectedDuration, 
   onChange,
-  className
-}) => {
-  const durations = [
+  className,
+  durations = [
     { months: 1, label: '1 Month', vietnameseLabel: '1 tháng', discount: 0 },
     { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 10 },
     { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 20 },
     { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 30 }
-  ];
-
+  ]
+}) => {
   return (
     <div className={cn("space-y-2", className)}>
       <RadioGroup
@@ -49,6 +50,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                     ? "bg-purple-600 text-white border-purple-600"
                     : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 )}
+                title={duration.discount > 0 ? `Save ${duration.discount}% when you commit longer 💰` : undefined}
               >
                 {duration.label}
                 {duration.discount > 0 && (
