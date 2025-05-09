@@ -1,5 +1,5 @@
 
-import { mainNavigationItems } from "./config/navigationItems";
+import { mainNavigation } from "../navbar/config/navigationItems";
 import { NavItem } from "./NavItem";
 import { Link } from "react-router-dom";
 
@@ -12,7 +12,7 @@ const MainNavigation = () => {
       >
         Home
       </Link>
-      {mainNavigationItems.map((item) => (
+      {mainNavigation.map((item) => (
         <NavItem key={item.path} item={item} />
       ))}
     </nav>
