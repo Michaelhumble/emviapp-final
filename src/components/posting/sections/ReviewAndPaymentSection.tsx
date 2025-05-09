@@ -46,12 +46,12 @@ const ReviewAndPaymentSection = ({
     : undefined;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-6xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="text-xl font-semibold mb-2">
+        <h2 className="text-2xl font-semibold mb-3">
           Select Your Listing Package
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground max-w-2xl mx-auto">
           Choose the best option to reach your target audience. Every tier offers unique benefits.
         </p>
       </div>
@@ -64,8 +64,8 @@ const ReviewAndPaymentSection = ({
       />
       
       {/* Summary Card */}
-      <div className="mt-8">
-        <Card>
+      <div className="mt-12">
+        <Card className="border-primary/20">
           <CardContent className="pt-6">
             <PricingDisplay 
               postType={postType}
