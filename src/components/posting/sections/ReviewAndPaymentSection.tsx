@@ -20,8 +20,6 @@ interface ReviewAndPaymentSectionProps {
   onPrevStep?: () => void;
   isFirstPost?: boolean;
   pricingOptions?: PricingOptions;
-  selectedPricing?: string;
-  onPricingChange?: (pricingId: string) => void;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -30,23 +28,16 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   onNextStep,
   onPrevStep,
   isFirstPost = false,
-  pricingOptions = {},
-  selectedPricing = "standard",
-  onPricingChange
+  pricingOptions = {}
 }) => {
   const { t, isVietnamese } = useTranslation();
   
   const [activeTab, setActiveTab] = useState("review");
+  const [selectedPricing, setSelectedPricing] = useState("standard");
   const [selectedDuration, setSelectedDuration] = useState(1); // Default to 1 month
   
   const handleDurationChange = (months: number) => {
     setSelectedDuration(months);
-  };
-  
-  const handlePricingSelection = (pricingId: string) => {
-    if (onPricingChange) {
-      onPricingChange(pricingId);
-    }
   };
   
   // Map job field mapping
@@ -121,7 +112,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
                 <PricingCards 
                   pricingOptions={jobPricingOptions}
                   selectedPricing={selectedPricing}
-                  onChange={handlePricingSelection}
+                  onChange={setSelectedPricing}
                   selectedDuration={selectedDuration}
                   onDurationChange={handleDurationChange}
                 />
@@ -129,8 +120,8 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
             </Card>
             
             <div className="flex justify-end">
-              <Button className="px-8" onClick={onNextStep}>
-                {t("Continue to Payment", "Tiếp tục thanh toán")}
+              <Button className="px-8">
+                {t("Continue to Checkout", "Tiếp tục thanh toán")}
               </Button>
             </div>
           </div>
