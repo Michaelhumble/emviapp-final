@@ -4,7 +4,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { mainNavigation } from "./config/navigationItems";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 
@@ -103,9 +103,8 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                       vietnamese: "Đăng nhập"
                     })}
                   </Button>
-                  <Button 
-                    variant="outline"
-                    className="w-full mb-2"
+                  <Button
+                    className="w-full mb-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full"
                     onClick={() => handleLinkClick("/sign-up")}
                   >
                     {t({
@@ -118,8 +117,8 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
             </div>
             
             {/* Enhanced "Inspired by Sunshine" text with more elegant styling */}
-            <div className="mt-6 pt-4 text-center">
-              <p className="text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent opacity-90">
+            <div className="mt-8 pt-4 text-center">
+              <p className="text-base font-medium bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent opacity-90">
                 Inspired by Sunshine ☀️
               </p>
             </div>

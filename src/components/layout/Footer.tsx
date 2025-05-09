@@ -46,9 +46,9 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-gray-200 pt-6 mt-6 text-center text-sm text-gray-500">
-          {/* Add "Inspired by Sunshine" credit above copyright */}
-          <p className="mb-2">
-            <span className="text-xs text-muted-foreground">
+          {/* Add "Inspired by Sunshine" credit above copyright with improved styling */}
+          <p className="mb-3">
+            <span className="text-sm text-purple-500 font-medium">
               Inspired by Sunshine ☀️
             </span>
           </p>

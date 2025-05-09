@@ -28,20 +28,22 @@ const ContactPage = () => {
         </div>
         
         <div className="text-center mt-10 text-muted-foreground">
-          <div className="mb-2 flex items-center justify-center">
+          <div className="mb-4 flex items-center justify-center">
             <span className="inline-block w-8 h-0.5 bg-gradient-to-r from-purple-600/50 to-blue-600/50 mr-2"></span>
             <span className="text-sm font-medium uppercase tracking-wider">Final Message</span>
             <span className="inline-block w-8 h-0.5 bg-gradient-to-r from-blue-600/50 to-purple-600/50 ml-2"></span>
           </div>
-          <p className="text-sm max-w-md mx-auto">
+          <p className="text-sm max-w-md mx-auto mb-6">
             We read every message. Your words guide EmviApp's growth.
             Together, we'll make something unforgettable.
           </p>
           
           {/* Updated Sunshine quote with better styling and visibility */}
-          <blockquote className="text-center text-sm text-purple-600 dark:text-purple-400 mt-6 mb-2 font-medium">
-            "This project wouldn't exist without Sunshine." ☀️
-          </blockquote>
+          <div className="py-4 px-2 mx-auto max-w-md">
+            <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+              "This project wouldn't exist without Sunshine." ☀️
+            </p>
+          </div>
         </div>
       </div>
     </Layout>
