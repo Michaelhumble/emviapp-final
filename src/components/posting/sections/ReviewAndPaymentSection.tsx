@@ -1,300 +1,218 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/auth';
-import { format, addDays } from 'date-fns';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+import React, { useState, useMemo } from 'react';
+import { format, add } from 'date-fns';
+import { jobPricingOptions, calculateFinalPrice } from '@/utils/posting/jobPricing';
+import { PricingOptions, JobPricingOption } from '@/utils/posting/types';
 import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
+import { Label } from '@/components/ui/label';
 import DurationSelector from '@/components/posting/DurationSelector';
-import PricingDisplay from '@/components/posting/PricingDisplay';
+import PricingCards from '@/components/posting/PricingCards';
 import PaymentSummary from '@/components/posting/PaymentSummary';
-import { calculateFinalPrice, jobPricingOptions } from '@/utils/posting/jobPricing';
-import { Job } from '@/types/job';
-import { PricingOptions, PostType, JobPricingOption } from '@/utils/posting/types';
-import { useTranslation } from '@/hooks/useTranslation';
-import StripeCheckout from '@/components/payments/StripeCheckout';
 import PaymentConfirmationModal from '@/components/posting/PaymentConfirmationModal';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ReviewAndPaymentSectionProps {
-  postType: PostType;
-  jobData?: Partial<Job>;
+  postType: string;
+  pricingOptions: PricingOptions;
+  onPricingChange: (pricingId: string) => void;
+  onUpdatePricing: (options: Partial<PricingOptions>) => void;
+  isFirstPost?: boolean;
   onNextStep: () => void;
   onPrevStep: () => void;
-  isFirstPost?: boolean;
-  pricingOptions: PricingOptions;
-  onPricingChange: (pricingTier: string) => void;
-  onUpdatePricing: (options: Partial<PricingOptions>) => void;
+  jobData?: any;
+  salonData?: any;
+  boothData?: any;
 }
 
-const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({ 
-  postType, 
-  jobData,
-  onNextStep,
-  onPrevStep,
-  isFirstPost = false,
+const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+  postType,
   pricingOptions,
   onPricingChange,
-  onUpdatePricing
+  onUpdatePricing,
+  isFirstPost = false,
+  onNextStep,
+  onPrevStep,
+  jobData,
+  salonData,
+  boothData
 }) => {
-  // Translation setup
   const { t } = useTranslation();
+  const [duration, setDuration] = useState<number>(1);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   
-  // State
-  const [selectedPricing, setSelectedPricing] = useState<string>(pricingOptions.selectedPricingTier || 'standard');
-  const [selectedDuration, setSelectedDuration] = useState<number>(1);
-  const [autoRenew, setAutoRenew] = useState<boolean>(pricingOptions.autoRenew || false);
-  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  // Get filtered pricing options based on post type
+  const filteredPricingOptions = useMemo(() => {
+    // For this example, we'll use the job pricing options for all post types
+    // In a real implementation, you'd have different pricing options for different post types
+    return jobPricingOptions;
+  }, []);
   
-  const navigate = useNavigate();
+  // Get selected pricing option
+  const selectedPricing = useMemo(() => {
+    return filteredPricingOptions.find(
+      (option) => option.id === pricingOptions.selectedPricingTier
+    ) || filteredPricingOptions[0];
+  }, [filteredPricingOptions, pricingOptions.selectedPricingTier]);
   
-  // Get pricing details for the selected option
-  const selectedOption = jobPricingOptions.find(option => option.id === selectedPricing) || jobPricingOptions[0];
-  const basePrice = selectedOption.price;
-  const isFreeTier = selectedPricing === 'free' || basePrice === 0;
-
-  // Handle diamond plan special case - only 12 months option makes sense
-  const isDiamondPlan = selectedPricing === 'diamond';
-  
-  // When diamond plan is selected, force 12 months duration
-  useEffect(() => {
-    if (isDiamondPlan && selectedDuration !== 12) {
-      setSelectedDuration(12);
-    }
-  }, [selectedPricing, isDiamondPlan]);
-  
-  // Format dates for renewal info
-  const today = new Date();
-  const renewalDate = addDays(today, 30);
-  const formattedRenewalDate = format(renewalDate, 'MMMM d, yyyy');
-  const formattedRenewalDateVi = format(renewalDate, "d 'tháng' M, yyyy");
-  
-  // Calculate renewal price with 20% off for auto-renewal
-  const renewalDiscount = 0.2; // 20% off
-  const renewalPrice = basePrice * (1 - renewalDiscount);
-  
-  // Calculate price based on duration and discounts
-  const { finalPrice, discountPercentage, originalPrice } = calculateFinalPrice(
-    basePrice, 
-    selectedDuration,
-    selectedPricing,
-    autoRenew
-  );
-  
-  // Disable auto-renew for diamond plan with duration < 12 months
-  const disableAutoRenew = isDiamondPlan && selectedDuration !== 12;
-  
-  // If auto-renew would be disabled, ensure it's not selected
-  useEffect(() => {
-    if (disableAutoRenew && autoRenew) {
-      setAutoRenew(false);
-      // Also update parent state
-      onUpdatePricing({ autoRenew: false });
-    }
-  }, [disableAutoRenew]);
-  
-  // Update parent component with selected pricing and duration
-  useEffect(() => {
-    onPricingChange(selectedPricing);
-    onUpdatePricing({ 
-      selectedPricingTier: selectedPricing,
-      autoRenew
-    });
-  }, [selectedPricing, autoRenew]);
-  
-  const handleDurationChange = (duration: number) => {
-    setSelectedDuration(duration);
+  // Handle duration change
+  const handleDurationChange = (value: number) => {
+    setDuration(value);
   };
   
-  const handleAutoRenewChange = (checked: boolean) => {
-    setAutoRenew(checked);
+  // Handle auto-renew toggle
+  const handleAutoRenewToggle = (checked: boolean) => {
+    onUpdatePricing({ autoRenew: checked });
   };
   
-  const handleOpenPayment = () => {
-    setIsPaymentDialogOpen(true);
+  // Calculate price with discount based on duration
+  const { originalPrice, finalPrice, discountPercentage } = useMemo(() => {
+    return calculateFinalPrice(
+      selectedPricing.price,
+      duration,
+      selectedPricing.id,
+      pricingOptions.autoRenew
+    );
+  }, [selectedPricing, duration, pricingOptions.autoRenew]);
+  
+  // Handle payment confirmation
+  const handleProceedToPayment = () => {
+    setShowPaymentModal(true);
   };
   
   const handleConfirmPayment = () => {
-    setIsLoading(true);
-    // This would be replaced with actual payment processing
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsConfirmModalOpen(false);
-      toast.success(t('Payment successful!', 'Thanh toán thành công!'), {
-        description: t('Your post has been published.', 'Tin đăng của bạn đã được công bố.')
-      });
-      navigate('/dashboard');
-    }, 2000);
+    setShowPaymentModal(false);
+    onNextStep();
   };
   
-  // Opening the confirmation modal
-  const handleProceedToPayment = () => {
-    setIsConfirmModalOpen(true);
+  // Calculate renewal date
+  const renewalDate = useMemo(() => {
+    let daysToAdd = 30;
+    
+    if (duration === 3) {
+      daysToAdd = 90;
+    } else if (duration === 6) {
+      daysToAdd = 180;
+    } else if (duration === 12) {
+      daysToAdd = 365;
+    }
+    
+    return add(new Date(), { days: daysToAdd });
+  }, [duration]);
+  
+  // Format renewal date for display
+  const formattedRenewalDate = format(renewalDate, 'MMM d, yyyy');
+  const formattedRenewalDateVi = format(renewalDate, "d 'tháng' M, yyyy");
+  
+  // Get renewal period text
+  const getRenewalPeriodText = () => {
+    if (duration === 1) {
+      return t('every 30 days', 'mỗi 30 ngày');
+    } else if (duration === 3) {
+      return t('every 90 days', 'mỗi 90 ngày');
+    } else if (duration === 6) {
+      return t('every 180 days', 'mỗi 180 ngày');
+    } else {
+      return t('every 12 months', 'mỗi 12 tháng');
+    }
   };
-
+  
+  // Check if Diamond plan is selected
+  const isDiamondPlan = selectedPricing.id === 'diamond';
+  
+  // Check if auto-renew should be enabled
+  // For Diamond plan, only enable if duration is 12 months
+  const canEnableAutoRenew = !isDiamondPlan || (isDiamondPlan && duration === 12);
+  
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">
-          {t('Review & Payment', 'Xem lại & Thanh toán')}
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold">
+          {t('Choose Your Plan', 'Chọn Gói Dịch Vụ')}
         </h2>
-        <p className="text-muted-foreground">{t('Choose your posting package and payment options.', 'Chọn gói đăng tin và các tùy chọn thanh toán.')}</p>
+        <p className="text-gray-600">
+          {t(
+            'Select a plan that fits your needs. Higher tier plans get more visibility and features.',
+            'Chọn gói phù hợp với nhu cầu của bạn. Các gói cao cấp hơn sẽ được hiển thị nhiều hơn và có nhiều tính năng hơn.'
+          )}
+        </p>
       </div>
-
-      <Separator className="my-6" />
-
-      {/* Pricing Tier Selection */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">{t('Select Your Plan', 'Chọn Gói Của Bạn')}</h3>
-        
-        <RadioGroup
-          value={selectedPricing}
-          onValueChange={setSelectedPricing}
-          className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
-        >
-          {jobPricingOptions.map((option: JobPricingOption) => {
-            const isPopular = option.popular;
-            return (
-              <div key={option.id} className="relative">
-                {isPopular && (
-                  <div className="absolute -top-2 -right-2 bg-yellow-500 text-white text-xs font-bold rounded-full px-2 py-1 z-10">
-                    {t('Popular', 'Phổ biến')}
-                  </div>
-                )}
-                <Label 
-                  htmlFor={`plan-${option.id}`}
-                  className={`flex flex-col p-4 border rounded-lg cursor-pointer transition-all hover:border-purple-500 ${selectedPricing === option.id ? 'border-2 border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-gray-200'}`}
-                >
-                  <RadioGroupItem 
-                    value={option.id} 
-                    id={`plan-${option.id}`}
-                    className="sr-only"
-                  />
-                  
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold">{option.name}</div>
-                      <div className="text-sm text-gray-500">{option.description}</div>
-                    </div>
-                    
-                    <PricingDisplay 
-                      basePrice={option.price} 
-                      duration={selectedDuration}
-                      pricingId={option.id}
-                      autoRenew={autoRenew}
-                    />
-                  </div>
-                  
-                  <ul className="mt-4 space-y-2 text-sm">
-                    {option.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start">
-                        <svg className="h-5 w-5 mr-2 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  {option.tag && (
-                    <div className="mt-3 inline-block px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-700 dark:text-gray-300">
-                      {option.tag}
-                    </div>
-                  )}
-                </Label>
-              </div>
-            );
-          })}
-        </RadioGroup>
-      </div>
-
-      <Separator className="my-6" />
       
-      {/* Duration Selection */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">{t('Choose Duration', 'Chọn Thời hạn')}</h3>
-        <DurationSelector
-          selectedDuration={selectedDuration}
-          onChange={handleDurationChange}
-          disableSelection={isFreeTier || isDiamondPlan}
-          selectedPricing={selectedPricing}
+      <PricingCards
+        pricingOptions={filteredPricingOptions}
+        selectedPricing={selectedPricing.id}
+        onChange={onPricingChange}
+        selectedDuration={duration}
+        onDurationChange={handleDurationChange}
+      />
+      
+      {/* Auto-renew option */}
+      <div className="bg-gray-50 p-4 rounded-lg border">
+        <div className="flex justify-between items-center">
+          <div className="space-y-1">
+            <h3 className="font-semibold text-lg">
+              {t('Enable Auto-Renew', 'Bật Tự Động Gia Hạn')}
+            </h3>
+            <p className="text-gray-600 text-sm">
+              {canEnableAutoRenew ? (
+                <>{t('Get an additional 5% discount', 'Nhận thêm giảm giá 5%')}</>
+              ) : (
+                <>{t('Only available for 12-month plans', 'Chỉ khả dụng cho gói 12 tháng')}</>
+              )}
+            </p>
+            
+            {/* Show renewal information if auto-renew is enabled */}
+            {pricingOptions.autoRenew && canEnableAutoRenew && (
+              <div className="mt-2 text-sm text-gray-600">
+                <p>
+                  {t(
+                    `You'll be billed ${finalPrice} ${getRenewalPeriodText()} starting ${formattedRenewalDate}.`,
+                    `Bạn sẽ bị tính phí ${finalPrice} ${getRenewalPeriodText()} bắt đầu từ ${formattedRenewalDateVi}.`
+                  )}
+                </p>
+                {isDiamondPlan && duration === 12 && (
+                  <p className="text-green-600 mt-1">
+                    {t('Keep this price locked in each year. Cancel anytime.', 'Giữ giá này mỗi năm. Hủy bất kỳ lúc nào.')}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="auto-renew"
+              checked={pricingOptions.autoRenew && canEnableAutoRenew}
+              onCheckedChange={handleAutoRenewToggle}
+              disabled={!canEnableAutoRenew}
+            />
+            <Label htmlFor="auto-renew">
+              {pricingOptions.autoRenew && canEnableAutoRenew ? t('On', 'Bật') : t('Off', 'Tắt')}
+            </Label>
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t pt-6">
+        <PaymentSummary
+          basePrice={selectedPricing.price}
+          duration={duration}
+          autoRenew={pricingOptions.autoRenew && canEnableAutoRenew}
+          originalPrice={originalPrice}
+          finalPrice={finalPrice}
+          discountPercentage={discountPercentage}
+          onProceedToPayment={handleProceedToPayment}
         />
       </div>
       
-      <Separator className="my-6" />
-      
-      {/* Auto-renew Option */}
-      {!isFreeTier && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-medium">{t('Enable Auto-Renew', 'Bật Tự động gia hạn')}</h3>
-              <p className="text-sm text-gray-500">{t('Get 5% off when you enable auto-renew', 'Giảm 5% khi bạn bật tự động gia hạn')}</p>
-            </div>
-            <Switch 
-              checked={autoRenew} 
-              onCheckedChange={handleAutoRenewChange}
-              disabled={disableAutoRenew}
-            />
-          </div>
-          
-          {/* Renewal information display */}
-          {autoRenew && !isFreeTier && (
-            <div className="text-sm text-gray-500">
-              {t(
-                `You'll be billed $${renewalPrice.toFixed(2)} every 30 days starting ${formattedRenewalDate} (unless canceled).`,
-                `Bạn sẽ bị tính phí $${renewalPrice.toFixed(2)} mỗi 30 ngày bắt đầu từ ${formattedRenewalDateVi} (trừ khi hủy).`
-              )}
-              
-              {/* Special messaging for Diamond yearly plan */}
-              {isDiamondPlan && selectedDuration === 12 && (
-                <div className="text-green-600 mt-1">
-                  {t('Keep this price locked in each year. Cancel anytime.', 'Giữ giá này mỗi năm. Hủy bất kỳ lúc nào.')}
-                </div>
-              )}
-            </div>
-          )}
-          
-          <Separator className="my-6" />
-        </div>
-      )}
-      
-      {/* Payment Summary */}
-      <PaymentSummary 
-        basePrice={basePrice}
-        duration={selectedDuration}
-        autoRenew={autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-        onProceedToPayment={handleProceedToPayment}
-      />
-      
-      {/* Payment Confirmation Modal */}
-      <PaymentConfirmationModal 
-        open={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
+      {/* Payment confirmation modal */}
+      <PaymentConfirmationModal
+        open={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
         onConfirmPayment={handleConfirmPayment}
         amount={finalPrice}
         options={pricingOptions}
         originalPrice={originalPrice}
         discountPercentage={discountPercentage}
       />
-      
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-8">
-        <Button
-          variant="outline"
-          onClick={onPrevStep}
-        >
-          {t('Previous', 'Trước')}
-        </Button>
-      </div>
     </div>
   );
 };

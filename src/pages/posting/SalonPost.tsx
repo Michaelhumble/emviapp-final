@@ -1,89 +1,159 @@
-
-import { useState } from "react";
-import Layout from "@/components/layout/Layout";
-import { SalonPostForm } from "@/components/posting/salon/SalonPostForm";
-import SalonPostOptions from "@/components/posting/salon/SalonPostOptions";
-import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
-import ThankYouModal from "@/components/posting/ThankYouModal";
-import { toast } from "sonner";
-import { PricingOptions } from "@/utils/posting/types";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import PostWizardLayout from '@/components/posting/PostWizardLayout';
+import AuthPostGuard from '@/components/posting/AuthPostGuard';
+import { Salon } from '@/types/salon';
+import { PricingOptions } from '@/utils/posting/types';
+import { useTranslation } from '@/hooks/useTranslation';
+import PaymentConfirmationModal from '@/components/posting/PaymentConfirmationModal';
+import SalonDetailsSection from '@/components/posting/sections/SalonDetailsSection';
+import AmenitiesSection from '@/components/posting/sections/AmenitiesSection';
+import GallerySection from '@/components/posting/sections/GallerySection';
+import ContactInformationSection from '@/components/posting/sections/ContactInformationSection';
+import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
 
 const SalonPost = () => {
-  const [isNationwide, setIsNationwide] = useState(false);
-  const [fastSalePackage, setFastSalePackage] = useState(false);
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const handleSubmit = async (values: any) => {
-    setIsSubmitting(true);
-    console.log("Form values:", values);
-    console.log("Photo uploads:", photoUploads);
-    
-    // Simulate submission process
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsPaymentModalOpen(true);
-    }, 1500);
-  };
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [salonDetails, setSalonDetails] = useState<Partial<Salon>>({
+    name: '',
+    address: '',
+    description: '',
+    amenities: [],
+    gallery: [],
+    contact_info: {
+      owner_name: '',
+      phone: '',
+      email: ''
+    }
+  });
   
-  const handlePaymentSuccess = () => {
-    setIsThankYouModalOpen(true);
-  };
-  
-  const handleBoostClick = () => {
-    toast.info("Redirecting to boost options...");
-  };
-
-  // Complete PricingOptions object with all required properties
-  const pricingOptions: PricingOptions = {
-    isFirstPost: false,
-    isNationwide: isNationwide,
-    fastSalePackage: fastSalePackage,
+  // Pricing options state
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    isFirstPost: true,
+    isNationwide: false,
+    fastSalePackage: false,
     showAtTop: false,
     bundleWithJobPost: false,
+    hasReferrals: false,
     isHotListing: false,
     isUrgent: false,
     bundleWithSalonPost: false,
     boostVisibility: false,
     featuredListing: false,
-    extendedDuration: false
+    extendedDuration: false,
+    selectedPricingTier: 'standard', // Default pricing tier
+    autoRenew: false
+  });
+  
+  const nextStep = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+  
+  const handleSalonDetailChange = (details: Partial<Salon>) => {
+    setSalonDetails({ ...salonDetails, ...details });
+  };
+  
+  const handlePricingChange = (pricingTier: string) => {
+    setPricingOptions({ ...pricingOptions, selectedPricingTier: pricingTier });
+  };
+  
+  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
+    setPricingOptions({ ...pricingOptions, ...options });
+  };
+  
+  const handlePaymentConfirmation = () => {
+    setShowPaymentModal(false);
+    // Process payment and submit salon
+    navigate('/salon-post-success');
+  };
+  
+  const handleAmenitiesChange = (amenities: string[]) => {
+    setSalonDetails({ ...salonDetails, amenities: amenities });
+  };
+
+  const handleGalleryChange = (gallery: string[]) => {
+    setSalonDetails({ ...salonDetails, gallery: gallery });
+  };
+
+  const handleContactChange = (contactInfo: Salon['contact_info']) => {
+    setSalonDetails({ ...salonDetails, contact_info: contactInfo });
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-serif mb-8">List a Salon For Sale</h1>
-          
-          <SalonPostForm
-            onSubmit={handleSubmit}
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            onNationwideChange={setIsNationwide}
-            onFastSaleChange={setFastSalePackage}
-          />
-        </div>
+    <AuthPostGuard>
+      <div className="container mx-auto px-4">
+        <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 block">
+          {t('← Back to Home', '← Trở về Trang chủ')}
+        </Link>
       </div>
+      <PostWizardLayout 
+        currentStep={currentStep} 
+        totalSteps={5} 
+        title={t("Post Your Salon", "Đăng Tin Salon")}
+        onNext={() => setCurrentStep(prev => prev + 1)}
+        onPrev={() => setCurrentStep(prev => prev - 1)}
+        onSubmit={() => console.log("Submitting salon details...")}
+      >
+        {currentStep === 1 && (
+          <SalonDetailsSection
+            details={salonDetails}
+            onChange={handleSalonDetailChange}
+          />
+        )}
+        {currentStep === 2 && (
+          <AmenitiesSection
+            amenities={salonDetails.amenities}
+            onChange={handleAmenitiesChange}
+          />
+        )}
+        {currentStep === 3 && (
+          <GallerySection
+            gallery={salonDetails.gallery}
+            onChange={handleGalleryChange}
+          />
+        )}
+        {currentStep === 4 && (
+          <ContactInformationSection
+            contactInfo={salonDetails.contact_info}
+            onChange={handleContactChange}
+          />
+        )}
+        {currentStep === 5 && (
+          <ReviewAndPaymentSection
+            postType="salon"
+            pricingOptions={pricingOptions}
+            onPricingChange={handlePricingChange}
+            onUpdatePricing={handleUpdatePricing}
+            onNextStep={nextStep}
+            onPrevStep={prevStep}
+          />
+        )}
+      </PostWizardLayout>
       
       <PaymentConfirmationModal
-        open={isPaymentModalOpen}
-        onOpenChange={setIsPaymentModalOpen}
-        postType="salon"
-        price={99}
+        open={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onOpenChange={setShowPaymentModal}
+        onConfirmPayment={handlePaymentConfirmation}
+        amount={100} // Replace with actual calculated price
         options={pricingOptions}
-        onSuccess={handlePaymentSuccess}
+        originalPrice={150} // Replace with actual original price
+        discountPercentage={10} // Replace with actual discount percentage
       />
-      
-      <ThankYouModal
-        open={isThankYouModalOpen}
-        onOpenChange={setIsThankYouModalOpen}
-        postType="salon"
-        onBoostClick={handleBoostClick}
-      />
-    </Layout>
+    </AuthPostGuard>
   );
 };
 

@@ -8,7 +8,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 export interface PaymentConfirmationModalProps {
   open: boolean;
-  onClose: () => void;  // Added this missing property
+  onClose: () => void;
+  onOpenChange?: (open: boolean) => void;
   onConfirmPayment: () => void;
   amount: number;
   options: PricingOptions;
@@ -18,7 +19,8 @@ export interface PaymentConfirmationModalProps {
 
 const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
   open,
-  onClose,  // Added this parameter to the component
+  onClose,
+  onOpenChange,
   onConfirmPayment,
   amount,
   options,
@@ -27,10 +29,13 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) onClose();
+    if (onOpenChange) onOpenChange(isOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      if (!isOpen) onClose();
-    }}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{t('Confirm Payment', 'Xác nhận thanh toán')}</DialogTitle>
