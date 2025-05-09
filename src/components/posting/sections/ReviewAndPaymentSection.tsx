@@ -11,6 +11,7 @@ import PricingDisplay from "@/components/posting/PricingDisplay";
 import PaymentSummary from "@/components/posting/PaymentSummary";
 import PricingCards from "@/components/posting/PricingCards";
 import { AlertCircle } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ReviewAndPaymentSectionProps {
   formData: any;
@@ -29,6 +30,8 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   isFirstPost = false,
   pricingOptions = {}
 }) => {
+  const { t, isVietnamese } = useTranslation();
+  
   const [activeTab, setActiveTab] = useState("review");
   const [selectedPricing, setSelectedPricing] = useState("standard");
   const [selectedDuration, setSelectedDuration] = useState(1); // Default to 1 month
@@ -39,13 +42,13 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   
   // Map job field mapping
   const jobFields = {
-    title: "Job Title",
-    location: "Location",
-    employment_type: "Employment Type",
-    description: "Job Description",
-    requirements: "Requirements",
-    compensation_details: "Compensation Details",
-    compensation_type: "Compensation Type",
+    title: t("Job Title", "Chức danh"),
+    location: t("Location", "Địa điểm"),
+    employment_type: t("Employment Type", "Loại việc làm"),
+    description: t("Job Description", "Mô tả công việc"),
+    requirements: t("Requirements", "Yêu cầu"),
+    compensation_details: t("Compensation Details", "Chi tiết lương"),
+    compensation_type: t("Compensation Type", "Hình thức trả lương"),
   };
 
   // Format data for the summary
@@ -70,12 +73,12 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
     <div className="space-y-8">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="review">Review</TabsTrigger>
-          <TabsTrigger value="payment">Payment</TabsTrigger>
+          <TabsTrigger value="review">{t("Review", "Xem lại")}</TabsTrigger>
+          <TabsTrigger value="payment">{t("Payment", "Thanh toán")}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="review" className="space-y-6 pt-4">
-          <h3 className="text-lg font-medium">Review your submission</h3>
+          <h3 className="text-lg font-medium">{t("Review your submission", "Xem lại thông tin")}</h3>
           
           <div className="space-y-4">
             {formattedData.map((item, i) => (
@@ -88,10 +91,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
           
           <div className="pt-4 flex justify-end">
             <Button variant="outline" className="mr-2" onClick={onPrevStep}>
-              Edit Information
+              {t("Edit Information", "Sửa thông tin")}
             </Button>
             <Button onClick={() => setActiveTab("payment")}>
-              Continue to Payment
+              {t("Continue to Payment", "Tiếp tục thanh toán")}
             </Button>
           </div>
         </TabsContent>
@@ -100,9 +103,9 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
           <div className="grid grid-cols-1 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Select a Plan</CardTitle>
+                <CardTitle>{t("Select a Plan", "Chọn gói")}</CardTitle>
                 <CardDescription>
-                  Choose the listing option that works best for you
+                  {t("Choose the listing option that works best for you", "Chọn lựa chọn đăng tin phù hợp nhất với bạn")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -118,7 +121,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
             
             <div className="flex justify-end">
               <Button className="px-8">
-                Continue to Checkout
+                {t("Continue to Checkout", "Tiếp tục thanh toán")}
               </Button>
             </div>
           </div>

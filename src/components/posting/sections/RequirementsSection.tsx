@@ -9,6 +9,7 @@ import {
   CardContent
 } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface RequirementsSectionProps {
   details: Partial<Job>;
@@ -16,6 +17,8 @@ interface RequirementsSectionProps {
 }
 
 const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) => {
+  const { t, isVietnamese } = useTranslation();
+  
   // Handle adding a requirement
   const addRequirement = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && e.currentTarget.value) {
@@ -39,12 +42,12 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Job Requirements</h2>
-      <p className="text-muted-foreground">Specify what you're looking for in candidates</p>
+      <h2 className="text-2xl font-bold">{t('Job Requirements', 'Yêu cầu công việc')}</h2>
+      <p className="text-muted-foreground">{t('Specify what you\'re looking for in candidates', 'Chỉ rõ bạn đang tìm kiếm ứng viên như thế nào')}</p>
       
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="experience-level">Experience Level</Label>
+          <Label htmlFor="experience-level">{t('Experience Level', 'Kinh nghiệm')}</Label>
           <RadioGroup 
             value={details.experience_level || 'any'} 
             onValueChange={(value) => onChange({ ...details, experience_level: value })}
@@ -52,24 +55,24 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="any" id="any" />
-              <Label htmlFor="any">Any Experience</Label>
+              <Label htmlFor="any">{t('Any Experience', 'Bất kỳ kinh nghiệm nào')}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="entry" id="entry" />
-              <Label htmlFor="entry">Entry Level</Label>
+              <Label htmlFor="entry">{t('Entry Level', 'Mới vào nghề')}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="experienced" id="experienced" />
-              <Label htmlFor="experienced">Experienced</Label>
+              <Label htmlFor="experienced">{t('Experienced', 'Có kinh nghiệm')}</Label>
             </div>
           </RadioGroup>
         </div>
         
         <div className="grid gap-2">
-          <Label>Requirements</Label>
+          <Label>{t('Requirements', 'Yêu cầu')}</Label>
           <div className="space-y-3">
             <Input
-              placeholder="Add requirement and press Enter"
+              placeholder={t('Add requirement and press Enter', 'Thêm yêu cầu và nhấn Enter')}
               onKeyDown={addRequirement}
             />
             
@@ -95,7 +98,7 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
         </div>
         
         <div className="grid gap-2 mt-4">
-          <Label>Additional Benefits</Label>
+          <Label>{t('Additional Benefits', 'Phúc lợi bổ sung')}</Label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="flex items-center space-x-2">
               <input 
@@ -105,7 +108,7 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, has_housing: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="has-housing">Housing Available</Label>
+              <Label htmlFor="has-housing">{t('Housing Available', 'Có nhà ở')}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <input 
@@ -115,7 +118,7 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, has_wax_room: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="has-wax-room">Wax Room Available</Label>
+              <Label htmlFor="has-wax-room">{t('Wax Room Available', 'Có phòng wax')}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <input 
@@ -125,7 +128,7 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, no_supply_deduction: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="no-supply-deduction">No Supply Deduction</Label>
+              <Label htmlFor="no-supply-deduction">{t('No Supply Deduction', 'Không trừ tiền vật tư')}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <input 
@@ -135,7 +138,7 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, owner_will_train: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="owner-will-train">Owner Will Train</Label>
+              <Label htmlFor="owner-will-train">{t('Owner Will Train', 'Chủ sẽ đào tạo')}</Label>
             </div>
           </div>
         </div>

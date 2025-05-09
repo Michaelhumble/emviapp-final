@@ -12,10 +12,12 @@ import AuthPostGuard from '@/components/posting/AuthPostGuard';
 import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
+  const { t } = useTranslation();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [jobDetails, setJobDetails] = useState<Partial<Job>>({
@@ -90,13 +92,13 @@ const JobPost = () => {
     <AuthPostGuard>
       <div className="container mx-auto px-4">
         <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 block">
-          ← Back to Home
+          {t('← Back to Home', '← Trở về Trang chủ')}
         </Link>
       </div>
       <PostWizardLayout 
         currentStep={currentStep} 
         totalSteps={totalSteps} 
-        title="Post a Job"
+        title={t("Post a Job", "Đăng Tin Tuyển Thợ")}
         onNext={nextStep}
         onPrev={prevStep}
         onSubmit={handleSubmit}
