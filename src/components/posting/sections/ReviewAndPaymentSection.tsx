@@ -8,6 +8,9 @@ import PricingCards from '../PricingCards';
 import PaymentConfirmationModal from '../PaymentConfirmationModal';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 interface ReviewAndPaymentSectionProps {
   postType: PostType;
@@ -32,6 +35,10 @@ const ReviewAndPaymentSection = ({
   const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState(1);
+  const [autoRenew, setAutoRenew] = useState(false);
+  
+  // Check if the selected pricing is the free tier
+  const isFreeTier = selectedPricing === 'free';
   
   // Update parent component when pricing changes
   useEffect(() => {
@@ -124,6 +131,36 @@ const ReviewAndPaymentSection = ({
               duration={selectedDuration}
               pricingId={selectedPricing}
             />
+            
+            {!isFreeTier && (
+              <div className="mt-5 flex items-center justify-between rounded-lg bg-gray-50 p-3 border border-gray-200">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium">
+                    {t('Enable Auto-Renew and Save 20%', 'Bật Tự động gia hạn và Tiết kiệm 20%')}
+                  </span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger type="button">
+                        <Info size={16} className="text-gray-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs text-sm">
+                          {t(
+                            'You can cancel anytime. We\'ll remind you before billing.',
+                            'Bạn có thể hủy bất kỳ lúc nào. Chúng tôi sẽ nhắc bạn trước khi tính phí.'
+                          )}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <Switch
+                  checked={autoRenew}
+                  onCheckedChange={setAutoRenew}
+                  aria-label={t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}
+                />
+              </div>
+            )}
           </div>
           
           <div className="flex justify-between pt-4">
@@ -149,7 +186,8 @@ const ReviewAndPaymentSection = ({
         options={{
           ...pricingOptions,
           isFirstPost,
-          selectedPricingTier: selectedPricing
+          selectedPricingTier: selectedPricing,
+          autoRenew: autoRenew
         }}
         originalPrice={originalPrice || undefined}
         discountPercentage={discountPercentage}
