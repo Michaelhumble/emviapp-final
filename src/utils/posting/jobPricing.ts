@@ -1,4 +1,3 @@
-
 import { JobPricingOption, JobPricingTier } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [
@@ -8,13 +7,12 @@ export const jobPricingOptions: JobPricingOption[] = [
     tier: 'basic' as JobPricingTier,
     price: 0,
     wasPrice: 9.99,
-    description: 'Basic listing. No image. Limited visibility.',
-    vietnameseDescription: 'Tin đơn giản – Không có hình ảnh.',
+    description: 'Simple & quick post. Limited reach.',
+    vietnameseDescription: 'Tin đơn giản – Không có hình ảnh',
     features: [
-      'Visible in Standard section',
-      'No image',
-      'Shows for 3 days',
-      'Standard placement'
+      '🪧 Listed in standard row',
+      '📆 Expires in 30 days',
+      '🧾 No image or contact shown'
     ],
     duration: 30, // days
     tag: '⚪ Was $9.99 – Now Free!'
@@ -25,13 +23,12 @@ export const jobPricingOptions: JobPricingOption[] = [
     tier: 'premium' as JobPricingTier,
     price: 9.99,
     wasPrice: 29.99,
-    description: 'Full listing with image & contact info.',
-    vietnameseDescription: 'Hiển thị hình ảnh và số điện thoại.',
+    description: 'Full listing. Better placement.',
+    vietnameseDescription: 'Hiển thị đầy đủ với hình ảnh + số điện thoại',
     features: [
-      'Includes image',
-      'Visible for 2 weeks',
-      'Listed in Gold section',
-      'Better placement'
+      '🖼️ Show image',
+      '📱 Show contact info',
+      '🏷️ Gold row placement'
     ],
     duration: 30, // days
     tag: '🟢 Save Big – Limited Time'
@@ -42,13 +39,12 @@ export const jobPricingOptions: JobPricingOption[] = [
     tier: 'featured' as JobPricingTier,
     price: 19.99,
     wasPrice: 39.99,
-    description: 'Appear in 🏆 Featured Row.',
-    vietnameseDescription: 'Hiển thị trong mục nổi bật. Ấn tượng hơn.',
+    description: 'Featured row. Look more impressive.',
+    vietnameseDescription: 'Hiển thị nổi bật – Khách thấy dễ hơn',
     features: [
-      'Featured row placement',
-      'Visible for 30 days',
-      'Priority in search',
-      'Enhanced visibility'
+      '👑 Highlighted in Gold',
+      '🔍 Search priority',
+      '📅 30-day display'
     ],
     duration: 30, // days
     popular: true,
@@ -60,13 +56,12 @@ export const jobPricingOptions: JobPricingOption[] = [
     tier: 'featured' as JobPricingTier,
     price: 49.99,
     wasPrice: 99.99,
-    description: 'Show up First. Homepage Love.',
-    vietnameseDescription: 'Ưu tiên trên trang chính – Khách hàng thấy đầu tiên.',
+    description: 'Homepage power. Best for speed.',
+    vietnameseDescription: 'Ưu tiên trên trang chính – Khách thấy bạn đầu tiên',
     features: [
-      'Pinned for 1 week',
-      'Homepage placement',
-      'Priority visibility',
-      'VIP support'
+      '🏠 Homepage pinning',
+      '📌 Top visibility',
+      '💬 VIP support'
     ],
     duration: 30, // days
     tag: '🟠 Today Only – 50% OFF'
@@ -77,13 +72,12 @@ export const jobPricingOptions: JobPricingOption[] = [
     tier: 'featured' as JobPricingTier,
     price: 999.99,
     wasPrice: 1499.99,
-    description: 'Top 3 Spot. Forever Trusted.',
-    vietnameseDescription: 'Vị trí đặc biệt – Chỉ 3 chỗ duy nhất.',
+    description: 'Top 3 Spots. Forever Trusted.',
+    vietnameseDescription: 'Vị trí đặc biệt – Chỉ 3 chỗ duy nhất',
     features: [
-      'Top 3 spots',
-      '1-year duration',
-      'Only 3 available',
-      'Homepage pinning'
+      '🥇 1 of only 3',
+      '🏠 Homepage pinned',
+      '👥 Unlimited team'
     ],
     duration: 365, // days
     tag: '🔥 Only 3 Available',

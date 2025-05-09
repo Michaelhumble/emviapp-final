@@ -1,3 +1,4 @@
+
 export interface JobPosting {
   id: string;
   title: string;
@@ -24,14 +25,14 @@ export interface JobPricingOption {
   name: string;
   tier: JobPricingTier;
   price: number;
-  wasPrice?: number; // Add the 'was' price
+  wasPrice?: number;
   description: string;
-  vietnameseDescription?: string; // Add Vietnamese description
+  vietnameseDescription?: string;
   features: string[];
   duration: number; // in days
   popular?: boolean;
-  tag?: string; // Add tag for promotional display
-  note?: string; // Add note for additional information
+  tag?: string;
+  note?: string;
 }
 
 // Add missing types
@@ -39,7 +40,7 @@ export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
 export interface PricingOptions {
   isFirstPost?: boolean;
-  isRenewal?: boolean; // Added the missing property
+  isRenewal?: boolean;
   isNationwide?: boolean;
   fastSalePackage?: boolean;
   showAtTop?: boolean;
