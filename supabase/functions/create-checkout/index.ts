@@ -104,8 +104,8 @@ serve(async (req) => {
         },
         quantity: 1
       }],
-      success_url: `${req.headers.get("origin") || "https://emviapp.app"}/post-success?payment_log_id=${paymentLog.id}`,
-      cancel_url: `${req.headers.get("origin") || "https://emviapp.app"}/post-job`,
+      success_url: `https://emviapp.app/post-success?payment_log_id=${paymentLog.id}`,
+      cancel_url: `https://emviapp.app/post-job`,
       metadata: {
         payment_log_id: paymentLog.id,
         user_id: user.id

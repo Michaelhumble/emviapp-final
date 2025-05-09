@@ -58,7 +58,8 @@ serve(async (req) => {
       .insert({
         event_type: event.type,
         payload: event.data.object,
-        source: 'stripe'
+        source: 'stripe',
+        status: 'received'
       });
       
     // Process different event types
@@ -81,14 +82,32 @@ serve(async (req) => {
           
         if (updateError) {
           console.error("Error updating payment log:", updateError);
+          await supabase
+            .from('webhook_logs')
+            .insert({
+              event_type: event.type,
+              status: 'error',
+              details: { error: updateError, stage: 'updating_payment_log' }
+            });
         }
         
         // Get payment details for post creation
-        const { data: paymentLog } = await supabase
+        const { data: paymentLog, error: fetchError } = await supabase
           .from('payment_logs')
           .select('*')
           .eq('id', paymentLogId)
           .single();
+          
+        if (fetchError) {
+          console.error("Error fetching payment log:", fetchError);
+          await supabase
+            .from('webhook_logs')
+            .insert({
+              event_type: event.type,
+              status: 'error',
+              details: { error: fetchError, stage: 'fetching_payment_log' }
+            });
+        }
           
         if (paymentLog) {
           // Create the actual post based on the payment
@@ -118,6 +137,13 @@ serve(async (req) => {
             
           if (postError) {
             console.error("Error creating post:", postError);
+            await supabase
+              .from('webhook_logs')
+              .insert({
+                event_type: event.type,
+                status: 'error',
+                details: { error: postError, stage: 'creating_post' }
+              });
           } else {
             console.log(`Created post: ${post.id} with expiration: ${expiresAt.toISOString()}`);
             
@@ -126,6 +152,14 @@ serve(async (req) => {
               .from('payment_logs')
               .update({ post_id: post.id })
               .eq('id', paymentLogId);
+              
+            await supabase
+              .from('webhook_logs')
+              .insert({
+                event_type: event.type,
+                status: 'success',
+                details: { post_id: post.id, payment_log_id: paymentLogId }
+              });
           }
         }
       }
@@ -133,15 +167,30 @@ serve(async (req) => {
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent succeeded: ${paymentIntent.id}`);
       
-      // Additional processing for payment_intent.succeeded can be added here
+      // Log successful payment
+      await supabase
+        .from('webhook_logs')
+        .insert({
+          event_type: event.type,
+          status: 'success',
+          details: { payment_intent_id: paymentIntent.id }
+        });
       
     } else if (event.type === 'payment_intent.failed') {
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent failed: ${paymentIntent.id}`);
       
-      // Handle payment failure
-      // Find associated payment log by metadata if relevant
-      // Update status to failed
+      // Log failed payment
+      await supabase
+        .from('webhook_logs')
+        .insert({
+          event_type: event.type,
+          status: 'failed',
+          details: { 
+            payment_intent_id: paymentIntent.id,
+            error: paymentIntent.last_payment_error
+          }
+        });
     }
 
     return new Response(JSON.stringify({ received: true }), {
@@ -150,6 +199,26 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error(`Webhook error: ${error.message}`);
+    
+    // Initialize Supabase client to log the error
+    try {
+      const supabase = createClient(
+        Deno.env.get("SUPABASE_URL") || "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+        { auth: { persistSession: false } }
+      );
+      
+      await supabase
+        .from('webhook_logs')
+        .insert({
+          event_type: 'error',
+          status: 'error',
+          details: { error: error.message }
+        });
+    } catch (logError) {
+      console.error("Failed to log webhook error:", logError);
+    }
+    
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
