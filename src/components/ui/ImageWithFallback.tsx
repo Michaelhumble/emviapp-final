@@ -26,16 +26,28 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 }) => {
   const [error, setError] = useState(false);
   
-  // Enhanced validation for image URL
-  const isValidImageUrl = src && (
-    src.startsWith('http') || 
-    src.startsWith('/') || 
-    src.startsWith('data:')
-  ) && !src.includes('undefined') && !src.includes('null');
+  // Enhanced validation for image URL with robust checks
+  const isValidImageUrl = (url: string) => {
+    // Check if URL is undefined, null, or empty string
+    if (!url) return false;
+    
+    // Check if URL has valid format (http, https, data:, or relative path)
+    const hasValidPrefix = 
+      url.startsWith('http') || 
+      url.startsWith('/') || 
+      url.startsWith('data:');
+      
+    // Check for common invalid URL segments
+    const hasInvalidSegments = 
+      url.includes('undefined') || 
+      url.includes('null');
+    
+    return hasValidPrefix && !hasInvalidSegments;
+  };
 
-  // Function to get a fallback Supabase image for Vietnamese jobs
+  // Function to get a reliable fallback Supabase image
   const getSupabaseImage = () => {
-    // Array of valid Supabase image filenames
+    // Define a set of known valid Supabase image filenames
     const validImages = [
       'generated(01).png', 'generated(04).png', 'generated(08).png', 'generated(12).png',
       'generated(15).png', 'generated(21).png', 'generated(27).png', 'generated(33).png',
@@ -45,44 +57,54 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       '_A long, luxurious nail salon-16.png', '_A long, luxurious nail salon-17.png'
     ];
     
-    // Choose a random image from the valid options
-    const randomImage = validImages[Math.floor(Math.random() * validImages.length)];
-    return `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${randomImage}`;
+    // Choose a deterministic image based on the alt text to ensure consistency
+    const hash = alt.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const index = hash % validImages.length;
+    
+    return `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/${validImages[index]}`;
   };
 
-  if (!isValidImageUrl || error) {
-    // Use fallbackImage if provided
-    if (fallbackImage) {
+  // If source is invalid or error occurred during loading
+  if (!isValidImageUrl(src) || error) {
+    // Use provided fallback image if available
+    if (fallbackImage && isValidImageUrl(fallbackImage)) {
       return (
         <img
           src={fallbackImage}
           alt={alt}
           className={className}
           style={style}
+          loading={priority ? "eager" : "lazy"}
+          onError={() => setError(true)} // In case fallback also fails
         />
       );
     }
     
-    // For Vietnamese listings, use the Supabase image
-    if (alt.includes('Vietnamese') || alt.includes('nail') || alt.toLowerCase().includes('tiệm')) {
+    // For Vietnamese listings or nail-related content, use Supabase fallback
+    if (alt.includes('Vietnamese') || 
+        alt.toLowerCase().includes('nail') || 
+        alt.toLowerCase().includes('tiệm') ||
+        (businessName && businessName.toLowerCase().includes('nail'))) {
+      const supabaseUrl = getSupabaseImage();
       return (
         <img
-          src={getSupabaseImage()}
+          src={supabaseUrl}
           alt={alt}
           className={className}
           style={style}
+          loading={priority ? "eager" : "lazy"}
           onError={() => {
-            console.log('Fallback Supabase image failed to load');
+            // If even this fallback fails, use gradient placeholder silently
             setError(true);
           }}
         />
       );
     }
     
-    // Return a gradient placeholder with first letter of alt text or businessName
+    // Return a gradient placeholder with first letter
     const firstLetter = businessName ? 
       businessName.charAt(0).toUpperCase() : 
-      alt.charAt(0).toUpperCase() || 'J';
+      (alt && alt.length > 0 ? alt.charAt(0).toUpperCase() : 'E');
       
     return (
       <div 
@@ -100,6 +122,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     );
   }
 
+  // If source is valid and no error, render the image
   return (
     <img
       src={src}

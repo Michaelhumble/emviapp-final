@@ -23,8 +23,9 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
   const remainingCount = rowSize - (jobs.length % rowSize);
   if (remainingCount !== rowSize) {
     for (let i = 0; i < remainingCount; i++) {
-      // Direct URL construction for placeholders
-      const fallbackImageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${18 + i}.png`;
+      // Use verified image paths for placeholders
+      const imageIndex = i % 8; // Keep within bounds of known good images
+      const fallbackImageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${10 + imageIndex}.png`;
       
       premiumJobs.push({
         id: `premium-placeholder-${i}`,
@@ -64,6 +65,7 @@ const PremiumListingsSection = ({ jobs, onViewDetails }: PremiumListingsSectionP
                 alt={job.title || "Job listing"}
                 className={`w-full h-full object-cover ${index >= jobs.length ? 'opacity-70' : ''}`}
                 businessName={job.company}
+                fallbackImage={`https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${10 + (index % 8)}.png`}
               />
               <Badge className={`absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 ${index >= jobs.length ? 'opacity-70' : ''}`}>
                 Premium

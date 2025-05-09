@@ -21,6 +21,18 @@ const getSalaryValue = (salary: string): number => {
   return parseFloat(salary.replace(/[^0-9.]/g, ''));
 };
 
+// List of verified working images from the Supabase bucket
+const verifiedImages = [
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-10.png`,
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-11.png`,
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-12.png`,
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-13.png`,
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-14.png`,
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-15.png`,
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-16.png`,
+  `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-17.png`,
+];
+
 export const premiumJobs: Job[] = [
   {
     id: "premium-1",
@@ -29,7 +41,7 @@ export const premiumJobs: Job[] = [
     location: "6947 FM 1960 Rd E, Humble, TX",
     created_at: new Date("2025-05-03").toISOString(),
     description: "Receptionist $150/ngày. 60 người đang làm chung.",
-    image: `${SUPABASE_URL}/generated%20(01).png`,
+    image: verifiedImages[0],
     contact_info: {
       phone: "(346) 398-6868 (gặp Nhi)"
     },
@@ -44,7 +56,7 @@ export const premiumJobs: Job[] = [
     location: "South Lake Tahoe, CA",
     created_at: new Date("2025-05-01").toISOString(),
     description: "Tiệm dễ thương, khách du lịch chịu chi.",
-    image: `${SUPABASE_URL}/generated02.png`,
+    image: verifiedImages[1],
     contact_info: {
       phone: "(916) 802-1922"
     },
@@ -59,7 +71,7 @@ export const premiumJobs: Job[] = [
     location: "Killeen, TX",
     created_at: new Date("2025-04-29").toISOString(),
     description: "Tiệm lớn, giá cao, tip tốt.",
-    image: `${SUPABASE_URL}/generated%20(003).png`,
+    image: verifiedImages[2],
     contact_info: {
       phone: "(512) 540-6173 | (806) 777-0526"
     },
@@ -74,7 +86,7 @@ export const premiumJobs: Job[] = [
     location: "Clawson, MI",
     created_at: new Date("2025-05-05").toISOString(),
     description: "Tiệm nhỏ khu Mỹ trắng, tip hậu. Cần thợ làm bột, dip, gel-x.",
-    image: `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-14.png`,
+    image: verifiedImages[3],
     contact_info: {
       phone: "(248) 403-6472 | (248) 525-9911"
     },
@@ -89,7 +101,7 @@ export const premiumJobs: Job[] = [
     location: "Clinton, MD",
     created_at: new Date("2025-05-04").toISOString(),
     description: "Khách dễ chịu, tip cao.",
-    image: `${SUPABASE_URL}/generated%20(4).png`,
+    image: verifiedImages[4],
     contact_info: {
       phone: "703-980-6551"
     },
@@ -104,7 +116,7 @@ export const premiumJobs: Job[] = [
     location: "Fort Worth, TX",
     created_at: new Date("2025-05-02").toISOString(),
     description: "Làm đủ thứ. Môi trường vui vẻ.",
-    image: `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-15.png`,
+    image: verifiedImages[5],
     contact_info: {
       phone: "817-841-5157"
     },
@@ -119,7 +131,7 @@ export const premiumJobs: Job[] = [
     location: "Chicago, IL",
     created_at: new Date("2025-05-02").toISOString(),
     description: "Cần thợ bột, dipping tại Chicago.",
-    image: `${SUPABASE_URL}/generated%20(5).png`,
+    image: verifiedImages[6],
     contact_info: {
       phone: "779-475-0679"
     },
@@ -134,7 +146,7 @@ export const premiumJobs: Job[] = [
     location: "Iowa",
     created_at: new Date("2025-05-02").toISOString(),
     description: "Full set, chân tay nước.",
-    image: `${SUPABASE_URL}/_A%20long%2C%20luxurious%20nail%20salon-16.png`,
+    image: verifiedImages[7],
     contact_info: {
       phone: "402-617-8806"
     },

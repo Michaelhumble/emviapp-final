@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +8,6 @@ import { MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import JobCardContact from "./JobCardContact";
-import { supabase } from "@/integrations/supabase/client";
 
 interface FeaturedGoldListingsProps {
   jobs: Job[];
@@ -18,15 +18,17 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
   // Ensure we have jobs to display
   if (!jobs.length) return null;
 
-  // Function to get valid Supabase image URLs
+  // Function to get valid Supabase image URLs with robust validation
   const getValidImageUrl = (job: Job, index: number): string => {
     // If job already has a valid image URL, use it
-    if (job.image && !job.image.includes('undefined') && !job.image.includes('null') && 
+    if (job.image && 
+        !job.image.includes('undefined') && 
+        !job.image.includes('null') && 
         job.image.startsWith('https://')) {
       return job.image;
     }
     
-    // Otherwise, use one of our valid images with rotation
+    // Use a reliable set of verified images with consistent rotation
     const validImages = [
       '_A long, luxurious nail salon-10.png',
       '_A long, luxurious nail salon-11.png',
@@ -47,10 +49,10 @@ const FeaturedGoldListings = ({ jobs, onViewDetails }: FeaturedGoldListingsProps
   const rowSize = 4;
   const remainingCount = rowSize - (jobs.length % rowSize);
   if (remainingCount !== rowSize) {
-    // Generate placeholder jobs using metadata from existing jobs
+    // Generate placeholder jobs using correct image paths
     for (let i = 0; i < remainingCount; i++) {
-      // Use the correct naming pattern for placeholder images
-      const imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${16 + i}.png`;
+      const imageIndex = i % 8; // Ensure we don't go out of bounds
+      const imageUrl = `https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-${10 + imageIndex}.png`;
         
       balancedJobs.push({
         id: `gold-placeholder-${i}`,

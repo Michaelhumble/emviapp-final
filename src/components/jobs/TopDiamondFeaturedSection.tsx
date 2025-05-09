@@ -22,6 +22,13 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
   
   // Get the first real job (Magic Nails)
   const mainJob = featuredJobs[0];
+
+  // Define fallback images for verification
+  const mainJobImagePath = "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png";
+  const secondaryImagePath = "/lovable-uploads/d98977ed-9565-4629-b2e7-fc4cf3f93a7f.png";
+  
+  // Supabase fallback if the lovable uploads are not available
+  const supabaseFallback = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-10.png";
   
   return (
     <motion.section
@@ -48,10 +55,11 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
           <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
 
           <div className="aspect-video relative">
-            <img
-              src={"/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png"}
+            <ImageWithFallback
+              src={mainJobImagePath}
               alt="Magic Nails"
               className="w-full h-full object-cover"
+              fallbackImage={supabaseFallback}
             />
             <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-medium">
               ✨ Top Diamond Exclusive
@@ -108,13 +116,14 @@ const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFe
           <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
 
           <div className="aspect-video relative">
-            <img
-              src={"/lovable-uploads/d98977ed-9565-4629-b2e7-fc4cf3f93a7f.png"}
+            <ImageWithFallback
+              src={secondaryImagePath}
               alt="Premium Listing Opportunity"
               className="w-full h-full object-cover transition-transform duration-700"
               style={{
                 transform: isHovered ? 'scale(1.05)' : 'scale(1)'
               }}
+              fallbackImage={supabaseFallback}
             />
             <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-medium">
               ✨ Be Seen by Thousands
