@@ -1,23 +1,32 @@
 
 import { useState, useEffect } from 'react';
 
-export const useIsMobile = () => {
+export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(false);
-
+  
   useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768); // Consider screens less than 768px as mobile
-    };
-
-    // Check on initial render
-    checkIfMobile();
+    // Check if window is available (client-side)
+    if (typeof window === 'undefined') return;
     
-    // Add event listener
-    window.addEventListener('resize', checkIfMobile);
+    // Initial check
+    setIsMobile(window.innerWidth < 768);
+    
+    // Create the media query list
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    
+    // Define the handler
+    const handleResize = (e: MediaQueryListEvent) => {
+      setIsMobile(e.matches);
+    };
+    
+    // Add the listener
+    mediaQuery.addEventListener('change', handleResize);
     
     // Clean up
-    return () => window.removeEventListener('resize', checkIfMobile);
+    return () => {
+      mediaQuery.removeEventListener('change', handleResize);
+    };
   }, []);
-
+  
   return isMobile;
-};
+}
