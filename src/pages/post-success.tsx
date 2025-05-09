@@ -63,7 +63,7 @@ const PostSuccessPage = () => {
               "Tin của bạn đã đăng thành công!"
             )}
           </h1>
-          <Alert variant="success" className="bg-green-50 border-green-200">
+          <Alert variant="default" className="bg-green-50 border-green-200">
             <CheckCircle className="h-5 w-5 text-green-600" />
             <AlertDescription className="ml-2 text-green-700">
               {isVietnamese ? 
