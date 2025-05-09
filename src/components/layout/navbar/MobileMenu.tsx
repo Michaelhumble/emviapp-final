@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Menu, Flame, Home, Briefcase, Store, Scissors, Users, Info, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { mainNavigation } from "./config/navigationItems";
+
+// Define the MobileMenuProps interface
+interface MobileMenuProps {
+  user?: any;
+  handleSignOut: () => Promise<void>;
+}
 
 // Map of navigation paths to their corresponding icons
 const iconMap: Record<string, React.FC<{ className?: string }>> = {
@@ -19,7 +26,7 @@ const iconMap: Record<string, React.FC<{ className?: string }>> = {
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t, toggleLanguage, isVietnamese } = useTranslation();
   const navigate = useNavigate();
   
   const handleLinkClick = (path: string) => {
@@ -29,6 +36,11 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   
   const handleSignOutClick = async () => {
     await handleSignOut();
+    setOpen(false);
+  };
+  
+  const handleLanguageToggle = () => {
+    toggleLanguage();
     setOpen(false);
   };
 
@@ -57,12 +69,10 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
               <Button 
                 variant="outline"
                 className="w-full justify-start gap-2 rounded-md"
-                onClick={() => {
-                  // Toggle language
-                }}
+                onClick={handleLanguageToggle}
               >
                 <Globe className="h-5 w-5" />
-                <span>Tiếng Việt</span>
+                <span>{isVietnamese ? "English" : "Tiếng Việt"}</span>
               </Button>
             </div>
             
