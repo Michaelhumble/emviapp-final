@@ -14,69 +14,74 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
   
+  const signature = req.headers.get("stripe-signature");
+  if (!signature) {
+    return new Response(JSON.stringify({ error: "No Stripe signature found" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
   try {
+    // Get the raw body data for signature verification
+    const body = await req.text();
+    
+    // Get Stripe secret key and webhook secret from environment variables
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
     
     if (!stripeKey || !webhookSecret) {
-      throw new Error("Required Stripe configuration is missing");
+      console.error("Missing required environment variables: STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET");
+      throw new Error("Server configuration error");
     }
 
-    // Get the signature from the header
-    const signature = req.headers.get("stripe-signature");
-    if (!signature) {
-      throw new Error("No stripe signature in request");
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+    
+    // Verify the webhook signature
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    } catch (err) {
+      console.error(`Webhook signature verification failed: ${err.message}`);
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
 
-    // Get raw body for webhook signature verification
-    const body = await req.text();
+    console.log(`Webhook event received: ${event.type}`);
     
-    // Initialize Stripe
-    const stripe = new Stripe(stripeKey, {
-      apiVersion: "2023-10-16",
-    });
-
-    // Verify webhook signature
-    const event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      webhookSecret
-    );
-    
-    // Initialize Supabase client with service role key
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
       { auth: { persistSession: false } }
     );
-    
-    console.log(`Webhook event received: ${event.type}`);
-    
-    // Log webhook event
+
+    // Log the event to track webhook activity
     await supabase
-      .from('webhook_logs')
+      .from("webhook_logs")
       .insert({
         event_type: event.type,
-        payload: event.data.object,
-        source: 'stripe',
-        status: 'received'
+        event_id: event.id,
+        status: "received",
+        details: event.data.object
       });
       
     // Process different event types
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
+      console.log(`Checkout session completed: ${session.id}`);
+      
+      // Get payment_log_id from metadata
       const paymentLogId = session.metadata?.payment_log_id;
       
       if (paymentLogId) {
-        console.log(`Processing completed payment for log: ${paymentLogId}`);
-        
         // Update payment log status
         const { error: updateError } = await supabase
           .from('payment_logs')
           .update({ 
             status: 'completed',
-            completed_at: new Date().toISOString(),
-            payment_details: session
+            payment_date: new Date().toISOString()
           })
           .eq('id', paymentLogId);
           
@@ -111,28 +116,31 @@ serve(async (req) => {
           
         if (paymentLog) {
           // Create the actual post based on the payment
-          const { post_type, post_details, pricing_options, user_id } = paymentLog;
-          
-          // Calculate expiration date based on duration months
-          const months = pricing_options.durationMonths || 1;
+          const duration = paymentLog.pricing_options?.durationMonths || 1;
           const expiresAt = new Date();
-          expiresAt.setMonth(expiresAt.getMonth() + months);
+          expiresAt.setDate(expiresAt.getDate() + (duration * 30)); // Approximate month to 30 days
           
-          // Create post record
           const postData = {
-            ...post_details,
-            user_id,
+            user_id: paymentLog.user_id,
+            post_type: paymentLog.post_type,
+            title: paymentLog.post_details?.title || 'New Post',
+            content: paymentLog.post_details?.description || '',
+            location: paymentLog.post_details?.location || '',
+            contact_info: paymentLog.post_details?.contact_info || {},
             status: 'active',
-            post_type,
-            pricingTier: pricing_options.selectedPricingTier,
-            payment_id: paymentLogId,
-            expires_at: expiresAt.toISOString()
+            expires_at: expiresAt.toISOString(),
+            is_nationwide: paymentLog.pricing_options?.isNationwide || false,
+            price: paymentLog.price_amount / 100, // Convert from cents to dollars
+            metadata: {
+              pricing_tier: paymentLog.pricing_options?.selectedPricingTier || 'standard',
+              payment_log_id: paymentLogId
+            }
           };
           
           const { data: post, error: postError } = await supabase
             .from('posts')
             .insert(postData)
-            .select('id')
+            .select()
             .single();
             
           if (postError) {
@@ -147,7 +155,7 @@ serve(async (req) => {
           } else {
             console.log(`Created post: ${post.id} with expiration: ${expiresAt.toISOString()}`);
             
-            // Link post ID back to payment log
+            // Link the post to the payment log
             await supabase
               .from('payment_logs')
               .update({ post_id: post.id })
@@ -195,7 +203,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
+      status: 200
     });
   } catch (error) {
     console.error(`Webhook error: ${error.message}`);
