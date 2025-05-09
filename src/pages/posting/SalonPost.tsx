@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -42,8 +41,7 @@ const SalonPost = () => {
       phone: '',
       email: ''
     },
-    // Add gallery property to the Salon interface if needed
-    gallery: [] as any[]
+    gallery: [] // Now this is valid since we added it to the Salon interface
   });
   
   // Pricing options state
@@ -99,7 +97,7 @@ const SalonPost = () => {
   };
 
   const handleGalleryChange = (gallery: any[]) => {
-    setSalonDetails(prev => ({ ...prev, gallery }));
+    setSalonDetails(prev => ({ ...prev, gallery })); // Now this is valid
   };
 
   const handleContactChange = (contactInfo: Salon['contact_info']) => {

@@ -80,4 +80,7 @@ export interface Salon {
   
   // Created at timestamp (needed for Job compatibility)
   created_at?: string;
+  
+  // Add gallery property for salon posting
+  gallery?: any[];
 }
