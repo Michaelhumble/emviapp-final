@@ -62,15 +62,14 @@ export const useSalonPayment = () => {
         pricingOptions
       };
       
-      console.log("🚀 Calling create-checkout with payload:", payload);
+      console.log("🚀 Calling create-checkout with payload:", JSON.stringify(payload, null, 2));
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: payload
       });
 
       console.log("📥 Stripe checkout raw response:", data);
-      console.log("📥 Stripe checkout error:", error);
-
+      
       if (error) {
         console.error("Edge function error:", error);
         toast.error(t("Payment service error", "Lỗi dịch vụ thanh toán"), {
@@ -85,11 +84,10 @@ export const useSalonPayment = () => {
         throw new Error('No data returned from payment service');
       }
       
-      // Explicitly validate the URL
-      const checkoutResponse = data as StripeCheckoutResponse;
-      console.log("Checkout response data structure:", JSON.stringify(checkoutResponse));
+      console.log("📥 Full checkout response data:", JSON.stringify(data, null, 2));
       
-      if (!checkoutResponse.url) {
+      // Explicitly validate the URL
+      if (!data.url) {
         console.error("⛔ No checkout URL received in response:", data);
         toast.error(t("Missing payment URL", "URL thanh toán bị thiếu"), {
           description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
@@ -97,14 +95,14 @@ export const useSalonPayment = () => {
         throw new Error('No checkout URL received from Stripe');
       }
       
-      console.log("✅ Successfully received Stripe checkout URL:", checkoutResponse.url);
+      console.log("✅ Successfully received Stripe checkout URL:", data.url);
       
       // Return successful response with URL and data
       return { 
         success: true, 
-        redirect: checkoutResponse.url,
-        data: checkoutResponse,
-        sessionId: checkoutResponse.session_id
+        redirect: data.url,
+        data: data,
+        sessionId: data.session_id
       };
     } catch (error: any) {
       console.error('❌ Salon payment initiation error:', error);

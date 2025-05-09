@@ -1,318 +1,207 @@
 
-// @ts-nocheck
-// This comment disables TypeScript checking for this file because it uses Deno types
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
-import { addMonths } from "https://esm.sh/date-fns@2.30.0";
-
-// CORS headers for cross-origin requests
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // Handle CORS preflight request
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get request data and auth header
-    const requestData = await req.json();
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
+    console.log("Checkout function called");
+    // Create Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Initialize the Supabase client
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_ANON_KEY") || "",
-      {
-        global: { headers: { Authorization: `Bearer ${token}` } }
-      }
-    );
-
-    // Get the authenticated user
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) {
-      console.error("Authentication failed:", userError);
-      return new Response(JSON.stringify({ error: "Authentication failed" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    console.log(`Authenticated user: ${user.id}`);
-
-    // Extract request parameters
-    const { postType, postDetails, pricingOptions } = requestData;
-    console.log(`Creating checkout for ${postType} with pricing tier: ${pricingOptions.selectedPricingTier}`);
-
-    // Handle free posts separately (should be handled by different endpoint)
-    if (pricingOptions.selectedPricingTier === "free") {
+    // Get the request body
+    const body = await req.json();
+    console.log("Request body:", body);
+    
+    // Get user info from JWT token
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: "Free posts should use the create-free-post endpoint" }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
+        JSON.stringify({ error: "Missing Authorization header" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error("Auth error:", authError);
+      return new Response(
+        JSON.stringify({ error: "Authentication failed" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Calculate pricing details
-    const pricingDetails = calculatePricing(pricingOptions);
-    console.log("Pricing details:", pricingDetails);
-
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-08-16",
-    });
-
-    // Create the payment mode
-    const paymentMode = pricingOptions.autoRenew ? "subscription" : "payment";
-    console.log(`Payment mode: ${paymentMode}`);
-
-    // Initialize Supabase admin client for database operations
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
-      { auth: { persistSession: false } }
-    );
-
-    // Create a placeholder post record
-    console.log("Creating placeholder post record...");
-    const { data: post, error: postError } = await createPlaceholderPost(
-      supabaseAdmin,
-      postType,
-      postDetails,
-      pricingOptions,
-      user.id
-    );
-
-    if (postError) {
-      console.error(`Error creating ${postType} record:`, postError);
-      return new Response(JSON.stringify({ error: `Failed to create ${postType} record` }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      console.error("Missing STRIPE_SECRET_KEY environment variable");
+      return new Response(
+        JSON.stringify({ error: "Server configuration error" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    console.log(`Created placeholder ${postType} with ID: ${post?.id}`);
+    console.log("Initializing Stripe with key length:", stripeSecretKey.length);
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: "2023-10-16",
+    });
 
-    // Calculate the expiration date
-    const expiresAt = addMonths(new Date(), pricingOptions.durationMonths || 1).toISOString();
+    // Extract data from request body
+    const { postType, postDetails, pricingOptions } = body;
 
-    // Create a payment log record
-    console.log("Creating payment log record...");
-    const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-      .from("payment_logs")
+    if (!postType || !pricingOptions || !pricingOptions.selectedPricingTier) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Calculate price based on tier and duration
+    let priceAmount = 0;
+    let durationMonths = pricingOptions.durationMonths || 1;
+    
+    // This is just an example - your actual pricing logic would go here
+    switch (pricingOptions.selectedPricingTier) {
+      case 'premium':
+        priceAmount = 9900; // $99.00
+        break;
+      case 'featured':
+        priceAmount = 4900; // $49.00
+        break;
+      case 'standard':
+        priceAmount = 2900; // $29.00
+        break;
+      default:
+        priceAmount = 1900; // $19.00
+    }
+    
+    // Apply duration multiplier and any discounts
+    if (durationMonths > 1) {
+      // Simple duration discount example
+      const discount = durationMonths >= 6 ? 0.2 : durationMonths >= 3 ? 0.1 : 0;
+      priceAmount = Math.round(priceAmount * durationMonths * (1 - discount));
+    }
+
+    // Create or retrieve customer
+    let customerId;
+    
+    // Look for existing customer
+    const { data: customers } = await stripe.customers.list({
+      email: user.email,
+      limit: 1
+    });
+    
+    if (customers && customers.length > 0) {
+      customerId = customers[0].id;
+      console.log("Using existing customer:", customerId);
+    } else {
+      // Create a new customer
+      const newCustomer = await stripe.customers.create({
+        email: user.email,
+        metadata: {
+          user_id: user.id
+        }
+      });
+      customerId = newCustomer.id;
+      console.log("Created new customer:", customerId);
+    }
+
+    // First, create a payment log entry
+    const { data: paymentLog, error: paymentLogError } = await supabase
+      .from('payment_logs')
       .insert({
         user_id: user.id,
-        listing_id: post?.id,
-        listing_type: postType,
-        payment_type: paymentMode,
-        amount: pricingDetails.amountInCents / 100,
-        currency: "usd",
-        payment_status: "pending",
-        pricing_tier: pricingOptions.selectedPricingTier,
-        duration_months: pricingOptions.durationMonths,
-        auto_renew: pricingOptions.autoRenew || false,
-        expires_at: expiresAt,
-        metadata: { 
-          originalPrice: pricingDetails.basePrice,
-          discountPercentage: pricingDetails.discountPercentage,
-          finalPrice: pricingDetails.finalPrice
-        }
+        payment_type: postType,
+        amount: priceAmount,
+        status: 'pending',
+        tier: pricingOptions.selectedPricingTier,
+        duration_months: durationMonths
       })
       .select()
       .single();
-
+      
     if (paymentLogError) {
       console.error("Error creating payment log:", paymentLogError);
-      // Continue anyway - the payment log is not critical
     } else {
-      console.log(`Created payment log with ID: ${paymentLog.id}`);
+      console.log("Created payment log:", paymentLog);
     }
 
-    // Create product name based on post type and pricing tier
-    let productName = `${pricingOptions.selectedPricingTier.charAt(0).toUpperCase() + pricingOptions.selectedPricingTier.slice(1)} ${postType.charAt(0).toUpperCase() + postType.slice(1)} Listing`;
-    if (pricingOptions.durationMonths > 1) {
-      productName += ` (${pricingOptions.durationMonths} months)`;
-    }
-
-    // Create Stripe Checkout Session
-    console.log("Creating Stripe checkout session...");
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      customer: customerId,
+      payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: 'usd',
             product_data: {
-              name: productName,
+              name: `${postType.toUpperCase()} - ${pricingOptions.selectedPricingTier} (${durationMonths} month${durationMonths > 1 ? 's' : ''})`,
+              description: `${durationMonths} month${durationMonths > 1 ? 's' : ''} of ${pricingOptions.selectedPricingTier} visibility`,
             },
-            unit_amount: pricingDetails.amountInCents,
-            recurring: paymentMode === "subscription" ? {
-              interval: "year",
-              interval_count: 1
-            } : undefined,
+            unit_amount: priceAmount,
           },
           quantity: 1,
         },
       ],
-      mode: paymentMode,
-      success_url: `${req.headers.get("origin")}/post-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/post-cancel?session_id={CHECKOUT_SESSION_ID}`,
-      customer_email: user.email,
+      mode: 'payment',
+      success_url: `${req.headers.get("origin")}/post-success?session_id={CHECKOUT_SESSION_ID}&payment_log_id=${paymentLog?.id}`,
+      cancel_url: `${req.headers.get("origin")}/${postType === 'job' ? 'post-job' : 'post-salon'}`,
       metadata: {
         user_id: user.id,
-        post_id: post?.id,
         post_type: postType,
         pricing_tier: pricingOptions.selectedPricingTier,
-        duration_months: pricingOptions.durationMonths,
-        auto_renew: pricingOptions.autoRenew || false,
-        expires_at: expiresAt,
-        payment_log_id: paymentLog?.id || null
+        duration_months: durationMonths,
+        payment_log_id: paymentLog?.id || '',
       },
     });
 
-    console.log(`✅ Created checkout session with ID: ${session.id} and URL: ${session.url}`);
-
-    // Update payment log with Stripe session ID if available
-    if (paymentLog && session.id) {
-      await supabaseAdmin
-        .from("payment_logs")
-        .update({ stripe_payment_id: session.id })
-        .eq("id", paymentLog.id);
-      
-      console.log(`Updated payment log ${paymentLog.id} with Stripe session ID: ${session.id}`);
+    console.log("Created Stripe session:", session.id);
+    console.log("Session URL:", session.url);
+    
+    // Update the payment log with the session ID
+    if (paymentLog) {
+      const { error: updateError } = await supabase
+        .from('payment_logs')
+        .update({
+          stripe_session_id: session.id
+        })
+        .eq('id', paymentLog.id);
+        
+      if (updateError) {
+        console.error("Error updating payment log:", updateError);
+      }
     }
 
+    // Return the checkout URL to the client
     return new Response(
-      JSON.stringify({
+      JSON.stringify({ 
         url: session.url,
         session_id: session.id,
-        post_id: post?.id,
         payment_log_id: paymentLog?.id
       }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+    
   } catch (error) {
-    console.error("Error creating checkout session:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error("Error in checkout function:", error);
+    return new Response(
+      JSON.stringify({ error: error.message || "Unknown error occurred" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 });
-
-// Calculate pricing details based on options
-function calculatePricing(pricingOptions) {
-  // Get base price per month based on selected tier
-  let basePricePerMonth = 0;
-  
-  switch (pricingOptions.selectedPricingTier) {
-    case "standard":
-      basePricePerMonth = 9.99;
-      break;
-    case "gold":
-      basePricePerMonth = 19.99;
-      break;
-    case "premium":
-      basePricePerMonth = 49.99;
-      break;
-    case "diamond":
-      basePricePerMonth = 124.99; // $1,499.99 yearly or $999.99 with promo
-      break;
-    default:
-      basePricePerMonth = 9.99; // Default to standard
-  }
-
-  // Calculate duration discount
-  let discountPercentage = 0;
-  
-  // Apply duration-based discount (except for Diamond tier)
-  if (pricingOptions.selectedPricingTier !== "diamond") {
-    switch (pricingOptions.durationMonths) {
-      case 3:
-        discountPercentage = 10;
-        break;
-      case 6:
-        discountPercentage = 20;
-        break;
-      case 12:
-        discountPercentage = 30;
-        break;
-      default:
-        discountPercentage = 0;
-    }
-  } else {
-    // Special pricing for Diamond tier
-    // 12-month diamond plan has a promotional price of $999.99 instead of $1,499.99
-    discountPercentage = pricingOptions.durationMonths === 12 ? 33 : 0; // ~33% discount
-  }
-
-  // Calculate the original price (before discount)
-  let basePrice = basePricePerMonth * pricingOptions.durationMonths;
-  
-  // Apply discount
-  let finalPrice = basePrice * (1 - (discountPercentage / 100));
-  
-  // If it's diamond plan with 12-month duration, set the exact promo price
-  if (pricingOptions.selectedPricingTier === "diamond" && pricingOptions.durationMonths === 12) {
-    finalPrice = 999.99; // Special promotional price
-    basePrice = 1499.99; // Original yearly price
-  }
-  
-  // Round to 2 decimal places and convert to cents for Stripe
-  finalPrice = Math.round(finalPrice * 100) / 100;
-  const amountInCents = Math.round(finalPrice * 100);
-  
-  return {
-    basePrice,
-    finalPrice,
-    discountPercentage,
-    amountInCents,
-    durationMonths: pricingOptions.durationMonths
-  };
-}
-
-// Create a placeholder post record with pending status
-async function createPlaceholderPost(supabase, postType, postDetails, pricingOptions, userId) {
-  // Common fields for all post types
-  const commonFields = {
-    user_id: userId,
-    status: "pending_payment",
-    pricingTier: pricingOptions.selectedPricingTier,
-    is_featured: ["premium", "diamond"].includes(pricingOptions.selectedPricingTier),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
-
-  // Get the appropriate table name based on post type
-  let tableName;
-  if (postType === "job") {
-    tableName = "jobs";
-  } else if (postType === "salon") {
-    tableName = "salons";
-  } else if (postType === "booth") {
-    tableName = "booths";
-  } else if (postType === "supply") {
-    tableName = "supplies";
-  } else {
-    throw new Error(`Invalid post type: ${postType}`);
-  }
-
-  // Merge the post details with common fields
-  const postData = {
-    ...postDetails,
-    ...commonFields
-  };
-
-  // Insert the record and return the ID
-  return await supabase.from(tableName).insert(postData).select().single();
-}
