@@ -1,186 +1,161 @@
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle, Share2, Home } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
-const PostSuccess = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from '@/hooks/useTranslation';
+
+interface PostSuccessData {
+  id?: string;
+  post_id?: string;
+  expires_at?: string;
+  post_type?: string;
+  payment_log_id?: string;
+  pricing_tier?: string;
+}
+
+const PostSuccess: React.FC = () => {
   const { t } = useTranslation();
-  const { userProfile } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [postDetails, setPostDetails] = useState<any>(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [postData, setPostData] = useState<PostSuccessData | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  const sessionId = searchParams.get('session_id');
+  const paymentLogId = searchParams.get('payment_log_id');
   
   useEffect(() => {
-    const checkPostStatus = async () => {
-      setIsLoading(true);
-      
+    // If we have payment info in the URL, fetch the details
+    const fetchPostDetails = async () => {
+      setLoading(true);
       try {
-        // Check if we have state from free post creation
-        if (location.state && location.state.postType) {
-          setPostDetails({
-            type: location.state.postType,
-            details: location.state.postDetails,
-            pricing: location.state.pricingDetails,
-            data: location.state.postData
-          });
-          setIsLoading(false);
-          return;
-        }
-        
-        // Otherwise, check URL parameters for Stripe redirect
-        const params = new URLSearchParams(location.search);
-        const referenceId = params.get('reference');
-        const status = params.get('status');
-        
-        if (referenceId && status === 'success') {
-          // Fetch checkout session details from our database
-          const { data: checkoutData, error: checkoutError } = await supabase
-            .from('checkout_sessions')
+        if (paymentLogId) {
+          // For free posts that have payment_log_id in the URL
+          const { data, error } = await supabase
+            .from('payment_logs')
             .select('*')
-            .eq('reference_id', referenceId)
+            .eq('id', paymentLogId)
             .single();
+            
+          if (error) throw error;
           
-          if (checkoutError || !checkoutData) {
-            console.error('Error fetching checkout data:', checkoutError);
-            toast.error(t('Could not verify your payment', 'Không thể xác nhận thanh toán của bạn'));
-            navigate('/');
-            return;
+          if (data) {
+            // Cast to avoid type errors
+            const typedData = data as any;
+            setPostData({
+              post_id: typedData.related_id,
+              expires_at: typedData.expires_at,
+              post_type: typedData.payment_type,
+              pricing_tier: typedData.pricing_tier,
+              payment_log_id: typedData.id
+            });
           }
-          
-          // Fetch the created post details
-          const tableName = checkoutData.post_type === 'job' ? 'jobs' : 'salons';
-          const { data: postData, error: postError } = await supabase
-            .from(tableName)
-            .select('*')
-            .eq('user_id', userProfile?.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-          
-          if (postError || !postData) {
-            console.error('Error fetching post data:', postError);
-            // Don't block the success page if we can't fetch post details
-          }
-          
-          setPostDetails({
-            type: checkoutData.post_type,
-            checkout: checkoutData,
-            post: postData
+        } else if (sessionId) {
+          // For Stripe payments that redirect back with session_id
+          const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
+            body: { sessionId }
           });
+          
+          if (error) throw error;
+          
+          if (data) {
+            setPostData({
+              post_id: data.post_id,
+              expires_at: data.expires_at,
+              post_type: data.post_type,
+              pricing_tier: data.pricing_tier,
+              payment_log_id: data.payment_log_id
+            });
+          }
         } else {
-          // If no reference or state, redirect to home
-          navigate('/');
-          return;
+          // No identifiers, probably direct navigation
+          console.warn('No session_id or payment_log_id found in URL');
         }
-      } catch (error) {
-        console.error('Error in post success page:', error);
-        toast.error(t('An error occurred', 'Đã xảy ra lỗi'));
+      } catch (err) {
+        console.error('Error fetching post details:', err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
     
-    checkPostStatus();
-  }, [location, navigate, userProfile, t]);
+    fetchPostDetails();
+  }, [paymentLogId, sessionId]);
   
-  if (isLoading) {
+  const navigateToDashboard = () => {
+    navigate('/dashboard');
+  };
+  
+  const navigateToJobs = () => {
+    navigate('/jobs');
+  };
+  
+  if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600 mb-4" />
-        <p>{t('Verifying your submission...', 'Đang xác nhận đơn của bạn...')}</p>
-      </div>
+      <Layout>
+        <div className="container max-w-4xl py-12">
+          <Card className="p-8">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="animate-pulse h-8 w-64 bg-gray-200 rounded"></div>
+              <div className="animate-pulse h-4 w-48 bg-gray-200 rounded"></div>
+              <div className="animate-pulse h-10 w-32 bg-gray-200 rounded mt-4"></div>
+            </div>
+          </Card>
+        </div>
+      </Layout>
     );
   }
   
-  const postType = postDetails?.type === 'job' ? 
-    t('job post', 'tin tuyển dụng') : 
-    t('salon post', 'tin salon');
-  
-  const isPaidPost = postDetails?.pricing?.selectedPricingTier !== 'free' && 
-                     postDetails?.checkout?.pricing_tier !== 'free';
-  
-  const autoRenewEnabled = postDetails?.pricing?.autoRenew || 
-                           postDetails?.checkout?.auto_renew || 
-                           false;
-
+  // Post success view
   return (
-    <div className="container mx-auto px-4 py-16 max-w-3xl">
-      <div className="text-center mb-12">
-        <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
-        <h1 className="text-3xl font-bold mb-4">
-          {t('Post Published Successfully!', 'Đăng tin thành công!')}
-        </h1>
-        <p className="text-gray-600 text-lg">
-          {t(
-            `Your ${postType} has been published and is now live.`,
-            `${postType.charAt(0).toUpperCase() + postType.slice(1)} của bạn đã được xuất bản và hiển thị công khai.`
-          )}
-        </p>
-      </div>
-      
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">
-          {t('Post Details', 'Chi tiết tin đăng')}
-        </h2>
-        
-        <div className="space-y-3">
-          <div className="flex justify-between py-2 border-b">
-            <span className="text-gray-600">{t('Plan', 'Gói')}</span>
-            <span className="font-medium">{postDetails?.pricing?.selectedPricingTier || postDetails?.checkout?.pricing_tier || 'Standard'}</span>
-          </div>
-          
-          <div className="flex justify-between py-2 border-b">
-            <span className="text-gray-600">{t('Duration', 'Thời hạn')}</span>
-            <span className="font-medium">
-              {postDetails?.pricing?.durationMonths || postDetails?.checkout?.duration_months || 1} {t('months', 'tháng')}
-            </span>
-          </div>
-          
-          {isPaidPost && (
-            <div className="flex justify-between py-2 border-b">
-              <span className="text-gray-600">{t('Auto-Renew', 'Tự động gia hạn')}</span>
-              <span className="font-medium">
-                {autoRenewEnabled ? 
-                  t('Enabled', 'Bật') : 
-                  t('Disabled', 'Tắt')}
-              </span>
+    <Layout>
+      <div className="container max-w-4xl py-12">
+        <Card className="p-8">
+          <div className="flex flex-col items-center justify-center space-y-6">
+            <div className="rounded-full bg-green-100 p-3">
+              <CheckCircle className="h-12 w-12 text-green-600" />
             </div>
-          )}
-          
-          <div className="flex justify-between py-2 border-b">
-            <span className="text-gray-600">{t('Status', 'Trạng thái')}</span>
-            <span className="font-medium text-green-600">{t('Active', 'Hoạt động')}</span>
+            
+            <h1 className="text-3xl font-bold text-center">
+              {t('Congratulations!', 'Chúc mừng!')}
+            </h1>
+            
+            <p className="text-xl text-center text-gray-700">
+              {postData?.post_type === 'job'
+                ? t('Your job listing has been successfully published!', 'Tin tuyển dụng của bạn đã được đăng thành công!')
+                : t('Your salon listing has been successfully published!', 'Thông tin về salon của bạn đã được đăng thành công!')}
+            </p>
+            
+            {postData?.expires_at && (
+              <p className="text-gray-600">
+                {t('Your listing expires on', 'Tin của bạn hết hạn vào')}: {new Date(postData.expires_at).toLocaleDateString()}
+              </p>
+            )}
+            
+            <div className="w-full flex flex-col md:flex-row gap-4 pt-6">
+              <Button 
+                variant="outline"
+                className="flex-1"
+                onClick={navigateToJobs}
+              >
+                {t('View All Listings', 'Xem tất cả tin đăng')}
+              </Button>
+              
+              <Button 
+                className="flex-1 flex items-center justify-center gap-2"
+                onClick={navigateToDashboard}
+              >
+                {t('Go to Dashboard', 'Đi đến bảng điều khiển')}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        </Card>
       </div>
-      
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button 
-          variant="outline"
-          className="flex items-center gap-2"
-          onClick={() => navigate('/dashboard')}
-        >
-          <Home className="h-4 w-4" />
-          {t('Go to Dashboard', 'Đến Bảng Điều Khiển')}
-        </Button>
-        
-        <Button 
-          className="flex items-center gap-2"
-          onClick={() => {
-            // Here you could add share functionality
-            toast.info(t('Share functionality coming soon', 'Chức năng chia sẻ sẽ sớm ra mắt'));
-          }}
-        >
-          <Share2 className="h-4 w-4" />
-          {t('Share Your Post', 'Chia Sẻ Tin')}
-        </Button>
-      </div>
-    </div>
+    </Layout>
   );
 };
 

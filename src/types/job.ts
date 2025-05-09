@@ -62,6 +62,7 @@ export interface Job {
   imageUrl?: string;
   is_vietnamese_listing?: boolean;
   industry?: string;
+  post_type?: string; // Added missing field
   
   // Updated pricing tier field to include 'gold'
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
@@ -72,4 +73,59 @@ export interface Job {
   chair_count?: string;
   sale_price?: string;
   is_salon_for_sale?: boolean;
+}
+
+// Add missing exported interfaces
+export interface JobDetailsSubmission {
+  title: string;
+  description?: string;
+  location: string;
+  compensation_type?: string;
+  compensation_details?: string;
+  employment_type?: string;
+  requirements?: string[] | string;
+  contact_info?: {
+    owner_name?: string;
+    phone?: string;
+    email?: string;
+    notes?: string;
+    zalo?: string;
+  };
+  image?: string;
+  vietnamese_description?: string;
+  preferred_languages?: string[];
+  benefits?: string[];
+  features?: string[];
+  salon_type?: string;
+  specialties?: string[];
+  weekly_pay?: boolean;
+  has_housing?: boolean;
+  has_wax_room?: boolean;
+  no_supply_deduction?: boolean;
+  owner_will_train?: boolean;
+  tip_range?: string;
+  salary_range?: string;
+  is_urgent?: boolean;
+  user_id?: string;
+  post_type?: string;
+}
+
+// Ensure PricingOptions is properly exported
+export interface PricingOptions {
+  isFirstPost?: boolean;
+  isNationwide?: boolean;
+  fastSalePackage?: boolean;
+  showAtTop?: boolean;
+  isHotListing?: boolean;
+  isUrgent?: boolean;
+  bundleWithJobPost?: boolean;
+  bundleWithSalonPost?: boolean;
+  boostVisibility?: boolean;
+  featuredListing?: boolean;
+  extendedDuration?: boolean;
+  hasReferrals?: boolean;
+  isRenewal?: boolean;
+  selectedPricingTier?: string;
+  autoRenew?: boolean;
+  durationMonths?: number;
 }

@@ -15,6 +15,7 @@ interface PaymentSummaryProps {
   discountPercentage: number;
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
+  isSubmitting?: boolean; // Added missing prop
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
@@ -25,7 +26,8 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   finalPrice,
   discountPercentage,
   onProceedToPayment,
-  isFreePlan = false
+  isFreePlan = false,
+  isSubmitting = false // Added default value
 }) => {
   const { t } = useTranslation();
   const expiryDate = addMonths(new Date(), duration);
@@ -112,11 +114,18 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
         <Button 
           onClick={onProceedToPayment} 
           className="w-full"
+          disabled={isSubmitting}
         >
-          {isFreePlan 
-            ? t('Complete Free Listing', 'Hoàn tất đăng tin miễn phí')
-            : t('Proceed to Payment', 'Tiến hành thanh toán')}
-          <ArrowRight className="ml-2 h-4 w-4" />
+          {isSubmitting ? (
+            <span>{isFreePlan ? t('Submitting...', 'Đang gửi...') : t('Processing...', 'Đang xử lý...')}</span>
+          ) : (
+            <>
+              {isFreePlan 
+                ? t('Complete Free Listing', 'Hoàn tất đăng tin miễn phí')
+                : t('Proceed to Payment', 'Tiến hành thanh toán')}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>
