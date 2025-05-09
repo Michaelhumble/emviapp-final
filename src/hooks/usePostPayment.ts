@@ -62,7 +62,10 @@ export const usePostPayment = () => {
       
       if (data?.url) {
         console.log("Redirecting to Stripe checkout URL:", data.url);
-        // Return success with redirect URL
+        // Instead of returning the URL, directly redirect
+        window.location.href = data.url;
+        
+        // Also return success with redirect URL for component handling
         return { 
           success: true, 
           redirect: data.url,
@@ -80,7 +83,8 @@ export const usePostPayment = () => {
       return { 
         success: false,
         redirect: null,
-        error: error.message
+        error: error.message,
+        data: null
       };
     } finally {
       setIsLoading(false);
