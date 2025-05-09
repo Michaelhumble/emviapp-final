@@ -21,6 +21,9 @@ serve(async (req) => {
       throw new Error("STRIPE_SECRET_KEY is not set");
     }
     
+    // Log that we have a valid key (without revealing the key itself)
+    console.log("✅ STRIPE_SECRET_KEY found, length:", stripeKey.length);
+    
     // Initialize Stripe
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
@@ -44,6 +47,16 @@ serve(async (req) => {
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
     console.log("User authenticated:", { id: user.id, email: user.email });
+    
+    // Test Stripe connection
+    try {
+      // Make a simple API call to validate the Stripe key works
+      await stripe.customers.list({ limit: 1 });
+      console.log("✅ Successfully connected to Stripe API");
+    } catch (stripeError) {
+      console.error("❌ Stripe connection test failed:", stripeError.message);
+      throw new Error(`Stripe connection failed: ${stripeError.message}`);
+    }
     
     // Check if the user already exists as a Stripe customer
     let customerId: string | undefined;
@@ -89,6 +102,7 @@ serve(async (req) => {
     }
     
     // Create Stripe checkout session
+    console.log("Creating Stripe checkout session...");
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ["card"],
@@ -110,6 +124,7 @@ serve(async (req) => {
         user_id: user.id
       }
     });
+    console.log("✅ Stripe checkout session created:", session.id);
     
     // Update payment log with session ID
     await supabaseAdmin
