@@ -54,7 +54,7 @@ export interface PricingOptions {
   extendedDuration?: boolean;
   featuredPost?: boolean;
   selectedPricingTier?: string; // Track selected pricing tier
-  autoRenew?: boolean; // Added missing autoRenew property
+  autoRenew?: boolean; // Added autoRenew property
 }
 
 // Added the missing interface

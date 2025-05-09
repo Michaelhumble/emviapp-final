@@ -48,7 +48,8 @@ const JobPost = () => {
     boostVisibility: false,
     featuredListing: false,
     extendedDuration: false,
-    selectedPricingTier: 'standard' // Default pricing tier
+    selectedPricingTier: 'standard', // Default pricing tier
+    autoRenew: false // Initialize autoRenew
   });
 
   const totalSteps = 5;
@@ -90,6 +91,10 @@ const JobPost = () => {
   
   const handlePricingChange = (pricingTier: string) => {
     setPricingOptions({ ...pricingOptions, selectedPricingTier: pricingTier });
+  };
+  
+  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
+    setPricingOptions({ ...pricingOptions, ...options });
   };
 
   const handleSubmit = async () => {
@@ -145,12 +150,13 @@ const JobPost = () => {
         {currentStep === 5 && (
           <ReviewAndPaymentSection 
             postType="job"
-            formData={jobDetails}
+            jobData={jobDetails}
             onNextStep={nextStep}
             onPrevStep={prevStep}
             isFirstPost={pricingOptions.isFirstPost}
             pricingOptions={pricingOptions}
             onPricingChange={handlePricingChange}
+            onUpdatePricing={handleUpdatePricing}
           />
         )}
       </PostWizardLayout>

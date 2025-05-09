@@ -1,223 +1,214 @@
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { calculateFinalPrice } from '@/utils/posting/jobPricing';
-import { PostType, PricingOptions } from '@/utils/posting/types';
-import { t } from '@/hooks/translationUtils';
-import PricingCards from '../PricingCards';
-import PricingDisplay from '../PricingDisplay';
-import PaymentConfirmationModal from '../PaymentConfirmationModal';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import PricingCards from '@/components/posting/PricingCards';
+import PaymentSummary from '@/components/posting/PaymentSummary';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { PricingOptions } from '@/utils/posting/types';
+import { Dialog } from '@/components/ui/dialog';
+import { calculateFinalPrice } from '@/utils/posting/jobPricing';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
+import StripeCheckout from '@/components/payments/StripeCheckout';
 
-interface ReviewAndPaymentSectionProps {
-  postType: PostType;
-  pricingOptions: PricingOptions;
-  onUpdatePricing: (options: PricingOptions) => void;
-  onSubmitListing: () => void;
+export interface ReviewAndPaymentSectionProps {
+  postType: 'job' | 'salon' | 'booth' | 'supply';
+  jobData?: any;
+  onNextStep: () => void;
+  onPrevStep: () => void;
   isFirstPost: boolean;
-  initialPrice?: number;
-  originalPrice?: number;
-  finalPrice?: number;
-  discountPercentage?: number;
+  pricingOptions: PricingOptions;
+  onPricingChange: (pricingTier: string) => void;
+  onUpdatePricing?: (options: Partial<PricingOptions>) => void;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   postType,
-  pricingOptions,
-  onUpdatePricing,
-  onSubmitListing,
+  jobData,
+  onNextStep,
+  onPrevStep,
   isFirstPost,
-  initialPrice,
-  originalPrice,
-  finalPrice,
-  discountPercentage
+  pricingOptions,
+  onPricingChange,
+  onUpdatePricing
 }) => {
   const { t } = useTranslation();
-  const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedDuration, setSelectedDuration] = useState(1);
-  const [autoRenew, setAutoRenew] = useState(false);
-  
-  // Check if the selected pricing is the free tier
+  const [selectedPricing, setSelectedPricing] = useState<string>(pricingOptions.selectedPricingTier || 'standard');
+  const [selectedDuration, setSelectedDuration] = useState<number>(1);
+  const [autoRenew, setAutoRenew] = useState<boolean>(pricingOptions.autoRenew || false);
+  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
+
+  const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
+  const basePrice = selectedPricingOption?.price || 0;
   const isFreeTier = selectedPricing === 'free';
-  
-  // Update parent component when pricing changes
+
+  // Calculate pricing with discounts applied
+  const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
+    basePrice,
+    selectedDuration,
+    selectedPricing,
+    autoRenew
+  );
+
+  // Set the pricing details when selection changes
   useEffect(() => {
-    if (selectedPricing) {
+    if (onPricingChange) {
+      onPricingChange(selectedPricing);
+    }
+  }, [selectedPricing, onPricingChange]);
+
+  // Update autoRenew and other pricing options
+  useEffect(() => {
+    if (onUpdatePricing) {
       onUpdatePricing({
-        ...pricingOptions,
-        selectedPricingTier: selectedPricing
+        selectedPricingTier: selectedPricing,
+        autoRenew
       });
     }
-  }, [selectedPricing]);
+  }, [selectedPricing, autoRenew, onUpdatePricing]);
 
-  // Get the base price of the selected pricing tier
-  const getPricingOption = () => {
-    return jobPricingOptions.find(option => option.id === selectedPricing);
-  };
-
-  // Get the base price
-  const getBasePrice = () => {
-    const option = getPricingOption();
-    return option ? option.price : 0;
-  };
-  
-  // Handle pricing selection
-  const handlePricingChange = (pricingId: string) => {
+  const handleChangePricing = (pricingId: string) => {
     setSelectedPricing(pricingId);
-    
-    // Reset duration to 1 for non-diamond plans
-    if (pricingId !== 'diamond') {
-      setSelectedDuration(1);
-    } else {
-      setSelectedDuration(12); // Force 12 months for Diamond plan
+    // Reset auto-renew when switching to free tier
+    if (pricingId === 'free') {
+      setAutoRenew(false);
     }
   };
 
-  // Handle duration selection
   const handleDurationChange = (duration: number) => {
     setSelectedDuration(duration);
   };
 
-  // Calculate the final price based on selected pricing and duration
-  const calculateTotalPrice = () => {
-    const basePrice = getBasePrice();
-    
-    if (selectedPricing === 'diamond') {
-      return basePrice; // Diamond plan has fixed price
+  const handleToggleAutoRenew = (checked: boolean) => {
+    setAutoRenew(checked);
+    if (onUpdatePricing) {
+      onUpdatePricing({
+        ...pricingOptions,
+        autoRenew: checked
+      });
     }
-    
-    const { finalPrice } = calculateFinalPrice(
-      basePrice, 
-      selectedDuration,
-      selectedPricing,
-      autoRenew
-    );
-    
-    return finalPrice;
   };
 
-  // Handle submit/next
-  const handleSubmit = () => {
-    if (selectedPricing === 'free') {
-      onSubmitListing();
-    } else {
-      setShowPaymentModal(true);
-    }
+  const handleProceedToPayment = () => {
+    setShowPaymentModal(true);
   };
+
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+  };
+
+  const handleConfirmPayment = () => {
+    // Here you would typically handle the actual payment processing
+    // For now, just close the modal and proceed
+    setShowPaymentModal(false);
+    onNextStep();
+  };
+
+  // Construct the product name based on user selections
+  const productName = `${selectedPricingOption?.name} ${postType.toUpperCase()} Post (${selectedDuration} ${selectedDuration === 1 ? 'month' : 'months'})`;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">
-          {t('Select Listing Type', 'Chọn Loại Đăng Tin')}
-        </h2>
-        <p className="text-gray-500 mb-4">
-          {t('Choose how you want to promote your listing', 'Chọn cách bạn muốn quảng bá tin đăng')}
-        </p>
-        
-        <PricingCards 
-          pricingOptions={jobPricingOptions}
-          selectedPricing={selectedPricing}
-          onChange={handlePricingChange}
-          selectedDuration={selectedDuration}
-          onDurationChange={handleDurationChange}
-        />
-      </div>
-      
-      <div className="border-t border-gray-200 py-5">
-        <h2 className="text-xl font-semibold mb-4">
-          {t('Payment Summary', 'Tổng kết Thanh toán')}
-        </h2>
-        
-        <div className="bg-gray-50 rounded-lg p-5">
-          <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-            <div>
-              <p className="font-medium">
-                {getPricingOption()?.name || t('Standard Listing', 'Đăng tin Tiêu chuẩn')}
-              </p>
-              <p className="text-sm text-gray-500">
-                {t('Duration:', 'Thời hạn:')} {selectedDuration} {selectedDuration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
-              </p>
-            </div>
-            
-            <PricingDisplay 
-              basePrice={getBasePrice()}
-              duration={selectedDuration}
-              pricingId={selectedPricing}
-              autoRenew={autoRenew}
-            />
-            
-            {!isFreeTier && (
-              <div className="mt-5 flex items-center justify-between rounded-lg bg-gray-50 p-3 border border-gray-200">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium">
-                    {t('Enable Auto-Renew and Save 20%', 'Bật Tự động gia hạn và Tiết kiệm 20%')}
-                  </span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger type="button">
-                        <Info size={16} className="text-gray-500" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs text-sm">
-                          {t(
-                            'You can cancel anytime. We\'ll remind you before billing.',
-                            'Bạn có thể hủy bất kỳ lúc nào. Chúng tôi sẽ nhắc bạn trước khi tính phí.'
-                          )}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <Switch
-                  checked={autoRenew}
-                  onCheckedChange={setAutoRenew}
-                  aria-label={t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}
-                />
+    <div className="space-y-6">
+      <h2 className="text-2xl font-semibold">
+        {t('Review and Payment', 'Xem lại và Thanh toán')}
+      </h2>
+      <p className="text-gray-600">
+        {t('Choose a plan that fits your needs. All plans include visibility on our platform.', 
+           'Chọn gói phù hợp với nhu cầu của bạn. Tất cả các gói đều bao gồm hiển thị trên nền tảng của chúng tôi.')}
+      </p>
+
+      <Card>
+        <CardContent className="pt-6">
+          <PricingCards
+            pricingOptions={jobPricingOptions}
+            selectedPricing={selectedPricing}
+            onChange={handleChangePricing}
+            selectedDuration={selectedDuration}
+            onDurationChange={handleDurationChange}
+          />
+        </CardContent>
+      </Card>
+
+      {!isFreeTier && (
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="auto-renew" 
+                checked={autoRenew} 
+                onCheckedChange={handleToggleAutoRenew}
+              />
+              <div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Label htmlFor="auto-renew" className="cursor-pointer">
+                        {t('Enable Auto-Renew and Save 20%', 'Bật Tự động gia hạn và Tiết kiệm 20%')}
+                      </Label>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        {t('You can cancel anytime. We\'ll remind you before billing.',
+                           'Bạn có thể hủy bất kỳ lúc nào. Chúng tôi sẽ nhắc bạn trước khi tính phí.')}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-            )}
+            </div>
           </div>
-          
-          <div className="flex justify-between pt-4">
-            <p className="font-medium">
-              {t('Total', 'Tổng cộng')}
+        </Card>
+      )}
+
+      <Card>
+        <CardContent className="pt-6">
+          <PaymentSummary 
+            basePrice={basePrice}
+            duration={selectedDuration}
+            autoRenew={autoRenew}
+            originalPrice={originalPrice}
+            finalPrice={finalPrice}
+            discountPercentage={discountPercentage}
+            onProceedToPayment={handleProceedToPayment}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Payment Modal */}
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">{t('Confirm Payment', 'Xác nhận thanh toán')}</h3>
+            <p className="mb-4">{t('Total Amount:', 'Tổng số tiền:')}</p>
+            <p className="text-2xl font-bold">${finalPrice.toFixed(2)}</p>
+            <p className="text-sm text-gray-600 mb-6">
+              {discountPercentage > 0 && (
+                <span className="line-through mr-2">${originalPrice.toFixed(2)}</span>
+              )}
+              {discountPercentage > 0 && (
+                <span className="text-green-600">(-{discountPercentage}%)</span>
+              )}
             </p>
-            <div className="text-right">
-              <p className="text-xl font-bold">
-                ${calculateTotalPrice().toFixed(2)}
-              </p>
+
+            <div className="mt-6 space-y-4">
+              <StripeCheckout
+                amount={finalPrice}
+                productName={productName}
+                buttonText={t('Proceed to Payment', 'Tiến hành thanh toán')}
+                onSuccess={handleConfirmPayment}
+              />
+              <button 
+                className="w-full py-2 text-gray-600 hover:text-gray-800"
+                onClick={handleClosePaymentModal}
+              >
+                {t('Cancel', 'Hủy')}
+              </button>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="mt-8 flex justify-end">
-        <Button onClick={handleSubmit}>
-          {selectedPricing === 'free' 
-            ? t('Submit Listing', 'Đăng tin') 
-            : t('Proceed to Payment', 'Tiến hành thanh toán')}
-        </Button>
-      </div>
-
-      <PaymentConfirmationModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        onConfirmPayment={onSubmitListing}
-        amount={calculateTotalPrice()}
-        options={{
-          ...pricingOptions,
-          isFirstPost,
-          selectedPricingTier: selectedPricing,
-          autoRenew: autoRenew
-        }}
-        originalPrice={originalPrice || undefined}
-        discountPercentage={discountPercentage}
-      />
+      </Dialog>
     </div>
   );
 };

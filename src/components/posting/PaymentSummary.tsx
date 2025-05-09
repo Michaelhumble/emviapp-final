@@ -1,80 +1,97 @@
 
 import React from 'react';
-import { PricingOptions, PostType } from '@/utils/posting/types';
-import { getJobPostPricingSummary } from '@/utils/posting/jobPricing';
-import { getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
-import { getBoothPostPricingSummary } from '@/utils/posting/boothPricing';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
+import { formatCurrency } from '@/lib/utils';
 
 interface PaymentSummaryProps {
-  postType: PostType;
-  pricingOptions: PricingOptions;
-  isFirstPost?: boolean;
+  basePrice: number;
+  duration: number;
+  autoRenew?: boolean;
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
+  onProceedToPayment: () => void;
 }
 
-const PaymentSummary = ({ postType, pricingOptions, isFirstPost = false }: PaymentSummaryProps) => {
-  // Get summary based on post type
-  const getSummaryItems = () => {
-    switch (postType) {
-      case 'job': {
-        // Job pricing uses a different format (returns object)
-        const selectedTier = pricingOptions.featuredPost ? 'premium' : 
-                             pricingOptions.featuredListing ? 'standard' : 'free';
-        
-        const extras = {
-          featuredPlacement: !!pricingOptions.featuredListing,
-          extendedDuration: !!pricingOptions.extendedDuration,
-          highlightedListing: !!pricingOptions.boostVisibility
-        };
-        
-        return getJobPostPricingSummary(selectedTier, extras);
-      }
-      case 'salon':
-        // Salon pricing returns string[]
-        return getSalonPostPricingSummary(pricingOptions);
-      case 'booth':
-        // Booth pricing returns string[]
-        return getBoothPostPricingSummary(pricingOptions);
-      default:
-        // Default fallback
-        return ['Basic Post: $5', 'Total: $5'];
-    }
-  };
-  
-  const summaryItems = getSummaryItems();
-  
-  // Handle different return types (object vs string array)
-  let lineItems: string[] = [];
-  let totalPrice: string = '';
-  
-  if (Array.isArray(summaryItems)) {
-    // Handle string array return type (salon, booth)
-    totalPrice = summaryItems[summaryItems.length - 1];
-    lineItems = summaryItems.slice(0, -1);
-  } else {
-    // Handle object return type (job)
-    totalPrice = `Total: $${summaryItems.total.toFixed(2)}`;
-    lineItems = summaryItems.lineItems.map(item => `${item.name}: $${item.price.toFixed(2)}`);
-  }
-  
+const PaymentSummary: React.FC<PaymentSummaryProps> = ({
+  basePrice,
+  duration,
+  autoRenew = false,
+  originalPrice,
+  finalPrice,
+  discountPercentage,
+  onProceedToPayment
+}) => {
+  const { t } = useTranslation();
+
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <h3 className="font-medium text-lg mb-3">Pricing Summary</h3>
-        <div className="space-y-2">
-          {lineItems.map((item, idx) => (
-            <div key={idx} className="flex justify-between text-sm">
-              <span>{item.split(': ')[0]}</span>
-              <span>{item.split(': ')[1]}</span>
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">{t('Payment Summary', 'Tóm tắt thanh toán')}</h3>
+      
+      <div className="space-y-2 divide-y">
+        {/* Base price line */}
+        <div className="flex justify-between py-2">
+          <span>{t('Base price', 'Giá cơ bản')}:</span>
+          <span>{formatCurrency(basePrice)}/mo</span>
+        </div>
+        
+        {/* Duration line */}
+        <div className="flex justify-between py-2">
+          <span>{t('Duration', 'Thời hạn')}:</span>
+          <span>{duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}</span>
+        </div>
+        
+        {/* Show original price if discount applies */}
+        {discountPercentage > 0 && (
+          <div className="flex justify-between py-2">
+            <span>{t('Subtotal', 'Tạm tính')}:</span>
+            <span className="text-gray-500 line-through">{formatCurrency(originalPrice)}</span>
+          </div>
+        )}
+        
+        {/* Auto-renew discount if enabled */}
+        {autoRenew && (
+          <div className="flex justify-between py-2">
+            <span>{t('Auto-renew discount', 'Giảm giá gia hạn tự động')}:</span>
+            <span className="text-green-600">-5%</span>
+          </div>
+        )}
+        
+        {/* Duration discount if applicable */}
+        {duration > 1 && (
+          <div className="flex justify-between py-2">
+            <span>{t('Duration discount', 'Giảm giá theo thời hạn')}:</span>
+            <span className="text-green-600">
+              {duration === 3 ? '-10%' : duration === 6 ? '-20%' : '-30%'}
+            </span>
+          </div>
+        )}
+        
+        {/* Total section */}
+        <div className="flex justify-between py-3 font-semibold">
+          <span>{t('Total', 'Tổng cộng')}:</span>
+          <div className="text-right">
+            <div className="text-xl">{formatCurrency(finalPrice)}</div>
+            {discountPercentage > 0 && (
+              <div className="text-sm text-green-600">
+                {t('You save', 'Bạn tiết kiệm')}: {formatCurrency(originalPrice - finalPrice)} ({discountPercentage}%)
+              </div>
+            )}
+            <div className="text-xs text-gray-500">
+              {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
             </div>
-          ))}
-          <div className="border-t mt-2 pt-2 flex justify-between font-semibold">
-            <span>{totalPrice.split(': ')[0]}</span>
-            <span>{totalPrice.split(': ')[1]}</span>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      
+      <Button 
+        className="w-full mt-4" 
+        onClick={onProceedToPayment}
+      >
+        {t('Proceed to Payment', 'Tiến hành thanh toán')}
+      </Button>
+    </div>
   );
 };
 
