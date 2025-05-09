@@ -37,6 +37,12 @@ export const mainNavigation: NavigationItem[] = [
     vietnameseLabel: 'Giới thiệu',
     visibleFor: 'all',
   },
+  {
+    label: 'Contact',
+    path: '/contact',
+    vietnameseLabel: 'Liên hệ',
+    visibleFor: 'all',
+  },
 ];
 
 export const userNavigation: NavigationItem[] = [

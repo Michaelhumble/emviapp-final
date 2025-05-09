@@ -1,11 +1,8 @@
 
-import { LucideIcon } from "lucide-react";
-
+// Define navigation item types
 export interface NavigationItem {
-  title: string;
-  label?: string; // Make label optional
+  label: string;
   path: string;
-  isPrimary?: boolean;
-  icon?: LucideIcon;
-  highlight?: boolean;
+  vietnameseLabel?: string;
+  visibleFor?: 'all' | 'guest' | 'user';
 }

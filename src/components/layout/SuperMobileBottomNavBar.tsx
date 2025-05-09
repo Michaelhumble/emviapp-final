@@ -50,9 +50,9 @@ const SuperMobileBottomNavBar = () => {
       label: t("Salons", "Tiệm Nail") 
     },
     { 
-      path: "/profile", 
+      path: "/contact", 
       icon: <User strokeWidth={1.75} size={24} />, 
-      label: t("Profile", "Cá nhân") 
+      label: t("Contact", "Liên hệ") 
     }
   ];
 

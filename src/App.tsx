@@ -15,7 +15,8 @@ import StableSalonPage from "@/pages/salons/StableSalonPage";
 import Layout from "@/components/layout/Layout";
 import JobPost from "@/pages/posting/JobPost";
 import Jobs from "@/pages/Jobs";
-import About from "@/pages/About"; // Import the new About page
+import About from "@/pages/About"; 
+import Contact from "@/pages/Contact"; // Import the Contact page
 
 function App() {
   const location = useLocation();
@@ -49,9 +50,12 @@ function App() {
                   {/* Add the new About page route */}
                   <Route path="/about" element={<About />} />
                   
+                  {/* Add the new Contact page route */}
+                  <Route path="/contact" element={<Contact />} />
+                  
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
-                    (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about") && (
+                    (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && route.path !== "/contact") && (
                       <Route 
                         key={index}
                         path={route.path}
