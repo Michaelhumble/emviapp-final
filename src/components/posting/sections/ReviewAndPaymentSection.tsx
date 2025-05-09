@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,12 +37,25 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedPricing, setSelectedPricing] = useState(pricingOptions?.selectedPricingTier || "standard");
   const [selectedDuration, setSelectedDuration] = useState(1); // Default to 1 month
   
+  // If Diamond plan is selected, force the duration to 12 months
+  useEffect(() => {
+    if (selectedPricing === 'diamond' && selectedDuration !== 12) {
+      setSelectedDuration(12);
+    }
+  }, [selectedPricing]);
+  
   const handleDurationChange = (months: number) => {
     setSelectedDuration(months);
   };
   
   const handlePricingChange = (pricingId: string) => {
     setSelectedPricing(pricingId);
+    
+    // If Diamond plan is selected, force the duration to 12 months
+    if (pricingId === 'diamond') {
+      setSelectedDuration(12);
+    }
+    
     if (onPricingChange) {
       onPricingChange(pricingId);
     }
@@ -148,6 +160,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
                       "This plan includes all you need to reach the right candidates quickly.",
                       "Gói này bao gồm tất cả những gì bạn cần để tiếp cận ứng viên phù hợp một cách nhanh chóng."
                     )}
+                    pricingId={selectedPricing}
                   />
                 </CardContent>
               </Card>

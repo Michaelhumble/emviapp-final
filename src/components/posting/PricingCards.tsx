@@ -1,17 +1,17 @@
 
 import React, { useEffect } from 'react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent } from '@/components/ui/card';
-import { Check } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { motion } from 'framer-motion';
 import { JobPricingOption } from '@/utils/posting/types';
+import { cn } from '@/lib/utils';
+import { CheckCircle } from 'lucide-react';
+import DurationSelector from './DurationSelector';
 
 interface PricingCardsProps {
   pricingOptions: JobPricingOption[];
   selectedPricing: string;
-  onChange: (value: string) => void;
+  onChange: (pricingId: string) => void;
   selectedDuration: number;
-  onDurationChange: (months: number) => void;
+  onDurationChange: (duration: number) => void;
 }
 
 const PricingCards: React.FC<PricingCardsProps> = ({
@@ -21,148 +21,74 @@ const PricingCards: React.FC<PricingCardsProps> = ({
   selectedDuration,
   onDurationChange
 }) => {
-  const { t, isVietnamese } = useTranslation();
-
-  // Ensure the selectedPricing is valid
+  // If Diamond plan is selected, force 12 month duration
   useEffect(() => {
-    if (!selectedPricing && pricingOptions.length > 0) {
-      onChange(pricingOptions[0].id);
+    if (selectedPricing === 'diamond' && selectedDuration !== 12) {
+      onDurationChange(12);
     }
-  }, [selectedPricing, pricingOptions, onChange]);
-
-  const handleCardClick = (optionId: string) => {
-    onChange(optionId);
-  };
-
+  }, [selectedPricing, selectedDuration, onDurationChange]);
+  
   return (
     <div className="space-y-6">
-      <RadioGroup 
-        value={selectedPricing} 
-        onValueChange={onChange} 
-        className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto pb-2">
         {pricingOptions.map((option) => (
-          <div key={option.id} className="relative">
-            <RadioGroupItem 
-              value={option.id} 
-              id={option.id} 
-              className="sr-only" 
-            />
-            <label
-              htmlFor={option.id}
-              className="cursor-pointer block h-full"
-              onClick={() => handleCardClick(option.id)}
-            >
-              <Card 
-                className={`hover:border-primary transition-colors h-full ${
-                  selectedPricing === option.id ? 'border-2 border-primary shadow-md' : 'border'
-                }`}
-              >
-                <CardContent className="pt-6 h-full flex flex-col">
-                  {option.popular && (
-                    <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs font-medium py-1 px-2 rounded-bl-md rounded-tr-md">
-                      {t('POPULAR', 'PHỔ BIẾN')}
-                    </div>
-                  )}
-                  
-                  <div className="absolute top-3 left-3">
-                    {selectedPricing === option.id && (
-                      <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="h-3 w-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex flex-col h-full">
-                    <h3 className="font-medium text-lg">{option.name}</h3>
-                    
-                    {option.tag && (
-                      <span className="text-xs text-amber-600 font-medium">
-                        {option.tag}
-                      </span>
-                    )}
-                    
-                    <div className="mt-3 flex items-baseline">
-                      <span className="text-2xl font-bold">${option.price}</span>
-                      {option.wasPrice && (
-                        <span className="text-sm ml-2 line-through text-muted-foreground">
-                          ${option.wasPrice}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {isVietnamese ? option.vietnameseDescription : option.description}
-                    </p>
-                    
-                    <ul className="mt-4 space-y-2 flex-grow">
-                      {option.features.map((feature, idx) => (
-                        <li key={idx} className="text-sm flex gap-2 items-start">
-                          <div className="h-4 w-4 mt-0.5 text-primary flex-shrink-0">
-                            <Check className="h-4 w-4" />
-                          </div>
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    {option.note && (
-                      <p className="text-xs text-muted-foreground mt-4 pt-2 border-t">
-                        {option.note}
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </label>
-          </div>
+          <motion.div
+            key={option.id}
+            className={cn(
+              "border rounded-lg overflow-hidden cursor-pointer transition-all",
+              selectedPricing === option.id
+                ? "border-purple-600 shadow-md ring-2 ring-purple-200"
+                : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+            )}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onChange(option.id)}
+          >
+            <div className={cn(
+              "px-6 py-4",
+              option.popular ? "bg-gradient-to-r from-amber-50 to-amber-100" : "bg-gray-50"
+            )}>
+              {option.popular && (
+                <span className="bg-amber-500 text-white px-2 py-0.5 text-xs rounded-full uppercase font-medium mb-2 inline-block">
+                  Phổ biến nhất
+                </span>
+              )}
+              {option.tag && (
+                <span className="text-xs text-gray-600 bg-white px-2 py-0.5 rounded-full mb-2 inline-block border shadow-sm">
+                  {option.tag}
+                </span>
+              )}
+              <h3 className="font-bold text-lg">{option.name}</h3>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-2xl font-bold">${option.price}</span>
+                {option.wasPrice && option.wasPrice > option.price && (
+                  <span className="text-sm text-gray-500 line-through">${option.wasPrice}</span>
+                )}
+              </div>
+              <p className="text-sm text-gray-600 mt-1">
+                {option.vietnameseDescription || option.description}
+              </p>
+            </div>
+            <div className="p-4 bg-white">
+              <ul className="space-y-2">
+                {option.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
         ))}
-      </RadioGroup>
+      </div>
       
-      {/* Duration selection */}
-      <div className="border rounded-md p-4 bg-muted/10">
-        <h4 className="font-medium mb-3">{t('Post Duration', 'Thời hạn đăng')}</h4>
-        <RadioGroup 
-          value={selectedDuration.toString()} 
-          onValueChange={(value) => onDurationChange(parseInt(value, 10))}
-          className="grid grid-cols-3 gap-2"
-        >
-          <label
-            htmlFor="duration-1"
-            className={`border rounded-md p-3 flex flex-col items-center text-center cursor-pointer transition-colors ${
-              selectedDuration === 1 ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
-            }`}
-            onClick={() => onDurationChange(1)}
-          >
-            <RadioGroupItem value="1" id="duration-1" className="sr-only" />
-            <span className="font-medium">{t('1 Month', '1 Tháng')}</span>
-            <span className="text-xs text-muted-foreground">{t('Standard Price', 'Giá tiêu chuẩn')}</span>
-          </label>
-          
-          <label
-            htmlFor="duration-3"
-            className={`border rounded-md p-3 flex flex-col items-center text-center cursor-pointer transition-colors ${
-              selectedDuration === 3 ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
-            }`}
-            onClick={() => onDurationChange(3)}
-          >
-            <RadioGroupItem value="3" id="duration-3" className="sr-only" />
-            <span className="font-medium">{t('3 Months', '3 Tháng')}</span>
-            <span className="text-xs text-muted-foreground">{t('Save 15%', 'Tiết kiệm 15%')}</span>
-          </label>
-          
-          <label
-            htmlFor="duration-6"
-            className={`border rounded-md p-3 flex flex-col items-center text-center cursor-pointer transition-colors ${
-              selectedDuration === 6 ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
-            }`}
-            onClick={() => onDurationChange(6)}
-          >
-            <RadioGroupItem value="6" id="duration-6" className="sr-only" />
-            <span className="font-medium">{t('6 Months', '6 Tháng')}</span>
-            <span className="text-xs text-muted-foreground">{t('Save 25%', 'Tiết kiệm 25%')}</span>
-          </label>
-        </RadioGroup>
+      <div className="mt-8">
+        <p className="text-center text-sm text-gray-600 mb-4">Select subscription length:</p>
+        <DurationSelector 
+          selectedDuration={selectedDuration} 
+          onChange={onDurationChange}
+          selectedPricing={selectedPricing}
+        />
       </div>
     </div>
   );

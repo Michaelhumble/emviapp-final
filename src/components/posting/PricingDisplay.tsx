@@ -1,4 +1,3 @@
-
 import { CheckCircle, DollarSign, AlertCircle } from "lucide-react";
 import { PricingOptions, PostType } from "@/utils/posting/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -11,6 +10,7 @@ interface PricingDisplayProps {
   originalPrice?: number;
   discountPercentage?: number;
   duration?: number;
+  pricingId?: string;
 }
 
 const PricingDisplay = ({ 
@@ -20,23 +20,30 @@ const PricingDisplay = ({
   promotionalText, 
   originalPrice,
   discountPercentage,
-  duration = 1
+  duration = 1,
+  pricingId
 }: PricingDisplayProps) => {
   const { t } = useTranslation();
+  const isDiamondPlan = pricingId === 'diamond';
   
   const formattedPrice = price.toFixed(2);
   const formattedOriginalPrice = originalPrice ? originalPrice.toFixed(2) : undefined;
   
   // Calculate total price based on duration
   let actualPrice = price;
-  if (discountPercentage && discountPercentage > 0) {
+  if (!isDiamondPlan && discountPercentage && discountPercentage > 0) {
     actualPrice = price * (1 - discountPercentage/100) * duration;
   } else {
-    actualPrice = price * duration;
+    // For Diamond, it's always a fixed yearly price
+    actualPrice = isDiamondPlan ? price : price * duration;
   }
   
   const totalFormattedPrice = actualPrice.toFixed(2);
-  const durationText = duration > 1 ? `${t('for', 'trong')} ${duration} ${t('months', 'tháng')}` : '';
+  
+  // For Diamond plan, show special duration text
+  const durationText = isDiamondPlan 
+    ? `${t('Annual plan', 'Gói thường niên')}`
+    : (duration > 1 ? `${t('for', 'trong')} ${duration} ${t('months', 'tháng')}` : '');
   
   return (
     <div className="border rounded-lg overflow-hidden">
@@ -50,7 +57,7 @@ const PricingDisplay = ({
               )}
               <span className="text-xl font-bold">${totalFormattedPrice}</span>
             </div>
-            {discountPercentage && discountPercentage > 0 && (
+            {!isDiamondPlan && discountPercentage && discountPercentage > 0 && (
               <span className="text-xs text-green-600 font-medium">
                 {t('Saving', 'Tiết kiệm')}: {discountPercentage}%
               </span>
@@ -69,13 +76,15 @@ const PricingDisplay = ({
           <div className="flex items-start">
             <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
             <span className="text-sm">
-              {postType === 'job' 
-                ? t('30-day job listing', 'Tin tuyển dụng 30 ngày') 
-                : postType === 'salon' 
-                  ? t('Salon for sale listing (30 days)', 'Tin bán tiệm (30 ngày)')
-                  : postType === 'booth' 
-                    ? t('Booth rental listing (30 days)', 'Tin cho thuê booth (30 ngày)')
-                    : t('Supply listing (30 days)', 'Tin bán thiết bị (30 ngày)')}
+              {isDiamondPlan 
+                ? t('365-day premium listing', 'Tin nổi bật 365 ngày')
+                : postType === 'job' 
+                  ? t('30-day job listing', 'Tin tuyển dụng 30 ngày') 
+                  : postType === 'salon' 
+                    ? t('Salon for sale listing (30 days)', 'Tin bán tiệm (30 ngày)')
+                    : postType === 'booth' 
+                      ? t('Booth rental listing (30 days)', 'Tin cho thuê booth (30 ngày)')
+                      : t('Supply listing (30 days)', 'Tin bán thiết bị (30 ngày)')}
             </span>
           </div>
           
@@ -107,12 +116,21 @@ const PricingDisplay = ({
             </div>
           )}
           
-          {duration && duration > 1 && (
+          {!isDiamondPlan && duration && duration > 1 && (
             <div className="flex items-start">
               <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
               <span className="text-sm">
                 {duration}-{t('month subscription', 'tháng đăng ký')}
                 {duration >= 3 ? ` ${t('with discount', 'với giảm giá')}` : ''}
+              </span>
+            </div>
+          )}
+          
+          {isDiamondPlan && (
+            <div className="flex items-start">
+              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+              <span className="text-sm">
+                {t('Annual premium listing', 'Đăng tin đặc biệt thường niên')}
               </span>
             </div>
           )}
