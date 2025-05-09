@@ -24,13 +24,22 @@ const PostSuccess = () => {
     const verifyPayment = async () => {
       try {
         const { data, error } = await supabase
-          .from('payments')
+          .from('payment_logs')
           .select('*')
-          .eq('stripe_session_id', sessionId)
+          .eq('stripe_payment_id', sessionId)
           .single();
 
         if (error || !data) {
-          throw new Error('Payment verification failed');
+          // Try legacy table as fallback
+          const { data: legacyData, error: legacyError } = await supabase
+            .from('payments')
+            .select('*')
+            .eq('stripe_session_id', sessionId)
+            .single();
+            
+          if (legacyError || !legacyData) {
+            throw new Error('Payment verification failed');
+          }
         }
 
         toast.success("Payment successful!", {

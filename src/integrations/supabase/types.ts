@@ -1042,6 +1042,45 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_logs: {
+        Row: {
+          auto_renew_enabled: boolean | null
+          created_at: string
+          expires_at: string
+          id: string
+          listing_id: string | null
+          payment_date: string
+          payment_status: string
+          plan_type: string
+          stripe_payment_id: string | null
+          user_id: string
+        }
+        Insert: {
+          auto_renew_enabled?: boolean | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          listing_id?: string | null
+          payment_date?: string
+          payment_status?: string
+          plan_type: string
+          stripe_payment_id?: string | null
+          user_id: string
+        }
+        Update: {
+          auto_renew_enabled?: boolean | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          listing_id?: string | null
+          payment_date?: string
+          payment_status?: string
+          plan_type?: string
+          stripe_payment_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number

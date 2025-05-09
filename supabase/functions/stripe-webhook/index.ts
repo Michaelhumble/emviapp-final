@@ -36,8 +36,22 @@ serve(async (req) => {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       const metadata = session.metadata || {};
+      
+      // Insert payment record into payment_logs table
+      await supabase
+        .from('payment_logs')
+        .insert({
+          user_id: metadata.user_id,
+          listing_id: metadata.listing_id,
+          plan_type: metadata.plan_type || 'standard',
+          payment_status: 'success',
+          stripe_payment_id: session.id,
+          auto_renew_enabled: metadata.auto_renew === 'true',
+          payment_date: new Date().toISOString(),
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        });
 
-      // Insert payment record
+      // Also insert into payments table for backward compatibility
       const { error } = await supabase
         .from('payments')
         .insert({
