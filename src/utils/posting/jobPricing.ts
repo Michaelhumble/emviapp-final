@@ -188,7 +188,8 @@ export const calculatePriceWithDuration = (
 export const calculateFinalPrice = (
   basePrice: number,
   durationMonths: number,
-  pricingId: string
+  pricingId: string,
+  autoRenew: boolean = false
 ): {
   originalPrice: number;
   finalPrice: number;
@@ -208,6 +209,11 @@ export const calculateFinalPrice = (
   if (durationMonths === 3) discountPercentage = 10;
   else if (durationMonths === 6) discountPercentage = 20;
   else if (durationMonths === 12) discountPercentage = 30;
+  
+  // Add auto-renew discount if enabled
+  if (autoRenew) {
+    discountPercentage += 5;
+  }
   
   const originalPrice = basePrice * durationMonths;
   const finalPrice = originalPrice * (1 - discountPercentage / 100);

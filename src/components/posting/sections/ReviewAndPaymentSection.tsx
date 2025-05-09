@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { PricingOptions, PostType } from '@/utils/posting/types';
-import { Card } from '@/components/ui/card';
-import PricingDisplay from '../PricingDisplay';
+import { calculateFinalPrice } from '@/utils/posting/jobPricing';
+import { PostType, PricingOptions } from '@/utils/posting/types';
+import { t } from '@/hooks/translationUtils';
 import PricingCards from '../PricingCards';
+import PricingDisplay from '../PricingDisplay';
 import PaymentConfirmationModal from '../PaymentConfirmationModal';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
@@ -14,23 +15,27 @@ import { Info } from 'lucide-react';
 
 interface ReviewAndPaymentSectionProps {
   postType: PostType;
-  formData: any;
-  onNextStep: () => void;
-  onPrevStep: () => void;
-  isFirstPost?: boolean;
   pricingOptions: PricingOptions;
-  onPricingChange: (pricingTier: string) => void;
+  onUpdatePricing: (options: PricingOptions) => void;
+  onSubmitListing: () => void;
+  isFirstPost: boolean;
+  initialPrice?: number;
+  originalPrice?: number;
+  finalPrice?: number;
+  discountPercentage?: number;
 }
 
-const ReviewAndPaymentSection = ({
+const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   postType,
-  formData,
-  onNextStep,
-  onPrevStep,
-  isFirstPost = false,
   pricingOptions,
-  onPricingChange
-}: ReviewAndPaymentSectionProps) => {
+  onUpdatePricing,
+  onSubmitListing,
+  isFirstPost,
+  initialPrice,
+  originalPrice,
+  finalPrice,
+  discountPercentage
+}) => {
   const { t } = useTranslation();
   const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -42,94 +47,109 @@ const ReviewAndPaymentSection = ({
   
   // Update parent component when pricing changes
   useEffect(() => {
-    onPricingChange(selectedPricing);
-  }, [selectedPricing, onPricingChange]);
-
-  // Ensure Diamond plan always uses 12 months
-  useEffect(() => {
-    if (selectedPricing === 'diamond' && selectedDuration !== 12) {
-      setSelectedDuration(12);
+    if (selectedPricing) {
+      onUpdatePricing({
+        ...pricingOptions,
+        selectedPricingTier: selectedPricing
+      });
     }
   }, [selectedPricing]);
 
+  // Get the base price of the selected pricing tier
+  const getPricingOption = () => {
+    return jobPricingOptions.find(option => option.id === selectedPricing);
+  };
+
+  // Get the base price
+  const getBasePrice = () => {
+    const option = getPricingOption();
+    return option ? option.price : 0;
+  };
+  
+  // Handle pricing selection
   const handlePricingChange = (pricingId: string) => {
     setSelectedPricing(pricingId);
     
-    // If switching to Diamond plan, force 12 month duration
-    if (pricingId === 'diamond') {
-      setSelectedDuration(12);
+    // Reset duration to 1 for non-diamond plans
+    if (pricingId !== 'diamond') {
+      setSelectedDuration(1);
+    } else {
+      setSelectedDuration(12); // Force 12 months for Diamond plan
     }
   };
-  
+
+  // Handle duration selection
   const handleDurationChange = (duration: number) => {
-    // Don't allow changing Diamond plan duration from 12 months
-    if (selectedPricing === 'diamond' && duration !== 12) {
-      return;
-    }
     setSelectedDuration(duration);
   };
-  
-  const handleContinue = () => {
-    setShowPaymentModal(true);
+
+  // Calculate the final price based on selected pricing and duration
+  const calculateTotalPrice = () => {
+    const basePrice = getBasePrice();
+    
+    if (selectedPricing === 'diamond') {
+      return basePrice; // Diamond plan has fixed price
+    }
+    
+    const { finalPrice } = calculateFinalPrice(
+      basePrice, 
+      selectedDuration,
+      selectedPricing,
+      autoRenew
+    );
+    
+    return finalPrice;
   };
-  
-  const handlePaymentSuccess = () => {
-    // Close payment modal and proceed to next step
-    setShowPaymentModal(false);
-    onNextStep();
+
+  // Handle submit/next
+  const handleSubmit = () => {
+    if (selectedPricing === 'free') {
+      onSubmitListing();
+    } else {
+      setShowPaymentModal(true);
+    }
   };
-  
-  // Find the selected pricing option
-  const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
-  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
-  
-  // Calculate duration-based discount
-  let discountPercentage = 0;
-  if (selectedPricing !== 'diamond') {
-    if (selectedDuration === 3) discountPercentage = 10;
-    else if (selectedDuration === 6) discountPercentage = 20;
-    else if (selectedDuration === 12) discountPercentage = 30;
-  }
-  
-  // Calculate original price before discount (for displaying strikethrough)
-  const originalPrice = selectedPricing === 'diamond' ? null : basePrice * selectedDuration;
-  
-  // Diamond plan price is always fixed regardless of duration
-  const actualPrice = selectedPricing === 'diamond' 
-    ? basePrice 
-    : discountPercentage > 0 
-      ? basePrice * selectedDuration * (1 - discountPercentage/100) 
-      : basePrice * selectedDuration;
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold">{t('Choose Listing Type', 'Chọn Loại Tin')}</h2>
-        <p className="text-muted-foreground">{t('Select how you want your post to appear', 'Chọn cách hiển thị tin của bạn')}</p>
+    <div className="max-w-3xl mx-auto">
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-2">
+          {t('Select Listing Type', 'Chọn Loại Đăng Tin')}
+        </h2>
+        <p className="text-gray-500 mb-4">
+          {t('Choose how you want to promote your listing', 'Chọn cách bạn muốn quảng bá tin đăng')}
+        </p>
+        
+        <PricingCards 
+          pricingOptions={jobPricingOptions}
+          selectedPricing={selectedPricing}
+          onChange={handlePricingChange}
+          selectedDuration={selectedDuration}
+          onDurationChange={handleDurationChange}
+        />
       </div>
-
-      <Card className="p-6">
-        <div className="space-y-6">
-          <PricingCards 
-            pricingOptions={jobPricingOptions}
-            selectedPricing={selectedPricing}
-            onChange={handlePricingChange}
-            selectedDuration={selectedDuration}
-            onDurationChange={handleDurationChange}
-          />
-          
-          <div className="border-t border-gray-200 pt-6">
+      
+      <div className="border-t border-gray-200 py-5">
+        <h2 className="text-xl font-semibold mb-4">
+          {t('Payment Summary', 'Tổng kết Thanh toán')}
+        </h2>
+        
+        <div className="bg-gray-50 rounded-lg p-5">
+          <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+            <div>
+              <p className="font-medium">
+                {getPricingOption()?.name || t('Standard Listing', 'Đăng tin Tiêu chuẩn')}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t('Duration:', 'Thời hạn:')} {selectedDuration} {selectedDuration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
+              </p>
+            </div>
+            
             <PricingDisplay 
-              postType={postType}
-              price={basePrice}
-              options={{
-                ...pricingOptions,
-                isFirstPost
-              }}
-              originalPrice={originalPrice || undefined}
-              discountPercentage={discountPercentage}
+              basePrice={getBasePrice()}
               duration={selectedDuration}
               pricingId={selectedPricing}
+              autoRenew={autoRenew}
             />
             
             {!isFreeTier && (
@@ -164,25 +184,31 @@ const ReviewAndPaymentSection = ({
           </div>
           
           <div className="flex justify-between pt-4">
-            <Button
-              variant="outline"
-              onClick={onPrevStep}
-            >
-              {t('Back', 'Quay lại')}
-            </Button>
-            
-            <Button onClick={handleContinue}>
-              {t('Continue', 'Tiếp tục')}
-            </Button>
+            <p className="font-medium">
+              {t('Total', 'Tổng cộng')}
+            </p>
+            <div className="text-right">
+              <p className="text-xl font-bold">
+                ${calculateTotalPrice().toFixed(2)}
+              </p>
+            </div>
           </div>
         </div>
-      </Card>
-      
-      <PaymentConfirmationModal 
-        open={showPaymentModal}
-        onOpenChange={setShowPaymentModal}
-        postType={postType}
-        price={basePrice}
+      </div>
+
+      <div className="mt-8 flex justify-end">
+        <Button onClick={handleSubmit}>
+          {selectedPricing === 'free' 
+            ? t('Submit Listing', 'Đăng tin') 
+            : t('Proceed to Payment', 'Tiến hành thanh toán')}
+        </Button>
+      </div>
+
+      <PaymentConfirmationModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onConfirmPayment={onSubmitListing}
+        amount={calculateTotalPrice()}
         options={{
           ...pricingOptions,
           isFirstPost,
@@ -191,8 +217,6 @@ const ReviewAndPaymentSection = ({
         }}
         originalPrice={originalPrice || undefined}
         discountPercentage={discountPercentage}
-        duration={selectedDuration}
-        onSuccess={handlePaymentSuccess}
       />
     </div>
   );

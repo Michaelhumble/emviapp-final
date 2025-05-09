@@ -1,171 +1,78 @@
 
-import { CheckCircle, DollarSign, AlertCircle } from "lucide-react";
-import { PricingOptions, PostType } from "@/utils/posting/types";
-import { useTranslation } from "@/hooks/useTranslation";
+import React from 'react';
+import { formatCurrency } from '@/lib/utils';
+import { calculateFinalPrice } from '@/utils/posting/jobPricing';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PricingDisplayProps {
-  postType: PostType;
-  price: number;
-  options?: PricingOptions;
-  promotionalText?: string;
-  originalPrice?: number;
-  discountPercentage?: number;
-  duration?: number;
-  pricingId?: string;
+  basePrice: number;
+  duration: number;
+  pricingId: string;
+  autoRenew?: boolean;
 }
 
-const PricingDisplay = ({ 
-  postType, 
-  price, 
-  options,
-  promotionalText, 
-  originalPrice,
-  discountPercentage,
-  duration = 1,
-  pricingId
-}: PricingDisplayProps) => {
+const PricingDisplay: React.FC<PricingDisplayProps> = ({ 
+  basePrice, 
+  duration, 
+  pricingId,
+  autoRenew = false
+}) => {
   const { t } = useTranslation();
-  const isDiamondPlan = pricingId === 'diamond';
   
-  const formattedPrice = price.toFixed(2);
-  const formattedOriginalPrice = originalPrice ? originalPrice.toFixed(2) : undefined;
-  
-  // Calculate total price based on duration
-  let actualPrice = price;
-  let durationDiscount = 0;
-  
-  // Set discount percentage based on duration (for non-Diamond plans)
-  if (!isDiamondPlan) {
-    if (duration === 3) durationDiscount = 10;
-    else if (duration === 6) durationDiscount = 20;
-    else if (duration === 12) durationDiscount = 30;
+  // Skip discount calculation for free tier
+  if (basePrice === 0) {
+    return (
+      <div className="text-right">
+        <div className="text-lg font-semibold">{formatCurrency(0)}</div>
+        <div className="text-sm text-gray-500">
+          {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
+        </div>
+      </div>
+    );
   }
   
-  // Calculate actual price with discounts
-  if (isDiamondPlan) {
-    // Diamond plan has fixed yearly price
-    actualPrice = price;
-  } else {
-    // For other plans, calculate based on duration and apply discount
-    const subtotal = price * duration;
-    actualPrice = durationDiscount > 0 
-      ? subtotal * (1 - durationDiscount/100) 
-      : subtotal;
+  // Calculate price with discount
+  const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
+    basePrice, 
+    duration,
+    pricingId,
+    autoRenew
+  );
+  
+  // For diamond plan, show as annual only
+  if (pricingId === 'diamond') {
+    return (
+      <div className="text-right">
+        <div className="text-lg font-semibold">{formatCurrency(finalPrice)}</div>
+        <div className="text-sm text-gray-500">
+          {t('annual subscription', 'gói đặc biệt')}
+        </div>
+      </div>
+    );
   }
   
-  // Format the price to show whole numbers when possible
-  const totalFormattedPrice = actualPrice % 1 === 0 
-    ? actualPrice.toFixed(0) 
-    : actualPrice.toFixed(2);
-  
-  // Calculate full price before discount (for display purposes)
-  const fullPriceBeforeDiscount = isDiamondPlan ? null : price * duration;
-  const formattedFullPrice = fullPriceBeforeDiscount 
-    ? (fullPriceBeforeDiscount % 1 === 0 
-      ? fullPriceBeforeDiscount.toFixed(0) 
-      : fullPriceBeforeDiscount.toFixed(2)) 
-    : null;
-  
-  // For Diamond plan, show special duration text
-  const durationText = isDiamondPlan 
-    ? `${t('Annual plan', 'Gói thường niên')}`
-    : (duration > 1 ? `${t('for', 'cho')} ${duration} ${t('months', 'tháng')}` : '');
+  // Show discount if applicable
+  const hasDiscount = discountPercentage > 0;
   
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="bg-gradient-to-r from-indigo-500/5 to-purple-500/5 px-4 py-3 border-b">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium">{t('Total', 'Tổng cộng')}</h3>
-          <div className="flex flex-col items-end">
-            <div className="flex items-baseline gap-2">
-              {!isDiamondPlan && durationDiscount > 0 && formattedFullPrice && (
-                <span className="text-sm line-through text-red-500">${formattedFullPrice}</span>
-              )}
-              <span className="text-xl font-bold">${totalFormattedPrice}</span>
-            </div>
-            {!isDiamondPlan && durationDiscount > 0 && (
-              <span className="text-xs text-green-600 font-medium">
-                {t('Saving', 'Tiết kiệm')}: {durationDiscount}%
-              </span>
-            )}
-          </div>
+    <div className="text-right">
+      {hasDiscount && (
+        <div className="text-sm text-gray-400 line-through">
+          {formatCurrency(originalPrice)}
         </div>
-        {durationText && (
-          <div className="text-xs text-muted-foreground text-right mt-1">
-            {durationText}
-          </div>
+      )}
+      <div className="text-lg font-semibold">
+        {formatCurrency(finalPrice)}
+        {hasDiscount && (
+          <span className="text-xs text-green-600 ml-2">
+            (-{discountPercentage}%)
+          </span>
         )}
       </div>
-      
-      <div className="p-4 bg-white">
-        <div className="flex flex-col space-y-2 mb-3">
-          <div className="flex items-start">
-            <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-            <span className="text-sm">
-              {isDiamondPlan 
-                ? t('365-day premium listing', 'Tin nổi bật 365 ngày')
-                : postType === 'job' 
-                  ? t('30-day job listing', 'Tin tuyển dụng 30 ngày') 
-                  : postType === 'salon' 
-                    ? t('Salon for sale listing (30 days)', 'Tin bán tiệm (30 ngày)')
-                    : postType === 'booth' 
-                      ? t('Booth rental listing (30 days)', 'Tin cho thuê booth (30 ngày)')
-                      : t('Supply listing (30 days)', 'Tin bán thiết bị (30 ngày)')}
-            </span>
-          </div>
-          
-          {options?.isNationwide && (
-            <div className="flex items-start">
-              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span className="text-sm">{t('Nationwide visibility', 'Hiển thị toàn quốc')}</span>
-            </div>
-          )}
-          
-          {options?.fastSalePackage && (
-            <div className="flex items-start">
-              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span className="text-sm">{t('Featured placement + Fast Sale Package', 'Vị trí nổi bật + Gói bán nhanh')}</span>
-            </div>
-          )}
-          
-          {options?.showAtTop && (
-            <div className="flex items-start">
-              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span className="text-sm">{t('Top position in search results', 'Vị trí hàng đầu trong kết quả tìm kiếm')}</span>
-            </div>
-          )}
-          
-          {options?.isFirstPost && (
-            <div className="flex items-start">
-              <DollarSign className="h-4 w-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span className="text-sm text-amber-700 font-medium">{t('First-time poster discount applied', 'Áp dụng giảm giá cho người đăng lần đầu')}</span>
-            </div>
-          )}
-          
-          {!isDiamondPlan && duration && duration > 1 && (
-            <div className="flex items-start">
-              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span className="text-sm">
-                {duration}-{t('month subscription', 'tháng đăng ký')}
-                {duration >= 3 ? ` ${t('with discount', 'với giảm giá')}` : ''}
-              </span>
-            </div>
-          )}
-          
-          {isDiamondPlan && (
-            <div className="flex items-start">
-              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span className="text-sm">
-                {t('Annual premium listing', 'Đăng tin đặc biệt thường niên')}
-              </span>
-            </div>
-          )}
-        </div>
-        
-        {promotionalText && (
-          <div className="mt-3 py-2 px-3 bg-indigo-50 rounded-md text-sm text-indigo-700 border border-indigo-100">
-            {promotionalText}
-          </div>
+      <div className="text-sm text-gray-500">
+        {t('for', 'cho')} {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
+        {autoRenew && (
+          <span className="text-green-600 ml-1">{t('(auto-renew)', '(tự động gia hạn)')}</span>
         )}
       </div>
     </div>
