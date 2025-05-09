@@ -16,7 +16,9 @@ import Layout from "@/components/layout/Layout";
 import JobPost from "@/pages/posting/JobPost";
 import Jobs from "@/pages/Jobs";
 import About from "@/pages/About"; 
-import Contact from "@/pages/Contact"; // Import the Contact page
+import Contact from "@/pages/Contact";
+import Terms from "@/pages/Terms";
+import Refund from "@/pages/Refund";
 
 function App() {
   const location = useLocation();
@@ -53,9 +55,16 @@ function App() {
                   {/* Add the new Contact page route */}
                   <Route path="/contact" element={<Contact />} />
                   
+                  {/* Add the new Terms page route */}
+                  <Route path="/terms" element={<Terms />} />
+                  
+                  {/* Add the new Refund page route */}
+                  <Route path="/refund" element={<Refund />} />
+                  
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
-                    (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && route.path !== "/contact") && (
+                    (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
+                     route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund") && (
                       <Route 
                         key={index}
                         path={route.path}
