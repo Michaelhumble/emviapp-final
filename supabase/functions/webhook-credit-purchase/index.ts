@@ -1,125 +1,128 @@
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.24.0";
-import Stripe from "https://esm.sh/stripe@12.1.1";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  };
-
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  // Handle CORS preflight request
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
-
-  try {
-    // Get the request body and signature header
-    const body = await req.text();
-    const signature = req.headers.get('stripe-signature') || '';
-
-    // Get environment variables
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
-    const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    // Initialize Stripe
-    const stripe = new Stripe(stripeSecretKey || '', {
-      apiVersion: '2023-08-16',
-    });
-
-    // Verify webhook signature
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret || '');
-    } catch (err) {
-      console.error(`Webhook signature verification failed: ${err.message}`);
-      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Initialize Supabase client
-    const supabase = createClient(
-      supabaseUrl || '',
-      supabaseServiceKey || ''
+  
+  const signature = req.headers.get("stripe-signature");
+  if (!signature) {
+    return new Response(
+      JSON.stringify({ error: "Missing stripe signature" }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
-    // Handle checkout.session.completed event
+  }
+  
+  try {
+    // Get request body for webhook verification
+    const body = await req.text();
+    
+    // Initialize Stripe
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2023-10-16",
+    });
+    
+    const stripeWebhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+    if (!stripeWebhookSecret) {
+      return new Response(
+        JSON.stringify({ error: "Server configuration error" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // Verify webhook signature
+    const event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      stripeWebhookSecret
+    );
+    
+    console.log(`Received Stripe credit purchase webhook event: ${event.type}`);
+    
+    // Create Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Log the webhook event
+    const { error: logError } = await supabase
+      .from('webhook_logs')
+      .insert({
+        event_type: event.type,
+        payload: event,
+        source: 'credit-purchase'
+      });
+      
+    if (logError) {
+      console.error("Error logging webhook:", logError);
+    }
+    
+    // Process different event types
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       
-      // Get metadata from the session
-      const userId = session.metadata?.userId;
-      const creditsAmount = parseInt(session.metadata?.creditsAmount || '0', 10);
-      
-      console.log(`Processing successful payment for user ${userId}: +${creditsAmount} credits`);
-      
-      if (userId && creditsAmount > 0) {
-        // Get the user's current credits
-        const { data: userData, error: fetchError } = await supabase
-          .from('users')
-          .select('credits')
-          .eq('id', userId)
-          .single();
-          
-        if (fetchError) {
-          console.error('Error fetching user data:', fetchError);
-          return new Response(JSON.stringify({ error: 'User not found' }), {
-            status: 404,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
+      if (session.metadata?.purchase_type === 'credits') {
+        const userId = session.metadata.user_id;
+        const creditsAmount = parseInt(session.metadata.credits_amount || '0');
         
-        // Calculate new credit balance
-        const currentCredits = userData?.credits || 0;
-        const newCredits = currentCredits + creditsAmount;
-        
-        console.log(`Updating user ${userId} credits from ${currentCredits} to ${newCredits}`);
-        
-        // Update the user's credits
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({ credits: newCredits })
-          .eq('id', userId);
-          
-        if (updateError) {
-          console.error('Error updating user credits:', updateError);
-          return new Response(JSON.stringify({ error: 'Failed to update credits' }), {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        
-        // Log the credit purchase
-        await supabase
-          .from('activity_log')
-          .insert({
-            user_id: userId,
-            activity_type: 'credit_earned',
-            description: `Purchased ${creditsAmount} credits`,
-            metadata: {
-              credits: creditsAmount,
-              source: 'purchase',
-              payment_id: session.id
+        if (userId && creditsAmount > 0) {
+          // Update user's credits
+          const { error: updateError } = await supabase.rpc(
+            'award_credits',
+            {
+              p_user_id: userId,
+              p_action_type: 'purchase',
+              p_value: creditsAmount,
+              p_description: `Purchased ${creditsAmount} credits`
             }
-          });
+          );
           
-        console.log(`Credits updated and activity logged for user ${userId}`);
+          if (updateError) {
+            console.error("Error awarding credits:", updateError);
+          } else {
+            console.log(`Successfully awarded ${creditsAmount} credits to user ${userId}`);
+            
+            // Create notification for user
+            const { error: notifError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: userId,
+                type: 'credit_purchase',
+                message: `You've received ${creditsAmount} credits from your purchase!`,
+                metadata: {
+                  credits: creditsAmount,
+                  transaction_id: session.id
+                }
+              });
+              
+            if (notifError) {
+              console.error("Error creating notification:", notifError);
+            }
+          }
+        }
       }
     }
-
-    return new Response(JSON.stringify({ received: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    
+    // Return a success response
+    return new Response(
+      JSON.stringify({ received: true }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    console.error('Error processing webhook:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error(`Error handling webhook: ${error.message}`);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 });
