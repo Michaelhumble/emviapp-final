@@ -15,7 +15,7 @@ interface PaymentSummaryProps {
   discountPercentage: number;
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
-  isSubmitting?: boolean; // Added missing prop
+  isSubmitting?: boolean;
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
@@ -27,7 +27,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   discountPercentage,
   onProceedToPayment,
   isFreePlan = false,
-  isSubmitting = false // Added default value
+  isSubmitting = false
 }) => {
   const { t } = useTranslation();
   const expiryDate = addMonths(new Date(), duration);

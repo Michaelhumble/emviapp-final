@@ -16,3 +16,25 @@ export interface PricingWithDuration {
   durationMonths: number;
   discountPercentage: number;
 }
+
+// Types for Stripe payment processing
+export interface StripePaymentRequest {
+  postType: 'job' | 'salon' | 'booth' | 'supply';
+  pricing: {
+    tier: string;
+    amountInCents: number;
+    mode: 'payment' | 'subscription';
+    durationMonths: number;
+    autoRenew: boolean;
+    basePrice: number;
+  };
+  postDetails: any;
+  pricingOptions: any;
+}
+
+export interface StripeCheckoutResponse {
+  url: string;
+  session_id: string;
+  payment_log_id?: string;
+  post_id?: string;
+}

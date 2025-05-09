@@ -1,7 +1,6 @@
 
 // @ts-nocheck
 // ^ This comment disables TypeScript checking for this file since it uses Deno types
-// that aren't available in the browser/Node.js environment
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -34,14 +33,13 @@ serve(async (req) => {
     // Extract token from Auth header
     const token = authHeader.replace("Bearer ", "");
 
-    // Initialize Supabase client with service role for admin operations
+    // Initialize Supabase clients
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
       { auth: { persistSession: false } }
     );
 
-    // Initialize Supabase client with user token for user-based operations
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_ANON_KEY") || "",
@@ -78,6 +76,17 @@ serve(async (req) => {
     // Get metadata from the session
     const metadata = session.metadata || {};
     
+    // Check if payment is complete
+    if (session.payment_status !== "paid") {
+      return new Response(JSON.stringify({ 
+        error: "Payment not completed", 
+        status: session.payment_status 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    
     // Find the related payment log
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
@@ -89,13 +98,56 @@ serve(async (req) => {
       console.error("Error fetching payment log:", paymentLogError);
     }
 
+    // If we have a post_id in metadata, update the job status
+    if (metadata.post_id) {
+      if (metadata.post_type === 'job') {
+        const { error: updateJobError } = await supabaseAdmin
+          .from('jobs')
+          .update({ 
+            status: 'active',
+            expires_at: metadata.expires_at,
+            pricingTier: metadata.pricing_tier || 'standard'
+          })
+          .eq('id', metadata.post_id);
+          
+        if (updateJobError) {
+          console.error("Error updating job status:", updateJobError);
+        }
+      } else if (metadata.post_type === 'salon') {
+        const { error: updateSalonError } = await supabaseAdmin
+          .from('salon_sales')
+          .update({ 
+            status: 'active',
+            expires_at: metadata.expires_at,
+            is_featured: metadata.pricing_tier === 'premium' || metadata.pricing_tier === 'diamond'
+          })
+          .eq('id', metadata.post_id);
+          
+        if (updateSalonError) {
+          console.error("Error updating salon status:", updateSalonError);
+        }
+      }
+    }
+    
+    // Update payment log status
+    if (paymentLog?.id) {
+      const { error: updateLogError } = await supabaseAdmin
+        .from('payment_logs')
+        .update({ payment_status: 'success' })
+        .eq('id', paymentLog.id);
+        
+      if (updateLogError) {
+        console.error("Error updating payment log:", updateLogError);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
         post_id: metadata.post_id || paymentLog?.listing_id,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
-        pricing_tier: metadata.pricing_tier || paymentLog?.pricing_tier,
+        pricing_tier: metadata.pricing_tier,
         payment_log_id: paymentLog?.id
       }),
       {
