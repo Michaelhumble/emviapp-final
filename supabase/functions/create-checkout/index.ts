@@ -17,6 +17,7 @@ serve(async (req) => {
   try {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
+      console.error("STRIPE_SECRET_KEY is not set in environment variables");
       throw new Error("STRIPE_SECRET_KEY is not set");
     }
     
