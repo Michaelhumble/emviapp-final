@@ -38,8 +38,8 @@ const ContactPage = () => {
             Together, we'll make something unforgettable.
           </p>
           
-          {/* Add the quote block */}
-          <blockquote className="text-center text-sm text-muted-foreground mt-8">
+          {/* Updated Sunshine quote with better styling and visibility */}
+          <blockquote className="text-center text-sm text-purple-600 dark:text-purple-400 mt-6 mb-2 font-medium">
             "This project wouldn't exist without Sunshine." ☀️
           </blockquote>
         </div>
