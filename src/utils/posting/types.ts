@@ -53,6 +53,7 @@ export interface PricingOptions {
   featuredListing?: boolean;
   extendedDuration?: boolean;
   featuredPost?: boolean;
+  selectedPricingTier?: string; // Track selected pricing tier
 }
 
 // Added the missing interface

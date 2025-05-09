@@ -40,6 +40,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
     setSelectedDuration(months);
   };
   
+  const handlePricingChange = (pricingId: string) => {
+    setSelectedPricing(pricingId);
+  };
+  
   // Map job field mapping
   const jobFields = {
     title: t("Job Title", "Chức danh"),
@@ -68,6 +72,9 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   };
 
   const formattedData = formatData();
+  
+  // Get the selected pricing option details
+  const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
 
   return (
     <div className="space-y-8">
@@ -112,15 +119,37 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
                 <PricingCards 
                   pricingOptions={jobPricingOptions}
                   selectedPricing={selectedPricing}
-                  onChange={setSelectedPricing}
+                  onChange={handlePricingChange}
                   selectedDuration={selectedDuration}
                   onDurationChange={handleDurationChange}
                 />
               </CardContent>
             </Card>
             
+            {selectedPricingOption && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("Your Selection", "Lựa chọn của bạn")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <PricingDisplay 
+                    postType="job" 
+                    price={selectedPricingOption.price}
+                    options={pricingOptions}
+                    originalPrice={selectedPricingOption.wasPrice}
+                    duration={selectedDuration}
+                    discountPercentage={selectedDuration === 3 ? 15 : selectedDuration === 6 ? 25 : 0}
+                    promotionalText={t(
+                      "This plan includes all you need to reach the right candidates quickly.",
+                      "Gói này bao gồm tất cả những gì bạn cần để tiếp cận ứng viên phù hợp một cách nhanh chóng."
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
             <div className="flex justify-end">
-              <Button className="px-8">
+              <Button className="px-8" onClick={onNextStep}>
                 {t("Continue to Checkout", "Tiếp tục thanh toán")}
               </Button>
             </div>

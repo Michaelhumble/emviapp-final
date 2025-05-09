@@ -47,7 +47,8 @@ const JobPost = () => {
     bundleWithSalonPost: false,
     boostVisibility: false,
     featuredListing: false,
-    extendedDuration: false
+    extendedDuration: false,
+    selectedPricingTier: 'standard' // Default pricing tier
   });
 
   const totalSteps = 5;
@@ -55,6 +56,9 @@ const JobPost = () => {
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
+    } else {
+      // Handle final submission
+      handleSubmit();
     }
   };
 
@@ -83,9 +87,20 @@ const JobPost = () => {
   const handleShowAtTopChange = (checked: boolean) => {
     setPricingOptions({ ...pricingOptions, showAtTop: checked });
   };
+  
+  const handlePricingChange = (pricingTier: string) => {
+    setPricingOptions({ ...pricingOptions, selectedPricingTier: pricingTier });
+  };
 
   const handleSubmit = async () => {
-    navigate('/checkout');
+    // Here we would submit both job details and pricing options
+    // For now, we'll just navigate to checkout
+    navigate('/checkout', { 
+      state: { 
+        jobDetails,
+        pricingOptions
+      }
+    });
   };
 
   return (
