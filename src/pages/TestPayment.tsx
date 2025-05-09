@@ -33,17 +33,23 @@ const TestPayment = () => {
         durationMonths: 1
       });
 
-      console.log("🛑 Payment result:", result);
+      console.log("🔍 Payment result:", result);
       setResponseData(result);
       
-      if (result?.success) {
+      if (result?.success && result?.redirect) {
         setSuccess(true);
-        // The redirect happens inside the initiatePayment function
         toast.success(t("Payment setup successful", "Thiết lập thanh toán thành công"), {
           description: t("Redirecting to checkout...", "Đang chuyển hướng đến thanh toán...")
         });
+        
+        // For live testing, we want to see the response before redirecting
+        // We'll redirect automatically without a setTimeout
+        console.log("🔄 Redirecting to:", result.redirect);
+        window.location.href = result.redirect;
       } else {
-        setError(result?.error || "Unknown error occurred");
+        const errorMessage = result?.error || "Missing redirect URL";
+        console.error("❌ Payment setup failed:", errorMessage);
+        setError(errorMessage);
         toast.error(t("Payment setup failed", "Thiết lập thanh toán thất bại"), {
           description: t("Please check console logs for details", "Vui lòng kiểm tra nhật ký bảng điều khiển để biết chi tiết")
         });

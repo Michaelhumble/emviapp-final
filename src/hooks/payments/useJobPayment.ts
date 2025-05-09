@@ -33,16 +33,8 @@ export const useJobPayment = () => {
 
         if (postError) {
           console.error("Free post creation error:", postError);
-          toast.error(t("Error creating free post", "Lỗi khi tạo bài đăng miễn phí"), {
-            description: postError.message || t("Please try again", "Vui lòng thử lại")
-          });
           throw postError;
         }
-
-        toast.success(
-          t("Your free post has been submitted", "Tin miễn phí của bạn đã được đăng"), {
-          description: t("You can view it in your dashboard now", "Bạn có thể xem nó trong bảng điều khiển của bạn ngay bây giờ")
-        });
         
         return { 
           success: true,
@@ -71,24 +63,17 @@ export const useJobPayment = () => {
       
       if (error) {
         console.error("Edge function error:", error);
-        toast.error(t("Payment service error", "Lỗi dịch vụ thanh toán"), {
-          description: error.message || t("Could not connect to payment provider", "Không thể kết nối với nhà cung cấp dịch vụ thanh toán")
-        });
         throw error;
       }
       
       if (!data) {
         console.error("No data returned from checkout");
-        toast.error(t("Invalid response from payment service", "Phản hồi không hợp lệ từ dịch vụ thanh toán"));
         throw new Error('No data returned from payment service');
       }
       
       // Explicitly validate the URL
       if (!data.url) {
         console.error("⛔ No checkout URL received in response:", data);
-        toast.error(t("Missing payment URL", "URL thanh toán bị thiếu"), {
-          description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
-        });
         throw new Error('No checkout URL received from Stripe');
       }
       
@@ -103,15 +88,7 @@ export const useJobPayment = () => {
       };
     } catch (error: any) {
       console.error('❌ Job payment initiation error:', error);
-      toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
-        description: error.message || t("Please try again.", "Vui lòng thử lại.")
-      });
-      return { 
-        success: false,
-        redirect: null,
-        error: error.message || 'Unknown error',
-        data: null
-      };
+      throw error;
     } finally {
       setIsLoading(false);
     }

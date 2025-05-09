@@ -27,20 +27,16 @@ export const usePostPayment = () => {
       if (postType === 'job') {
         console.log("Calling initiateJobPayment...");
         result = await initiateJobPayment(postDetails, pricingOptions);
-        console.log("Full job payment result:", result);
       } else if (postType === 'salon') {
         console.log("Calling initiateSalonPayment...");
         result = await initiateSalonPayment(postDetails, pricingOptions);
-        console.log("Full salon payment result:", result);
       } else {
         throw new Error(`Unsupported post type: ${postType}`);
       }
 
       // Debug the raw response
       console.log("🧪 Raw payment result:", result);
-      console.log("🧪 Result type:", typeof result);
-      console.log("🧪 Result structure:", JSON.stringify(result, null, 2));
-
+      
       // Check if we got a successful result with redirect URL
       if (result?.success && result?.redirect) {
         console.log("✅ Payment initiation successful, redirect URL:", result.redirect);
@@ -57,28 +53,26 @@ export const usePostPayment = () => {
           toast.error(t("Invalid payment URL", "URL thanh toán không hợp lệ"), {
             description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
           });
-          throw new Error('Invalid redirect URL format');
+          return {
+            success: false,
+            redirect: null,
+            error: 'Invalid redirect URL format',
+            data: null
+          };
         }
-        
-        // For paid plans, redirect to Stripe checkout immediately
-        console.log("🔄 Redirecting to Stripe checkout URL:", result.redirect);
-        
-        // Redirect immediately without using setTimeout
-        window.location.href = result.redirect;
         
         return result;
       } else {
         console.error("⚠️ Payment initiation did not return success or redirect URL:", result);
-        toast.error(t("Payment setup failed", "Thiết lập thanh toán thất bại"), {
-          description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
-        });
-        throw new Error('Payment initiation failed without redirect URL');
+        return { 
+          success: false,
+          redirect: null,
+          error: 'Payment initiation failed without redirect URL',
+          data: result
+        };
       }
     } catch (error: any) {
       console.error('❌ Payment initiation error:', error);
-      toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
-        description: error.message || t("Please try again.", "Vui lòng thử lại.")
-      });
       return { 
         success: false,
         redirect: null,
