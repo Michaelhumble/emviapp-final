@@ -88,7 +88,7 @@ serve(async (req) => {
       throw new Error("Failed to create payment record");
     }
     
-    // Create Stripe checkout session
+    // Create Stripe checkout session with exact live URLs
     console.log("Creating live Stripe checkout session...");
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -104,8 +104,8 @@ serve(async (req) => {
         },
         quantity: 1
       }],
-      success_url: `https://emviapp.app/post-success?payment_log_id=${paymentLog.id}`,
-      cancel_url: `https://emviapp.app/post-job`,
+      success_url: `https://emvi.app/post-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://emvi.app/post-canceled`,
       metadata: {
         payment_log_id: paymentLog.id,
         user_id: user.id
