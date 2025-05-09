@@ -1,199 +1,223 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { toast } from "sonner";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from "@/components/ui/checkbox"
-import { Switch } from "@/components/ui/switch"
 import { useTranslation } from '@/hooks/useTranslation';
-import { PricingOptions } from '@/types/job';
+import Layout from '@/components/layout/Layout';
+// Remove yup import and use zod which is already in the project
+import { z } from "zod";
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
+
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+import { useAuth } from "@/context/auth";
+import { supabase } from '@/integrations/supabase/client';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Separator } from "@/components/ui/separator"
-import { Slider } from "@/components/ui/slider"
-import { InputCurrency } from '@/components/ui/input-currency';
-import { Icons } from '@/components/ui/icons';
-import ImageUploader from '@/components/ImageUploader';
-import { Salon } from '@/types/salon';
-import { useAuth } from '@/context/auth';
+import { PricingOptions } from '@/types/job';
+import { calculateSalonPostPrice, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
+import { SalonPostForm } from "@/components/posting/salon/SalonPostForm";
+import SalonPostOptions from "@/components/posting/salon/SalonPostOptions";
+import { SalonFormValues } from "@/components/posting/salon/salonFormSchema";
 
-const schema = yup.object({
-  title: yup.string().required('Title is required'),
-  description: yup.string().required('Description is required'),
-  location: yup.string().required('Location is required'),
-  contact_info: yup.object().shape({
-    owner_name: yup.string().required('Owner name is required'),
-    phone: yup.string().required('Phone is required'),
-    email: yup.string().email('Invalid email').required('Email is required'),
-  }).required('Contact info is required'),
-});
+// Replace missing imports with existing components or functionality
+// Use Input component instead of InputCurrency
+// Remove Icons import
+// Use simple file input instead of ImageUploader
 
-const SalonPost: React.FC = () => {
+const SalonPost = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { initiatePayment, isLoading: isPaymentLoading } = usePostPayment();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'standard',
-    autoRenew: false,
-    durationMonths: 1
-  });
-  const [formData, setFormData] = useState<Salon>({} as Salon);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { user } = useAuth();
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<yup.InferType<typeof schema>>({
-    resolver: yupResolver(schema),
+  const navigate = useNavigate();
+  const { initiatePayment, isLoading } = usePostPayment();
+  
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    isFirstPost: true,
+    isNationwide: false,
+    fastSalePackage: false,
+    showAtTop: false,
+    selectedPricingTier: 'standard',
+    autoRenew: false
   });
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
-
-  const onSubmit = (data: yup.InferType<typeof schema>) => {
-    setFormData({
-      ...data,
-      image: selectedImage || '',
-    });
+  
+  const handleNationwideChange = (checked: boolean) => {
+    setPricingOptions(prev => ({ ...prev, isNationwide: checked }));
+  };
+  
+  const handleFastSaleChange = (checked: boolean) => {
+    setPricingOptions(prev => ({ ...prev, fastSalePackage: checked }));
   };
 
-  const handleProceedToPayment = async () => {
+  const handleSalonFormSubmit = async (data: SalonFormValues) => {
+    if (!user) {
+      toast.error(t("You must be logged in to post a salon listing", "Bạn phải đăng nhập để đăng tin tiệm"));
+      navigate("/login");
+      return;
+    }
+    
+    setFormSubmitted(true);
+    
     try {
-      setIsProcessing(true);
-      const result = await initiatePayment('salon', formData, pricingOptions);
+      // 1. Upload photos
+      let photoUrls: string[] = [];
       
-      if (result.success && result.redirect) {
-        // Successful payment initiation, redirect to Stripe or success page
-        window.location.href = result.redirect;
-      } else if (result.success) {
-        // Success but no redirect (shouldn't happen, but handle it)
-        navigate('/dashboard');
+      if (photoUploads.length > 0) {
+        setUploadingImages(true);
+        
+        for (const file of photoUploads) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+          
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('salon-sale-photos')
+            .upload(fileName, file);
+            
+          if (uploadError) {
+            throw new Error(t("Error uploading images", "Lỗi khi tải lên hình ảnh"));
+          }
+          
+          if (uploadData) {
+            const { data: urlData } = supabase.storage
+              .from('salon-sale-photos')
+              .getPublicUrl(uploadData.path);
+              
+            photoUrls.push(urlData.publicUrl);
+          }
+        }
+        
+        setUploadingImages(false);
       }
       
-      // If we get here without redirecting, there was an issue
-      setIsProcessing(false);
-    } catch (error) {
-      console.error("Payment processing error:", error);
-      toast.error(t("There was a problem processing your payment", "Có lỗi khi xử lý thanh toán của bạn"), {
-        description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ")
-      });
-      setIsProcessing(false);
+      // 2. Prepare salon data
+      const salonData = {
+        salonName: data.salonName,
+        city: data.city,
+        state: data.state,
+        askingPrice: data.askingPrice,
+        monthlyRent: data.monthlyRent || '',
+        numberOfStaff: data.numberOfStaff || '',
+        squareFeet: data.squareFeet || '',
+        revenue: data.revenue || '',
+        reasonForSelling: data.reasonForSelling || '',
+        vietnameseDescription: data.vietnameseDescription || '',
+        englishDescription: data.englishDescription || '',
+        willTrain: data.willTrain,
+        isNationwide: data.isNationwide,
+        hasHousing: data.hasHousing,
+        hasWaxRoom: data.hasWaxRoom,
+        hasDiningRoom: data.hasDiningRoom,
+        hasLaundry: data.hasLaundry,
+        photos: photoUrls,
+        user_id: user.id,
+      };
+      
+      // 3. Calculate pricing
+      const pricingTier = pricingOptions.selectedPricingTier || 'standard';
+      const totalPrice = calculateSalonPostPrice(pricingOptions);
+      
+      // 4. Free tier or initiate payment
+      if (pricingTier === 'free' || totalPrice === 0) {
+        pricingOptions.selectedPricingTier = 'free';
+      }
+      
+      // 5. Process payment or free post
+      const result = await initiatePayment('salon', salonData, pricingOptions);
+      
+      if (result.success && result.redirect) {
+        // For paid posts, redirect to Stripe
+        if (pricingOptions.selectedPricingTier !== 'free') {
+          window.location.href = result.redirect;
+        } else {
+          // For free posts, redirect to success page
+          if (result.data && result.data.payment_log_id) {
+            navigate(`/post-success?payment_log_id=${result.data.payment_log_id}&free=true`);
+          } else {
+            navigate('/post-success?free=true');
+          }
+        }
+      } else {
+        toast.error(t("Error processing payment", "Lỗi xử lý thanh toán"));
+      }
+    } catch (error: any) {
+      toast.error(error.message || t("An error occurred", "Đã xảy ra lỗi"));
+      setFormSubmitted(false);
     }
-  };
-
-  const handleImageUpload = (url: string) => {
-    setSelectedImage(url);
   };
 
   return (
-    <div className="container max-w-4xl py-12">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('Post a Salon', 'Đăng tin Salon')}</CardTitle>
-          <CardDescription>
-            {t('Fill out the form below to post a salon listing.', 'Điền vào mẫu dưới đây để đăng tin salon.')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">{t('Title', 'Tiêu đề')}</Label>
-              <Input id="title" {...register('title')} placeholder={t('Salon for sale in Little Saigon', 'Salon cần bán ở Little Saigon')} />
-              {errors.title && (
-                <p className="text-sm text-red-500">{errors.title.message}</p>
-              )}
+    <Layout>
+      <div className="container py-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-2">
+            {t("List Your Salon For Sale", "Đăng bán tiệm của bạn")}
+          </h1>
+          <p className="text-gray-600 mb-8">
+            {t(
+              "Create a listing to sell your salon business. Vietnamese nail salons are in high demand.",
+              "Tạo tin rao bán tiệm của bạn. Tiệm nail Việt Nam đang có nhu cầu cao."
+            )}
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <SalonPostForm 
+                onSubmit={handleSalonFormSubmit}
+                photoUploads={photoUploads}
+                setPhotoUploads={setPhotoUploads}
+                onNationwideChange={handleNationwideChange}
+                onFastSaleChange={handleFastSaleChange}
+              />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="description">{t('Description', 'Mô tả')}</Label>
-              <Textarea id="description" {...register('description')} placeholder={t('Describe the salon', 'Mô tả về salon')} />
-              {errors.description && (
-                <p className="text-sm text-red-500">{errors.description.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="location">{t('Location', 'Địa điểm')}</Label>
-              <Input id="location" {...register('location')} placeholder={t('City, State', 'Thành phố, Tiểu bang')} />
-              {errors.location && (
-                <p className="text-sm text-red-500">{errors.location.message}</p>
-              )}
-            </div>
+            
             <div>
-              <Label>{t('Upload Image', 'Tải ảnh lên')}</Label>
-              <ImageUploader onUpload={handleImageUpload} />
-              {selectedImage && (
-                <img src={selectedImage} alt="Uploaded" className="mt-2 max-h-40" />
-              )}
-            </div>
-            <div>
-              <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                {t('Contact Information', 'Thông tin liên hệ')}
-              </h2>
-              <div className="grid gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="owner_name">{t('Owner Name', 'Tên chủ sở hữu')}</Label>
-                  <Input id="owner_name" {...register('contact_info.owner_name')} placeholder={t('John Doe', 'Nguyễn Văn A')} />
-                  {errors.contact_info?.owner_name && (
-                    <p className="text-sm text-red-500">{errors.contact_info.owner_name.message}</p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="phone">{t('Phone', 'Điện thoại')}</Label>
-                  <Input id="phone" {...register('contact_info.phone')} placeholder={t('123-456-7890', '123-456-7890')} />
-                  {errors.contact_info?.phone && (
-                    <p className="text-sm text-red-500">{errors.contact_info.phone.message}</p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="email">{t('Email', 'Email')}</Label>
-                  <Input id="email" {...register('contact_info.email')} placeholder={t('johndoe@example.com', 'johndoe@example.com')} />
-                  {errors.contact_info?.email && (
-                    <p className="text-sm text-red-500">{errors.contact_info.email.message}</p>
-                  )}
-                </div>
+              <div className="sticky top-24">
+                <SalonPostOptions 
+                  pricingOptions={pricingOptions}
+                  setPricingOptions={setPricingOptions}
+                />
+                
+                <Card className="mt-6 p-4">
+                  <h3 className="font-semibold mb-3">{t("Price Summary", "Tóm tắt giá")}</h3>
+                  <ul className="space-y-2 text-sm">
+                    {getSalonPostPricingSummary(pricingOptions).map((line, index) => (
+                      <li key={index} className="flex justify-between">
+                        <span>{line.split(":")[0]}</span>
+                        <span className="font-medium">{line.split(":")[1]}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <Button
+                    className="w-full mt-4"
+                    disabled={formSubmitted || isLoading || uploadingImages}
+                    onClick={() => {
+                      // Use form submission instead of direct payment
+                      document.querySelector('form')?.dispatchEvent(
+                        new Event('submit', { cancelable: true, bubbles: true })
+                      );
+                    }}
+                  >
+                    {isLoading || uploadingImages ? t("Processing...", "Đang xử lý...") : t("Proceed to Payment", "Tiến hành thanh toán")}
+                  </Button>
+                </Card>
               </div>
             </div>
-            <Button disabled={isProcessing} onClick={handleSubmit(onSubmit).then(handleProceedToPayment)}>
-              {isProcessing ? (
-                <>
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  {t('Processing', 'Đang xử lý')}...
-                </>
-              ) : (
-                t('Proceed to Payment', 'Tiến hành thanh toán')
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
