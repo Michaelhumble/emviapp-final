@@ -19,6 +19,8 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Terms from "@/pages/Terms";
 import Refund from "@/pages/Refund";
+import Privacy from "@/pages/Privacy";
+import Cookies from "@/pages/Cookies";
 
 function App() {
   const location = useLocation();
@@ -61,10 +63,15 @@ function App() {
                   {/* Add the new Refund page route */}
                   <Route path="/refund" element={<Refund />} />
                   
+                  {/* Add the Privacy and Cookies page routes */}
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/cookies" element={<Cookies />} />
+                  
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
                     (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
-                     route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund") && (
+                     route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
+                     route.path !== "/privacy" && route.path !== "/cookies") && (
                       <Route 
                         key={index}
                         path={route.path}
