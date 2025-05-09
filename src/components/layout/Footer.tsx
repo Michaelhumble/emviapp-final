@@ -54,13 +54,19 @@ const Footer = () => {
             </span>
           </p>
           
-          {/* New legal links row */}
+          {/* New legal links row - UPDATED with Privacy and Cookie links */}
           <div className="flex flex-wrap justify-center gap-6 mb-4">
             <Link to="/terms" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
               <span className="mr-1">📄</span> Terms of Service
             </Link>
             <Link to="/refund" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
               <span className="mr-1">💸</span> Refund Policy
+            </Link>
+            <Link to="/privacy" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">🔐</span> Privacy Policy
+            </Link>
+            <Link to="/cookies" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">🍪</span> Cookie Policy
             </Link>
             <Link to="/contact" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
               <span className="mr-1">📬</span> Contact Us
