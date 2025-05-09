@@ -46,6 +46,12 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-gray-200 pt-6 mt-6 text-center text-sm text-gray-500">
+          {/* Add "Inspired by Sunshine" credit above copyright */}
+          <p className="mb-2">
+            <span className="text-xs text-muted-foreground">
+              Inspired by Sunshine ☀️
+            </span>
+          </p>
           <p>© {new Date().getFullYear()} EmviApp. All rights reserved.</p>
         </div>
       </div>

@@ -186,6 +186,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
                 </div>
               </div>
             </div>
+            
+            {/* Add "Inspired by Sunshine" credit to the mobile menu */}
+            <p className="text-xs text-muted-foreground mt-6 text-center px-4 mb-4">
+              Inspired by Sunshine ☀️
+            </p>
           </div>
         </SheetContent>
       </Sheet>

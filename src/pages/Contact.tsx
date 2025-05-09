@@ -37,6 +37,11 @@ const ContactPage = () => {
             We read every message. Your words guide EmviApp's growth.
             Together, we'll make something unforgettable.
           </p>
+          
+          {/* Add the quote block */}
+          <blockquote className="text-center text-sm text-muted-foreground mt-8">
+            "This project wouldn't exist without Sunshine." ☀️
+          </blockquote>
         </div>
       </div>
     </Layout>
