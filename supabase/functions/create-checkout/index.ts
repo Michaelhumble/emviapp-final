@@ -14,6 +14,7 @@ serve(async (req) => {
   }
   
   try {
+    // Get Stripe key with fallback for debugging
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
       console.error("STRIPE_SECRET_KEY is not set in environment variables");
@@ -23,7 +24,7 @@ serve(async (req) => {
     // Initialize Stripe with the live key
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
-    console.log("Creating minimal Stripe checkout session...");
+    console.log("Creating Stripe checkout session - START");
     const session = await stripe.checkout.sessions.create({
       line_items: [{
         price_data: {
@@ -31,7 +32,7 @@ serve(async (req) => {
           product_data: {
             name: 'Job Post - Premium',
           },
-          unit_amount: 4999,
+          unit_amount: 4999, // exactly 4999 as integer
         },
         quantity: 1,
       }],
@@ -40,11 +41,13 @@ serve(async (req) => {
       cancel_url: 'https://emvi.app/payment-cancelled',
     });
     
-    console.log("Stripe checkout session created:", session.id);
+    console.log("Stripe checkout session created successfully:", session.id);
     
     return new Response(
       JSON.stringify({
-        url: session.url,
+        success: true,
+        redirect: session.url,
+        url: session.url, // Including both formats for compatibility
         session_id: session.id
       }),
       { 
