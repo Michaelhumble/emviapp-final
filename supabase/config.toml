@@ -4,3 +4,6 @@ verify_jwt = true
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.stripe-webhook-handler]
+verify_jwt = false
