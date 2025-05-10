@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -23,8 +24,9 @@ import Privacy from "@/pages/Privacy";
 import Cookies from "@/pages/Cookies";
 import CheckoutFallback from "@/pages/CheckoutFallback";
 import PostSuccess from "@/pages/post-success";
+import PaymentSuccess from "@/pages/payment-success";
+import PaymentCanceled from "@/pages/payment-canceled";
 import { Helmet } from 'react-helmet';
-import { BrowserRouter } from 'react-router-dom';
 import TestPayment from '@/pages/TestPayment';
 
 function App() {
@@ -52,6 +54,10 @@ function App() {
                   
                   {/* Add post success page route */}
                   <Route path="/post-success" element={<PostSuccess />} />
+                  
+                  {/* Add new payment success/canceled routes */}
+                  <Route path="/payment-success" element={<PaymentSuccess />} />
+                  <Route path="/payment-canceled" element={<PaymentCanceled />} />
                   
                   {/* Explicitly define the /salons route to use StableSalonPage */}
                   <Route path="/salons" element={<StableSalonPage />} />

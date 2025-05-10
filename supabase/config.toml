@@ -22,3 +22,7 @@ verify_jwt = true
 
 [functions.webhook-credit-purchase]
 verify_jwt = false
+
+[functions.expire-listings]
+verify_jwt = false
+
