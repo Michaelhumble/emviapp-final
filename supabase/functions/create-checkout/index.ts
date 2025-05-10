@@ -35,18 +35,32 @@ serve(async (req) => {
     
     console.log("Creating Stripe checkout session - START");
     
-    // Parse request body to get any metadata
+    // Parse request body to get job details and pricing info
     const requestData = await req.json().catch(() => ({}));
-    const metadata = requestData.metadata || {};
+    const { postType, postDetails, pricingOptions, pricing } = requestData;
     
+    // Generate metadata from request data
+    const metadata = {
+      post_type: postType || 'job',
+      pricing_tier: pricingOptions?.selectedPricingTier || 'standard',
+      expires_at: new Date(Date.now() + ((pricingOptions?.durationMonths || 1) * 30 * 24 * 60 * 60 * 1000)).toISOString()
+    };
+
+    console.log("Creating checkout with metadata:", metadata);
+    
+    // Use dynamic price from request or default to $49.99
+    const unitAmount = pricing?.amountInCents || 4999;
+    const productName = `${metadata.pricing_tier.charAt(0).toUpperCase() + metadata.pricing_tier.slice(1)} Job Post`;
+    
+    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       line_items: [{
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'Job Post - Premium',
+            name: productName,
           },
-          unit_amount: 4999, // exactly 4999 as integer
+          unit_amount: unitAmount, // Use dynamic price from request
         },
         quantity: 1,
       }],

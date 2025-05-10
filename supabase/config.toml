@@ -25,3 +25,4 @@ verify_jwt = false
 
 [functions.expire-listings]
 verify_jwt = false
+

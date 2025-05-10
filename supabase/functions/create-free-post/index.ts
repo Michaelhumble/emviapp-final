@@ -1,7 +1,4 @@
 
-// @ts-nocheck
-// ^ This comment disables TypeScript checking for this file since it uses Deno types
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -17,159 +14,149 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Creating free post - START");
+    
     // Parse request body
-    const body = await req.json();
-    const { postType, postDetails, pricingOptions } = body;
+    const { postType, postDetails, pricingOptions } = await req.json();
+    console.log("Request data:", { postType, pricingOptions });
     
-    console.log(`🆓 Processing free ${postType} post...`);
-    
-    if (!postType || !postDetails) {
-      console.error("Missing required parameters for free post");
-      return new Response(JSON.stringify({ error: "Missing required parameters" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Authentication check
+    // Get auth header for user identification
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      console.error("No authorization header provided");
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - Must be logged in" }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401 
+        }
+      );
     }
-
+    
+    // Extract token from Auth header
     const token = authHeader.replace("Bearer ", "");
     
-    // Initialize Supabase clients
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    // Initialize Supabase client with service role for admin operations
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") || "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+      { auth: { persistSession: false } }
+    );
     
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    });
+    // Initialize Supabase client with user token
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") || "",
+      Deno.env.get("SUPABASE_ANON_KEY") || "",
+      {
+        global: {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      }
+    );
     
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false }
-    });
-
     // Get the authenticated user
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
       console.error("Authentication failed:", userError);
-      return new Response(JSON.stringify({ error: "Authentication failed" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Authentication failed" }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401 
+        }
+      );
     }
     
-    console.log(`👤 User authenticated: ${user.id}`);
-
-    // Calculate expiry date (30 days for free posts)
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30);
-    const expiresAt = expiryDate.toISOString();
+    console.log("User authenticated:", user.id);
     
-    // Create post based on post type
-    let newPostId;
-    let postError;
+    // Calculate expiration date based on duration
+    const durationMonths = pricingOptions?.durationMonths || 0.5; // Default to 14 days (0.5 months)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + (durationMonths * 30));
     
+    // Create job posting directly
     if (postType === 'job') {
-      // Create job post
-      const { data: jobData, error: jobError } = await supabaseAdmin
-        .from('jobs')
-        .insert({
-          user_id: user.id,
-          title: postDetails.title || "",
-          description: postDetails.description || "",
-          location: postDetails.location || "",
-          compensation_type: postDetails.compensation_type,
-          compensation_details: postDetails.compensation_details,
-          employment_type: postDetails.employment_type,
-          requirements: postDetails.requirements,
-          contact_info: postDetails.contact_info,
-          status: "active",
-          expires_at: expiresAt,
-          pricingTier: 'free'
-        })
-        .select('id')
-        .single();
-      
-      newPostId = jobData?.id;
-      postError = jobError;
-      
-    } else if (postType === 'salon') {
-      // Create salon sale post
-      const { data: salonData, error: salonError } = await supabaseAdmin
-        .from('salon_sales')
-        .insert({
-          user_id: user.id,
-          salon_name: postDetails.salon_name || postDetails.title || "",
-          city: postDetails.city || postDetails.location || "",
-          state: postDetails.state || "",
-          description: postDetails.description || "",
-          asking_price: postDetails.asking_price || 0,
-          is_featured: false,
-          is_urgent: false,
-          expires_at: expiresAt,
-          status: "active"
-        })
-        .select('id')
-        .single();
-      
-      newPostId = salonData?.id;
-      postError = salonError;
-    }
-    
-    if (postError) {
-      console.error(`Error creating ${postType} post:`, postError);
-      return new Response(JSON.stringify({ error: `Error creating ${postType} post`, details: postError }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    
-    // Create payment log entry
-    const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-      .from("payment_logs")
-      .insert({
+      // Add user_id to job details
+      const jobData = {
+        ...postDetails,
         user_id: user.id,
-        listing_id: newPostId,
-        plan_type: postType,
-        payment_status: "success", // Free posts are automatically "paid"
-        auto_renew_enabled: false, // Free posts don't have auto-renew
-        expires_at: expiresAt
-      })
-      .select("id")
-      .single();
-    
-    if (paymentLogError) {
-      console.error("Error creating payment log:", paymentLogError);
-      // Non-critical error, continue
+        status: 'active',
+        expires_at: expiresAt.toISOString(),
+        pricingTier: pricingOptions?.selectedPricingTier || 'free',
+        created_at: new Date().toISOString()
+      };
+      
+      console.log("Creating job post:", jobData);
+      
+      // Insert into jobs table
+      const { data: job, error: jobError } = await supabaseAdmin
+        .from('jobs')
+        .insert(jobData)
+        .select()
+        .single();
+      
+      if (jobError) {
+        console.error("Error creating job:", jobError);
+        return new Response(
+          JSON.stringify({ error: "Failed to create job posting", details: jobError.message }),
+          { 
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 500 
+          }
+        );
+      }
+      
+      console.log("Job created successfully:", job.id);
+      
+      // Add entry to payment logs for tracking
+      const { data: paymentLog, error: logError } = await supabaseAdmin
+        .from('payment_logs')
+        .insert({
+          user_id: user.id,
+          listing_id: job.id,
+          payment_type: 'free',
+          payment_status: 'success',
+          amount: 0,
+          plan_type: 'job',
+          expires_at: expiresAt.toISOString()
+        })
+        .select()
+        .single();
+      
+      if (logError) {
+        console.error("Error creating payment log:", logError);
+      } else {
+        console.log("Payment log created:", paymentLog.id);
+      }
+      
+      return new Response(
+        JSON.stringify({
+          success: true,
+          post_id: job.id,
+          payment_log_id: paymentLog?.id,
+          expires_at: expiresAt.toISOString()
+        }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200 
+        }
+      );
+    } else {
+      return new Response(
+        JSON.stringify({ error: "Unsupported post type" }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400 
+        }
+      );
     }
-    
-    console.log(`✅ Created free ${postType} post ID: ${newPostId}`);
-    console.log(`📝 Created payment log ID: ${paymentLog?.id}`);
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
-      post_id: newPostId,
-      payment_log_id: paymentLog?.id,
-      expires_at: expiresAt
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-    
   } catch (error) {
     console.error("Error in create-free-post:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500 
+      }
+    );
   }
 });

@@ -1,8 +1,4 @@
 
-// @ts-nocheck
-// ^ This comment disables TypeScript checking for this file since it uses Deno types
-// that aren't available in the browser/Node.js environment
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
@@ -28,7 +24,7 @@ serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       console.error("No authorization header provided");
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: "Unauthorized", success: false }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -59,7 +55,7 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
       console.error("Authentication failed:", userError);
-      return new Response(JSON.stringify({ error: "Authentication failed" }), {
+      return new Response(JSON.stringify({ error: "Authentication failed", success: false }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -76,7 +72,7 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
       console.error("Invalid session");
-      return new Response(JSON.stringify({ error: "Invalid session" }), {
+      return new Response(JSON.stringify({ error: "Invalid session", success: false }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -126,7 +122,8 @@ serve(async (req) => {
         .update({ 
           status: 'active',
           expires_at: expiresAt,
-          paid_at: new Date().toISOString()
+          paid_at: new Date().toISOString(),
+          pricingTier: metadata.pricing_tier || 'standard'
         })
         .eq('id', metadata.post_id);
         
