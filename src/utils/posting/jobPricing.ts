@@ -238,3 +238,6 @@ export const calculateFinalPrice = (
     discountPercentage
   };
 };
+
+// Export the JobPricingOption type for other files to use
+export type { JobPricingOption, JobPricingTier };

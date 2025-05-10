@@ -9,6 +9,74 @@ import {
   getPriceWithDiscount
 } from "./promotionalText";
 
+export const salonPricingOptions = [
+  {
+    id: 'free',
+    name: '🎁 Free Post',
+    tier: 'basic',
+    price: 0,
+    wasPrice: 9.99,
+    description: 'Simple & quick post. Limited reach.',
+    vietnameseDescription: 'Tin đơn giản – Không có hình ảnh',
+    features: [
+      '📄 Listed in standard row',
+      '⏳ Expires in 30 days',
+      '🚫 No image or contact shown'
+    ],
+    duration: 30, // days
+    tag: '⚪ Was $9.99 – Now Free!'
+  },
+  {
+    id: 'standard',
+    name: '✅ Standard',
+    tier: 'premium',
+    price: 19.99,
+    wasPrice: 39.99,
+    description: 'Full listing with contact info.',
+    vietnameseDescription: 'Hiển thị đầy đủ với hình ảnh + số điện thoại',
+    features: [
+      '🖼️ Show images',
+      '📞 Show contact info',
+      '🪙 Premium row placement'
+    ],
+    duration: 30, // days
+    tag: '🟢 Save 50% – Limited Time'
+  },
+  {
+    id: 'featured',
+    name: '🏆 Featured',
+    tier: 'featured',
+    price: 49.99,
+    wasPrice: 89.99,
+    description: 'Top visibility for salon owners.',
+    vietnameseDescription: 'Hiển thị nổi bật – Khách thấy dễ hơn',
+    features: [
+      '👑 Highlighted in Gold',
+      '🔍 Search priority',
+      '📅 30-day display'
+    ],
+    duration: 30, // days
+    popular: true,
+    tag: '🟡 Best Value'
+  },
+  {
+    id: 'premium',
+    name: '✨ Premium',
+    tier: 'featured',
+    price: 99.99,
+    wasPrice: 149.99,
+    description: 'Maximum exposure for your salon.',
+    vietnameseDescription: 'Ưu tiên trên trang chính – Khách thấy bạn đầu tiên',
+    features: [
+      '📌 Homepage pinning',
+      '📈 Top visibility',
+      '💬 VIP support'
+    ],
+    duration: 30, // days
+    tag: '🟠 Most Exposure'
+  }
+];
+
 export const calculateSalonPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
   // Default to first post if stats not provided
   const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);

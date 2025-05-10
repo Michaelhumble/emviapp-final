@@ -35,3 +35,14 @@ export interface PricingOptions {
   autoRenew?: boolean;
   durationMonths?: number;
 }
+
+// Export the Salon type needed for SalonPost.tsx
+export type Salon = {
+  name: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  description: string;
+  email: string;
+  facebook?: string;
+};
