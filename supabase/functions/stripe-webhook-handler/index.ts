@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.24.0";
 import Stripe from "https://esm.sh/stripe@12.1.1";
@@ -203,6 +202,73 @@ serve(async (req) => {
             });
           }
         }
+        break;
+      }
+      
+      case 'customer.subscription.created': {
+        const subscription = event.data.object;
+        
+        // Extract metadata from the subscription
+        const metadata = subscription.metadata || {};
+        const postType = metadata.post_type;
+        const pricingTier = metadata.pricing_tier || 'standard';
+        const durationMonths = parseInt(metadata.duration_months || '1', 10);
+        const autoRenew = metadata.auto_renew === 'true';
+        
+        // Update payment logs table with subscription details
+        await supabaseAdmin
+          .from('payment_logs')
+          .update({
+            subscription_id: subscription.id,
+            auto_renew_enabled: autoRenew,
+            next_payment_date: new Date(subscription.current_period_end * 1000).toISOString()
+          })
+          .eq('stripe_payment_id', subscription.latest_invoice);
+        
+        // Log the subscription creation
+        await supabaseAdmin
+          .from('webhook_logs')
+          .insert({
+            event_type: event.type,
+            status: 'processed',
+            details: { 
+              subscription_id: subscription.id,
+              pricing_tier: pricingTier,
+              duration_months: durationMonths,
+              auto_renew: autoRenew
+            }
+          });
+        break;
+      }
+      
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object;
+        
+        // Extract subscription details
+        const status = subscription.status;
+        const cancelAtPeriodEnd = subscription.cancel_at_period_end;
+        
+        // Update payment logs with the latest subscription status
+        await supabaseAdmin
+          .from('payment_logs')
+          .update({
+            auto_renew_enabled: !cancelAtPeriodEnd,
+            next_payment_date: cancelAtPeriodEnd ? null : new Date(subscription.current_period_end * 1000).toISOString()
+          })
+          .eq('subscription_id', subscription.id);
+          
+        // Log the subscription update
+        await supabaseAdmin
+          .from('webhook_logs')
+          .insert({
+            event_type: event.type,
+            status: 'processed',
+            details: { 
+              subscription_id: subscription.id,
+              status: status,
+              cancel_at_period_end: cancelAtPeriodEnd
+            }
+          });
         break;
       }
       

@@ -16,3 +16,22 @@ export interface PricingWithDuration {
   durationMonths: number;
   discountPercentage: number;
 }
+
+export interface PricingOptions {
+  isFirstPost?: boolean;
+  isNationwide?: boolean;
+  fastSalePackage?: boolean;
+  showAtTop?: boolean;
+  isHotListing?: boolean;
+  isUrgent?: boolean;
+  bundleWithJobPost?: boolean;
+  bundleWithSalonPost?: boolean;
+  boostVisibility?: boolean;
+  featuredListing?: boolean;
+  extendedDuration?: boolean;
+  hasReferrals?: boolean;
+  isRenewal?: boolean;
+  selectedPricingTier?: string;
+  autoRenew?: boolean;
+  durationMonths?: number;
+}

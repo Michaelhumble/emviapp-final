@@ -5,6 +5,13 @@ import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { PricingOptions } from '@/types/pricing';
 
+// Define response types to fix TypeScript errors
+interface PaymentSuccessResponse {
+  success: boolean;
+  url?: string;
+  payment_log_id?: string;
+}
+
 /**
  * Hook for initiating post payments via Stripe
  */
@@ -19,7 +26,7 @@ export const usePostPayment = () => {
    * @param pricingOptions - Selected pricing options
    * @returns Result object indicating success status
    */
-  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
+  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions): Promise<PaymentSuccessResponse> => {
     setIsLoading(true);
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
@@ -56,9 +63,11 @@ export const usePostPayment = () => {
           description: t("You can view it in your dashboard now", "Bạn có thể xem nó trong bảng điều khiển của bạn ngay bây giờ")
         });
         
-        // Redirect to success page
-        window.location.href = `/post-success?payment_log_id=${postData?.payment_log_id}&free=true`;
-        return { success: true };
+        // Return success result with payment log ID
+        return { 
+          success: true,
+          payment_log_id: postData?.payment_log_id
+        };
       } 
       
       // For paid listings, create a Stripe checkout session
@@ -79,9 +88,10 @@ export const usePostPayment = () => {
       
       if (data?.url) {
         console.log("Redirecting to Stripe checkout URL:", data.url);
-        // Redirect to Stripe's hosted checkout
-        window.location.href = data.url;
-        return { success: true };
+        return { 
+          success: true, 
+          url: data.url 
+        };
       } else {
         console.error("No checkout URL received");
         throw new Error('No checkout URL received from Stripe');
