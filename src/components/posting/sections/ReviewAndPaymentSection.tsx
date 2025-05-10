@@ -36,7 +36,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
-  const [selectedDuration, setSelectedDuration] = useState(1);
+  const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths || 1);
   const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew || false);
   const [isFreePlan, setIsFreePlan] = useState(false);
   

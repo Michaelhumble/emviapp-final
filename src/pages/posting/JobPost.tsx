@@ -10,20 +10,33 @@ import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
 
 const JobPost: React.FC = () => {
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     selectedPricingTier: 'standard',
     isFirstPost: true,
-    isHotListing: false // Add missing field
+    isHotListing: false,
+    autoRenew: true,
+    durationMonths: 1
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState<'form' | 'payment'>('form');
+  const [formValues, setFormValues] = useState<JobFormValues | null>(null);
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
   
   // Handle form submission
   const handleFormSubmit = async (values: JobFormValues) => {
+    setFormValues(values);
+    setCurrentStep('payment');
+  };
+
+  // Handle final submission with pricing
+  const handleCreateCheckoutSession = async () => {
+    if (!formValues) return;
+    
     setIsSubmitting(true);
     
     try {
@@ -42,7 +55,7 @@ const JobPost: React.FC = () => {
       // If finalPrice is greater than 0, proceed to payment
       if (finalPrice > 0) {
         // Navigate to payment page with salon data
-        const result = await initiatePayment('job', values, pricingOptions);
+        const result = await initiatePayment('job', formValues, pricingOptions);
         
         // Add safeguards for the returned result
         if (result?.success) {
@@ -74,8 +87,18 @@ const JobPost: React.FC = () => {
   };
   
   // Handle changes to pricing options
-  const handleUpdatePricing = (options: PricingOptions) => {
-    setPricingOptions(options);
+  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
+    setPricingOptions(prev => ({ ...prev, ...options }));
+  };
+  
+  // Handle pricing tier selection
+  const handlePricingTierChange = (tier: string) => {
+    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
+  };
+  
+  // Go back to form step
+  const handleBackToForm = () => {
+    setCurrentStep('form');
   };
 
   return (
@@ -85,40 +108,90 @@ const JobPost: React.FC = () => {
         Create a detailed job listing to attract qualified candidates
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <JobForm 
-            onSubmit={handleFormSubmit}
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            isSubmitting={isSubmitting}
-          />
-        </div>
+      {currentStep === 'form' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <JobForm 
+              onSubmit={handleFormSubmit}
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              isSubmitting={isSubmitting}
+            />
+          </div>
 
-        <div className="lg:col-span-1">
-          <div className="sticky top-8">
-            <Card className="p-6">
-              <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
-              <JobPostOptions
-                pricingOptions={pricingOptions}
-                setPricingOptions={handleUpdatePricing}
-              />
-              
-              <Button 
-                onClick={() => document.querySelector('form')?.requestSubmit()}
-                className="w-full mt-4"
-                disabled={isLoading || isSubmitting}
-              >
-                {isLoading || isSubmitting ? "Processing..." : "Post Job"}
-              </Button>
-              
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                By proceeding, you agree to our Terms of Service
-              </p>
-            </Card>
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <Card className="p-6">
+                <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
+                <JobPostOptions
+                  pricingOptions={pricingOptions}
+                  setPricingOptions={handleUpdatePricing}
+                />
+                
+                <Button 
+                  onClick={() => document.querySelector('form')?.requestSubmit()}
+                  className="w-full mt-4"
+                  disabled={isLoading || isSubmitting}
+                >
+                  {isLoading || isSubmitting ? "Processing..." : "Continue to Pricing"}
+                </Button>
+                
+                <p className="text-xs text-gray-500 mt-4 text-center">
+                  By proceeding, you agree to our Terms of Service
+                </p>
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Card className="p-6">
+              <ReviewAndPaymentSection
+                postType="job"
+                pricingOptions={pricingOptions}
+                onPricingChange={handlePricingTierChange}
+                onUpdatePricing={handleUpdatePricing}
+                onNextStep={handleCreateCheckoutSession}
+                onPrevStep={handleBackToForm}
+                jobData={formValues}
+                isFirstPost={pricingOptions.isFirstPost}
+                isSubmitting={isSubmitting}
+              />
+            </Card>
+          </div>
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <Card className="p-6">
+                <h2 className="text-xl font-medium mb-4">Job Post Summary</h2>
+                {formValues && (
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Job Title</h3>
+                      <p>{formValues.title}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Job Type</h3>
+                      <p className="capitalize">{formValues.jobType.replace('-', ' ')}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Location</h3>
+                      <p>{formValues.location}</p>
+                    </div>
+                  </div>
+                )}
+                <Button 
+                  onClick={handleBackToForm}
+                  variant="outline" 
+                  className="w-full mb-2"
+                >
+                  Edit Job Details
+                </Button>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
