@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ListingPlanSelector, { ListingPlan } from './ListingPlanSelector';
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission } from '@/types/job';
+import { calculateFinalPrice } from '@/utils/posting/jobPricing';
 
 interface JobPostPaymentFlowProps {
   jobData: JobDetailsSubmission;
@@ -36,7 +37,18 @@ const JobPostPaymentFlow: React.FC<JobPostPaymentFlowProps> = ({ jobData, onBack
     try {
       console.log("Proceeding with plan:", selectedPlan.id);
       
-      // For free plans, we can create the job post directly
+      // Calculate the final price with duration discounts
+      const durationMonths = selectedPlan.duration / 30; // Convert days to months
+      const { finalPrice } = calculateFinalPrice(
+        selectedPlan.price,
+        durationMonths,
+        selectedPlan.id,
+        false // No auto renewal for now
+      );
+      
+      console.log("Final price calculated:", finalPrice);
+      
+      // For free plans, we don't need to create a checkout session
       if (selectedPlan.price === 0) {
         console.log("Free plan selected, creating job post directly");
         const { data, error } = await supabase.functions.invoke('create-free-post', {
@@ -45,7 +57,7 @@ const JobPostPaymentFlow: React.FC<JobPostPaymentFlowProps> = ({ jobData, onBack
             postDetails: jobData,
             pricingOptions: {
               selectedPricingTier: selectedPlan.id,
-              durationMonths: selectedPlan.duration / 30, // Convert days to months
+              durationMonths: durationMonths,
               autoRenew: false
             }
           }
@@ -69,14 +81,14 @@ const JobPostPaymentFlow: React.FC<JobPostPaymentFlowProps> = ({ jobData, onBack
           postDetails: jobData,
           pricingOptions: {
             selectedPricingTier: selectedPlan.id,
-            durationMonths: selectedPlan.duration / 30, // Convert days to months
+            durationMonths: durationMonths,
             autoRenew: false
           },
           pricing: {
             tier: selectedPlan.id,
-            amountInCents: Math.round(selectedPlan.price * 100),
+            amountInCents: Math.round(finalPrice * 100),
             mode: 'payment',
-            durationMonths: selectedPlan.duration / 30,
+            durationMonths: durationMonths,
             autoRenew: false,
             basePrice: selectedPlan.price
           }

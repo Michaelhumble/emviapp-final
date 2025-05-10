@@ -1,5 +1,5 @@
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -12,37 +12,26 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
-
+  
   try {
-    console.log("Creating free post - START");
+    console.log("Creating free job post - START");
     
-    // Parse request body
-    const { postType, postDetails, pricingOptions } = await req.json();
-    console.log("Request data:", { postType, pricingOptions });
-    
-    // Get auth header for user identification
+    // Get authenticated user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized - Must be logged in" }),
-        { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 401 
-        }
-      );
+      throw new Error("No authorization header provided");
     }
     
-    // Extract token from Auth header
     const token = authHeader.replace("Bearer ", "");
     
-    // Initialize Supabase client with service role for admin operations
+    // Initialize Supabase admin client for database operations
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
       { auth: { persistSession: false } }
     );
     
-    // Initialize Supabase client with user token
+    // Initialize client with user token for getting user info
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_ANON_KEY") || "",
@@ -53,102 +42,83 @@ serve(async (req) => {
       }
     );
     
-    // Get the authenticated user
+    // Get user from token
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      console.error("Authentication failed:", userError);
-      return new Response(
-        JSON.stringify({ error: "Authentication failed" }),
-        { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 401 
-        }
-      );
+      throw new Error("Authentication failed: " + (userError?.message || "User not found"));
     }
     
     console.log("User authenticated:", user.id);
     
+    // Parse request body
+    const { postType, postDetails, pricingOptions } = await req.json();
+    
     // Calculate expiration date based on duration
     const durationMonths = pricingOptions?.durationMonths || 0.5; // Default to 14 days (0.5 months)
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + (durationMonths * 30));
+    const expiresAt = new Date(Date.now() + (durationMonths * 30 * 24 * 60 * 60 * 1000)).toISOString();
     
-    // Create job posting directly
-    if (postType === 'job') {
-      // Add user_id to job details
-      const jobData = {
-        ...postDetails,
-        user_id: user.id,
-        status: 'active',
-        expires_at: expiresAt.toISOString(),
-        pricingTier: pricingOptions?.selectedPricingTier || 'free',
-        created_at: new Date().toISOString()
-      };
-      
-      console.log("Creating job post:", jobData);
-      
-      // Insert into jobs table
-      const { data: job, error: jobError } = await supabaseAdmin
-        .from('jobs')
-        .insert(jobData)
-        .select()
-        .single();
-      
-      if (jobError) {
-        console.error("Error creating job:", jobError);
-        return new Response(
-          JSON.stringify({ error: "Failed to create job posting", details: jobError.message }),
-          { 
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 500 
-          }
-        );
-      }
-      
-      console.log("Job created successfully:", job.id);
-      
-      // Add entry to payment logs for tracking
-      const { data: paymentLog, error: logError } = await supabaseAdmin
-        .from('payment_logs')
-        .insert({
-          user_id: user.id,
-          listing_id: job.id,
-          payment_type: 'free',
-          payment_status: 'success',
-          amount: 0,
-          plan_type: 'job',
-          expires_at: expiresAt.toISOString()
-        })
-        .select()
-        .single();
-      
-      if (logError) {
-        console.error("Error creating payment log:", logError);
-      } else {
-        console.log("Payment log created:", paymentLog.id);
-      }
-      
-      return new Response(
-        JSON.stringify({
-          success: true,
-          post_id: job.id,
-          payment_log_id: paymentLog?.id,
-          expires_at: expiresAt.toISOString()
-        }),
-        { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200 
-        }
-      );
-    } else {
-      return new Response(
-        JSON.stringify({ error: "Unsupported post type" }),
-        { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400 
-        }
-      );
+    console.log("Creating free job post with expiration:", expiresAt);
+    
+    // Create job in database with 'active' status
+    const jobData = {
+      ...postDetails,
+      user_id: user.id,
+      status: 'active',
+      expires_at: expiresAt,
+      pricingTier: pricingOptions?.selectedPricingTier || 'free',
+      post_type: postType
+    };
+    
+    // Insert job
+    const { data: jobInsertData, error: jobInsertError } = await supabaseAdmin
+      .from('jobs')
+      .insert([jobData])
+      .select();
+    
+    if (jobInsertError) {
+      console.error("Error inserting job:", jobInsertError);
+      throw new Error("Failed to create job post: " + jobInsertError.message);
     }
+    
+    const jobId = jobInsertData?.[0]?.id;
+    console.log("Job post created successfully with ID:", jobId);
+    
+    // Record the free transaction in payment_logs
+    const { data: paymentLogData, error: paymentLogError } = await supabaseAdmin
+      .from('payment_logs')
+      .insert([{
+        user_id: user.id,
+        amount: 0,
+        currency: 'usd',
+        payment_method: 'free',
+        payment_status: 'success',
+        plan_type: postType,
+        listing_id: jobId,
+        pricing_tier: pricingOptions?.selectedPricingTier || 'free',
+        expires_at: expiresAt
+      }])
+      .select();
+    
+    if (paymentLogError) {
+      console.error("Error creating payment log:", paymentLogError);
+      // Continue even if payment log fails
+    }
+    
+    const paymentLogId = paymentLogData?.[0]?.id;
+    console.log("Payment log created with ID:", paymentLogId);
+    
+    return new Response(
+      JSON.stringify({
+        success: true,
+        post_id: jobId,
+        payment_log_id: paymentLogId,
+        expires_at: expiresAt
+      }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200 
+      }
+    );
   } catch (error) {
     console.error("Error in create-free-post:", error);
     return new Response(

@@ -52,6 +52,9 @@ serve(async (req) => {
     const unitAmount = pricing?.amountInCents || 4999;
     const productName = `${metadata.pricing_tier.charAt(0).toUpperCase() + metadata.pricing_tier.slice(1)} Job Post`;
     
+    // Origin for success/cancel URLs
+    const origin = req.headers.get("origin") || "https://emvi.app";
+    
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       line_items: [{
@@ -66,8 +69,8 @@ serve(async (req) => {
       }],
       mode: 'payment',
       metadata: metadata,
-      success_url: 'https://emvi.app/payment-success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://emvi.app/payment-canceled',
+      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/payment-canceled`,
     });
     
     console.log("Stripe checkout session created successfully:", session.id);

@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
-import JobPostForm from '@/components/posting/JobPostForm'; // Existing component
-import JobPostPaymentFlow from '@/components/posting/JobPostPaymentFlow'; // Our new component
+import JobPostForm from '@/components/posting/JobPostForm';
+import JobPostPaymentFlow from '@/components/posting/JobPostPaymentFlow';
 import { JobDetailsSubmission } from '@/types/job';
 import { Card } from '@/components/ui/card';
 
