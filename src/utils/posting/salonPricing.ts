@@ -1,4 +1,3 @@
-
 import { PricingOptions, UserPostingStats } from "./types";
 import { 
   getBasePrice, 
@@ -8,6 +7,62 @@ import {
   getJobPostBundlePrice,
   getPriceWithDiscount
 } from "./promotionalText";
+
+// Similar to job pricing map
+export const salonPriceMap = {
+  free: null,
+  standard: "price_XXX_SALON_STANDARD_999",
+  standardAutoRenew: "price_XXX_SALON_STANDARD_AUTO_949",
+  premium: "price_XXX_SALON_PREMIUM_4999",
+  featured: "price_XXX_SALON_FEATURED_1999"
+};
+
+export const getStripeSalonPriceId = (
+  pricingId: string,
+  options: PricingOptions
+): string | null => {
+  if (pricingId === 'free') {
+    return null; // Free tier doesn't need a Stripe price ID
+  }
+  
+  // Standard plan with auto-renew
+  if (pricingId === 'standard' && options.autoRenew) {
+    return salonPriceMap.standardAutoRenew;
+  }
+  
+  // Other plans
+  switch (pricingId) {
+    case 'standard': return salonPriceMap.standard;
+    case 'premium': return salonPriceMap.premium;
+    case 'featured': return salonPriceMap.featured;
+    default: return salonPriceMap.standard; // Default fallback
+  }
+};
+
+export const validateSalonPricingOptions = (
+  pricingId: string,
+  options: PricingOptions
+): boolean => {
+  // Ensure we have a valid pricing ID
+  if (!pricingId) {
+    console.error("No pricing tier selected");
+    return false;
+  }
+  
+  // Ensure we have a duration for non-free plans
+  if (pricingId !== 'free' && !options.durationMonths) {
+    console.error("No duration selected for paid plan");
+    return false;
+  }
+  
+  // Ensure we have a valid Stripe price ID for non-free plans
+  if (pricingId !== 'free' && !getStripeSalonPriceId(pricingId, options)) {
+    console.error("Failed to get valid Stripe price ID", { pricingId, options });
+    return false;
+  }
+  
+  return true;
+};
 
 export const calculateSalonPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
   // Default to first post if stats not provided

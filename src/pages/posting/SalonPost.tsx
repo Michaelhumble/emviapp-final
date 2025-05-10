@@ -1,219 +1,235 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import PostWizardLayout from '@/components/posting/PostWizardLayout';
-import AuthPostGuard from '@/components/posting/AuthPostGuard';
-import { Salon } from '@/types/salon';
-import { PricingOptions } from '@/utils/posting/types';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select';
+import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import PaymentConfirmationModal from '@/components/posting/PaymentConfirmationModal';
-import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
+import { useAuth } from '@/context/auth';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import { toast } from 'sonner';
+import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
+import { calculateSalonPostPrice } from '@/utils/posting/salonPricing';
+import { Salon } from '@/types/salon';  // Import the Salon type we defined
+import { PricingOptions } from '@/utils/posting/types';
+import { salonPostSchema } from '@/lib/validators/salon';
+import { z } from "zod";
 
-// Mock sections that would normally be imported
-const SalonDetailsSection = ({ details, onChange }: any) => (
-  <div>Salon Details Section (Mock)</div>
-);
-
-const AmenitiesSection = ({ amenities, onChange }: any) => (
-  <div>Amenities Section (Mock)</div>
-);
-
-const GallerySection = ({ gallery, onChange }: any) => (
-  <div>Gallery Section (Mock)</div>
-);
-
-const ContactInformationSection = ({ contactInfo, onChange }: any) => (
-  <div>Contact Information Section (Mock)</div>
-);
-
-const SalonPost = () => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
+const SalonPostPage: React.FC = () => {
+  const router = useRouter();
+  const { t, isVietnamese } = useTranslation();
+  const { user } = useAuth();
   const { initiatePayment, isLoading } = usePostPayment();
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [salonDetails, setSalonDetails] = useState<Partial<Salon>>({
-    name: '',
-    description: '',
-    amenities: [],
-    contact_info: {
-      owner_name: '',
-      phone: '',
-      email: ''
-    },
-    gallery: [] // This is now valid since we added it to the Salon interface
-  });
-  
-  // Pricing options state
+  const [activeStep, setActiveStep] = useState(1);
+  const [isFirstPost, setIsFirstPost] = useState(true);
+  const [autoRenew, setAutoRenew] = useState(false);
+  const [savePaymentMethod, setSavePaymentMethod] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    isFirstPost: true,
-    isNationwide: false,
-    fastSalePackage: false,
-    showAtTop: false,
-    bundleWithJobPost: false,
-    hasReferrals: false,
-    isHotListing: false,
-    isUrgent: false,
-    bundleWithSalonPost: false,
-    boostVisibility: false,
-    featuredListing: false,
-    extendedDuration: false,
-    selectedPricingTier: 'standard', // Default pricing tier
-    autoRenew: false
+    selectedPricingTier: 'standard',
+    autoRenew: false,
+    durationMonths: 1
   });
-  
-  const nextStep = () => {
-    if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
+
+  const form = useForm<z.infer<typeof salonPostSchema>>({
+    resolver: zodResolver(salonPostSchema),
+    defaultValues: {
+      name: "",
+      city: "",
+      state: "",
+      zip_code: "",
+      description: "",
+      email: "",
+      facebook: "",
+    },
+  })
+
+  const handleNextStep = () => {
+    if (activeStep === 1 && !form.formState.isValid) {
+      toast.error(t("Please fill in all required fields.", "Vui lòng điền đầy đủ các trường bắt buộc."));
+      return;
     }
+    setActiveStep(activeStep + 1);
   };
 
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+  const handlePrevStep = () => {
+    setActiveStep(activeStep - 1);
+  };
+
+  const updatePricingOptions = (options: Partial<PricingOptions>) => {
+    setPricingOptions(prev => ({ ...prev, ...options }));
+  };
+
+  const onPricingTierChange = (pricingTier: string) => {
+    updatePricingOptions({ selectedPricingTier: pricingTier });
+  };
+
+  const onSubmit = async (values: z.infer<typeof salonPostSchema>) => {
+    if (!user) {
+      toast.error(t("You must be logged in to post a salon.", "Bạn phải đăng nhập để đăng tin salon."));
+      return;
     }
-  };
-  
-  const handleSalonDetailChange = (details: Partial<Salon>) => {
-    setSalonDetails({ ...salonDetails, ...details });
-  };
-  
-  const handlePricingChange = (pricingTier: string) => {
-    setPricingOptions({ ...pricingOptions, selectedPricingTier: pricingTier });
-  };
-  
-  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
-    setPricingOptions({ ...pricingOptions, ...options });
-  };
-  
-  const handleSubmit = async () => {
-    try {
-      // Show loading state
-      toast.loading(
-        t("Processing your submission...", "Đang xử lý đơn của bạn..."),
-        { id: "salon-submission" }
-      );
-      
-      // Pass both salon details and pricing options to the payment hook
-      const result = await initiatePayment('salon', salonDetails, pricingOptions);
-      
-      // Clear loading state
-      toast.dismiss("salon-submission");
 
-      if (result.success) {
-        if (result.redirect) {
-          // For free posts, navigate to success page
-          if (result.redirect === '/post-success') {
-            navigate('/post-success', { 
-              state: { 
-                postType: 'salon',
-                postDetails: salonDetails,
-                pricingDetails: pricingOptions,
-                postData: result.data
-              } 
-            });
-          } else {
-            // For paid posts, redirect to Stripe
-            window.location.href = result.redirect;
-          }
-        }
-      } else {
-        toast.error(
-          t("There was a problem with your submission", "Có vấn đề với việc gửi đơn của bạn"),
-          { description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ") }
-        );
-      }
-    } catch (error) {
-      console.error("Salon post submission error:", error);
-      toast.error(
-        t("Submission error", "Lỗi khi gửi đơn"),
-        { description: t("Please check your details and try again", "Vui lòng kiểm tra thông tin của bạn và thử lại") }
-      );
-    }
-  };
-  
-  const handleAmenitiesChange = (amenities: string[]) => {
-    setSalonDetails({ ...salonDetails, amenities: amenities });
-  };
+    const salonDetails = {
+      ...values,
+      user_id: user.id,
+    };
 
-  const handleGalleryChange = (gallery: any[]) => {
-    setSalonDetails(prev => ({ ...prev, gallery })); // Now this is valid
-  };
-
-  const handleContactChange = (contactInfo: Salon['contact_info']) => {
-    setSalonDetails({ ...salonDetails, contact_info: contactInfo });
+    initiatePayment('salon', salonDetails, pricingOptions);
   };
 
   return (
-    <AuthPostGuard>
-      <div className="container mx-auto px-4">
-        <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 block">
-          {t('← Back to Home', '← Trở về Trang chủ')}
-        </Link>
-      </div>
-      <PostWizardLayout 
-        currentStep={currentStep} 
-        totalSteps={5} 
-        title={t("Post Your Salon", "Đăng Tin Salon")}
-        onNext={() => setCurrentStep(prev => prev + 1)}
-        onPrev={() => setCurrentStep(prev => prev - 1)}
-        onSubmit={handleSubmit}
-        isSubmitting={isLoading}
-      >
-        {currentStep === 1 && (
-          <SalonDetailsSection
-            details={salonDetails}
-            onChange={handleSalonDetailChange}
-          />
+    <div className="container py-12">
+      <h1 className="text-3xl font-bold mb-6">{t('Post a Salon', 'Đăng tin Salon')}</h1>
+
+      <div className="mb-8">
+        {activeStep === 1 && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">{t('Salon Details', 'Chi tiết Salon')}</h2>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Salon Name', 'Tên Salon')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("Enter salon name", "Nhập tên salon")} {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        {t("This is the name that will be displayed on your listing.", "Đây là tên sẽ được hiển thị trên danh sách của bạn.")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex gap-4">
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormLabel>{t('City', 'Thành phố')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t("Enter city", "Nhập thành phố")} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormLabel>{t('State', 'Tỉnh/Bang')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t("Enter state", "Nhập tỉnh/bang")} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="zip_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Zip Code', 'Mã Bưu Điện')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("Enter zip code", "Nhập mã bưu điện")} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Description', 'Mô tả')}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t("Write a description about your salon", "Viết mô tả về salon của bạn")}
+                          className="resize-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t("Describe your salon, services, and what makes it unique.", "Mô tả salon, dịch vụ và điều gì làm cho nó trở nên độc đáo.")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Email', 'Email')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("Enter your email", "Nhập email của bạn")} type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="facebook"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Facebook (Optional)', 'Facebook (Tùy chọn)')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("Enter your Facebook URL", "Nhập URL Facebook của bạn")} type="url" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-between">
+                  <div></div>
+                  <Button type="button" onClick={handleNextStep}>
+                    {t('Next', 'Tiếp theo')}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </section>
         )}
-        {currentStep === 2 && (
-          <AmenitiesSection
-            amenities={salonDetails.amenities}
-            onChange={handleAmenitiesChange}
-          />
-        )}
-        {currentStep === 3 && (
-          <GallerySection
-            gallery={salonDetails.gallery || []}
-            onChange={handleGalleryChange}
-          />
-        )}
-        {currentStep === 4 && (
-          <ContactInformationSection
-            contactInfo={salonDetails.contact_info}
-            onChange={handleContactChange}
-          />
-        )}
-        {currentStep === 5 && (
+
+        {activeStep === 2 && (
           <ReviewAndPaymentSection
             postType="salon"
             pricingOptions={pricingOptions}
-            onPricingChange={handlePricingChange}
-            onUpdatePricing={handleUpdatePricing}
-            onNextStep={nextStep}
-            onPrevStep={prevStep}
-            isFirstPost={pricingOptions.isFirstPost}
+            onPricingChange={onPricingTierChange}
+            onUpdatePricing={updatePricingOptions}
+            onNextStep={onSubmit}
+            onPrevStep={handlePrevStep}
+            isFirstPost={isFirstPost}
             isSubmitting={isLoading}
           />
         )}
-      </PostWizardLayout>
-      
-      <PaymentConfirmationModal
-        open={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        onOpenChange={setShowPaymentModal}
-        onConfirmPayment={handleSubmit}
-        amount={100} // Replace with actual calculated price
-        options={pricingOptions}
-        originalPrice={150} // Replace with actual original price
-        discountPercentage={10} // Replace with actual discount percentage
-      />
-    </AuthPostGuard>
+      </div>
+    </div>
   );
 };
 
-export default SalonPost;
+export default SalonPostPage;

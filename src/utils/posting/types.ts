@@ -47,3 +47,6 @@ export interface PricingOptions {
   autoRenew?: boolean;
   durationMonths?: number;
 }
+
+// Re-export the type
+export type { PricingOptions };

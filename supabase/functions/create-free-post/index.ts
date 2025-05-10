@@ -100,7 +100,7 @@ serve(async (req) => {
           user_id: user.id,
           status: 'active',
           post_type: postType,
-          pricingTier: 'free',
+          pricing_tier: 'free',
           expires_at: expiresAt.toISOString()
         })
         .select('id')

@@ -1,140 +1,138 @@
-
-import React, { useState, useEffect } from 'react';
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent } from "@/components/ui/card";
-import { useAuth } from "@/context/auth";
-import { useNavigate } from 'react-router-dom';
-import { PricingOptions, UserPostingStats } from '@/utils/posting/types';
-import { generatePromotionalText, getFirstPostPromotionalText } from '@/utils/posting/promotionalText';
+import React, { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { PricingOptions } from '@/utils/posting/types';
+import { calculateSalonPostPrice } from '@/utils/posting/salonPricing';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonPostOptionsProps {
-  pricingOptions: PricingOptions;
-  setPricingOptions: (options: PricingOptions) => void;
+  options: PricingOptions;
+  onOptionsChange: (options: PricingOptions) => void;
+  isFirstPost?: boolean;
 }
 
-const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({ pricingOptions, setPricingOptions }) => {
-  const { user, userProfile } = useAuth();
-  const navigate = useNavigate();
-  
-  const [totalJobPosts, setTotalJobPosts] = useState(0);
-  const [totalSalonPosts, setTotalSalonPosts] = useState(0);
-  const [totalBoothPosts, setTotalBoothPosts] = useState(0);
-  const [totalSupplyPosts, setTotalSupplyPosts] = useState(0);
-  const [referralCount, setReferralCount] = useState(0);
-  const [isFirstPost, setIsFirstPost] = useState(true);
-  
-  useEffect(() => {
-    if (!user) return;
-    
-    // Mock data - replace with actual data fetching from backend
-    setTotalJobPosts(2);
-    setTotalSalonPosts(0);
-    setTotalBoothPosts(1);
-    setTotalSupplyPosts(0);
-    
-    // Safely get referral count from user profile
-    const userReferralCount = userProfile?.referral_count || 0;
-    setReferralCount(userReferralCount);
-    
-    // Determine if it's the user's first post
-    setIsFirstPost(totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts === 0);
-  }, [user, userProfile, totalJobPosts, totalSalonPosts, totalBoothPosts, totalSupplyPosts]);
-  
-  const handleCheckboxChange = (option: keyof PricingOptions) => {
-    setPricingOptions({
-      ...pricingOptions,
-      [option]: !pricingOptions[option]
-    });
-  };
-  
-  const getPostStats = (): UserPostingStats => {
-    // Create an object that matches the UserPostingStats interface
-    return {
-      jobPostCount: totalJobPosts,
-      salonPostCount: totalSalonPosts,
-      featuredPostCount: 0, // Add this missing property
-      boothPostCount: totalBoothPosts,
-      supplyPostCount: totalSupplyPosts,
-      totalPostCount: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
-      hasReferrals: referralCount > 0
+const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
+  options,
+  onOptionsChange,
+  isFirstPost = false
+}) => {
+  const { t } = useTranslation();
+  const [localOptions, setLocalOptions] = useState<PricingOptions>({
+    ...options,
+    isFirstPost
+  });
+
+  const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
+    const updatedOptions = {
+      ...localOptions,
+      [option]: value
     };
+    setLocalOptions(updatedOptions);
+    onOptionsChange(updatedOptions);
   };
-  
-  const postStats = getPostStats();
-  
+
+  // Calculate the current price based on selected options
+  const price = calculateSalonPostPrice(localOptions);
+
   return (
-    <Card className="border-2">
-      <CardContent className="space-y-4 pt-6">
-        <h3 className="text-lg font-medium">Salon Post Options</h3>
-        
-        {isFirstPost && (
-          <div className="bg-green-50 border border-green-200 p-3 rounded-md">
-            <p className="text-sm text-green-700 font-medium">
-              {getFirstPostPromotionalText()}
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">{t('Enhance Your Listing', 'Nâng cao tin đăng của bạn')}</h3>
+      <p className="text-sm text-gray-500">
+        {t(
+          'Select additional options to increase visibility and attract more clients',
+          'Chọn các tùy chọn bổ sung để tăng khả năng hiển thị và thu hút nhiều khách hàng hơn'
+        )}
+      </p>
+
+      <div className="space-y-3 pt-2">
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="isNationwide"
+            checked={localOptions.isNationwide || false}
+            onCheckedChange={(checked) => handleOptionChange('isNationwide', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="isNationwide" className="text-sm font-medium">
+              {t('Nationwide Visibility', 'Hiển thị toàn quốc')}
+              <span className="ml-2 text-sm font-normal text-gray-500">+$10</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t(
+                'Show your salon to clients across the country',
+                'Hiển thị salon của bạn cho khách hàng trên toàn quốc'
+              )}
             </p>
           </div>
-        )}
-        
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="isNationwide">Nationwide Reach</Label>
-            <Checkbox
-              id="isNationwide"
-              checked={pricingOptions.isNationwide || false}
-              onCheckedChange={() => handleCheckboxChange('isNationwide')}
-            />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Reach customers across the country (recommended for mobile salons).
-          </p>
         </div>
-        
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="showAtTop">Featured Positioning</Label>
-            <Checkbox
-              id="showAtTop"
-              checked={pricingOptions.showAtTop || false}
-              onCheckedChange={() => handleCheckboxChange('showAtTop')}
-            />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Show your salon at the top of search results.
-          </p>
-        </div>
-        
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="fastSalePackage">Fast Sale Package</Label>
-            <Checkbox
-              id="fastSalePackage"
-              checked={pricingOptions.fastSalePackage || false}
-              onCheckedChange={() => handleCheckboxChange('fastSalePackage')}
-            />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Boost visibility with our premium promotion package.
-          </p>
-        </div>
-        
-        {postStats.jobPostCount === 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="bundleWithJobPost">Bundle with Job Post</Label>
-              <Checkbox
-                id="bundleWithJobPost"
-                checked={pricingOptions.bundleWithJobPost || false}
-                onCheckedChange={() => handleCheckboxChange('bundleWithJobPost')}
-              />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Create a job post to find new talent while promoting your salon (20% off).
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="fastSalePackage"
+            checked={localOptions.fastSalePackage || false}
+            onCheckedChange={(checked) => handleOptionChange('fastSalePackage', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="fastSalePackage" className="text-sm font-medium">
+              {t('Premium Promotion', 'Quảng cáo cao cấp')}
+              <span className="ml-2 text-sm font-normal text-gray-500">+$20</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t(
+                'Boost visibility with premium placement and promotion',
+                'Tăng khả năng hiển thị với vị trí và quảng cáo cao cấp'
+              )}
             </p>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="showAtTop"
+            checked={localOptions.showAtTop || false}
+            onCheckedChange={(checked) => handleOptionChange('showAtTop', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="showAtTop" className="text-sm font-medium">
+              {t('Featured Placement', 'Vị trí nổi bật')}
+              <span className="ml-2 text-sm font-normal text-gray-500">+$15</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t(
+                'Show your salon at the top of search results',
+                'Hiển thị salon của bạn ở đầu kết quả tìm kiếm'
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="bundleWithJobPost"
+            checked={localOptions.bundleWithJobPost || false}
+            onCheckedChange={(checked) => handleOptionChange('bundleWithJobPost', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="bundleWithJobPost" className="text-sm font-medium">
+              {t('Bundle with Job Post', 'Gói với tin tuyển dụng')}
+              <span className="ml-2 text-sm font-normal text-gray-500">+$15</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t(
+                'Add a job posting to find staff for your salon',
+                'Thêm tin tuyển dụng để tìm nhân viên cho salon của bạn'
+              )}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 pt-4 border-t">
+        <div className="flex justify-between items-center">
+          <span className="font-medium">{t('Current Price', 'Giá hiện tại')}:</span>
+          <span className="font-bold text-lg">${price.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
   );
 };
 

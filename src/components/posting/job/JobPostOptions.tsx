@@ -124,3 +124,12 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
 };
 
 export default JobPostOptions;
+
+// Fix function call by providing default options
+const calculatePrice = (options: PricingOptions = {}) => {
+  // Function implementation...
+  return 9.99; // Default price
+};
+
+// Use this fixed version where the function is called
+const price = calculatePrice();

@@ -1,4 +1,4 @@
-import { JobPricingOption, JobPricingTier } from './types';
+import { JobPricingOption, JobPricingTier, PricingOptions } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [
   {
@@ -85,6 +85,80 @@ export const jobPricingOptions: JobPricingOption[] = [
     yearlyDiscountPrice: 999.99 // New property for yearly discount
   },
 ];
+
+// Price map for Stripe products
+export const priceMap = {
+  free: null,
+  standard: "price_XXX_STANDARD_999",
+  standardAutoRenew: "price_XXX_STANDARD_AUTO_949",
+  gold: "price_XXX_GOLD_1999",
+  premium: "price_XXX_PREMIUM_4999",
+  diamond3mo: "price_XXX_DIAMOND_3MO_49999",
+  diamond6mo: "price_XXX_DIAMOND_6MO_79999",
+  diamond1yr: "price_XXX_DIAMOND_1YR_99999"
+};
+
+// Function to get the Stripe price ID based on pricing options
+export const getStripePriceId = (
+  pricingId: string,
+  options: PricingOptions
+): string | null => {
+  if (pricingId === 'free') {
+    return null; // Free tier doesn't need a Stripe price ID
+  }
+  
+  // Special handling for Diamond plan based on duration
+  if (pricingId === 'diamond') {
+    const durationMonths = options.durationMonths || 12;
+    if (durationMonths === 3) {
+      return priceMap.diamond3mo;
+    } else if (durationMonths === 6) {
+      return priceMap.diamond6mo;
+    } else {
+      // Default to 1 year for Diamond plan
+      return priceMap.diamond1yr;
+    }
+  }
+  
+  // Standard plan with auto-renew
+  if (pricingId === 'standard' && options.autoRenew) {
+    return priceMap.standardAutoRenew;
+  }
+  
+  // Other plans
+  switch (pricingId) {
+    case 'standard': return priceMap.standard;
+    case 'gold': return priceMap.gold;
+    case 'premium': return priceMap.premium;
+    default: return priceMap.standard; // Default fallback
+  }
+};
+
+// Validate pricing options
+export const validatePricingOptions = (
+  pricingId: string,
+  options: PricingOptions
+): boolean => {
+  // Ensure we have a valid pricing ID
+  if (!pricingId) {
+    console.error("No pricing tier selected");
+    return false;
+  }
+  
+  // Ensure we have a duration for non-free plans
+  if (pricingId !== 'free' && !options.durationMonths) {
+    console.error("No duration selected for paid plan");
+    return false;
+  }
+  
+  // Ensure we have a valid Stripe price ID for non-free plans
+  if (pricingId !== 'free' && !getStripePriceId(pricingId, options)) {
+    console.error("Failed to get valid Stripe price ID", { pricingId, options });
+    return false;
+  }
+  
+  return true;
+};
 
 // Function to get pricing summary for job posts
 export const getJobPostPricingSummary = (
@@ -198,11 +272,24 @@ export const calculateFinalPrice = (
   // Special Diamond plan pricing logic
   if (pricingId === 'diamond') {
     const selectedOption = jobPricingOptions.find(option => option.id === 'diamond');
-    const yearlyPrice = selectedOption?.price || 1499.99;
-    const yearlyDiscountPrice = selectedOption?.yearlyDiscountPrice || 999.99;
     
-    // If 12 month plan, apply the special discount price
-    if (durationMonths === 12) {
+    if (durationMonths === 3) {
+      return {
+        originalPrice: 499.99,
+        finalPrice: 499.99,
+        discountPercentage: 0
+      };
+    } else if (durationMonths === 6) {
+      return {
+        originalPrice: 799.99,
+        finalPrice: 799.99,
+        discountPercentage: 0
+      };
+    } else if (durationMonths === 12) {
+      // Use the special yearly discount price for Diamond
+      const yearlyPrice = selectedOption?.price || 1499.99;
+      const yearlyDiscountPrice = 999.99; // As per requirements
+      
       return {
         originalPrice: yearlyPrice,
         finalPrice: yearlyDiscountPrice, 
@@ -211,8 +298,8 @@ export const calculateFinalPrice = (
     } else {
       // All other durations show full price with no discount
       return {
-        originalPrice: yearlyPrice * durationMonths,
-        finalPrice: yearlyPrice * durationMonths,
+        originalPrice: basePrice * durationMonths,
+        finalPrice: basePrice * durationMonths,
         discountPercentage: 0
       };
     }
@@ -237,4 +324,15 @@ export const calculateFinalPrice = (
     finalPrice,
     discountPercentage
   };
+};
+
+// Get amount in cents for Stripe
+export const getAmountInCents = (amount: number): number => {
+  return Math.round(amount * 100);
+};
+
+// Helper function to determine if plan should use subscription mode
+export const isSubscriptionPlan = (pricingId: string, autoRenew: boolean): boolean => {
+  // Only standard plan with auto-renew should use subscription mode
+  return pricingId === 'standard' && autoRenew;
 };

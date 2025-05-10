@@ -1,5 +1,6 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
@@ -144,6 +145,14 @@ const JobPost = () => {
         { description: t("Please check your details and try again", "Vui lòng kiểm tra thông tin của bạn và thử lại") }
       );
     }
+  };
+
+  const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew);
+  const [savePaymentMethod, setSavePaymentMethod] = useState(false);
+
+  const handleAutoRenewChange = (checked: boolean) => {
+    setAutoRenew(checked);
+    onUpdatePricing({ autoRenew: checked });
   };
 
   return (
