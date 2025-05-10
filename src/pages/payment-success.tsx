@@ -32,16 +32,22 @@ const PaymentSuccess: React.FC = () => {
   
   useEffect(() => {
     // If we have payment info in the URL, fetch the details
-    const fetchPostDetails = async () => {
+    const verifyCheckoutSession = async () => {
       setLoading(true);
       try {
         if (sessionId) {
-          // For Stripe payments that redirect back with session_id
+          console.log("Verifying checkout session:", sessionId);
+          // Call verify-checkout-session edge function with the session ID
           const { data, error: functionError } = await supabase.functions.invoke('verify-checkout-session', {
             body: { sessionId }
           });
           
-          if (functionError) throw functionError;
+          if (functionError) {
+            console.error("Error verifying checkout session:", functionError);
+            throw functionError;
+          }
+          
+          console.log("Checkout session verified:", data);
           
           if (data) {
             setPostData({
@@ -75,14 +81,14 @@ const PaymentSuccess: React.FC = () => {
           setError('No session ID or payment log ID found in URL');
         }
       } catch (err: any) {
-        console.error('Error fetching payment details:', err);
-        setError(err.message || 'Failed to fetch payment details');
+        console.error('Error verifying payment details:', err);
+        setError(err.message || 'Failed to verify payment status');
       } finally {
         setLoading(false);
       }
     };
     
-    fetchPostDetails();
+    verifyCheckoutSession();
   }, [sessionId, paymentLogId]);
   
   const navigateToDashboard = () => {
