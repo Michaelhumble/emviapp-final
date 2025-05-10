@@ -1,16 +1,51 @@
 
 export type Salon = {
-  id?: string;
-  user_id?: string;
+  id: string;
   name: string;
   city: string;
   state: string;
   zip_code: string;
-  description: string;
   email: string;
   facebook?: string;
+  description?: string;
+  image?: string;
+  services?: string[];
+  amenities?: string[];
+  price?: string;
+  isPremium?: boolean;
+  featured?: boolean;
+  rating?: number;
+  reviewCount?: number;
+  phone?: string;
+  website?: string;
+  hours?: any;
+  neighborhood?: string;
+  beforeAfterGallery?: string[];
+  paymentMethods?: string[];
+  specialty?: string;
+  isHiring?: boolean;
+  user_id?: string;
   created_at?: string;
   updated_at?: string;
   status?: string;
   expiration_date?: string;
+  bio?: string;
+  established?: string;
+  bookingLink?: string;
+  location?: string;
+  square_feet?: number;
+  monthly_rent?: number;
+  socialMedia?: {
+    instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+  };
+  imageUrl?: string;
+  shortBio?: string;
+  category?: string;
+  contact_info?: {
+    owner_name?: string;
+    phone?: string;
+    email?: string;
+  };
 };
