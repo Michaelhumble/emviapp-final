@@ -79,3 +79,19 @@ export const generatePromotionalText = (postType: string): string => {
       return 'Post your listing and reach your target audience today!';
   }
 };
+
+// Add the missing function for first post promotional text
+export const getFirstPostPromotionalText = (postType: string): string => {
+  switch (postType) {
+    case 'job':
+      return 'First job post: Save 50% with our special introductory offer!';
+    case 'salon':
+      return 'First salon listing: Enjoy special pricing for new users!';
+    case 'booth':
+      return 'First booth listing: Special introductory price!';
+    case 'supply':
+      return 'First supply listing: Special discount for new sellers!';
+    default:
+      return 'First post special: Save on your first listing!';
+  }
+};

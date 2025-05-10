@@ -1,3 +1,4 @@
+
 import { PricingOptions, UserPostingStats } from "./types";
 import { 
   getBasePrice, 
@@ -8,41 +9,70 @@ import {
   getPriceWithDiscount
 } from "./promotionalText";
 
-// Similar to job pricing map
+// Updated price map with more specific options
 export const salonPriceMap = {
   free: null,
-  standard: "price_XXX_SALON_STANDARD_999",
-  standardAutoRenew: "price_XXX_SALON_STANDARD_AUTO_949",
-  premium: "price_XXX_SALON_PREMIUM_4999",
-  featured: "price_XXX_SALON_FEATURED_1999"
+  standard_1mo: "price_STD_999",
+  standard_3mo: "price_STD_2799",
+  standard_6mo: "price_STD_4999",
+  standard_autorenew: "price_STD_AUTO_949",
+  gold_1mo: "price_GOLD_1999",
+  premium_1mo: "price_PREMIUM_4999",
+  diamond_3mo: "price_DIAMOND_49999",
+  diamond_6mo: "price_DIAMOND_79999",
+  diamond_1yr: "price_DIAMOND_99999",
 };
 
 export const getStripeSalonPriceId = (
-  pricingId: string,
+  pricingTier: string,
   options: PricingOptions
 ): string | null => {
-  if (pricingId === 'free') {
+  if (pricingTier === 'free') {
     return null; // Free tier doesn't need a Stripe price ID
   }
   
   // Standard plan with auto-renew
-  if (pricingId === 'standard' && options.autoRenew) {
-    return salonPriceMap.standardAutoRenew;
+  if (pricingTier === 'standard' && options.autoRenew) {
+    return salonPriceMap.standard_autorenew;
   }
   
-  // Other plans
-  switch (pricingId) {
-    case 'standard': return salonPriceMap.standard;
-    case 'premium': return salonPriceMap.premium;
-    case 'featured': return salonPriceMap.featured;
-    default: return salonPriceMap.standard; // Default fallback
+  // Duration-based pricing
+  const durationMonths = options.durationMonths || 1;
+  
+  // Map pricing tier and duration to price ID
+  if (pricingTier === 'standard') {
+    if (durationMonths === 3) return salonPriceMap.standard_3mo;
+    if (durationMonths === 6) return salonPriceMap.standard_6mo;
+    return salonPriceMap.standard_1mo; // Default to 1 month
   }
+  
+  if (pricingTier === 'gold') {
+    return salonPriceMap.gold_1mo;
+  }
+  
+  if (pricingTier === 'premium') {
+    return salonPriceMap.premium_1mo;
+  }
+  
+  if (pricingTier === 'diamond') {
+    if (durationMonths === 6) return salonPriceMap.diamond_6mo;
+    if (durationMonths === 12) return salonPriceMap.diamond_1yr;
+    return salonPriceMap.diamond_3mo; // Default to 3 months for diamond
+  }
+  
+  // Default fallback
+  return salonPriceMap.standard_1mo;
 };
 
 export const validateSalonPricingOptions = (
   pricingId: string,
   options: PricingOptions
 ): boolean => {
+  // Free plan is always valid
+  if (pricingId === 'free') {
+    return true;
+  }
+  
   // Ensure we have a valid pricing ID
   if (!pricingId) {
     console.error("No pricing tier selected");
@@ -56,7 +86,8 @@ export const validateSalonPricingOptions = (
   }
   
   // Ensure we have a valid Stripe price ID for non-free plans
-  if (pricingId !== 'free' && !getStripeSalonPriceId(pricingId, options)) {
+  const stripePriceId = getStripeSalonPriceId(pricingId, options);
+  if (pricingId !== 'free' && !stripePriceId) {
     console.error("Failed to get valid Stripe price ID", { pricingId, options });
     return false;
   }

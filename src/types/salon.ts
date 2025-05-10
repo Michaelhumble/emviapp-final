@@ -11,7 +11,7 @@ export type Salon = {
   image?: string;
   services?: string[];
   amenities?: string[];
-  price?: string;
+  price?: string | number;
   isPremium?: boolean;
   featured?: boolean;
   rating?: number;
@@ -47,5 +47,10 @@ export type Salon = {
     owner_name?: string;
     phone?: string;
     email?: string;
+    zalo?: string;
   };
+  logo?: string;
+  asking_price?: string | number;
+  owner_name?: string;
+  zalo?: string;
 };

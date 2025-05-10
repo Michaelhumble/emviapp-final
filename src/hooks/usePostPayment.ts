@@ -42,6 +42,17 @@ export const usePostPayment = () => {
       } 
       
       // For paid listings, create a Stripe checkout session
+      // Get the correct Stripe price ID based on tier and duration
+      const selectedPricingTier = pricingOptions?.selectedPricingTier;
+      const durationMonths = pricingOptions?.durationMonths || 1;
+      
+      // Log payment parameters for debugging
+      console.log("Payment parameters:", {
+        tier: selectedPricingTier,
+        duration: durationMonths,
+        autoRenew: pricingOptions?.autoRenew
+      });
+      
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           postType,
