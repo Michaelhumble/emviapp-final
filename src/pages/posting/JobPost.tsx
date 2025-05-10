@@ -21,7 +21,7 @@ const JobPost = () => {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
   const { t } = useTranslation();
-  const { initiatePayment, isLoading } = usePostPayment();
+  const { initiatePayment, isLoading, setIsSubmitting } = usePostPayment();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [jobDetails, setJobDetails] = useState<Partial<Job>>({
@@ -110,33 +110,21 @@ const JobPost = () => {
       );
       
       // Pass both job details and pricing options to the payment hook
-      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      const response = await initiatePayment('job', jobDetails, pricingOptions);
+      setIsSubmitting(false);
       
-      // Clear loading state
-      toast.dismiss("job-submission");
-
-      if (result.success) {
-        if (result.redirect) {
-          // For free posts, navigate to success page
-          if (result.redirect === '/post-success') {
-            navigate('/post-success', { 
-              state: { 
-                postType: 'job',
-                postDetails: jobDetails,
-                pricingDetails: pricingOptions,
-                postData: result.data
-              } 
-            });
-          } else {
-            // For paid posts, redirect to Stripe
-            window.location.href = result.redirect;
-          }
+      if (response.success) {
+        // Check if redirect property exists and use it if it does
+        if (response.redirect) {
+          window.location.href = response.redirect;
+        } else {
+          // Otherwise navigate to the dashboard
+          navigate('/dashboard', { state: { status: 'success' } });
         }
       } else {
-        toast.error(
-          t("There was a problem with your submission", "Có vấn đề với việc gửi đơn của bạn"),
-          { description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ") }
-        );
+        // Error handling
+        const errorMessage = response.data?.message || 'Job post failed. Please try again.';
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Job post submission error:", error);

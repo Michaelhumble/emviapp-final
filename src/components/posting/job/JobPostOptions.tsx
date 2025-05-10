@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,7 +53,6 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
     return {
       jobPostCount: totalJobPosts,
       salonPostCount: totalSalonPosts,
-      featuredPostCount: 0,
       boothPostCount: totalBoothPosts,
       supplyPostCount: totalSupplyPosts,
       totalPostCount: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
@@ -106,11 +106,11 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
         {postStats.salonPostCount === 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="bundleWithSalonPost">Bundle with Salon Post</Label>
+              <Label htmlFor="bundleWithJobPost">Bundle with Salon Post</Label>
               <Checkbox
-                id="bundleWithSalonPost"
-                checked={pricingOptions.bundleWithSalonPost || false}
-                onCheckedChange={() => handleCheckboxChange('bundleWithSalonPost')}
+                id="bundleWithJobPost"
+                checked={pricingOptions.bundleWithJobPost || false}
+                onCheckedChange={() => handleCheckboxChange('bundleWithJobPost')}
               />
             </div>
             <p className="text-sm text-muted-foreground">
@@ -126,7 +126,7 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
 export default JobPostOptions;
 
 // Fix function call by providing default options
-const calculatePrice = (options: PricingOptions = {}) => {
+const calculatePrice = (options: PricingOptions = { selectedPricingTier: 'standard' }) => {
   // Function implementation...
   return 9.99; // Default price
 };

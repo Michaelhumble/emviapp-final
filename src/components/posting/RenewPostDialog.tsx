@@ -4,13 +4,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { PricingOptions } from '@/types/job';
+import { PricingOptions } from '@/utils/posting/types';
 
 interface RenewPostDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   postId: string;
-  postType: 'job' | 'salon' | 'booth';
+  postType: 'job' | 'salon';
   isNationwide: boolean;
   expiresAt: string;
   fastSalePackage?: boolean;

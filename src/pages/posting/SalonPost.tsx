@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 const SalonPost: React.FC = () => {
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'standard',
     isFirstPost: true
   });
   const navigate = useNavigate();

@@ -4,6 +4,8 @@ export interface UserPostingStats {
   salonPostCount: number;
   boothPostCount: number;
   supplyPostCount: number;
+  totalPostCount?: number;
+  hasReferrals?: boolean;
 }
 
 export interface PricingOptions {
@@ -18,3 +20,23 @@ export interface PricingOptions {
   hasReferrals?: boolean;
   autoRenew?: boolean;
 }
+
+export type PostType = 'job' | 'salon' | 'booth' | 'supply';
+
+export interface JobPricingOption {
+  id: string;
+  name: string;
+  price: number;
+  wasPrice?: number;
+  basePrice?: number;
+  finalPrice?: number;
+  description: string;
+  vietnameseDescription?: string;
+  tag?: string;
+  popular?: boolean;
+  discountPercentage?: number;
+  features: string[];
+  isFirstPost?: boolean;
+}
+
+export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';

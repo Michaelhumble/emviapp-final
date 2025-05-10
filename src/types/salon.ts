@@ -1,7 +1,7 @@
 export type Salon = {
   id: string;
   name: string;
-  asking_price?: string;
+  asking_price?: string | number;
   zalo?: string;
   owner_name?: string;
   email?: string;
@@ -24,6 +24,10 @@ export type Salon = {
   beforeAfterGallery?: string[];
   isPremium?: boolean;
   featured?: boolean;
+  // Add these for Vietnamese listings
+  vietnamese_title?: string;
+  vietnamese_description?: string;
+  income_range?: string;
   // Keep existing fields for backward compatibility
   zip_code?: string;
   facebook?: string;
@@ -55,4 +59,6 @@ export type Salon = {
     tiktok?: string;
   };
   is_vietnamese_listing?: boolean;
+  title?: string; // For compatibility with listingsVerification.ts
+  company?: string; // For compatibility with listingsVerification.ts
 };
