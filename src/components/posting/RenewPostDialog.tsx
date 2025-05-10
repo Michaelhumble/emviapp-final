@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { usePostPayment } from '@/hooks/usePostPayment';
@@ -49,7 +48,7 @@ const RenewPostDialog = ({
     };
 
     try {
-      await initiatePayment(postType, { id: postId }, pricingOptions);
+      const result = await initiatePayment(postType, { id: postId }, pricingOptions);
       if (onRenewed) {
         onRenewed();
       }

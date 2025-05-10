@@ -19,7 +19,7 @@ interface SmartAdOptionsProps {
 }
 
 const SmartAdOptions = ({
-  postType,
+  postType = 'job', // Provide a default value
   isFirstPost = false,
   hasReferrals = false,
   onNationwideChange,
@@ -27,9 +27,11 @@ const SmartAdOptions = ({
   onShowAtTopChange,
   onBundleWithJobChange
 }: SmartAdOptionsProps) => {
-  const isJobPost = postType === 'job';
-  const isSalonPost = postType === 'salon';
-  const isBoothPost = postType === 'booth';
+  // Validate postType or provide fallback
+  const safePostType = ['job', 'salon', 'booth', 'supply'].includes(postType) ? postType : 'job';
+  const isJobPost = safePostType === 'job';
+  const isSalonPost = safePostType === 'salon';
+  const isBoothPost = safePostType === 'booth';
   
   const handleNationwideChange = (checked: boolean) => {
     if (onNationwideChange) onNationwideChange(checked);
@@ -55,7 +57,7 @@ const SmartAdOptions = ({
         {/* Nationwide Visibility Option */}
         {(isJobPost || isSalonPost || isBoothPost) && (
           <NationwideOption 
-            postType={postType} 
+            postType={safePostType} 
             isFirstPost={isFirstPost}
             onChange={handleNationwideChange}
           />
@@ -78,7 +80,7 @@ const SmartAdOptions = ({
         {/* Bundle with Job - For Salon and Booth posts */}
         {(isSalonPost || isBoothPost) && (
           <BundleWithJobOption 
-            postType={postType} 
+            postType={safePostType} 
             onChange={handleBundleWithJobChange} 
           />
         )}

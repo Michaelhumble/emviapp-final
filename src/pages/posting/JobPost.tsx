@@ -1,203 +1,123 @@
-import { useState, useEffect } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/auth';
-import PostWizardLayout from '@/components/posting/PostWizardLayout';
-import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
-import RequirementsSection from '@/components/posting/sections/RequirementsSection';
-import CompensationSection from '@/components/posting/sections/CompensationSection';
-import ContactInformationSection from '@/components/posting/sections/ContactInformationSection';
-import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
-import AuthPostGuard from '@/components/posting/AuthPostGuard';
-import { Job } from '@/types/job';
+
+import React, { useState } from 'react';
+import { JobForm } from '@/components/posting/job/JobForm';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
-import { Link } from 'react-router-dom';
-import { useTranslation } from '@/hooks/useTranslation';
-import { usePostPayment } from '@/hooks/usePostPayment';
+import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
-const JobPost = () => {
-  const navigate = useNavigate();
-  const { userProfile } = useAuth();
-  const { t } = useTranslation();
-  const { initiatePayment, isLoading, setIsSubmitting } = usePostPayment();
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const [jobDetails, setJobDetails] = useState<Partial<Job>>({
-    title: '',
-    location: '',
-    employment_type: 'full-time',
-    description: '',
-    requirements: [] as string[], // Initialize as an empty string array
-    compensation_type: 'hourly',
-    compensation_details: '',
-    contact_info: {
-      owner_name: userProfile?.full_name || '',
-      phone: userProfile?.phone || '',
-      email: userProfile?.email || ''
-    }
-  });
-  
-  // Pricing options state with all required properties
+const JobPost: React.FC = () => {
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'standard',
     isFirstPost: true,
-    isNationwide: false,
-    fastSalePackage: false,
-    showAtTop: false,
-    isHotListing: false,
-    isUrgent: false,
-    bundleWithJobPost: false,
-    bundleWithSalonPost: false,
-    boostVisibility: false,
-    featuredListing: false,
-    extendedDuration: false,
-    selectedPricingTier: 'standard', // Default pricing tier
-    autoRenew: false // Initialize autoRenew
+    isHotListing: false // Add missing field
   });
-
-  const totalSteps = 5;
-
-  const nextStep = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      // Handle final submission
-      handleSubmit();
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleDetailsChange = (details: Partial<Job>) => {
-    setJobDetails({ ...jobDetails, ...details });
-  };
-
-  const handleContactChange = (contactInfo: Job['contact_info']) => {
-    setJobDetails({ ...jobDetails, contact_info: contactInfo });
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const { initiatePayment, isLoading } = usePostPayment();
   
-  const handleNationwideChange = (checked: boolean) => {
-    setPricingOptions({ ...pricingOptions, isNationwide: checked });
-  };
-  
-  const handleFastSalePackageChange = (checked: boolean) => {
-    setPricingOptions({ ...pricingOptions, fastSalePackage: checked });
-  };
-  
-  const handleShowAtTopChange = (checked: boolean) => {
-    setPricingOptions({ ...pricingOptions, showAtTop: checked });
-  };
-  
-  const handlePricingChange = (pricingTier: string) => {
-    setPricingOptions({ ...pricingOptions, selectedPricingTier: pricingTier });
-  };
-  
-  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
-    setPricingOptions({ ...pricingOptions, ...options });
-  };
-
-  const handleSubmit = async () => {
+  // Handle form submission
+  const handleFormSubmit = async (values: JobFormValues) => {
+    setIsSubmitting(true);
+    
     try {
-      // Show loading state
-      toast.loading(
-        t("Processing your submission...", "Đang xử lý đơn của bạn..."),
-        { id: "job-submission" }
-      );
+      // Check if photos were uploaded (optional)
+      if (photoUploads.length === 0) {
+        console.log("No photos uploaded");
+      }
       
-      // Pass both job details and pricing options to the payment hook
-      const response = await initiatePayment('job', jobDetails, pricingOptions);
-      setIsSubmitting(false);
+      // Calculate price
+      const price = calculateJobPostPrice(pricingOptions);
+      console.log("Job post price:", price);
       
-      if (response.success) {
-        // Check if redirect property exists and use it if it does
-        if (response.redirect) {
-          window.location.href = response.redirect;
+      // If price is greater than 0, proceed to payment
+      if (price > 0) {
+        // Navigate to payment page with salon data
+        const result = await initiatePayment('job', values, pricingOptions);
+        
+        // Add safeguards for the returned result
+        if (result?.success) {
+          // Handle successful payment initiation
+          if (result.hasOwnProperty('redirect') && result.redirect) {
+            // If there's a redirect URL in the response, follow it
+            window.location.href = typeof result.redirect === 'string' ? result.redirect : '/payment';
+          }
+          
+          // Handle case where there's data but no redirect
+          if (result.hasOwnProperty('data')) {
+            toast.success("Job post submitted successfully!");
+            navigate('/dashboard');
+          }
         } else {
-          // Otherwise navigate to the dashboard
-          navigate('/dashboard', { state: { status: 'success' } });
+          // Handle payment initiation failure
+          toast.error("Failed to process payment. Please try again.");
         }
       } else {
-        // Error handling
-        const errorMessage = response.data?.message || 'Job post failed. Please try again.';
-        toast.error(errorMessage);
+        // For free listings, skip payment and go directly to success
+        toast.success("Your job listing has been posted!");
+        navigate('/dashboard');
       }
     } catch (error) {
-      console.error("Job post submission error:", error);
-      toast.error(
-        t("Submission error", "Lỗi khi gửi đơn"),
-        { description: t("Please check your details and try again", "Vui lòng kiểm tra thông tin của bạn và thử lại") }
-      );
+      console.error("Error submitting job post:", error);
+      toast.error("Failed to submit job post. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew);
-  const [savePaymentMethod, setSavePaymentMethod] = useState(false);
-
-  const handleAutoRenewChange = (checked: boolean) => {
-    setAutoRenew(checked);
-    onUpdatePricing({ autoRenew: checked });
+  
+  // Handle changes to pricing options
+  const handleUpdatePricing = (options: PricingOptions) => {
+    setPricingOptions(options);
   };
 
   return (
-    <AuthPostGuard>
-      <div className="container mx-auto px-4">
-        <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 block">
-          {t('← Back to Home', '← Trở về Trang chủ')}
-        </Link>
+    <div className="container max-w-6xl mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-2">Post a Job</h1>
+      <p className="text-gray-600 mb-8">
+        Create a detailed job listing to attract qualified candidates
+      </p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <JobForm 
+            onSubmit={handleFormSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+
+        <div className="lg:col-span-1">
+          <div className="sticky top-8">
+            <Card className="p-6">
+              <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
+              <JobPostOptions
+                pricingOptions={pricingOptions}
+                setPricingOptions={handleUpdatePricing}
+              />
+              
+              <Button 
+                onClick={() => document.querySelector('form')?.requestSubmit()}
+                className="w-full mt-4"
+                disabled={isLoading || isSubmitting}
+              >
+                {isLoading || isSubmitting ? "Processing..." : "Post Job"}
+              </Button>
+              
+              <p className="text-xs text-gray-500 mt-4 text-center">
+                By proceeding, you agree to our Terms of Service
+              </p>
+            </Card>
+          </div>
+        </div>
       </div>
-      <PostWizardLayout 
-        currentStep={currentStep} 
-        totalSteps={totalSteps} 
-        title={t("Post a Job", "Đăng Tin Tuyển Thợ")}
-        onNext={nextStep}
-        onPrev={prevStep}
-        onSubmit={handleSubmit}
-        isSubmitting={isLoading}
-      >
-        {currentStep === 1 && (
-          <JobDetailsSection 
-            details={jobDetails} 
-            onChange={handleDetailsChange} 
-          />
-        )}
-        {currentStep === 2 && (
-          <RequirementsSection 
-            details={jobDetails} 
-            onChange={handleDetailsChange} 
-          />
-        )}
-        {currentStep === 3 && (
-          <CompensationSection 
-            details={jobDetails} 
-            onChange={handleDetailsChange} 
-          />
-        )}
-        {currentStep === 4 && (
-          <ContactInformationSection 
-            contactInfo={jobDetails.contact_info}
-            onChange={handleContactChange}
-          />
-        )}
-        {currentStep === 5 && (
-          <ReviewAndPaymentSection 
-            postType="job"
-            jobData={jobDetails}
-            onNextStep={nextStep}
-            onPrevStep={prevStep}
-            isFirstPost={pricingOptions.isFirstPost}
-            pricingOptions={pricingOptions}
-            onPricingChange={handlePricingChange}
-            onUpdatePricing={handleUpdatePricing}
-            isSubmitting={isLoading}
-          />
-        )}
-      </PostWizardLayout>
-    </AuthPostGuard>
+    </div>
   );
 };
 

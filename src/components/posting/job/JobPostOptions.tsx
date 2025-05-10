@@ -70,7 +70,7 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
         {isFirstPost && (
           <div className="bg-green-50 border border-green-200 p-3 rounded-md">
             <p className="text-sm text-green-700 font-medium">
-              {getFirstPostPromotionalText()}
+              {getFirstPostPromotionalText('job')}
             </p>
           </div>
         )}

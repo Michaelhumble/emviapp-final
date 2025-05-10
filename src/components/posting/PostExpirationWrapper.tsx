@@ -4,11 +4,12 @@ import ExpirationBadge from "./ExpirationBadge";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import RenewPostDialog from "./RenewPostDialog";
+import { PostType } from "@/utils/posting/types";
 
 interface PostExpirationWrapperProps {
   children: React.ReactNode;
   postId: string;
-  postType: 'job' | 'salon' | 'booth';
+  postType: PostType;
   expiresAt: string;
   isNationwide: boolean;
   isExpired: boolean;
@@ -32,6 +33,9 @@ const PostExpirationWrapper = ({
 }: PostExpirationWrapperProps) => {
   const [isRenewDialogOpen, setIsRenewDialogOpen] = useState(false);
   
+  // Convert booth to salon type for RenewPostDialog compatibility
+  const safePostType = postType === 'booth' ? 'salon' : postType === 'supply' ? 'salon' : postType;
+  
   return (
     <div className={`relative ${className}`}>
       {isExpired && (
@@ -54,7 +58,7 @@ const PostExpirationWrapper = ({
         open={isRenewDialogOpen}
         onOpenChange={setIsRenewDialogOpen}
         postId={postId}
-        postType={postType}
+        postType={safePostType}
         isNationwide={isNationwide}
         expiresAt={expiresAt}
         fastSalePackage={fastSalePackage}

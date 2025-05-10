@@ -64,7 +64,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
               )}
               <h3 className="font-bold text-lg">{option.name}</h3>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold">${option.price}</span>
+                <span className="text-2xl font-bold">${option.price.toFixed(2)}</span>
                 {option.wasPrice && option.wasPrice > option.price && (
                   <span className="text-sm text-gray-500 line-through">${option.wasPrice}</span>
                 )}
