@@ -33,11 +33,14 @@ const JobPost: React.FC = () => {
       }
       
       // Calculate price
-      const price = calculateJobPostPrice(pricingOptions);
-      console.log("Job post price:", price);
+      const priceResult = calculateJobPostPrice(pricingOptions);
+      console.log("Job post price:", priceResult);
       
-      // If price is greater than 0, proceed to payment
-      if (price > 0) {
+      // Destructure finalPrice from the returned price object
+      const { finalPrice } = priceResult;
+      
+      // If finalPrice is greater than 0, proceed to payment
+      if (finalPrice > 0) {
         // Navigate to payment page with salon data
         const result = await initiatePayment('job', values, pricingOptions);
         
