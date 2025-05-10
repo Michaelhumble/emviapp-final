@@ -1,5 +1,7 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-nocheck
+
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -12,121 +14,149 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
-  
+
   try {
-    console.log("Creating free job post - START");
-    
-    // Get authenticated user
+    // Get authorization header from request
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      throw new Error("No authorization header provided");
+      return new Response(JSON.stringify({ error: "Not authorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-    
-    const token = authHeader.replace("Bearer ", "");
-    
-    // Initialize Supabase admin client for database operations
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
-      { auth: { persistSession: false } }
-    );
-    
-    // Initialize client with user token for getting user info
+
+    // Create Supabase client with anonymous key (for user authentication)
     const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_ANON_KEY") || "",
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: authHeader },
         },
       }
     );
-    
-    // Get user from token
+
+    // Create Admin Supabase client with service role (for database operations)
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
+    // Get the user from the auth header
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      throw new Error("Authentication failed: " + (userError?.message || "User not found"));
+      return new Response(JSON.stringify({ error: "Unable to get user" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-    
-    console.log("User authenticated:", user.id);
-    
-    // Parse request body
+
+    // Parse the request body
     const { postType, postDetails, pricingOptions } = await req.json();
     
-    // Calculate expiration date based on duration
-    const durationMonths = pricingOptions?.durationMonths || 0.5; // Default to 14 days (0.5 months)
-    const expiresAt = new Date(Date.now() + (durationMonths * 30 * 24 * 60 * 60 * 1000)).toISOString();
+    console.log("Processing free post for:", postType);
     
-    console.log("Creating free job post with expiration:", expiresAt);
-    
-    // Create job in database with 'active' status
-    const jobData = {
-      ...postDetails,
-      user_id: user.id,
-      status: 'active',
-      expires_at: expiresAt,
-      pricingTier: pricingOptions?.selectedPricingTier || 'free',
-      post_type: postType
-    };
-    
-    // Insert job
-    const { data: jobInsertData, error: jobInsertError } = await supabaseAdmin
-      .from('jobs')
-      .insert([jobData])
-      .select();
-    
-    if (jobInsertError) {
-      console.error("Error inserting job:", jobInsertError);
-      throw new Error("Failed to create job post: " + jobInsertError.message);
+    // Verify that this is actually a free post
+    if (pricingOptions?.selectedPricingTier !== "free") {
+      return new Response(JSON.stringify({ error: "Invalid pricing tier for free post" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-    
-    const jobId = jobInsertData?.[0]?.id;
-    console.log("Job post created successfully with ID:", jobId);
-    
-    // Record the free transaction in payment_logs
-    const { data: paymentLogData, error: paymentLogError } = await supabaseAdmin
+
+    // Check if user is eligible for a free post (first time poster)
+    const { data: existingPosts, error: queryError } = await supabaseAdmin
       .from('payment_logs')
-      .insert([{
-        user_id: user.id,
-        amount: 0,
-        currency: 'usd',
-        payment_method: 'free',
-        payment_status: 'success',
-        plan_type: postType,
-        listing_id: jobId,
-        pricing_tier: pricingOptions?.selectedPricingTier || 'free',
-        expires_at: expiresAt
-      }])
-      .select();
-    
-    if (paymentLogError) {
-      console.error("Error creating payment log:", paymentLogError);
-      // Continue even if payment log fails
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('plan_type', postType)
+      .limit(1);
+      
+    if (queryError) {
+      console.error("Error checking existing posts:", queryError);
     }
     
-    const paymentLogId = paymentLogData?.[0]?.id;
-    console.log("Payment log created with ID:", paymentLogId);
+    const isFirstPost = !existingPosts || existingPosts.length === 0;
     
-    return new Response(
-      JSON.stringify({
-        success: true,
-        post_id: jobId,
-        payment_log_id: paymentLogId,
-        expires_at: expiresAt
-      }),
-      { 
+    // Only allow free posts for first-time posters
+    if (!isFirstPost && !pricingOptions?.isFirstPost) {
+      return new Response(JSON.stringify({ error: "Free tier is only available for first-time posts" }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200 
+      });
+    }
+
+    // Calculate expiration date (30 days for free tier)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30); // 30 days for free tier
+
+    try {
+      // Create the post
+      const { data: newPost, error: postError } = await supabaseAdmin
+        .from('jobs')
+        .insert({
+          ...postDetails,
+          user_id: user.id,
+          status: 'active',
+          post_type: postType,
+          pricingTier: 'free',
+          expires_at: expiresAt.toISOString()
+        })
+        .select('id')
+        .single();
+        
+      if (postError) {
+        console.error("Error creating free post:", postError);
+        return new Response(JSON.stringify({ error: "Failed to create free post" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-    );
+
+      // Create payment log entry for the free post
+      const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
+        .from('payment_logs')
+        .insert({
+          user_id: user.id,
+          listing_id: newPost.id,
+          plan_type: postType,
+          payment_status: 'free',
+          expires_at: expiresAt.toISOString(),
+          auto_renew_enabled: false,
+          pricing_tier: 'free'
+        })
+        .select('id')
+        .single();
+
+      if (paymentLogError) {
+        console.error("Error creating payment log for free post:", paymentLogError);
+      }
+
+      // Return success with post data
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          post_id: newPost.id,
+          payment_log_id: paymentLog?.id,
+          expires_at: expiresAt.toISOString()
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    } catch (dbError) {
+      console.error("Database error:", dbError);
+      return new Response(JSON.stringify({ error: "Database operation failed: " + dbError.message }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
   } catch (error) {
-    console.error("Error in create-free-post:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500 
-      }
-    );
+    console.error("Free post creation error:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

@@ -1,142 +1,240 @@
+import { JobPricingOption, JobPricingTier } from './types';
 
-import { ListingPlan } from '@/components/posting/ListingPlanSelector';
-
-export const jobPricingOptions: ListingPlan[] = [
+export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Free',
-    tier: 'free',
+    name: '🎁 Free Post',
+    tier: 'basic' as JobPricingTier,
     price: 0,
+    wasPrice: 9.99,
+    description: 'Simple & quick post. Limited reach.',
+    vietnameseDescription: 'Tin đơn giản – Không có hình ảnh',
     features: [
-      'Standard visibility',
-      'Basic analytics',
-      'Customer support',
-      'Email notifications'
+      '📄 Listed in standard row',
+      '⏳ Expires in 30 days',
+      '🚫 No image or contact shown'
     ],
-    description: 'Basic 14-day listing for small businesses',
-    vietnameseDescription: 'Đăng tin cơ bản 14 ngày cho doanh nghiệp nhỏ',
-    duration: 14,
-    tag: 'Free Trial'
+    duration: 30, // days
+    tag: '⚪ Was $9.99 – Now Free!'
   },
   {
-    id: 'featured',
-    name: 'Featured',
-    tier: 'featured',
-    price: 19.99,
+    id: 'standard',
+    name: '✅ Standard',
+    tier: 'premium' as JobPricingTier,
+    price: 9.99,
+    wasPrice: 29.99,
+    description: 'Full listing. Better placement.',
+    vietnameseDescription: 'Hiển thị đầy đủ với hình ảnh + số điện thoại',
     features: [
-      'Highlighted in search results',
-      'Priority placement',
-      'Email notifications',
-      '30 days visibility',
-      'Detailed performance analytics'
+      '🖼️ Show image',
+      '📞 Show contact info',
+      '🪙 Gold row placement'
     ],
-    description: '30-day listing with enhanced visibility',
-    vietnameseDescription: 'Đăng tin 30 ngày với khả năng hiển thị nổi bật',
-    duration: 30,
-    popular: true
+    duration: 30, // days
+    tag: '🟢 Save Big – Limited Time'
+  },
+  {
+    id: 'gold',
+    name: '🏆 Gold Featured',
+    tier: 'featured' as JobPricingTier,
+    price: 19.99,
+    wasPrice: 39.99,
+    description: 'Featured row. Look more impressive.',
+    vietnameseDescription: 'Hiển thị nổi bật – Khách thấy dễ hơn',
+    features: [
+      '👑 Highlighted in Gold',
+      '🔍 Search priority',
+      '📅 30-day display'
+    ],
+    duration: 30, // days
+    popular: true,
+    tag: '🟡 Smart Pick'
   },
   {
     id: 'premium',
-    name: 'Premium',
-    tier: 'premium',
+    name: '✨ Premium',
+    tier: 'featured' as JobPricingTier,
     price: 49.99,
-    wasPrice: 59.99,
+    wasPrice: 99.99,
+    description: 'Homepage power. Best for speed.',
+    vietnameseDescription: 'Ưu tiên trên trang chính – Khách thấy bạn đầu tiên',
     features: [
-      'Top search result placement',
-      'Featured in email newsletters',
-      'Social media promotion',
-      '90 days visibility',
-      'Applicant management tools',
-      'Priority customer support'
+      '📌 Homepage pinning',
+      '📈 Top visibility',
+      '💬 VIP support'
     ],
-    description: '90-day premium placement for maximum exposure',
-    vietnameseDescription: 'Đặt vị trí cao cấp trong 90 ngày để tiếp cận tối đa',
-    duration: 90,
+    duration: 30, // days
+    tag: '🟠 Today Only – 50% OFF'
   },
   {
     id: 'diamond',
-    name: 'Diamond Featured',
-    tier: 'diamond',
-    price: 999.99,
+    name: '💎 Diamond Featured',
+    tier: 'featured' as JobPricingTier,
+    price: 1499.99,
+    wasPrice: 1999.99,
+    description: 'Top 3 Spots. Forever Trusted.',
+    vietnameseDescription: 'Vị trí đặc biệt – Chỉ 3 chỗ duy nhất',
     features: [
-      'Premium placement guarantee',
-      'Featured in all communications',
-      'Dedicated account manager',
-      'Annual visibility (365 days)',
-      'Multiple job postings',
-      'Featured salon profile',
-      'Candidate matching service'
+      '🥇 1 of only 3',
+      '📌 Homepage pinned',
+      '👥 Unlimited team'
     ],
-    description: 'VIP annual package with maximum benefits',
-    vietnameseDescription: 'Gói VIP hàng năm với quyền lợi tối đa',
-    duration: 365,
-    tag: 'VIP Package'
-  }
+    duration: 365, // days
+    tag: '🔥 Only 3 Available',
+    note: 'Includes homepage pinning, unlimited team members, and highest visibility.',
+    yearlyDiscountPrice: 999.99 // New property for yearly discount
+  },
 ];
 
-export const durationOptions = [
-  { 
-    months: 1, 
-    label: '1 Month', 
-    vietnameseLabel: '1 Tháng',
-    discount: 0 
-  },
-  { 
-    months: 3, 
-    label: '3 Months', 
-    vietnameseLabel: '3 Tháng',
-    discount: 10 
-  },
-  { 
-    months: 6, 
-    label: '6 Months', 
-    vietnameseLabel: '6 Tháng',
-    discount: 15 
-  },
-  { 
-    months: 12, 
-    label: '12 Months', 
-    vietnameseLabel: '12 Tháng',
-    discount: 25 
+// Function to get pricing summary for job posts
+export const getJobPostPricingSummary = (
+  selectedPricingId: string,
+  extras: Record<string, boolean> = {}
+): { total: number; lineItems: Array<{ name: string; price: number }> } => {
+  // Find the selected pricing option
+  const selectedOption = jobPricingOptions.find(option => option.id === selectedPricingId);
+  
+  if (!selectedOption) {
+    return {
+      total: 0,
+      lineItems: []
+    };
   }
-];
 
-// Calculate final price with duration discount
+  // Start with the base pricing
+  const lineItems = [
+    {
+      name: `${selectedOption.name} Job Posting`,
+      price: selectedOption.price
+    }
+  ];
+
+  // Add any extras (can be expanded in the future)
+  Object.entries(extras).forEach(([key, isSelected]) => {
+    if (isSelected) {
+      switch (key) {
+        case 'featuredPlacement':
+          lineItems.push({
+            name: 'Featured Placement Upgrade',
+            price: 29.99
+          });
+          break;
+        case 'extendedDuration':
+          lineItems.push({
+            name: 'Extended Duration (+14 days)',
+            price: 14.99
+          });
+          break;
+        case 'highlightedListing':
+          lineItems.push({
+            name: 'Highlighted Listing',
+            price: 9.99
+          });
+          break;
+        // Add more extras as needed
+      }
+    }
+  });
+
+  // Calculate total
+  const total = lineItems.reduce((sum, item) => sum + item.price, 0);
+
+  return {
+    total,
+    lineItems
+  };
+};
+
+// Function to calculate price with duration discount
+export const calculatePriceWithDuration = (
+  basePrice: number,
+  durationMonths: number,
+  autoRenew: boolean = false
+): {
+  monthlyPrice: number;
+  totalPrice: number;
+  savings: number;
+  discountPercentage: number;
+} => {
+  let discountPercentage = 0;
+  
+  // Apply duration-based discounts
+  if (durationMonths === 3) {
+    discountPercentage = 5;
+  } else if (durationMonths === 6) {
+    discountPercentage = 10;
+  } else if (durationMonths === 12) {
+    discountPercentage = 20;
+  }
+  
+  // Add auto-renew discount
+  if (autoRenew) {
+    discountPercentage += 5;
+  }
+  
+  const monthlyPrice = basePrice * (1 - discountPercentage / 100);
+  const totalPrice = monthlyPrice * durationMonths;
+  const savings = basePrice * durationMonths - totalPrice;
+  
+  return {
+    monthlyPrice,
+    totalPrice,
+    savings,
+    discountPercentage
+  };
+};
+
+// Updated calculateFinalPrice function with special Diamond plan logic
 export const calculateFinalPrice = (
   basePrice: number,
   durationMonths: number,
-  pricingTier: string,
-  autoRenew: boolean
-) => {
-  // Diamond plan is always annual
-  if (pricingTier === 'diamond') {
-    return { finalPrice: basePrice, discount: 0, totalSavings: 0 };
+  pricingId: string,
+  autoRenew: boolean = false
+): {
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
+} => {
+  // Special Diamond plan pricing logic
+  if (pricingId === 'diamond') {
+    const selectedOption = jobPricingOptions.find(option => option.id === 'diamond');
+    const yearlyPrice = selectedOption?.price || 1499.99;
+    const yearlyDiscountPrice = selectedOption?.yearlyDiscountPrice || 999.99;
+    
+    // If 12 month plan, apply the special discount price
+    if (durationMonths === 12) {
+      return {
+        originalPrice: yearlyPrice,
+        finalPrice: yearlyDiscountPrice, 
+        discountPercentage: Math.round(((yearlyPrice - yearlyDiscountPrice) / yearlyPrice) * 100)
+      };
+    } else {
+      // All other durations show full price with no discount
+      return {
+        originalPrice: yearlyPrice * durationMonths,
+        finalPrice: yearlyPrice * durationMonths,
+        discountPercentage: 0
+      };
+    }
   }
   
-  // Free plan is always free
-  if (pricingTier === 'free' || basePrice === 0) {
-    return { finalPrice: 0, discount: 0, totalSavings: 0 };
+  // Regular pricing logic for other plans
+  let discountPercentage = 0;
+  if (durationMonths === 3) discountPercentage = 5;
+  else if (durationMonths === 6) discountPercentage = 10;
+  else if (durationMonths === 12) discountPercentage = 20;
+  
+  // Add auto-renew discount if enabled (only for non-Diamond plans)
+  if (autoRenew) {
+    discountPercentage += 5;
   }
-
-  // Find discount percentage based on duration
-  const durationOption = durationOptions.find(option => option.months === durationMonths);
-  const discountPercentage = durationOption?.discount || 0;
   
-  // Add auto-renewal discount if applicable
-  const totalDiscountPercentage = autoRenew ? discountPercentage + 5 : discountPercentage;
-  
-  // Calculate final price
-  const discountAmount = (basePrice * totalDiscountPercentage) / 100;
-  const finalPrice = basePrice - discountAmount;
-  
-  // Calculate total savings
-  const regularTotal = basePrice * durationMonths;
-  const discountedTotal = finalPrice * durationMonths;
-  const totalSavings = regularTotal - discountedTotal;
+  const originalPrice = basePrice * durationMonths;
+  const finalPrice = originalPrice * (1 - discountPercentage / 100);
   
   return {
+    originalPrice,
     finalPrice,
-    discount: totalDiscountPercentage,
-    totalSavings
+    discountPercentage
   };
 };
