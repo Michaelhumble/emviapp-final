@@ -1,3 +1,4 @@
+
 import { JobPricingOption, PricingOptions } from './types';
 import { DurationOption } from '@/types/pricing';
 
@@ -143,3 +144,47 @@ export const getAmountInCents = (amount: number): number => {
 export const isSubscriptionPlan = (pricingId: string): boolean => {
     return pricingId !== 'free';
 };
+
+/**
+ * Calculate the price for a job post based on pricing options
+ * @param options - The pricing options selected by the user
+ * @returns An object containing pricing details
+ */
+export const calculateJobPostPrice = (options: PricingOptions) => {
+  // Get the base price from the selected pricing tier
+  const selectedPricingOption = jobPricingOptions.find(option => option.id === options.selectedPricingTier);
+  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
+  
+  // Get duration (default to 1 if not specified)
+  const durationMonths = options.durationMonths || 1;
+  
+  // Calculate original price (before any discounts)
+  const originalPrice = basePrice * durationMonths;
+  
+  // Define discount percentage based on duration
+  let discountPercentage = 0;
+  
+  if (durationMonths === 3) {
+    discountPercentage = 10;
+  } else if (durationMonths === 6) {
+    discountPercentage = 15;
+  } else if (durationMonths >= 12) {
+    discountPercentage = 20;
+  }
+  
+  // Add first post discount if applicable
+  if (options.isFirstPost) {
+    discountPercentage += 5; // Additional 5% discount for first-time posters
+  }
+  
+  // Calculate the final price
+  const discount = (originalPrice * discountPercentage) / 100;
+  const finalPrice = originalPrice - discount;
+  
+  return {
+    originalPrice,
+    finalPrice,
+    discountPercentage
+  };
+};
+
