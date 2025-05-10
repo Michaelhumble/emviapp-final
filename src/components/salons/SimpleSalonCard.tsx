@@ -38,10 +38,10 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
         safeGetListingProperty(salon, 'name', '')
       );
       
-      return getDefaultSalonImage(category, salon.isPremium || false);
+      return getDefaultSalonImage(category as any, salon.isPremium || false);
     } catch (error) {
       console.error('Error getting salon image:', error);
-      return getDefaultSalonImage('generic');
+      return getDefaultSalonImage('generic' as any);
     }
   };
   
@@ -57,10 +57,6 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
           return askingPriceStr.includes('$') ? 
             askingPriceStr : 
             `$${askingPriceStr}`;
-        }
-        // Handle number type
-        else if (typeof salon.asking_price === 'number') {
-          return `$${salon.asking_price}`;
         }
       }
       
@@ -107,7 +103,7 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
             alt={salon.name || 'Salon listing'}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
             businessName={salon.name || 'Salon'}
-            category={salon.category}
+            category={salon.category as any}
             showPremiumBadge={salon.isPremium}
             priority={true}
           />
