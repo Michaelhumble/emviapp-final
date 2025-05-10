@@ -18,6 +18,8 @@ export interface ListingPlan {
   duration: number;
   tag?: string;
   popular?: boolean;
+  vietnameseDescription?: string;
+  wasPrice?: number;
 }
 
 interface ListingPlanSelectorProps {
@@ -35,11 +37,14 @@ const ListingPlanSelector: React.FC<ListingPlanSelectorProps> = ({
   // Select a default plan if none is selected (the second option, which is standard)
   useEffect(() => {
     if (!selectedPlanId && jobPricingOptions.length > 1) {
-      // Auto select the second plan (standard)
+      // Auto select the second plan (featured)
       const defaultPlan = jobPricingOptions[1];
-      onSelectPlan(defaultPlan);
+      onSelectPlan({
+        ...defaultPlan,
+        duration: selectedDuration * 30 // Convert months to days
+      });
     }
-  }, [selectedPlanId, onSelectPlan]);
+  }, [selectedPlanId, onSelectPlan, selectedDuration]);
 
   // Handle duration change
   const handleDurationChange = (months: number) => {

@@ -1,251 +1,202 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { JobDetailsSubmission } from '@/types/job';
-
-// Define the form schema
-const formSchema = z.object({
-  title: z.string().min(3, {
-    message: "Job title must be at least 3 characters.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }),
-  location: z.string().min(2, {
-    message: "Location is required.",
-  }),
-  employment_type: z.string().optional(),
-  compensation_type: z.string().optional(),
-  compensation_details: z.string().optional(),
-  contact_info: z.object({
-    owner_name: z.string().optional(),
-    phone: z.string().optional(),
-    email: z.string().email().optional(),
-  }).optional(),
-  vietnamese_description: z.string().optional(),
-});
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobPostFormProps {
   onSubmit: (data: JobDetailsSubmission) => void;
 }
 
 const JobPostForm: React.FC<JobPostFormProps> = ({ onSubmit }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { t } = useTranslation();
+  const [isUrgent, setIsUrgent] = useState(false);
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<JobDetailsSubmission>({
     defaultValues: {
-      title: "",
-      description: "",
-      location: "",
-      employment_type: "full_time",
-      compensation_type: "hourly",
-      compensation_details: "",
+      title: '',
+      description: '',
+      vietnamese_description: '',
+      location: '',
+      compensation_type: 'hourly',
+      compensation_details: '',
+      employment_type: 'full-time',
       contact_info: {
-        owner_name: "",
-        phone: "",
-        email: "",
-      },
-      vietnamese_description: "",
-    },
+        owner_name: '',
+        phone: '',
+        email: ''
+      }
+    }
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values as JobDetailsSubmission);
+  const handleFormSubmit = (data: JobDetailsSubmission) => {
+    // Add the urgent flag
+    const enhancedData = {
+      ...data,
+      is_urgent: isUrgent
+    };
+    
+    onSubmit(enhancedData);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Experienced Nail Technician" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">{t("Job Details", "Chi tiết công việc")}</h2>
+        
+        <div className="space-y-3">
+          <div>
+            <Label htmlFor="title">{t("Job Title", "Tiêu đề công việc")} *</Label>
+            <Input 
+              id="title"
+              {...register('title', { required: true })}
+              placeholder={t("e.g. Nail Technician, Nail Artist", "vd: Thợ nail, Nghệ sĩ nail")}
+              className={errors.title ? "border-red-500" : ""}
+            />
+            {errors.title && <p className="text-red-500 text-sm mt-1">{t("Job title is required", "Vui lòng nhập tiêu đề công việc")}</p>}
+          </div>
 
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="City, State" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div>
+            <Label htmlFor="location">{t("Location", "Địa điểm")} *</Label>
+            <Input 
+              id="location"
+              {...register('location', { required: true })}
+              placeholder={t("e.g. San Jose, CA", "vd: San Jose, CA")}
+              className={errors.location ? "border-red-500" : ""}
+            />
+            {errors.location && <p className="text-red-500 text-sm mt-1">{t("Location is required", "Vui lòng nhập địa điểm")}</p>}
+          </div>
 
-              <FormField
-                control={form.control}
-                name="employment_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Employment Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select employment type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="full_time">Full-time</SelectItem>
-                        <SelectItem value="part_time">Part-time</SelectItem>
-                        <SelectItem value="contract">Contract</SelectItem>
-                        <SelectItem value="temporary">Temporary</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div>
+            <Label htmlFor="employment_type">{t("Employment Type", "Loại việc làm")}</Label>
+            <Select 
+              defaultValue="full-time" 
+              onValueChange={(value) => setValue('employment_type', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("Select employment type", "Chọn loại việc làm")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="full-time">{t("Full-time", "Toàn thời gian")}</SelectItem>
+                <SelectItem value="part-time">{t("Part-time", "Bán thời gian")}</SelectItem>
+                <SelectItem value="contract">{t("Contract", "Hợp đồng")}</SelectItem>
+                <SelectItem value="temporary">{t("Temporary", "Tạm thời")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-              <FormField
-                control={form.control}
-                name="compensation_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Compensation Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select compensation type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="hourly">Hourly</SelectItem>
-                        <SelectItem value="salary">Salary</SelectItem>
-                        <SelectItem value="commission">Commission</SelectItem>
-                        <SelectItem value="mixed">Mixed (Hourly + Commission)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div>
+            <Label htmlFor="compensation_type">{t("Compensation Type", "Hình thức trả lương")}</Label>
+            <Select 
+              defaultValue="hourly" 
+              onValueChange={(value) => setValue('compensation_type', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("Select compensation type", "Chọn hình thức trả lương")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="hourly">{t("Hourly", "Theo giờ")}</SelectItem>
+                <SelectItem value="commission">{t("Commission", "Hoa hồng")}</SelectItem>
+                <SelectItem value="salary">{t("Salary", "Lương")}</SelectItem>
+                <SelectItem value="mixed">{t("Mixed", "Kết hợp")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-              <FormField
-                control={form.control}
-                name="compensation_details"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Compensation Details</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. $18-25/hr + tips" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Description (English)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe job responsibilities, requirements, and benefits..." 
-                        className="min-h-[150px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="vietnamese_description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Description (Vietnamese - Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Mô tả công việc bằng tiếng Việt..." 
-                        className="min-h-[150px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-4 border-t pt-4 mt-4">
-                <h3 className="font-medium">Contact Information</h3>
-                
-                <FormField
-                  control={form.control}
-                  name="contact_info.owner_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contact Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="contact_info.phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Phone number" type="tel" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="contact_info.email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Email address" type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-end">
-          <Button type="submit">Continue to Review</Button>
+          <div>
+            <Label htmlFor="compensation_details">{t("Compensation Details", "Chi tiết lương")}</Label>
+            <Input 
+              id="compensation_details"
+              {...register('compensation_details')}
+              placeholder={t("e.g. $25-35/hr plus tips", "vd: $25-35/giờ cộng tiền típ")}
+            />
+          </div>
         </div>
-      </form>
-    </Form>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">{t("Job Description", "Mô tả công việc")}</h2>
+        
+        <div>
+          <Label htmlFor="description">{t("English Description", "Mô tả bằng tiếng Anh")}</Label>
+          <Textarea 
+            id="description"
+            {...register('description')}
+            placeholder={t("Describe the job, responsibilities, and requirements", "Mô tả công việc, trách nhiệm và yêu cầu")}
+            rows={5}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="vietnamese_description">{t("Vietnamese Description (Optional)", "Mô tả bằng tiếng Việt (Tùy chọn)")}</Label>
+          <Textarea 
+            id="vietnamese_description"
+            {...register('vietnamese_description')}
+            placeholder={t("Provide a Vietnamese translation to reach more candidates", "Cung cấp bản dịch tiếng Việt để tiếp cận nhiều ứng viên hơn")}
+            rows={5}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">{t("Contact Information", "Thông tin liên hệ")}</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="owner_name">{t("Contact Name", "Tên liên hệ")}</Label>
+            <Input 
+              id="owner_name"
+              {...register('contact_info.owner_name')}
+              placeholder={t("e.g. John Smith", "vd: Nguyễn Văn A")}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="email">{t("Email", "Email")}</Label>
+            <Input 
+              id="email"
+              type="email"
+              {...register('contact_info.email')}
+              placeholder={t("e.g. contact@yourcompany.com", "vd: lienhe@congty.com")}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="phone">{t("Phone Number", "Số điện thoại")}</Label>
+            <Input 
+              id="phone"
+              type="tel"
+              {...register('contact_info.phone')}
+              placeholder={t("e.g. (123) 456-7890", "vd: (123) 456-7890")}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="pt-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="is_urgent" 
+            checked={isUrgent} 
+            onCheckedChange={(checked) => setIsUrgent(checked as boolean)} 
+          />
+          <Label htmlFor="is_urgent" className="font-normal cursor-pointer">
+            {t("Mark as urgent hiring", "Đánh dấu là tuyển dụng khẩn cấp")}
+          </Label>
+        </div>
+      </div>
+
+      <div className="pt-4 border-t">
+        <Button type="submit" className="w-full md:w-auto">
+          {t("Continue to Select Plan", "Tiếp tục chọn gói đăng tin")}
+        </Button>
+      </div>
+    </form>
   );
 };
 
