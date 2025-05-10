@@ -34,6 +34,11 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
     console.log("Creating Stripe checkout session - START");
+    
+    // Parse request body to get any metadata
+    const requestData = await req.json().catch(() => ({}));
+    const metadata = requestData.metadata || {};
+    
     const session = await stripe.checkout.sessions.create({
       line_items: [{
         price_data: {
@@ -46,6 +51,7 @@ serve(async (req) => {
         quantity: 1,
       }],
       mode: 'payment',
+      metadata: metadata,
       success_url: 'https://emvi.app/payment-success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://emvi.app/payment-canceled',
     });

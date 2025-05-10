@@ -17,6 +17,7 @@ interface PaymentSuccessData {
   post_type?: string;
   payment_log_id?: string;
   pricing_tier?: string;
+  success?: boolean;
 }
 
 const PaymentSuccess: React.FC = () => {
@@ -36,7 +37,7 @@ const PaymentSuccess: React.FC = () => {
       setLoading(true);
       try {
         if (sessionId) {
-          console.log("Verifying checkout session:", sessionId);
+          console.log("Verifying checkout session with ID:", sessionId);
           // Call verify-checkout-session edge function with the session ID
           const { data, error: functionError } = await supabase.functions.invoke('verify-checkout-session', {
             body: { sessionId }
@@ -47,19 +48,25 @@ const PaymentSuccess: React.FC = () => {
             throw functionError;
           }
           
-          console.log("Checkout session verified:", data);
+          console.log("Checkout session verification response:", data);
           
-          if (data) {
-            setPostData({
-              post_id: data.post_id,
-              expires_at: data.expires_at,
-              post_type: data.post_type,
-              pricing_tier: data.pricing_tier,
-              payment_log_id: data.payment_log_id
-            });
+          if (!data || !data.success) {
+            throw new Error("Payment verification failed or payment is not completed");
           }
+          
+          setPostData({
+            post_id: data.post_id,
+            expires_at: data.expires_at,
+            post_type: data.post_type,
+            pricing_tier: data.pricing_tier,
+            payment_log_id: data.payment_log_id,
+            success: data.success
+          });
+          
+          console.log("Payment verified successfully. Job status updated to active.");
         } else if (paymentLogId) {
           // For cases where payment_log_id is directly provided
+          console.log("Using payment log ID for verification:", paymentLogId);
           const { data, error: dataError } = await supabase
             .from('payment_logs')
             .select('*')
@@ -68,16 +75,22 @@ const PaymentSuccess: React.FC = () => {
             
           if (dataError) throw dataError;
           
+          console.log("Payment log data:", data);
+          
           if (data) {
             setPostData({
               post_id: data.listing_id,
               expires_at: data.expires_at,
               post_type: data.plan_type,
-              payment_log_id: data.id
+              payment_log_id: data.id,
+              success: data.payment_status === 'success'
             });
+            
+            console.log("Payment log verified. Status:", data.payment_status);
           }
         } else {
           // No identifiers, probably direct navigation
+          console.error("No session ID or payment log ID found in URL");
           setError('No session ID or payment log ID found in URL');
         }
       } catch (err: any) {
@@ -122,8 +135,8 @@ const PaymentSuccess: React.FC = () => {
         <div className="container max-w-4xl py-12">
           <Card className="p-8">
             <div className="flex flex-col items-center justify-center space-y-6">
-              <Alert variant="error" className="mb-4">
-                <AlertTitle>{t('Error', 'Lỗi')}</AlertTitle>
+              <Alert variant="destructive" className="mb-4">
+                <AlertTitle>{t('Payment Verification Failed', 'Xác minh thanh toán thất bại')}</AlertTitle>
                 <AlertDescription>
                   {error}
                 </AlertDescription>
@@ -131,6 +144,35 @@ const PaymentSuccess: React.FC = () => {
               
               <Button 
                 onClick={navigateToDashboard}
+                variant="default"
+              >
+                {t('Go to Dashboard', 'Đi đến bảng điều khiển')}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+  
+  // If we didn't get a success flag in the response
+  if (!postData?.success) {
+    return (
+      <Layout>
+        <div className="container max-w-4xl py-12">
+          <Card className="p-8">
+            <div className="flex flex-col items-center justify-center space-y-6">
+              <Alert variant="destructive" className="mb-4">
+                <AlertTitle>{t('Payment Not Complete', 'Thanh toán chưa hoàn tất')}</AlertTitle>
+                <AlertDescription>
+                  {t('Your payment has not been completed or is still processing. Please check back later.', 
+                    'Thanh toán của bạn chưa hoàn tất hoặc đang được xử lý. Vui lòng kiểm tra lại sau.')}
+                </AlertDescription>
+              </Alert>
+              
+              <Button 
+                onClick={navigateToDashboard}
+                variant="default"
               >
                 {t('Go to Dashboard', 'Đi đến bảng điều khiển')}
               </Button>
@@ -142,6 +184,7 @@ const PaymentSuccess: React.FC = () => {
   }
   
   // Payment success view
+  console.log("Rendering success UI with data:", postData);
   return (
     <Layout>
       <div className="container max-w-4xl py-12">
