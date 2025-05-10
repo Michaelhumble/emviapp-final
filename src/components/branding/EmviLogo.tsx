@@ -7,7 +7,7 @@ interface EmviLogoProps {
   showText?: boolean;
 }
 
-export const EmviLogo: React.FC<EmviLogoProps> = ({ 
+const EmviLogo: React.FC<EmviLogoProps> = ({ 
   className = "", 
   size = "medium", 
   showText = true 

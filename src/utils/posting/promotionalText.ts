@@ -1,59 +1,147 @@
 
-import { PostType } from './types';
-
-export const getBasePrice = (postType: PostType, isFirstPost: boolean): number => {
-  if (isFirstPost) {
-    return postType === 'job' ? 9.99 : 19.99;
+export const generatePromotionalText = (userRole: string | null) => {
+  switch (userRole) {
+    case 'artist':
+    case 'nail technician/artist':
+      return "Showcase your artistry to potential clients";
+    case 'salon':
+    case 'owner':
+      return "Get more clients through your door";
+    case 'vendor':
+    case 'supplier':
+    case 'beauty supplier':
+      return "Reach more salons with your products";
+    case 'freelancer':
+      return "Find more clients for your services";
+    default:
+      return "Connect with more customers";
   }
-  return postType === 'job' ? 19.99 : 29.99;
 };
 
-export const getNationwidePrice = (postType: PostType): number => {
-  return postType === 'job' ? 15 : 25;
+export const getFirstPostPromotionalText = () => {
+  return "First-time posters get a special discount!";
 };
 
-export const getFastSalePackagePrice = (postType: PostType): number => {
-  return postType === 'job' ? 9.99 : 14.99;
+// Base pricing functions
+export const getBasePrice = (postType: string, isFirstPost: boolean): number => {
+  if (isFirstPost) {
+    return 0; // First post is free
+  }
+  
+  switch (postType) {
+    case 'job':
+      return 20;
+    case 'salon':
+      return 20;
+    case 'booth':
+      return 15;
+    case 'supply':
+      return 15;
+    default:
+      return 15;
+  }
 };
 
-export const getShowAtTopPrice = (postType: PostType): number => {
-  return postType === 'job' ? 19.99 : 29.99;
+export const getNationwidePrice = (postType: string): number => {
+  switch (postType) {
+    case 'job':
+      return 10;
+    case 'salon':
+      return 10;
+    case 'booth':
+      return 8;
+    case 'supply':
+      return 8;
+    default:
+      return 10;
+  }
 };
 
-export const getJobPostBundlePrice = (postType: PostType): number => {
-  return postType === 'salon' ? 14.99 : 0;
+export const getFastSalePackagePrice = (postType: string): number => {
+  switch (postType) {
+    case 'job':
+      return 15;
+    case 'salon':
+      return 30;
+    case 'booth':
+      return 10;
+    case 'supply':
+      return 10;
+    default:
+      return 15;
+  }
 };
 
-export const getSalonPostBundlePrice = (postType: PostType): number => {
-  return postType === 'job' ? 14.99 : 0;
+export const getShowAtTopPrice = (postType: string): number => {
+  switch (postType) {
+    case 'job':
+      return 12;
+    case 'salon':
+      return 15;
+    case 'booth':
+      return 10;
+    case 'supply':
+      return 10;
+    default:
+      return 12;
+  }
+};
+
+export const getJobPostBundlePrice = (postType: string): number => {
+  switch (postType) {
+    case 'salon':
+      return 10;
+    case 'booth':
+      return 12;
+    default:
+      return 10;
+  }
 };
 
 export const getPriceWithDiscount = (price: number, hasReferrals: boolean): number => {
-  if (!hasReferrals) return price;
+  if (hasReferrals) {
+    return Math.round(price * 0.8); // 20% off for users with referrals
+  }
+  return price;
+};
+
+export const getRenewalPrice = (postType: string, isNationwide: boolean, fastSalePackage: boolean, bundleWithJobPost: boolean) => {
+  let basePrice = 0;
   
-  // Apply 20% discount for users with referrals
-  return price * 0.8;
-};
-
-// Add missing functions that are being referenced in other files
-export const getRenewalPrice = (postType: PostType, isFirstRenewal: boolean): number => {
-  if (isFirstRenewal) {
-    return postType === 'job' ? 14.99 : 24.99;
+  switch (postType) {
+    case 'job':
+      basePrice = 15;
+      break;
+    case 'salon':
+      basePrice = 30;
+      break;
+    case 'booth':
+      basePrice = 20;
+      break;
+    default:
+      basePrice = 15;
   }
-  return postType === 'job' ? 19.99 : 29.99;
+  
+  if (isNationwide) basePrice += 10;
+  if (fastSalePackage) basePrice += 7;
+  if (bundleWithJobPost) basePrice += 12;
+  
+  return basePrice;
 };
 
-export const generatePromotionalText = (postType: PostType, isFirstPost: boolean): string => {
-  if (isFirstPost) {
-    return postType === 'job' 
-      ? "First job post discount - save 50%!" 
-      : "First salon post discount - save 33%!";
+// Helper function for PaymentConfirmationModal
+export const generatePromotionalText2 = (postType: string, stats: any, options: any): string => {
+  if (options.isFirstPost) {
+    return "Your first post is free! Future posts will help you grow your business even more.";
   }
-  return "";
-};
-
-export const getFirstPostPromotionalText = (postType: PostType): string => {
-  return postType === 'job' 
-    ? "First-time posters save 50%!" 
-    : "First-time posters save 33%!";
+  
+  if (postType === 'job') {
+    return "Hiring the right professionals will transform your business!";
+  } else if (postType === 'salon') {
+    return "The right buyer is looking for a salon just like yours!";
+  } else if (postType === 'booth') {
+    return "Fill your vacant booth with a talented artist quickly!";
+  } else {
+    return "Grow your business with EmviApp's specialized marketing tools!";
+  }
 };

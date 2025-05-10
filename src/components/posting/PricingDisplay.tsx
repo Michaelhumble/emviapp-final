@@ -1,25 +1,19 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { format, addMonths } from 'date-fns';
+import { CalendarIcon, CheckCircle2, RefreshCw } from 'lucide-react';
 
 interface PricingDisplayProps {
-  lineItems?: Array<{ name: string; price: number }>;
-  total?: number;
-  className?: string;
-  // Add new properties to match how it's being used
-  basePrice?: number;
-  duration?: number;
-  pricingId?: string;
-  autoRenew?: boolean;
-  originalPrice?: number;
-  finalPrice?: number;
-  discountPercentage?: number;
+  basePrice: number;
+  duration: number;
+  pricingId: string;
+  autoRenew: boolean;
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
 }
 
-const PricingDisplay: React.FC<PricingDisplayProps> = ({ 
-  lineItems = [], 
-  total = 0, 
-  className = '',
+const PricingDisplay: React.FC<PricingDisplayProps> = ({
   basePrice,
   duration,
   pricingId,
@@ -28,50 +22,73 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   finalPrice,
   discountPercentage
 }) => {
-  // Calculate line items if not provided directly
-  const calculatedLineItems = lineItems.length > 0 ? lineItems : [];
+  const futureDate = addMonths(new Date(), duration);
+  const formattedDate = format(futureDate, 'MMM d, yyyy');
+  const isFreePlan = pricingId === 'free';
   
-  // If we have the new format properties, create line items from them
-  if (basePrice !== undefined && duration !== undefined) {
-    // Clear existing items to avoid duplication
-    calculatedLineItems.length = 0;
-    
-    // Base price line item
-    calculatedLineItems.push({
-      name: `Base price${duration > 1 ? ` (${duration} months)` : ''}`,
-      price: basePrice * duration
-    });
-    
-    // If there's a discount (auto-renew or other)
-    if (discountPercentage && discountPercentage > 0) {
-      calculatedLineItems.push({
-        name: `${autoRenew ? 'Auto-renew' : 'Discount'} (${discountPercentage}%)`,
-        price: -(originalPrice || basePrice * duration) * (discountPercentage / 100)
-      });
-    }
-  }
-  
-  // Use provided total or calculate from finalPrice
-  const displayTotal = finalPrice !== undefined ? finalPrice : total;
-
   return (
-    <Card className={className}>
-      <CardContent className="p-5">
-        <h3 className="text-lg font-bold mb-4">Order Summary</h3>
-        <div className="space-y-2">
-          {calculatedLineItems.map((item, idx) => (
-            <div key={idx} className="flex justify-between items-center">
-              <span className="text-gray-700">{item.name}</span>
-              <span className="font-medium">${item.price.toFixed(2)}</span>
+    <div className="rounded-lg border bg-card p-4 mt-6">
+      <h3 className="font-semibold text-md mb-4">Listing Summary</h3>
+      
+      <div className="space-y-3 text-sm">
+        {isFreePlan ? (
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+              <span>Free listing</span>
             </div>
-          ))}
-        </div>
-        <div className="border-t mt-4 pt-4 flex justify-between items-center">
-          <span className="font-bold">Total</span>
-          <span className="font-bold text-lg">${displayTotal.toFixed(2)}</span>
-        </div>
-      </CardContent>
-    </Card>
+            <span>30 days</span>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                <span>Listing duration</span>
+              </div>
+              <span>{duration} {duration === 1 ? 'month' : 'months'}</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <CalendarIcon className="h-4 w-4 mr-2 text-slate-500" />
+                <span>Expires on</span>
+              </div>
+              <span>{formattedDate}</span>
+            </div>
+            
+            {autoRenew && (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <RefreshCw className="h-4 w-4 mr-2 text-blue-500" />
+                  <span>Auto-renew</span>
+                </div>
+                <span>Enabled</span>
+              </div>
+            )}
+            
+            <div className="border-t pt-2 mt-2">
+              <div className="flex justify-between items-center">
+                <span>Standard price</span>
+                <span>${originalPrice.toFixed(2)}</span>
+              </div>
+              
+              {discountPercentage > 0 && (
+                <div className="flex justify-between items-center text-green-600">
+                  <span>Discount ({discountPercentage}%)</span>
+                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center font-semibold mt-1">
+                <span>Total</span>
+                <span>${finalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 

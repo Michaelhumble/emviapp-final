@@ -1,390 +1,218 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import PostWizardLayout from '@/components/posting/PostWizardLayout';
+import AuthPostGuard from '@/components/posting/AuthPostGuard';
+import { Salon } from '@/types/salon';
+import { PricingOptions } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
+import PaymentConfirmationModal from '@/components/posting/PaymentConfirmationModal';
+import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import { useAuth } from '@/context/auth';
-import { useSalon } from '@/context/salon';
-import { PricingCards } from '@/components/posting';
-import { salonPricingOptions } from '@/utils/posting/salonPricing';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { cn } from '@/lib/utils';
-import { Checkbox } from "@/components/ui/checkbox"
+import { toast } from 'sonner';
 
-// Define the schema for the form
-const formSchema = z.object({
-  businessName: z.string().min(2, {
-    message: "Business name must be at least 2 characters.",
-  }),
-  address: z.string().min(2, {
-    message: "Address must be at least 2 characters.",
-  }),
-  city: z.string().min(2, {
-    message: "City must be at least 2 characters.",
-  }),
-  state: z.string().min(2, {
-    message: "State must be at least 2 characters.",
-  }),
-  zipCode: z.string().min(5, {
-    message: "Zip code must be at least 5 characters.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }),
-  website: z.string().url({
-    message: "Please enter a valid URL.",
-  }).optional(),
-  phone: z.string().min(10, {
-    message: "Phone number must be at least 10 characters.",
-  }).optional(),
-  email: z.string().email({
-    message: "Please enter a valid email.",
-  }).optional(),
-  instagram: z.string().url({
-    message: "Please enter a valid URL.",
-  }).optional(),
-  facebook: z.string().url({
-    message: "Please enter a valid URL.",
-  }).optional(),
-});
+// Mock sections that would normally be imported
+const SalonDetailsSection = ({ details, onChange }: any) => (
+  <div>Salon Details Section (Mock)</div>
+);
 
-// Define the steps for the form
-type Steps = 'details' | 'pricing' | 'success';
+const AmenitiesSection = ({ amenities, onChange }: any) => (
+  <div>Amenities Section (Mock)</div>
+);
 
-// Main component
-const SalonPost: React.FC = () => {
-  const { t } = useTranslation();
+const GallerySection = ({ gallery, onChange }: any) => (
+  <div>Gallery Section (Mock)</div>
+);
+
+const ContactInformationSection = ({ contactInfo, onChange }: any) => (
+  <div>Contact Information Section (Mock)</div>
+);
+
+const SalonPost = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { currentSalon } = useSalon();
+  const { t } = useTranslation();
   const { initiatePayment, isLoading } = usePostPayment();
 
-  // Form state
-  const [currentStep, setCurrentStep] = useState<Steps>('details');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isFirstPost, setIsFirstPost] = useState(false);
-  const [selectedPricing, setSelectedPricing] = useState('standard');
-  const [selectedDuration, setSelectedDuration] = useState(1);
-  const [autoRenew, setAutoRenew] = useState(false);
-
-  // React Hook Form setup
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      businessName: currentSalon?.name || "",
-      address: currentSalon?.address || "",
-      city: currentSalon?.city || "",
-      state: currentSalon?.state || "",
-      zipCode: currentSalon?.zip_code || "",
-      description: currentSalon?.description || "",
-      website: currentSalon?.website || "",
-      phone: currentSalon?.phone || "",
-      email: currentSalon?.email || "",
-      instagram: currentSalon?.instagram || "",
-      facebook: currentSalon?.facebook || "",
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [salonDetails, setSalonDetails] = useState<Partial<Salon>>({
+    name: '',
+    description: '',
+    amenities: [],
+    contact_info: {
+      owner_name: '',
+      phone: '',
+      email: ''
     },
-    mode: "onChange",
+    gallery: [] // This is now valid since we added it to the Salon interface
   });
-
-  // Destructure form methods
-  const { handleSubmit, control } = form;
-
-  // Check if it's the user's first post
-  useEffect(() => {
-    const checkFirstPost = async () => {
-      if (!user?.id) return;
-      // Placeholder: Replace with actual logic to check if it's the user's first post
-      setIsFirstPost(true);
-    };
-
-    checkFirstPost();
-  }, [user?.id]);
-
-  // Handle form submission
-  // Fix the handleSubmit function to work with the new response types from usePostPayment
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    if (currentStep === 'details') {
-      setCurrentStep('pricing');
+  
+  // Pricing options state
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    isFirstPost: true,
+    isNationwide: false,
+    fastSalePackage: false,
+    showAtTop: false,
+    bundleWithJobPost: false,
+    hasReferrals: false,
+    isHotListing: false,
+    isUrgent: false,
+    bundleWithSalonPost: false,
+    boostVisibility: false,
+    featuredListing: false,
+    extendedDuration: false,
+    selectedPricingTier: 'standard', // Default pricing tier
+    autoRenew: false
+  });
+  
+  const nextStep = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  // Handle form submission
-  // Fix the handleSubmit function to work with the new response types from usePostPayment
-  const handlePricingSubmit = async () => {
-    // Create the salon post data
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+  
+  const handleSalonDetailChange = (details: Partial<Salon>) => {
+    setSalonDetails({ ...salonDetails, ...details });
+  };
+  
+  const handlePricingChange = (pricingTier: string) => {
+    setPricingOptions({ ...pricingOptions, selectedPricingTier: pricingTier });
+  };
+  
+  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
+    setPricingOptions({ ...pricingOptions, ...options });
+  };
+  
+  const handleSubmit = async () => {
     try {
-      setIsSubmitting(true);
+      // Show loading state
+      toast.loading(
+        t("Processing your submission...", "Đang xử lý đơn của bạn..."),
+        { id: "salon-submission" }
+      );
       
-      // Set up pricing options
-      const pricingOptions = {
-        selectedPricingTier: selectedPricing,
-        durationMonths: selectedDuration,
-        autoRenew: autoRenew,
-        isFirstPost: isFirstPost
-      };
+      // Pass both salon details and pricing options to the payment hook
+      const result = await initiatePayment('salon', salonDetails, pricingOptions);
       
-      // Validate that price data in salonPricingOptions matches the selected tier
-      const selectedPricingOption = salonPricingOptions.find(option => option.id === selectedPricing);
-      if (!selectedPricingOption) {
-        toast.error("Invalid pricing option selected");
-        setIsSubmitting(false);
-        return;
-      }
+      // Clear loading state
+      toast.dismiss("salon-submission");
 
-      console.log(`Initiating payment with tier ${selectedPricing} (${selectedPricingOption.price})`);
-      
-      // Call the payment initiation function
-      const result = await initiatePayment('salon', { ...form.getValues(), name: form.getValues().businessName }, pricingOptions);
-      
       if (result.success) {
-        if (result.url) {
-          // For paid listings, redirect to Stripe
-          window.location.href = result.url;
-        } else {
-          // For free listings, redirect to success page
-          navigate(`/post-success?payment_log_id=${result.payment_log_id}&free=true`);
+        if (result.redirect) {
+          // For free posts, navigate to success page
+          if (result.redirect === '/post-success') {
+            navigate('/post-success', { 
+              state: { 
+                postType: 'salon',
+                postDetails: salonDetails,
+                pricingDetails: pricingOptions,
+                postData: result.data
+              } 
+            });
+          } else {
+            // For paid posts, redirect to Stripe
+            window.location.href = result.redirect;
+          }
         }
       } else {
-        toast.error("Failed to process payment. Please try again.");
+        toast.error(
+          t("There was a problem with your submission", "Có vấn đề với việc gửi đơn của bạn"),
+          { description: t("Please try again or contact support", "Vui lòng thử lại hoặc liên hệ hỗ trợ") }
+        );
       }
-    } catch (error: any) {
-      console.error("Error submitting salon post:", error);
-      toast.error(error.message || "An error occurred while submitting your post");
-    } finally {
-      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Salon post submission error:", error);
+      toast.error(
+        t("Submission error", "Lỗi khi gửi đơn"),
+        { description: t("Please check your details and try again", "Vui lòng kiểm tra thông tin của bạn và thử lại") }
+      );
     }
+  };
+  
+  const handleAmenitiesChange = (amenities: string[]) => {
+    setSalonDetails({ ...salonDetails, amenities: amenities });
+  };
+
+  const handleGalleryChange = (gallery: any[]) => {
+    setSalonDetails(prev => ({ ...prev, gallery })); // Now this is valid
+  };
+
+  const handleContactChange = (contactInfo: Salon['contact_info']) => {
+    setSalonDetails({ ...salonDetails, contact_info: contactInfo });
   };
 
   return (
-    <div className="container py-12">
-      <h1 className="text-3xl font-bold mb-6">{t("Post a Salon", "Đăng tin Salon")}</h1>
-
-      <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {currentStep === 'details' && (
-            <div className="space-y-4">
-              <FormField
-                control={control}
-                name="businessName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("Business Name", "Tên Salon")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t("Enter your business name", "Nhập tên Salon của bạn")} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("Address", "Địa chỉ")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t("Enter your address", "Nhập địa chỉ của bạn")} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex gap-4">
-                <FormField
-                  control={control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>{t("City", "Thành phố")}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("Enter your city", "Nhập thành phố của bạn")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name="state"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>{t("State", "Tiểu bang")}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("Enter your state", "Nhập tiểu bang của bạn")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name="zipCode"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>{t("Zip Code", "Mã bưu điện")}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("Enter your zip code", "Nhập mã bưu điện của bạn")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("Description", "Mô tả")}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t("Enter a description for your salon", "Nhập mô tả cho Salon của bạn")}
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="website"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("Website", "Trang web")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t("Enter your website URL", "Nhập URL trang web của bạn")} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex gap-4">
-                <FormField
-                  control={control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>{t("Phone", "Điện thoại")}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("Enter your phone number", "Nhập số điện thoại của bạn")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>{t("Email", "Email")}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t("Enter your email", "Nhập email của bạn")} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={control}
-                name="instagram"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("Instagram", "Instagram")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t("Enter your Instagram URL", "Nhập URL Instagram của bạn")} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="facebook"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("Facebook", "Facebook")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t("Enter your Facebook URL", "Nhập URL Facebook của bạn")} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          )}
-
-          {currentStep === 'pricing' && (
-            <div className="space-y-4">
-              <PricingCards
-                pricingOptions={salonPricingOptions}
-                selectedPricing={selectedPricing}
-                onChange={setSelectedPricing}
-                selectedDuration={selectedDuration}
-                onDurationChange={setSelectedDuration}
-              />
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="auto-renew"
-                  checked={autoRenew}
-                  onCheckedChange={setAutoRenew}
-                />
-                <Label htmlFor="auto-renew" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed">
-                  {t("Auto-Renew Subscription", "Tự động gia hạn đăng ký")}
-                </Label>
-              </div>
-            </div>
-          )}
-
-          {currentStep === 'details' && (
-            <Button type="submit" disabled={isLoading}>
-              {t("Next: Select Pricing", "Tiếp theo: Chọn giá")}
-            </Button>
-          )}
-
-          {currentStep === 'pricing' && (
-            <Button type="button" onClick={handlePricingSubmit} disabled={isLoading || isSubmitting}>
-              {isLoading || isSubmitting ? t("Submitting...", "Đang gửi...") : t("Submit", "Gửi")}
-            </Button>
-          )}
-        </form>
-      </Form>
-    </div>
+    <AuthPostGuard>
+      <div className="container mx-auto px-4">
+        <Link to="/" className="text-sm text-gray-500 hover:text-purple-600 underline mt-4 block">
+          {t('← Back to Home', '← Trở về Trang chủ')}
+        </Link>
+      </div>
+      <PostWizardLayout 
+        currentStep={currentStep} 
+        totalSteps={5} 
+        title={t("Post Your Salon", "Đăng Tin Salon")}
+        onNext={() => setCurrentStep(prev => prev + 1)}
+        onPrev={() => setCurrentStep(prev => prev - 1)}
+        onSubmit={handleSubmit}
+        isSubmitting={isLoading}
+      >
+        {currentStep === 1 && (
+          <SalonDetailsSection
+            details={salonDetails}
+            onChange={handleSalonDetailChange}
+          />
+        )}
+        {currentStep === 2 && (
+          <AmenitiesSection
+            amenities={salonDetails.amenities}
+            onChange={handleAmenitiesChange}
+          />
+        )}
+        {currentStep === 3 && (
+          <GallerySection
+            gallery={salonDetails.gallery || []}
+            onChange={handleGalleryChange}
+          />
+        )}
+        {currentStep === 4 && (
+          <ContactInformationSection
+            contactInfo={salonDetails.contact_info}
+            onChange={handleContactChange}
+          />
+        )}
+        {currentStep === 5 && (
+          <ReviewAndPaymentSection
+            postType="salon"
+            pricingOptions={pricingOptions}
+            onPricingChange={handlePricingChange}
+            onUpdatePricing={handleUpdatePricing}
+            onNextStep={nextStep}
+            onPrevStep={prevStep}
+            isFirstPost={pricingOptions.isFirstPost}
+            isSubmitting={isLoading}
+          />
+        )}
+      </PostWizardLayout>
+      
+      <PaymentConfirmationModal
+        open={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onOpenChange={setShowPaymentModal}
+        onConfirmPayment={handleSubmit}
+        amount={100} // Replace with actual calculated price
+        options={pricingOptions}
+        originalPrice={150} // Replace with actual original price
+        discountPercentage={10} // Replace with actual discount percentage
+      />
+    </AuthPostGuard>
   );
 };
 

@@ -1,154 +1,96 @@
 
-import { PricingOptions } from '@/types/pricing';
+import { PricingOptions, UserPostingStats } from "./types";
+import { 
+  getBasePrice, 
+  getNationwidePrice, 
+  getFastSalePackagePrice, 
+  getShowAtTopPrice,
+  getJobPostBundlePrice,
+  getPriceWithDiscount
+} from "./promotionalText";
 
-// Define salon pricing options with correct prices
-export interface SalonPricingOption {
-  id: string;
-  name: string;
-  tier: string;
-  price: number;
-  wasPrice?: number;
-  description: string;
-  vietnameseDescription?: string;
-  features: string[];
-  popular?: boolean;
-  tag?: string;
-  duration?: number; // Duration in months
-}
-
-// Price mapping for Stripe
-export const salonPricePriceMap: Record<string, string | null> = {
-  'free': null,
-  'standard': 'price_XXXX_SALON_STANDARD',
-  'gold': 'price_XXXX_SALON_GOLD',
-  'premium': 'price_XXXX_SALON_PREMIUM',
-  'diamond': 'price_XXXX_SALON_DIAMOND'
-};
-
-// Duration options for salon posts
-export const salonDurationOptions = [
-  { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },
-  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 15 },
-  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 }
-];
-
-// Salon pricing tiers
-export const salonPricingOptions: SalonPricingOption[] = [
-  {
-    id: 'free',
-    name: 'Free',
-    tier: 'free',
-    price: 0,
-    description: 'Basic salon listing for first-time posters only',
-    vietnameseDescription: 'Đăng tin cơ bản chỉ dành cho người đăng lần đầu',
-    features: [
-      'Basic visibility',
-      '30-day listing',
-      'First-time posters only'
-    ],
-    tag: 'First Post Only'
-  },
-  {
-    id: 'standard',
-    name: 'Standard',
-    tier: 'standard',
-    price: 19.99,
-    wasPrice: 29.99,
-    description: 'Essential visibility for basic salon posts',
-    vietnameseDescription: 'Khả năng hiển thị cơ bản cho bài đăng salon',
-    features: [
-      'Standard visibility',
-      'Email notifications',
-      'Basic analytics'
-    ]
-  },
-  {
-    id: 'gold',
-    name: 'Gold',
-    tier: 'gold',
-    price: 29.99,
-    wasPrice: 39.99,
-    description: 'Enhanced visibility with premium placement',
-    vietnameseDescription: 'Tăng cường hiển thị với vị trí ưu tiên',
-    features: [
-      'Featured listing',
-      'Top placement for 7 days',
-      'Email and SMS notifications',
-      'Enhanced analytics'
-    ],
-    popular: true,
-    tag: 'Most Popular'
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    tier: 'premium',
-    price: 39.99,
-    description: 'Maximum exposure for salon promotion',
-    vietnameseDescription: 'Phơi bày tối đa cho quảng cáo salon',
-    features: [
-      'Featured listing with highlighted tag',
-      'Top placement for 14 days',
-      'Email, SMS, and app notifications',
-      'Premium analytics',
-      'Dedicated account manager'
-    ],
-    tag: 'Best Value'
+export const calculateSalonPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
+  // Default to first post if stats not provided
+  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
+  const isRenewal = options.isRenewal ?? false;
+  
+  // Base price depends on whether it's the first post
+  let price = isRenewal ? 5 : getBasePrice('salon', isFirstPost);
+  
+  // Add nationwide visibility if selected
+  if (options.isNationwide) {
+    price += getNationwidePrice('salon');
   }
-];
-
-// Function to calculate final price with discounts
-export const calculateFinalPrice = (
-  basePrice: number,
-  durationMonths: number = 1,
-  pricingTier: string,
-  autoRenew: boolean = false
-): { originalPrice: number; finalPrice: number; discountPercentage: number } => {
-  // Free tier costs nothing
-  if (pricingTier === 'free') {
-    return { originalPrice: 0, finalPrice: 0, discountPercentage: 0 };
+  
+  // Add fast sale package if selected
+  if (options.fastSalePackage) {
+    price += getFastSalePackagePrice('salon');
   }
-
-  // Calculate original price based on duration
-  let originalPrice = basePrice * durationMonths;
   
-  // Find duration discount
-  const durationOption = salonDurationOptions.find(option => option.months === durationMonths);
-  const durationDiscount = durationOption?.discount || 0;
+  // Add show at top if selected
+  if (options.showAtTop) {
+    price += getShowAtTopPrice('salon');
+  }
   
-  // Apply auto-renew discount (5%)
-  const autoRenewDiscount = autoRenew ? 5 : 0;
+  // Add job post bundle if selected
+  if (options.bundleWithJobPost) {
+    price += getJobPostBundlePrice('salon');
+  }
   
-  // Calculate total discount percentage
-  const discountPercentage = durationDiscount + autoRenewDiscount;
+  // Apply discount if user has referrals
+  if (options.hasReferrals) {
+    price = getPriceWithDiscount(price, true);
+  }
   
-  // Apply discount
-  const finalPrice = originalPrice * (1 - discountPercentage / 100);
-  
-  return {
-    originalPrice,
-    finalPrice,
-    discountPercentage
-  };
+  return price;
 };
 
-// Validate pricing options
-export const validatePricingOptions = (pricingOptions?: PricingOptions): boolean => {
-  if (!pricingOptions) return false;
+export const getSalonPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
+  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
+  const isRenewal = options.isRenewal ?? false;
   
-  // Check if tier exists
-  const tier = pricingOptions.selectedPricingTier;
-  if (!tier) return false;
+  const summary: string[] = [];
   
-  // Validate tier exists in our pricing options
-  const pricingTier = salonPricingOptions.find(option => option.id === tier);
-  if (!pricingTier) return false;
+  // Base price line
+  if (isRenewal) {
+    summary.push(`Salon Listing Renewal: $5`);
+  } else {
+    const basePrice = getBasePrice('salon', isFirstPost);
+    summary.push(`${isFirstPost ? "First" : "Standard"} Salon Listing: $${basePrice}`);
+  }
   
-  return true;
-};
-
-// Get stripe price ID based on tier
-export const getStripePriceId = (tier: string): string | null => {
-  return salonPricePriceMap[tier] || null;
+  // Add nationwide visibility if selected
+  if (options.isNationwide) {
+    const nationwidePrice = getNationwidePrice('salon');
+    summary.push(`Nationwide Visibility: +$${nationwidePrice}`);
+  }
+  
+  // Add fast sale package if selected
+  if (options.fastSalePackage) {
+    const fastSalePrice = getFastSalePackagePrice('salon');
+    summary.push(`Premium Promotion: +$${fastSalePrice}`);
+  }
+  
+  // Add show at top if selected
+  if (options.showAtTop) {
+    const showAtTopPrice = getShowAtTopPrice('salon');
+    summary.push(`Featured Placement: +$${showAtTopPrice}`);
+  }
+  
+  // Add job post bundle if selected
+  if (options.bundleWithJobPost) {
+    const jobBundlePrice = getJobPostBundlePrice('salon');
+    summary.push(`Job Post Bundle: +$${jobBundlePrice}`);
+  }
+  
+  // Show discount if applicable
+  if (options.hasReferrals) {
+    summary.push(`Referral Discount: -20%`);
+  }
+  
+  // Total line
+  const totalPrice = calculateSalonPostPrice(options, stats);
+  summary.push(`Total: $${totalPrice}`);
+  
+  return summary;
 };
