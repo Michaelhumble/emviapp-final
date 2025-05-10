@@ -60,7 +60,12 @@ serve(async (req) => {
     console.log("Pricing tier:", pricingOptions?.selectedPricingTier);
 
     // Get origin for success and cancel URLs
-    const origin = req.headers.get("origin") || "http://localhost:3000";
+    const origin = req.headers.get("origin") || "https://emviapp-final.lovable.app";
+    
+    // Get referer for potential fallback
+    const referer = req.headers.get("referer") || origin;
+    // Extract base URL from referer if available
+    const baseUrl = new URL(referer).origin;
 
     // Handle free tier immediately without creating a Stripe session
     if (pricingOptions?.selectedPricingTier === "free") {
@@ -69,7 +74,7 @@ serve(async (req) => {
       // Free tier logic should be handled by create-free-post function
       return new Response(
         JSON.stringify({ 
-          url: `${origin}/post-success?free=true&post_type=${postType}` 
+          url: `${baseUrl}/post-success?free=true&post_type=${postType}` 
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -129,6 +134,12 @@ serve(async (req) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + durationDays);
 
+    // Create success and cancel URLs with the proper domain
+    const successUrl = new URL('/payment-success', baseUrl);
+    successUrl.searchParams.append('session_id', '{CHECKOUT_SESSION_ID}');
+    
+    const cancelUrl = new URL('/post-canceled', baseUrl);
+
     // Prepare metadata for the Stripe session
     const metadata = {
       user_id: user.id,
@@ -136,7 +147,8 @@ serve(async (req) => {
       pricing_tier: pricingOptions?.selectedPricingTier,
       expires_at: expiresAt.toISOString(),
       auto_renew: pricingOptions?.autoRenew ? "true" : "false",
-      post_id: temporaryJobId || ""
+      post_id: temporaryJobId || "",
+      origin: baseUrl // Store the origin for verification later
     };
     
     console.log("Creating checkout session with metadata:", metadata);
@@ -158,8 +170,8 @@ serve(async (req) => {
         },
       ],
       metadata: metadata,
-      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/post-canceled`,
+      success_url: successUrl.toString(),
+      cancel_url: cancelUrl.toString(),
     });
     
     console.log("Stripe session created:", session.id, "with URL:", session.url);
@@ -175,7 +187,7 @@ serve(async (req) => {
         expires_at: expiresAt.toISOString(),
         stripe_payment_id: session.id,
         auto_renew_enabled: pricingOptions?.autoRenew || false,
-        pricing_tier: pricingOptions?.selectedPricingTier
+        pricing_tier: pricingOptions?.selectedPricingTier || 'standard'
       });
 
     if (paymentLogError) {

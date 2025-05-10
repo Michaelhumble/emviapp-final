@@ -20,7 +20,10 @@ serve(async (req) => {
 
   try {
     // Parse request body
-    const { sessionId } = await req.json();
+    const requestData = await req.json();
+    const { sessionId } = requestData;
+    
+    console.log("Verifying checkout session:", sessionId);
 
     // Authentication check
     const authHeader = req.headers.get("Authorization");
@@ -61,12 +64,15 @@ serve(async (req) => {
       });
     }
 
+    console.log("Authenticated user:", user.id);
+
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
 
     // Retrieve the session
+    console.log("Retrieving Stripe session with ID:", sessionId);
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
       return new Response(JSON.stringify({ error: "Invalid session" }), {
@@ -75,10 +81,25 @@ serve(async (req) => {
       });
     }
 
+    console.log("Session retrieved, payment status:", session.payment_status);
+
     // Get metadata from the session
     const metadata = session.metadata || {};
+    console.log("Session metadata:", metadata);
+    
+    // Check if payment is complete
+    if (session.payment_status !== "paid") {
+      return new Response(JSON.stringify({ 
+        error: "Payment not completed", 
+        status: session.payment_status 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     
     // Find the related payment log
+    console.log("Looking up payment log for session:", sessionId);
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
       .select('*')
@@ -87,8 +108,44 @@ serve(async (req) => {
 
     if (paymentLogError) {
       console.error("Error fetching payment log:", paymentLogError);
+    } else {
+      console.log("Payment log found:", paymentLog.id);
     }
 
+    // If we have a post_id in metadata, update the job status
+    if (metadata.post_id) {
+      console.log("Updating job status for post ID:", metadata.post_id);
+      const { error: updateJobError } = await supabaseAdmin
+        .from('jobs')
+        .update({ 
+          status: 'active',
+          expires_at: metadata.expires_at
+        })
+        .eq('id', metadata.post_id);
+        
+      if (updateJobError) {
+        console.error("Error updating job status:", updateJobError);
+      } else {
+        console.log("Job status updated successfully");
+      }
+    }
+    
+    // Update payment log status
+    if (paymentLog?.id) {
+      console.log("Updating payment log status to success");
+      const { error: updateLogError } = await supabaseAdmin
+        .from('payment_logs')
+        .update({ payment_status: 'success' })
+        .eq('id', paymentLog.id);
+        
+      if (updateLogError) {
+        console.error("Error updating payment log:", updateLogError);
+      } else {
+        console.log("Payment log updated successfully");
+      }
+    }
+
+    console.log("Checkout verification completed successfully");
     return new Response(
       JSON.stringify({
         success: true,
@@ -96,7 +153,8 @@ serve(async (req) => {
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
         pricing_tier: metadata.pricing_tier || paymentLog?.pricing_tier,
-        payment_log_id: paymentLog?.id
+        payment_log_id: paymentLog?.id,
+        checkout_time: new Date().toISOString()
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -3,16 +3,36 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission, PricingOptions } from '@/types/job';
+import { PricingOptions } from '@/types/pricing';
 
+/**
+ * Hook for initiating post payments via Stripe
+ */
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
+  /**
+   * Initiates the payment process for a post
+   * @param postType - Type of post ('job' or 'salon')
+   * @param postDetails - Details of the post
+   * @param pricingOptions - Selected pricing options
+   * @returns Result object indicating success status
+   */
   const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
     setIsLoading(true);
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
+      
+      // Store checkout data in sessionStorage to handle browser redirects better
+      if (pricingOptions) {
+        sessionStorage.setItem('emvi_checkout_postType', postType);
+        sessionStorage.setItem('emvi_checkout_pricingTier', pricingOptions.selectedPricingTier || '');
+        if (pricingOptions.durationMonths) {
+          sessionStorage.setItem('emvi_checkout_duration', pricingOptions.durationMonths.toString());
+        }
+        sessionStorage.setItem('emvi_checkout_autoRenew', pricingOptions.autoRenew ? 'true' : 'false');
+      }
 
       // Handle free listings directly without going to Stripe
       if (pricingOptions?.selectedPricingTier === 'free') {

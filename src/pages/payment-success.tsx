@@ -1,159 +1,100 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Layout } from '@/components/layout';
-import { Container } from '@/components/ui/container';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, ArrowRight, AlertTriangle } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
-import { toast } from 'sonner';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-const PaymentSuccess = () => {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+interface PostSuccessData {
+  id?: string;
+  post_id?: string;
+  expires_at?: string;
+  post_type?: string;
+  payment_log_id?: string;
+  pricing_tier?: string;
+}
+
+const PaymentSuccess: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [postData, setPostData] = useState<PostSuccessData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [postData, setPostData] = useState<{
-    post_id: string;
-    post_type: string;
-    pricing_tier: string;
-    expires_at: string;
-  } | null>(null);
-
+  const [retries, setRetries] = useState(0);
+  const maxRetries = 3;
+  
+  const sessionId = searchParams.get('session_id');
+  
+  // Recover data from session storage if available (for cross-browser compatibility)
+  const storedPostType = sessionStorage.getItem('emvi_checkout_postType');
+  const storedPricingTier = sessionStorage.getItem('emvi_checkout_pricingTier');
+  
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
-    const paymentLogId = searchParams.get('payment_log_id');
-    const isFreePost = searchParams.get('free') === 'true';
-    
-    // Handle different payment verification paths
-    const verifyPayment = async () => {
+    // If we have a session ID, verify the checkout session
+    const verifyCheckoutSession = async () => {
+      setLoading(true);
+      setError(null);
+      
       try {
-        setLoading(true);
-        
-        if (isFreePost) {
-          // For free posts, we just need to get the payment log info
-          if (paymentLogId) {
-            const { data, error } = await supabase
-              .from('payment_logs')
-              .select('*')
-              .eq('id', paymentLogId)
-              .single();
-              
-            if (error) throw error;
-            
-            if (data) {
-              setPostData({
-                post_id: data.listing_id,
-                post_type: data.plan_type,
-                pricing_tier: 'free',
-                expires_at: data.expires_at
-              });
-              
-              toast.success(
-                t("Your free post has been published!", "Bài đăng miễn phí của bạn đã được xuất bản!"), {
-                description: t(
-                  "Your post is now live and visible to everyone.",
-                  "Bài đăng của bạn hiện đã xuất bản và hiển thị với tất cả mọi người."
-                )
-              });
-            }
-          } else {
-            // Generic free post success without specific ID
-            setPostData({
-              post_id: '',
-              post_type: searchParams.get('post_type') || 'job',
-              pricing_tier: 'free',
-              expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-            });
-          }
-        } else if (sessionId) {
-          // For paid posts, verify the payment status with Stripe
-          console.log("Verifying Stripe session:", sessionId);
-          
+        if (sessionId) {
+          console.log("Verifying checkout session:", sessionId);
           const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
             body: { sessionId }
           });
           
           if (error) {
+            console.error("Verification error:", error);
             throw error;
           }
           
-          if (data?.success) {
+          if (data) {
+            console.log("Verification successful:", data);
             setPostData({
-              post_id: data.post_id || '',
-              post_type: data.post_type || 'job',
-              pricing_tier: data.pricing_tier || 'standard',
-              expires_at: data.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+              post_id: data.post_id,
+              expires_at: data.expires_at,
+              post_type: data.post_type || storedPostType || 'job',
+              pricing_tier: data.pricing_tier || storedPricingTier || 'standard',
+              payment_log_id: data.payment_log_id
             });
             
-            toast.success(
-              t("Payment successful!", "Thanh toán thành công!"), {
-              description: t(
-                "Your post has been published and is now live.",
-                "Bài đăng của bạn đã được xuất bản và hiện đã hoạt động."
-              )
-            });
+            // Clear session storage after successful verification
+            sessionStorage.removeItem('emvi_checkout_postType');
+            sessionStorage.removeItem('emvi_checkout_pricingTier');
+            sessionStorage.removeItem('emvi_checkout_duration');
+            sessionStorage.removeItem('emvi_checkout_autoRenew');
+            
+            setLoading(false);
           } else {
-            throw new Error(data?.error || "Payment verification failed");
+            throw new Error("No data returned from verification");
           }
         } else {
-          // No identifiers, probably direct navigation
-          setError("No payment information found. Please try posting again.");
-          toast.error(t("Invalid payment information", "Thông tin thanh toán không hợp lệ"));
+          // No session ID - redirect to post success page
+          console.log("No session ID found, redirecting to post success");
+          navigate('/post-success', { replace: true });
         }
-      } catch (error: any) {
-        console.error("Payment verification error:", error);
-        setError(error.message || "There was an issue verifying your payment");
-        toast.error(
-          t("Payment verification failed", "Xác minh thanh toán thất bại"), {
-          description: t(
-            "There was an issue verifying your payment. Please contact support.",
-            "Đã xảy ra sự cố khi xác minh thanh toán của bạn. Vui lòng liên hệ hỗ trợ."
-          )
-        });
-      } finally {
-        setLoading(false);
+      } catch (err: any) {
+        console.error("Error in verification:", err);
+        
+        // If we haven't exceeded max retries, try again
+        if (retries < maxRetries) {
+          console.log(`Retrying verification (${retries + 1}/${maxRetries})...`);
+          setRetries(prev => prev + 1);
+          setTimeout(verifyCheckoutSession, 1500); // Wait 1.5 seconds before retry
+        } else {
+          setError(err.message || "Failed to verify payment. Please check your dashboard for status.");
+          setLoading(false);
+        }
       }
     };
     
-    verifyPayment();
-  }, [searchParams, navigate, t]);
+    verifyCheckoutSession();
+  }, [sessionId, navigate, retries, storedPostType, storedPricingTier]);
   
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString();
-  };
-  
-  const getTierLabel = (tier: string) => {
-    switch (tier) {
-      case 'diamond':
-        return t('Diamond', 'Kim Cương');
-      case 'premium':
-        return t('Premium', 'Cao Cấp');
-      case 'gold':
-        return t('Gold', 'Vàng');
-      case 'standard':
-        return t('Standard', 'Tiêu Chuẩn');
-      case 'free':
-        return t('Free', 'Miễn Phí');
-      default:
-        return tier;
-    }
-  };
-  
-  const getPostTypeLabel = (type: string) => {
-    switch (type) {
-      case 'job':
-        return t('Job Post', 'Đăng Việc Làm');
-      case 'salon':
-        return t('Salon Listing', 'Đăng Tiệm');
-      default:
-        return t('Post', 'Bài Đăng');
-    }
-  };
-
   const navigateToDashboard = () => {
     navigate('/dashboard');
   };
@@ -161,61 +102,65 @@ const PaymentSuccess = () => {
   const navigateToJobs = () => {
     navigate('/jobs');
   };
-
+  
   if (loading) {
     return (
       <Layout>
-        <Container className="py-12 max-w-4xl">
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <div className="py-12">
-              <div className="h-16 w-16 border-4 border-t-primary border-r-primary border-b-gray-200 border-l-gray-200 rounded-full animate-spin mx-auto"></div>
-              <p className="mt-4 text-gray-600 text-center">{t("Verifying payment...", "Đang xác minh thanh toán...")}</p>
-            </div>
-          </div>
-        </Container>
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <Container className="py-12 max-w-4xl">
-          <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="container max-w-4xl py-12">
+          <Card className="p-8">
             <div className="flex flex-col items-center justify-center space-y-4">
-              <div className="bg-red-100 p-3 rounded-full">
-                <AlertTriangle className="h-8 w-8 text-red-600" />
-              </div>
-              <h1 className="text-2xl font-bold text-center">
-                {t("Payment Verification Error", "Lỗi Xác Minh Thanh Toán")}
-              </h1>
-              <p className="text-red-600 text-center max-w-md">
-                {t(error, error)}
-              </p>
-              <div className="mt-6">
-                <Button onClick={() => navigate('/post-job')} variant="default">
-                  {t("Try Again", "Thử Lại")}
-                </Button>
-              </div>
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <h1 className="text-xl font-medium">Verifying your payment...</h1>
+              <p className="text-muted-foreground">Please wait while we confirm your payment with Stripe.</p>
             </div>
-          </div>
-        </Container>
+          </Card>
+        </div>
       </Layout>
     );
   }
   
-  // Post success view
+  if (error) {
+    return (
+      <Layout>
+        <div className="container max-w-4xl py-12">
+          <Card className="p-8">
+            <div className="flex flex-col items-center justify-center space-y-6">
+              <Alert variant="destructive" className="mb-4">
+                <AlertTitle>Payment verification error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+              
+              <p className="text-center">
+                Your payment may still have been processed. Please check your dashboard to confirm your listing status.
+              </p>
+              
+              <div className="flex gap-4">
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Try Again
+                </Button>
+                <Button onClick={navigateToDashboard}>
+                  Go to Dashboard
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+  
+  // Payment success view
   return (
     <Layout>
-      <Container className="py-12 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-md p-8">
+      <div className="container max-w-4xl py-12">
+        <Card className="p-8">
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="rounded-full bg-green-100 p-3">
-              <Check className="h-12 w-12 text-green-600" />
+              <CheckCircle className="h-12 w-12 text-green-600" />
             </div>
             
             <h1 className="text-3xl font-bold text-center">
-              {t('Congratulations!', 'Chúc mừng!')}
+              {t('Payment Successful!', 'Thanh toán thành công!')}
             </h1>
             
             <p className="text-xl text-center text-gray-700">
@@ -224,32 +169,16 @@ const PaymentSuccess = () => {
                 : t('Your salon listing has been successfully published!', 'Thông tin về salon của bạn đã được đăng thành công!')}
             </p>
             
-            {postData?.expires_at && (
-              <p className="text-gray-600">
-                {t('Your listing expires on', 'Tin của bạn hết hạn vào')}: {formatDate(postData.expires_at)}
+            {postData?.pricing_tier && (
+              <p className="text-center font-medium">
+                {t('Plan', 'Gói')}: {postData.pricing_tier.charAt(0).toUpperCase() + postData.pricing_tier.slice(1)}
               </p>
             )}
             
-            {postData && (
-              <div className="bg-gray-50 p-6 rounded-lg w-full max-w-md">
-                <h3 className="font-medium mb-4">
-                  {t("Post Details", "Chi Tiết Bài Đăng")}
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">{t("Type", "Loại")}:</span>
-                    <span className="font-medium">{getPostTypeLabel(postData.post_type)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">{t("Tier", "Cấp")}:</span>
-                    <span className="font-medium">{getTierLabel(postData.pricing_tier)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">{t("Expires", "Hết hạn")}:</span>
-                    <span className="font-medium">{formatDate(postData.expires_at)}</span>
-                  </div>
-                </div>
-              </div>
+            {postData?.expires_at && (
+              <p className="text-gray-600">
+                {t('Your listing expires on', 'Tin của bạn hết hạn vào')}: {new Date(postData.expires_at).toLocaleDateString()}
+              </p>
             )}
             
             <div className="w-full flex flex-col md:flex-row gap-4 pt-6">
@@ -270,8 +199,8 @@ const PaymentSuccess = () => {
               </Button>
             </div>
           </div>
-        </div>
-      </Container>
+        </Card>
+      </div>
     </Layout>
   );
 };
