@@ -80,12 +80,16 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
   const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
   
-  const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
+  const pricingResult = calculateFinalPrice(
     basePrice,
     selectedDuration,
     selectedPricing,
     autoRenew
   );
+  
+  const originalPrice = pricingResult.originalPrice;
+  const finalPrice = pricingResult.finalPrice;
+  const discountPercentage = pricingResult.discountPercentage;
 
   return (
     <div className="space-y-6">

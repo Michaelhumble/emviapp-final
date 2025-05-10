@@ -44,13 +44,12 @@ const JobPost: React.FC = () => {
         // Add safeguards for the returned result
         if (result?.success) {
           // Handle successful payment initiation
-          if (result.hasOwnProperty('redirect') && result.redirect) {
+          if (result && 'redirect' in result && result.redirect) {
             // If there's a redirect URL in the response, follow it
-            window.location.href = typeof result.redirect === 'string' ? result.redirect : '/payment';
-          }
-          
-          // Handle case where there's data but no redirect
-          if (result.hasOwnProperty('data')) {
+            const redirectUrl = typeof result.redirect === 'string' ? result.redirect : '/payment';
+            window.location.href = redirectUrl;
+          } else if (result && 'data' in result) {
+            // Handle case where there's data but no redirect
             toast.success("Job post submitted successfully!");
             navigate('/dashboard');
           }

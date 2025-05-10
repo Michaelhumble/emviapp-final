@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 const formatPrice = (price: string | number | undefined): string => {
@@ -25,3 +26,11 @@ const formatPrice = (price: string | number | undefined): string => {
     minimumFractionDigits: 0
   });
 };
+
+const SimpleSalonDetailPage: React.FC = () => {
+  return (
+    <div>Simple Salon Detail Page</div>
+  );
+};
+
+export default SimpleSalonDetailPage;
