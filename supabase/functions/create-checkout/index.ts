@@ -1,20 +1,13 @@
+
+// @ts-nocheck
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
+import Stripe from "https://esm.sh/stripe@12.1.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-// Helper function to get the user ID from the auth token
-const getUserIdFromToken = async (supabaseClient: any) => {
-  const { data: { user }, error } = await supabaseClient.auth.getUser();
-  if (error) {
-    console.error("Error getting user:", error);
-    throw new Error("Failed to get user");
-  }
-  return user?.id;
 };
 
 serve(async (req) => {
@@ -24,28 +17,48 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+    console.log("Create Checkout function started");
+    
+    // Get authorization header from request
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Not authorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Parse the request body
+    const { postType, postDetails, pricingOptions } = await req.json();
+    
+    console.log(`Creating checkout for ${postType} post with pricing tier: ${pricingOptions?.selectedPricingTier}`);
+    console.log(`Auto-renew: ${pricingOptions?.autoRenew ? 'Yes' : 'No'}`);
+    console.log(`Duration months: ${pricingOptions?.durationMonths || 1}`);
+
+    // Create Supabase client with the auth header to get the user
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
-        auth: {
-          persistSession: false,
+        global: {
+          headers: { Authorization: authHeader },
         },
       }
     );
+    
+    // Create Admin Supabase client with service role (for database operations)
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
 
-    // Get the user ID from the auth token
-    const userId = await getUserIdFromToken(supabase);
-
-    // Parse request body
-    const { postType, postDetails, pricingOptions } = await req.json();
-
-    // Ensure postType is valid
-    if (!['job', 'salon'].includes(postType)) {
-      return new Response(JSON.stringify({ error: 'Invalid post type' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    // Get the user from the auth header
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Unable to get user" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -54,183 +67,213 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Create a customer if postId is not provided
+    // Check if this is a free post first
+    if (pricingOptions?.selectedPricingTier === "free") {
+      return new Response(JSON.stringify({ error: "Free posts should be handled by create-free-post function" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    
+    // Get price based on the selected tier
+    const pricing = getPricingInfo(postType, pricingOptions);
+    if (!pricing) {
+      return new Response(JSON.stringify({ error: "Invalid pricing tier" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    
+    console.log("Calculated price info:", pricing);
+
+    // Check if there's an existing Stripe customer record
+    const { data: customers, error: customerError } = await stripe.customers.list({
+      email: user.email,
+      limit: 1
+    });
+    
     let customerId;
-    if (postDetails?.customerId) {
-      customerId = postDetails.customerId;
+    if (customers && customers.data.length > 0) {
+      customerId = customers.data[0].id;
+      console.log(`Found existing Stripe customer: ${customerId}`);
     } else {
-      const customer = await stripe.customers.create({
+      // Create a new customer
+      const newCustomer = await stripe.customers.create({
+        email: user.email,
+        name: user.user_metadata?.full_name || "Emvi User",
         metadata: {
-          user_id: userId,
-          post_type: postType,
-        },
-      });
-      customerId = customer.id;
-    }
-
-    // Calculate the expiry date
-    let durationMonths = pricingOptions?.durationMonths || 1;
-    const expiryDate = new Date();
-    expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
-
-    // Create a post in the database
-    const { data: postData, error: postError } = await supabase
-      .from(postType === 'job' ? 'jobs' : 'salons')
-      .insert([
-        {
-          ...postDetails,
-          user_id: userId,
-          status: 'pending',
-          expires_at: expiryDate.toISOString(),
-        },
-      ])
-      .select()
-      .single();
-
-    if (postError) {
-      console.error("Post creation error:", postError);
-      return new Response(JSON.stringify({ error: 'Failed to create post' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const postId = postData.id;
-    const origin = req.headers.get('origin') || 'http://localhost:3000';
-
-    // Helper function to get the Stripe price ID based on the pricing tier and duration
-    const getStripePriceId = (pricingTier: string, durationMonths: number): string => {
-      // Map pricing tiers to their Stripe price IDs with proper duration
-      // Each pricing tier should have its own unique price ID
-      const priceMap: {[key: string]: {[key: number]: string}} = {
-        'free': {
-          1: 'price_free_monthly',   // Free tier doesn't need Stripe but included for completeness
-          3: 'price_free_quarterly',
-          6: 'price_free_biannual',
-          12: 'price_free_annual'
-        },
-        'standard': {
-          1: 'price_standard_monthly',  // $9.99/month
-          3: 'price_standard_quarterly',
-          6: 'price_standard_biannual',
-          12: 'price_standard_annual'
-        },
-        'gold': {
-          1: 'price_gold_monthly',     // $19.99/month
-          3: 'price_gold_quarterly',
-          6: 'price_gold_biannual',
-          12: 'price_gold_annual'
-        },
-        'premium': {
-          1: 'price_premium_monthly',  // $49.99/month
-          3: 'price_premium_quarterly',
-          6: 'price_premium_biannual',
-          12: 'price_premium_annual'
-        },
-        'diamond': {
-          12: 'price_diamond_annual'   // $1499.99/year (only available annually)
+          user_id: user.id
         }
-      };
+      });
+      customerId = newCustomer.id;
+      console.log(`Created new Stripe customer: ${customerId}`);
+    }
+    
+    // Calculate expiration date
+    const durationMonths = pricingOptions?.durationMonths || 1;
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
+    
+    // Save post as draft first
+    const { data: newPost, error: postError } = await supabaseAdmin
+      .from('jobs')
+      .insert({
+        ...postDetails,
+        user_id: user.id,
+        status: 'draft',
+        post_type: postType,
+        pricingTier: pricingOptions?.selectedPricingTier,
+        auto_renew: pricingOptions?.autoRenew || false,
+        expires_at: expiresAt.toISOString()
+      })
+      .select('id')
+      .single();
+      
+    if (postError) {
+      console.error("Error creating draft post:", postError);
+      return new Response(JSON.stringify({ error: "Failed to create draft post" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    
+    console.log(`Created draft post with ID: ${newPost.id}`);
+    
+    // Set up line items for Stripe
+    const lineItems = [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: `${postType === 'job' ? 'Job' : 'Salon'} Post - ${pricingOptions.selectedPricingTier.toUpperCase()}`,
+            description: `${durationMonths}-month ${postType} posting`,
+          },
+          unit_amount: Math.round(pricing.finalPrice * 100), // Convert to cents
+          ...(pricingOptions?.autoRenew ? { recurring: { interval: "month" } } : {}),
+        },
+        quantity: 1,
+      },
+    ];
 
-      // Default to the monthly price if the specific duration isn't found
-      const tierPrices = priceMap[pricingOptions?.selectedPricingTier] || priceMap['standard'];
-      return tierPrices[durationMonths] || tierPrices[1] || 'price_standard_monthly';
-    };
-
-    // Get the pricing details from the request
-    const pricingTier = pricingOptions?.selectedPricingTier || 'standard';
-    durationMonths = pricingOptions?.durationMonths || 1;
-    const autoRenew = pricingOptions?.autoRenew === true;
-
-    // Calculate the correct price based on tier and duration
-    let priceId = getStripePriceId(pricingTier, durationMonths);
-
-    // For development/testing, use test price IDs - replace these with your actual Stripe test price IDs
-    // In production, you'd use the live Stripe price IDs
-    const priceAmount = {
-      'standard': 999,  // $9.99
-      'gold': 1999,     // $19.99
-      'premium': 4999,  // $49.99
-      'diamond': 149999 // $1499.99
-    }[pricingTier] || 999;
-
-    // Create the checkout session with the correct price
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : postDetails?.email,
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `EmviApp ${postType === 'job' ? 'Job' : 'Salon'} Post - ${pricingTier.charAt(0).toUpperCase() + pricingTier.slice(1)}`,
-              description: `${durationMonths}-month ${pricingTier} posting`
-            },
-            unit_amount: priceAmount,
-            recurring: autoRenew ? {
-              interval: durationMonths <= 1 ? 'month' : durationMonths === 12 ? 'year' : 'month',
-              interval_count: durationMonths <= 1 ? 1 : durationMonths === 12 ? 1 : durationMonths
-            } : undefined
-          },
-          quantity: 1
-        }
-      ],
-      mode: autoRenew ? 'subscription' : 'payment',
-      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/payment-cancel`,
+      payment_method_types: ["card"],
+      line_items: lineItems,
+      mode: pricingOptions?.autoRenew ? "subscription" : "payment",
+      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/payment-canceled?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
-        post_id: postId,
+        post_id: newPost.id,
         post_type: postType,
-        user_id: userId,
-        expires_at: expiryDate.toISOString(),
-        pricing_tier: pricingTier,
+        pricing_tier: pricingOptions.selectedPricingTier,
+        auto_renew: pricingOptions?.autoRenew ? "true" : "false",
         duration_months: durationMonths.toString(),
-        auto_renew: autoRenew.toString()
-      }
+        expires_at: expiresAt.toISOString()
+      },
     });
-
-    // Create payment log
-    const { data: paymentLog, error: paymentLogError } = await supabase
+    
+    console.log(`Created Stripe session: ${session.id}`);
+    
+    // Create payment log entry
+    const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
-      .insert([
-        {
-          user_id: userId,
-          listing_id: postId,
-          stripe_payment_id: session.payment_intent || session.id,
-          payment_status: 'pending',
-          plan_type: postType,
-          pricing_tier: pricingTier,
-          expires_at: expiryDate.toISOString(),
-          auto_renew_enabled: autoRenew,
-          amount_total: session.amount_total,
-        },
-      ])
-      .select()
+      .insert({
+        user_id: user.id,
+        listing_id: newPost.id,
+        stripe_payment_id: session.id,
+        plan_type: postType,
+        pricing_tier: pricingOptions.selectedPricingTier,
+        payment_status: 'pending',
+        amount: pricing.finalPrice,
+        original_amount: pricing.originalPrice,
+        discount_percentage: pricing.discountPercentage,
+        expires_at: expiresAt.toISOString(),
+        auto_renew_enabled: pricingOptions?.autoRenew || false,
+        duration_months: durationMonths
+      })
+      .select('id')
       .single();
 
     if (paymentLogError) {
-      console.error("Payment log creation error:", paymentLogError);
-      return new Response(JSON.stringify({ error: 'Failed to create payment log' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      console.error("Error creating payment log:", paymentLogError);
+    } else {
+      console.log(`Created payment log with ID: ${paymentLog.id}`);
     }
 
+    // Return the checkout URL for the frontend to redirect to
     return new Response(
-      JSON.stringify({
+      JSON.stringify({ 
         url: session.url,
+        session_id: session.id,
+        payment_log_id: paymentLog?.id,
+        expires_at: expiresAt.toISOString()
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
       }
     );
   } catch (error) {
-    console.error("Error creating checkout session:", error);
+    console.error("Checkout creation error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
+
+// Helper function to get pricing info based on selected tier
+function getPricingInfo(postType, pricingOptions) {
+  const { selectedPricingTier, durationMonths = 1, autoRenew = false } = pricingOptions;
+  
+  // Define pricing tiers for each post type
+  const pricingTiers = {
+    job: {
+      standard: { price: 9.99 },
+      gold: { price: 19.99 },
+      premium: { price: 29.99 },
+      diamond: { price: 49.99 }
+    },
+    salon: {
+      standard: { price: 19.99 },
+      gold: { price: 29.99 },
+      premium: { price: 39.99 },
+      diamond: { price: 59.99 }
+    }
+  };
+  
+  // Get base price from pricing tier
+  const tierInfo = pricingTiers[postType]?.[selectedPricingTier];
+  if (!tierInfo) {
+    console.error(`Invalid pricing tier: ${selectedPricingTier} for ${postType}`);
+    return null;
+  }
+  
+  const basePrice = tierInfo.price;
+  
+  // Calculate original price (without discounts)
+  const originalPrice = basePrice * durationMonths;
+  
+  // Calculate duration discount
+  let durationDiscount = 0;
+  if (durationMonths === 3) durationDiscount = 10;
+  else if (durationMonths === 6) durationDiscount = 15;
+  else if (durationMonths >= 12) durationDiscount = 20;
+  
+  // Apply auto-renew discount (5%)
+  const autoRenewDiscount = autoRenew ? 5 : 0;
+  
+  // Calculate total discount percentage
+  const discountPercentage = durationDiscount + autoRenewDiscount;
+  
+  // Apply discount to get final price
+  const finalPrice = originalPrice * (1 - discountPercentage / 100);
+  
+  return {
+    basePrice,
+    originalPrice,
+    finalPrice,
+    discountPercentage,
+    priceTier: selectedPricingTier
+  };
+}

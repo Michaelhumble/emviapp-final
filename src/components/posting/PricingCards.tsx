@@ -2,7 +2,8 @@
 import React from 'react';
 import PricingCard from './PricingCard';
 
-interface PricingOption {
+// Update the interface to match how it's being used
+export interface PricingOption {
   id: string;
   name: string;
   price: number;
@@ -11,22 +12,38 @@ interface PricingOption {
   features: string[];
   popular?: boolean;
   tag?: string;
+  tier?: string;
 }
 
-interface PricingCardsProps {
-  options: PricingOption[];
-  selectedOption: string;
-  onSelectOption: (id: string) => void;
+export interface PricingCardsProps {
+  options?: PricingOption[];
+  pricingOptions?: PricingOption[];
+  selectedOption?: string;
+  selectedPricing?: string;
+  onSelectOption?: (id: string) => void;
+  onChange?: (id: string) => void;
+  selectedDuration?: number;
+  onDurationChange?: (duration: number) => void;
 }
 
 const PricingCards: React.FC<PricingCardsProps> = ({
   options,
+  pricingOptions,
   selectedOption,
-  onSelectOption
+  selectedPricing,
+  onSelectOption,
+  onChange,
+  selectedDuration,
+  onDurationChange
 }) => {
+  // Use either the options or pricingOptions prop (for backward compatibility)
+  const displayOptions = pricingOptions || options || [];
+  const selectedId = selectedPricing || selectedOption || '';
+  const handleSelect = onChange || onSelectOption || (() => {});
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {options.map((option) => (
+      {displayOptions.map((option) => (
         <PricingCard
           key={option.id}
           id={option.id}
@@ -35,10 +52,10 @@ const PricingCards: React.FC<PricingCardsProps> = ({
           wasPrice={option.wasPrice}
           description={option.description}
           features={option.features}
-          isSelected={selectedOption === option.id}
+          isSelected={selectedId === option.id}
           popular={option.popular}
           tag={option.tag}
-          onSelect={onSelectOption}
+          onSelect={handleSelect}
         />
       ))}
     </div>

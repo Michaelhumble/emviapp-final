@@ -34,3 +34,26 @@ export const getPriceWithDiscount = (price: number, hasReferrals: boolean): numb
   // Apply 20% discount for users with referrals
   return price * 0.8;
 };
+
+// Add missing functions that are being referenced in other files
+export const getRenewalPrice = (postType: PostType, isFirstRenewal: boolean): number => {
+  if (isFirstRenewal) {
+    return postType === 'job' ? 14.99 : 24.99;
+  }
+  return postType === 'job' ? 19.99 : 29.99;
+};
+
+export const generatePromotionalText = (postType: PostType, isFirstPost: boolean): string => {
+  if (isFirstPost) {
+    return postType === 'job' 
+      ? "First job post discount - save 50%!" 
+      : "First salon post discount - save 33%!";
+  }
+  return "";
+};
+
+export const getFirstPostPromotionalText = (postType: PostType): string => {
+  return postType === 'job' 
+    ? "First-time posters save 50%!" 
+    : "First-time posters save 33%!";
+};
