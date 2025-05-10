@@ -14,11 +14,20 @@ serve(async (req) => {
   }
   
   try {
-    // Get Stripe key with fallback for debugging
+    // Get Stripe key with better error handling
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
       console.error("STRIPE_SECRET_KEY is not set in environment variables");
-      throw new Error("Missing Stripe secret key in environment");
+      return new Response(
+        JSON.stringify({ 
+          error: "Missing Stripe configuration. Please check server configuration.",
+          debug: "Missing STRIPE_SECRET_KEY" 
+        }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500 
+        }
+      );
     }
     
     // Initialize Stripe with the live key
