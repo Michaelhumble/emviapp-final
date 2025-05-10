@@ -75,6 +75,82 @@ export const durationOptions: DurationOption[] = [
   { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 }
 ];
 
+// Define a mapping of Stripe product IDs based on pricing tier, duration and auto-renew status
+const stripeProductIdMap = {
+  standard: {
+    1: {
+      autoRenew: 'price_XXX_STANDARD_AUTO_949',
+      oneTime: 'price_XXX_STANDARD_999'
+    },
+    3: {
+      autoRenew: 'price_XXX_STANDARD_3M_AUTO_2699',
+      oneTime: 'price_XXX_STANDARD_3M_2799'
+    },
+    6: {
+      autoRenew: 'price_XXX_STANDARD_6M_AUTO_4999',
+      oneTime: 'price_XXX_STANDARD_6M_5299'
+    },
+    12: {
+      autoRenew: 'price_XXX_STANDARD_12M_AUTO_9499',
+      oneTime: 'price_XXX_STANDARD_12M_9999'
+    }
+  },
+  premium: {
+    1: {
+      autoRenew: 'price_XXX_PREMIUM_AUTO_4999',
+      oneTime: 'price_XXX_PREMIUM_4999'
+    },
+    3: {
+      autoRenew: 'price_XXX_PREMIUM_3M_AUTO_13499',
+      oneTime: 'price_XXX_PREMIUM_3M_13999'
+    },
+    6: {
+      autoRenew: 'price_XXX_PREMIUM_6M_AUTO_24999',
+      oneTime: 'price_XXX_PREMIUM_6M_26999'
+    },
+    12: {
+      autoRenew: 'price_XXX_PREMIUM_12M_AUTO_47999',
+      oneTime: 'price_XXX_PREMIUM_12M_49999'
+    }
+  },
+  gold: {
+    1: {
+      autoRenew: 'price_XXX_GOLD_AUTO_1899',
+      oneTime: 'price_XXX_GOLD_1999'
+    },
+    3: {
+      autoRenew: 'price_XXX_GOLD_3M_AUTO_5399',
+      oneTime: 'price_XXX_GOLD_3M_5699'
+    },
+    6: {
+      autoRenew: 'price_XXX_GOLD_6M_AUTO_9999',
+      oneTime: 'price_XXX_GOLD_6M_10999'
+    },
+    12: {
+      autoRenew: 'price_XXX_GOLD_12M_AUTO_18999',
+      oneTime: 'price_XXX_GOLD_12M_19999'
+    }
+  },
+  diamond: {
+    1: {
+      autoRenew: 'price_XXX_DIAMOND_AUTO_2899',
+      oneTime: 'price_XXX_DIAMOND_2999'
+    },
+    3: {
+      autoRenew: 'price_XXX_DIAMOND_3M_AUTO_8099',
+      oneTime: 'price_XXX_DIAMOND_3M_8499'
+    },
+    6: {
+      autoRenew: 'price_XXX_DIAMOND_6M_AUTO_15299',
+      oneTime: 'price_XXX_DIAMOND_6M_15999'
+    },
+    12: {
+      autoRenew: 'price_XXX_DIAMOND_12M_AUTO_28499',
+      oneTime: 'price_XXX_DIAMOND_12M_29999'
+    }
+  }
+};
+
 export const getJobPostPricingSummary = (options: PricingOptions): string => {
   let summary = `Selected Pricing Tier: ${options.selectedPricingTier}`;
   if (options.isFirstPost) {
@@ -98,15 +174,34 @@ export const validatePricingOptions = (options: PricingOptions): boolean => {
   return true;
 };
 
-export const getStripePriceId = (pricingTier: string): string | null => {
-  switch (pricingTier) {
-    case 'standard':
-      return process.env.NEXT_PUBLIC_STRIPE_STANDARD_PRICE_ID || null;
-    case 'premium':
-      return process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID || null;
-    default:
-      return null;
+/**
+ * Gets the Stripe price ID based on pricing tier, duration, and auto-renew status
+ * @param pricingTier The pricing tier selected
+ * @param durationMonths The duration in months
+ * @param autoRenew Whether auto-renew is enabled
+ * @returns The Stripe price ID or null if not available
+ */
+export const getStripeProductId = (
+  pricingTier: string, 
+  durationMonths: number = 1, 
+  autoRenew: boolean = false
+): string | null => {
+  // Free plan has no Stripe product ID
+  if (pricingTier === 'free') return null;
+  
+  // Check if tier exists in the map
+  if (!stripeProductIdMap[pricingTier]) return null;
+  
+  // Check if duration exists for the tier
+  if (!stripeProductIdMap[pricingTier][durationMonths]) {
+    // Default to 1 month if the specific duration is not available
+    durationMonths = 1;
   }
+  
+  // Get the price ID based on auto-renew status
+  return autoRenew 
+    ? stripeProductIdMap[pricingTier][durationMonths].autoRenew
+    : stripeProductIdMap[pricingTier][durationMonths].oneTime;
 };
 
 // Modify the calculateFinalPrice function to return an object with the expected properties
@@ -148,12 +243,21 @@ export const isSubscriptionPlan = (pricingId: string): boolean => {
 /**
  * Calculate the price for a job post based on pricing options
  * @param options - The pricing options selected by the user
- * @returns An object containing pricing details
+ * @returns An object containing pricing details or null if required options are missing
  */
 export const calculateJobPostPrice = (options: PricingOptions) => {
+  // Check for required parameters
+  if (!options || !options.selectedPricingTier || !options.durationMonths) {
+    return null;
+  }
+  
   // Get the base price from the selected pricing tier
   const selectedPricingOption = jobPricingOptions.find(option => option.id === options.selectedPricingTier);
-  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
+  if (!selectedPricingOption) {
+    return null;
+  }
+  
+  const basePrice = selectedPricingOption.price;
   
   // Get duration (default to 1 if not specified)
   const durationMonths = options.durationMonths || 1;
@@ -177,6 +281,11 @@ export const calculateJobPostPrice = (options: PricingOptions) => {
     discountPercentage += 5; // Additional 5% discount for first-time posters
   }
   
+  // Apply auto-renew discount if enabled
+  if (options.autoRenew) {
+    discountPercentage += 5; // Additional 5% discount for auto-renew
+  }
+  
   // Calculate the final price
   const discount = (originalPrice * discountPercentage) / 100;
   const finalPrice = originalPrice - discount;
@@ -187,4 +296,5 @@ export const calculateJobPostPrice = (options: PricingOptions) => {
     discountPercentage
   };
 };
+
 

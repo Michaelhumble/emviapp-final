@@ -16,6 +16,7 @@ interface PaymentSummaryProps {
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
   isSubmitting?: boolean;
+  isDisabled?: boolean;
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
@@ -27,7 +28,8 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   discountPercentage,
   onProceedToPayment,
   isFreePlan = false,
-  isSubmitting = false
+  isSubmitting = false,
+  isDisabled = false
 }) => {
   const { t } = useTranslation();
   const expiryDate = addMonths(new Date(), duration);
@@ -114,7 +116,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
         <Button 
           onClick={onProceedToPayment} 
           className="w-full"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isDisabled}
         >
           {isSubmitting ? (
             <span>{isFreePlan ? t('Submitting...', 'Đang gửi...') : t('Processing...', 'Đang xử lý...')}</span>

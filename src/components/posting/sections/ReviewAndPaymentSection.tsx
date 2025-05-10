@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import PricingCards from '@/components/posting/PricingCards';
-import { jobPricingOptions, calculateFinalPrice } from '@/utils/posting/jobPricing';
+import { jobPricingOptions, calculateFinalPrice, getStripeProductId, calculateJobPostPrice } from '@/utils/posting/jobPricing';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import PaymentSummary from '@/components/posting/PaymentSummary';
@@ -10,6 +10,7 @@ import { format, addDays } from 'date-fns';
 import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
 import PricingDisplay from '@/components/posting/PricingDisplay';
+import { toast } from 'sonner';
 
 export interface ReviewAndPaymentSectionProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
@@ -39,6 +40,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths || 1);
   const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew || false);
   const [isFreePlan, setIsFreePlan] = useState(false);
+  const [pricingError, setPricingError] = useState<string | null>(null);
   
   useEffect(() => {
     if (selectedPricing === 'free') {
@@ -61,6 +63,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const handlePricingChange = (pricingId: string) => {
     setSelectedPricing(pricingId);
     onPricingChange(pricingId);
+    setPricingError(null);
     
     // When switching to free plan, disable auto-renew
     if (pricingId === 'free') {
@@ -70,21 +73,50 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   
   const handleDurationChange = (duration: number) => {
     setSelectedDuration(duration);
+    setPricingError(null);
   };
   
   const handleAutoRenewChange = (checked: boolean) => {
     setAutoRenew(checked);
     onUpdatePricing({ autoRenew: checked });
+    setPricingError(null);
   };
 
+  // Calculate pricing using the new function
+  const pricingResult = calculateJobPostPrice({
+    selectedPricingTier: selectedPricing,
+    durationMonths: selectedDuration,
+    autoRenew: autoRenew,
+    isFirstPost: isFirstPost
+  });
+
+  // Set default values in case the pricing calculation returns null
   const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
   const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
   
-  // Call calculateFinalPrice with only the required parameters, and receive an object as the return value
-  const pricingResult = calculateFinalPrice(basePrice, selectedDuration);
-  
-  // Destructure the values from the pricingResult object
-  const { originalPrice, finalPrice, discountPercentage } = pricingResult;
+  // Use the pricing result if available, otherwise fallback to basic calculation
+  const { originalPrice, finalPrice, discountPercentage } = pricingResult || {
+    originalPrice: 0,
+    finalPrice: 0,
+    discountPercentage: 0
+  };
+
+  // Validate the Stripe product ID is available
+  useEffect(() => {
+    if (selectedPricing !== 'free') {
+      const stripeProductId = getStripeProductId(selectedPricing, selectedDuration, autoRenew);
+      if (!stripeProductId) {
+        setPricingError(t(
+          'This pricing configuration is not available. Please select a different option.',
+          'Cấu hình giá này không khả dụng. Vui lòng chọn một tùy chọn khác.'
+        ));
+      } else {
+        setPricingError(null);
+      }
+    } else {
+      setPricingError(null);
+    }
+  }, [selectedPricing, selectedDuration, autoRenew, t]);
 
   return (
     <div className="space-y-6">
@@ -115,6 +147,12 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         </div>
       )}
       
+      {pricingError && (
+        <div className="text-sm text-red-500 p-2 border border-red-200 rounded-md bg-red-50">
+          {pricingError}
+        </div>
+      )}
+      
       <PaymentSummary
         basePrice={basePrice}
         duration={selectedDuration}
@@ -125,6 +163,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         onProceedToPayment={onNextStep}
         isFreePlan={isFreePlan}
         isSubmitting={isSubmitting}
+        isDisabled={!!pricingError}
       />
       
       <PricingDisplay 

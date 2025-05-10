@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission, PricingOptions } from '@/types/job';
+import { getStripeProductId } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,22 +43,35 @@ export const usePostPayment = () => {
       } 
       
       // For paid listings, create a Stripe checkout session
-      // Get the correct Stripe price ID based on tier and duration
+      // Get the correct Stripe price ID based on tier, duration, and auto-renew
       const selectedPricingTier = pricingOptions?.selectedPricingTier;
       const durationMonths = pricingOptions?.durationMonths || 1;
+      const autoRenew = pricingOptions?.autoRenew || false;
+      
+      // Get the appropriate Stripe product ID
+      const stripeProductId = getStripeProductId(selectedPricingTier, durationMonths, autoRenew);
+      
+      if (!stripeProductId) {
+        throw new Error(t(
+          'Invalid pricing configuration. Please select a different plan or duration.',
+          'Cấu hình giá không hợp lệ. Vui lòng chọn gói hoặc thời hạn khác.'
+        ));
+      }
       
       // Log payment parameters for debugging
       console.log("Payment parameters:", {
         tier: selectedPricingTier,
         duration: durationMonths,
-        autoRenew: pricingOptions?.autoRenew
+        autoRenew: autoRenew,
+        stripeProductId: stripeProductId
       });
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           postType,
           postDetails,
-          pricingOptions
+          pricingOptions,
+          stripeProductId // Pass the product ID to the edge function
         }
       });
 
