@@ -2,9 +2,8 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { DurationOption } from '@/types/pricing';
+import { DurationOption, PriceDetails } from '@/types/pricing';
 import { useTranslation } from '@/hooks/useTranslation';
-import { PriceDetails } from '@/types/pricing';
 
 interface PricingCardsProps {
   pricingOptions: PriceDetails[];
