@@ -52,8 +52,11 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
           <div className="grid gap-4">
             {durations.map((option) => {
               // Calculate pricing for this duration option
-              const priceInfo = calculateFinalPrice(basePrice, option.months, autoRenew);
-              const { originalPrice, finalPrice, discountPercentage } = priceInfo;
+              const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
+                basePrice, 
+                option.months, 
+                autoRenew
+              );
               
               const savings = (originalPrice - finalPrice).toFixed(2);
               const pricePerDay = (finalPrice / option.days).toFixed(2);
