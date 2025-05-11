@@ -1,6 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import PricingTierCard from './PricingTierCard';
 import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
 import { CheckCircle } from 'lucide-react';
@@ -37,53 +38,12 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto pb-2">
         {pricingOptions.map((option) => (
-          <motion.div
+          <PricingTierCard 
             key={option.id}
-            className={cn(
-              "border rounded-lg overflow-hidden cursor-pointer transition-all",
-              selectedPricing === option.id
-                ? "border-purple-600 shadow-md ring-2 ring-purple-200"
-                : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
-            )}
-            whileTap={{ scale: 0.98 }}
+            pricing={option}
+            isSelected={selectedPricing === option.id}
             onClick={() => onChange(option.id)}
-          >
-            <div className={cn(
-              "px-6 py-4",
-              option.popular ? "bg-gradient-to-r from-amber-50 to-amber-100" : "bg-gray-50"
-            )}>
-              {option.popular && (
-                <span className="bg-amber-500 text-white px-2 py-0.5 text-xs rounded-full uppercase font-medium mb-2 inline-block">
-                  Phổ biến nhất
-                </span>
-              )}
-              {option.tag && (
-                <span className="text-xs text-gray-600 bg-white px-2 py-0.5 rounded-full mb-2 inline-block border shadow-sm">
-                  {option.tag}
-                </span>
-              )}
-              <h3 className="font-bold text-lg">{option.name}</h3>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold">${option.price.toFixed(2)}</span>
-                {option.wasPrice && option.wasPrice > option.price && (
-                  <span className="text-sm text-gray-500 line-through">${option.wasPrice}</span>
-                )}
-              </div>
-              <p className="text-sm text-gray-600 mt-1">
-                {option.vietnameseDescription || option.description}
-              </p>
-            </div>
-            <div className="p-4 bg-white">
-              <ul className="space-y-2">
-                {option.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
+          />
         ))}
       </div>
       

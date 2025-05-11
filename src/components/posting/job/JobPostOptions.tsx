@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
+import SectionHeader from "../SectionHeader";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from 'react-router-dom';
 import { PricingOptions, UserPostingStats } from '@/utils/posting/types';
@@ -65,7 +66,10 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
   return (
     <Card className="border-2">
       <CardContent className="space-y-4 pt-6">
-        <h3 className="text-lg font-medium">Job Post Options</h3>
+        <SectionHeader 
+          title="Job Post Options" 
+          emoji="📦"
+        />
         
         {isFirstPost && (
           <div className="bg-green-50 border border-green-200 p-3 rounded-md">
@@ -77,28 +81,34 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
         
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="isNationwide">Nationwide Reach</Label>
+            <Label htmlFor="isNationwide" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <span className="text-purple-600">🌎</span> Nationwide Reach
+            </Label>
             <Checkbox
               id="isNationwide"
               checked={pricingOptions.isNationwide || false}
               onCheckedChange={() => handleCheckboxChange('isNationwide')}
+              className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
             />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground pl-7">
             Reach candidates across the country.
           </p>
         </div>
         
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="fastSalePackage">Fast Sale Package</Label>
+            <Label htmlFor="fastSalePackage" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <span className="text-purple-600">⚡</span> Fast Sale Package
+            </Label>
             <Checkbox
               id="fastSalePackage"
               checked={pricingOptions.fastSalePackage || false}
               onCheckedChange={() => handleCheckboxChange('fastSalePackage')}
+              className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
             />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground pl-7">
             Get your job post seen by more candidates faster.
           </p>
         </div>
@@ -106,14 +116,17 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
         {postStats.salonPostCount === 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="bundleWithJobPost">Bundle with Salon Post</Label>
+              <Label htmlFor="bundleWithJobPost" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <span className="text-purple-600">🏪</span> Bundle with Salon Post
+              </Label>
               <Checkbox
                 id="bundleWithJobPost"
                 checked={pricingOptions.bundleWithJobPost || false}
                 onCheckedChange={() => handleCheckboxChange('bundleWithJobPost')}
+                className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
               />
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground pl-7">
               Create a salon post to promote your salon and attract more candidates.
             </p>
           </div>
@@ -124,12 +137,3 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
 };
 
 export default JobPostOptions;
-
-// Fix function call by providing default options
-const calculatePrice = (options: PricingOptions = { selectedPricingTier: 'standard' }) => {
-  // Function implementation...
-  return 9.99; // Default price
-};
-
-// Use this fixed version where the function is called
-const price = calculatePrice();
