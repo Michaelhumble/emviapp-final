@@ -155,6 +155,14 @@ export function calculateFinalPrice(
 }
 
 /**
+ * Get discount percentage between original and final price
+ */
+export function getDiscountPercentage(original: number, final: number): number {
+  if (original === 0) return 0;
+  return Math.round((1 - final / original) * 100);
+}
+
+/**
  * Check if a plan is a subscription (auto-renew) plan
  */
 export function isSubscriptionPlan(pricingOptions: PricingOptions): boolean {

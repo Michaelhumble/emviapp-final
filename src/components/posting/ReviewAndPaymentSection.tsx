@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { PricingOptions } from '@/utils/posting/types';
-import { calculatePriceWithDuration, calculateFinalPrice, getStripeProductId, validatePricingOptions } from '@/utils/posting/jobPricing';
+import { calculateFinalPrice, getStripeProductId, validatePricingOptions } from '@/utils/posting/jobPricing';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import PaymentSummary from './PaymentSummary';
 import UpsellModal from './UpsellModal'; // Import the new UpsellModal
