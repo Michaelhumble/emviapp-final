@@ -1,195 +1,249 @@
-
-import React, { useState } from 'react';
-import { JobForm } from '@/components/posting/job/JobForm';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import JobPostOptions from '@/components/posting/job/JobPostOptions';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { JobDetailsSubmission } from '@/types/job';
+import { PricingOptions } from '@/utils/posting/types';
+import { jobPricingOptions, getJobPostPricingSummary } from '@/utils/posting/jobPricing';
+import JobDetailsSection from '@/components/posting/JobDetailsSection';
+import ReviewAndPaymentSection from '@/components/posting/ReviewAndPaymentSection';
+import PricingSection from '@/components/posting/PricingSection';
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from 'lucide-react';
 
 const JobPost: React.FC = () => {
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'standard',
-    isFirstPost: true,
-    isHotListing: false,
-    autoRenew: true,
-    durationMonths: 1
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'form' | 'payment'>('form');
-  const [formValues, setFormValues] = useState<JobFormValues | null>(null);
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { initiatePayment, isLoading } = usePostPayment();
-  
-  // Handle form submission
-  const handleFormSubmit = async (values: JobFormValues) => {
-    setFormValues(values);
-    setCurrentStep('payment');
+  const { t } = useTranslation();
+
+  // Job details state
+  const [jobDetails, setJobDetails] = useState<JobDetailsSubmission>({
+    title: '',
+    company: '',
+    location: '',
+    description: '',
+    job_type: 'full-time',
+    salary_range: '',
+    application_email: '',
+    application_url: '',
+    contact_phone: '',
+    benefits: [],
+    responsibilities: [],
+    qualifications: [],
+    years_of_experience: '',
+    education_level: '',
+    skills: [],
+    is_remote: false,
+    status: 'active',
+    posted_date: new Date(),
+    category: 'other',
+    tags: [],
+    // user_id: user?.id || '',  // Set on submission
+    // salon_id: '',             // For salon-linked jobs
+  });
+
+  // Pricing options state
+  const [pricingId, setPricingId] = useState<string>('');
+  const [duration, setDuration] = useState<number>(1);
+  const [autoRenew, setAutoRenew] = useState<boolean>(false);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: pricingId,
+    durationMonths: duration,
+    autoRenew: autoRenew
+  });
+
+  // Form section state
+  const [currentSection, setCurrentSection] = useState<number>(0);
+  const totalSections = 3;
+
+  // Validation error state
+  const [validationError, setValidationError] = useState<string>('');
+
+  // Update pricing options whenever pricingId, duration, or autoRenew changes
+  useEffect(() => {
+    setPricingOptions({
+      selectedPricingTier: pricingId,
+      durationMonths: duration,
+      autoRenew: autoRenew
+    });
+  }, [pricingId, duration, autoRenew]);
+
+  // Pricing summary
+  const price = getJobPostPricingSummary(pricingId, duration);
+
+  // Handlers for updating job details
+  const handleJobDetailsChange = (updatedDetails: Partial<JobDetailsSubmission>) => {
+    setJobDetails(prevDetails => ({ ...prevDetails, ...updatedDetails }));
+    setValidationError(''); // Clear any previous validation errors
   };
 
-  // Handle final submission with pricing
-  const handleCreateCheckoutSession = async () => {
-    if (!formValues) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Check if photos were uploaded (optional)
-      if (photoUploads.length === 0) {
-        console.log("No photos uploaded");
+  // Handler for going to the next section
+  const handleNextSection = () => {
+    // Validate job details before proceeding
+    if (currentSection === 0) {
+      if (!jobDetails.title || !jobDetails.company || !jobDetails.location || !jobDetails.description) {
+        setValidationError(t(
+          "Please fill in all required job details.",
+          "Vui lòng điền đầy đủ thông tin chi tiết công việc."
+        ));
+        toast.error(t(
+          "Please fill in all required job details.",
+          "Vui lòng điền đầy đủ thông tin chi tiết công việc."
+        ));
+        return;
       }
-      
-      // Calculate price
-      const priceResult = calculateJobPostPrice(pricingOptions);
-      console.log("Job post price:", priceResult);
-      
-      // Destructure finalPrice from the returned price object
-      const { finalPrice } = priceResult;
-      
-      // If finalPrice is greater than 0, proceed to payment
-      if (finalPrice > 0) {
-        // Navigate to payment page with salon data
-        const result = await initiatePayment('job', formValues, pricingOptions);
-        
-        // Add safeguards for the returned result
-        if (result?.success) {
-          // Handle successful payment initiation
-          if (result && 'redirect' in result && result.redirect) {
-            // If there's a redirect URL in the response, follow it
-            const redirectUrl = typeof result.redirect === 'string' ? result.redirect : '/payment';
-            window.location.href = redirectUrl;
-          } else if (result && 'data' in result) {
-            // Handle case where there's data but no redirect
-            toast.success("Job post submitted successfully!");
-            navigate('/dashboard');
-          }
-        } else {
-          // Handle payment initiation failure
-          toast.error("Failed to process payment. Please try again.");
-        }
-      } else {
-        // For free listings, skip payment and go directly to success
-        toast.success("Your job listing has been posted!");
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error("Error submitting job post:", error);
-      toast.error("Failed to submit job post. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
+
+    // Validate pricing options before proceeding
+    if (currentSection === 1) {
+      if (!pricingId || !duration) {
+        setValidationError(t(
+          "Please select a pricing option and duration.",
+          "Vui lòng chọn một tùy chọn giá và thời hạn."
+        ));
+        toast.error(t(
+          "Please select a pricing option and duration.",
+          "Vui lòng chọn một tùy chọn giá và thời hạn."
+        ));
+        return;
+      }
+    }
+
+    setValidationError('');
+    setCurrentSection(prevSection => Math.min(prevSection + 1, totalSections - 1));
   };
-  
-  // Handle changes to pricing options
-  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
-    setPricingOptions(prev => ({ ...prev, ...options }));
+
+  // Handler for going to the previous section
+  const handlePreviousSection = () => {
+    setCurrentSection(prevSection => Math.max(prevSection - 1, 0));
+    setValidationError('');
   };
-  
-  // Handle pricing tier selection
-  const handlePricingTierChange = (tier: string) => {
-    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
+
+  // Handler for pricing selection
+  const handlePricingSelect = (selectedPricingId: string) => {
+    setPricingId(selectedPricingId);
+    setValidationError('');
   };
-  
-  // Go back to form step
-  const handleBackToForm = () => {
-    setCurrentStep('form');
+
+  // Handler for duration selection
+  const handleDurationSelect = (selectedDuration: number) => {
+    setDuration(selectedDuration);
+    setValidationError('');
+  };
+
+  // Handler for auto-renew toggle
+  const handleAutoRenewToggle = (selectedAutoRenew: boolean) => {
+    setAutoRenew(selectedAutoRenew);
+  };
+
+  // Handler for form submission
+  const handleSubmit = async () => {
+    // Validate all required fields
+    if (!jobDetails.title || !jobDetails.company || !jobDetails.location || !jobDetails.description) {
+      setValidationError(t(
+        "Please fill in all required job details.",
+        "Vui lòng điền đầy đủ thông tin chi tiết công việc."
+      ));
+      toast.error(t(
+        "Please fill in all required job details.",
+        "Vui lòng điền đầy đủ thông tin chi tiết công việc."
+      ));
+      setCurrentSection(0);
+      return;
+    }
+
+    if (!pricingId || !duration) {
+      setValidationError(t(
+        "Please select a pricing option and duration.",
+        "Vui lòng chọn một tùy chọn giá và thời hạn."
+      ));
+      toast.error(t(
+        "Please select a pricing option and duration.",
+        "Vui lòng chọn một tùy chọn giá và thời hạn."
+      ));
+      setCurrentSection(1);
+      return;
+    }
+
+    // Set user_id before submission
+    jobDetails.user_id = user?.id || '';
+
+    // All validations passed, proceed to the last section
+    setCurrentSection(2);
   };
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-2">Post a Job</h1>
-      <p className="text-gray-600 mb-8">
-        Create a detailed job listing to attract qualified candidates
-      </p>
+    <div className="container mx-auto py-8">
+      <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-4">
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        {t("Back to Dashboard", "Quay lại trang tổng quan")}
+      </Button>
 
-      {currentStep === 'form' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <JobForm 
-              onSubmit={handleFormSubmit}
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              isSubmitting={isSubmitting}
-            />
-          </div>
+      <h1 className="text-2xl font-bold mb-4">{t("Post a Job", "Đăng tin tuyển dụng")}</h1>
 
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Card className="p-6">
-                <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
-                <JobPostOptions
-                  pricingOptions={pricingOptions}
-                  setPricingOptions={handleUpdatePricing}
-                />
-                
-                <Button 
-                  onClick={() => document.querySelector('form')?.requestSubmit()}
-                  className="w-full mt-4"
-                  disabled={isLoading || isSubmitting}
-                >
-                  {isLoading || isSubmitting ? "Processing..." : "Continue to Pricing"}
-                </Button>
-                
-                <p className="text-xs text-gray-500 mt-4 text-center">
-                  By proceeding, you agree to our Terms of Service
-                </p>
-              </Card>
-            </div>
-          </div>
+      {validationError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <strong className="font-bold">{t("Error", "Lỗi")}:</strong>
+          <span className="block sm:inline">{validationError}</span>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Card className="p-6">
-              <ReviewAndPaymentSection
-                postType="job"
-                pricingOptions={pricingOptions}
-                onPricingChange={handlePricingTierChange}
-                onUpdatePricing={handleUpdatePricing}
-                onNextStep={handleCreateCheckoutSession}
-                onPrevStep={handleBackToForm}
-                jobData={formValues}
-                isFirstPost={pricingOptions.isFirstPost}
-                isSubmitting={isSubmitting}
-              />
-            </Card>
-          </div>
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Card className="p-6">
-                <h2 className="text-xl font-medium mb-4">Job Post Summary</h2>
-                {formValues && (
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <h3 className="font-medium text-sm text-gray-500">Job Title</h3>
-                      <p>{formValues.title}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm text-gray-500">Job Type</h3>
-                      <p className="capitalize">{formValues.jobType.replace('-', ' ')}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm text-gray-500">Location</h3>
-                      <p>{formValues.location}</p>
-                    </div>
-                  </div>
-                )}
-                <Button 
-                  onClick={handleBackToForm}
-                  variant="outline" 
-                  className="w-full mb-2"
-                >
-                  Edit Job Details
-                </Button>
-              </Card>
-            </div>
-          </div>
+      )}
+
+      <div className="mb-6">
+        {currentSection === 0 && (
+          <JobDetailsSection
+            jobDetails={jobDetails}
+            onChange={handleJobDetailsChange}
+            onNext={handleNextSection}
+          />
+        )}
+
+        {currentSection === 1 && (
+          <PricingSection
+            pricingOptions={jobPricingOptions}
+            selectedPricingId={pricingId}
+            selectedDuration={duration}
+            autoRenew={autoRenew}
+            onPricingSelect={handlePricingSelect}
+            onDurationSelect={handleDurationSelect}
+            onAutoRenewToggle={handleAutoRenewToggle}
+            onNext={handleNextSection}
+            onPrevious={handlePreviousSection}
+          />
+        )}
+
+        {currentSection === 2 && (
+          <ReviewAndPaymentSection
+            pricingId={pricingId}
+            duration={duration}
+            autoRenew={autoRenew}
+            jobDetails={jobDetails}
+            pricingOptions={pricingOptions}
+            onValidationError={setValidationError}
+          />
+        )}
+      </div>
+
+      {currentSection !== 2 && (
+        <div className="flex justify-between">
+          {currentSection > 0 && (
+            <Button variant="secondary" onClick={handlePreviousSection}>
+              {t("Previous", "Trước")}
+            </Button>
+          )}
+
+          {currentSection < 1 && (
+            <Button onClick={handleNextSection}>
+              {t("Next", "Tiếp theo")}
+            </Button>
+          )}
+
+          {currentSection === 1 && (
+            <Button onClick={handleSubmit}>
+              {t("Submit", "Gửi")}
+            </Button>
+          )}
         </div>
       )}
     </div>

@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission, PricingOptions } from '@/types/job';
+import { JobDetailsSubmission } from '@/types/job';
+import { PricingOptions } from '@/utils/posting/types';
 import { getStripeProductId, validatePricingOptions } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
@@ -53,7 +54,7 @@ export const usePostPayment = () => {
       // For paid listings, create a Stripe checkout session
       // Get the correct Stripe product ID based on tier, duration, and auto-renew
       const selectedPricingTier = pricingOptions.selectedPricingTier;
-      const durationMonths = pricingOptions.durationMonths;
+      const durationMonths = pricingOptions.durationMonths || 1; // Default to 1 month if not specified
       const autoRenew = pricingOptions.autoRenew || false;
       
       // Get the appropriate Stripe product ID
