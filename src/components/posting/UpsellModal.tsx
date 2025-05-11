@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { calculatePriceWithDuration, calculateFinalPrice } from '@/utils/posting/jobPricing';
 import { PricingOptions } from '@/utils/posting/types';
+import { formatCurrency } from '@/lib/utils';
 
 interface UpsellModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface UpsellModalProps {
   selectedTier: string;
   basePrice: number;
   onConfirm: (duration: number, autoRenew: boolean) => void;
+  showUrgencyLabel?: boolean;
 }
 
 const UpsellModal: React.FC<UpsellModalProps> = ({
@@ -20,15 +22,16 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
   onClose,
   selectedTier,
   basePrice,
-  onConfirm
+  onConfirm,
+  showUrgencyLabel = true
 }) => {
   const [selectedDuration, setSelectedDuration] = useState(6); // Default to 6 months
   const [autoRenew, setAutoRenew] = useState(false);
 
   const durations = [
-    { months: 3, label: "3 months", discount: 10, badge: "" },
-    { months: 6, label: "6 months", discount: 15, badge: "Most Popular" },
-    { months: 12, label: "12 months", discount: 20, badge: "Best Value" },
+    { months: 3, label: "3 months", days: 90, discount: 10, badge: "" },
+    { months: 6, label: "6 months", days: 180, discount: 15, badge: "Most Popular" },
+    { months: 12, label: "12 months", days: 365, discount: 20, badge: "Best Value" },
   ];
 
   const handleConfirm = () => {
@@ -52,10 +55,11 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
         <div className="py-4 space-y-4">
           <div className="grid gap-4">
             {durations.map((option) => {
-              const priceWithDuration = calculatePriceWithDuration(basePrice, option.months);
-              const totalDiscount = option.discount + autoRenewDiscount;
+              const originalPrice = basePrice * option.months;
               const finalPrice = calculateFinalPrice(basePrice, option.months, autoRenew);
-              const savings = ((basePrice * option.months) - finalPrice).toFixed(2);
+              const savings = (originalPrice - finalPrice).toFixed(2);
+              const totalDiscount = option.discount + autoRenewDiscount;
+              const pricePerDay = (finalPrice / (option.days)).toFixed(2);
               
               return (
                 <div 
@@ -67,10 +71,10 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                   }`}
                   onClick={() => setSelectedDuration(option.months)}
                 >
-                  <div className="flex justify-between items-center">
-                    <div>
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{option.label}</span>
+                        <span className="font-medium">{option.days} days / {option.months} months</span>
                         {option.badge && (
                           <Badge 
                             variant={option.badge === "Best Value" ? "default" : "secondary"}
@@ -80,19 +84,29 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                           </Badge>
                         )}
                       </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Save {totalDiscount}% ({autoRenew ? `${option.discount}% + ${autoRenewDiscount}% auto-renew` : `${option.discount}%`})
+                      
+                      {showUrgencyLabel && (
+                        <div className="text-sm text-orange-600 font-medium animate-pulse">
+                          🔥 Limited time deal – you may not see this offer again
+                        </div>
+                      )}
+                      
+                      <div className="text-sm mt-2">
+                        Originally <span className="line-through">${originalPrice.toFixed(2)}</span> – now just <span className="font-bold">${finalPrice.toFixed(2)}</span>
+                      </div>
+                      
+                      <div className="text-sm font-bold text-green-600">
+                        💸 Just ${pricePerDay}/day
+                      </div>
+                      
+                      <div className="text-sm text-gray-600">
+                        Save {totalDiscount}% (${savings})
                       </div>
                     </div>
+                    
                     <div className="text-right">
                       <div className="font-bold text-lg">
                         ${finalPrice.toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500 line-through">
-                        ${(basePrice * option.months).toFixed(2)}
-                      </div>
-                      <div className="text-xs text-green-600">
-                        Save ${savings}
                       </div>
                     </div>
                   </div>

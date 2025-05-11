@@ -5,7 +5,7 @@ import { PricingOptions } from '@/utils/posting/types';
 import { calculateFinalPrice, getStripeProductId, validatePricingOptions, calculateJobPostPrice, getDiscountPercentage } from '@/utils/posting/jobPricing';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import PaymentSummary from './PaymentSummary';
-import UpsellModal from './UpsellModal'; // Import the new UpsellModal
+import UpsellModal from './UpsellModal'; 
 
 interface ReviewAndPaymentSectionProps {
   pricingId: string;
@@ -29,7 +29,8 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedDuration, setSelectedDuration] = useState<number>(duration);
   const [selectedAutoRenew, setSelectedAutoRenew] = useState<boolean>(autoRenew);
   
-  // Calculate prices using the provided functions
+  // Calculate prices using the direct calculation approach
+  const { selectedPricingTier, durationMonths, autoRenew: pricingAutoRenew } = pricingOptions;
   const basePrice = calculateJobPostPrice(pricingId);
   const originalPrice = basePrice * selectedDuration;
   const finalPrice = calculateFinalPrice(basePrice, selectedDuration, selectedAutoRenew);
@@ -102,13 +103,14 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         isDisabled={!pricingId || !selectedDuration}
       />
 
-      {/* Upsell Modal */}
+      {/* Upsell Modal with enhanced display */}
       <UpsellModal
         isOpen={showUpsellModal}
         onClose={() => setShowUpsellModal(false)}
         selectedTier={pricingId}
         basePrice={basePrice}
         onConfirm={handleUpsellConfirm}
+        showUrgencyLabel={true}
       />
     </div>
   );
