@@ -11,6 +11,8 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useTranslation } from '@/hooks/useTranslation';
+import SectionHeader from '../SectionHeader';
+import { Briefcase, ClipboardList } from 'lucide-react';
 
 interface JobDetailsSectionProps {
   details: Partial<Job>;
@@ -21,40 +23,48 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
   const { t, isVietnamese } = useTranslation();
   
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('Job Details', 'Chi tiết công việc')}</h2>
-      <p className="text-muted-foreground">{t('Basic information about the job position', 'Thông tin cơ bản về vị trí tuyển dụng')}</p>
+    <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border">
+      <SectionHeader 
+        emoji="📝" 
+        title={t('Job Description', 'Chi tiết công việc')}
+        description={t('Basic information about the job position', 'Thông tin cơ bản về vị trí tuyển dụng')}
+      />
       
-      <div className="grid gap-4">
+      <div className="grid gap-5">
         <div className="grid gap-2">
-          <Label htmlFor="title">{t('Job Title', 'Chức danh')}</Label>
-          <Input 
-            id="title"
-            value={details.title || ''}
-            onChange={(e) => onChange({ ...details, title: e.target.value })}
-            placeholder={t('e.g. Nail Technician, Hair Stylist', 'VD: Thợ nail, Thợ tóc')}
-            required
-          />
+          <Label htmlFor="title" className="text-base font-medium">{t('Job Title', 'Chức danh')}</Label>
+          <div className="relative">
+            <Input 
+              id="title"
+              value={details.title || ''}
+              onChange={(e) => onChange({ ...details, title: e.target.value })}
+              placeholder={t('e.g. Nail Technician, Hair Stylist', 'VD: Thợ nail, Thợ tóc')}
+              required
+              className="pl-9 h-12"
+            />
+            <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          </div>
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="location">{t('Location', 'Địa điểm')}</Label>
+          <Label htmlFor="location" className="text-base font-medium">{t('Location', 'Địa điểm')}</Label>
           <Input 
             id="location"
             value={details.location || ''}
             onChange={(e) => onChange({ ...details, location: e.target.value })}
             placeholder={t('e.g. Los Angeles, CA', 'VD: Houston, TX')}
             required
+            className="h-12"
           />
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="employment-type">{t('Employment Type', 'Loại việc làm')}</Label>
+          <Label htmlFor="employment-type" className="text-base font-medium">{t('Employment Type', 'Loại việc làm')}</Label>
           <Select 
             value={details.employment_type || 'full-time'}
             onValueChange={(value) => onChange({ ...details, employment_type: value })}
           >
-            <SelectTrigger id="employment-type">
+            <SelectTrigger id="employment-type" className="h-12">
               <SelectValue placeholder={t('Select employment type', 'Chọn loại việc làm')} />
             </SelectTrigger>
             <SelectContent>
@@ -68,15 +78,18 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="description">{t('Job Description', 'Mô tả công việc')}</Label>
-          <textarea
-            id="description"
-            className="min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            value={details.description || ''}
-            onChange={(e) => onChange({ ...details, description: e.target.value })}
-            placeholder={t('Describe the job position, responsibilities, and benefits', 'Mô tả vị trí công việc, trách nhiệm và quyền lợi')}
-            required
-          />
+          <Label htmlFor="description" className="text-base font-medium">{t('Job Description', 'Mô tả công việc')}</Label>
+          <div className="relative">
+            <textarea
+              id="description"
+              className="min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-3 pl-9 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              value={details.description || ''}
+              onChange={(e) => onChange({ ...details, description: e.target.value })}
+              placeholder={t('Describe the job position, responsibilities, and benefits', 'Mô tả vị trí công việc, trách nhiệm và quyền lợi')}
+              required
+            />
+            <ClipboardList className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
+          </div>
         </div>
       </div>
     </div>
