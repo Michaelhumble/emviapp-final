@@ -1,15 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucide-react';
+import { ArrowRight, CalendarClock, CheckCircle, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, addDays } from 'date-fns';
-import { PriceDetails } from '@/types/PriceDetails';
 
 interface PaymentSummaryProps {
-  price: PriceDetails;
-  autoRenew: boolean;
+  tier: string;
+  priceInCents: number;
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
   isSubmitting?: boolean;
@@ -17,15 +16,16 @@ interface PaymentSummaryProps {
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
-  price,
-  autoRenew,
+  tier,
+  priceInCents,
   onProceedToPayment,
   isFreePlan = false,
   isSubmitting = false,
   isDisabled = false
 }) => {
   const { t } = useTranslation();
-  const expiryDate = addDays(new Date(), price.durationDays);
+  const expiryDate = addDays(new Date(), 30); // Default to 30 days
+  const priceInDollars = (priceInCents / 100).toFixed(2);
   
   return (
     <Card className="border border-gray-200">
@@ -42,7 +42,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
               <div>
                 <p className="font-medium">{t('Free listing valid for 30 days', 'Đăng tin miễn phí có hiệu lực trong 30 ngày')}</p>
-                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addDays(new Date(), 30), 'MMMM d, yyyy')}</p>
+                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(expiryDate, 'MMMM d, yyyy')}</p>
               </div>
             </div>
             
@@ -59,44 +59,17 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             <div className="flex items-start">
               <CalendarClock className="h-5 w-5 text-purple-500 mt-0.5 mr-2" /> 
               <div>
-                <p className="font-medium">{price.label}</p>
+                <p className="font-medium">{tier.charAt(0).toUpperCase() + tier.slice(1)} Plan</p>
                 <p className="text-sm text-gray-600">
                   {t('Expires on', 'Hết hạn vào')}: {format(expiryDate, 'MMMM d, yyyy')}
                 </p>
               </div>
             </div>
             
-            {autoRenew && (
-              <div className="flex items-start">
-                <RefreshCw className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
-                <div>
-                  <p className="font-medium">{t('Auto-renewal enabled', 'Tự động gia hạn được bật')}</p>
-                  <p className="text-sm text-gray-600">
-                    {t(
-                      'Your subscription will automatically renew on', 
-                      'Đăng ký của bạn sẽ tự động gia hạn vào'
-                    )}: {format(expiryDate, 'MMMM d, yyyy')}
-                  </p>
-                </div>
-              </div>
-            )}
-            
-            <div className="border-t border-gray-200 pt-3 space-y-1">
-              <div className="flex justify-between">
-                <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
-                <span className="text-gray-600">${price.originalPrice.toFixed(2)}</span>
-              </div>
-              
-              {price.discountPercentage > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>{t('Discount', 'Giảm giá')} ({price.discountPercentage}%):</span>
-                  <span>-${(price.originalPrice - price.finalPrice).toFixed(2)}</span>
-                </div>
-              )}
-              
+            <div className="border-t border-gray-200 pt-3">
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('Total', 'Tổng cộng')}:</span>
-                <span>${price.finalPrice.toFixed(2)}</span>
+                <span>${priceInDollars}</span>
               </div>
             </div>
           </div>
