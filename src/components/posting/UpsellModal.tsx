@@ -64,7 +64,7 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
               return (
                 <div 
                   key={option.months}
-                  className={`relative border rounded-2xl p-5 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] ${
+                  className={`relative border-[3px] rounded-2xl p-5 cursor-pointer transition-all duration-300 shadow-md hover:shadow-lg hover:scale-[1.01] ${
                     selectedDuration === option.months 
                       ? "border-purple-500 bg-gradient-to-br from-purple-50 to-white ring-2 ring-purple-400 ring-opacity-50" 
                       : "border-gray-200 hover:border-gray-300 bg-gradient-to-br from-slate-50 to-white"
@@ -73,11 +73,10 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                 >
                   {option.badge && (
                     <Badge 
-                      variant={option.badge === "Best Value" ? "default" : "secondary"}
-                      className={`absolute top-3 right-3 ${
+                      className={`absolute top-3 right-3 text-xs px-2 py-1 font-medium ${
                         option.badge === "Best Value" 
-                          ? "bg-green-600 text-xs px-2 py-1 font-medium" 
-                          : "bg-amber-500 text-xs px-2 py-1 font-medium"
+                          ? "bg-green-600 hover:bg-green-700 text-white" 
+                          : "bg-amber-500 hover:bg-amber-600 text-white"
                       }`}
                     >
                       {option.badge}
@@ -86,7 +85,7 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                   
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-semibold text-purple-900">{option.days} days / {option.months} months</span>
+                      <span className="text-lg font-bold text-purple-900">{option.days} days / {option.months} months</span>
                     </div>
                     
                     {showUrgencyLabel && (
@@ -95,15 +94,15 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                       </div>
                     )}
                     
-                    <div className="text-base mt-2 font-medium">
+                    <div className="text-base mt-3 font-medium">
                       Originally <span className="line-through text-gray-500">${originalPrice.toFixed(2)}</span> – now just <span className="font-bold text-lg text-purple-700">${finalPrice.toFixed(2)}</span>
                     </div>
                     
-                    <div className="text-base font-bold text-green-600 py-1 px-2 inline-block rounded-md bg-green-50">
+                    <div className="text-base font-bold text-green-600 py-1 px-2.5 inline-block rounded-md bg-green-50 border border-green-100">
                       {option.emoji} Just ${pricePerDay}/day
                     </div>
                     
-                    <div className="text-sm text-gray-600 italic bg-gray-50 p-2 rounded-lg border-l-2 border-purple-300">
+                    <div className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded-lg border-l-2 border-purple-300">
                       💡 {option.days} days = {option.days} chances for the right artist to find you. Don't miss your next hire.
                     </div>
                     
