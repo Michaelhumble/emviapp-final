@@ -1,4 +1,3 @@
-
 import { JobPricingOption, PricingOptions } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [

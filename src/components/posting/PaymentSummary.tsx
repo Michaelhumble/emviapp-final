@@ -10,9 +10,9 @@ interface PaymentSummaryProps {
   basePrice: number;
   duration: number;
   autoRenew: boolean;
-  originalPrice: number;
-  finalPrice: number;
-  discountPercentage: number;
+  originalPrice: number; // Direct value, not nested inside a price object
+  finalPrice: number; // Direct value, not nested inside a price object
+  discountPercentage: number; // Direct value, not nested inside a price object
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
   isSubmitting?: boolean;
