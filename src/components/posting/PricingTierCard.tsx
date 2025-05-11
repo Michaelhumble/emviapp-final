@@ -1,72 +1,87 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { JobPricingOption } from '@/utils/posting/types';
+import { cn } from '@/lib/utils';
+import { Check } from 'lucide-react';
 
 interface PricingTierCardProps {
   pricing: JobPricingOption;
   isSelected: boolean;
+  isMostPopular?: boolean;
   onClick: () => void;
 }
 
-const PricingTierCard: React.FC<PricingTierCardProps> = ({
-  pricing,
-  isSelected,
-  onClick
+const PricingTierCard: React.FC<PricingTierCardProps> = ({ 
+  pricing, 
+  isSelected, 
+  isMostPopular = false,
+  onClick 
 }) => {
+  
+  // Helper to get the appropriate emoji based on tier
+  const getTierEmoji = (id: string) => {
+    switch (id) {
+      case 'diamond':
+        return '💎';
+      case 'premium':
+        return '✨';
+      case 'gold':
+        return '🏆';
+      default:
+        return '📢';
+    }
+  };
+  
   return (
     <Card 
       className={cn(
-        "cursor-pointer transition-all duration-200 overflow-hidden relative",
-        isSelected ? 
-          "border-primary/70 shadow-md ring-2 ring-primary/20" : 
-          "border-gray-200 hover:border-primary/50"
+        "relative border-2 overflow-hidden transition-all duration-200 cursor-pointer h-full",
+        isSelected 
+          ? "ring-2 ring-purple-500 ring-offset-2 border-purple-200 shadow-lg" 
+          : "hover:border-purple-200 hover:shadow-md"
       )}
       onClick={onClick}
     >
-      {pricing.popular && (
-        <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-xs font-medium">
+      {/* Most Popular Badge */}
+      {isMostPopular && (
+        <div className="absolute top-0 right-0 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs font-bold py-1 px-3 transform rotate-0 translate-x-0 -translate-y-0 shadow-sm">
           Most Popular
         </div>
       )}
       
-      {pricing.tag && !pricing.popular && (
-        <div className="absolute top-0 right-0 bg-amber-500 text-white px-3 py-1 text-xs font-medium">
-          {pricing.tag}
-        </div>
-      )}
+      {/* Tier Emoji Badge */}
+      <div className="absolute top-4 left-4 text-2xl">
+        {getTierEmoji(pricing.id)}
+      </div>
       
       <CardContent className={cn(
-        "p-6",
-        isSelected ? "bg-gradient-to-br from-white to-primary/5" : ""
+        "p-6 pt-12",
+        isSelected ? "bg-gradient-to-b from-purple-50 to-white" : ""
       )}>
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-lg font-bold">{pricing.name}</h3>
-            {pricing.vietnameseDescription && (
-              <p className="text-sm text-gray-500">{pricing.vietnameseDescription}</p>
-            )}
-          </div>
-          <div className="flex flex-col items-end">
-            {pricing.wasPrice && (
-              <span className="text-sm text-gray-400 line-through">${pricing.wasPrice}</span>
-            )}
-            <span className="text-2xl font-bold">
-              {pricing.price === 0 ? 'Free' : `$${pricing.price}`}
-            </span>
+        <div className="text-center mb-4">
+          <h3 className={cn(
+            "text-lg font-medium mb-1",
+            isSelected ? "text-purple-800" : "text-gray-800"
+          )}>
+            {pricing.name}
+          </h3>
+          <p className="text-sm text-muted-foreground">{pricing.description}</p>
+          
+          <div className="mt-4 mb-6">
+            <span className="text-3xl font-bold">${pricing.price}</span>
+            <span className="text-gray-500 text-sm"> /month</span>
           </div>
         </div>
         
-        <div className="space-y-2 mt-4">
-          {pricing.features.map((feature, i) => (
-            <div key={i} className="flex items-start">
-              <Check className="h-5 w-5 mr-2 text-green-500 shrink-0 mt-0.5" />
-              <span className="text-sm">{feature}</span>
-            </div>
+        <ul className="space-y-2">
+          {pricing.features.map((feature, index) => (
+            <li key={index} className="flex items-start text-sm">
+              <Check className="h-4 w-4 text-green-500 mr-2 mt-1 flex-shrink-0" />
+              <span className="text-gray-600">{feature}</span>
+            </li>
           ))}
-        </div>
+        </ul>
       </CardContent>
     </Card>
   );

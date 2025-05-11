@@ -34,21 +34,38 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     return null;
   }
   
+  // Determine the "most popular" pricing tier (typically the middle option)
+  const getMostPopularId = () => {
+    if (pricingOptions.length >= 3) {
+      // Usually the middle option is most popular
+      return pricingOptions[1].id;
+    }
+    return null;
+  };
+  
+  const mostPopularId = getMostPopularId();
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto pb-2">
         {pricingOptions.map((option) => (
-          <PricingTierCard 
+          <motion.div
             key={option.id}
-            pricing={option}
-            isSelected={selectedPricing === option.id}
-            onClick={() => onChange(option.id)}
-          />
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <PricingTierCard 
+              pricing={option}
+              isSelected={selectedPricing === option.id}
+              onClick={() => onChange(option.id)}
+              isMostPopular={option.id === mostPopularId}
+            />
+          </motion.div>
         ))}
       </div>
       
       <div className="mt-8">
-        <p className="text-center text-sm text-gray-600 mb-4">Select subscription length:</p>
+        <p className="text-center text-sm text-gray-600 mb-4">Select subscription length to get the best value:</p>
         <DurationSelector 
           selectedDuration={selectedDuration} 
           onChange={onDurationChange}
