@@ -8,15 +8,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Job } from '@/types/job';
 import { PriceDetails, pricingTiers } from '@/types/pricing';
 import PricingDisplay from '@/components/posting/PricingDisplay';
+import { PaymentOptions } from '@/utils/posting/types';
 
 export interface ReviewAndPaymentSectionProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
   onPricingChange: (pricingTier: string) => void;
-  onUpdatePricing: (options: Partial<{
-    selectedPricingTier: string;
-    autoRenew: boolean;
-    durationMonths: number;
-  }>) => void;
+  onUpdatePricing: (options: Partial<PaymentOptions>) => void;
   onNextStep: () => void;
   onPrevStep: () => void;
   jobData?: Partial<Job>;

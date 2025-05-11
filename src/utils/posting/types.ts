@@ -8,37 +8,14 @@ export interface UserPostingStats {
   hasReferrals?: boolean;
 }
 
-export interface PricingOptions {
+export interface PaymentOptions {
   selectedPricingTier: string;
+  priceDetails: PriceDetails;
+  durationMonths: number;
+  autoRenew: boolean;
   isFirstPost?: boolean;
-  isRenewal?: boolean;
-  durationMonths?: number;
-  isNationwide?: boolean;
-  fastSalePackage?: boolean;
-  showAtTop?: boolean;
-  bundleWithJobPost?: boolean;
-  hasReferrals?: boolean;
-  autoRenew?: boolean;
-  isHotListing?: boolean;
 }
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
-
-export interface JobPricingOption {
-  id: string;
-  name: string;
-  price: number;
-  wasPrice?: number;
-  basePrice?: number;
-  finalPrice?: number;
-  description: string;
-  vietnameseDescription?: string;
-  tag?: string;
-  popular?: boolean;
-  discountPercentage?: number;
-  features: string[];
-  isFirstPost?: boolean;
-  tier?: JobPricingTier;
-}
 
 export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';

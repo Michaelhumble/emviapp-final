@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { usePostPayment, PaymentOptions } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { PricingOptions } from '@/utils/posting/types';
 import { pricingTiers } from '@/types/pricing';
 
 interface RenewPostDialogProps {
