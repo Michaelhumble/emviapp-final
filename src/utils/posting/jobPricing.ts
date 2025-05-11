@@ -111,7 +111,7 @@ export const getStripeProductId = (tier: string, durationMonths: number, autoRen
 
 /**
  * Calculate the final price based on base price, duration and auto-renew status
- * Returns an object with original price, final price, and discount percentage
+ * Always returns an object with originalPrice, finalPrice, and discountPercentage
  */
 export function calculateFinalPrice(basePrice: number, duration: number, autoRenew: boolean): {
   originalPrice: number;

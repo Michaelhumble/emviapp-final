@@ -29,13 +29,12 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedDuration, setSelectedDuration] = useState<number>(duration);
   const [selectedAutoRenew, setSelectedAutoRenew] = useState<boolean>(autoRenew);
   
-  // Calculate prices using the updated calculationFinalPrice which returns an object
+  // Calculate base price from pricing tier
   const basePrice = calculateJobPostPrice(pricingId);
-  const { 
-    originalPrice, 
-    finalPrice, 
-    discountPercentage 
-  } = calculateFinalPrice(basePrice, selectedDuration, selectedAutoRenew);
+  
+  // Calculate prices using the updated calculationFinalPrice which returns an object
+  const priceInfo = calculateFinalPrice(basePrice, selectedDuration, selectedAutoRenew);
+  const { originalPrice, finalPrice, discountPercentage } = priceInfo;
 
   const handleProceedToPayment = async () => {
     // For paid plans, show the upsell modal first

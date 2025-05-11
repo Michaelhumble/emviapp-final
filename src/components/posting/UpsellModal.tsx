@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { calculateFinalPrice } from '@/utils/posting/jobPricing';
-import { PricingOptions } from '@/utils/posting/types';
-import { formatCurrency } from '@/lib/utils';
 
 interface UpsellModalProps {
   isOpen: boolean;
@@ -38,8 +36,6 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
     onConfirm(selectedDuration, autoRenew);
   };
 
-  const autoRenewDiscount = autoRenew ? 5 : 0;
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
@@ -55,15 +51,12 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
         <div className="py-4 space-y-4">
           <div className="grid gap-4">
             {durations.map((option) => {
-              const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
-                basePrice, 
-                option.months, 
-                autoRenew
-              );
+              // Calculate pricing for this duration option
+              const priceInfo = calculateFinalPrice(basePrice, option.months, autoRenew);
+              const { originalPrice, finalPrice, discountPercentage } = priceInfo;
               
               const savings = (originalPrice - finalPrice).toFixed(2);
-              const totalDiscount = option.discount + autoRenewDiscount;
-              const pricePerDay = (finalPrice / (option.days)).toFixed(2);
+              const pricePerDay = (finalPrice / option.days).toFixed(2);
               
               return (
                 <div 
