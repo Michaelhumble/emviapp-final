@@ -4,6 +4,7 @@ import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import { PricingOptions } from '@/utils/posting/types';
 import { JobDetailsSubmission } from '@/types/job';
 import ReviewAndPaymentSection from '@/components/posting/ReviewAndPaymentSection';
+import { getPricingOptionByDuration } from '@/utils/jobPricingOptions';
 
 // Example JobPost component
 const JobPost = () => {

@@ -1,5 +1,5 @@
 
-export type PriceDetails = {
+export interface PriceDetails {
   id: string;
   label: string;
   originalPrice: number;
@@ -11,4 +11,4 @@ export type PriceDetails = {
   isPopular?: boolean;
   isBestValue?: boolean;
   emoji: string;
-};
+}
