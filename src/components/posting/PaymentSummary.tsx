@@ -5,32 +5,28 @@ import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucid
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, addMonths } from 'date-fns';
+import { PriceDetails } from '@/types/pricing';
 
 interface PaymentSummaryProps {
-  basePrice: number;
+  priceDetails: PriceDetails;
   duration: number;
   autoRenew: boolean;
-  originalPrice: number;
-  finalPrice: number;
-  discountPercentage: number;
   onProceedToPayment: () => void;
-  isFreePlan?: boolean;
+  isFreePlan: boolean;
   isSubmitting?: boolean;
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
-  basePrice,
+  priceDetails,
   duration,
   autoRenew,
-  originalPrice,
-  finalPrice,
-  discountPercentage,
   onProceedToPayment,
   isFreePlan = false,
   isSubmitting = false
 }) => {
   const { t } = useTranslation();
   const expiryDate = addMonths(new Date(), duration);
+  const priceInDollars = priceDetails.priceInCents / 100;
   
   return (
     <Card className="border border-gray-200">
@@ -91,21 +87,9 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             )}
             
             <div className="border-t border-gray-200 pt-3 space-y-1">
-              <div className="flex justify-between">
-                <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
-                <span className="text-gray-600">${originalPrice.toFixed(2)}</span>
-              </div>
-              
-              {discountPercentage > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
-                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
-                </div>
-              )}
-              
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('Total', 'Tổng cộng')}:</span>
-                <span>${finalPrice.toFixed(2)}</span>
+                <span>${priceInDollars.toFixed(2)}</span>
               </div>
             </div>
           </div>

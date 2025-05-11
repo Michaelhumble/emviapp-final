@@ -3,26 +3,38 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission, PricingOptions } from '@/types/job';
+import { JobDetailsSubmission } from '@/types/job';
+import { PriceDetails } from '@/types/pricing';
+
+export interface PaymentOptions {
+  selectedPricingTier: string;
+  priceDetails: PriceDetails;
+  durationMonths: number;
+  autoRenew: boolean;
+  isFirstPost?: boolean;
+}
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
+  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, paymentOptions?: PaymentOptions) => {
     setIsLoading(true);
     try {
-      console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
+      const pricingTier = paymentOptions?.selectedPricingTier || 'standard';
+      const priceDetails = paymentOptions?.priceDetails;
+      
+      console.log("Initiating payment for:", postType, "with pricing:", pricingTier);
 
       // Handle free listings directly without going to Stripe
-      if (pricingOptions?.selectedPricingTier === 'free') {
+      if (pricingTier === 'free') {
         console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
           body: { 
             postType,
             postDetails,
-            pricingOptions
+            pricingOptions: paymentOptions
           }
         });
 
@@ -43,21 +55,21 @@ export const usePostPayment = () => {
       
       // For paid listings, create a Stripe checkout session
       // Get the correct Stripe price ID based on tier and duration
-      const selectedPricingTier = pricingOptions?.selectedPricingTier;
-      const durationMonths = pricingOptions?.durationMonths || 1;
+      const durationMonths = paymentOptions?.durationMonths || 1;
       
       // Log payment parameters for debugging
       console.log("Payment parameters:", {
-        tier: selectedPricingTier,
+        tier: pricingTier,
+        priceInCents: priceDetails?.priceInCents,
         duration: durationMonths,
-        autoRenew: pricingOptions?.autoRenew
+        autoRenew: paymentOptions?.autoRenew
       });
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           postType,
           postDetails,
-          pricingOptions
+          pricingOptions: paymentOptions
         }
       });
 
