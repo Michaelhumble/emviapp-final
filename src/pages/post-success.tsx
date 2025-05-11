@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, ArrowRight, FileText, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -101,6 +101,10 @@ const PostSuccess: React.FC = () => {
     navigate('/jobs');
   };
   
+  const navigateToPostJob = () => {
+    navigate('/post-job');
+  };
+  
   if (loading) {
     return (
       <Layout>
@@ -121,42 +125,59 @@ const PostSuccess: React.FC = () => {
   return (
     <Layout>
       <div className="container max-w-4xl py-12">
-        <Card className="p-8">
+        <Card className="p-8 border-purple-100 shadow-lg bg-gradient-to-b from-white to-purple-50">
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="rounded-full bg-green-100 p-3">
               <CheckCircle className="h-12 w-12 text-green-600" />
             </div>
             
-            <h1 className="text-3xl font-bold text-center">
-              {t('Congratulations!', 'Chúc mừng!')}
+            <h1 className="text-3xl md:text-4xl font-playfair font-semibold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-purple-500">
+              {t('🎉 Your Job Post is Live!', '🎉 Tin Đăng Của Bạn Đã Hiển Thị!')}
             </h1>
             
             <p className="text-xl text-center text-gray-700">
-              {postData?.post_type === 'job'
-                ? t('Your job listing has been successfully published!', 'Tin tuyển dụng của bạn đã được đăng thành công!')
-                : t('Your salon listing has been successfully published!', 'Thông tin về salon của bạn đã được đăng thành công!')}
+              {t('Artists in your area are being notified right now.', 'Các nghệ sĩ trong khu vực của bạn đang được thông báo ngay bây giờ.')}
+            </p>
+            
+            <p className="text-md text-center text-gray-600 max-w-lg">
+              {t('Thank you for trusting EmviApp. You\'re helping raise the bar for beauty professionals everywhere.', 
+                'Cảm ơn bạn đã tin tưởng EmviApp. Bạn đang góp phần nâng cao tiêu chuẩn cho các chuyên gia làm đẹp ở khắp mọi nơi.')}
             </p>
             
             {postData?.expires_at && (
-              <p className="text-gray-600">
-                {t('Your listing expires on', 'Tin của bạn hết hạn vào')}: {new Date(postData.expires_at).toLocaleDateString()}
-              </p>
+              <div className="flex items-center justify-center bg-white px-4 py-3 rounded-lg border border-purple-100 shadow-sm">
+                <Calendar className="h-5 w-5 mr-2 text-purple-500" />
+                <span className="text-gray-700">
+                  {t('Your listing expires on', 'Tin đăng của bạn hết hạn vào')}: 
+                  <strong className="ml-1">{new Date(postData.expires_at).toLocaleDateString()}</strong>
+                </span>
+              </div>
             )}
             
             <div className="w-full flex flex-col md:flex-row gap-4 pt-6">
               <Button 
                 variant="outline"
-                className="flex-1"
+                className="flex-1 bg-white hover:bg-gray-50 border-gray-200"
                 onClick={navigateToJobs}
               >
-                {t('View All Listings', 'Xem tất cả tin đăng')}
+                <FileText className="mr-2 h-4 w-4" />
+                {t('View My Post', 'Xem Bài Đăng Của Tôi')}
               </Button>
               
               <Button 
-                className="flex-1 flex items-center justify-center gap-2"
+                variant="outline"
+                className="flex-1 bg-white hover:bg-gray-50 border-gray-200"
+                onClick={navigateToPostJob}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {t('Post Another Job', 'Đăng Tin Khác')}
+              </Button>
+              
+              <Button 
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600"
                 onClick={navigateToDashboard}
               >
-                {t('Go to Dashboard', 'Đi đến bảng điều khiển')}
+                {t('Back to Dashboard', 'Về Trang Quản Lý')}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
