@@ -30,7 +30,6 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedAutoRenew, setSelectedAutoRenew] = useState<boolean>(autoRenew);
   
   // Calculate prices using the direct calculation approach
-  const { selectedPricingTier, durationMonths, autoRenew: pricingAutoRenew } = pricingOptions;
   const basePrice = calculateJobPostPrice(pricingId);
   const originalPrice = basePrice * selectedDuration;
   const finalPrice = calculateFinalPrice(basePrice, selectedDuration, selectedAutoRenew);
