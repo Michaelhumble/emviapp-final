@@ -43,7 +43,7 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
 
         <div className="py-4 space-y-6">
           <div className="grid gap-5">
-            {PRICING_OPTIONS.map((option) => {
+            {PRICING_OPTIONS.map((option: PriceDetails) => {
               // Apply auto-renew discount if selected
               const price = autoRenew ? applyAutoRenewDiscount(option, autoRenew) : option;
               const { originalPrice, finalPrice, discountPercentage, dailyRate, durationDays, durationMonths } = price;
