@@ -41,6 +41,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   };
 
   const basePrice = getBasePricePerMonth(pricingId);
+  // Calculate the initial prices
   const originalPrice = basePrice * selectedDuration;
   const discountPercentage = selectedDuration === 1 ? 0 : 
                             selectedDuration === 3 ? 10 : 
