@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission, PricingOptions } from '@/types/job';
-import { getStripeProductId } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,16 +14,8 @@ export const usePostPayment = () => {
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
 
-      // Validate pricing options
-      if (!pricingOptions || !pricingOptions.selectedPricingTier || !pricingOptions.durationMonths) {
-        throw new Error(t(
-          'Invalid pricing configuration. Please select a plan and duration.',
-          'Cấu hình giá không hợp lệ. Vui lòng chọn gói và thời hạn.'
-        ));
-      }
-
       // Handle free listings directly without going to Stripe
-      if (pricingOptions.selectedPricingTier === 'free') {
+      if (pricingOptions?.selectedPricingTier === 'free') {
         console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
@@ -51,42 +42,22 @@ export const usePostPayment = () => {
       } 
       
       // For paid listings, create a Stripe checkout session
-      // Get the correct Stripe product ID based on tier, duration, and auto-renew
-      const selectedPricingTier = pricingOptions.selectedPricingTier;
-      const durationMonths = pricingOptions.durationMonths;
-      const autoRenew = pricingOptions.autoRenew || false;
-      
-      // Get the appropriate Stripe product ID
-      const stripeProductId = getStripeProductId(selectedPricingTier, durationMonths, autoRenew);
-      
-      if (!stripeProductId) {
-        const errorMsg = t(
-          'Invalid pricing configuration. Please select a different plan or duration.',
-          'Cấu hình giá không hợp lệ. Vui lòng chọn gói hoặc thời hạn khác.'
-        );
-        toast.error(errorMsg);
-        throw new Error(errorMsg);
-      }
+      // Get the correct Stripe price ID based on tier and duration
+      const selectedPricingTier = pricingOptions?.selectedPricingTier;
+      const durationMonths = pricingOptions?.durationMonths || 1;
       
       // Log payment parameters for debugging
       console.log("Payment parameters:", {
         tier: selectedPricingTier,
         duration: durationMonths,
-        autoRenew: autoRenew,
-        stripeProductId: stripeProductId
+        autoRenew: pricingOptions?.autoRenew
       });
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           postType,
           postDetails,
-          pricingOptions,
-          stripeProductId,
-          metadata: {
-            tier: selectedPricingTier,
-            duration: durationMonths,
-            autoRenew: autoRenew
-          }
+          pricingOptions
         }
       });
 

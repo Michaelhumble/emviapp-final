@@ -1,240 +1,190 @@
-import { PricingOptions, JobPricingTier } from './types';
 
-// Define job pricing tiers
-export const jobPricingOptions = [
+import { JobPricingOption, PricingOptions } from './types';
+import { DurationOption } from '@/types/pricing';
+
+export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
     name: 'Free',
     price: 0,
-    description: 'Basic listing for 30 days',
-    vietnameseDescription: 'Đăng tin cơ bản trong 30 ngày',
-    popular: false,
+    description: 'Free listing for 30 days',
+    vietnameseDescription: 'Đăng tin miễn phí trong 30 ngày',
     features: [
-      'Basic visibility',
-      'Standard placement',
-      '30-day listing',
-      'Email support'
+      'Limited visibility',
+      'Standard placement in listings'
     ],
-    tier: 'free' as JobPricingTier
+    tier: 'free'
   },
   {
     id: 'standard',
     name: 'Standard',
-    price: 9.99,
-    description: 'Higher visibility listing',
-    vietnameseDescription: 'Đăng tin với khả năng hiển thị cao hơn',
-    popular: true,
+    price: 49.99,
+    description: 'Standard listing with increased visibility',
+    vietnameseDescription: 'Đăng tin tiêu chuẩn với khả năng hiển thị cao',
     features: [
       'Increased visibility',
-      'Higher search placement',
-      'Phone support',
-      'Email alerts'
+      'Featured in search results'
     ],
-    tier: 'standard' as JobPricingTier
+    tier: 'standard'
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: 49.99,
-    description: 'Featured listing with maximum exposure',
-    vietnameseDescription: 'Đăng tin nổi bật với mức độ hiển thị tối đa',
-    tag: 'Best Value',
-    popular: false,
+    price: 99.99,
+    description: 'Premium listing with top placement',
+    vietnameseDescription: 'Đăng tin cao cấp với vị trí hàng đầu',
     features: [
-      'Featured in premium section',
-      'Top search placement',
-      'Social media promotion',
-      'Priority support',
-      'Analytics dashboard'
+      'Top placement in listings',
+      'Highlight in search results',
+      'Social media promotion'
     ],
-    tier: 'premium' as JobPricingTier
+    tier: 'premium'
   },
   {
     id: 'gold',
-    name: 'Gold Featured',
-    price: 19.99,
-    description: 'Featured listing with high visibility',
-    vietnameseDescription: 'Đăng tin nổi bật với độ phơi bày cao',
-    popular: false,
+    name: 'Gold',
+    price: 199.99,
+    description: 'Gold listing with maximum exposure',
+    vietnameseDescription: 'Đăng tin vàng với khả năng hiển thị tối đa',
     features: [
-      'Featured in gold section',
-      'High search placement',
-      'Dedicated support',
-      'Listing analytics'
+      'Maximum visibility',
+      'Exclusive placement',
+      'Dedicated support'
     ],
-    tier: 'gold' as JobPricingTier
+    tier: 'gold'
   },
   {
     id: 'diamond',
-    name: 'Diamond Featured',
-    price: 99.99,
-    description: 'Premium listing with maximum visibility',
-    vietnameseDescription: 'Đăng tin cao cấp với độ hiển thị tối đa',
-    popular: false,
-    tag: 'Premium',
+    name: 'Diamond',
+    price: 299.99,
+    description: 'Diamond listing with ultimate exposure',
+    vietnameseDescription: 'Đăng tin kim cương với khả năng hiển thị tuyệt vời',
     features: [
-      'Featured in diamond section',
-      'Top search placement',
-      'Social media promotion',
-      'Dedicated account manager',
-      'Full analytics suite',
-      'Multi-channel promotion'
+      'Ultimate visibility',
+      'Priority placement',
+      '24/7 dedicated support'
     ],
-    tier: 'diamond' as JobPricingTier
+    tier: 'diamond'
   }
 ];
 
-// Calculate job post price based on options
-export const calculateJobPostPrice = (options: PricingOptions) => {
-  if (!options || !options.selectedPricingTier || !options.durationMonths) {
-    return null;
+export const durationOptions: DurationOption[] = [
+  { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
+  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },
+  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 15 },
+  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 }
+];
+
+export const getJobPostPricingSummary = (options: PricingOptions): string => {
+  let summary = `Selected Pricing Tier: ${options.selectedPricingTier}`;
+  if (options.isFirstPost) {
+    summary += ', First Post Discount Applied';
   }
-  
-  // Find the selected pricing option
-  const selectedOption = jobPricingOptions.find(option => option.id === options.selectedPricingTier);
-  if (!selectedOption) {
-    return null;
+  if (options.isNationwide) {
+    summary += ', Nationwide Visibility';
   }
+  return summary;
+};
+
+export const calculatePriceWithDuration = (basePrice: number, durationMonths: number, discountPercentage: number): number => {
+  const originalPrice = basePrice * durationMonths;
+  const discount = (originalPrice * discountPercentage) / 100;
+  return originalPrice - discount;
+};
+
+export const validatePricingOptions = (options: PricingOptions): boolean => {
+  if (!options) return false;
+  if (!options.selectedPricingTier) return false;
+  return true;
+};
+
+export const getStripePriceId = (pricingTier: string): string | null => {
+  switch (pricingTier) {
+    case 'standard':
+      return process.env.NEXT_PUBLIC_STRIPE_STANDARD_PRICE_ID || null;
+    case 'premium':
+      return process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID || null;
+    default:
+      return null;
+  }
+};
+
+// Modify the calculateFinalPrice function to return an object with the expected properties
+export const calculateFinalPrice = (basePrice: number, durationMonths: number) => {
+  // Calculate original price (before any discounts)
+  const originalPrice = basePrice * durationMonths;
   
-  // Get the base price from the selected option
-  const basePrice = selectedOption.price;
-  let originalPrice = basePrice * options.durationMonths;
+  // Define discount percentage based on duration
   let discountPercentage = 0;
   
-  // Apply duration discounts
-  if (options.durationMonths === 3) {
+  if (durationMonths === 3) {
     discountPercentage = 10;
-  } else if (options.durationMonths === 6) {
+  } else if (durationMonths === 6) {
     discountPercentage = 15;
-  } else if (options.durationMonths === 12) {
+  } else if (durationMonths >= 12) {
     discountPercentage = 20;
   }
   
-  // Apply auto-renew discount (additional 5%)
-  if (options.autoRenew && options.selectedPricingTier !== 'free') {
-    discountPercentage += 5;
-  }
+  // Calculate final price after applying discount
+  const discount = (originalPrice * discountPercentage) / 100;
+  const finalPrice = originalPrice - discount;
   
-  // Apply first post discount if applicable
-  if (options.isFirstPost && options.selectedPricingTier !== 'free') {
-    discountPercentage += 10;
-  }
-  
-  // Calculate final price with discount
-  const finalPrice = originalPrice * (1 - discountPercentage / 100);
-  
+  // Return an object with all required properties
   return {
-    basePrice,
     originalPrice,
     finalPrice,
     discountPercentage
   };
 };
 
-// Get job post pricing summary text
-export const getJobPostPricingSummary = (pricingOptions: PricingOptions) => {
-  if (!pricingOptions) return '';
-  
-  const pricingResult = calculateJobPostPrice(pricingOptions);
-  if (!pricingResult) return '';
-  
-  const { originalPrice, finalPrice, discountPercentage } = pricingResult;
-  
-  if (discountPercentage > 0) {
-    return `$${finalPrice.toFixed(2)} (${discountPercentage}% off $${originalPrice.toFixed(2)})`;
-  } else {
-    return `$${finalPrice.toFixed(2)}`;
-  }
-};
-
-/**
- * Calculates the price with duration discount but without auto-renew discount
- */
-export const calculatePriceWithDuration = (basePrice: number, durationMonths: number): number => {
-  // Apply duration-based discount
-  let discountPercentage = 0;
-  if (durationMonths === 3) discountPercentage = 10;
-  else if (durationMonths === 6) discountPercentage = 15;
-  else if (durationMonths === 12) discountPercentage = 20;
-  
-  const discountMultiplier = 1 - (discountPercentage / 100);
-  return basePrice * durationMonths * discountMultiplier;
-};
-
-/**
- * Calculates the final price with all discounts applied
- */
-export const calculateFinalPrice = (basePrice: number, durationMonths: number, autoRenew: boolean = false): number => {
-  let price = calculatePriceWithDuration(basePrice, durationMonths);
-  
-  // Apply auto-renew discount if enabled
-  if (autoRenew) {
-    const autoRenewDiscount = 0.05; // 5% discount
-    price = price * (1 - autoRenewDiscount);
-  }
-  
-  return price;
-};
-
-/**
- * Get Stripe product ID based on tier, duration and auto-renew status
- */
-export const getStripeProductId = (
-  selectedPricingTier: string,
-  durationMonths: number,
-  autoRenew: boolean = false
-): string | null => {
-  // Validate inputs
-  if (!selectedPricingTier || !durationMonths) {
-    console.error("Missing required parameters for Stripe product ID lookup", {
-      tier: selectedPricingTier,
-      duration: durationMonths
-    });
-    return null;
-  }
-
-  // Map of product IDs by tier, duration, and renewal option
-  const productIds: Record<string, Record<number, Record<boolean, string>>> = {
-    standard: {
-      1: { true: 'price_1NxYs2DfXxB9DeyaasdqWERE', false: 'price_1NxYrKDfXxB9Deyaasf35Dda' },
-      3: { true: 'price_1NxYs2DfXxB9DeyaFG4qWEDF', false: 'price_1NxYrKDfXxB9DeyaSD35Dda' },
-      6: { true: 'price_1NxYs2DfXxB9DeyaFGGGEDF', false: 'price_1NxYrKDfXxB9DeyaSDGHDda' },
-      12: { true: 'price_1NxYs2DfXxB9DeyJJGGGEDF', false: 'price_1NxYrKDfXxB9DYYYSDGHDda' }
-    },
-    premium: {
-      1: { true: 'price_1NxYs2DfXxB9Deya0Et6YiXP', false: 'price_1NxYrKDfXxB9DeyaopoCSmvx' },
-      3: { true: 'price_1NxYs2DfXxB9DeyaEEEYiXP', false: 'price_1NxYrKDfXxB9DeyUUUCSmvx' },
-      6: { true: 'price_1NxYs2DfXxB9DeyaAAAYiXP', false: 'price_1NxYrKDfXxB9DeyQQQCSmvx' },
-      12: { true: 'price_1NxYs2DfXxB9DeyLLLLYiXP', false: 'price_1NxYrKDfXxB9DeyBBBBSmvx' }
-    },
-    gold: {
-      1: { true: 'price_1NxYs2DfXxB9Deya7cKbQrAF', false: 'price_1NxYrKDfXxB9DeyalVuCeN1I' },
-      3: { true: 'price_1NxYs2DfXxB9DeyaRRRbQrAF', false: 'price_1NxYrKDfXxB9DeWWWVuCeN1I' },
-      6: { true: 'price_1NxYs2DfXxB9DeyaMMMbQrAF', false: 'price_1NxYrKDfXxB9DeyaPPPCeN1I' },
-      12: { true: 'price_1NxYs2DfXxB9DeyZZZZbQrAF', false: 'price_1NxYrKDfXxB9DeyaXXXCeN1I' }
-    }
-  };
-
-  try {
-    return productIds[selectedPricingTier][durationMonths][autoRenew] || null;
-  } catch (e) {
-    console.error("Error retrieving Stripe product ID:", e);
-    console.error("Invalid pricing configuration:", {
-      tier: selectedPricingTier,
-      duration: durationMonths,
-      autoRenew
-    });
-    return null;
-  }
-};
-
-// Helper to determine if a plan should use subscription mode
-export const isSubscriptionPlan = (pricingOptions: PricingOptions): boolean => {
-  if (!pricingOptions) return false;
-  return pricingOptions.autoRenew === true && pricingOptions.selectedPricingTier !== 'free';
-};
-
-// Convert dollar amount to cents for Stripe
 export const getAmountInCents = (amount: number): number => {
   return Math.round(amount * 100);
 };
+
+export const isSubscriptionPlan = (pricingId: string): boolean => {
+    return pricingId !== 'free';
+};
+
+/**
+ * Calculate the price for a job post based on pricing options
+ * @param options - The pricing options selected by the user
+ * @returns An object containing pricing details
+ */
+export const calculateJobPostPrice = (options: PricingOptions) => {
+  // Get the base price from the selected pricing tier
+  const selectedPricingOption = jobPricingOptions.find(option => option.id === options.selectedPricingTier);
+  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
+  
+  // Get duration (default to 1 if not specified)
+  const durationMonths = options.durationMonths || 1;
+  
+  // Calculate original price (before any discounts)
+  const originalPrice = basePrice * durationMonths;
+  
+  // Define discount percentage based on duration
+  let discountPercentage = 0;
+  
+  if (durationMonths === 3) {
+    discountPercentage = 10;
+  } else if (durationMonths === 6) {
+    discountPercentage = 15;
+  } else if (durationMonths >= 12) {
+    discountPercentage = 20;
+  }
+  
+  // Add first post discount if applicable
+  if (options.isFirstPost) {
+    discountPercentage += 5; // Additional 5% discount for first-time posters
+  }
+  
+  // Calculate the final price
+  const discount = (originalPrice * discountPercentage) / 100;
+  const finalPrice = originalPrice - discount;
+  
+  return {
+    originalPrice,
+    finalPrice,
+    discountPercentage
+  };
+};
+

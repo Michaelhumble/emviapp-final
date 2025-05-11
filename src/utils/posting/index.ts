@@ -5,11 +5,10 @@ export {
   getJobPostPricingSummary,
   calculatePriceWithDuration,
   validatePricingOptions,
-  getStripeProductId,
+  getStripePriceId,
   calculateFinalPrice,
   getAmountInCents,
-  isSubscriptionPlan,
-  calculateJobPostPrice
+  isSubscriptionPlan
 } from './jobPricing';
 
 export {
