@@ -31,6 +31,7 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
   // For Diamond plan, we'll show a special message for non-yearly options
   // IMPORTANT: Diamond plan is intentionally hardcoded for 12-month only.
   // This restriction is by design and should not be changed without business approval.
+  // TODO: Diamond tier is temporarily hidden and will be accessible later via waitlist/bid flow
   const isDiamondPlan = selectedPricing === 'diamond';
   const isFreePlan = selectedPricing === 'free';
   

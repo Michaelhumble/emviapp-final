@@ -1,3 +1,4 @@
+
 import { JobPricingOption, PricingOptions } from './types';
 import { DurationOption } from '@/types/pricing';
 
@@ -65,7 +66,7 @@ export const jobPricingOptions: JobPricingOption[] = [
       '24/7 dedicated support'
     ],
     tier: 'diamond',
-    hidden: true // Diamond tier is hidden
+    hidden: true // TODO: Diamond tier is temporarily hidden and will be accessible later via waitlist/bid flow
   }
 ];
 

@@ -36,8 +36,11 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     return null;
   }
   
-  // Filter out hidden tiers
-  const visiblePricingOptions = pricingOptions.filter(option => !option.hidden);
+  // Filter out hidden tiers and Diamond tier (temporarily)
+  // TODO: Diamond tier is temporarily hidden and will be accessible later via waitlist/bid flow
+  const visiblePricingOptions = pricingOptions.filter(option => 
+    !option.hidden && option.id !== 'diamond'
+  );
   
   // Determine the "most popular" pricing tier (typically the Premium option)
   const getMostPopularId = () => {
