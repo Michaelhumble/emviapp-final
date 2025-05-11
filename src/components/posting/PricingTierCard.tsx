@@ -43,9 +43,11 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
   const getPromotionText = (id: string) => {
     switch (id) {
       case 'premium':
-        return 'Get Seen 5x More';
+        return 'Top Pick by Salons';
       case 'standard':
-        return 'Most Booked by Salons';
+        return 'Smart Choice';
+      case 'gold':
+        return 'Fastest Hiring Plan';
       default:
         return null;
     }
@@ -54,11 +56,27 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
   const isFree = pricing.id === 'free';
   const promotionText = getPromotionText(pricing.id);
   
+  // Define background style based on tier
+  const getBgStyle = (id: string) => {
+    switch (id) {
+      case 'premium':
+        return "bg-gradient-to-b from-amber-50 to-white border-amber-200"; // soft gold
+      case 'standard':
+        return "bg-gradient-to-b from-purple-50 to-white border-purple-100"; // lavender
+      case 'gold':
+        return "bg-gradient-to-b from-amber-100 to-white border-amber-300"; // premium gold
+      case 'free':
+        return "bg-gray-50 border-gray-200"; // muted gray
+      default:
+        return "bg-white border-gray-200";
+    }
+  };
+  
   // Define premium-specific features that the free plan lacks
   const freeNegativeFeatures = isFree ? [
-    'Top placement', 
-    'Highlight in search',
-    'Social media promotion'
+    'No visibility boost', 
+    'Not recommended for hiring',
+    'No listing boost'
   ] : [];
   
   return (
@@ -68,18 +86,21 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
         isSelected 
           ? "ring-2 ring-purple-500 ring-offset-2 border-purple-200 shadow-lg transform scale-[1.02]" 
           : "hover:border-purple-200 hover:shadow-md hover:transform hover:scale-[1.01]",
-        isFree && "bg-gray-50 border-gray-200",
-        pricing.id === 'premium' && "bg-gradient-to-b from-amber-50 to-white border-amber-200"
+        getBgStyle(pricing.id)
       )}
       onClick={onClick}
     >
-      {/* Animated Glow Effect for premium when selected */}
+      {/* Animated Glow Effect for selected cards */}
       {isSelected && pricing.id === 'premium' && (
         <div className="absolute inset-0 bg-amber-100 opacity-30 animate-pulse rounded-lg" />
       )}
       
-      {/* Standard glow for non-premium selected */}
-      {isSelected && pricing.id !== 'premium' && !isFree && (
+      {isSelected && pricing.id === 'gold' && (
+        <div className="absolute inset-0 bg-amber-200 opacity-30 animate-pulse rounded-lg" />
+      )}
+      
+      {/* Standard glow for standard selected */}
+      {isSelected && pricing.id === 'standard' && (
         <div className="absolute inset-0 bg-purple-100 opacity-30 animate-pulse rounded-lg" />
       )}
       
@@ -103,7 +124,9 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
             "text-xs font-medium px-2 py-1 rounded-full",
             pricing.id === 'premium' 
               ? "bg-amber-100 text-amber-700" 
-              : "bg-blue-100 text-blue-700"
+              : pricing.id === 'gold'
+                ? "bg-amber-200 text-amber-800"
+                : "bg-purple-100 text-purple-700"
           )}>
             {promotionText}
           </span>
@@ -116,20 +139,24 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
           Most customers hire within 3 days
         </div>
       )}
+
+      {/* Gold-specific tooltip */}
+      {pricing.id === 'gold' && isSelected && (
+        <div className="absolute -top-2 -left-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full border border-amber-200 shadow-sm">
+          Get front-page exposure
+        </div>
+      )}
       
       <CardContent className={cn(
         "p-6 pt-12",
-        isSelected ? 
-          pricing.id === 'premium' 
-            ? "bg-gradient-to-b from-amber-50 to-white" 
-            : "bg-gradient-to-b from-purple-50 to-white" 
-          : ""
+        isSelected ? getBgStyle(pricing.id) : ""
       )}>
         <div className="text-center mb-4">
           <h3 className={cn(
             "text-lg font-medium mb-1",
             isSelected ? "text-purple-800" : "text-gray-800",
             pricing.id === 'premium' && "text-amber-700",
+            pricing.id === 'gold' && "text-amber-800",
             isFree && "text-gray-600"
           )}>
             {pricing.name}
@@ -163,7 +190,8 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
               <Check className={cn(
                 "h-4 w-4 mr-2 mt-1 flex-shrink-0",
                 pricing.id === 'premium' ? "text-amber-500" : 
-                pricing.id === 'standard' ? "text-green-500" :
+                pricing.id === 'gold' ? "text-amber-600" :
+                pricing.id === 'standard' ? "text-purple-500" :
                 "text-gray-500"
               )} />
               <span className={cn(

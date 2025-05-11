@@ -41,6 +41,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths || 1);
   const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew || false);
   const [isFreePlan, setIsFreePlan] = useState(false);
+  const [showUpsellCard, setShowUpsellCard] = useState(false);
   
   useEffect(() => {
     if (selectedPricing === 'free') {
@@ -48,8 +49,11 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       // Force 1 month duration for free plan and turn off auto-renew
       setSelectedDuration(1);
       setAutoRenew(false);
+      setShowUpsellCard(false);
     } else {
       setIsFreePlan(false);
+      // Show upsell card if standard or premium is selected (but not gold)
+      setShowUpsellCard(selectedPricing === 'standard' || selectedPricing === 'premium');
     }
   }, [selectedPricing]);
 
@@ -79,6 +83,12 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const handleAutoRenewChange = (checked: boolean) => {
     setAutoRenew(checked);
     onUpdatePricing({ autoRenew: checked });
+  };
+
+  const handleUpgradeClick = () => {
+    setSelectedPricing('gold');
+    onPricingChange('gold');
+    setShowUpsellCard(false);
   };
 
   const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
@@ -130,6 +140,11 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       {/* Auto-Renew Suggestion Banner */}
       {selectedPricing !== 'free' && !autoRenew && (
         <AutoRenewSuggestionCard />
+      )}
+
+      {/* Smart Upsell Card */}
+      {showUpsellCard && (
+        <AutoRenewSuggestionCard onUpgrade={handleUpgradeClick} />
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

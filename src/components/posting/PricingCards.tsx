@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import PricingTierCard from './PricingTierCard';
 import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Calendar } from 'lucide-react';
 import DurationSelector from './DurationSelector';
 import {
   Tooltip,
@@ -50,11 +50,15 @@ const PricingCards: React.FC<PricingCardsProps> = ({
   
   // Separate free and paid tiers
   const freeTier = visiblePricingOptions.find(option => option.id === 'free');
-  const paidTiers = visiblePricingOptions.filter(option => option.id !== 'free');
   
-  // Determine the "most popular" pricing tier (typically the Premium option)
+  // Get paid tiers, but make gold visible now
+  const paidTiers = visiblePricingOptions.filter(option => 
+    option.id !== 'free' && 
+    (option.id !== 'gold' || true) // Always show gold now
+  );
+  
+  // Determine the "most popular" pricing tier (now Premium)
   const getMostPopularId = () => {
-    // Premium is now our most popular option
     return 'premium';
   };
   
@@ -72,7 +76,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
         </TooltipTrigger>
         <TooltipContent className="p-3 max-w-xs bg-white border border-amber-200 text-gray-800 shadow-lg">
           <p className="font-medium mb-1 text-amber-800">Limited Visibility Warning</p>
-          <p className="text-sm">Free listings reach 80% fewer candidates. Upgrade to attract top talent faster.</p>
+          <p className="text-sm">80% of free listings never get filled. Try a paid plan to attract real candidates.</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -81,7 +85,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
   return (
     <div className="space-y-6">
       {/* Paid Plans Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
         {paidTiers.map((option) => (
           <motion.div
             key={option.id}
@@ -111,11 +115,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
               animate={selectedPricing === 'free' ? { scale: 1.01 } : { scale: 1 }}
             >
               <PricingTierCard 
-                pricing={{
-                  ...freeTier,
-                  name: "Basic (Limited Reach)",
-                  description: "Recommended only if you're testing the platform"
-                }}
+                pricing={freeTier}
                 isSelected={selectedPricing === 'free'}
                 onClick={() => onChange('free')}
                 isFreeVariant={true}

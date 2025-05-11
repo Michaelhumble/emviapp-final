@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format, addMonths } from 'date-fns';
-import { CalendarIcon, RefreshCw, DollarSign, Tag, Sparkles, CreditCard } from 'lucide-react';
+import { CalendarIcon, RefreshCw, CreditCard, Tag, Sparkles, Check, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 

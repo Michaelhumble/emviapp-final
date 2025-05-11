@@ -1,14 +1,13 @@
-
 import { JobPricingOption, PricingOptions } from './types';
 import { DurationOption } from '@/types/pricing';
 
 export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Free',
+    name: 'Basic (Limited Reach)',
     price: 0,
-    description: 'Free listing for 30 days',
-    vietnameseDescription: 'Đăng tin miễn phí trong 30 ngày',
+    description: 'Free listing with very limited visibility',
+    vietnameseDescription: 'Đăng tin miễn phí với khả năng hiển thị rất hạn chế',
     features: [
       'Limited visibility',
       'Standard placement in listings'
@@ -18,41 +17,41 @@ export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'standard',
     name: 'Standard',
-    price: 49.99,
-    description: 'Standard listing with increased visibility',
-    vietnameseDescription: 'Đăng tin tiêu chuẩn với khả năng hiển thị cao',
+    price: 9.99,
+    description: 'Smart Choice for most businesses',
+    vietnameseDescription: 'Lựa chọn thông minh cho hầu hết các doanh nghiệp',
     features: [
       'Increased visibility',
-      'Featured in search results'
+      'Better search placement'
     ],
     tier: 'standard'
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: 99.99,
-    description: 'Premium listing with top placement',
-    vietnameseDescription: 'Đăng tin cao cấp với vị trí hàng đầu',
+    price: 19.99,
+    description: 'Top Pick by Salons',
+    vietnameseDescription: 'Lựa chọn hàng đầu của các salon',
     features: [
       'Top placement in listings',
-      'Highlight in search results',
-      'Social media promotion'
+      'Highlighted in search results',
+      'Faster candidate matching'
     ],
     tier: 'premium'
   },
   {
     id: 'gold',
-    name: 'Gold',
-    price: 199.99,
-    description: 'Gold listing with maximum exposure',
-    vietnameseDescription: 'Đăng tin vàng với khả năng hiển thị tối đa',
+    name: 'Featured',
+    price: 29.99,
+    description: 'Fastest Hiring Plan',
+    vietnameseDescription: 'Kế hoạch tuyển dụng nhanh nhất',
     features: [
-      'Maximum visibility',
-      'Exclusive placement',
-      'Dedicated support'
+      'Premium placement',
+      'Homepage feature',
+      'Free listing boost',
+      'Priority support'
     ],
-    tier: 'gold',
-    hidden: true // Gold tier is hidden
+    tier: 'gold'
   },
   {
     id: 'diamond',
