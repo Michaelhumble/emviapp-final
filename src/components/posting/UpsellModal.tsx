@@ -27,9 +27,9 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
   const [autoRenew, setAutoRenew] = useState(false);
 
   const durations = [
-    { months: 3, label: "3 months", days: 90, discount: 10, badge: "" },
-    { months: 6, label: "6 months", days: 180, discount: 15, badge: "Most Popular" },
-    { months: 12, label: "12 months", days: 365, discount: 20, badge: "Best Value" },
+    { months: 3, label: "3 months", days: 90, discount: 10, badge: "", emoji: "🐢" },
+    { months: 6, label: "6 months", days: 180, discount: 15, badge: "Most Popular", emoji: "🐝" },
+    { months: 12, label: "12 months", days: 365, discount: 20, badge: "Best Value", emoji: "🐇" },
   ];
 
   const handleConfirm = () => {
@@ -96,7 +96,7 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                       </div>
                       
                       <div className="text-sm font-bold text-green-600">
-                        💸 Just ${pricePerDay}/day
+                        {option.emoji} Just ${pricePerDay}/day
                       </div>
                       
                       <div className="text-sm text-gray-600 italic">
@@ -104,7 +104,7 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                       </div>
                       
                       <div className="text-sm text-gray-600">
-                        Save {discountPercentage}% (${savings})
+                        💸 Save {discountPercentage}% (${savings})
                       </div>
                     </div>
                     

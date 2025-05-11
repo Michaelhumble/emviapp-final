@@ -32,7 +32,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   // Calculate base price from pricing tier
   const basePrice = calculateJobPostPrice(pricingId);
   
-  // Calculate prices using the updated calculateFinalPrice which returns an object
+  // Calculate prices using the calculateFinalPrice which returns an object
   const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
     basePrice, 
     selectedDuration, 
