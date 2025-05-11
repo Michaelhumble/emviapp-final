@@ -1,88 +1,104 @@
 
 import React, { useState, useEffect } from 'react';
 import PricingCards from '@/components/posting/PricingCards';
+import { jobPricingOptions, calculateFinalPrice } from '@/utils/posting/jobPricing';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import PaymentSummary from '@/components/posting/PaymentSummary';
 import { useTranslation } from '@/hooks/useTranslation';
+import { format, addDays } from 'date-fns';
 import { Job } from '@/types/job';
-import { PriceDetails, pricingTiers } from '@/types/pricing';
+import { PricingOptions } from '@/utils/posting/types';
 import PricingDisplay from '@/components/posting/PricingDisplay';
-import { PaymentOptions } from '@/utils/posting/types';
 
 export interface ReviewAndPaymentSectionProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
+  pricingOptions: PricingOptions;
   onPricingChange: (pricingTier: string) => void;
-  onUpdatePricing: (options: Partial<PaymentOptions>) => void;
+  onUpdatePricing: (options: Partial<PricingOptions>) => void;
   onNextStep: () => void;
   onPrevStep: () => void;
   jobData?: Partial<Job>;
   isFirstPost?: boolean;
   isSubmitting?: boolean;
-  selectedPricingTier: string;
-  autoRenew: boolean;
-  durationMonths: number;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   postType,
+  pricingOptions,
   onPricingChange,
   onUpdatePricing,
   onNextStep,
   onPrevStep,
   jobData,
   isFirstPost,
-  isSubmitting = false,
-  selectedPricingTier,
-  autoRenew,
-  durationMonths
+  isSubmitting = false
 }) => {
   const { t } = useTranslation();
+  const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
+  const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths || 1);
+  const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew || false);
   const [isFreePlan, setIsFreePlan] = useState(false);
   
   useEffect(() => {
-    if (selectedPricingTier === 'free') {
+    if (selectedPricing === 'free') {
       setIsFreePlan(true);
       // Automatically turn off auto-renew for the free plan
-      onUpdatePricing({ autoRenew: false });
+      setAutoRenew(false);
     } else {
       setIsFreePlan(false);
     }
-  }, [selectedPricingTier, onUpdatePricing]);
+  }, [selectedPricing]);
+
+  useEffect(() => {
+    onUpdatePricing({ 
+      selectedPricingTier: selectedPricing,
+      autoRenew: autoRenew,
+      durationMonths: selectedDuration
+    });
+  }, [selectedPricing, autoRenew, selectedDuration, onUpdatePricing]);
   
   const handlePricingChange = (pricingId: string) => {
+    setSelectedPricing(pricingId);
     onPricingChange(pricingId);
     
     // When switching to free plan, disable auto-renew
     if (pricingId === 'free') {
-      onUpdatePricing({ autoRenew: false });
+      setAutoRenew(false);
     }
   };
   
   const handleDurationChange = (duration: number) => {
-    onUpdatePricing({ durationMonths: duration });
+    setSelectedDuration(duration);
   };
   
   const handleAutoRenewChange = (checked: boolean) => {
+    setAutoRenew(checked);
     onUpdatePricing({ autoRenew: checked });
   };
 
-  // Get the selected pricing tier details
-  const priceDetails: PriceDetails = pricingTiers[selectedPricingTier] || pricingTiers.standard;
+  const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
+  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
+  
+  // Call calculateFinalPrice with only the required parameters, and receive an object as the return value
+  const pricingResult = calculateFinalPrice(basePrice, selectedDuration);
+  
+  // Destructure the values from the pricingResult object
+  const { originalPrice, finalPrice, discountPercentage } = pricingResult;
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">{t('Review & Payment', 'Xem lại & Thanh toán')}</h2>
       
       <PricingCards
-        pricingOptions={Object.values(pricingTiers)}
-        selectedPricing={selectedPricingTier}
+        pricingOptions={jobPricingOptions}
+        selectedPricing={selectedPricing}
         onChange={handlePricingChange}
-        selectedDuration={durationMonths}
+        selectedDuration={selectedDuration}
         onDurationChange={handleDurationChange}
       />
       
-      {selectedPricingTier !== 'free' && (
+      {selectedPricing !== 'free' && (
         <div className="flex items-center justify-between">
           <Label htmlFor="auto-renew">{t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}</Label>
           <Switch 
@@ -93,25 +109,32 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         </div>
       )}
       
-      {selectedPricingTier === 'free' && (
+      {selectedPricing === 'free' && (
         <div className="text-sm text-gray-500 italic">
           {t('This plan does not renew. First-time post only.', 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.')}
         </div>
       )}
       
       <PaymentSummary
-        priceDetails={priceDetails}
-        duration={durationMonths}
+        basePrice={basePrice}
+        duration={selectedDuration}
         autoRenew={autoRenew}
+        originalPrice={originalPrice}
+        finalPrice={finalPrice}
+        discountPercentage={discountPercentage}
         onProceedToPayment={onNextStep}
         isFreePlan={isFreePlan}
         isSubmitting={isSubmitting}
       />
       
       <PricingDisplay 
-        priceDetails={priceDetails}
-        duration={durationMonths}
+        basePrice={basePrice}
+        duration={selectedDuration}
+        pricingId={selectedPricing}
         autoRenew={autoRenew}
+        originalPrice={originalPrice}
+        finalPrice={finalPrice}
+        discountPercentage={discountPercentage}
       />
     </div>
   );

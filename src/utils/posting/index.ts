@@ -1,5 +1,19 @@
 
 export * from './types';
+export { 
+  jobPricingOptions,
+  getJobPostPricingSummary,
+  calculatePriceWithDuration,
+  validatePricingOptions,
+  getStripePriceId,
+  calculateFinalPrice,
+  getAmountInCents,
+  isSubscriptionPlan
+} from './jobPricing';
 
-// Export your simplified pricing model
-export { pricingTiers } from '@/types/pricing';
+export {
+  calculateSalonPostPrice,
+  getSalonPostPricingSummary,
+  validateSalonPricingOptions,
+  getStripeSalonPriceId
+} from './salonPricing';

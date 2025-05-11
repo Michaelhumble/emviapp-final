@@ -1,23 +1,18 @@
 
-import React from 'react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { DurationOption, PriceDetails } from '@/types/pricing';
-import { useTranslation } from '@/hooks/useTranslation';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { JobPricingOption } from '@/utils/posting/types';
+import { cn } from '@/lib/utils';
+import { CheckCircle } from 'lucide-react';
+import DurationSelector from './DurationSelector';
 
 interface PricingCardsProps {
-  pricingOptions: PriceDetails[];
+  pricingOptions: JobPricingOption[];
   selectedPricing: string;
-  onChange: (id: string) => void;
+  onChange: (pricingId: string) => void;
   selectedDuration: number;
   onDurationChange: (duration: number) => void;
 }
-
-const durationOptions: DurationOption[] = [
-  { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },
-  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 20 }
-];
 
 const PricingCards: React.FC<PricingCardsProps> = ({
   pricingOptions,
@@ -26,67 +21,80 @@ const PricingCards: React.FC<PricingCardsProps> = ({
   selectedDuration,
   onDurationChange
 }) => {
-  const { t } = useTranslation();
-
+  // If Diamond plan is selected, force 12 month duration
+  useEffect(() => {
+    if (selectedPricing === 'diamond' && selectedDuration !== 12) {
+      onDurationChange(12);
+    }
+  }, [selectedPricing, selectedDuration, onDurationChange]);
+  
+  // Add null check for pricingOptions
+  if (!pricingOptions || pricingOptions.length === 0) {
+    return null;
+  }
+  
   return (
     <div className="space-y-6">
-      <RadioGroup value={selectedPricing} onValueChange={onChange} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto pb-2">
         {pricingOptions.map((option) => (
-          <div 
+          <motion.div
             key={option.id}
-            className={`border rounded-lg p-4 cursor-pointer transition-all ${
-              selectedPricing === option.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'
-            }`}
+            className={cn(
+              "border rounded-lg overflow-hidden cursor-pointer transition-all",
+              selectedPricing === option.id
+                ? "border-purple-600 shadow-md ring-2 ring-purple-200"
+                : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+            )}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onChange(option.id)}
           >
-            <RadioGroupItem value={option.id} id={option.id} className="sr-only" />
-            <Label htmlFor={option.id} className="cursor-pointer block">
-              <div className="font-semibold text-lg mb-1">{option.label}</div>
-              <div className="text-xl font-bold mb-2">
-                {option.priceInCents === 0 
-                  ? t('Free', 'Miễn phí') 
-                  : `$${(option.priceInCents / 100).toFixed(2)}`}
+            <div className={cn(
+              "px-6 py-4",
+              option.popular ? "bg-gradient-to-r from-amber-50 to-amber-100" : "bg-gray-50"
+            )}>
+              {option.popular && (
+                <span className="bg-amber-500 text-white px-2 py-0.5 text-xs rounded-full uppercase font-medium mb-2 inline-block">
+                  Phổ biến nhất
+                </span>
+              )}
+              {option.tag && (
+                <span className="text-xs text-gray-600 bg-white px-2 py-0.5 rounded-full mb-2 inline-block border shadow-sm">
+                  {option.tag}
+                </span>
+              )}
+              <h3 className="font-bold text-lg">{option.name}</h3>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-2xl font-bold">${option.price.toFixed(2)}</span>
+                {option.wasPrice && option.wasPrice > option.price && (
+                  <span className="text-sm text-gray-500 line-through">${option.wasPrice}</span>
+                )}
               </div>
-              <div className="text-sm text-gray-500">
-                {option.id === 'free' 
-                  ? t('Limited visibility', 'Hiển thị hạn chế') 
-                  : t('Premium visibility', 'Hiển thị nổi bật')}
-              </div>
-            </Label>
-          </div>
+              <p className="text-sm text-gray-600 mt-1">
+                {option.vietnameseDescription || option.description}
+              </p>
+            </div>
+            <div className="p-4 bg-white">
+              <ul className="space-y-2">
+                {option.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
         ))}
-      </RadioGroup>
-
-      {selectedPricing !== 'free' && (
-        <div className="mt-6">
-          <h3 className="text-lg font-medium mb-3">{t('Select Duration', 'Chọn thời hạn')}</h3>
-          <RadioGroup 
-            value={String(selectedDuration)} 
-            onValueChange={(value) => onDurationChange(Number(value))}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
-          >
-            {durationOptions.map((option) => (
-              <div 
-                key={option.months}
-                className={`border rounded-lg p-3 cursor-pointer transition-all ${
-                  selectedDuration === option.months ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'
-                }`}
-              >
-                <RadioGroupItem value={String(option.months)} id={`duration-${option.months}`} className="sr-only" />
-                <Label htmlFor={`duration-${option.months}`} className="cursor-pointer block">
-                  <div className="font-semibold">
-                    {t(option.label, option.vietnameseLabel)}
-                  </div>
-                  {option.discount > 0 && (
-                    <div className="text-sm text-green-600 font-medium">
-                      {t(`Save ${option.discount}%`, `Tiết kiệm ${option.discount}%`)}
-                    </div>
-                  )}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
-      )}
+      </div>
+      
+      <div className="mt-8">
+        <p className="text-center text-sm text-gray-600 mb-4">Select subscription length:</p>
+        <DurationSelector 
+          selectedDuration={selectedDuration} 
+          onChange={onDurationChange}
+          selectedPricing={selectedPricing}
+        />
+      </div>
     </div>
   );
 };

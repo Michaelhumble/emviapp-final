@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { usePostPayment, PaymentOptions } from '@/hooks/usePostPayment';
+import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { pricingTiers } from '@/types/pricing';
+import { PricingOptions } from '@/utils/posting/types';
 
 interface RenewPostDialogProps {
   open?: boolean;
@@ -37,20 +36,19 @@ const RenewPostDialog = ({
   };
 
   const handleRenew = async () => {
-    // Get the price details from the selected tier
-    const priceDetails = pricingTiers[selectedPlan];
-    
-    // Setup renewal payment options
-    const paymentOptions: PaymentOptions = {
+    // Setup renewal pricing options
+    const pricingOptions: PricingOptions = {
       selectedPricingTier: selectedPlan,
-      priceDetails,
+      isRenewal: true,
       durationMonths: 1,
-      autoRenew: false,
-      isFirstPost: false
+      isNationwide,
+      fastSalePackage,
+      bundleWithJobPost,
+      autoRenew: false
     };
 
     try {
-      const result = await initiatePayment(postType, { id: postId }, paymentOptions);
+      const result = await initiatePayment(postType, { id: postId }, pricingOptions);
       if (onRenewed) {
         onRenewed();
       }
