@@ -8,7 +8,8 @@ export {
   getStripeProductId,
   calculateFinalPrice,
   getAmountInCents,
-  isSubscriptionPlan
+  isSubscriptionPlan,
+  calculateJobPostPrice
 } from './jobPricing';
 
 export {
