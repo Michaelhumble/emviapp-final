@@ -3,13 +3,15 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
-import { Check, Sparkles, Star } from 'lucide-react';
+import { Check, X, Sparkles, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface PricingTierCardProps {
   pricing: JobPricingOption;
   isSelected: boolean;
   isMostPopular?: boolean;
+  isFreeVariant?: boolean;
+  subtitle?: string;
   onClick: () => void;
 }
 
@@ -17,6 +19,8 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
   pricing, 
   isSelected, 
   isMostPopular = false,
+  isFreeVariant = false,
+  subtitle,
   onClick 
 }) => {
   
@@ -28,6 +32,7 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
       case 'premium':
         return '✨';
       case 'gold':
+      case 'standard':
         return '🏆';
       default:
         return '📢';
@@ -49,6 +54,13 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
   const isFree = pricing.id === 'free';
   const promotionText = getPromotionText(pricing.id);
   
+  // Define premium-specific features that the free plan lacks
+  const freeNegativeFeatures = isFree ? [
+    'Top placement', 
+    'Highlight in search',
+    'Social media promotion'
+  ] : [];
+  
   return (
     <Card 
       className={cn(
@@ -56,17 +68,22 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
         isSelected 
           ? "ring-2 ring-purple-500 ring-offset-2 border-purple-200 shadow-lg transform scale-[1.02]" 
           : "hover:border-purple-200 hover:shadow-md hover:transform hover:scale-[1.01]",
-        pricing.id === 'free' && "bg-gray-50",
+        isFree && "bg-gray-50 border-gray-200",
         pricing.id === 'premium' && "bg-gradient-to-b from-amber-50 to-white border-amber-200"
       )}
       onClick={onClick}
     >
-      {/* Animated Glow Effect when selected */}
-      {isSelected && (
+      {/* Animated Glow Effect for premium when selected */}
+      {isSelected && pricing.id === 'premium' && (
+        <div className="absolute inset-0 bg-amber-100 opacity-30 animate-pulse rounded-lg" />
+      )}
+      
+      {/* Standard glow for non-premium selected */}
+      {isSelected && pricing.id !== 'premium' && !isFree && (
         <div className="absolute inset-0 bg-purple-100 opacity-30 animate-pulse rounded-lg" />
       )}
       
-      {/* Most Popular Badge */}
+      {/* Most Popular Badge with Star icon */}
       {isMostPopular && (
         <div className="absolute top-0 right-0 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs font-bold py-1 px-3 transform rotate-0 translate-x-0 -translate-y-0 shadow-sm flex items-center gap-1">
           <Star className="h-3 w-3" />
@@ -93,6 +110,13 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
         </div>
       )}
       
+      {/* Premium-specific tooltip */}
+      {pricing.id === 'premium' && isSelected && (
+        <div className="absolute -top-2 -left-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full border border-amber-200 shadow-sm">
+          Most customers hire within 3 days
+        </div>
+      )}
+      
       <CardContent className={cn(
         "p-6 pt-12",
         isSelected ? 
@@ -105,16 +129,22 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
           <h3 className={cn(
             "text-lg font-medium mb-1",
             isSelected ? "text-purple-800" : "text-gray-800",
-            pricing.id === 'premium' && "text-amber-700"
+            pricing.id === 'premium' && "text-amber-700",
+            isFree && "text-gray-600"
           )}>
             {pricing.name}
           </h3>
           <p className="text-sm text-muted-foreground">{pricing.description}</p>
           
+          {/* Vietnamese subtitle for free plan */}
+          {isFreeVariant && subtitle && (
+            <p className="text-xs italic mt-1 text-gray-500">{subtitle}</p>
+          )}
+          
           <div className="mt-4 mb-6">
             {isFree ? (
               <div>
-                <span className="text-3xl font-bold">$0</span>
+                <span className="text-3xl font-bold text-gray-700">$0</span>
                 <span className="text-gray-500 text-sm"> / 30 days</span>
               </div>
             ) : (
@@ -127,13 +157,27 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
         </div>
         
         <ul className="space-y-3">
+          {/* Positive features */}
           {pricing.features.map((feature, index) => (
             <li key={index} className="flex items-start text-sm">
               <Check className={cn(
                 "h-4 w-4 mr-2 mt-1 flex-shrink-0",
-                pricing.id === 'premium' ? "text-amber-500" : "text-green-500"
+                pricing.id === 'premium' ? "text-amber-500" : 
+                pricing.id === 'standard' ? "text-green-500" :
+                "text-gray-500"
               )} />
-              <span className="text-gray-600">{feature}</span>
+              <span className={cn(
+                "text-gray-600",
+                isFree && "text-gray-500"
+              )}>{feature}</span>
+            </li>
+          ))}
+          
+          {/* Negative features for free plan */}
+          {isFreeVariant && freeNegativeFeatures.map((feature, index) => (
+            <li key={`missing-${index}`} className="flex items-start text-sm">
+              <X className="h-4 w-4 mr-2 mt-1 flex-shrink-0 text-gray-400" />
+              <span className="text-gray-400">{feature}</span>
             </li>
           ))}
         </ul>

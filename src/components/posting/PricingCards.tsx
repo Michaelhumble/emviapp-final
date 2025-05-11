@@ -6,6 +6,12 @@ import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
 import { CheckCircle } from 'lucide-react';
 import DurationSelector from './DurationSelector';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PricingCardsProps {
   pricingOptions: JobPricingOption[];
@@ -42,6 +48,10 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     !option.hidden && option.id !== 'diamond'
   );
   
+  // Separate free and paid tiers
+  const freeTier = visiblePricingOptions.find(option => option.id === 'free');
+  const paidTiers = visiblePricingOptions.filter(option => option.id !== 'free');
+  
   // Determine the "most popular" pricing tier (typically the Premium option)
   const getMostPopularId = () => {
     // Premium is now our most popular option
@@ -53,10 +63,26 @@ const PricingCards: React.FC<PricingCardsProps> = ({
   // Check if free plan is selected
   const isFreePlanSelected = selectedPricing === 'free';
   
+  // FOMO tooltip for free plan
+  const renderFreeTooltip = (children: React.ReactNode) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {children}
+        </TooltipTrigger>
+        <TooltipContent className="p-3 max-w-xs bg-white border border-amber-200 text-gray-800 shadow-lg">
+          <p className="font-medium mb-1 text-amber-800">Limited Visibility Warning</p>
+          <p className="text-sm">Free listings reach 80% fewer candidates. Upgrade to attract top talent faster.</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+  
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-        {visiblePricingOptions.map((option) => (
+      {/* Paid Plans Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        {paidTiers.map((option) => (
           <motion.div
             key={option.id}
             initial={{ y: 0 }}
@@ -73,6 +99,32 @@ const PricingCards: React.FC<PricingCardsProps> = ({
           </motion.div>
         ))}
       </div>
+      
+      {/* Free Plan Row - Smaller and visually deemphasized */}
+      {freeTier && (
+        <div className="mt-4 max-w-[85%] mx-auto opacity-90">
+          {renderFreeTooltip(
+            <motion.div
+              initial={{ y: 0 }}
+              whileHover={{ y: -3 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              animate={selectedPricing === 'free' ? { scale: 1.01 } : { scale: 1 }}
+            >
+              <PricingTierCard 
+                pricing={{
+                  ...freeTier,
+                  name: "Basic (Limited Reach)",
+                  description: "Recommended only if you're testing the platform"
+                }}
+                isSelected={selectedPricing === 'free'}
+                onClick={() => onChange('free')}
+                isFreeVariant={true}
+                subtitle="Chỉ nên chọn nếu bạn đang thử nghiệm nền tảng"
+              />
+            </motion.div>
+          )}
+        </div>
+      )}
       
       {!isFreePlanSelected && (
         <div className="mt-6">

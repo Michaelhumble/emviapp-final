@@ -31,54 +31,54 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   
   return (
     <div className={cn(
-      "rounded-lg border bg-white p-5 mt-6 shadow-sm",
+      "rounded-lg border bg-white p-6 mt-6 shadow-sm",
       !isFreePlan && "bg-gradient-to-br from-white to-gray-50"
     )}>
-      <h3 className="font-semibold text-md mb-4 flex items-center gap-2 text-purple-800">
+      <h3 className="font-semibold text-md mb-5 flex items-center gap-2 text-purple-800">
         <Sparkles className="h-5 w-5 text-purple-600" />
         Listing Summary
       </h3>
       
-      <div className="space-y-4 text-sm">
+      <div className="space-y-5 text-sm">
         {isFreePlan ? (
-          <div className="flex justify-between items-center p-3.5 bg-green-50 rounded-md border border-green-100">
+          <div className="flex justify-between items-center p-4 bg-green-50 rounded-md border border-green-100">
             <div className="flex items-center">
-              <CalendarIcon className="h-5 w-5 mr-2.5 text-green-500" />
+              <CalendarIcon className="h-5 w-5 mr-3 text-green-500" />
               <span className="font-medium">Free listing</span>
             </div>
             <span className="font-medium">30 days</span>
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center p-3.5 bg-gray-50 rounded-md border border-gray-100">
+            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-md border border-gray-100">
               <div className="flex items-center">
-                <CalendarIcon className="h-5 w-5 mr-2.5 text-blue-500" />
+                <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
                 <span>Listing duration</span>
               </div>
               <span className="font-medium">{duration} {duration === 1 ? 'month' : 'months'}</span>
             </div>
             
-            <div className="flex justify-between items-center p-3.5 bg-gray-50 rounded-md border border-gray-100">
+            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-md border border-gray-100">
               <div className="flex items-center">
-                <CalendarIcon className="h-5 w-5 mr-2.5 text-blue-500" />
+                <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
                 <span>Expires on</span>
               </div>
               <span className="font-medium">{formattedDate}</span>
             </div>
             
             {autoRenew && (
-              <div className="flex justify-between items-center p-3.5 bg-blue-50 rounded-md border border-blue-100">
+              <div className="flex justify-between items-center p-4 bg-blue-50 rounded-md border border-blue-100">
                 <div className="flex items-center">
-                  <RefreshCw className="h-5 w-5 mr-2.5 text-blue-500" />
+                  <RefreshCw className="h-5 w-5 mr-3 text-blue-500" />
                   <span>Auto-renew</span>
                 </div>
                 <span className="font-medium">Enabled</span>
               </div>
             )}
             
-            <div className="border-t pt-4 mt-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Base price (${basePrice.toFixed(2)}/month × {duration})</span>
+            <div className="border-t pt-5 mt-5 space-y-3.5">
+              <div className="flex justify-between items-center text-gray-700">
+                <span>Base price (${basePrice.toFixed(2)}/month × {duration})</span>
                 <span>${originalPrice.toFixed(2)}</span>
               </div>
               
@@ -92,7 +92,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
                 </div>
               )}
               
-              <div className="flex justify-between items-center font-bold text-lg pt-3 border-t border-dashed mt-1">
+              <div className="flex justify-between items-center font-bold text-lg pt-4 border-t border-dashed mt-2">
                 <div className="flex items-center">
                   <CreditCard className="h-5 w-5 mr-2 text-purple-700" />
                   <span>Total</span>
@@ -106,8 +106,8 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
               </div>
               
               {discountPercentage > 0 && (
-                <div className="mt-3">
-                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100 px-2.5 py-1.5 font-semibold">
+                <div className="mt-4">
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100 px-3 py-1.5 font-semibold">
                     You Save ${discountAmount.toFixed(2)} ({discountPercentage}%)
                   </Badge>
                 </div>
