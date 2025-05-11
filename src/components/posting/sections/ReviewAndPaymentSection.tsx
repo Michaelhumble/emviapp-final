@@ -10,6 +10,7 @@ import { format, addDays } from 'date-fns';
 import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
 import PricingDisplay from '@/components/posting/PricingDisplay';
+import AutoRenewSuggestionCard from '@/components/posting/AutoRenewSuggestionCard';
 
 export interface ReviewAndPaymentSectionProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
@@ -113,6 +114,11 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         <div className="text-sm text-gray-500 italic">
           {t('This plan does not renew. First-time post only.', 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.')}
         </div>
+      )}
+      
+      {/* Auto-Renew Suggestion Banner */}
+      {selectedPricing !== 'free' && !autoRenew && (
+        <AutoRenewSuggestionCard />
       )}
       
       <PaymentSummary
