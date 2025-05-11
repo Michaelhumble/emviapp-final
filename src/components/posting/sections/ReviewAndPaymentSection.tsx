@@ -11,6 +11,7 @@ import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
 import PricingDisplay from '@/components/posting/PricingDisplay';
 import AutoRenewSuggestionCard from '@/components/posting/AutoRenewSuggestionCard';
+import { InfoCircle } from 'lucide-react';
 
 export interface ReviewAndPaymentSectionProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
@@ -113,8 +114,12 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       )}
       
       {selectedPricing === 'free' && (
-        <div className="text-sm text-gray-500 italic">
-          {t('This plan does not renew. First-time post only.', 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.')}
+        <div className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded-md flex items-start">
+          <InfoCircle className="h-5 w-5 mr-2 text-blue-500 mt-0.5 flex-shrink-0" />
+          <div>
+            {t('Auto-renew not available for Free listings. This plan offers 30 days of visibility with standard placement.', 
+              'Tự động gia hạn không khả dụng cho đăng tin miễn phí. Gói này cung cấp 30 ngày hiển thị với vị trí tiêu chuẩn.')}
+          </div>
         </div>
       )}
       

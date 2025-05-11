@@ -51,7 +51,7 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Dedicated support'
     ],
     tier: 'gold',
-    hidden: true // Add hidden flag
+    hidden: true // Gold tier is hidden but remains in the codebase for future use
   },
   {
     id: 'diamond',
@@ -65,15 +65,15 @@ export const jobPricingOptions: JobPricingOption[] = [
       '24/7 dedicated support'
     ],
     tier: 'diamond',
-    hidden: true // Add hidden flag
+    hidden: true // Diamond tier is hidden but remains in the codebase for future use
   }
 ];
 
 export const durationOptions: DurationOption[] = [
   { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 5 },  // Changed to 5%
-  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 10 }, // Changed to 10%
-  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 }
+  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 5 },  // 5% discount
+  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 10 }, // 10% discount
+  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 } // 20% discount
 ];
 
 export const getJobPostPricingSummary = (options: PricingOptions): string => {
@@ -110,7 +110,8 @@ export const getStripePriceId = (pricingTier: string): string | null => {
   }
 };
 
-// Modify the calculateFinalPrice function to return an object with the expected properties
+// Calculates the final price based on base price and duration with appropriate discounts
+// Note: Free plan is always 30 days regardless of duration selection
 export const calculateFinalPrice = (basePrice: number, durationMonths: number) => {
   // Calculate original price (before any discounts)
   const originalPrice = basePrice * durationMonths;
@@ -119,11 +120,11 @@ export const calculateFinalPrice = (basePrice: number, durationMonths: number) =
   let discountPercentage = 0;
   
   if (durationMonths === 3) {
-    discountPercentage = 5; // Changed from 10% to 5%
+    discountPercentage = 5; // 5% discount for 3-month duration
   } else if (durationMonths === 6) {
-    discountPercentage = 10; // Changed from 15% to 10%
+    discountPercentage = 10; // 10% discount for 6-month duration
   } else if (durationMonths >= 12) {
-    discountPercentage = 20; // Kept at 20%
+    discountPercentage = 20; // 20% discount for 12-month or longer duration
   }
   
   // Calculate final price after applying discount
@@ -166,11 +167,11 @@ export const calculateJobPostPrice = (options: PricingOptions) => {
   let discountPercentage = 0;
   
   if (durationMonths === 3) {
-    discountPercentage = 5; // Changed from 10% to 5%
+    discountPercentage = 5; // 5% discount for 3-month duration
   } else if (durationMonths === 6) {
-    discountPercentage = 10; // Changed from 15% to 10%
+    discountPercentage = 10; // 10% discount for 6-month duration
   } else if (durationMonths >= 12) {
-    discountPercentage = 20; // Kept at 20%
+    discountPercentage = 20; // 20% discount for 12-month or longer duration
   }
   
   // Add first post discount if applicable

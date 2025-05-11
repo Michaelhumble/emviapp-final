@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { format, addMonths } from 'date-fns';
-import { CalendarIcon, CheckCircle2, RefreshCw, DollarSign } from 'lucide-react';
+import { CalendarIcon, CheckCircle2, RefreshCw, DollarSign, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface PricingDisplayProps {
   basePrice: number;
@@ -26,6 +27,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   const futureDate = addMonths(new Date(), duration);
   const formattedDate = format(futureDate, 'MMM d, yyyy');
   const isFreePlan = pricingId === 'free';
+  const discountAmount = originalPrice - finalPrice;
   
   return (
     <div className={cn(
@@ -82,15 +84,31 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
               
               {discountPercentage > 0 && (
                 <div className="flex justify-between items-center text-green-600 mb-2">
-                  <span>Discount ({discountPercentage}%)</span>
-                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                  <div className="flex items-center">
+                    <Tag className="h-4 w-4 mr-1" />
+                    <span>Discount ({discountPercentage}%)</span>
+                  </div>
+                  <span>-${discountAmount.toFixed(2)}</span>
                 </div>
               )}
               
               <div className="flex justify-between items-center font-bold text-lg pt-2 border-t border-dashed">
                 <span>Total</span>
-                <span>${finalPrice.toFixed(2)}</span>
+                <div className="flex flex-col items-end">
+                  {discountPercentage > 0 && (
+                    <span className="text-sm line-through text-gray-500 font-normal">${originalPrice.toFixed(2)}</span>
+                  )}
+                  <span>${finalPrice.toFixed(2)}</span>
+                </div>
               </div>
+              
+              {discountPercentage > 0 && (
+                <div className="mt-2 text-right">
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                    You Save ${discountAmount.toFixed(2)} ({discountPercentage}%)
+                  </Badge>
+                </div>
+              )}
             </div>
           </>
         )}

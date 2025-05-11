@@ -32,6 +32,8 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
         return '📢';
     }
   };
+
+  const isFree = pricing.id === 'free';
   
   return (
     <Card 
@@ -69,8 +71,17 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
           <p className="text-sm text-muted-foreground">{pricing.description}</p>
           
           <div className="mt-4 mb-6">
-            <span className="text-3xl font-bold">${pricing.price}</span>
-            <span className="text-gray-500 text-sm"> /month</span>
+            {isFree ? (
+              <div>
+                <span className="text-3xl font-bold">$0</span>
+                <span className="text-gray-500 text-sm"> / 30 days</span>
+              </div>
+            ) : (
+              <div>
+                <span className="text-3xl font-bold">${pricing.price}</span>
+                <span className="text-gray-500 text-sm"> /month</span>
+              </div>
+            )}
           </div>
         </div>
         

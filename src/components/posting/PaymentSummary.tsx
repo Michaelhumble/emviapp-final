@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucide-react';
+import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield, Tag } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, addMonths } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
 interface PaymentSummaryProps {
   basePrice: number;
@@ -30,7 +31,8 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   isSubmitting = false
 }) => {
   const { t } = useTranslation();
-  const expiryDate = addMonths(new Date(), duration);
+  const expiryDate = isFreePlan ? addMonths(new Date(), 1) : addMonths(new Date(), duration);
+  const discountAmount = originalPrice - finalPrice;
   
   return (
     <Card className="border border-gray-200">
@@ -47,7 +49,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
               <div>
                 <p className="font-medium">{t('Free listing valid for 30 days', 'Đăng tin miễn phí có hiệu lực trong 30 ngày')}</p>
-                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
+                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(expiryDate, 'MMMM d, yyyy')}</p>
               </div>
             </div>
             
@@ -98,15 +100,31 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               
               {discountPercentage > 0 && (
                 <div className="flex justify-between text-green-600">
-                  <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
-                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                  <div className="flex items-center">
+                    <Tag className="h-4 w-4 mr-1" />
+                    <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
+                  </div>
+                  <span>-${discountAmount.toFixed(2)}</span>
                 </div>
               )}
               
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('Total', 'Tổng cộng')}:</span>
-                <span>${finalPrice.toFixed(2)}</span>
+                <div className="flex flex-col items-end">
+                  {discountPercentage > 0 && (
+                    <span className="text-sm line-through text-gray-500 font-normal">${originalPrice.toFixed(2)}</span>
+                  )}
+                  <span>${finalPrice.toFixed(2)}</span>
+                </div>
               </div>
+              
+              {discountPercentage > 0 && (
+                <div className="mt-2 text-right">
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                    {t('You Save', 'Bạn tiết kiệm')} ${discountAmount.toFixed(2)} ({discountPercentage}%)
+                  </Badge>
+                </div>
+              )}
             </div>
           </div>
         )}
