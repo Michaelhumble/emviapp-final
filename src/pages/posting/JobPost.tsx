@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import { PricingOptions } from '@/utils/posting/types';
@@ -80,7 +81,7 @@ const JobPost = () => {
       
       {/* Review and Payment Section */}
       <ReviewAndPaymentSection
-        pricingId={pricingOptions.selectedPricingTier}
+        pricingTier={pricingOptions.selectedPricingTier}
         duration={pricingOptions.durationMonths || 1}
         autoRenew={pricingOptions.autoRenew || false}
         jobDetails={jobDetails}

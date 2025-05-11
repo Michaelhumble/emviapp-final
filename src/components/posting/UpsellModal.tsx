@@ -45,19 +45,19 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
           <div className="grid gap-5">
             {PRICING_OPTIONS.map((option) => {
               // Apply auto-renew discount if selected
-              const priceDetails = autoRenew ? applyAutoRenewDiscount(option, autoRenew) : option;
-              const { originalPrice, finalPrice, discountPercentage, dailyRate, durationDays } = priceDetails;
+              const price = autoRenew ? applyAutoRenewDiscount(option, autoRenew) : option;
+              const { originalPrice, finalPrice, discountPercentage, dailyRate, durationDays, durationMonths } = price;
               const savings = (originalPrice - finalPrice).toFixed(2);
               
               return (
                 <div 
                   key={option.id}
                   className={`relative border-[3px] rounded-2xl p-5 cursor-pointer transition-all duration-300 shadow-md hover:shadow-lg hover:scale-[1.01] ${
-                    selectedDuration === option.durationMonths 
+                    selectedDuration === durationMonths 
                       ? "border-purple-500 bg-gradient-to-br from-purple-50 to-white ring-2 ring-purple-400 ring-opacity-50" 
                       : "border-gray-200 hover:border-gray-300 bg-gradient-to-br from-slate-50 to-white"
                   }`}
-                  onClick={() => setSelectedDuration(option.durationMonths)}
+                  onClick={() => setSelectedDuration(durationMonths)}
                 >
                   {(option.isPopular || option.isBestValue) && (
                     <Badge 

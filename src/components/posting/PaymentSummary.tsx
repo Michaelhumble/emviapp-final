@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
-import { format, addMonths } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { PriceDetails } from '@/types/PriceDetails';
 
 interface PaymentSummaryProps {
-  priceDetails: PriceDetails;
+  price: PriceDetails;
   autoRenew: boolean;
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
@@ -17,7 +17,7 @@ interface PaymentSummaryProps {
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
-  priceDetails,
+  price,
   autoRenew,
   onProceedToPayment,
   isFreePlan = false,
@@ -25,7 +25,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   isDisabled = false
 }) => {
   const { t } = useTranslation();
-  const expiryDate = addMonths(new Date(), priceDetails.durationMonths);
+  const expiryDate = addDays(new Date(), price.durationDays);
   
   return (
     <Card className="border border-gray-200">
@@ -42,7 +42,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
               <div>
                 <p className="font-medium">{t('Free listing valid for 30 days', 'Đăng tin miễn phí có hiệu lực trong 30 ngày')}</p>
-                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
+                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addDays(new Date(), 30), 'MMMM d, yyyy')}</p>
               </div>
             </div>
             
@@ -59,11 +59,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             <div className="flex items-start">
               <CalendarClock className="h-5 w-5 text-purple-500 mt-0.5 mr-2" /> 
               <div>
-                <p className="font-medium">
-                  {priceDetails.durationMonths === 1 
-                    ? t('1 month listing', '1 tháng đăng tin')
-                    : t(`${priceDetails.durationMonths} months listing`, `${priceDetails.durationMonths} tháng đăng tin`)}
-                </p>
+                <p className="font-medium">{price.label}</p>
                 <p className="text-sm text-gray-600">
                   {t('Expires on', 'Hết hạn vào')}: {format(expiryDate, 'MMMM d, yyyy')}
                 </p>
@@ -88,19 +84,19 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             <div className="border-t border-gray-200 pt-3 space-y-1">
               <div className="flex justify-between">
                 <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
-                <span className="text-gray-600">${priceDetails.originalPrice.toFixed(2)}</span>
+                <span className="text-gray-600">${price.originalPrice.toFixed(2)}</span>
               </div>
               
-              {priceDetails.discountPercentage > 0 && (
+              {price.discountPercentage > 0 && (
                 <div className="flex justify-between text-green-600">
-                  <span>{t('Discount', 'Giảm giá')} ({priceDetails.discountPercentage}%):</span>
-                  <span>-${(priceDetails.originalPrice - priceDetails.finalPrice).toFixed(2)}</span>
+                  <span>{t('Discount', 'Giảm giá')} ({price.discountPercentage}%):</span>
+                  <span>-${(price.originalPrice - price.finalPrice).toFixed(2)}</span>
                 </div>
               )}
               
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('Total', 'Tổng cộng')}:</span>
-                <span>${priceDetails.finalPrice.toFixed(2)}</span>
+                <span>${price.finalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>
