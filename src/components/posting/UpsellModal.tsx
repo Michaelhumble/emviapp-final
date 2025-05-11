@@ -48,8 +48,8 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
           </p>
         </DialogHeader>
 
-        <div className="py-4 space-y-4">
-          <div className="grid gap-4">
+        <div className="py-4 space-y-6">
+          <div className="grid gap-5">
             {durations.map((option) => {
               // Calculate pricing for this duration option
               const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
@@ -64,53 +64,52 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
               return (
                 <div 
                   key={option.months}
-                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                  className={`relative border rounded-2xl p-5 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] ${
                     selectedDuration === option.months 
-                      ? "border-purple-500 bg-purple-50" 
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-purple-500 bg-gradient-to-br from-purple-50 to-white ring-2 ring-purple-400 ring-opacity-50" 
+                      : "border-gray-200 hover:border-gray-300 bg-gradient-to-br from-slate-50 to-white"
                   }`}
                   onClick={() => setSelectedDuration(option.months)}
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{option.days} days / {option.months} months</span>
-                        {option.badge && (
-                          <Badge 
-                            variant={option.badge === "Best Value" ? "default" : "secondary"}
-                            className={option.badge === "Best Value" ? "bg-green-600" : "bg-amber-500"}
-                          >
-                            {option.badge}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      {showUrgencyLabel && (
-                        <div className="text-sm text-orange-600 font-medium animate-pulse">
-                          🔥 Limited time deal – you may not see this offer again
-                        </div>
-                      )}
-                      
-                      <div className="text-sm mt-2">
-                        Originally <span className="line-through">${originalPrice.toFixed(2)}</span> – now just <span className="font-bold">${finalPrice.toFixed(2)}</span>
-                      </div>
-                      
-                      <div className="text-sm font-bold text-green-600">
-                        {option.emoji} Just ${pricePerDay}/day
-                      </div>
-                      
-                      <div className="text-sm text-gray-600 italic">
-                        💡 {option.days} days = {option.days} chances for the right artist to find you. Don't miss your next hire.
-                      </div>
-                      
-                      <div className="text-sm text-gray-600">
-                        💸 Save {discountPercentage}% (${savings})
-                      </div>
+                  {option.badge && (
+                    <Badge 
+                      variant={option.badge === "Best Value" ? "default" : "secondary"}
+                      className={`absolute top-3 right-3 ${
+                        option.badge === "Best Value" 
+                          ? "bg-green-600 text-xs px-2 py-1 font-medium" 
+                          : "bg-amber-500 text-xs px-2 py-1 font-medium"
+                      }`}
+                    >
+                      {option.badge}
+                    </Badge>
+                  )}
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-semibold text-purple-900">{option.days} days / {option.months} months</span>
                     </div>
                     
-                    <div className="text-right">
-                      <div className="font-bold text-lg">
-                        ${finalPrice.toFixed(2)}
+                    {showUrgencyLabel && (
+                      <div className="text-sm text-orange-600 font-medium animate-pulse">
+                        🔥 Limited time deal – you may not see this offer again
+                      </div>
+                    )}
+                    
+                    <div className="text-base mt-2 font-medium">
+                      Originally <span className="line-through text-gray-500">${originalPrice.toFixed(2)}</span> – now just <span className="font-bold text-lg text-purple-700">${finalPrice.toFixed(2)}</span>
+                    </div>
+                    
+                    <div className="text-base font-bold text-green-600 py-1 px-2 inline-block rounded-md bg-green-50">
+                      {option.emoji} Just ${pricePerDay}/day
+                    </div>
+                    
+                    <div className="text-sm text-gray-600 italic bg-gray-50 p-2 rounded-lg border-l-2 border-purple-300">
+                      💡 {option.days} days = {option.days} chances for the right artist to find you. Don't miss your next hire.
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <div className="text-sm text-green-600 font-medium">
+                        💸 Save {discountPercentage}% (${savings})
                       </div>
                     </div>
                   </div>
@@ -119,26 +118,27 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
             })}
           </div>
 
-          <div className="flex items-center space-x-2 mt-4 pt-4 border-t">
+          <div className="flex items-center space-x-2 mt-6 pt-4 border-t">
             <Checkbox 
               id="autoRenew" 
               checked={autoRenew}
               onCheckedChange={(checked) => setAutoRenew(!!checked)} 
+              className="text-purple-600 border-purple-300 focus:ring-purple-500"
             />
             <label 
               htmlFor="autoRenew" 
-              className="text-sm font-medium leading-none cursor-pointer"
+              className="text-sm font-medium leading-none cursor-pointer text-gray-700"
             >
               Auto-renew subscription (save an additional 5%)
             </label>
           </div>
         </div>
 
-        <DialogFooter className="sm:justify-between">
-          <Button variant="outline" onClick={onClose}>
+        <DialogFooter className="sm:justify-between gap-4">
+          <Button variant="outline" onClick={onClose} className="border-gray-300">
             Back to Plan Selection
           </Button>
-          <Button onClick={handleConfirm}>
+          <Button onClick={handleConfirm} className="bg-purple-600 hover:bg-purple-700">
             Continue to Payment
           </Button>
         </DialogFooter>
