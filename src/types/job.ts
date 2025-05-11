@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   role?: string;
@@ -108,6 +107,7 @@ export interface JobDetailsSubmission {
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
+  company?: string; // Added the missing company field
 }
 
 // Ensure PricingOptions is properly exported
