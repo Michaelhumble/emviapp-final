@@ -1,4 +1,3 @@
-
 import { JobPricingOption, PricingOptions } from './types';
 import { DurationOption } from '@/types/pricing';
 
@@ -51,7 +50,8 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Exclusive placement',
       'Dedicated support'
     ],
-    tier: 'gold'
+    tier: 'gold',
+    hidden: true // Add hidden flag
   },
   {
     id: 'diamond',
@@ -64,14 +64,15 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Priority placement',
       '24/7 dedicated support'
     ],
-    tier: 'diamond'
+    tier: 'diamond',
+    hidden: true // Add hidden flag
   }
 ];
 
 export const durationOptions: DurationOption[] = [
   { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },
-  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 15 },
+  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 5 },  // Changed to 5%
+  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 10 }, // Changed to 10%
   { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 }
 ];
 
@@ -118,11 +119,11 @@ export const calculateFinalPrice = (basePrice: number, durationMonths: number) =
   let discountPercentage = 0;
   
   if (durationMonths === 3) {
-    discountPercentage = 10;
+    discountPercentage = 5; // Changed from 10% to 5%
   } else if (durationMonths === 6) {
-    discountPercentage = 15;
+    discountPercentage = 10; // Changed from 15% to 10%
   } else if (durationMonths >= 12) {
-    discountPercentage = 20;
+    discountPercentage = 20; // Kept at 20%
   }
   
   // Calculate final price after applying discount
@@ -165,11 +166,11 @@ export const calculateJobPostPrice = (options: PricingOptions) => {
   let discountPercentage = 0;
   
   if (durationMonths === 3) {
-    discountPercentage = 10;
+    discountPercentage = 5; // Changed from 10% to 5%
   } else if (durationMonths === 6) {
-    discountPercentage = 15;
+    discountPercentage = 10; // Changed from 15% to 10%
   } else if (durationMonths >= 12) {
-    discountPercentage = 20;
+    discountPercentage = 20; // Kept at 20%
   }
   
   // Add first post discount if applicable
@@ -187,4 +188,3 @@ export const calculateJobPostPrice = (options: PricingOptions) => {
     discountPercentage
   };
 };
-

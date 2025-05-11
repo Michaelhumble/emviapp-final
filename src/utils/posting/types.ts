@@ -39,6 +39,7 @@ export interface JobPricingOption {
   features: string[];
   isFirstPost?: boolean;
   tier?: JobPricingTier;
+  hidden?: boolean; // Add hidden property
 }
 
 export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';

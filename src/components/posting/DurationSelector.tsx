@@ -21,8 +21,8 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
   className,
   durations = [
     { months: 1, label: '1 Month', vietnameseLabel: '1 tháng', discount: 0 },
-    { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 5 },
-    { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 10 },
+    { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 5 },  // Changed to 5%
+    { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 10 }, // Changed to 10%
     { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 20 }
   ],
   disableSelection = false,
@@ -73,14 +73,9 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                         )}
                       >
                         {duration.label}
-                        {!isDiamondPlan && duration.discount > 0 && (
+                        {duration.discount > 0 && (
                           <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 px-1.5 py-0.5 rounded-full ml-1">
                             -{duration.discount}%
-                          </span>
-                        )}
-                        {isDiamondPlan && duration.months === 12 && (
-                          <span className="text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 px-1.5 py-0.5 rounded-full ml-1">
-                            -33%
                           </span>
                         )}
                       </Label>

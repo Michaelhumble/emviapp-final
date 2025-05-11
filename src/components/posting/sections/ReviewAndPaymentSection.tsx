@@ -44,7 +44,8 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   useEffect(() => {
     if (selectedPricing === 'free') {
       setIsFreePlan(true);
-      // Automatically turn off auto-renew for the free plan
+      // Force 1 month duration for free plan and turn off auto-renew
+      setSelectedDuration(1);
       setAutoRenew(false);
     } else {
       setIsFreePlan(false);
@@ -63,9 +64,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
     setSelectedPricing(pricingId);
     onPricingChange(pricingId);
     
-    // When switching to free plan, disable auto-renew
+    // When switching to free plan, disable auto-renew and set duration to 1 month
     if (pricingId === 'free') {
       setAutoRenew(false);
+      setSelectedDuration(1);
     }
   };
   

@@ -34,21 +34,24 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     return null;
   }
   
-  // Determine the "most popular" pricing tier (typically the middle option)
+  // Filter out hidden tiers
+  const visiblePricingOptions = pricingOptions.filter(option => !option.hidden);
+  
+  // Determine the "most popular" pricing tier (typically the Premium option)
   const getMostPopularId = () => {
-    if (pricingOptions.length >= 3) {
-      // Usually the middle option is most popular
-      return pricingOptions[1].id;
-    }
-    return null;
+    // Premium is now our most popular option
+    return 'premium';
   };
   
   const mostPopularId = getMostPopularId();
   
+  // Check if free plan is selected
+  const isFreePlanSelected = selectedPricing === 'free';
+  
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto pb-2">
-        {pricingOptions.map((option) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-x-auto pb-2">
+        {visiblePricingOptions.map((option) => (
           <motion.div
             key={option.id}
             whileHover={{ y: -5 }}
@@ -64,14 +67,16 @@ const PricingCards: React.FC<PricingCardsProps> = ({
         ))}
       </div>
       
-      <div className="mt-8">
-        <p className="text-center text-sm text-gray-600 mb-4">Select subscription length to get the best value:</p>
-        <DurationSelector 
-          selectedDuration={selectedDuration} 
-          onChange={onDurationChange}
-          selectedPricing={selectedPricing}
-        />
-      </div>
+      {!isFreePlanSelected && (
+        <div className="mt-8">
+          <p className="text-center text-sm text-gray-600 mb-4">Select subscription length to get the best value:</p>
+          <DurationSelector 
+            selectedDuration={selectedDuration} 
+            onChange={onDurationChange}
+            selectedPricing={selectedPricing}
+          />
+        </div>
+      )}
     </div>
   );
 };

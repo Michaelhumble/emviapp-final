@@ -76,7 +76,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
             
             <div className="border-t pt-4 mt-4">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600">Standard price</span>
+                <span className="text-gray-600">Base price ({pricingId === 'standard' ? '$49.99' : pricingId === 'premium' ? '$99.99' : '$0'}/month × {duration})</span>
                 <span>${originalPrice.toFixed(2)}</span>
               </div>
               
