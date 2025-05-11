@@ -5,7 +5,7 @@ export {
   getJobPostPricingSummary,
   calculatePriceWithDuration,
   validatePricingOptions,
-  getStripePriceId,
+  getStripeProductId,
   calculateFinalPrice,
   getAmountInCents,
   isSubscriptionPlan
