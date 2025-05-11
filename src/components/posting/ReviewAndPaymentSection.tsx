@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { PricingOptions } from '@/utils/posting/types';
-import { calculateFinalPrice, getStripeProductId, validatePricingOptions } from '@/utils/posting/jobPricing';
+import { calculateFinalPrice, getStripeProductId, validatePricingOptions, calculateJobPostPrice, getDiscountPercentage } from '@/utils/posting/jobPricing';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import PaymentSummary from './PaymentSummary';
 import UpsellModal from './UpsellModal'; // Import the new UpsellModal
@@ -29,24 +29,11 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedDuration, setSelectedDuration] = useState<number>(duration);
   const [selectedAutoRenew, setSelectedAutoRenew] = useState<boolean>(autoRenew);
   
-  // Base price per month for the selected tier
-  const getBasePricePerMonth = (tier: string) => {
-    switch(tier) {
-      case 'free': return 0;
-      case 'standard': return 9.99;
-      case 'premium': return 19.99;
-      case 'gold': return 29.99;
-      default: return 9.99;
-    }
-  };
-
-  const basePrice = getBasePricePerMonth(pricingId);
-  // Calculate the initial prices
+  // Calculate prices using the provided functions
+  const basePrice = calculateJobPostPrice(pricingId);
   const originalPrice = basePrice * selectedDuration;
-  const discountPercentage = selectedDuration === 1 ? 0 : 
-                            selectedDuration === 3 ? 10 : 
-                            selectedDuration === 6 ? 15 : 20;
   const finalPrice = calculateFinalPrice(basePrice, selectedDuration, selectedAutoRenew);
+  const discountPercentage = getDiscountPercentage(originalPrice, finalPrice);
 
   const handleProceedToPayment = async () => {
     // For paid plans, show the upsell modal first
