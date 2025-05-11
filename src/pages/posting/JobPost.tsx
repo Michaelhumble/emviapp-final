@@ -1,108 +1,197 @@
 
 import React, { useState } from 'react';
-import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
-import { JobDetailsSubmission } from '@/types/job';
-import { usePostPayment } from '@/hooks/usePostPayment';
+import { JobForm } from '@/components/posting/job/JobForm';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { PricingOptions } from '@/utils/posting/types';
+import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { usePostPayment } from '@/hooks/usePostPayment';
 import { Card } from '@/components/ui/card';
-import { PRICING_TIERS } from '@/utils/pricing';
-import { PaymentOptions } from '@/types/PriceDetails';
-import PaymentSummary from '@/components/posting/PaymentSummary';
+import { Button } from '@/components/ui/button';
+import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
 
-// Example JobPost component
-const JobPost = () => {
-  const [jobDetails, setJobDetails] = useState<JobDetailsSubmission>({
-    title: '',
-    description: '',
-    location: '',
-    company: '',
+const JobPost: React.FC = () => {
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'standard',
+    isFirstPost: true,
+    isHotListing: false,
+    autoRenew: true,
+    durationMonths: 1
   });
-  
-  const [selectedTierId, setSelectedTierId] = useState<string>('standard');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState<'form' | 'payment'>('form');
+  const [formValues, setFormValues] = useState<JobFormValues | null>(null);
+  const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
   
-  const handleJobDetailsChange = (details: Partial<JobDetailsSubmission>) => {
-    setJobDetails(prevDetails => ({ ...prevDetails, ...details }));
+  // Handle form submission
+  const handleFormSubmit = async (values: JobFormValues) => {
+    setFormValues(values);
+    setCurrentStep('payment');
   };
 
-  const selectedTier = PRICING_TIERS.find(tier => tier.id === selectedTierId) || PRICING_TIERS[1]; // Default to standard
-  const isFreePlan = selectedTierId === 'free';
-
-  const handleProceedToPayment = async () => {
+  // Handle final submission with pricing
+  const handleCreateCheckoutSession = async () => {
+    if (!formValues) return;
+    
+    setIsSubmitting(true);
+    
     try {
-      // Validate job details
-      if (!jobDetails.title || !jobDetails.description || !jobDetails.location) {
-        toast.error("Please complete all required job details");
-        return;
+      // Check if photos were uploaded (optional)
+      if (photoUploads.length === 0) {
+        console.log("No photos uploaded");
       }
-
-      // For free tier, show confirmation and return
-      if (isFreePlan) {
-        toast.success("Free job posting submitted successfully!");
-        return;
-      }
-
-      // For paid tiers, use Stripe checkout
-      const pricingOptions: PaymentOptions = {
-        selectedPricingTier: selectedTierId,
-        durationMonths: 1, // Fixed to single month option
-        autoRenew: false
-      };
       
-      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      // Calculate price
+      const priceResult = calculateJobPostPrice(pricingOptions);
+      console.log("Job post price:", priceResult);
       
-      if (!result.success) {
-        toast.error("Failed to process payment. Please try again.");
+      // Destructure finalPrice from the returned price object
+      const { finalPrice } = priceResult;
+      
+      // If finalPrice is greater than 0, proceed to payment
+      if (finalPrice > 0) {
+        // Navigate to payment page with salon data
+        const result = await initiatePayment('job', formValues, pricingOptions);
+        
+        // Add safeguards for the returned result
+        if (result?.success) {
+          // Handle successful payment initiation
+          if (result && 'redirect' in result && result.redirect) {
+            // If there's a redirect URL in the response, follow it
+            const redirectUrl = typeof result.redirect === 'string' ? result.redirect : '/payment';
+            window.location.href = redirectUrl;
+          } else if (result && 'data' in result) {
+            // Handle case where there's data but no redirect
+            toast.success("Job post submitted successfully!");
+            navigate('/dashboard');
+          }
+        } else {
+          // Handle payment initiation failure
+          toast.error("Failed to process payment. Please try again.");
+        }
+      } else {
+        // For free listings, skip payment and go directly to success
+        toast.success("Your job listing has been posted!");
+        navigate('/dashboard');
       }
     } catch (error) {
-      console.error("Payment processing error:", error);
-      toast.error("An error occurred while processing your payment. Please try again.");
+      console.error("Error submitting job post:", error);
+      toast.error("Failed to submit job post. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+  
+  // Handle changes to pricing options
+  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
+    setPricingOptions(prev => ({ ...prev, ...options }));
+  };
+  
+  // Handle pricing tier selection
+  const handlePricingTierChange = (tier: string) => {
+    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
+  };
+  
+  // Go back to form step
+  const handleBackToForm = () => {
+    setCurrentStep('form');
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <h1 className="text-3xl font-bold">Post a Job</h1>
-      
-      {/* Job Details Section */}
-      <JobDetailsSection 
-        details={jobDetails}
-        onChange={handleJobDetailsChange}
-      />
-      
-      {/* Simplified Pricing Section */}
-      <Card className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold">Select a Plan</h2>
-        <div className="grid gap-4 md:grid-cols-4">
-          {PRICING_TIERS.map(tier => (
-            <div
-              key={tier.id}
-              className={`p-4 border rounded-lg cursor-pointer ${
-                selectedTierId === tier.id 
-                  ? "border-purple-500 bg-purple-50" 
-                  : "border-gray-200"
-              }`}
-              onClick={() => setSelectedTierId(tier.id)}
-            >
-              <div className="font-bold capitalize">{tier.label}</div>
-              <div className="mt-2 font-medium">
-                {tier.id === 'free' ? 'Free' : `$${(tier.priceInCents / 100).toFixed(2)}`}
-              </div>
+    <div className="container max-w-6xl mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-2">Post a Job</h1>
+      <p className="text-gray-600 mb-8">
+        Create a detailed job listing to attract qualified candidates
+      </p>
+
+      {currentStep === 'form' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <JobForm 
+              onSubmit={handleFormSubmit}
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <Card className="p-6">
+                <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
+                <JobPostOptions
+                  pricingOptions={pricingOptions}
+                  setPricingOptions={handleUpdatePricing}
+                />
+                
+                <Button 
+                  onClick={() => document.querySelector('form')?.requestSubmit()}
+                  className="w-full mt-4"
+                  disabled={isLoading || isSubmitting}
+                >
+                  {isLoading || isSubmitting ? "Processing..." : "Continue to Pricing"}
+                </Button>
+                
+                <p className="text-xs text-gray-500 mt-4 text-center">
+                  By proceeding, you agree to our Terms of Service
+                </p>
+              </Card>
             </div>
-          ))}
+          </div>
         </div>
-        
-        {/* Payment Summary */}
-        <PaymentSummary
-          tier={selectedTier.label}
-          priceInCents={selectedTier.priceInCents}
-          onProceedToPayment={handleProceedToPayment}
-          isFreePlan={isFreePlan}
-          isSubmitting={isLoading}
-          isDisabled={false}
-        />
-      </Card>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Card className="p-6">
+              <ReviewAndPaymentSection
+                postType="job"
+                pricingOptions={pricingOptions}
+                onPricingChange={handlePricingTierChange}
+                onUpdatePricing={handleUpdatePricing}
+                onNextStep={handleCreateCheckoutSession}
+                onPrevStep={handleBackToForm}
+                jobData={formValues}
+                isFirstPost={pricingOptions.isFirstPost}
+                isSubmitting={isSubmitting}
+              />
+            </Card>
+          </div>
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <Card className="p-6">
+                <h2 className="text-xl font-medium mb-4">Job Post Summary</h2>
+                {formValues && (
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Job Title</h3>
+                      <p>{formValues.title}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Job Type</h3>
+                      <p className="capitalize">{formValues.jobType.replace('-', ' ')}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Location</h3>
+                      <p>{formValues.location}</p>
+                    </div>
+                  </div>
+                )}
+                <Button 
+                  onClick={handleBackToForm}
+                  variant="outline" 
+                  className="w-full mb-2"
+                >
+                  Edit Job Details
+                </Button>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

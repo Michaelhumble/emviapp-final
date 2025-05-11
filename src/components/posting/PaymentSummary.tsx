@@ -1,15 +1,18 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CalendarClock, CheckCircle, Shield } from 'lucide-react';
+import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
-import { format, addDays } from 'date-fns';
-import { formatPriceInDollars } from '@/utils/pricing';
+import { format, addMonths } from 'date-fns';
 
 interface PaymentSummaryProps {
-  tier: string;
-  priceInCents: number;
+  basePrice: number;
+  duration: number;
+  autoRenew: boolean;
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
   isSubmitting?: boolean;
@@ -17,16 +20,19 @@ interface PaymentSummaryProps {
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
-  tier,
-  priceInCents,
+  basePrice,
+  duration,
+  autoRenew,
+  originalPrice,
+  finalPrice,
+  discountPercentage,
   onProceedToPayment,
   isFreePlan = false,
   isSubmitting = false,
   isDisabled = false
 }) => {
   const { t } = useTranslation();
-  const expiryDate = addDays(new Date(), 30); // Default to 30 days
-  const priceInDollars = formatPriceInDollars(priceInCents);
+  const expiryDate = addMonths(new Date(), duration);
   
   return (
     <Card className="border border-gray-200">
@@ -43,7 +49,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
               <div>
                 <p className="font-medium">{t('Free listing valid for 30 days', 'Đăng tin miễn phí có hiệu lực trong 30 ngày')}</p>
-                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(expiryDate, 'MMMM d, yyyy')}</p>
+                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
               </div>
             </div>
             
@@ -60,17 +66,48 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             <div className="flex items-start">
               <CalendarClock className="h-5 w-5 text-purple-500 mt-0.5 mr-2" /> 
               <div>
-                <p className="font-medium">{tier.charAt(0).toUpperCase() + tier.slice(1)} Plan</p>
+                <p className="font-medium">
+                  {duration === 1 
+                    ? t('1 month listing', '1 tháng đăng tin')
+                    : t(`${duration} months listing`, `${duration} tháng đăng tin`)}
+                </p>
                 <p className="text-sm text-gray-600">
                   {t('Expires on', 'Hết hạn vào')}: {format(expiryDate, 'MMMM d, yyyy')}
                 </p>
               </div>
             </div>
             
-            <div className="border-t border-gray-200 pt-3">
+            {autoRenew && (
+              <div className="flex items-start">
+                <RefreshCw className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
+                <div>
+                  <p className="font-medium">{t('Auto-renewal enabled', 'Tự động gia hạn được bật')}</p>
+                  <p className="text-sm text-gray-600">
+                    {t(
+                      'Your subscription will automatically renew on', 
+                      'Đăng ký của bạn sẽ tự động gia hạn vào'
+                    )}: {format(expiryDate, 'MMMM d, yyyy')}
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <div className="border-t border-gray-200 pt-3 space-y-1">
+              <div className="flex justify-between">
+                <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
+                <span className="text-gray-600">${originalPrice.toFixed(2)}</span>
+              </div>
+              
+              {discountPercentage > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
+                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                </div>
+              )}
+              
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('Total', 'Tổng cộng')}:</span>
-                <span>${priceInDollars}</span>
+                <span>${finalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>
