@@ -103,18 +103,22 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       />
       
       {selectedPricing !== 'free' && (
-        <div className="flex items-center justify-between">
-          <Label htmlFor="auto-renew">{t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}</Label>
+        <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <Label htmlFor="auto-renew" className="flex items-center gap-2 cursor-pointer">
+            <Info className="h-4 w-4 text-blue-500" />
+            {t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}
+          </Label>
           <Switch 
             id="auto-renew" 
             checked={autoRenew} 
             onCheckedChange={handleAutoRenewChange} 
+            className="data-[state=checked]:bg-purple-600"
           />
         </div>
       )}
       
       {selectedPricing === 'free' && (
-        <div className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded-md flex items-start">
+        <div className="text-sm text-gray-600 italic bg-gray-50 p-4 rounded-md flex items-start border border-gray-200">
           <Info className="h-5 w-5 mr-2 text-blue-500 mt-0.5 flex-shrink-0" />
           <div>
             {t('Auto-renew not available for Free listings. This plan offers 30 days of visibility with standard placement.', 
@@ -128,27 +132,33 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         <AutoRenewSuggestionCard />
       )}
       
-      <PaymentSummary
-        basePrice={basePrice}
-        duration={selectedDuration}
-        autoRenew={autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-        onProceedToPayment={onNextStep}
-        isFreePlan={isFreePlan}
-        isSubmitting={isSubmitting}
-      />
-      
-      <PricingDisplay 
-        basePrice={basePrice}
-        duration={selectedDuration}
-        pricingId={selectedPricing}
-        autoRenew={autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="order-2 md:order-1">
+          <PricingDisplay 
+            basePrice={basePrice}
+            duration={selectedDuration}
+            pricingId={selectedPricing}
+            autoRenew={autoRenew}
+            originalPrice={originalPrice}
+            finalPrice={finalPrice}
+            discountPercentage={discountPercentage}
+          />
+        </div>
+        
+        <div className="order-1 md:order-2">
+          <PaymentSummary
+            basePrice={basePrice}
+            duration={selectedDuration}
+            autoRenew={autoRenew}
+            originalPrice={originalPrice}
+            finalPrice={finalPrice}
+            discountPercentage={discountPercentage}
+            onProceedToPayment={onNextStep}
+            isFreePlan={isFreePlan}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+      </div>
     </div>
   );
 };

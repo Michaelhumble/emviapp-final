@@ -40,8 +40,8 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
       className={cn(
         "relative border-2 overflow-hidden transition-all duration-200 cursor-pointer h-full",
         isSelected 
-          ? "ring-2 ring-purple-500 ring-offset-2 border-purple-200 shadow-lg" 
-          : "hover:border-purple-200 hover:shadow-md"
+          ? "ring-2 ring-purple-500 ring-offset-2 border-purple-200 shadow-lg transform scale-[1.02]" 
+          : "hover:border-purple-200 hover:shadow-md hover:transform hover:scale-[1.01]"
       )}
       onClick={onClick}
     >
@@ -85,7 +85,7 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
           </div>
         </div>
         
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {pricing.features.map((feature, index) => (
             <li key={index} className="flex items-start text-sm">
               <Check className="h-4 w-4 text-green-500 mr-2 mt-1 flex-shrink-0" />
