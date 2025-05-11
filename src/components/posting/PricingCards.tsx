@@ -55,12 +55,14 @@ const PricingCards: React.FC<PricingCardsProps> = ({
   
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-x-auto pb-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
         {visiblePricingOptions.map((option) => (
           <motion.div
             key={option.id}
+            initial={{ y: 0 }}
             whileHover={{ y: -5 }}
             transition={{ type: "spring", stiffness: 300 }}
+            animate={selectedPricing === option.id ? { scale: 1.02 } : { scale: 1 }}
           >
             <PricingTierCard 
               pricing={option}
@@ -73,7 +75,7 @@ const PricingCards: React.FC<PricingCardsProps> = ({
       </div>
       
       {!isFreePlanSelected && (
-        <div className="mt-8">
+        <div className="mt-6">
           <p className="text-center text-sm text-gray-600 mb-4">Select subscription length to get the best value:</p>
           <DurationSelector 
             selectedDuration={selectedDuration} 
