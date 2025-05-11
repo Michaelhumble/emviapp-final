@@ -5,6 +5,7 @@ import { ArrowRight, CalendarClock, CheckCircle, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, addDays } from 'date-fns';
+import { formatPriceInDollars } from '@/utils/pricing';
 
 interface PaymentSummaryProps {
   tier: string;
@@ -25,7 +26,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
 }) => {
   const { t } = useTranslation();
   const expiryDate = addDays(new Date(), 30); // Default to 30 days
-  const priceInDollars = (priceInCents / 100).toFixed(2);
+  const priceInDollars = formatPriceInDollars(priceInCents);
   
   return (
     <Card className="border border-gray-200">

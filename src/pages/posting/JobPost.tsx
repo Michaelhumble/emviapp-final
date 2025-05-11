@@ -6,6 +6,7 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { PRICING_TIERS } from '@/utils/pricing';
 
 // Example JobPost component
 const JobPost = () => {
@@ -16,22 +17,15 @@ const JobPost = () => {
     company: '',
   });
   
-  const [selectedPriceTier, setSelectedPriceTier] = useState<string>('standard');
+  const [selectedTierId, setSelectedTierId] = useState<string>('standard');
   const { initiatePayment, isLoading } = usePostPayment();
   
   const handleJobDetailsChange = (details: Partial<JobDetailsSubmission>) => {
     setJobDetails(prevDetails => ({ ...prevDetails, ...details }));
   };
-  
-  const getPriceInCents = (tier: string): number => {
-    switch(tier) {
-      case 'free': return 0;
-      case 'standard': return 999; // $9.99
-      case 'premium': return 1999; // $19.99
-      case 'gold': return 2999; // $29.99
-      default: return 999;
-    }
-  };
+
+  const selectedTier = PRICING_TIERS.find(tier => tier.id === selectedTierId) || PRICING_TIERS[1]; // Default to standard
+  const isFreePlan = selectedTierId === 'free';
 
   const handleProceedToPayment = async () => {
     try {
@@ -42,15 +36,15 @@ const JobPost = () => {
       }
 
       // For free tier, show confirmation and return
-      if (selectedPriceTier === 'free') {
+      if (isFreePlan) {
         toast.success("Free job posting submitted successfully!");
         return;
       }
 
       // For paid tiers, use Stripe checkout
       const pricingOptions = {
-        selectedPricingTier: selectedPriceTier,
-        durationMonths: 1, // Simplified to single month option
+        selectedPricingTier: selectedTierId,
+        durationMonths: 1, // Fixed to single month option
         autoRenew: false
       };
       
@@ -79,19 +73,19 @@ const JobPost = () => {
       <Card className="p-6 space-y-6">
         <h2 className="text-2xl font-bold">Select a Plan</h2>
         <div className="grid gap-4 md:grid-cols-4">
-          {['free', 'standard', 'premium', 'gold'].map(tier => (
+          {PRICING_TIERS.map(tier => (
             <div
-              key={tier}
+              key={tier.id}
               className={`p-4 border rounded-lg cursor-pointer ${
-                selectedPriceTier === tier 
+                selectedTierId === tier.id 
                   ? "border-purple-500 bg-purple-50" 
                   : "border-gray-200"
               }`}
-              onClick={() => setSelectedPriceTier(tier)}
+              onClick={() => setSelectedTierId(tier.id)}
             >
-              <div className="font-bold capitalize">{tier}</div>
+              <div className="font-bold capitalize">{tier.label}</div>
               <div className="mt-2 font-medium">
-                {tier === 'free' ? 'Free' : `$${(getPriceInCents(tier) / 100).toFixed(2)}`}
+                {tier.id === 'free' ? 'Free' : `$${(tier.priceCents / 100).toFixed(2)}`}
               </div>
             </div>
           ))}
@@ -104,7 +98,7 @@ const JobPost = () => {
             disabled={isLoading}
             className="w-full"
           >
-            {isLoading ? 'Processing...' : selectedPriceTier === 'free' ? 'Post Job' : 'Proceed to Payment'}
+            {isLoading ? 'Processing...' : isFreePlan ? 'Post Job' : 'Proceed to Payment'}
           </Button>
           
           <p className="text-sm text-gray-500 text-center mt-4">
