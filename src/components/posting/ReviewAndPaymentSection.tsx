@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { PricingOptions } from '@/utils/posting/types';
-import { calculateFinalPrice, getStripeProductId, validatePricingOptions, calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { validatePricingOptions, getStripeProductId } from '@/utils/posting/jobPricing';
 import { usePostPayment } from '@/hooks/usePostPayment';
+import { PriceDetails } from '@/types/PriceDetails';
+import { PRICING_OPTIONS, getPricingOptionByDuration, applyAutoRenewDiscount } from '@/utils/jobPricingOptions';
 import PaymentSummary from './PaymentSummary';
 import UpsellModal from './UpsellModal'; 
 
@@ -30,17 +32,20 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedAutoRenew, setSelectedAutoRenew] = useState<boolean>(autoRenew);
   
   // Calculate base price from pricing tier
-  const basePrice = calculateJobPostPrice(pricingId);
-  
-  // Calculate prices using the calculateFinalPrice which returns an object
-  const priceInfo = calculateFinalPrice(
-    basePrice, 
-    selectedDuration, 
-    selectedAutoRenew
-  );
+  const basePrice = calculateBasePrice(pricingId);
 
-  // Destructure the price info from the returned object
-  const { originalPrice, finalPrice, discountPercentage } = priceInfo;
+  // Get the price details based on duration
+  let priceDetails = getPricingOptionByDuration(selectedDuration);
+  
+  // If no price details found, use the first option as fallback
+  if (!priceDetails) {
+    priceDetails = PRICING_OPTIONS[0];
+  }
+  
+  // Apply auto-renew discount if selected
+  if (selectedAutoRenew) {
+    priceDetails = applyAutoRenewDiscount(priceDetails, selectedAutoRenew);
+  }
 
   const handleProceedToPayment = async () => {
     // For paid plans, show the upsell modal first
@@ -83,6 +88,17 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         return;
       }
       
+      // Get the updated price details
+      let updatedPriceDetails = getPricingOptionByDuration(processDuration);
+      if (!updatedPriceDetails) {
+        updatedPriceDetails = PRICING_OPTIONS[0];
+      }
+      
+      // Apply auto-renew discount if selected
+      if (processAutoRenew) {
+        updatedPriceDetails = applyAutoRenewDiscount(updatedPriceDetails, processAutoRenew);
+      }
+      
       const result = await initiatePayment('job', jobDetails, updatedPricingOptions);
       
       if (!result.success) {
@@ -94,15 +110,21 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
     }
   };
 
+  // Helper function to calculate base price from tier
+  const calculateBasePrice = (tier: string): number => {
+    switch(tier) {
+      case 'premium': return 19.99;
+      case 'gold': return 29.99;
+      case 'standard': return 9.99;
+      default: return 0; // Free tier
+    }
+  };
+
   return (
     <div className="space-y-6">
       <PaymentSummary
-        basePrice={basePrice}
-        duration={selectedDuration}
+        priceDetails={priceDetails}
         autoRenew={selectedAutoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
         onProceedToPayment={handleProceedToPayment}
         isFreePlan={pricingId === 'free'}
         isSubmitting={isLoading}
@@ -114,7 +136,6 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         isOpen={showUpsellModal}
         onClose={() => setShowUpsellModal(false)}
         selectedTier={pricingId}
-        basePrice={basePrice}
         onConfirm={handleUpsellConfirm}
         showUrgencyLabel={true}
       />

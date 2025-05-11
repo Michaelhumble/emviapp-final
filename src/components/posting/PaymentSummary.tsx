@@ -5,14 +5,11 @@ import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucid
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, addMonths } from 'date-fns';
+import { PriceDetails } from '@/types/PriceDetails';
 
 interface PaymentSummaryProps {
-  basePrice: number;
-  duration: number;
+  priceDetails: PriceDetails;
   autoRenew: boolean;
-  originalPrice: number; // Direct value, not nested inside a price object
-  finalPrice: number; // Direct value, not nested inside a price object
-  discountPercentage: number; // Direct value, not nested inside a price object
   onProceedToPayment: () => void;
   isFreePlan?: boolean;
   isSubmitting?: boolean;
@@ -20,19 +17,15 @@ interface PaymentSummaryProps {
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
-  basePrice,
-  duration,
+  priceDetails,
   autoRenew,
-  originalPrice,
-  finalPrice,
-  discountPercentage,
   onProceedToPayment,
   isFreePlan = false,
   isSubmitting = false,
   isDisabled = false
 }) => {
   const { t } = useTranslation();
-  const expiryDate = addMonths(new Date(), duration);
+  const expiryDate = addMonths(new Date(), priceDetails.durationMonths);
   
   return (
     <Card className="border border-gray-200">
@@ -67,9 +60,9 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               <CalendarClock className="h-5 w-5 text-purple-500 mt-0.5 mr-2" /> 
               <div>
                 <p className="font-medium">
-                  {duration === 1 
+                  {priceDetails.durationMonths === 1 
                     ? t('1 month listing', '1 tháng đăng tin')
-                    : t(`${duration} months listing`, `${duration} tháng đăng tin`)}
+                    : t(`${priceDetails.durationMonths} months listing`, `${priceDetails.durationMonths} tháng đăng tin`)}
                 </p>
                 <p className="text-sm text-gray-600">
                   {t('Expires on', 'Hết hạn vào')}: {format(expiryDate, 'MMMM d, yyyy')}
@@ -95,19 +88,19 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             <div className="border-t border-gray-200 pt-3 space-y-1">
               <div className="flex justify-between">
                 <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
-                <span className="text-gray-600">${originalPrice.toFixed(2)}</span>
+                <span className="text-gray-600">${priceDetails.originalPrice.toFixed(2)}</span>
               </div>
               
-              {discountPercentage > 0 && (
+              {priceDetails.discountPercentage > 0 && (
                 <div className="flex justify-between text-green-600">
-                  <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
-                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                  <span>{t('Discount', 'Giảm giá')} ({priceDetails.discountPercentage}%):</span>
+                  <span>-${(priceDetails.originalPrice - priceDetails.finalPrice).toFixed(2)}</span>
                 </div>
               )}
               
               <div className="flex justify-between font-semibold text-lg">
                 <span>{t('Total', 'Tổng cộng')}:</span>
-                <span>${finalPrice.toFixed(2)}</span>
+                <span>${priceDetails.finalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>

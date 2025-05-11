@@ -4,13 +4,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { calculateFinalPrice } from '@/utils/posting/jobPricing';
+import { PRICING_OPTIONS, applyAutoRenewDiscount } from '@/utils/jobPricingOptions';
+import { PriceDetails } from '@/types/PriceDetails';
 
 interface UpsellModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedTier: string;
-  basePrice: number;
   onConfirm: (duration: number, autoRenew: boolean) => void;
   showUrgencyLabel?: boolean;
 }
@@ -19,18 +19,11 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
   isOpen,
   onClose,
   selectedTier,
-  basePrice,
   onConfirm,
   showUrgencyLabel = true
 }) => {
-  const [selectedDuration, setSelectedDuration] = useState(6); // Default to 6 months
-  const [autoRenew, setAutoRenew] = useState(false);
-
-  const durations = [
-    { months: 3, label: "3 months", days: 90, discount: 10, badge: "", emoji: "🐢" },
-    { months: 6, label: "6 months", days: 180, discount: 15, badge: "Most Popular", emoji: "🐝" },
-    { months: 12, label: "12 months", days: 365, discount: 20, badge: "Best Value", emoji: "🐇" },
-  ];
+  const [selectedDuration, setSelectedDuration] = useState<number>(6); // Default to 6 months
+  const [autoRenew, setAutoRenew] = useState<boolean>(false);
 
   const handleConfirm = () => {
     onConfirm(selectedDuration, autoRenew);
@@ -50,42 +43,37 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
 
         <div className="py-4 space-y-6">
           <div className="grid gap-5">
-            {durations.map((option) => {
-              // Calculate pricing for this duration option
-              const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
-                basePrice, 
-                option.months, 
-                autoRenew
-              );
-              
+            {PRICING_OPTIONS.map((option) => {
+              // Apply auto-renew discount if selected
+              const priceDetails = autoRenew ? applyAutoRenewDiscount(option, autoRenew) : option;
+              const { originalPrice, finalPrice, discountPercentage, dailyRate, durationDays } = priceDetails;
               const savings = (originalPrice - finalPrice).toFixed(2);
-              const pricePerDay = (finalPrice / option.days).toFixed(2);
               
               return (
                 <div 
-                  key={option.months}
+                  key={option.id}
                   className={`relative border-[3px] rounded-2xl p-5 cursor-pointer transition-all duration-300 shadow-md hover:shadow-lg hover:scale-[1.01] ${
-                    selectedDuration === option.months 
+                    selectedDuration === option.durationMonths 
                       ? "border-purple-500 bg-gradient-to-br from-purple-50 to-white ring-2 ring-purple-400 ring-opacity-50" 
                       : "border-gray-200 hover:border-gray-300 bg-gradient-to-br from-slate-50 to-white"
                   }`}
-                  onClick={() => setSelectedDuration(option.months)}
+                  onClick={() => setSelectedDuration(option.durationMonths)}
                 >
-                  {option.badge && (
+                  {(option.isPopular || option.isBestValue) && (
                     <Badge 
                       className={`absolute top-3 right-3 text-xs px-2 py-1 font-medium ${
-                        option.badge === "Best Value" 
+                        option.isBestValue 
                           ? "bg-green-600 hover:bg-green-700 text-white" 
                           : "bg-amber-500 hover:bg-amber-600 text-white"
                       }`}
                     >
-                      {option.badge}
+                      {option.isBestValue ? "💎 Best Value" : "🔥 Most Popular"}
                     </Badge>
                   )}
                   
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-purple-900">{option.days} days / {option.months} months</span>
+                      <span className="text-lg font-bold text-purple-900">{option.label}</span>
                     </div>
                     
                     {showUrgencyLabel && (
@@ -99,11 +87,11 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                     </div>
                     
                     <div className="text-base font-bold text-green-600 py-1 px-2.5 inline-block rounded-md bg-green-50 border border-green-100">
-                      {option.emoji} Just ${pricePerDay}/day
+                      {option.emoji} Just {dailyRate}
                     </div>
                     
                     <div className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded-lg border-l-2 border-purple-300">
-                      💡 {option.days} days = {option.days} chances for the right artist to find you. Don't miss your next hire.
+                      💡 {option.label} = {durationDays} chances for the right artist to find you. Don't miss your next hire.
                     </div>
                     
                     <div className="flex justify-end">
