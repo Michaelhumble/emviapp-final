@@ -1,3 +1,4 @@
+
 import { JobPricingOption, PricingOptions } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [
@@ -110,17 +111,37 @@ export const getStripeProductId = (tier: string, durationMonths: number, autoRen
 
 /**
  * Calculate the final price based on base price, duration and auto-renew status
+ * Returns an object with original price, final price, and discount percentage
  */
-export function calculateFinalPrice(basePrice: number, duration: number, autoRenew: boolean): number {
-  let price = basePrice * duration;
+export function calculateFinalPrice(basePrice: number, duration: number, autoRenew: boolean): {
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
+} {
+  const originalPrice = basePrice * duration;
+  let finalPrice = originalPrice;
+  
+  // Apply duration-based discounts
+  if (duration === 3) finalPrice *= 0.9;
+  else if (duration === 6) finalPrice *= 0.85;
+  else if (duration === 12) finalPrice *= 0.8;
 
-  if (duration === 3) price *= 0.9;
-  else if (duration === 6) price *= 0.85;
-  else if (duration === 12) price *= 0.8;
+  // Apply auto-renew discount
+  if (autoRenew) finalPrice *= 0.95;
 
-  if (autoRenew) price *= 0.95;
+  // Round to 2 decimal places
+  finalPrice = Math.round(finalPrice * 100) / 100;
+  
+  // Calculate discount percentage
+  const discountPercentage = originalPrice > 0 
+    ? Math.round((1 - finalPrice / originalPrice) * 100) 
+    : 0;
 
-  return Math.round(price * 100) / 100;
+  return {
+    originalPrice,
+    finalPrice,
+    discountPercentage
+  };
 }
 
 /**

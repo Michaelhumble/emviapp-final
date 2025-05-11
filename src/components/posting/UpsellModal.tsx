@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { calculatePriceWithDuration, calculateFinalPrice } from '@/utils/posting/jobPricing';
+import { calculateFinalPrice } from '@/utils/posting/jobPricing';
 import { PricingOptions } from '@/utils/posting/types';
 import { formatCurrency } from '@/lib/utils';
 
@@ -55,8 +55,12 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
         <div className="py-4 space-y-4">
           <div className="grid gap-4">
             {durations.map((option) => {
-              const originalPrice = basePrice * option.months;
-              const finalPrice = calculateFinalPrice(basePrice, option.months, autoRenew);
+              const { originalPrice, finalPrice, discountPercentage } = calculateFinalPrice(
+                basePrice, 
+                option.months, 
+                autoRenew
+              );
+              
               const savings = (originalPrice - finalPrice).toFixed(2);
               const totalDiscount = option.discount + autoRenewDiscount;
               const pricePerDay = (finalPrice / (option.days)).toFixed(2);
@@ -99,8 +103,12 @@ const UpsellModal: React.FC<UpsellModalProps> = ({
                         💸 Just ${pricePerDay}/day
                       </div>
                       
+                      <div className="text-sm text-gray-600 italic">
+                        💡 {option.days} days = {option.days} chances for the right artist to find you. Don't miss your next hire.
+                      </div>
+                      
                       <div className="text-sm text-gray-600">
-                        Save {totalDiscount}% (${savings})
+                        Save {discountPercentage}% (${savings})
                       </div>
                     </div>
                     
