@@ -51,7 +51,7 @@ export const usePostPayment = () => {
       } 
       
       // For paid listings, create a Stripe checkout session
-      // Get the correct Stripe price ID based on tier, duration, and auto-renew
+      // Get the correct Stripe product ID based on tier, duration, and auto-renew
       const selectedPricingTier = pricingOptions.selectedPricingTier;
       const durationMonths = pricingOptions.durationMonths;
       const autoRenew = pricingOptions.autoRenew || false;
@@ -60,10 +60,12 @@ export const usePostPayment = () => {
       const stripeProductId = getStripeProductId(selectedPricingTier, durationMonths, autoRenew);
       
       if (!stripeProductId) {
-        throw new Error(t(
+        const errorMsg = t(
           'Invalid pricing configuration. Please select a different plan or duration.',
           'Cấu hình giá không hợp lệ. Vui lòng chọn gói hoặc thời hạn khác.'
-        ));
+        );
+        toast.error(errorMsg);
+        throw new Error(errorMsg);
       }
       
       // Log payment parameters for debugging
@@ -79,7 +81,12 @@ export const usePostPayment = () => {
           postType,
           postDetails,
           pricingOptions,
-          stripeProductId // Pass the product ID to the edge function
+          stripeProductId,
+          metadata: {
+            tier: selectedPricingTier,
+            duration: durationMonths,
+            autoRenew: autoRenew
+          }
         }
       });
 

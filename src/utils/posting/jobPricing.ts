@@ -1,4 +1,3 @@
-
 import { PricingOptions, JobPricingTier } from './types';
 
 // Define job pricing tiers
@@ -148,158 +147,91 @@ export const getJobPostPricingSummary = (pricingOptions: PricingOptions) => {
   }
 };
 
-// Calculate price with duration discount
-export const calculatePriceWithDuration = (basePrice: number, months: number) => {
-  let discount = 0;
+/**
+ * Calculates the price with duration discount but without auto-renew discount
+ */
+export const calculatePriceWithDuration = (basePrice: number, durationMonths: number): number => {
+  // Apply duration-based discount
+  let discountPercentage = 0;
+  if (durationMonths === 3) discountPercentage = 10;
+  else if (durationMonths === 6) discountPercentage = 15;
+  else if (durationMonths === 12) discountPercentage = 20;
   
-  if (months === 3) discount = 0.1;
-  else if (months === 6) discount = 0.15;
-  else if (months === 12) discount = 0.2;
-  
-  return basePrice * months * (1 - discount);
+  const discountMultiplier = 1 - (discountPercentage / 100);
+  return basePrice * durationMonths * discountMultiplier;
 };
 
-// Validate pricing options
-export const validatePricingOptions = (options: PricingOptions) => {
-  if (!options) return false;
+/**
+ * Calculates the final price with all discounts applied
+ */
+export const calculateFinalPrice = (basePrice: number, durationMonths: number, autoRenew: boolean = false): number => {
+  let price = calculatePriceWithDuration(basePrice, durationMonths);
   
-  // Ensure required fields are present
-  if (!options.selectedPricingTier || !options.durationMonths) {
-    return false;
+  // Apply auto-renew discount if enabled
+  if (autoRenew) {
+    const autoRenewDiscount = 0.05; // 5% discount
+    price = price * (1 - autoRenewDiscount);
   }
   
-  // Validate the tier exists
-  const validTier = jobPricingOptions.some(option => option.id === options.selectedPricingTier);
-  if (!validTier) return false;
-  
-  // Validate duration is valid
-  const validDuration = [1, 3, 6, 12].includes(options.durationMonths);
-  if (!validDuration) return false;
-  
-  return true;
+  return price;
 };
 
-// Map pricing configuration to Stripe product IDs
+/**
+ * Get Stripe product ID based on tier, duration and auto-renew status
+ */
 export const getStripeProductId = (
-  pricingTier: string,
-  durationMonths: number = 1,
+  selectedPricingTier: string,
+  durationMonths: number,
   autoRenew: boolean = false
 ): string | null => {
-  // Return null for invalid inputs
-  if (!pricingTier || !durationMonths) {
+  // Validate inputs
+  if (!selectedPricingTier || !durationMonths) {
+    console.error("Missing required parameters for Stripe product ID lookup", {
+      tier: selectedPricingTier,
+      duration: durationMonths
+    });
     return null;
   }
-  
-  // Handle free tier (no product ID needed)
-  if (pricingTier === 'free') {
-    return null;
-  }
-  
-  // Map pricing tier and duration to Stripe product IDs
-  const productMapping = {
-    // Standard tier
-    'standard': {
-      1: {
-        true: 'price_XXX_STANDARD_1M_AUTO_949',   // 1 month with auto-renew
-        false: 'price_XXX_STANDARD_1M_999'        // 1 month one-time
-      },
-      3: {
-        true: 'price_XXX_STANDARD_3M_AUTO_2550',
-        false: 'price_XXX_STANDARD_3M_2699'
-      },
-      6: {
-        true: 'price_XXX_STANDARD_6M_AUTO_4675',
-        false: 'price_XXX_STANDARD_6M_5099'
-      },
-      12: {
-        true: 'price_XXX_STANDARD_12M_AUTO_7999',
-        false: 'price_XXX_STANDARD_12M_8999'
-      }
+
+  // Map of product IDs by tier, duration, and renewal option
+  const productIds: Record<string, Record<number, Record<boolean, string>>> = {
+    standard: {
+      1: { true: 'price_1NxYs2DfXxB9DeyaasdqWERE', false: 'price_1NxYrKDfXxB9Deyaasf35Dda' },
+      3: { true: 'price_1NxYs2DfXxB9DeyaFG4qWEDF', false: 'price_1NxYrKDfXxB9DeyaSD35Dda' },
+      6: { true: 'price_1NxYs2DfXxB9DeyaFGGGEDF', false: 'price_1NxYrKDfXxB9DeyaSDGHDda' },
+      12: { true: 'price_1NxYs2DfXxB9DeyJJGGGEDF', false: 'price_1NxYrKDfXxB9DYYYSDGHDda' }
     },
-    // Premium tier
-    'premium': {
-      1: {
-        true: 'price_XXX_PREMIUM_AUTO_4999',
-        false: 'price_XXX_PREMIUM_4999'
-      },
-      3: {
-        true: 'price_XXX_PREMIUM_3M_AUTO_13499',
-        false: 'price_XXX_PREMIUM_3M_13499'
-      },
-      6: {
-        true: 'price_XXX_PREMIUM_6M_AUTO_25499',
-        false: 'price_XXX_PREMIUM_6M_25499'
-      },
-      12: {
-        true: 'price_XXX_PREMIUM_12M_AUTO_47999',
-        false: 'price_XXX_PREMIUM_12M_47999'
-      }
+    premium: {
+      1: { true: 'price_1NxYs2DfXxB9Deya0Et6YiXP', false: 'price_1NxYrKDfXxB9DeyaopoCSmvx' },
+      3: { true: 'price_1NxYs2DfXxB9DeyaEEEYiXP', false: 'price_1NxYrKDfXxB9DeyUUUCSmvx' },
+      6: { true: 'price_1NxYs2DfXxB9DeyaAAAYiXP', false: 'price_1NxYrKDfXxB9DeyQQQCSmvx' },
+      12: { true: 'price_1NxYs2DfXxB9DeyLLLLYiXP', false: 'price_1NxYrKDfXxB9DeyBBBBSmvx' }
     },
-    // Gold tier
-    'gold': {
-      1: {
-        true: 'price_XXX_GOLD_AUTO_1999',
-        false: 'price_XXX_GOLD_1999'
-      },
-      3: {
-        true: 'price_XXX_GOLD_3M_AUTO_5399',
-        false: 'price_XXX_GOLD_3M_5399'
-      },
-      6: {
-        true: 'price_XXX_GOLD_6M_AUTO_10199',
-        false: 'price_XXX_GOLD_6M_10199'
-      },
-      12: {
-        true: 'price_XXX_GOLD_12M_AUTO_19199',
-        false: 'price_XXX_GOLD_12M_19199'
-      }
-    },
-    // Diamond tier
-    'diamond': {
-      1: {
-        true: 'price_XXX_DIAMOND_AUTO_9999',
-        false: 'price_XXX_DIAMOND_9999'
-      },
-      3: {
-        true: 'price_XXX_DIAMOND_3M_AUTO_26997',
-        false: 'price_XXX_DIAMOND_3M_26997'
-      },
-      6: {
-        true: 'price_XXX_DIAMOND_6M_AUTO_50995',
-        false: 'price_XXX_DIAMOND_6M_50995'
-      },
-      12: {
-        true: 'price_XXX_DIAMOND_12M_AUTO_95990',
-        false: 'price_XXX_DIAMOND_12M_95990'
-      }
+    gold: {
+      1: { true: 'price_1NxYs2DfXxB9Deya7cKbQrAF', false: 'price_1NxYrKDfXxB9DeyalVuCeN1I' },
+      3: { true: 'price_1NxYs2DfXxB9DeyaRRRbQrAF', false: 'price_1NxYrKDfXxB9DeWWWVuCeN1I' },
+      6: { true: 'price_1NxYs2DfXxB9DeyaMMMbQrAF', false: 'price_1NxYrKDfXxB9DeyaPPPCeN1I' },
+      12: { true: 'price_1NxYs2DfXxB9DeyZZZZbQrAF', false: 'price_1NxYrKDfXxB9DeyaXXXCeN1I' }
     }
   };
-  
-  // Check if the mapping exists
-  if (!productMapping[pricingTier] || 
-      !productMapping[pricingTier][durationMonths] || 
-      productMapping[pricingTier][durationMonths][autoRenew] === undefined) {
-    console.error(`Invalid pricing configuration: tier=${pricingTier}, months=${durationMonths}, autoRenew=${autoRenew}`);
+
+  try {
+    return productIds[selectedPricingTier][durationMonths][autoRenew] || null;
+  } catch (e) {
+    console.error("Error retrieving Stripe product ID:", e);
+    console.error("Invalid pricing configuration:", {
+      tier: selectedPricingTier,
+      duration: durationMonths,
+      autoRenew
+    });
     return null;
   }
-  
-  return productMapping[pricingTier][durationMonths][autoRenew];
 };
 
 // Helper to determine if a plan should use subscription mode
 export const isSubscriptionPlan = (pricingOptions: PricingOptions): boolean => {
   if (!pricingOptions) return false;
   return pricingOptions.autoRenew === true && pricingOptions.selectedPricingTier !== 'free';
-};
-
-// Calculate final price with all discounts
-export const calculateFinalPrice = (basePrice: number, options: PricingOptions): number => {
-  if (!options || !options.durationMonths) return basePrice;
-  
-  const result = calculateJobPostPrice(options);
-  if (!result) return basePrice;
-  
-  return result.finalPrice;
 };
 
 // Convert dollar amount to cents for Stripe
