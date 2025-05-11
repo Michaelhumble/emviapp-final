@@ -107,16 +107,6 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
     }
   };
 
-  // Helper function to calculate base price from tier
-  const calculateBasePrice = (tier: string): number => {
-    switch(tier) {
-      case 'premium': return 19.99;
-      case 'gold': return 29.99;
-      case 'standard': return 9.99;
-      default: return 0; // Free tier
-    }
-  };
-
   return (
     <div className="space-y-6">
       <PaymentSummary
