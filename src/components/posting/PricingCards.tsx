@@ -23,6 +23,8 @@ const PricingCards: React.FC<PricingCardsProps> = ({
   onDurationChange
 }) => {
   // If Diamond plan is selected, force 12 month duration
+  // IMPORTANT: Diamond plan is intentionally hardcoded for 12-month only.
+  // This restriction is by design and should not be changed without business approval.
   useEffect(() => {
     if (selectedPricing === 'diamond' && selectedDuration !== 12) {
       onDurationChange(12);

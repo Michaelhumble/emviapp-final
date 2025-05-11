@@ -27,7 +27,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   const futureDate = addMonths(new Date(), duration);
   const formattedDate = format(futureDate, 'MMM d, yyyy');
   const isFreePlan = pricingId === 'free';
-  const discountAmount = originalPrice - finalPrice;
+  const discountAmount = Number((originalPrice - finalPrice).toFixed(2));
   
   return (
     <div className={cn(
@@ -78,7 +78,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
             
             <div className="border-t pt-4 mt-4">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600">Base price ({pricingId === 'standard' ? '$49.99' : pricingId === 'premium' ? '$99.99' : '$0'}/month × {duration})</span>
+                <span className="text-gray-600">Base price ({basePrice.toFixed(2)}/month × {duration})</span>
                 <span>${originalPrice.toFixed(2)}</span>
               </div>
               

@@ -51,7 +51,7 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Dedicated support'
     ],
     tier: 'gold',
-    hidden: true // Gold tier is hidden but remains in the codebase for future use
+    hidden: true // Gold tier is hidden
   },
   {
     id: 'diamond',
@@ -65,7 +65,7 @@ export const jobPricingOptions: JobPricingOption[] = [
       '24/7 dedicated support'
     ],
     tier: 'diamond',
-    hidden: true // Diamond tier is hidden but remains in the codebase for future use
+    hidden: true // Diamond tier is hidden
   }
 ];
 
@@ -129,11 +129,11 @@ export const calculateFinalPrice = (basePrice: number, durationMonths: number) =
   
   // Calculate final price after applying discount
   const discount = (originalPrice * discountPercentage) / 100;
-  const finalPrice = originalPrice - discount;
+  const finalPrice = Number((originalPrice - discount).toFixed(2)); // Round to 2 decimal places at final step
   
   // Return an object with all required properties
   return {
-    originalPrice,
+    originalPrice: Number(originalPrice.toFixed(2)),
     finalPrice,
     discountPercentage
   };

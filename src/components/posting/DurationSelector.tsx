@@ -32,7 +32,12 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
   // IMPORTANT: Diamond plan is intentionally hardcoded for 12-month only.
   // This restriction is by design and should not be changed without business approval.
   const isDiamondPlan = selectedPricing === 'diamond';
-  const showFullDurations = !isDiamondPlan;
+  const isFreePlan = selectedPricing === 'free';
+  
+  // Modify the first duration option label for free plans
+  const modifiedDurations = isFreePlan 
+    ? [{ ...durations[0], label: '30 Days Free', vietnameseLabel: '30 ngày miễn phí' }, ...durations.slice(1)]
+    : durations;
   
   return (
     <div className={cn("space-y-2", className)}>
@@ -40,11 +45,17 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
         value={String(selectedDuration)}
         onValueChange={(value) => onChange(Number(value))}
         className="flex flex-wrap justify-center gap-2"
-        disabled={disableSelection}
+        disabled={disableSelection || isFreePlan}
       >
-        {durations.map((duration) => {
+        {modifiedDurations.map((duration, index) => {
           // For Diamond plan, show tooltip on non-12-month options
           const isDiamondNonYearly = isDiamondPlan && duration.months !== 12;
+          // For Free plan, only show first option (30 days)
+          const isNonFreeOption = isFreePlan && index > 0;
+          
+          if (isFreePlan && index > 0) {
+            return null; // Don't show other duration options for free plan
+          }
           
           return (
             <div key={duration.months} className="flex flex-col items-center">
@@ -54,13 +65,13 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                     <div className={cn(
                       "relative flex items-center justify-center",
                       "cursor-pointer transition-all duration-200",
-                      (isDiamondNonYearly) && "opacity-60 cursor-help"
+                      (isDiamondNonYearly || isNonFreeOption) && "opacity-60 cursor-help"
                     )}>
                       <RadioGroupItem
                         value={String(duration.months)}
                         id={`duration-${duration.months}`}
                         className="sr-only"
-                        disabled={disableSelection || isDiamondNonYearly}
+                        disabled={disableSelection || isDiamondNonYearly || isFreePlan}
                       />
                       <Label
                         htmlFor={`duration-${duration.months}`}
@@ -70,12 +81,12 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                           selectedDuration === duration.months
                             ? "bg-purple-600 text-white border-purple-600"
                             : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700",
-                          (disableSelection || isDiamondNonYearly) && 
+                          (disableSelection || isDiamondNonYearly || isFreePlan) && 
                             "cursor-help hover:bg-white dark:hover:bg-gray-800"
                         )}
                       >
                         {duration.label}
-                        {duration.discount > 0 && (
+                        {duration.discount > 0 && !isFreePlan && (
                           <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 px-1.5 py-0.5 rounded-full ml-1">
                             -{duration.discount}%
                           </span>
@@ -86,6 +97,11 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                   {isDiamondNonYearly && (
                     <TooltipContent side="top" className="p-2 max-w-xs text-center">
                       <p>Only 12-month plan unlocks special discount pricing.</p>
+                    </TooltipContent>
+                  )}
+                  {isFreePlan && (
+                    <TooltipContent side="top" className="p-2 max-w-xs text-center">
+                      <p>Free listings are available for 30 days only.</p>
                     </TooltipContent>
                   )}
                 </Tooltip>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import PricingCards from '@/components/posting/PricingCards';
 import { jobPricingOptions, calculateFinalPrice } from '@/utils/posting/jobPricing';

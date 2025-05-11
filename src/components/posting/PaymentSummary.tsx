@@ -32,7 +32,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
 }) => {
   const { t } = useTranslation();
   const expiryDate = isFreePlan ? addMonths(new Date(), 1) : addMonths(new Date(), duration);
-  const discountAmount = originalPrice - finalPrice;
+  const discountAmount = Number((originalPrice - finalPrice).toFixed(2));
   
   return (
     <Card className="border border-gray-200">
