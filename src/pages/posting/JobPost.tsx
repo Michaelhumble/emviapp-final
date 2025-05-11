@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PRICING_TIERS } from '@/utils/pricing';
+import { PaymentOptions } from '@/types/PriceDetails';
+import PaymentSummary from '@/components/posting/PaymentSummary';
 
 // Example JobPost component
 const JobPost = () => {
@@ -42,7 +44,7 @@ const JobPost = () => {
       }
 
       // For paid tiers, use Stripe checkout
-      const pricingOptions = {
+      const pricingOptions: PaymentOptions = {
         selectedPricingTier: selectedTierId,
         durationMonths: 1, // Fixed to single month option
         autoRenew: false
@@ -85,26 +87,21 @@ const JobPost = () => {
             >
               <div className="font-bold capitalize">{tier.label}</div>
               <div className="mt-2 font-medium">
-                {tier.id === 'free' ? 'Free' : `$${(tier.priceCents / 100).toFixed(2)}`}
+                {tier.id === 'free' ? 'Free' : `$${(tier.priceInCents / 100).toFixed(2)}`}
               </div>
             </div>
           ))}
         </div>
         
-        {/* Payment Button */}
-        <div className="pt-6 border-t mt-6">
-          <Button 
-            onClick={handleProceedToPayment}
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? 'Processing...' : isFreePlan ? 'Post Job' : 'Proceed to Payment'}
-          </Button>
-          
-          <p className="text-sm text-gray-500 text-center mt-4">
-            By posting a job, you agree to our terms and conditions.
-          </p>
-        </div>
+        {/* Payment Summary */}
+        <PaymentSummary
+          tier={selectedTier.label}
+          priceInCents={selectedTier.priceInCents}
+          onProceedToPayment={handleProceedToPayment}
+          isFreePlan={isFreePlan}
+          isSubmitting={isLoading}
+          isDisabled={false}
+        />
       </Card>
     </div>
   );
