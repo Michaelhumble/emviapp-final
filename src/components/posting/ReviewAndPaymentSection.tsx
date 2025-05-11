@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { PricingOptions } from '@/utils/posting/types';
-import { calculatePriceWithDuration, calculateFinalPrice, getStripeProductId } from '@/utils/posting/jobPricing';
+import { calculatePriceWithDuration, calculateFinalPrice, getStripeProductId, validatePricingOptions } from '@/utils/posting/jobPricing';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import PaymentSummary from './PaymentSummary';
 import UpsellModal from './UpsellModal'; // Import the new UpsellModal
@@ -80,21 +79,14 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         autoRenew: processAutoRenew
       };
       
-      // Validate that pricing options are valid
-      if (!updatedPricingOptions.selectedPricingTier) {
-        const errorMsg = "No pricing tier selected. Please select a pricing tier.";
+      // Validate that pricing options are valid using our exported function
+      if (!validatePricingOptions(updatedPricingOptions)) {
+        const errorMsg = "Invalid pricing configuration. Please select a pricing tier and duration.";
         toast.error(errorMsg);
         if (onValidationError) onValidationError(errorMsg);
         return;
       }
       
-      if (!updatedPricingOptions.durationMonths) {
-        const errorMsg = "No duration selected. Please select a duration.";
-        toast.error(errorMsg);
-        if (onValidationError) onValidationError(errorMsg);
-        return;
-      }
-
       const result = await initiatePayment('job', jobDetails, updatedPricingOptions);
       
       if (!result.success) {

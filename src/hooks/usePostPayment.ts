@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission, PricingOptions } from '@/types/job';
-import { getStripeProductId } from '@/utils/posting/jobPricing';
+import { getStripeProductId, validatePricingOptions } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,7 @@ export const usePostPayment = () => {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
 
       // Validate pricing options
-      if (!pricingOptions || !pricingOptions.selectedPricingTier || !pricingOptions.durationMonths) {
+      if (!validatePricingOptions(pricingOptions)) {
         throw new Error(t(
           'Invalid pricing configuration. Please select a plan and duration.',
           'Cấu hình giá không hợp lệ. Vui lòng chọn gói và thời hạn.'
