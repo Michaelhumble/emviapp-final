@@ -31,9 +31,6 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedDuration, setSelectedDuration] = useState<number>(duration);
   const [selectedAutoRenew, setSelectedAutoRenew] = useState<boolean>(autoRenew);
   
-  // Calculate base price from pricing tier
-  const basePrice = calculateBasePrice(pricingId);
-
   // Get the price details based on duration
   let priceDetails = getPricingOptionByDuration(selectedDuration);
   
