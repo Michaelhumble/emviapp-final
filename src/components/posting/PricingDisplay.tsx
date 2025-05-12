@@ -1,308 +1,176 @@
 
 import React from 'react';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { Check, Star, Crown, Fire, Gem } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
+import { format, addMonths } from 'date-fns';
+import { CalendarIcon, RefreshCw, CreditCard, Tag, Sparkles, Check, Info, AlertTriangle, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { GradientBackground } from '@/components/ui/gradient-background';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PricingDisplayProps {
-  selectedPricing: string;
-  onSelect: (pricingId: string) => void;
-  isFirstPost?: boolean;
+  basePrice: number;
+  duration: number;
+  pricingId: string;
+  autoRenew: boolean;
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
 }
 
-const PricingDisplay: React.FC<PricingDisplayProps> = ({ selectedPricing, onSelect, isFirstPost = false }) => {
-  const { t, isVietnamese } = useTranslation();
+const PricingDisplay: React.FC<PricingDisplayProps> = ({
+  basePrice,
+  duration,
+  pricingId,
+  autoRenew,
+  originalPrice,
+  finalPrice,
+  discountPercentage
+}) => {
+  const futureDate = addMonths(new Date(), duration);
+  const formattedDate = format(futureDate, 'MMM d, yyyy');
+  const isFreePlan = pricingId === 'free';
+  const discountAmount = Number((originalPrice - finalPrice).toFixed(2));
   
-  // Filter out hidden plans
-  const visibleOptions = jobPricingOptions.filter(option => !option.hidden);
-  
-  // Define our exact order and format for the plans
-  const orderedOptions = [
-    { id: 'standard', displayName: 'Standard — $9.99/mo' },
-    { id: 'gold', displayName: 'Gold Featured — $14.99/mo' },
-    { id: 'premium', displayName: 'Premium Listing — $24.99/mo' },
-    { id: 'free', displayName: 'Basic Plan – Free (first-time only)' }
-  ];
-  
-  // Sort the visible options based on our ordered list
-  const sortedOptions = [...visibleOptions].sort((a, b) => {
-    const aIndex = orderedOptions.findIndex(o => o.id === a.id);
-    const bIndex = orderedOptions.findIndex(o => o.id === b.id);
-    return aIndex - bIndex;
-  });
-  
-  // Get display names from our ordered list
-  const getDisplayName = (id: string) => {
-    const option = orderedOptions.find(o => o.id === id);
-    return option ? option.displayName : '';
-  };
-  
-  // Badge configurations
-  const getBadgeConfig = (pricingId: string) => {
+  const getPricingTitle = () => {
     switch(pricingId) {
-      case 'standard':
-        return {
-          text: '🔥 Chosen by 8,200+ salons',
-          className: 'bg-blue-500/10 text-blue-800 border-blue-200'
-        };
-      case 'gold':
-        return {
-          text: '⭐ Built to help you grow faster',
-          className: 'bg-amber-500/10 text-amber-800 border-amber-200'
-        };
-      case 'premium':
-        return {
-          text: '💎 Most loved by salons',
-          className: 'bg-purple-500/10 text-purple-800 border-purple-200'
-        };
-      case 'free':
-        return {
-          text: '✨ For new users',
-          className: 'bg-gray-500/10 text-gray-700 border-gray-200'
-        };
-      default:
-        return { text: '', className: '' };
+      case 'standard': return 'Standard';
+      case 'premium': return 'Premium';
+      case 'gold': return 'Featured';
+      case 'free': return 'Basic (Limited Reach)';
+      default: return 'Selected Plan';
     }
   };
-  
-  // Subtitle configurations
-  const getSubtitle = (pricingId: string) => {
+
+  const getPricingGradient = () => {
     switch(pricingId) {
-      case 'standard':
-        return 'Smart visibility for most businesses';
-      case 'gold':
-        return 'Premium exposure across homepage & listings';
-      case 'premium':
-        return 'Highlight your listing & match with better candidates';
-      case 'free':
-        return 'No credit card required. Limited visibility.';
-      default:
-        return '';
+      case 'standard': return 'from-blue-50 to-blue-100/30';
+      case 'premium': return 'from-purple-50 to-purple-100/30';
+      case 'gold': return 'from-amber-50 to-amber-100/30';
+      default: return 'from-gray-50 to-gray-100/30';
     }
-  };
-  
-  // Card background and styling configurations
-  const getCardStyle = (pricingId: string, isSelected: boolean) => {
-    const baseClasses = "relative rounded-xl overflow-hidden transition-all duration-300";
-    const selectedClasses = "ring-2 ring-[#50C878] transform -translate-y-1";
-    
-    switch(pricingId) {
-      case 'standard':
-        return cn(
-          baseClasses,
-          "border border-blue-200 bg-white",
-          isSelected && selectedClasses
-        );
-      case 'gold':
-        return cn(
-          baseClasses,
-          "border border-amber-200 bg-gradient-to-b from-[#FFF4D4] to-[#FFEAC2]",
-          isSelected && "ring-2 ring-amber-400 transform -translate-y-1"
-        );
-      case 'premium':
-        return cn(
-          baseClasses,
-          "border border-purple-200 bg-gradient-to-b from-[#F5F3FF] to-[#EDE7FF]",
-          isSelected && "ring-2 ring-purple-400 transform -translate-y-1"
-        );
-      case 'free':
-        return cn(
-          baseClasses,
-          "border border-gray-200 bg-gray-50",
-          isSelected && selectedClasses
-        );
-      default:
-        return baseClasses;
-    }
-  };
-  
-  const getPriceDisplay = (option: any) => {
-    if (option.id === 'free') {
-      return <span className="font-bold text-gray-600">Free</span>;
-    }
-    
-    return (
-      <div className="space-y-1">
-        {option.wasPrice && (
-          <div className="text-gray-400 text-sm line-through font-medium">
-            ${option.wasPrice.toFixed(2)}
-          </div>
-        )}
-        <div className="flex items-center">
-          <span className="text-3xl font-bold font-playfair">
-            ${option.price.toFixed(2)}
-          </span>
-          <span className="text-sm text-gray-600 ml-1">/mo</span>
-        </div>
-      </div>
-    );
   };
   
   return (
-    <div className="space-y-8 w-full max-w-4xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {sortedOptions.filter(option => option.id !== 'free').map((option) => {
-          const isSelected = selectedPricing === option.id;
-          const badgeConfig = getBadgeConfig(option.id);
-          const subtitle = getSubtitle(option.id);
-          
-          return (
-            <motion.div
-              key={option.id}
-              initial={{ opacity: 0.8, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              whileHover={{ y: -4, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-              className={getCardStyle(option.id, isSelected)}
-            >
-              {/* Badge on top */}
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <Badge className={cn("px-3 py-1 font-medium text-xs border shadow-sm whitespace-nowrap", badgeConfig.className)}>
-                  {badgeConfig.text}
-                </Badge>
-              </div>
-              
-              <div 
-                className={cn(
-                  "h-full flex flex-col p-6",
-                  option.id === 'standard' ? "border-blue-50" : 
-                  option.id === 'gold' ? "border-amber-50" : "border-purple-50"
-                )}
-              >
-                <div className="mb-5 text-center">
-                  <h3 className="text-xl font-bold font-playfair mb-1">
-                    {getDisplayName(option.id)}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {subtitle}
-                  </p>
-                  
-                  {/* Vietnamese description */}
-                  {isVietnamese && option.vietnameseDescription && (
-                    <p className="text-sm text-gray-500 italic mt-1">
-                      {option.vietnameseDescription}
-                    </p>
-                  )}
-                </div>
-                
-                <div className="text-center mb-5">
-                  {getPriceDisplay(option)}
-                </div>
-                
-                {/* Social proof tag */}
-                {option.tag && (
-                  <div className={cn(
-                    "text-center text-sm px-4 py-2 mb-5 rounded-full",
-                    option.id === 'standard' ? "bg-blue-50 text-blue-800" : 
-                    option.id === 'gold' ? "bg-amber-50 text-amber-800" : 
-                    "bg-purple-50 text-purple-800"
-                  )}>
-                    {option.tag}
-                  </div>
-                )}
-                
-                <div className="space-y-3 mb-6 flex-grow">
-                  {option.features.map((feature, i) => (
-                    <div key={i} className="flex items-start">
-                      <Check className="h-5 w-5 text-[#50C878] flex-shrink-0 mr-3 mt-0.5" />
-                      <span className="text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-                
-                <button
-                  onClick={() => onSelect(option.id)}
-                  className={cn(
-                    "w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all",
-                    isSelected ? "bg-[#50C878] text-white shadow-md" : 
-                    option.id === 'standard' ? "bg-blue-50 text-blue-800 hover:bg-blue-100" :
-                    option.id === 'gold' ? "bg-amber-50 text-amber-800 hover:bg-amber-100" :
-                    "bg-purple-50 text-purple-800 hover:bg-purple-100"
-                  )}
-                >
-                  {isSelected ? 'Selected' : 'Select Plan'}
-                </button>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+    <div className={cn(
+      "rounded-lg border p-6 mt-6 shadow-md",
+      !isFreePlan 
+        ? `bg-gradient-to-br ${getPricingGradient()}` 
+        : "bg-gray-50"
+    )}>
+      <h3 className="font-semibold text-md mb-5 flex items-center gap-2 text-purple-800">
+        <Sparkles className="h-5 w-5 text-purple-600" />
+        Listing Summary
+      </h3>
       
-      {/* Free Plan (Basic) */}
-      {sortedOptions.filter(option => option.id === 'free').map((option) => (
-        <motion.div
-          key={option.id}
-          initial={{ opacity: 0.8, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className={getCardStyle(option.id, selectedPricing === option.id)}
-        >
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-            <Badge className={cn("px-3 py-1 font-medium text-xs border shadow-sm", getBadgeConfig(option.id).className)}>
-              {getBadgeConfig(option.id).text}
-            </Badge>
+      <div className="space-y-5 text-sm">
+        {isFreePlan ? (
+          <div className="flex justify-between items-center p-4 bg-gray-50 rounded-md border border-gray-200">
+            <div className="flex items-center">
+              <AlertTriangle className="h-5 w-5 mr-3 text-amber-500" />
+              <span className="font-medium text-gray-700">Basic - Limited Reach</span>
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="font-medium flex items-center">
+                    30 days
+                    <Info className="h-4 w-4 ml-1 text-gray-400" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="p-2">
+                  <p className="text-sm">Free listings have limited visibility</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-          
-          <div className="p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div className="flex-grow">
-              <h3 className="text-xl font-bold font-playfair mb-1">
-                {getDisplayName(option.id)}
-              </h3>
-              <p className="text-sm text-gray-600 mb-3">
-                {getSubtitle(option.id)}
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-6 sm:gap-10">
-                <div className="space-y-2">
-                  <div className="flex items-start">
-                    <Check className="h-5 w-5 text-[#50C878] flex-shrink-0 mr-3 mt-0.5" />
-                    <span className="text-sm">Free for your first job post</span>
-                  </div>
-                  <div className="flex items-start">
-                    <Check className="h-5 w-5 text-gray-400 flex-shrink-0 mr-3 mt-0.5" />
-                    <span className="text-sm text-gray-500">Limited visibility</span>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-start">
-                    <Check className="h-5 w-5 text-gray-400 flex-shrink-0 mr-3 mt-0.5" />
-                    <span className="text-sm text-gray-500">Standard placement</span>
-                  </div>
-                  {isFirstPost && (
-                    <div className="flex items-start">
-                      <Check className="h-5 w-5 text-[#50C878] flex-shrink-0 mr-3 mt-0.5" />
-                      <span className="text-sm">Available for first-time posters</span>
-                    </div>
-                  )}
-                </div>
+        ) : (
+          <>
+            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
+              <div className="flex items-center">
+                <Sparkles className="h-5 w-5 mr-3 text-purple-500" />
+                <span className="font-medium">{getPricingTitle()} Plan</span>
+              </div>
+              <div className="text-right">
+                {pricingId === 'standard' && <span className="text-xs line-through text-gray-400 block">$14.99/month</span>}
+                {pricingId === 'premium' && <span className="text-xs line-through text-gray-400 block">$24.99/month</span>}
+                {pricingId === 'gold' && <span className="text-xs line-through text-gray-400 block">$39.99/month</span>}
+                <span className="font-medium">${basePrice.toFixed(2)}/month</span>
               </div>
             </div>
             
-            <div className="flex-shrink-0 flex flex-col items-center gap-2">
-              <div className="text-center mb-2">
-                <div className="text-lg font-bold font-playfair text-gray-700">Free</div>
-                <div className="text-xs text-gray-500">First-time only</div>
+            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
+              <div className="flex items-center">
+                <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
+                <span>Duration</span>
+              </div>
+              <div className="flex items-center">
+                {duration >= 12 && <Crown className="h-4 w-4 mr-1 text-amber-500" />}
+                <span className="font-medium">{duration} {duration === 1 ? 'month' : 'months'}</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
+              <div className="flex items-center">
+                <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
+                <span>Expires on</span>
+              </div>
+              <span className="font-medium">{formattedDate}</span>
+            </div>
+            
+            {autoRenew && (
+              <div className="flex justify-between items-center p-4 bg-blue-50 rounded-md border border-blue-100">
+                <div className="flex items-center">
+                  <RefreshCw className="h-5 w-5 mr-3 text-blue-500" />
+                  <span>Auto-renew</span>
+                </div>
+                <span className="font-medium">Enabled</span>
+              </div>
+            )}
+            
+            <div className="border-t pt-5 mt-5 space-y-3.5">
+              <div className="flex justify-between items-center text-gray-700">
+                <span>Base price (${basePrice.toFixed(2)}/month × {duration})</span>
+                <span>${originalPrice.toFixed(2)}</span>
               </div>
               
-              <button
-                onClick={() => onSelect(option.id)}
-                className={cn(
-                  "py-2.5 px-6 rounded-lg font-medium text-sm transition-all",
-                  selectedPricing === option.id ? "bg-[#50C878] text-white shadow-md" : 
-                  "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                )}
-              >
-                {selectedPricing === option.id ? 'Selected' : 'Select Free Plan'}
-              </button>
+              {discountPercentage > 0 && (
+                <div className="flex justify-between items-center text-green-600">
+                  <div className="flex items-center">
+                    <Tag className="h-4 w-4 mr-2" />
+                    <span>Discount ({discountPercentage}%)</span>
+                  </div>
+                  <span>-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center font-bold text-lg pt-4 border-t border-dashed mt-2">
+                <div className="flex items-center">
+                  <CreditCard className="h-5 w-5 mr-2 text-purple-700" />
+                  <span>Total</span>
+                </div>
+                <div className="flex flex-col items-end">
+                  {discountPercentage > 0 && (
+                    <span className="text-sm line-through text-gray-500 font-normal">${originalPrice.toFixed(2)}</span>
+                  )}
+                  <span className="text-purple-800">${finalPrice.toFixed(2)}</span>
+                </div>
+              </div>
+              
+              {discountPercentage > 0 && (
+                <div className="mt-4">
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100 px-3 py-1.5 font-semibold">
+                    You Save ${discountAmount.toFixed(2)} ({discountPercentage}%)
+                  </Badge>
+                </div>
+              )}
             </div>
-          </div>
-        </motion.div>
-      ))}
+          </>
+        )}
+      </div>
     </div>
   );
 };
