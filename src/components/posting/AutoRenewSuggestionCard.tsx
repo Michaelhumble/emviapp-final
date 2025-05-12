@@ -15,8 +15,8 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
   const getUpgradeMessage = () => {
     if (selectedPricing === 'standard') {
       return {
-        title: "Want to double your hiring chances?",
-        description: "For just $5 more, get front-page exposure for 30 days and hire up to 3× faster.",
+        title: "Want to double your visibility?",
+        description: "For just $5 more, get front-page exposure for 30 days and reach more artists faster.",
         buttonText: "Upgrade for $5 more"
       };
     } else if (selectedPricing === 'premium') {
@@ -30,7 +30,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
     // Default
     return {
       title: "Upgrade to Featured for Maximum Visibility",
-      description: "Featured listings get 3x more views and appear in the top section.",
+      description: "Featured listings get more views and appear in the top section.",
       buttonText: "Upgrade Now"
     };
   };

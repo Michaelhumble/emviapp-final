@@ -147,8 +147,8 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
           
           {/* Security footer note */}
           <p className="text-center text-xs text-neutral-400 mt-8">
-            🔒 EmviApp never stores your card. All payments are securely processed by Stripe.<br/>
-            🌞 Inspired by Sunshine ☀️ — for our artists and salons.
+            🔒 EmviApp never stores your card details. Payments securely handled by Stripe.<br/>
+            🌞 Inspired by Sunshine ☀️ — built for the beauty community.
           </p>
         </div>
       </Card>

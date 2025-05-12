@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { CalendarDays, Check, CreditCard, Info, CircleDollarSign } from 'lucide-react';
+import { Check, X, Info, Star, Crown, CircleDollarSign, CreditCard } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface PricingDisplayProps {
@@ -29,26 +29,82 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   // Plan title mapping
   const getPlanTitle = () => {
     switch(pricingId) {
-      case 'free': return 'Basic Plan (First Time Free)';
+      case 'free': return 'Basic Plan – Free (first-time only)';
       case 'standard': return 'Standard — $9.99/mo';
       case 'premium': return 'Premium Listing — $24.99/mo';
       case 'gold': return 'Gold Featured — $14.99/mo';
       default: return 'Job Listing Plan';
     }
   };
+  
+  // Plan subtitle mapping
+  const getPlanSubtitle = () => {
+    switch(pricingId) {
+      case 'free': return 'No credit card required. Limited visibility.';
+      case 'standard': return 'Smart visibility for most businesses';
+      case 'premium': return 'Highlight your listing & match with better candidates';
+      case 'gold': return 'Premium exposure across homepage & listings';
+      default: return '';
+    }
+  };
+  
+  // Badge mapping
+  const getPlanBadge = () => {
+    switch(pricingId) {
+      case 'free': return { icon: '✨', text: 'For new users' };
+      case 'standard': return { icon: '🔥', text: 'Chosen by 8,200+ salons' };
+      case 'premium': return { icon: '💎', text: 'Most loved by salons' };
+      case 'gold': return { icon: '⭐', text: 'Built to help you grow faster' };
+      default: return { icon: '', text: '' };
+    }
+  };
+
+  // Card styling
+  const getCardStyling = () => {
+    switch(pricingId) {
+      case 'free':
+        return "bg-gray-50 border border-gray-200 shadow";
+      case 'standard':
+        return "bg-white border border-blue-200 shadow-lg";
+      case 'premium':
+        return "bg-gradient-to-r from-[#F5F3FF] to-[#EDE7FF] border border-purple-200 shadow-lg";
+      case 'gold':
+        return "bg-gradient-to-r from-[#FFF4D4] to-[#FFEAC2] border border-amber-200 shadow-lg";
+      default:
+        return "bg-white border border-gray-200 shadow";
+    }
+  };
+
+  const badge = getPlanBadge();
 
   return (
     <motion.div
       initial={{ opacity: 0.8 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
+      className="flex-1"
     >
-      <div className="bg-white rounded-xl border border-[#F7E7CE]/30 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
-        <div className="bg-gradient-to-r from-[#F8F8FF] to-[#f7e7ce15] p-5 border-b border-[#F7E7CE]/20">
+      <div className={`rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl h-full flex flex-col ${getCardStyling()}`}>
+        <div className="p-5 border-b border-[#F7E7CE]/20">
+          {badge.text && (
+            <div className="mb-2">
+              <Badge variant="secondary" className={`
+                py-1 px-3 text-xs font-medium 
+                ${pricingId === 'standard' ? 'bg-blue-100 text-blue-700' : ''}
+                ${pricingId === 'premium' ? 'bg-purple-100 text-purple-700' : ''}
+                ${pricingId === 'gold' ? 'bg-amber-100 text-amber-700' : ''}
+                ${pricingId === 'free' ? 'bg-gray-100 text-gray-700' : ''}
+              `}>
+                {badge.icon} {badge.text}
+              </Badge>
+            </div>
+          )}
+          
           <h3 className="font-medium text-xl font-playfair text-[#1D1E1E]">{getPlanTitle()}</h3>
+          <p className="text-sm text-gray-600 mt-1">{getPlanSubtitle()}</p>
         </div>
         
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-5 flex-grow">
           <div className="flex items-start justify-between">
             <div className="flex items-start">
               <CircleDollarSign className="h-5 w-5 text-[#50C878] mr-3 mt-0.5" />
@@ -88,9 +144,84 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
             </motion.div>
           )}
 
+          {/* Features section */}
+          <div className="space-y-2 pt-3">
+            {pricingId === 'standard' && (
+              <>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Increased visibility</span>
+                </div>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Better search placement</span>
+                </div>
+              </>
+            )}
+            
+            {pricingId === 'premium' && (
+              <>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Top placement in listings</span>
+                </div>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Highlighted in search results</span>
+                </div>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Higher visibility</span>
+                </div>
+              </>
+            )}
+            
+            {pricingId === 'gold' && (
+              <>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Premium placement</span>
+                </div>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Homepage feature</span>
+                </div>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Free listing boost</span>
+                </div>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Priority support</span>
+                </div>
+              </>
+            )}
+            
+            {pricingId === 'free' && (
+              <>
+                <div className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm">Limited visibility</span>
+                </div>
+                <div className="flex items-center">
+                  <X className="h-4 w-4 text-gray-400 mr-2" />
+                  <span className="text-sm text-gray-400">Premium placement</span>
+                </div>
+                <div className="flex items-center">
+                  <X className="h-4 w-4 text-gray-400 mr-2" />
+                  <span className="text-sm text-gray-400">Homepage feature</span>
+                </div>
+                <div className="flex items-center">
+                  <X className="h-4 w-4 text-gray-400 mr-2" />
+                  <span className="text-sm text-gray-400">Listing boost</span>
+                </div>
+              </>
+            )}
+          </div>
+
           {autoRenew && !isFreePlan && (
-            <div className="flex items-start">
-              <CalendarDays className="h-5 w-5 text-blue-500 mr-3 mt-0.5" />
+            <div className="flex items-start pt-2">
+              <CreditCard className="h-5 w-5 text-blue-500 mr-3 mt-0.5" />
               <div className="text-sm text-blue-700">
                 <span className="font-medium">Auto-renew enabled</span>
                 <p className="text-blue-600 text-xs mt-0.5">
