@@ -1,192 +1,132 @@
+
 import React, { useState } from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { PricingOptions } from '@/utils/posting/types';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
-import { RadioGroup } from '@/components/ui/radio-group';
-import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Info, Check } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { JobPricingOption, PricingOptions } from '@/utils/posting/types';
+import { jobPricingOptions, calculatePriceWithDuration } from '@/utils/posting/jobPricing';
+import { toast } from 'sonner';
+import { DurationOption } from '@/types/pricing';
 import AutoRenewSuggestionCard from '@/components/posting/AutoRenewSuggestionCard';
-import PricingCards from '../PricingCards';
-import DurationSelector from '../DurationSelector';
+
+// Define the type for pricing tier
+export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';
+
+// Add the interface for the PricingCards props based on the error
+interface PricingCardsProps {
+  options: JobPricingOption[];
+  selectedTier: string;
+  onSelect: (tier: string) => void;
+  durationOptions: DurationOption[];
+  selectedDuration: number;
+  onDurationChange: (duration: number) => void;
+  autoRenew?: boolean;
+  onAutoRenewChange?: (autoRenew: boolean) => void;
+}
 
 interface ReviewAndPaymentSectionProps {
-  pricingOptions: PricingOptions;
-  onPricingChange: (options: PricingOptions) => void;
+  onSubmit: (options: PricingOptions) => void;
+  durationOptions: DurationOption[];
+  isFirstPost?: boolean;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
-  pricingOptions,
-  onPricingChange,
+  onSubmit,
+  durationOptions,
+  isFirstPost = false,
 }) => {
-  const { t } = useTranslation();
-  const [showAutoRenewPrompt, setShowAutoRenewPrompt] = useState(false);
-  
-  const handlePricingChange = (tierId: string) => {
-    if ((tierId === 'standard' || tierId === 'premium') && tierId !== pricingOptions.selectedPricingTier) {
-      setShowAutoRenewPrompt(true);
-    } else {
-      setShowAutoRenewPrompt(false);
+  const [selectedTier, setSelectedTier] = useState<string>('standard');
+  const [selectedDuration, setSelectedDuration] = useState<number>(1);
+  const [autoRenew, setAutoRenew] = useState<boolean>(false);
+  const [isUpgrading, setIsUpgrading] = useState<boolean>(false);
+
+  const filteredOptions = jobPricingOptions.filter(option => !option.hidden);
+
+  const handleSubmit = () => {
+    const pricingOptions: PricingOptions = {
+      selectedPricingTier: selectedTier,
+      isFirstPost,
+      durationMonths: selectedDuration,
+      autoRenew,
+    };
+    
+    onSubmit(pricingOptions);
+    toast.success('Payment options selected');
+  };
+
+  const handleUpgrade = () => {
+    if (selectedTier === 'standard') {
+      setSelectedTier('premium');
+      setIsUpgrading(true);
+      toast.success('Upgraded to Premium Plan!');
+    } else if (selectedTier === 'premium') {
+      setSelectedTier('gold');
+      setIsUpgrading(true);
+      toast.success('Upgraded to Featured Plan!');
     }
-    onPricingChange({
-      ...pricingOptions,
-      selectedPricingTier: tierId,
-    });
   };
-
-  const handleUpgradeToGold = () => {
-    onPricingChange({
-      ...pricingOptions,
-      selectedPricingTier: 'gold',
-    });
-    setShowAutoRenewPrompt(false);
-  };
-
-  const pricingResult = calculateJobPostPrice(pricingOptions);
 
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-gray-800">
-        {t('Choose Your Plan', 'Chọn Gói Dịch Vụ Của Bạn')}
-      </h3>
-      
-      <div className="mb-6">
-        <p className="text-gray-600 mb-4">
-          {t(
-            'Select the best plan for your hiring needs. Higher tier plans will attract more qualified candidates faster.',
-            'Chọn gói phù hợp nhất với nhu cầu tuyển dụng của bạn. Các gói cao cấp sẽ thu hút nhiều ứng viên có trình độ hơn và nhanh hơn.'
-          )}
-        </p>
-
-        <div className="grid gap-4 md:grid-cols-3 mb-6">
-          {jobPricingOptions
-            .filter(option => !option.hidden)
-            .sort((a, b) => {
-              if (a.id === 'free') return 1;
-              if (b.id === 'free') return -1;
-              return a.price - b.price;
-            })
-            .map((option) => (
-              <PricingCards
-                key={option.id}
-                id={option.id}
-                name={option.name}
-                price={option.price}
-                wasPrice={option.wasPrice}
-                description={option.vietnameseDescription || option.description}
-                features={option.features}
-                tier={option.tier}
-                isSelected={pricingOptions.selectedPricingTier === option.id}
-                onSelect={() => handlePricingChange(option.id)}
-                tag={option.tag}
-              />
-            ))}
-        </div>
-
-        {showAutoRenewPrompt && (
-          <AutoRenewSuggestionCard onUpgrade={handleUpgradeToGold} />
-        )}
-
-        <div className="mb-4">
-          <h4 className="font-semibold text-gray-700 mb-2">
-            {t('Select Duration', 'Chọn Thời Hạn')}
-          </h4>
-          <p className="text-sm text-gray-500 mb-3">
-            {t('Choose how long you want your job posting to be active.', 'Chọn thời gian bạn muốn tin đăng việc của mình hoạt động.')}
-          </p>
-          <DurationSelector
-            selectedDuration={pricingOptions.durationMonths || 1}
-            onChange={(duration) => onPricingChange({ ...pricingOptions, durationMonths: duration })}
-            selectedPricing={pricingOptions.selectedPricingTier}
-          />
-        </div>
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Review & Payment</h2>
+        <p className="text-gray-600 mb-4">Select a plan that works for your business needs</p>
       </div>
 
-      <Card className="p-4 border-2 border-purple-100 bg-gradient-to-r from-purple-50 to-white shadow-sm">
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <h4 className="font-semibold text-purple-900">
-              {t('Payment Summary', 'Tóm Tắt Thanh Toán')}
-            </h4>
-            <div className="flex items-center text-gray-500 text-sm">
-              <Info className="h-4 w-4 mr-1" />
-              {t('Secure Payment', 'Thanh Toán An Toàn')}
-            </div>
+      {/* Use the proper PricingCards component with corrected props */}
+      <PricingCards
+        options={filteredOptions}
+        selectedTier={selectedTier}
+        onSelect={setSelectedTier}
+        durationOptions={durationOptions}
+        selectedDuration={selectedDuration}
+        onDurationChange={setSelectedDuration}
+        autoRenew={autoRenew}
+        onAutoRenewChange={setAutoRenew}
+      />
+
+      {/* Show auto-renew suggestion only for standard and premium tiers */}
+      {(selectedTier === 'standard' || selectedTier === 'premium') && !isUpgrading && (
+        <AutoRenewSuggestionCard onUpgrade={handleUpgrade} />
+      )}
+
+      <Card className="p-4 bg-gradient-to-r from-indigo-50 to-violet-50 border-indigo-100">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium text-lg">Your Plan Summary</h3>
+            <p className="text-gray-600 text-sm">
+              {filteredOptions.find(option => option.id === selectedTier)?.name} for {selectedDuration} {selectedDuration === 1 ? 'month' : 'months'}
+            </p>
+            {autoRenew && <p className="text-emerald-600 text-sm">✓ Auto-renew enabled</p>}
           </div>
-
-          <Separator className="bg-purple-100" />
-
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">
-                {t('Selected Plan', 'Gói Đã Chọn')}
-              </span>
-              <span className="font-medium">
-                {
-                  jobPricingOptions.find(
-                    (option) => option.id === pricingOptions.selectedPricingTier
-                  )?.name
-                }
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-gray-600">
-                {t('Duration', 'Thời Hạn')}
-              </span>
-              <span className="font-medium">
-                {pricingOptions.durationMonths || 1} {t('months', 'tháng')}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-gray-600">
-                {t('Base Price', 'Giá Cơ Bản')}
-              </span>
-              <span className="font-medium">
-                ${pricingResult.originalPrice.toFixed(2)}
-              </span>
-            </div>
-
-            {pricingResult.discountPercentage > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>
-                  {t('Discount', 'Giảm Giá')} ({pricingResult.discountPercentage}%)
-                </span>
-                <span>
-                  -${(pricingResult.originalPrice - pricingResult.finalPrice).toFixed(2)}
-                </span>
-              </div>
-            )}
-
-            <Separator className="bg-purple-100" />
-
-            <div className="flex justify-between font-bold text-lg">
-              <span className="text-purple-900">
-                {t('Total', 'Tổng Cộng')}
-              </span>
-              <span className="text-purple-900">
-                ${pricingResult.finalPrice.toFixed(2)}
-              </span>
-            </div>
-
-            {pricingOptions.selectedPricingTier !== 'free' && (
-              <div className="bg-green-50 p-2 rounded-md mt-2">
-                <div className="flex items-start">
-                  <Check className="h-5 w-5 text-green-600 mt-0.5 mr-2 flex-shrink-0" />
-                  <p className="text-sm text-green-800">
-                    {t(
-                      'Your listing will be active for the full duration and can be renewed at any time.',
-                      'Tin đăng của bạn sẽ hoạt động trong suốt thời gian và có thể được gia hạn bất kỳ lúc nào.'
-                    )}
-                  </p>
-                </div>
-              </div>
+          <div className="text-right">
+            <p className="text-sm text-gray-500">Total:</p>
+            <p className="text-2xl font-bold">
+              ${calculatePriceWithDuration(
+                filteredOptions.find(option => option.id === selectedTier)?.price || 0,
+                selectedDuration,
+                durationOptions.find(option => option.months === selectedDuration)?.discount || 0
+              ).toFixed(2)}
+            </p>
+            {selectedDuration > 1 && (
+              <p className="text-emerald-600 text-xs">
+                You save {durationOptions.find(option => option.months === selectedDuration)?.discount}%
+              </p>
             )}
           </div>
         </div>
       </Card>
+
+      <Separator />
+
+      <div className="flex justify-end">
+        <Button 
+          onClick={handleSubmit}
+          className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
+        >
+          Continue to Payment
+        </Button>
+      </div>
     </div>
   );
 };
