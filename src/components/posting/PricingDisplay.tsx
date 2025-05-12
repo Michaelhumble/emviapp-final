@@ -47,7 +47,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   
   return (
     <div className={cn(
-      "rounded-lg border p-6 mt-6 shadow-sm",
+      "rounded-lg border p-6 mt-6 shadow-md",
       !isFreePlan ? "bg-gradient-to-br from-white to-gray-50" : "bg-gray-50"
     )}>
       <h3 className="font-semibold text-md mb-5 flex items-center gap-2 text-purple-800">

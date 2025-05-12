@@ -1,17 +1,9 @@
 
-import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import PricingTierCard from './PricingTierCard';
+import React from 'react';
 import { JobPricingOption } from '@/utils/posting/types';
+import { Card } from '@/components/ui/card';
+import PricingTierCard from '@/components/posting/PricingTierCard';
 import { cn } from '@/lib/utils';
-import { CheckCircle, Calendar, AlertTriangle } from 'lucide-react';
-import DurationSelector from './DurationSelector';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface PricingCardsProps {
   pricingOptions: JobPricingOption[];
@@ -21,174 +13,103 @@ interface PricingCardsProps {
   onDurationChange: (duration: number) => void;
 }
 
+const DURATION_OPTIONS = [
+  { months: 1, label: '1 Month', discount: 0 },
+  { months: 3, label: '3 Months', discount: 10 },
+  { months: 6, label: '6 Months', discount: 20 },
+  { months: 12, label: '12 Months', discount: 30 },
+];
+
 const PricingCards: React.FC<PricingCardsProps> = ({
   pricingOptions,
   selectedPricing,
   onChange,
   selectedDuration,
-  onDurationChange
+  onDurationChange,
 }) => {
-  // If Diamond plan is selected, force 12 month duration
-  // IMPORTANT: Diamond plan is intentionally hardcoded for 12-month only.
-  // This restriction is by design and should not be changed without business approval.
-  useEffect(() => {
-    if (selectedPricing === 'diamond' && selectedDuration !== 12) {
-      onDurationChange(12);
-    }
-  }, [selectedPricing, selectedDuration, onDurationChange]);
+  // Filter out any hidden options
+  const visiblePricingOptions = pricingOptions.filter(option => !option.hidden);
   
-  // Add null check for pricingOptions
-  if (!pricingOptions || pricingOptions.length === 0) {
-    return null;
-  }
-  
-  // Filter out hidden tiers
-  const visiblePricingOptions = pricingOptions.filter(option => 
-    !option.hidden
-  );
-  
-  // Separate free and paid tiers
-  const freeTier = visiblePricingOptions.find(option => option.id === 'free');
-  
-  // Get paid tiers - standard, premium, gold (featured)
-  const paidTiers = visiblePricingOptions.filter(option => 
-    option.id !== 'free' && (option.id === 'standard' || option.id === 'premium' || option.id === 'gold')
-  );
-  
-  // Gold tier (Featured) might be hidden initially until upsell
-  const standardTier = paidTiers.find(option => option.id === 'standard');
-  const premiumTier = paidTiers.find(option => option.id === 'premium');
-  const goldTier = paidTiers.find(option => option.id === 'gold');
-  
-  // Check if free plan is selected
-  const isFreePlanSelected = selectedPricing === 'free';
-  
-  // FOMO tooltip for free plan
-  const renderFreeTooltip = (children: React.ReactNode) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {children}
-        </TooltipTrigger>
-        <TooltipContent className="p-3 max-w-xs bg-white border border-amber-200 text-gray-800 shadow-lg">
-          <p className="font-medium mb-1 text-amber-800">⚠️ Limited Visibility Warning</p>
-          <p className="text-sm">Free posts reach 80% fewer candidates. Use only if testing.</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-  
+  // Sort options by price - free at the end
+  const sortedOptions = [...visiblePricingOptions].sort((a, b) => {
+    if (a.id === 'free') return 1;
+    if (b.id === 'free') return -1;
+    return a.price - b.price;
+  });
+
+  // Find free plan
+  const freePlan = sortedOptions.find(option => option.price === 0);
+  // Find paid plans
+  const paidPlans = sortedOptions.filter(option => option.price > 0);
+
   return (
     <div className="space-y-6">
-      {/* Paid Plans Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-        {/* Standard Plan */}
-        {standardTier && (
-          <motion.div
-            initial={{ y: 0 }}
-            whileHover={{ y: -5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            animate={selectedPricing === 'standard' ? { scale: 1.02, boxShadow: '0 4px 12px rgba(155, 135, 245, 0.2)' } : { scale: 1 }}
-          >
-            <PricingTierCard 
-              pricing={{
-                ...standardTier,
-                name: 'Standard',
-                wasPrice: 14.99,
-                price: 9.99,
-                description: 'Smart Choice for most businesses',
-                tag: '🔥 Chosen by over 8,000 salons this year'
-              }}
-              isSelected={selectedPricing === 'standard'}
-              onClick={() => onChange('standard')}
-            />
-          </motion.div>
-        )}
-        
-        {/* Premium Plan */}
-        {premiumTier && (
-          <motion.div
-            initial={{ y: 0 }}
-            whileHover={{ y: -5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            animate={selectedPricing === 'premium' ? { scale: 1.03, boxShadow: '0 4px 15px rgba(155, 135, 245, 0.3)' } : { scale: 1 }}
-          >
-            <PricingTierCard 
-              pricing={{
-                ...premiumTier,
-                name: 'Premium',
-                wasPrice: 24.99,
-                price: 19.99,
-                description: 'Top Pick by Salons',
-                tag: '⭐ Used by 4,500+ serious salons for better results'
-              }}
-              isSelected={selectedPricing === 'premium'}
-              onClick={() => onChange('premium')}
-              isMostPopular={true}
-            />
-          </motion.div>
-        )}
-        
-        {/* Gold/Featured Plan */}
-        {goldTier && (
-          <motion.div
-            initial={{ y: 0 }}
-            whileHover={{ y: -5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            animate={selectedPricing === 'gold' ? { scale: 1.03, boxShadow: '0 4px 15px rgba(250, 202, 78, 0.3)' } : { scale: 1 }}
-          >
-            <PricingTierCard 
-              pricing={{
-                ...goldTier,
-                name: 'Featured',
-                wasPrice: 39.99,
-                price: 29.99,
-                description: 'Fastest Hiring Plan',
-                tag: '🏆 Preferred by growing brands – 1,200 upgraded last month'
-              }}
-              isSelected={selectedPricing === 'gold'}
-              onClick={() => onChange('gold')}
-            />
-          </motion.div>
-        )}
-      </div>
-      
-      {/* Free Plan Row - Smaller and visually deemphasized */}
-      {freeTier && (
-        <div className="mt-6 max-w-[85%] mx-auto opacity-80">
-          {renderFreeTooltip(
-            <motion.div
-              initial={{ y: 0 }}
-              whileHover={{ y: -3 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              animate={selectedPricing === 'free' ? { scale: 1.01 } : { scale: 1 }}
-              className="transform scale-95"
-            >
-              <PricingTierCard 
-                pricing={{
-                  ...freeTier,
-                  name: 'Basic (Limited Reach)',
-                  description: 'Free listing with very limited visibility',
-                  tag: 'Recommended only for early testing'
-                }}
-                isSelected={selectedPricing === 'free'}
-                onClick={() => onChange('free')}
-                isFreeVariant={true}
-                subtitle="Chỉ nên chọn nếu bạn đang thử nghiệm nền tảng"
-                negativeFeatures={['Top placement', 'Highlight in search', 'Social media promotion']}
-              />
-            </motion.div>
-          )}
+      {/* Duration Selector */}
+      <Card className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200">
+        <div className="flex flex-col sm:flex-row items-center justify-between">
+          <h3 className="text-base font-medium mb-3 sm:mb-0">Choose Duration:</h3>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {DURATION_OPTIONS.map((option) => (
+              <button
+                key={option.months}
+                onClick={() => onDurationChange(option.months)}
+                className={cn(
+                  "px-4 py-2 rounded-md text-sm font-medium transition-all border",
+                  selectedDuration === option.months
+                    ? "bg-purple-600 text-white border-purple-600 shadow-md"
+                    : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                )}
+              >
+                <span className="flex flex-col items-center">
+                  <span>{option.label}</span>
+                  {option.discount > 0 && (
+                    <span className="text-xs mt-0.5 bg-green-100 px-2 py-0.5 rounded-full text-green-800 font-semibold">
+                      Save {option.discount}%
+                    </span>
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
-      )}
-      
-      {!isFreePlanSelected && (
-        <div className="mt-6">
-          <p className="text-center text-sm text-gray-600 mb-4">Select subscription length to get the best value:</p>
-          <DurationSelector 
-            selectedDuration={selectedDuration} 
-            onChange={onDurationChange}
-            selectedPricing={selectedPricing}
+      </Card>
+
+      {/* Pricing Tiers */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Paid Plans First */}
+        {paidPlans.map((pricing) => (
+          <div 
+            key={pricing.id} 
+            className={cn(
+              "transition-all duration-300",
+              pricing.id === 'premium' ? "md:transform md:scale-105 md:z-10" : ""
+            )}
+          >
+            <PricingTierCard
+              pricing={pricing}
+              isSelected={selectedPricing === pricing.id}
+              onClick={() => onChange(pricing.id)}
+              isMostPopular={pricing.id === 'premium'}
+              subtitle={pricing.vietnameseDescription}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Free Plan - Separated and visually diminished */}
+      {freePlan && (
+        <div className="mt-8 opacity-80 hover:opacity-90 transition-opacity max-w-sm mx-auto">
+          <PricingTierCard
+            pricing={freePlan}
+            isSelected={selectedPricing === freePlan.id}
+            onClick={() => onChange(freePlan.id)}
+            isFreeVariant={true}
+            subtitle={freePlan.vietnameseDescription}
+            negativeFeatures={[
+              "No Top placement",
+              "No Highlight in search",
+              "No Social media promotion"
+            ]}
           />
         </div>
       )}
