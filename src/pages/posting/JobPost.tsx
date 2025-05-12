@@ -60,7 +60,8 @@ const JobPost = () => {
   
   // Calculate final price - passing both required arguments: basePrice and durationMonths
   const priceInfo = calculateFinalPrice(19.99, pricingOptions.durationMonths || 1);
-  const finalPrice = priceInfo.finalPrice;
+  // Safely extract the finalPrice as a number
+  const finalPrice = typeof priceInfo.finalPrice === 'number' ? priceInfo.finalPrice : 0;
   
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
