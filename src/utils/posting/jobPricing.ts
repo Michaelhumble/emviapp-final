@@ -4,7 +4,7 @@ import { DurationOption } from '@/types/pricing';
 export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Basic (Limited Reach)',
+    name: '🧊 Basic Plan (Limited Reach)',
     price: 0,
     description: 'Free listing with very limited visibility',
     vietnameseDescription: 'Đăng tin miễn phí với khả năng hiển thị rất hạn chế',
@@ -26,12 +26,12 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Better search placement'
     ],
     tier: 'standard',
-    tag: '🔥 Chosen by over 8,000 salons this year'
+    tag: '🔥 Chosen by over 8,200 salons this year'
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: 19.99,
+    price: 14.99,
     wasPrice: 24.99,
     description: 'Top Pick by Salons',
     vietnameseDescription: 'Lựa chọn hàng đầu của các salon',
@@ -41,12 +41,12 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Faster candidate matching'
     ],
     tier: 'premium',
-    tag: '⭐ Used by 4,500+ serious salons for better results'
+    tag: '💜 Used by 4,500+ salons for better results'
   },
   {
     id: 'gold',
     name: 'Featured',
-    price: 29.99,
+    price: 24.99,
     wasPrice: 39.99,
     description: 'Fastest Hiring Plan',
     vietnameseDescription: 'Kế hoạch tuyển dụng nhanh nhất',
@@ -71,15 +71,15 @@ export const jobPricingOptions: JobPricingOption[] = [
       '24/7 dedicated support'
     ],
     tier: 'diamond',
-    hidden: true // TODO: Diamond tier is temporarily hidden and will be accessible later via waitlist/bid flow
+    hidden: true // Diamond tier is temporarily hidden and will be accessible later via waitlist/bid flow
   }
 ];
 
 export const durationOptions: DurationOption[] = [
   { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 5 },  // 5% discount
-  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 10 }, // 10% discount
-  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 } // 20% discount
+  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },  // 10% discount
+  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 20 }, // 20% discount
+  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 30 } // 30% discount
 ];
 
 export const getJobPostPricingSummary = (options: PricingOptions): string => {

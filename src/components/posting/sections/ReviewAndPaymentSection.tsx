@@ -104,48 +104,50 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">{t('Review & Payment', 'Xem lại & Thanh toán')}</h2>
       
-      <PricingCards
-        pricingOptions={jobPricingOptions}
-        selectedPricing={selectedPricing}
-        onChange={handlePricingChange}
-        selectedDuration={selectedDuration}
-        onDurationChange={handleDurationChange}
-      />
-      
-      {selectedPricing !== 'free' && (
-        <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <Label htmlFor="auto-renew" className="flex items-center gap-2 cursor-pointer">
-            <Info className="h-4 w-4 text-blue-500" />
-            {t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}
-          </Label>
-          <Switch 
-            id="auto-renew" 
-            checked={autoRenew} 
-            onCheckedChange={handleAutoRenewChange} 
-            className="data-[state=checked]:bg-purple-600"
-          />
-        </div>
-      )}
-      
-      {selectedPricing === 'free' && (
-        <div className="text-sm text-gray-600 italic bg-gray-50 p-4 rounded-md flex items-start border border-gray-200">
-          <Info className="h-5 w-5 mr-2 text-blue-500 mt-0.5 flex-shrink-0" />
-          <div>
-            {t('Auto-renew not available for Free listings. This plan offers 30 days of visibility with standard placement.', 
-              'Tự động gia hạn không khả dụng cho đăng tin miễn phí. Gói này cung cấp 30 ngày hiển thị với vị trí tiêu chuẩn.')}
+      <div className="bg-gradient-to-b from-white to-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm space-y-8">
+        <PricingCards
+          pricingOptions={jobPricingOptions}
+          selectedPricing={selectedPricing}
+          onChange={handlePricingChange}
+          selectedDuration={selectedDuration}
+          onDurationChange={handleDurationChange}
+        />
+        
+        {selectedPricing !== 'free' && (
+          <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <Label htmlFor="auto-renew" className="flex items-center gap-2 cursor-pointer">
+              <Info className="h-4 w-4 text-blue-500" />
+              {t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}
+            </Label>
+            <Switch 
+              id="auto-renew" 
+              checked={autoRenew} 
+              onCheckedChange={handleAutoRenewChange} 
+              className="data-[state=checked]:bg-purple-600"
+            />
           </div>
-        </div>
-      )}
-      
-      {/* Auto-Renew Suggestion Banner */}
-      {selectedPricing !== 'free' && !autoRenew && (
-        <AutoRenewSuggestionCard />
-      )}
+        )}
+        
+        {selectedPricing === 'free' && (
+          <div className="text-sm text-gray-600 italic bg-gray-50 p-4 rounded-md flex items-start border border-gray-200">
+            <Info className="h-5 w-5 mr-2 text-blue-500 mt-0.5 flex-shrink-0" />
+            <div>
+              {t('Auto-renew not available for Free listings. This plan offers 30 days of visibility with standard placement.', 
+                'Tự động gia hạn không khả dụng cho đăng tin miễn phí. Gói này cung cấp 30 ngày hiển thị với vị trí tiêu chuẩn.')}
+            </div>
+          </div>
+        )}
+        
+        {/* Auto-Renew Suggestion Banner */}
+        {selectedPricing !== 'free' && !autoRenew && (
+          <AutoRenewSuggestionCard />
+        )}
 
-      {/* Smart Upsell Card */}
-      {showUpsellCard && (
-        <AutoRenewSuggestionCard onUpgrade={handleUpgradeClick} selectedPricing={selectedPricing} />
-      )}
+        {/* Smart Upsell Card */}
+        {showUpsellCard && (
+          <AutoRenewSuggestionCard onUpgrade={handleUpgradeClick} selectedPricing={selectedPricing} />
+        )}
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="order-2 md:order-1">

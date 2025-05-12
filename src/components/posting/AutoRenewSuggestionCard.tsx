@@ -39,8 +39,8 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
     const upgradeInfo = getUpgradeMessage();
     
     return (
-      <Card className="p-4 bg-gradient-to-r from-amber-50 to-amber-100/80 border-amber-200 shadow-md">
-        <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+      <Card className="p-5 bg-gradient-to-r from-amber-50 to-amber-100/80 border border-amber-200 shadow-md">
+        <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 sm:space-x-4">
           <div className="flex-1">
             <h3 className="text-lg font-medium text-amber-800 flex items-center">
               <Star className="h-5 w-5 mr-2 text-amber-600" />
@@ -75,7 +75,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
   
   // This is the auto-renew suggestion variant
   return (
-    <Card className="p-4 bg-gradient-to-r from-blue-50 to-blue-100/80 border-blue-200 shadow-md">
+    <Card className="p-5 bg-gradient-to-r from-blue-50 to-blue-100/80 border-blue-200 shadow-md">
       <div className="flex items-center">
         <div className="flex-shrink-0 mr-4">
           <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">

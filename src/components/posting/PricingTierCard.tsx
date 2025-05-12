@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Check, X, Star, Crown } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { JobPricingOption } from '@/utils/posting/types';
+import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { Check, X } from 'lucide-react';
 
 interface PricingTierCardProps {
   pricing: JobPricingOption;
@@ -22,194 +22,163 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
   isMostPopular = false,
   isFreeVariant = false,
   subtitle,
-  negativeFeatures = []
+  negativeFeatures = [],
 }) => {
-  const getBgGradient = () => {
-    if (isFreeVariant) return 'bg-gray-50 hover:bg-gray-50/80';
-    if (pricing.id === 'gold') return 'bg-gradient-to-b from-amber-50 to-amber-100/60';
-    if (pricing.id === 'premium') return 'bg-gradient-to-b from-purple-50 to-purple-100/60';
-    if (pricing.id === 'standard') return 'bg-gradient-to-b from-blue-50/80 to-blue-100/50 hover:from-blue-50 hover:to-blue-100/70';
-    return 'bg-gradient-to-b from-white to-gray-50';
-  };
-
-  const getBorderColor = () => {
-    if (isSelected) {
-      if (pricing.id === 'gold') return 'border-amber-400 ring-2 ring-amber-200';
-      if (pricing.id === 'premium') return 'border-purple-400 ring-2 ring-purple-200';
-      if (pricing.id === 'standard') return 'border-blue-400 ring-2 ring-blue-200';
-      return 'border-gray-300 ring-2 ring-gray-200';
-    }
-    if (isFreeVariant) return 'border-gray-200';
-    if (pricing.id === 'gold') return 'border-amber-200';
-    if (pricing.id === 'premium') return 'border-purple-200';
-    if (pricing.id === 'standard') return 'border-blue-200';
-    return 'border-gray-200';
-  };
-
-  const getNameTextColor = () => {
-    if (pricing.id === 'gold') return 'text-amber-700';
-    if (pricing.id === 'premium') return 'text-purple-700';
-    if (pricing.id === 'standard') return 'text-blue-700';
-    return 'text-gray-700';
-  };
-
-  const getPriceTextColor = () => {
-    if (pricing.id === 'gold') return 'text-amber-800';
-    if (pricing.id === 'premium') return 'text-purple-800';
-    if (pricing.id === 'standard') return 'text-blue-800';
-    return 'text-gray-600';
-  };
-
-  const getCheckColor = () => {
-    if (pricing.id === 'gold') return 'text-amber-600';
-    if (pricing.id === 'premium') return 'text-purple-600';
-    if (pricing.id === 'standard') return 'text-blue-600';
-    return 'text-gray-400';
-  };
-
-  const getCardShadow = () => {
-    if (isFreeVariant) return '';
-    if (isSelected) return 'shadow-lg';
-    return 'shadow-md hover:shadow-lg';
-  };
-
-  const getHoverEffect = () => {
-    if (isFreeVariant) return '';
-    return 'transition-all duration-300 hover:translate-y-[-4px]';
-  };
-
-  const getPricingDisplayClass = () => {
-    if (isFreeVariant) {
-      return 'text-gray-600 font-medium';
-    }
-    return 'text-3xl font-bold';
-  };
-
-  const getFeatureTextClass = () => {
-    if (isFreeVariant) {
-      return 'text-sm text-gray-500';
-    }
-    return 'text-sm';
-  };
-
-  const renderPlanName = () => {
-    if (pricing.id === 'free') {
-      return '🧊 Basic Plan (Limited Reach)';
-    }
-    return pricing.name;
-  };
-
-  const renderSubtitle = () => {
-    if (pricing.id === 'free') {
-      return 'Recommended only for testing the platform.';
-    }
-    return subtitle || pricing.description;
-  };
-
-  const getSocialProofTag = () => {
-    if (pricing.id === 'standard') return '🔥 Chosen by over 8,200 salons this year';
-    if (pricing.id === 'premium') return '💜 Used by 4,500+ salons for better results';
-    if (pricing.id === 'gold') return '🏆 Preferred by growing brands – 1,200 upgraded';
-    return '';
-  };
+  const isPremiumPlan = pricing.id === 'premium';
+  const isGoldPlan = pricing.id === 'gold';
+  const isStandardPlan = pricing.id === 'standard';
+  const isFreePlan = pricing.id === 'free';
 
   return (
-    <div
-      onClick={onClick}
+    <Card
       className={cn(
-        "relative rounded-xl border p-5 cursor-pointer",
-        getBgGradient(),
-        getBorderColor(),
-        getCardShadow(),
-        getHoverEffect(),
-        isFreeVariant ? "transform scale-95 opacity-90" : "transform scale-100",
-        isSelected ? "z-10" : "z-0"
+        "relative overflow-hidden border-2 transition-all",
+        isSelected
+          ? isFreeVariant
+            ? "border-gray-300 shadow-md"
+            : isPremiumPlan
+              ? "border-purple-500 shadow-lg"
+              : isGoldPlan
+                ? "border-amber-500 shadow-lg"
+                : "border-blue-500 shadow-lg"
+          : isFreeVariant
+            ? "border-gray-200 hover:border-gray-300"
+            : "border-gray-200 hover:border-gray-300",
+        isFreeVariant
+          ? "bg-gray-50"
+          : isPremiumPlan
+            ? "bg-gradient-to-br from-white via-purple-50 to-white"
+            : isGoldPlan
+              ? "bg-gradient-to-br from-white via-amber-50 to-white"
+              : isStandardPlan
+                ? "bg-gradient-to-br from-white via-blue-50 to-white"
+                : "bg-white"
       )}
     >
-      {/* Popular Badge */}
-      {isMostPopular && (
-        <div className="absolute -top-3 inset-x-0 mx-auto w-max">
-          <Badge className="bg-purple-600 text-white hover:bg-purple-700 px-3 py-1 font-medium shadow-sm">
-            <Star className="h-3.5 w-3.5 mr-1" /> Most Popular
-          </Badge>
+      {/* Popular Tag */}
+      {isMostPopular && !isFreeVariant && (
+        <div className="absolute -top-3 left-0 right-0 text-center">
+          <div className="inline-block bg-purple-600 text-white text-xs font-bold py-1 px-3 rounded-full shadow-md">
+            MOST POPULAR
+          </div>
         </div>
       )}
-      
-      {/* Plan Name */}
-      <h3 className={cn(
-        "text-lg font-semibold mb-1",
-        getNameTextColor(),
-        isFreeVariant ? "text-base" : "text-lg"
-      )}>
-        {renderPlanName()}
-      </h3>
-      
-      {/* Plan Description */}
-      {renderSubtitle() && (
-        <p className={cn(
-          "text-sm mb-2",
-          isFreeVariant ? "text-gray-500" : "text-gray-600"
-        )}>
-          {renderSubtitle()}
-        </p>
+
+      {/* Tier Tag */}
+      {isGoldPlan && !isFreeVariant && (
+        <div className="absolute -top-3 left-0 right-0 text-center">
+          <div className="inline-block bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold py-1 px-3 rounded-full shadow-md">
+            FASTEST RESULTS
+          </div>
+        </div>
       )}
-      
-      {/* Social Proof Tag */}
-      {!isFreeVariant && getSocialProofTag() && (
-        <p className={cn(
-          "text-xs mb-3 mt-1 font-medium",
-          pricing.id === 'gold' ? "text-amber-700" : 
-          pricing.id === 'premium' ? "text-purple-700" : 
-          pricing.id === 'standard' ? "text-blue-700" : "text-gray-700"
-        )}>
-          {getSocialProofTag()}
-        </p>
-      )}
-      
-      {/* Price Display with Original Price */}
-      <div className={cn("mb-4 mt-3", isFreeVariant ? "mt-2" : "mt-4")}>
-        <div className={cn("flex items-baseline", isFreeVariant ? "" : "space-x-2")}>
-          {pricing.wasPrice && !isFreeVariant && (
-            <span className="text-sm line-through text-gray-400">
-              ${pricing.wasPrice.toFixed(2)}
-            </span>
-          )}
-          <span className={cn(
-            getPricingDisplayClass(),
-            getPriceTextColor()
+
+      <div 
+        onClick={onClick}
+        className={cn(
+          "p-5 cursor-pointer h-full flex flex-col",
+          isSelected && !isFreeVariant ? "ring-2 ring-inset ring-offset-1" : "",
+          isFreeVariant ? "ring-0" : ""
+        )}
+      >
+        {/* Header */}
+        <div className="text-center mb-4">
+          <h3 className={cn(
+            "text-xl font-bold mb-1",
+            isFreeVariant ? "text-gray-600" : "text-gray-800"
           )}>
-            {pricing.price === 0 ? "Free" : `$${pricing.price.toFixed(2)}`}
-          </span>
-          {pricing.price > 0 && (
-            <span className="text-sm text-gray-500 ml-1">/month</span>
+            {pricing.name}
+          </h3>
+          {subtitle && (
+            <p className="text-xs text-gray-500 italic">{subtitle}</p>
           )}
+        </div>
+
+        {/* Price */}
+        <div className={cn(
+          "text-center mb-4",
+          isFreeVariant ? "text-gray-600" : "text-gray-900"
+        )}>
+          {pricing.wasPrice && !isFreeVariant && (
+            <div className="text-sm text-gray-400 line-through">
+              ${pricing.wasPrice}
+            </div>
+          )}
+          <div className="flex items-center justify-center">
+            <span className="text-3xl font-bold">
+              {pricing.price > 0 ? `$${pricing.price}` : 'Free'}
+            </span>
+            {pricing.price > 0 && <span className="text-sm ml-1">/mo</span>}
+          </div>
+        </div>
+
+        {/* Social Proof Tag */}
+        {pricing.tag && !isFreeVariant && (
+          <div className="mb-4 text-center">
+            <div className={cn(
+              "text-xs px-2 py-1.5 rounded-full text-center inline-block",
+              isPremiumPlan 
+                ? "bg-purple-100 text-purple-800"
+                : isGoldPlan 
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-blue-100 text-blue-800"
+            )}>
+              {pricing.tag}
+            </div>
+          </div>
+        )}
+
+        {/* Features */}
+        <div className="space-y-2 flex-grow mb-4">
+          {pricing.features && pricing.features.map((feature, index) => (
+            <div key={index} className="flex items-start">
+              <Check className={cn(
+                "h-4 w-4 mr-2 mt-0.5 flex-shrink-0",
+                isFreeVariant ? "text-gray-500" : "text-green-600"
+              )} />
+              <span className={cn(
+                "text-sm",
+                isFreeVariant ? "text-gray-600" : "text-gray-700"
+              )}>
+                {feature}
+              </span>
+            </div>
+          ))}
+          
+          {/* Negative Features */}
+          {negativeFeatures && negativeFeatures.map((feature, index) => (
+            <div key={`neg-${index}`} className="flex items-start">
+              <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+              <span className="text-sm text-gray-500">{feature}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Select Button */}
+        <div className="mt-auto pt-2">
+          <button 
+            onClick={onClick}
+            type="button"
+            className={cn(
+              "w-full rounded-full py-2 px-4 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2",
+              isSelected
+                ? isFreeVariant
+                  ? "bg-gray-500 text-white hover:bg-gray-600"
+                  : isPremiumPlan
+                    ? "bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500"
+                    : isGoldPlan
+                      ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 focus:ring-amber-500"
+                      : "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
+                : isFreeVariant
+                  ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-300"
+            )}
+          >
+            {isSelected ? "Selected" : "Select Plan"}
+          </button>
         </div>
       </div>
-      
-      {/* Features List */}
-      <ul className={cn(
-        "space-y-2", 
-        isFreeVariant ? "opacity-80" : "opacity-100"
-      )}>
-        {pricing.features.map((feature, index) => (
-          <li key={`${pricing.id}-feature-${index}`} className="flex items-start">
-            <Check className={cn(
-              "h-4 w-4 mr-2 mt-0.5 flex-shrink-0",
-              getCheckColor()
-            )} />
-            <span className={getFeatureTextClass()}>{feature}</span>
-          </li>
-        ))}
-        
-        {/* Negative Features */}
-        {negativeFeatures && negativeFeatures.map((feature, index) => (
-          <li key={`${pricing.id}-negative-${index}`} className="flex items-start text-gray-500">
-            <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
-            <span className="text-sm">{feature}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </Card>
   );
 };
 
