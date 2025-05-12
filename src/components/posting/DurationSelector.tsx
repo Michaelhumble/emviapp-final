@@ -33,8 +33,8 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
           
           // Calculate savings amount for display
           const basePrice = selectedPricing === 'standard' ? 9.99 : 
-                            selectedPricing === 'premium' ? 24.99 : 
-                            selectedPricing === 'gold' ? 14.99 : 19.99;
+                            selectedPricing === 'premium' ? 14.99 : 
+                            selectedPricing === 'gold' ? 24.99 : 19.99;
           const regularTotal = basePrice * option.months;
           const discountedTotal = regularTotal * (1 - option.discount / 100);
           const dollarSavings = regularTotal - discountedTotal;
