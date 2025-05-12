@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { JobForm } from './JobForm';
 import { JobFormValues } from './jobFormSchema';
@@ -5,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import PostHeader from '../PostHeader';
 import MotivationalFooter from '../MotivationalFooter';
 import UpsellSidebar from '../upsell/UpsellSidebar';
+import { useAuth } from '@/context/auth'; // Add auth context import
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -23,6 +25,8 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   defaultValues,
   industry = "nails" // Default to nails
 }) => {
+  const { userProfile } = useAuth(); // Get user profile with contact details
+  
   return (
     <div className="space-y-8">
       <PostHeader 
@@ -40,6 +44,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
               isSubmitting={isSubmitting}
               defaultValues={defaultValues}
               industry={industry}
+              userProfile={userProfile} // Pass the user profile with contact info
             />
           </div>
         </div>
@@ -56,7 +61,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         <MotivationalFooter 
           icon="🫶"
           message="Artists check for new jobs every morning. Make yours the one they remember."
-          subMessage="Post now — and let the best artists come to you."
+          subMessage="Post now — and let the best talent come to you."
         />
       </div>
       
