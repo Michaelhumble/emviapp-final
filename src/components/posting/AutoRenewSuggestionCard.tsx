@@ -3,6 +3,7 @@ import React from 'react';
 import { RefreshCw, Check, ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { motion } from 'framer-motion';
 
 interface AutoRenewSuggestionCardProps {
   onUpgrade?: () => void;
@@ -39,37 +40,50 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
     const upgradeInfo = getUpgradeMessage();
     
     return (
-      <Card className="p-5 bg-gradient-to-r from-[#F8F8FF] to-[#F7E7CE]/20 border border-[#F7E7CE]/50 shadow-md">
-        <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 sm:space-x-4">
-          <div className="flex-1">
-            <h3 className="text-lg font-medium text-[#1D1E1E] flex items-center font-playfair">
-              <Star className="h-5 w-5 mr-2 text-[#F7E7CE] stroke-amber-600" />
-              {upgradeInfo.title}
-            </h3>
-            <p className="text-sm mt-1 text-[#1D1E1E]/80">
-              {upgradeInfo.description}
-            </p>
-            <ul className="mt-2 space-y-1">
-              <li className="flex items-center text-sm text-[#1D1E1E]/80">
-                <Check className="h-4 w-4 mr-1.5 text-[#50C878]" />
-                <span>Premium placement on homepage</span>
-              </li>
-              <li className="flex items-center text-sm text-[#1D1E1E]/80">
-                <Check className="h-4 w-4 mr-1.5 text-[#50C878]" />
-                <span>Free listing boost included</span>
-              </li>
-            </ul>
+      <motion.div
+        initial={{ opacity: 0.8, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="p-5 bg-gradient-to-r from-[#F8F8FF] to-[#F7E7CE]/20 border border-[#F7E7CE]/50 shadow-md overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-b from-[#F7E7CE]/20 to-transparent rounded-full -mr-16 -mt-16 opacity-50" />
+          
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 sm:space-x-4 relative z-10">
+            <div className="flex-1">
+              <h3 className="text-lg font-medium text-[#1D1E1E] flex items-center font-playfair">
+                <Star className="h-5 w-5 mr-2 text-[#F7E7CE] stroke-amber-600" />
+                {upgradeInfo.title}
+              </h3>
+              <p className="text-sm mt-1 text-[#1D1E1E]/80">
+                {upgradeInfo.description}
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                <li className="flex items-center text-sm text-[#1D1E1E]/80">
+                  <Check className="h-4 w-4 mr-1.5 text-[#50C878]" />
+                  <span>Premium placement on homepage</span>
+                </li>
+                <li className="flex items-center text-sm text-[#1D1E1E]/80">
+                  <Check className="h-4 w-4 mr-1.5 text-[#50C878]" />
+                  <span>Free listing boost included</span>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button 
+                  onClick={onUpgrade} 
+                  className="bg-[#50C878] hover:bg-[#50C878]/90 text-white font-medium shadow-sm"
+                >
+                  {upgradeInfo.buttonText} <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </motion.div>
+            </div>
           </div>
-          <div>
-            <Button 
-              onClick={onUpgrade} 
-              className="bg-[#50C878] hover:bg-[#50C878]/90 text-white font-medium shadow-sm"
-            >
-              {upgradeInfo.buttonText} <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      </motion.div>
     );
   }
   
