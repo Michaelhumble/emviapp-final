@@ -144,7 +144,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
 
       {/* Smart Upsell Card */}
       {showUpsellCard && (
-        <AutoRenewSuggestionCard onUpgrade={handleUpgradeClick} />
+        <AutoRenewSuggestionCard onUpgrade={handleUpgradeClick} selectedPricing={selectedPricing} />
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

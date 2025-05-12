@@ -6,21 +6,48 @@ import { Card } from '@/components/ui/card';
 
 interface AutoRenewSuggestionCardProps {
   onUpgrade?: () => void;
+  selectedPricing?: string;
 }
 
-const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpgrade }) => {
+const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpgrade, selectedPricing }) => {
+  // Conditional upgrade messaging based on selected plan
+  const getUpgradeMessage = () => {
+    if (selectedPricing === 'standard') {
+      return {
+        title: "Want to double your chances?",
+        description: "For just $5 more, get front-page exposure for 30 days and hire up to 3× faster.",
+        buttonText: "Upgrade for $5 more"
+      };
+    } else if (selectedPricing === 'premium') {
+      return {
+        title: "Did you know 1,200 brands upgraded to Featured last month?",
+        description: "Get maximum visibility and premium placement with our Featured plan for just $10 more.",
+        buttonText: "Upgrade to Featured"
+      };
+    }
+    
+    // Default
+    return {
+      title: "Upgrade to Featured for Maximum Visibility",
+      description: "Featured listings get 3x more views and appear in the top section.",
+      buttonText: "Upgrade Now"
+    };
+  };
+  
   if (onUpgrade) {
     // This is the upgrade card variant
+    const upgradeInfo = getUpgradeMessage();
+    
     return (
       <Card className="p-4 bg-gradient-to-r from-amber-50 to-amber-100/80 border-amber-200 shadow-md">
         <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
           <div className="flex-1">
             <h3 className="text-lg font-medium text-amber-800 flex items-center">
               <Star className="h-5 w-5 mr-2 text-amber-600" />
-              Upgrade to Featured for Maximum Visibility
+              {upgradeInfo.title}
             </h3>
             <p className="text-sm mt-1 text-amber-700">
-              Featured listings get 3x more views and appear in the top section. Upgrade now for premium placement.
+              {upgradeInfo.description}
             </p>
             <ul className="mt-2 space-y-1">
               <li className="flex items-center text-sm text-amber-700">
@@ -38,7 +65,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
               onClick={onUpgrade} 
               className="bg-amber-600 hover:bg-amber-700 text-white font-medium shadow-sm"
             >
-              Upgrade Now <ArrowRight className="ml-1 h-4 w-4" />
+              {upgradeInfo.buttonText} <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, X, Star } from 'lucide-react';
+import { Check, X, Star, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { JobPricingOption } from '@/utils/posting/types';
@@ -106,6 +106,13 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
     return subtitle || pricing.description;
   };
 
+  const getSocialProofTag = () => {
+    if (pricing.id === 'standard') return '🔥 Chosen by over 8,200 salons this year';
+    if (pricing.id === 'premium') return '💜 Used by 4,500+ salons for better results';
+    if (pricing.id === 'gold') return '🏆 Preferred by growing brands – 1,200 upgraded';
+    return '';
+  };
+
   return (
     <div
       onClick={onClick}
@@ -147,15 +154,15 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
         </p>
       )}
       
-      {/* Trust Signal Tag */}
-      {pricing.tag && !isFreeVariant && (
+      {/* Social Proof Tag */}
+      {!isFreeVariant && getSocialProofTag() && (
         <p className={cn(
           "text-xs mb-3 mt-1 font-medium",
           pricing.id === 'gold' ? "text-amber-700" : 
           pricing.id === 'premium' ? "text-purple-700" : 
           pricing.id === 'standard' ? "text-blue-700" : "text-gray-700"
         )}>
-          {pricing.tag}
+          {getSocialProofTag()}
         </p>
       )}
       

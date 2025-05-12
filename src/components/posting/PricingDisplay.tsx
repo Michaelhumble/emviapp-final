@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format, addMonths } from 'date-fns';
-import { CalendarIcon, RefreshCw, CreditCard, Tag, Sparkles, Check, Info, AlertTriangle } from 'lucide-react';
+import { CalendarIcon, RefreshCw, CreditCard, Tag, Sparkles, Check, Info, AlertTriangle, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -44,11 +44,22 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
       default: return 'Selected Plan';
     }
   };
+
+  const getPricingGradient = () => {
+    switch(pricingId) {
+      case 'standard': return 'from-blue-50 to-blue-100/30';
+      case 'premium': return 'from-purple-50 to-purple-100/30';
+      case 'gold': return 'from-amber-50 to-amber-100/30';
+      default: return 'from-gray-50 to-gray-100/30';
+    }
+  };
   
   return (
     <div className={cn(
       "rounded-lg border p-6 mt-6 shadow-md",
-      !isFreePlan ? "bg-gradient-to-br from-white to-gray-50" : "bg-gray-50"
+      !isFreePlan 
+        ? `bg-gradient-to-br ${getPricingGradient()}` 
+        : "bg-gray-50"
     )}>
       <h3 className="font-semibold text-md mb-5 flex items-center gap-2 text-purple-800">
         <Sparkles className="h-5 w-5 text-purple-600" />
@@ -83,7 +94,12 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
                 <Sparkles className="h-5 w-5 mr-3 text-purple-500" />
                 <span className="font-medium">{getPricingTitle()} Plan</span>
               </div>
-              <span className="font-medium">${basePrice.toFixed(2)}/month</span>
+              <div className="text-right">
+                {pricingId === 'standard' && <span className="text-xs line-through text-gray-400 block">$14.99/month</span>}
+                {pricingId === 'premium' && <span className="text-xs line-through text-gray-400 block">$24.99/month</span>}
+                {pricingId === 'gold' && <span className="text-xs line-through text-gray-400 block">$39.99/month</span>}
+                <span className="font-medium">${basePrice.toFixed(2)}/month</span>
+              </div>
             </div>
             
             <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
@@ -91,7 +107,10 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
                 <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
                 <span>Duration</span>
               </div>
-              <span className="font-medium">{duration} {duration === 1 ? 'month' : 'months'}</span>
+              <div className="flex items-center">
+                {duration >= 12 && <Crown className="h-4 w-4 mr-1 text-amber-500" />}
+                <span className="font-medium">{duration} {duration === 1 ? 'month' : 'months'}</span>
+              </div>
             </div>
             
             <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
