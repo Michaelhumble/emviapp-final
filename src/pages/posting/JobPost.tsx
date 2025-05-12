@@ -1,198 +1,148 @@
-import React, { useState } from 'react';
-import { JobForm } from '@/components/posting/job/JobForm';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import JobPostOptions from '@/components/posting/job/JobPostOptions';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { Card } from '@/components/ui/card';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
+import { UserPostingStats } from '@/utils/posting/types';
+import { calculateFinalPrice } from '@/utils/postingPriceCalculator';
+import { PricingOptions } from '@/types/job';
+import { Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/context/auth';
 
-const JobPost: React.FC = () => {
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'standard',
-    isFirstPost: true,
-    isHotListing: false,
-    autoRenew: true,
-    durationMonths: 1
-  });
+const JobPost = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'form' | 'payment'>('form');
-  const [formValues, setFormValues] = useState<JobFormValues | null>(null);
-  const navigate = useNavigate();
-  const { initiatePayment, isLoading } = usePostPayment();
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [jobDetails, setJobDetails] = useState<JobFormValues | null>(null);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    isFirstPost: false,
+    isNationwide: false,
+    fastSalePackage: false,
+    selectedPricingTier: 'standard',
+    durationMonths: 1,
+    autoRenew: false,
+  });
   
-  // Handle form submission
-  const handleFormSubmit = async (values: JobFormValues) => {
-    setFormValues(values);
-    setCurrentStep('payment');
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { userProfile } = useAuth();
+  
+  // Default user posting stats
+  const userPostingStats: UserPostingStats = {
+    hasPostedJobs: userProfile?.has_posted_job || false,
+    totalPostCount: 0,
+    isFirstTimeUser: !userProfile?.has_posted_job,
+    referralCredits: 0
   };
-
-  // Handle final submission with pricing
-  const handleCreateCheckoutSession = async () => {
-    if (!formValues) return;
+  
+  // Handle job form submission
+  const handleJobFormSubmit = (values: JobFormValues) => {
+    console.log('Job form submitted:', values);
+    setJobDetails(values);
     
+    // Process job posting
     setIsSubmitting(true);
     
-    try {
-      // Check if photos were uploaded (optional)
-      if (photoUploads.length === 0) {
-        console.log("No photos uploaded");
-      }
-      
-      // Calculate price
-      const priceResult = calculateJobPostPrice(pricingOptions);
-      console.log("Job post price:", priceResult);
-      
-      // Destructure finalPrice from the returned price object
-      const { finalPrice } = priceResult;
-      
-      // If finalPrice is greater than 0, proceed to payment
-      if (finalPrice > 0) {
-        // Navigate to payment page with salon data
-        const result = await initiatePayment('job', formValues, pricingOptions);
-        
-        // Add safeguards for the returned result
-        if (result?.success) {
-          // Handle successful payment initiation
-          if (result && 'redirect' in result && result.redirect) {
-            // If there's a redirect URL in the response, follow it
-            const redirectUrl = typeof result.redirect === 'string' ? result.redirect : '/payment';
-            window.location.href = redirectUrl;
-          } else if (result && 'data' in result) {
-            // Handle case where there's data but no redirect
-            toast.success("Job post submitted successfully!");
-            navigate('/dashboard');
-          }
-        } else {
-          // Handle payment initiation failure
-          toast.error("Failed to process payment. Please try again.");
-        }
-      } else {
-        // For free listings, skip payment and go directly to success
-        toast.success("Your job listing has been posted!");
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error("Error submitting job post:", error);
-      toast.error("Failed to submit job post. Please try again.");
-    } finally {
+    // Simulate API call with timeout
+    setTimeout(() => {
+      toast({
+        title: "Job posting created!",
+        description: "Your job has been successfully created and is now live.",
+      });
       setIsSubmitting(false);
-    }
+      
+      // Navigate to success page or job details
+      navigate('/jobs');
+    }, 1500);
   };
   
-  // Handle changes to pricing options
-  const handlePricingOptionsChange = (options: Partial<PricingOptions>) => {
-    setPricingOptions({ ...pricingOptions, ...options });
-  };
+  // Calculate final price
+  const finalPrice = calculateFinalPrice(pricingOptions);
   
-  // Handle pricing tier selection
-  const handlePricingTierChange = (tier: string) => {
-    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
-  };
-  
-  // Go back to form step
-  const handleBackToForm = () => {
-    setCurrentStep('form');
-  };
-
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-2">Post a Job</h1>
-      <p className="text-gray-600 mb-8">
-        Create a detailed job listing to attract qualified candidates
-      </p>
-
-      {currentStep === 'form' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <JobForm 
-              onSubmit={handleFormSubmit}
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              isSubmitting={isSubmitting}
-            />
-          </div>
-
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Card className="p-6">
-                <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
-                <JobPostOptions
-                  isFirstPost={userStats?.isFirstTimeUser}
-                  hasReferrals={userStats?.referralCredits > 0}
-                  pricingOptions={pricingOptions}
-                  setPricingOptions={handlePricingOptionsChange}
-                />
-                
-                <Button 
-                  onClick={() => document.querySelector('form')?.requestSubmit()}
-                  className="w-full mt-4"
-                  disabled={isLoading || isSubmitting}
-                >
-                  {isLoading || isSubmitting ? "Processing..." : "Continue to Pricing"}
-                </Button>
-                
-                <p className="text-xs text-gray-500 mt-4 text-center">
-                  By proceeding, you agree to our Terms of Service
-                </p>
-              </Card>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Card className="p-6">
-              <ReviewAndPaymentSection
-                postType="job"
-                pricingOptions={pricingOptions}
-                onPricingChange={handlePricingTierChange}
-                onUpdatePricing={handlePricingOptionsChange}
-                onNextStep={handleCreateCheckoutSession}
-                onPrevStep={handleBackToForm}
-                jobData={formValues}
-                isFirstPost={pricingOptions.isFirstPost}
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold">Post a Job</h1>
+        <p className="text-gray-600">Find the perfect nail technician for your salon</p>
+      </div>
+      
+      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Job Details</CardTitle>
+              <CardDescription>
+                Enter information about the position you're hiring for
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EnhancedJobForm
+                onSubmit={handleJobFormSubmit}
+                photoUploads={photoUploads}
+                setPhotoUploads={setPhotoUploads}
                 isSubmitting={isSubmitting}
               />
-            </Card>
-          </div>
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Card className="p-6">
-                <h2 className="text-xl font-medium mb-4">Job Post Summary</h2>
-                {formValues && (
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <h3 className="font-medium text-sm text-gray-500">Job Title</h3>
-                      <p>{formValues.title}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm text-gray-500">Job Type</h3>
-                      <p className="capitalize">{formValues.jobType.replace('-', ' ')}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm text-gray-500">Location</h3>
-                      <p>{formValues.location}</p>
-                    </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Pricing Summary</CardTitle>
+              <CardDescription>
+                Review your job posting package
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span>Standard Job Listing</span>
+                  <span>${(19.99).toFixed(2)}</span>
+                </div>
+                
+                {pricingOptions.isNationwide && (
+                  <div className="flex justify-between text-primary">
+                    <span>+ Nationwide Visibility</span>
+                    <span>$5.00</span>
                   </div>
                 )}
+                
+                {pricingOptions.fastSalePackage && (
+                  <div className="flex justify-between text-primary">
+                    <span>+ Fast Sale Package</span>
+                    <span>$5.00</span>
+                  </div>
+                )}
+                
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="flex justify-between font-semibold">
+                    <span>Total</span>
+                    <span>${finalPrice.toFixed(2)}</span>
+                  </div>
+                </div>
+                
                 <Button 
-                  onClick={handleBackToForm}
-                  variant="outline" 
-                  className="w-full mb-2"
+                  className="w-full mt-4" 
+                  disabled={isSubmitting}
+                  onClick={() => handleJobFormSubmit(jobDetails as JobFormValues)}
                 >
-                  Edit Job Details
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Continue to Payment"
+                  )}
                 </Button>
-              </Card>
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      )}
+      </div>
     </div>
   );
 };
