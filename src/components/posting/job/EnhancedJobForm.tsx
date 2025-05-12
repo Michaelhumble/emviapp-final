@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { JobForm } from './JobForm';
 import { JobFormValues } from './jobFormSchema';
