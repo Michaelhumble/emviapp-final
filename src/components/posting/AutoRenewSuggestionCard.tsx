@@ -99,7 +99,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
         <div className="flex-1">
           <h3 className="text-lg font-medium text-[#1D1E1E] font-playfair">Auto-Renew Recommended</h3>
           <p className="text-sm mt-1 text-[#1D1E1E]/70">
-            Keep your listing active without interruption. You'll be notified before each renewal.
+            ✅ Auto-renew is enabled. Cancel anytime. Best value over time.
           </p>
         </div>
       </div>

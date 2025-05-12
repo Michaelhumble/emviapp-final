@@ -26,6 +26,17 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   const isFreePlan = pricingId === 'free';
   const dollarSavings = originalPrice - finalPrice;
 
+  // Plan title mapping
+  const getPlanTitle = () => {
+    switch(pricingId) {
+      case 'free': return 'Basic Plan (First Time Free)';
+      case 'standard': return 'Standard — $9.99/mo';
+      case 'premium': return 'Premium Listing — $24.99/mo';
+      case 'gold': return 'Gold Featured — $14.99/mo';
+      default: return 'Job Listing Plan';
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0.8 }}
@@ -34,7 +45,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
     >
       <div className="bg-white rounded-xl border border-[#F7E7CE]/30 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
         <div className="bg-gradient-to-r from-[#F8F8FF] to-[#f7e7ce15] p-5 border-b border-[#F7E7CE]/20">
-          <h3 className="font-medium text-xl font-playfair text-[#1D1E1E]">Payment Summary</h3>
+          <h3 className="font-medium text-xl font-playfair text-[#1D1E1E]">{getPlanTitle()}</h3>
         </div>
         
         <div className="p-6 space-y-5">

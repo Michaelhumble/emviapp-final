@@ -83,6 +83,16 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
                     {option.months} {option.months === 1 ? 'Month' : 'Months'}
                   </span>
                   
+                  {/* Vietnamese translation support */}
+                  <span className="text-xs text-gray-500">
+                    {option.discount > 0 ? (
+                      option.months === 3 ? 'Tiết kiệm 10% – 3 tháng' :
+                      option.months === 6 ? 'Tiết kiệm 20% – 6 tháng' :
+                      option.months === 12 ? 'Ưu đãi nhất – 12 tháng' : 
+                      ''
+                    ) : ''}
+                  </span>
+                  
                   {option.discount > 0 && (
                     <span className="text-[#50C878] text-sm font-medium">
                       Save ${dollarSavings.toFixed(2)}
@@ -93,6 +103,11 @@ const DurationSelector: React.FC<DurationSelectorProps> = ({
             </motion.div>
           );
         })}
+      </div>
+      
+      {/* Savings microcopy */}
+      <div className="text-center text-sm text-gray-600 mt-2">
+        <p>You'll save nearly 4 months by going annual. That's $35.96 back in your pocket.</p>
       </div>
     </div>
   );
