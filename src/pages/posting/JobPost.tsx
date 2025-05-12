@@ -6,7 +6,7 @@ import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UserPostingStats } from '@/utils/posting/types';
-import { calculateFinalPrice } from '@/utils/postingPriceCalculator';
+import { calculateFinalPrice } from '@/utils/posting/jobPricing';
 import { PricingOptions } from '@/types/job';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
@@ -58,8 +58,9 @@ const JobPost = () => {
     }, 1500);
   };
   
-  // Calculate final price
-  const finalPrice = calculateFinalPrice(pricingOptions);
+  // Calculate final price - passing both required arguments: basePrice and durationMonths
+  const priceInfo = calculateFinalPrice(19.99, pricingOptions.durationMonths || 1);
+  const finalPrice = priceInfo.finalPrice;
   
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
