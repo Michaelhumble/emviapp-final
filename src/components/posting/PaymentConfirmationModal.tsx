@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils';
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions } from '@/types/job';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ArrowRight, CalendarClock, CheckCircle, CreditCard, RefreshCw, ShieldCheck } from 'lucide-react';
 
