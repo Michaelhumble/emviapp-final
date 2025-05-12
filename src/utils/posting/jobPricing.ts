@@ -4,7 +4,7 @@ import { DurationOption } from '@/types/pricing';
 export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Basic (Limited Reach)',
+    name: '🧊 Basic Plan (Limited Reach)',
     price: 0,
     description: 'Free listing with very limited visibility',
     vietnameseDescription: 'Đăng tin miễn phí với khả năng hiển thị rất hạn chế',
@@ -77,9 +77,9 @@ export const jobPricingOptions: JobPricingOption[] = [
 
 export const durationOptions: DurationOption[] = [
   { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 5 },  // 5% discount
-  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 10 }, // 10% discount
-  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 } // 20% discount
+  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },  // Updated to 10% discount
+  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 20 }, // Updated to 20% discount
+  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 30 } // Updated to 30% discount
 ];
 
 export const getJobPostPricingSummary = (options: PricingOptions): string => {

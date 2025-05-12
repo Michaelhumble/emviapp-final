@@ -12,6 +12,7 @@ import { PricingOptions } from '@/utils/posting/types';
 import PricingDisplay from '@/components/posting/PricingDisplay';
 import AutoRenewSuggestionCard from '@/components/posting/AutoRenewSuggestionCard';
 import { Info } from 'lucide-react';
+import UserMessages from '@/components/posting/smart-ad-options/UserMessages';
 
 export interface ReviewAndPaymentSectionProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
@@ -100,17 +101,57 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   // Destructure the values from the pricingResult object
   const { originalPrice, finalPrice, discountPercentage } = pricingResult;
 
+  // Get the free plan and paid plans separately
+  const freePlan = jobPricingOptions.find(plan => plan.id === 'free');
+  const paidPlans = jobPricingOptions.filter(plan => plan.id !== 'free' && !plan.hidden);
+
+  // Define negative features for the free plan
+  const freeNegativeFeatures = [
+    'Top placement',
+    'Highlight in search',
+    'Social media promotion'
+  ];
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">{t('Review & Payment', 'Xem lại & Thanh toán')}</h2>
       
-      <PricingCards
-        pricingOptions={jobPricingOptions}
-        selectedPricing={selectedPricing}
-        onChange={handlePricingChange}
-        selectedDuration={selectedDuration}
-        onDurationChange={handleDurationChange}
+      <UserMessages 
+        isFirstPost={isFirstPost} 
+        hasReferrals={pricingOptions.hasReferrals} 
+        postType={postType} 
       />
+
+      <div className="space-y-6">
+        {/* Paid Plans Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {paidPlans.map(plan => (
+            <div key={plan.id} className="col-span-1">
+              <PricingTierCard
+                pricing={plan}
+                isSelected={selectedPricing === plan.id}
+                onClick={() => handlePricingChange(plan.id)}
+                isMostPopular={plan.id === 'premium'}
+                subtitle={plan.vietnameseDescription}
+              />
+            </div>
+          ))}
+        </div>
+        
+        {/* Free Plan Row */}
+        {freePlan && (
+          <div className="mt-6 max-w-md mx-auto">
+            <PricingTierCard
+              pricing={freePlan}
+              isSelected={selectedPricing === 'free'}
+              onClick={() => handlePricingChange('free')}
+              isFreeVariant={true}
+              subtitle={freePlan.vietnameseDescription}
+              negativeFeatures={freeNegativeFeatures}
+            />
+          </div>
+        )}
+      </div>
       
       {selectedPricing !== 'free' && (
         <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
