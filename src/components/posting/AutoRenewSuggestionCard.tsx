@@ -26,7 +26,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
       };
     }
     
-    // Default
+    // Default for basic/free plan
     return {
       title: "Upgrade to Gold Featured for Maximum Visibility",
       description: "Gold Featured listings get more views and appear in the premium section.",
@@ -34,7 +34,10 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
     };
   };
   
-  if (onUpgrade) {
+  // Show upsell variant for basic or standard plans
+  const showUpsell = selectedPricing === 'basic' || selectedPricing === 'standard' || selectedPricing === 'free';
+  
+  if (onUpgrade && showUpsell) {
     // This is the upgrade card variant
     const upgradeInfo = getUpgradeMessage();
     

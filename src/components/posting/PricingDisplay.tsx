@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Flame, Star, Diamond } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import PricingMicroCopy from './PricingMicroCopy';
 
 interface PricingDisplayProps {
   pricingId: string;
@@ -181,6 +181,9 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
             </div>
           </>
         )}
+        
+        {/* Add the dynamic microcopy */}
+        <PricingMicroCopy selectedPlan={pricingId} />
       </CardContent>
     </Card>
   );

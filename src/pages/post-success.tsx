@@ -1,17 +1,18 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, addDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, TrendingUp, Share2, Calendar as CalendarIcon } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar'; // Added the missing import
+import { Calendar } from '@/components/ui/calendar';
 import Layout from '@/components/layout/Layout';
 import ThankYouModal from '@/components/posting/ThankYouModal';
+import PostConfirmationUpsell from '@/components/posting/upsell/PostConfirmationUpsell';
 
 const PostSuccess = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const [postType, setPostType] = useState<'job' | 'salon' | 'booth' | 'supply'>('job');
+  const [selectedPlan, setSelectedPlan] = useState('basic');
   
   // Try to get post type from URL parameters or local storage
   React.useEffect(() => {
@@ -54,6 +55,11 @@ const PostSuccess = () => {
       default:
         navigate('/boost');
     }
+  };
+
+  const handleUpgrade = () => {
+    // Navigate to boost page
+    handleBoostClick();
   };
 
   // Render main success page with thank you message and next steps
@@ -99,7 +105,13 @@ const PostSuccess = () => {
           </div>
         </div>
 
-        <div className="text-center">
+        {/* Add confirmation upsell for basic/standard plans */}
+        <PostConfirmationUpsell 
+          selectedPlan={selectedPlan} 
+          onUpgrade={handleUpgrade}
+        />
+
+        <div className="text-center mt-8">
           <Button 
             variant="ghost" 
             className="text-primary hover:text-primary-dark"
