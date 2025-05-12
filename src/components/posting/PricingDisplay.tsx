@@ -1,20 +1,13 @@
 
 import React from 'react';
-import { format, addMonths } from 'date-fns';
-import { CalendarIcon, RefreshCw, CreditCard, Tag, Sparkles, Check, Info, AlertTriangle, Crown } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Flame, Star, Diamond } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface PricingDisplayProps {
+  pricingId: string;
   basePrice: number;
   duration: number;
-  pricingId: string;
   autoRenew: boolean;
   originalPrice: number;
   finalPrice: number;
@@ -22,157 +15,178 @@ interface PricingDisplayProps {
 }
 
 const PricingDisplay: React.FC<PricingDisplayProps> = ({
+  pricingId,
   basePrice,
   duration,
-  pricingId,
   autoRenew,
   originalPrice,
   finalPrice,
-  discountPercentage
+  discountPercentage,
 }) => {
-  const futureDate = addMonths(new Date(), duration);
-  const formattedDate = format(futureDate, 'MMM d, yyyy');
   const isFreePlan = pricingId === 'free';
-  const discountAmount = Number((originalPrice - finalPrice).toFixed(2));
   
-  const getPricingTitle = () => {
-    switch(pricingId) {
-      case 'standard': return 'Standard';
-      case 'premium': return 'Premium';
-      case 'gold': return 'Featured';
-      case 'free': return 'Basic (Limited Reach)';
-      default: return 'Selected Plan';
+  const formatCurrency = (value: number): string => {
+    return value.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+  
+  // Function to get the appropriate icon
+  const getPlanIcon = () => {
+    switch (pricingId) {
+      case 'standard':
+        return <Flame size={24} className="text-blue-600" />;
+      case 'premium':
+        return <Diamond size={24} className="text-purple-600" />;
+      case 'gold':
+        return <Star size={24} className="text-amber-600" />;
+      default:
+        return null;
+    }
+  };
+  
+  // Function to get the plan name
+  const getPlanName = () => {
+    switch (pricingId) {
+      case 'standard':
+        return "Standard";
+      case 'premium':
+        return "Premium Listing";
+      case 'gold':
+        return "Gold Featured";
+      case 'free':
+        return "Basic Plan";
+      default:
+        return "Selected Plan";
+    }
+  };
+  
+  // Get gradient background for different plans
+  const getGradientBg = () => {
+    if (isFreePlan) return "bg-gray-50";
+    
+    switch (pricingId) {
+      case 'standard':
+        return "bg-gradient-to-br from-white to-blue-50";
+      case 'premium':
+        return "bg-gradient-to-br from-purple-50 to-purple-100/70";
+      case 'gold':
+        return "bg-gradient-to-br from-amber-50 to-amber-100/70";
+      default:
+        return "bg-white";
     }
   };
 
-  const getPricingGradient = () => {
-    switch(pricingId) {
-      case 'standard': return 'from-blue-50 to-blue-100/30';
-      case 'premium': return 'from-purple-50 to-purple-100/30';
-      case 'gold': return 'from-amber-50 to-amber-100/30';
-      default: return 'from-gray-50 to-gray-100/30';
-    }
-  };
-  
   return (
-    <div className={cn(
-      "rounded-lg border p-6 mt-6 shadow-md",
-      !isFreePlan 
-        ? `bg-gradient-to-br ${getPricingGradient()}` 
-        : "bg-gray-50"
+    <Card className={cn(
+      "overflow-hidden",
+      getGradientBg(),
+      pricingId === 'standard' ? "border-blue-200" :
+      pricingId === 'premium' ? "border-purple-200" :
+      pricingId === 'gold' ? "border-amber-200" :
+      "border-gray-200"
     )}>
-      <h3 className="font-semibold text-md mb-5 flex items-center gap-2 text-purple-800">
-        <Sparkles className="h-5 w-5 text-purple-600" />
-        Listing Summary
-      </h3>
+      <CardHeader 
+        className={cn(
+          "p-5 space-y-1",
+          pricingId === 'standard' ? "bg-blue-100/50 border-b border-blue-200" :
+          pricingId === 'premium' ? "bg-purple-100/50 border-b border-purple-200" :
+          pricingId === 'gold' ? "bg-amber-100/50 border-b border-amber-200" :
+          "bg-gray-100 border-b border-gray-200"
+        )}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            {getPlanIcon()}
+            <CardTitle className={cn(
+              "font-playfair",
+              pricingId === 'standard' ? "text-blue-800" :
+              pricingId === 'premium' ? "text-purple-800" :
+              pricingId === 'gold' ? "text-amber-800" :
+              "text-gray-800"
+            )}>
+              {getPlanName()}
+            </CardTitle>
+          </div>
+          {!isFreePlan && (
+            <span className="px-2 py-1 text-xs rounded-full bg-opacity-20 font-medium bg-white">
+              {duration} {duration === 1 ? 'month' : 'months'}
+            </span>
+          )}
+        </div>
+        <CardDescription className={cn(
+          "text-sm",
+          pricingId === 'standard' ? "text-blue-700" :
+          pricingId === 'premium' ? "text-purple-700" :
+          pricingId === 'gold' ? "text-amber-700" :
+          "text-gray-600"
+        )}>
+          {isFreePlan ? "Limited visibility posting" : "Premium job placement"}
+        </CardDescription>
+      </CardHeader>
       
-      <div className="space-y-5 text-sm">
+      <CardContent className="p-5 space-y-4">
         {isFreePlan ? (
-          <div className="flex justify-between items-center p-4 bg-gray-50 rounded-md border border-gray-200">
-            <div className="flex items-center">
-              <AlertTriangle className="h-5 w-5 mr-3 text-amber-500" />
-              <span className="font-medium text-gray-700">Basic - Limited Reach</span>
-            </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="font-medium flex items-center">
-                    30 days
-                    <Info className="h-4 w-4 ml-1 text-gray-400" />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent className="p-2">
-                  <p className="text-sm">Free listings have limited visibility</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <div className="text-center py-2">
+            <p className="text-2xl font-medium mb-1">Free</p>
+            <p className="text-sm text-gray-500">For first-time users only</p>
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
-              <div className="flex items-center">
-                <Sparkles className="h-5 w-5 mr-3 text-purple-500" />
-                <span className="font-medium">{getPricingTitle()} Plan</span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Base price</span>
+                <span className="font-medium">{formatCurrency(basePrice)}/mo</span>
               </div>
-              <div className="text-right">
-                {pricingId === 'standard' && <span className="text-xs line-through text-gray-400 block">$14.99/month</span>}
-                {pricingId === 'premium' && <span className="text-xs line-through text-gray-400 block">$24.99/month</span>}
-                {pricingId === 'gold' && <span className="text-xs line-through text-gray-400 block">$39.99/month</span>}
-                <span className="font-medium">${basePrice.toFixed(2)}/month</span>
-              </div>
-            </div>
-            
-            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
-              <div className="flex items-center">
-                <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
-                <span>Duration</span>
-              </div>
-              <div className="flex items-center">
-                {duration >= 12 && <Crown className="h-4 w-4 mr-1 text-amber-500" />}
+              
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Duration</span>
                 <span className="font-medium">{duration} {duration === 1 ? 'month' : 'months'}</span>
               </div>
-            </div>
-            
-            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
-              <div className="flex items-center">
-                <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
-                <span>Expires on</span>
-              </div>
-              <span className="font-medium">{formattedDate}</span>
-            </div>
-            
-            {autoRenew && (
-              <div className="flex justify-between items-center p-4 bg-blue-50 rounded-md border border-blue-100">
-                <div className="flex items-center">
-                  <RefreshCw className="h-5 w-5 mr-3 text-blue-500" />
-                  <span>Auto-renew</span>
-                </div>
-                <span className="font-medium">Enabled</span>
-              </div>
-            )}
-            
-            <div className="border-t pt-5 mt-5 space-y-3.5">
-              <div className="flex justify-between items-center text-gray-700">
-                <span>Base price (${basePrice.toFixed(2)}/month × {duration})</span>
-                <span>${originalPrice.toFixed(2)}</span>
-              </div>
-              
+
               {discountPercentage > 0 && (
-                <div className="flex justify-between items-center text-green-600">
-                  <div className="flex items-center">
-                    <Tag className="h-4 w-4 mr-2" />
-                    <span>Discount ({discountPercentage}%)</span>
+                <>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Subtotal</span>
+                    <span className="font-medium">{formatCurrency(originalPrice)}</span>
                   </div>
-                  <span>-${discountAmount.toFixed(2)}</span>
-                </div>
+                  
+                  <div className="flex justify-between items-center text-green-700">
+                    <span className="text-sm font-medium">Discount ({discountPercentage}%)</span>
+                    <span className="font-medium">-{formatCurrency(originalPrice - finalPrice)}</span>
+                  </div>
+                </>
               )}
               
-              <div className="flex justify-between items-center font-bold text-lg pt-4 border-t border-dashed mt-2">
-                <div className="flex items-center">
-                  <CreditCard className="h-5 w-5 mr-2 text-purple-700" />
-                  <span>Total</span>
-                </div>
-                <div className="flex flex-col items-end">
-                  {discountPercentage > 0 && (
-                    <span className="text-sm line-through text-gray-500 font-normal">${originalPrice.toFixed(2)}</span>
-                  )}
-                  <span className="text-purple-800">${finalPrice.toFixed(2)}</span>
+              <div className="pt-2 border-t border-gray-200">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-900">Total</span>
+                  <span className="text-xl font-bold">
+                    {formatCurrency(finalPrice)}
+                  </span>
                 </div>
               </div>
-              
-              {discountPercentage > 0 && (
-                <div className="mt-4">
-                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100 px-3 py-1.5 font-semibold">
-                    You Save ${discountAmount.toFixed(2)} ({discountPercentage}%)
-                  </Badge>
+
+              {autoRenew && (
+                <div className="pt-3 text-xs text-gray-600">
+                  <p className="flex items-center">
+                    <RefreshCw className="h-3.5 w-3.5 mr-1 text-green-600" />
+                    Auto-renewal is enabled. You can cancel anytime.
+                  </p>
                 </div>
               )}
             </div>
           </>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
+
+// Import RefreshCw from lucide-react
+import { RefreshCw } from 'lucide-react';
 
 export default PricingDisplay;

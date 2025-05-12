@@ -102,7 +102,9 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('Review & Payment', 'Xem lại & Thanh toán')}</h2>
+      <h2 className="text-2xl font-bold font-playfair">
+        {t('Review & Payment', 'Xem lại & Thanh toán')}
+      </h2>
       
       <PricingCards
         pricingOptions={jobPricingOptions}
@@ -113,7 +115,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       />
       
       {selectedPricing !== 'free' && (
-        <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg border border-gray-200 shadow-sm">
           <Label htmlFor="auto-renew" className="flex items-center gap-2 cursor-pointer">
             <Info className="h-4 w-4 text-blue-500" />
             {t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}
@@ -150,9 +152,9 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="order-2 md:order-1">
           <PricingDisplay 
+            pricingId={selectedPricing}
             basePrice={basePrice}
             duration={selectedDuration}
-            pricingId={selectedPricing}
             autoRenew={autoRenew}
             originalPrice={originalPrice}
             finalPrice={finalPrice}

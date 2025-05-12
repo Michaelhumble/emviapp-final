@@ -14,22 +14,22 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
   const getUpgradeMessage = () => {
     if (selectedPricing === 'standard') {
       return {
-        title: "Want to double your chances?",
-        description: "For just $5 more, get front-page exposure for 30 days and hire up to 3× faster.",
-        buttonText: "Upgrade for $5 more"
+        title: "Want to double your reach?",
+        description: "For just $5 more, get front-page exposure for 30 days and reach more artists faster.",
+        buttonText: "Upgrade to Gold Featured"
       };
     } else if (selectedPricing === 'premium') {
       return {
-        title: "Did you know 1,200 brands upgraded to Featured last month?",
-        description: "Get maximum visibility and premium placement with our Featured plan for just $10 more.",
-        buttonText: "Upgrade to Featured"
+        title: "Did you know 1,200 brands upgraded to Gold last month?",
+        description: "Get maximum visibility and premium placement with our Gold Featured plan.",
+        buttonText: "Upgrade to Gold Featured"
       };
     }
     
     // Default
     return {
-      title: "Upgrade to Featured for Maximum Visibility",
-      description: "Featured listings get 3x more views and appear in the top section.",
+      title: "Upgrade to Gold Featured for Maximum Visibility",
+      description: "Gold Featured listings get more views and appear in the premium section.",
       buttonText: "Upgrade Now"
     };
   };
@@ -83,9 +83,9 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
           </div>
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-medium text-blue-800">Auto-Renew Recommended</h3>
+          <h3 className="text-lg font-medium text-blue-800">✅ Auto-renew is enabled. Cancel anytime.</h3>
           <p className="text-sm mt-1 text-blue-600">
-            Keep your listing active without interruption. You'll be notified before each renewal.
+            Best value over time. Keep your listing active without interruption. You'll be notified before each renewal.
           </p>
         </div>
       </div>
