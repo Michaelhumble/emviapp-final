@@ -1,440 +1,312 @@
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { FileText, Image, MapPin, Phone, Mail, Briefcase, DollarSign } from 'lucide-react';
-import { getJobTemplate, getVietnameseTemplate } from '@/utils/jobTemplates';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { toast } from 'sonner';
+import { ImageIcon, Plus, Trash } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Badge } from '@/components/ui/badge';
-import SectionHeader from '../SectionHeader';
+import { UserProfile } from '@/types/user';
 
 interface JobFormProps {
-  onSubmit: (values: JobFormValues) => void;
+  onSubmit: SubmitHandler<JobFormValues>;
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
   defaultValues?: JobFormValues;
   industry?: string;
-  userProfile?: any;
+  userProfile?: UserProfile | null;
 }
 
-export const JobForm: React.FC<JobFormProps> = ({
-  onSubmit,
-  photoUploads,
-  setPhotoUploads,
+export const JobForm: React.FC<JobFormProps> = ({ 
+  onSubmit, 
+  photoUploads, 
+  setPhotoUploads, 
   isSubmitting,
   defaultValues,
-  industry = '',
+  industry = "nails",
   userProfile
 }) => {
   const { t, isVietnamese } = useTranslation();
-  const [selectedIndustry, setSelectedIndustry] = useState(industry);
-  const [vietnameseTemplate, setVietnameseTemplate] = useState<Partial<JobFormValues> | null>(null);
+  
+  // Define the schema for file uploads
+  const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 5MB
+  const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+  
+  const imageSchema = z.instanceof(File)
+    .refine((file) => file.size <= MAX_UPLOAD_SIZE, `Max image size is 5MB.`)
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    );
+  
+  const uploadSchema = z.array(imageSchema).max(3, "You can only upload up to 3 images");
+  
+  const [uploadError, setUploadError] = useState<string | null>(null);
   
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: defaultValues || {
-      title: '',
-      description: '',
-      location: '',
-      salary: '',
-      jobType: 'full-time',
-      phoneNumber: userProfile?.phoneNumber || '',
-      contactEmail: userProfile?.email || '',
+      title: "",
+      description: "",
+      location: "",
+      salary: "",
+      contactEmail: userProfile?.email || "",
+      phoneNumber: userProfile?.phone_number || "",
+      jobType: "full-time",
+      requirements: [],
+      jobSummary: "",
+      weeklyPay: false
     },
+    mode: "onChange"
   });
-
-  useEffect(() => {
-    if (selectedIndustry && !defaultValues) {
-      // Apply template only if no existing data
-      const template = getJobTemplate(selectedIndustry, userProfile);
-      const vTemplate = getVietnameseTemplate(selectedIndustry);
-      
-      setVietnameseTemplate(vTemplate);
-      
-      if (template) {
-        Object.keys(template).forEach((key) => {
-          const typedKey = key as keyof JobFormValues;
-          form.setValue(typedKey, template[typedKey] as any);
-        });
-      }
-    }
-  }, [selectedIndustry, form, defaultValues, userProfile]);
-
-  const handleIndustryChange = (value: string) => {
-    setSelectedIndustry(value);
-  };
   
-  // Photo upload handling
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      // Limit to max 5 photos
-      const newFiles = Array.from(files).slice(0, 5 - photoUploads.length);
-      setPhotoUploads([...photoUploads, ...newFiles]);
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = form;
+  
+  const watchAllFields = watch(); // This will watch all fields
+  
+  // Handle file uploads
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUploadError(null); // Clear previous errors
+    
+    const files = Array.from(e.target.files || []);
+    
+    try {
+      uploadSchema.parse(files);
+      setPhotoUploads(files);
+    } catch (error: any) {
+      setUploadError(error.message);
+      toast.error(error.message);
     }
   };
   
-  const removePhoto = (index: number) => {
-    setPhotoUploads(photoUploads.filter((_, i) => i !== index));
+  // Handle removing a specific photo
+  const handleRemovePhoto = (indexToRemove: number) => {
+    setPhotoUploads(prevUploads => prevUploads.filter((_, index) => index !== indexToRemove));
   };
   
-  const FormSection = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-    <div className={`bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 hover:border-purple-200 transition-colors ${className || ''}`}>
-      {children}
-    </div>
-  );
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-8">
-        {/* Industry Selection */}
-        <FormSection>
-          <SectionHeader
-            title={t("Select Industry", "Chọn Ngành Nghề")}
-            emoji="🏷️"
-          />
-          <FormField
-            control={form.control}
-            name="jobType"
-            render={({ field }) => (
-              <FormItem>
-                <Select
-                  value={selectedIndustry}
-                  onValueChange={handleIndustryChange}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("Select Industry", "Chọn Ngành Nghề")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="nails">🧖‍♀️ {t("Nails", "Móng")}</SelectItem>
-                    <SelectItem value="hair">💇‍♀️ {t("Hair", "Tóc")}</SelectItem>
-                    <SelectItem value="eyebrowLash">👁️ {t("Eyelash & Brows", "Mi & Lông Mày")}</SelectItem>
-                    <SelectItem value="tattoo">🎨 {t("Tattoo", "Xăm")}</SelectItem>
-                    <SelectItem value="massage">✋ {t("Massage & Spa", "Mát-xa & Spa")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-        </FormSection>
-        
-        {/* Job Title Section */}
-        <FormSection className="bg-gradient-to-br from-white to-purple-50/30">
-          <SectionHeader
-            title={t("Job Title", "Tiêu Đề Công Việc")}
-            emoji="📝"
-            description={t("Create an appealing title that attracts qualified candidates", "Tạo tiêu đề hấp dẫn để thu hút ứng viên có trình độ")}
-          />
-          
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <div className="relative">
-                  <Input
-                    {...field}
-                    placeholder={isVietnamese && vietnameseTemplate ? vietnameseTemplate.title : "e.g. Experienced Nail Technician Needed"}
-                    className="pl-10 border-2 h-12"
-                  />
-                  <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                </div>
-                {selectedIndustry === "nails" && vietnameseTemplate && (
-                  <div className="mt-2 text-sm text-gray-500">
-                    {isVietnamese ? (
-                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                        ✨ English: {jobFormSchema.shape.title.default()}
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                        ✨ Tiếng Việt: {vietnameseTemplate.title}
-                      </Badge>
-                    )}
-                  </div>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </FormSection>
-
-        {/* Job Summary Section */}
-        <FormSection className="bg-gradient-to-br from-white to-pink-50/30">
-          <SectionHeader
-            title={t("Job Summary", "Tóm Tắt Công Việc")}
-            emoji="📊"
-            description={t("Brief overview of the position (appears in search results)", "Mô tả ngắn gọn về vị trí (hiển thị trong kết quả tìm kiếm)")}
-          />
-          
-          <FormField
-            control={form.control}
-            name="jobSummary"
-            render={({ field }) => (
-              <FormItem>
-                <div className="relative">
-                  <Textarea
-                    {...field}
-                    placeholder={isVietnamese && vietnameseTemplate?.jobSummary 
-                      ? vietnameseTemplate.jobSummary 
-                      : "Brief overview of what makes this position great"}
-                    className="min-h-[80px] pl-10 border-2 pt-2"
-                  />
-                  <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                </div>
-                {selectedIndustry === "nails" && vietnameseTemplate && (
-                  <div className="mt-2 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-md border border-purple-100">
-                    <span className="block mb-2 text-sm font-medium text-purple-700">
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                        ✨ {t("Suggested for Nail Salons", "Đề xuất cho Tiệm Nail")}
-                      </Badge>
-                    </span>
-                    <p className="text-sm text-gray-600">
-                      {isVietnamese 
-                        ? jobFormSchema.shape.jobSummary.default() || "Looking for a friendly, reliable nail tech with experience in dip, gel, and design. Great team, busy salon, weekly pay."
-                        : vietnameseTemplate.jobSummary}
-                    </p>
-                  </div>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </FormSection>
-
-        {/* Job Type & Salary Section */}
-        <FormSection>
-          <SectionHeader
-            title={t("Job Details", "Chi Tiết Công Việc")}
-            emoji="💼"
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="jobType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Briefcase className="h-4 w-4" />
-                    {t("Employment Type", "Loại Hình Công Việc")}
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("Select job type", "Chọn loại hình công việc")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full-time">{t("Full-Time", "Toàn Thời Gian")}</SelectItem>
-                      <SelectItem value="part-time">{t("Part-Time", "Bán Thời Gian")}</SelectItem>
-                      <SelectItem value="contract">{t("Contract", "Hợp Đồng")}</SelectItem>
-                      <SelectItem value="temporary">{t("Temporary", "Tạm Thời")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+  // Function to display file upload previews
+  const PhotoPreviews = () => {
+    return (
+      <div className="flex flex-wrap gap-3 mt-4">
+        {photoUploads.map((file, index) => (
+          <div key={index} className="relative">
+            <img
+              src={URL.createObjectURL(file)}
+              alt={file.name}
+              className="w-32 h-32 rounded-md object-cover"
             />
-
-            <FormField
-              control={form.control}
-              name="salary"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4" />
-                    {t("Salary/Compensation", "Lương/Thu Nhập")}
-                  </FormLabel>
-                  <div className="relative">
-                    <Input 
-                      {...field} 
-                      placeholder={isVietnamese && vietnameseTemplate 
-                        ? vietnameseTemplate.salary 
-                        : "e.g. $800-1200/week or Competitive pay"}
-                    />
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </FormSection>
-
-        {/* Location Section */}
-        <FormSection>
-          <SectionHeader
-            title={t("Location", "Địa Điểm")}
-            emoji="📍"
-          />
-          
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <div className="relative">
-                  <Input
-                    {...field}
-                    placeholder={t("City, State (e.g. San Jose, CA)", "Thành Phố, Tiểu Bang (VD: San Jose, CA)")}
-                    className="pl-10"
-                  />
-                  <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </FormSection>
-
-        {/* Detailed Description */}
-        <FormSection className="bg-gradient-to-br from-white to-blue-50/30">
-          <SectionHeader
-            title={t("Job Description", "Mô Tả Công Việc")}
-            emoji="📄"
-            description={t("Provide details about responsibilities, skills required, and benefits", "Cung cấp chi tiết về trách nhiệm, kỹ năng yêu cầu và quyền lợi")}
-          />
-          
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <Textarea
-                  {...field}
-                  placeholder={t("Detail the job responsibilities, required skills, and benefits", "Chi tiết về trách nhiệm công việc, kỹ năng yêu cầu và quyền lợi")}
-                  className="min-h-[150px]"
-                />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </FormSection>
-
-        {/* Contact Information Section */}
-        <FormSection>
-          <SectionHeader
-            title={t("Contact Information", "Thông Tin Liên Hệ")}
-            emoji="📞"
-            description={t("This information will be visible to candidates who want to apply", "Thông tin này sẽ hiển thị cho các ứng viên muốn ứng tuyển")}
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    {t("Phone Number", "Số Điện Thoại")}
-                  </FormLabel>
-                  <Input 
-                    {...field} 
-                    placeholder={t("e.g. (123) 456-7890", "VD: (123) 456-7890")} 
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="contactEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    {t("Email", "Email")}
-                  </FormLabel>
-                  <Input 
-                    {...field} 
-                    placeholder={t("e.g. hire@yoursalon.com", "VD: tuyendung@tiemnail.com")} 
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </FormSection>
-
-        {/* Photo Upload Section */}
-        <FormSection className="bg-gradient-to-br from-white to-yellow-50/30">
-          <SectionHeader
-            title={t("Photo Upload", "Tải Ảnh Lên")}
-            emoji="📸"
-            description={t("💡 Add Real Salon Photos to Stand Out", "💡 Thêm Hình Ảnh Thực Tế Để Nổi Bật Hơn")}
-          />
-          
-          <div className="mt-2">
-            <div 
-              className="border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50/50 transition-colors rounded-lg p-6 text-center cursor-pointer bg-gradient-to-r from-white to-purple-50/20"
-              onClick={() => document.getElementById('photo-upload')?.click()}
+            <button
+              type="button"
+              onClick={() => handleRemovePhoto(index)}
+              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-700 transition-colors"
             >
-              <Image className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="mt-2">
-                <Label htmlFor="photo-upload" className="text-primary hover:text-primary/80 cursor-pointer">
-                  {t("Upload photos", "Tải ảnh lên")}
-                </Label>
-                <p className="text-xs text-gray-500 mt-1">
-                  {t("PNG, JPG, WEBP up to 5MB (max 5 photos)", "PNG, JPG, WEBP tối đa 5MB (tối đa 5 ảnh)")}
-                </p>
-              </div>
-              <input 
-                id="photo-upload" 
-                type="file" 
-                multiple 
-                onChange={handlePhotoChange} 
-                accept="image/*" 
-                className="hidden" 
-              />
-            </div>
-
-            {/* Photo Previews */}
-            {photoUploads.length > 0 && (
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                {photoUploads.map((photo, index) => (
-                  <div key={index} className="relative group">
-                    <img 
-                      src={URL.createObjectURL(photo)} 
-                      alt={`Upload ${index + 1}`}
-                      className="h-24 w-full object-cover rounded-md border border-gray-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      ×
-                    </button>
-                    <p className="text-xs text-gray-500 truncate mt-1">{photo.name}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+              <Trash className="w-4 h-4" />
+            </button>
           </div>
-        </FormSection>
-
-        {/* Submit Button */}
-        <div className="flex justify-center pt-6">
-          <Button 
-            type="submit" 
-            size="lg" 
-            disabled={isSubmitting}
-            className="px-10 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-6"
-          >
-            {isSubmitting ? (
-              t("Posting Job...", "Đang Đăng Tin...")
-            ) : (
-              t("Post Job Now", "Đăng Tin Ngay")
-            )}
-          </Button>
+        ))}
+      </div>
+    );
+  };
+  
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-6">
+      {/* Job Title */}
+      <div>
+        <Label htmlFor="title" className="block text-sm font-medium text-gray-700">
+          {t("Job Title", "Tiêu đề công việc")}
+        </Label>
+        <Input
+          type="text"
+          id="title"
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          placeholder={t("e.g., Nail Technician", "Ví dụ: Thợ làm móng")}
+          {...register('title')}
+        />
+        {errors.title && (
+          <p className="mt-2 text-sm text-red-600">{errors.title.message}</p>
+        )}
+      </div>
+      
+      {/* Job Description */}
+      <div>
+        <Label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          {t("Job Description", "Mô tả công việc")}
+        </Label>
+        <Textarea
+          id="description"
+          rows={4}
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          placeholder={t("Describe the job responsibilities and requirements", "Mô tả trách nhiệm và yêu cầu công việc")}
+          {...register('description')}
+        />
+        {errors.description && (
+          <p className="mt-2 text-sm text-red-600">{errors.description.message}</p>
+        )}
+      </div>
+      
+      {/* Location */}
+      <div>
+        <Label htmlFor="location" className="block text-sm font-medium text-gray-700">
+          {t("Location", "Địa điểm")}
+        </Label>
+        <Input
+          type="text"
+          id="location"
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          placeholder={t("City, State", "Thành phố, Tiểu bang")}
+          {...register('location')}
+        />
+        {errors.location && (
+          <p className="mt-2 text-sm text-red-600">{errors.location.message}</p>
+        )}
+      </div>
+      
+      {/* Salary */}
+      <div>
+        <Label htmlFor="salary" className="block text-sm font-medium text-gray-700">
+          {t("Salary (Optional)", "Mức lương (Tùy chọn)")}
+        </Label>
+        <Input
+          type="text"
+          id="salary"
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          placeholder={t("e.g., $15 - $25 per hour", "Ví dụ: $15 - $25 mỗi giờ")}
+          {...register('salary')}
+        />
+        {errors.salary && (
+          <p className="mt-2 text-sm text-red-600">{errors.salary.message}</p>
+        )}
+      </div>
+      
+      {/* Contact Email */}
+      <div>
+        <Label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">
+          {t("Contact Email (Optional)", "Email liên hệ (Tùy chọn)")}
+        </Label>
+        <Input 
+          type="email" 
+          placeholder={t("Your email for applicants", "Email của bạn cho ứng viên")} 
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          {...register('contactEmail')}
+        />
+        {errors.contactEmail && (
+          <p className="mt-2 text-sm text-red-600">{errors.contactEmail.message}</p>
+        )}
+      </div>
+      
+      {/* Phone Number */}
+      <div>
+        <Label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+          {t("Phone Number (Optional)", "Số điện thoại (Tùy chọn)")}
+        </Label>
+        <Input 
+          type="tel" 
+          placeholder={t("Your phone number for applicants", "Số điện thoại của bạn cho ứng viên")} 
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          {...register('phoneNumber')}
+        />
+        {errors.phoneNumber && (
+          <p className="mt-2 text-sm text-red-600">{errors.phoneNumber.message}</p>
+        )}
+      </div>
+      
+      {/* Job Type */}
+      <div>
+        <Label htmlFor="jobType" className="block text-sm font-medium text-gray-700">
+          {t("Job Type", "Loại công việc")}
+        </Label>
+        <Select onValueChange={(value) => setValue('jobType', value)}>
+          <SelectTrigger className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+            <SelectValue placeholder={t("Select a job type", "Chọn một loại công việc")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="full-time">{t("Full-time", "Toàn thời gian")}</SelectItem>
+            <SelectItem value="part-time">{t("Part-time", "Bán thời gian")}</SelectItem>
+            <SelectItem value="contract">{t("Contract", "Hợp đồng")}</SelectItem>
+            <SelectItem value="temporary">{t("Temporary", "Tạm thời")}</SelectItem>
+          </SelectContent>
+        </Select>
+        {errors.jobType && (
+          <p className="mt-2 text-sm text-red-600">{errors.jobType.message}</p>
+        )}
+      </div>
+      
+      {/* Requirements */}
+      <div>
+        <Label htmlFor="requirements" className="block text-sm font-medium text-gray-700">
+          {t("Requirements (Optional)", "Yêu cầu (Tùy chọn)")}
+        </Label>
+        <Input
+          type="text"
+          id="requirements"
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          placeholder={t("e.g., 2 years experience, license", "Ví dụ: 2 năm kinh nghiệm, bằng cấp")}
+          {...register('requirements')}
+        />
+        {errors.requirements && (
+          <p className="mt-2 text-sm text-red-600">{errors.requirements.message}</p>
+        )}
+      </div>
+      
+      {/* Job Summary */}
+      <div>
+        <Label htmlFor="jobSummary" className="block text-sm font-medium text-gray-700">
+          {t("Job Summary (Optional)", "Tóm tắt công việc (Tùy chọn)")}
+        </Label>
+        <Textarea
+          id="jobSummary"
+          rows={2}
+          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+          placeholder={t("Summarize the job in a few sentences", "Tóm tắt công việc trong vài câu")}
+          {...register('jobSummary')}
+        />
+        {errors.jobSummary && (
+          <p className="mt-2 text-sm text-red-600">{errors.jobSummary.message}</p>
+        )}
+      </div>
+      
+      {/* Photo Uploads */}
+      <div>
+        <Label className="block text-sm font-medium text-gray-700">
+          {t("Upload Photos (Optional)", "Tải ảnh lên (Tùy chọn)")}
+        </Label>
+        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md border-gray-300">
+          <div className="space-y-1 text-center">
+            <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+            <div className="flex text-sm text-gray-600">
+              <label
+                htmlFor="file-upload"
+                className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+              >
+                <span>{t("Upload a file", "Tải lên một tệp")}</span>
+                <input id="file-upload" name="file-upload" type="file" className="sr-only" multiple onChange={handleFileChange} accept="image/*" />
+              </label>
+              <p className="pl-1">{t("or drag and drop", "hoặc kéo và thả")}</p>
+            </div>
+            <p className="text-xs text-gray-500">
+              {t("PNG, JPG, GIF up to 5MB", "PNG, JPG, GIF tối đa 5MB")}
+            </p>
+          </div>
         </div>
-      </form>
-    </Form>
+        
+        {/* Display photo previews */}
+        <PhotoPreviews />
+        
+        {uploadError && (
+          <p className="mt-2 text-sm text-red-600">{uploadError}</p>
+        )}
+      </div>
+      
+      {/* Submit Button */}
+      <Button type="submit" disabled={isSubmitting} className="w-full">
+        {isSubmitting ? t("Submitting...", "Đang gửi...") : t("Submit", "Gửi")}
+      </Button>
+    </form>
   );
 };

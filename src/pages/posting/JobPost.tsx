@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { JobForm } from '@/components/posting/job/JobForm';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
@@ -87,8 +86,8 @@ const JobPost: React.FC = () => {
   };
   
   // Handle changes to pricing options
-  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
-    setPricingOptions(prev => ({ ...prev, ...options }));
+  const handlePricingOptionsChange = (options: Partial<PricingOptions>) => {
+    setPricingOptions({ ...pricingOptions, ...options });
   };
   
   // Handle pricing tier selection
@@ -124,8 +123,10 @@ const JobPost: React.FC = () => {
               <Card className="p-6">
                 <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
                 <JobPostOptions
+                  isFirstPost={userStats?.isFirstTimeUser}
+                  hasReferrals={userStats?.referralCredits > 0}
                   pricingOptions={pricingOptions}
-                  setPricingOptions={handleUpdatePricing}
+                  setPricingOptions={handlePricingOptionsChange}
                 />
                 
                 <Button 
@@ -151,7 +152,7 @@ const JobPost: React.FC = () => {
                 postType="job"
                 pricingOptions={pricingOptions}
                 onPricingChange={handlePricingTierChange}
-                onUpdatePricing={handleUpdatePricing}
+                onUpdatePricing={handlePricingOptionsChange}
                 onNextStep={handleCreateCheckoutSession}
                 onPrevStep={handleBackToForm}
                 jobData={formValues}
