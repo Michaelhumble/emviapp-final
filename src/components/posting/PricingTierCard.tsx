@@ -1,216 +1,162 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { JobPricingOption } from '@/utils/posting/types';
+import { Check, X, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Check, X, Sparkles, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
+import { JobPricingOption } from '@/utils/posting/types';
 
 interface PricingTierCardProps {
   pricing: JobPricingOption;
   isSelected: boolean;
+  onClick: () => void;
   isMostPopular?: boolean;
   isFreeVariant?: boolean;
   subtitle?: string;
-  onClick: () => void;
+  negativeFeatures?: string[];
 }
 
-const PricingTierCard: React.FC<PricingTierCardProps> = ({ 
-  pricing, 
-  isSelected, 
+const PricingTierCard: React.FC<PricingTierCardProps> = ({
+  pricing,
+  isSelected,
+  onClick,
   isMostPopular = false,
   isFreeVariant = false,
   subtitle,
-  onClick 
+  negativeFeatures = []
 }) => {
-  
-  // Helper to get the appropriate emoji based on tier
-  const getTierEmoji = (id: string) => {
-    switch (id) {
-      case 'diamond':
-        return '💎';
-      case 'premium':
-        return '✨';
-      case 'gold':
-      case 'standard':
-        return '🏆';
-      default:
-        return '📢';
-    }
+  const getBgGradient = () => {
+    if (isFreeVariant) return 'bg-gradient-to-b from-gray-50 to-gray-100';
+    if (pricing.id === 'gold') return 'bg-gradient-to-b from-amber-50 to-amber-100/60';
+    if (pricing.id === 'premium') return 'bg-gradient-to-b from-purple-50 to-purple-100/60';
+    if (pricing.id === 'standard') return 'bg-gradient-to-b from-blue-50 to-blue-100/60';
+    return 'bg-gradient-to-b from-white to-gray-50';
   };
 
-  // Get promotion text based on tier
-  const getPromotionText = (id: string) => {
-    switch (id) {
-      case 'premium':
-        return 'Top Pick by Salons';
-      case 'standard':
-        return 'Smart Choice';
-      case 'gold':
-        return 'Fastest Hiring Plan';
-      default:
-        return null;
+  const getBorderColor = () => {
+    if (isSelected) {
+      if (pricing.id === 'gold') return 'border-amber-400 ring-2 ring-amber-200';
+      if (pricing.id === 'premium') return 'border-purple-400 ring-2 ring-purple-200';
+      if (pricing.id === 'standard') return 'border-blue-400 ring-2 ring-blue-200';
+      return 'border-gray-300 ring-2 ring-gray-200';
     }
+    if (isFreeVariant) return 'border-gray-200';
+    if (pricing.id === 'gold') return 'border-amber-200';
+    if (pricing.id === 'premium') return 'border-purple-200';
+    return 'border-gray-200';
   };
 
-  const isFree = pricing.id === 'free';
-  const promotionText = getPromotionText(pricing.id);
-  
-  // Define background style based on tier
-  const getBgStyle = (id: string) => {
-    switch (id) {
-      case 'premium':
-        return "bg-gradient-to-b from-amber-50 to-white border-amber-200"; // soft gold
-      case 'standard':
-        return "bg-gradient-to-b from-purple-50 to-white border-purple-100"; // lavender
-      case 'gold':
-        return "bg-gradient-to-b from-amber-100 to-white border-amber-300"; // premium gold
-      case 'free':
-        return "bg-gray-50 border-gray-200"; // muted gray
-      default:
-        return "bg-white border-gray-200";
-    }
+  const getNameTextColor = () => {
+    if (pricing.id === 'gold') return 'text-amber-700';
+    if (pricing.id === 'premium') return 'text-purple-700';
+    if (pricing.id === 'standard') return 'text-blue-700';
+    return 'text-gray-700';
   };
-  
-  // Define premium-specific features that the free plan lacks
-  const freeNegativeFeatures = isFree ? [
-    'No visibility boost', 
-    'Not recommended for hiring',
-    'No listing boost'
-  ] : [];
-  
+
+  const getPriceTextColor = () => {
+    if (pricing.id === 'gold') return 'text-amber-800';
+    if (pricing.id === 'premium') return 'text-purple-800';
+    if (pricing.id === 'standard') return 'text-blue-800';
+    return 'text-gray-800';
+  };
+
+  const getCheckColor = () => {
+    if (pricing.id === 'gold') return 'text-amber-600';
+    if (pricing.id === 'premium') return 'text-purple-600';
+    if (pricing.id === 'standard') return 'text-blue-600';
+    return 'text-gray-600';
+  };
+
   return (
-    <Card 
-      className={cn(
-        "relative border-2 overflow-hidden transition-all duration-300 cursor-pointer h-full",
-        isSelected 
-          ? "ring-2 ring-purple-500 ring-offset-2 border-purple-200 shadow-lg transform scale-[1.02]" 
-          : "hover:border-purple-200 hover:shadow-md hover:transform hover:scale-[1.01]",
-        getBgStyle(pricing.id)
-      )}
+    <div
       onClick={onClick}
+      className={cn(
+        "relative rounded-lg border p-5 cursor-pointer transition-all duration-300",
+        getBgGradient(),
+        getBorderColor(),
+        isSelected ? "shadow-md" : "shadow-sm hover:shadow",
+        isFreeVariant ? "bg-opacity-80" : "bg-opacity-100"
+      )}
     >
-      {/* Animated Glow Effect for selected cards */}
-      {isSelected && pricing.id === 'premium' && (
-        <div className="absolute inset-0 bg-amber-100 opacity-30 animate-pulse rounded-lg" />
-      )}
-      
-      {isSelected && pricing.id === 'gold' && (
-        <div className="absolute inset-0 bg-amber-200 opacity-30 animate-pulse rounded-lg" />
-      )}
-      
-      {/* Standard glow for standard selected */}
-      {isSelected && pricing.id === 'standard' && (
-        <div className="absolute inset-0 bg-purple-100 opacity-30 animate-pulse rounded-lg" />
-      )}
-      
-      {/* Most Popular Badge with Star icon */}
+      {/* Popular Badge */}
       {isMostPopular && (
-        <div className="absolute top-0 right-0 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs font-bold py-1 px-3 transform rotate-0 translate-x-0 -translate-y-0 shadow-sm flex items-center gap-1">
-          <Star className="h-3 w-3" />
-          <span>Most Popular</span>
+        <div className="absolute -top-3 inset-x-0 mx-auto w-max">
+          <Badge className="bg-purple-500 text-white hover:bg-purple-600 px-3 font-medium">
+            <Star className="h-3.5 w-3.5 mr-1" /> Most Popular
+          </Badge>
         </div>
       )}
       
-      {/* Tier Emoji Badge */}
-      <div className="absolute top-4 left-4 text-2xl">
-        {getTierEmoji(pricing.id)}
-      </div>
-
-      {/* Promotional text */}
-      {promotionText && (
-        <div className="absolute top-4 right-4">
-          <span className={cn(
-            "text-xs font-medium px-2 py-1 rounded-full",
-            pricing.id === 'premium' 
-              ? "bg-amber-100 text-amber-700" 
-              : pricing.id === 'gold'
-                ? "bg-amber-200 text-amber-800"
-                : "bg-purple-100 text-purple-700"
-          )}>
-            {promotionText}
-          </span>
-        </div>
-      )}
-      
-      {/* Premium-specific tooltip */}
-      {pricing.id === 'premium' && isSelected && (
-        <div className="absolute -top-2 -left-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full border border-amber-200 shadow-sm">
-          Most customers hire within 3 days
-        </div>
-      )}
-
-      {/* Gold-specific tooltip */}
-      {pricing.id === 'gold' && isSelected && (
-        <div className="absolute -top-2 -left-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full border border-amber-200 shadow-sm">
-          Get front-page exposure
-        </div>
-      )}
-      
-      <CardContent className={cn(
-        "p-6 pt-12",
-        isSelected ? getBgStyle(pricing.id) : ""
+      {/* Plan Name */}
+      <h3 className={cn(
+        "text-lg font-semibold mb-1",
+        getNameTextColor()
       )}>
-        <div className="text-center mb-4">
-          <h3 className={cn(
-            "text-lg font-medium mb-1",
-            isSelected ? "text-purple-800" : "text-gray-800",
-            pricing.id === 'premium' && "text-amber-700",
-            pricing.id === 'gold' && "text-amber-800",
-            isFree && "text-gray-600"
-          )}>
-            {pricing.name}
-          </h3>
-          <p className="text-sm text-muted-foreground">{pricing.description}</p>
-          
-          {/* Vietnamese subtitle for free plan */}
-          {isFreeVariant && subtitle && (
-            <p className="text-xs italic mt-1 text-gray-500">{subtitle}</p>
+        {pricing.name}
+      </h3>
+      
+      {/* Plan Description */}
+      {pricing.description && (
+        <p className="text-sm text-gray-600 mb-2">{pricing.description}</p>
+      )}
+      
+      {/* Vietnamese Description */}
+      {subtitle && (
+        <p className="text-xs text-gray-500 italic mb-4">{subtitle}</p>
+      )}
+      
+      {/* Trust Signal Tag */}
+      {pricing.tag && (
+        <p className={cn(
+          "text-xs mb-3 mt-1 font-medium",
+          pricing.id === 'gold' ? "text-amber-700" : 
+          pricing.id === 'premium' ? "text-purple-700" : 
+          pricing.id === 'standard' ? "text-blue-700" : "text-gray-700"
+        )}>
+          {pricing.tag}
+        </p>
+      )}
+      
+      {/* Price Display with Original Price */}
+      <div className="mb-4 mt-2">
+        <div className="flex items-baseline">
+          {pricing.wasPrice && (
+            <span className="text-sm line-through text-gray-500 mr-2">
+              ${pricing.wasPrice.toFixed(2)}
+            </span>
           )}
-          
-          <div className="mt-4 mb-6">
-            {isFree ? (
-              <div>
-                <span className="text-3xl font-bold text-gray-700">$0</span>
-                <span className="text-gray-500 text-sm"> / 30 days</span>
-              </div>
-            ) : (
-              <div>
-                <span className="text-3xl font-bold">${pricing.price}</span>
-                <span className="text-gray-500 text-sm"> /month</span>
-              </div>
-            )}
-          </div>
+          <span className={cn(
+            "text-2xl font-bold",
+            getPriceTextColor()
+          )}>
+            ${pricing.price.toFixed(2)}
+          </span>
+          {pricing.price > 0 && (
+            <span className="text-sm text-gray-500 ml-1">/month</span>
+          )}
         </div>
+      </div>
+      
+      {/* Features List */}
+      <ul className="space-y-2">
+        {pricing.features.map((feature, index) => (
+          <li key={`${pricing.id}-feature-${index}`} className="flex items-start">
+            <Check className={cn(
+              "h-4 w-4 mr-2 mt-0.5 flex-shrink-0",
+              getCheckColor()
+            )} />
+            <span className="text-sm">{feature}</span>
+          </li>
+        ))}
         
-        <ul className="space-y-3">
-          {/* Positive features */}
-          {pricing.features.map((feature, index) => (
-            <li key={index} className="flex items-start text-sm">
-              <Check className={cn(
-                "h-4 w-4 mr-2 mt-1 flex-shrink-0",
-                pricing.id === 'premium' ? "text-amber-500" : 
-                pricing.id === 'gold' ? "text-amber-600" :
-                pricing.id === 'standard' ? "text-purple-500" :
-                "text-gray-500"
-              )} />
-              <span className={cn(
-                "text-gray-600",
-                isFree && "text-gray-500"
-              )}>{feature}</span>
-            </li>
-          ))}
-          
-          {/* Negative features for free plan */}
-          {isFreeVariant && freeNegativeFeatures.map((feature, index) => (
-            <li key={`missing-${index}`} className="flex items-start text-sm">
-              <X className="h-4 w-4 mr-2 mt-1 flex-shrink-0 text-gray-400" />
-              <span className="text-gray-400">{feature}</span>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
+        {/* Negative Features */}
+        {negativeFeatures && negativeFeatures.map((feature, index) => (
+          <li key={`${pricing.id}-negative-${index}`} className="flex items-start text-gray-500">
+            <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+            <span className="text-sm">{feature}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

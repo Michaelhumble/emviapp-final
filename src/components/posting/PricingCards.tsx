@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import PricingTierCard from './PricingTierCard';
 import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
-import { CheckCircle, Calendar } from 'lucide-react';
+import { CheckCircle, Calendar, AlertTriangle } from 'lucide-react';
 import DurationSelector from './DurationSelector';
 import {
   Tooltip,
@@ -42,27 +42,23 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     return null;
   }
   
-  // Filter out hidden tiers and Diamond tier (temporarily)
-  // TODO: Diamond tier is temporarily hidden and will be accessible later via waitlist/bid flow
+  // Filter out hidden tiers
   const visiblePricingOptions = pricingOptions.filter(option => 
-    !option.hidden && option.id !== 'diamond'
+    !option.hidden
   );
   
   // Separate free and paid tiers
   const freeTier = visiblePricingOptions.find(option => option.id === 'free');
   
-  // Get paid tiers, but make gold visible now
+  // Get paid tiers - standard, premium, gold (featured)
   const paidTiers = visiblePricingOptions.filter(option => 
-    option.id !== 'free' && 
-    (option.id !== 'gold' || true) // Always show gold now
+    option.id !== 'free' && (option.id === 'standard' || option.id === 'premium' || option.id === 'gold')
   );
   
-  // Determine the "most popular" pricing tier (now Premium)
-  const getMostPopularId = () => {
-    return 'premium';
-  };
-  
-  const mostPopularId = getMostPopularId();
+  // Gold tier (Featured) might be hidden initially until upsell
+  const standardTier = paidTiers.find(option => option.id === 'standard');
+  const premiumTier = paidTiers.find(option => option.id === 'premium');
+  const goldTier = paidTiers.find(option => option.id === 'gold');
   
   // Check if free plan is selected
   const isFreePlanSelected = selectedPricing === 'free';
@@ -75,8 +71,8 @@ const PricingCards: React.FC<PricingCardsProps> = ({
           {children}
         </TooltipTrigger>
         <TooltipContent className="p-3 max-w-xs bg-white border border-amber-200 text-gray-800 shadow-lg">
-          <p className="font-medium mb-1 text-amber-800">Limited Visibility Warning</p>
-          <p className="text-sm">80% of free listings never get filled. Try a paid plan to attract real candidates.</p>
+          <p className="font-medium mb-1 text-amber-800">⚠️ Limited Visibility Warning</p>
+          <p className="text-sm">Free posts reach 80% fewer candidates. Use only if testing.</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -86,40 +82,100 @@ const PricingCards: React.FC<PricingCardsProps> = ({
     <div className="space-y-6">
       {/* Paid Plans Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-        {paidTiers.map((option) => (
+        {/* Standard Plan */}
+        {standardTier && (
           <motion.div
-            key={option.id}
             initial={{ y: 0 }}
             whileHover={{ y: -5 }}
             transition={{ type: "spring", stiffness: 300 }}
-            animate={selectedPricing === option.id ? { scale: 1.02 } : { scale: 1 }}
+            animate={selectedPricing === 'standard' ? { scale: 1.02, boxShadow: '0 4px 12px rgba(155, 135, 245, 0.2)' } : { scale: 1 }}
           >
             <PricingTierCard 
-              pricing={option}
-              isSelected={selectedPricing === option.id}
-              onClick={() => onChange(option.id)}
-              isMostPopular={option.id === mostPopularId}
+              pricing={{
+                ...standardTier,
+                name: 'Standard',
+                wasPrice: 14.99,
+                price: 9.99,
+                description: 'Smart Choice for most businesses',
+                tag: '🔥 Chosen by over 8,000 salons this year'
+              }}
+              isSelected={selectedPricing === 'standard'}
+              onClick={() => onChange('standard')}
             />
           </motion.div>
-        ))}
+        )}
+        
+        {/* Premium Plan */}
+        {premiumTier && (
+          <motion.div
+            initial={{ y: 0 }}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            animate={selectedPricing === 'premium' ? { scale: 1.03, boxShadow: '0 4px 15px rgba(155, 135, 245, 0.3)' } : { scale: 1 }}
+          >
+            <PricingTierCard 
+              pricing={{
+                ...premiumTier,
+                name: 'Premium',
+                wasPrice: 24.99,
+                price: 19.99,
+                description: 'Top Pick by Salons',
+                tag: '⭐ Used by 4,500+ serious salons for better results'
+              }}
+              isSelected={selectedPricing === 'premium'}
+              onClick={() => onChange('premium')}
+              isMostPopular={true}
+            />
+          </motion.div>
+        )}
+        
+        {/* Gold/Featured Plan */}
+        {goldTier && (
+          <motion.div
+            initial={{ y: 0 }}
+            whileHover={{ y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            animate={selectedPricing === 'gold' ? { scale: 1.03, boxShadow: '0 4px 15px rgba(250, 202, 78, 0.3)' } : { scale: 1 }}
+          >
+            <PricingTierCard 
+              pricing={{
+                ...goldTier,
+                name: 'Featured',
+                wasPrice: 39.99,
+                price: 29.99,
+                description: 'Fastest Hiring Plan',
+                tag: '🏆 Preferred by growing brands – 1,200 upgraded last month'
+              }}
+              isSelected={selectedPricing === 'gold'}
+              onClick={() => onChange('gold')}
+            />
+          </motion.div>
+        )}
       </div>
       
       {/* Free Plan Row - Smaller and visually deemphasized */}
       {freeTier && (
-        <div className="mt-4 max-w-[85%] mx-auto opacity-90">
+        <div className="mt-6 max-w-[85%] mx-auto opacity-80">
           {renderFreeTooltip(
             <motion.div
               initial={{ y: 0 }}
               whileHover={{ y: -3 }}
               transition={{ type: "spring", stiffness: 300 }}
               animate={selectedPricing === 'free' ? { scale: 1.01 } : { scale: 1 }}
+              className="transform scale-95"
             >
               <PricingTierCard 
-                pricing={freeTier}
+                pricing={{
+                  ...freeTier,
+                  name: 'Basic (Limited Reach)',
+                  description: 'Free listing with very limited visibility',
+                  tag: 'Recommended only for early testing'
+                }}
                 isSelected={selectedPricing === 'free'}
                 onClick={() => onChange('free')}
                 isFreeVariant={true}
                 subtitle="Chỉ nên chọn nếu bạn đang thử nghiệm nền tảng"
+                negativeFeatures={['Top placement', 'Highlight in search', 'Social media promotion']}
               />
             </motion.div>
           )}

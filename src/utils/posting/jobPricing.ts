@@ -18,18 +18,21 @@ export const jobPricingOptions: JobPricingOption[] = [
     id: 'standard',
     name: 'Standard',
     price: 9.99,
+    wasPrice: 14.99,
     description: 'Smart Choice for most businesses',
     vietnameseDescription: 'Lựa chọn thông minh cho hầu hết các doanh nghiệp',
     features: [
       'Increased visibility',
       'Better search placement'
     ],
-    tier: 'standard'
+    tier: 'standard',
+    tag: '🔥 Chosen by over 8,000 salons this year'
   },
   {
     id: 'premium',
     name: 'Premium',
     price: 19.99,
+    wasPrice: 24.99,
     description: 'Top Pick by Salons',
     vietnameseDescription: 'Lựa chọn hàng đầu của các salon',
     features: [
@@ -37,12 +40,14 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Highlighted in search results',
       'Faster candidate matching'
     ],
-    tier: 'premium'
+    tier: 'premium',
+    tag: '⭐ Used by 4,500+ serious salons for better results'
   },
   {
     id: 'gold',
     name: 'Featured',
     price: 29.99,
+    wasPrice: 39.99,
     description: 'Fastest Hiring Plan',
     vietnameseDescription: 'Kế hoạch tuyển dụng nhanh nhất',
     features: [
@@ -51,7 +56,8 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Free listing boost',
       'Priority support'
     ],
-    tier: 'gold'
+    tier: 'gold',
+    tag: '🏆 Preferred by growing brands – 1,200 upgraded last month'
   },
   {
     id: 'diamond',

@@ -1,9 +1,15 @@
 
 import React from 'react';
 import { format, addMonths } from 'date-fns';
-import { CalendarIcon, RefreshCw, CreditCard, Tag, Sparkles, Check, Info } from 'lucide-react';
+import { CalendarIcon, RefreshCw, CreditCard, Tag, Sparkles, Check, Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PricingDisplayProps {
   basePrice: number;
@@ -29,10 +35,20 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   const isFreePlan = pricingId === 'free';
   const discountAmount = Number((originalPrice - finalPrice).toFixed(2));
   
+  const getPricingTitle = () => {
+    switch(pricingId) {
+      case 'standard': return 'Standard';
+      case 'premium': return 'Premium';
+      case 'gold': return 'Featured';
+      case 'free': return 'Basic (Limited Reach)';
+      default: return 'Selected Plan';
+    }
+  };
+  
   return (
     <div className={cn(
-      "rounded-lg border bg-white p-6 mt-6 shadow-sm",
-      !isFreePlan && "bg-gradient-to-br from-white to-gray-50"
+      "rounded-lg border p-6 mt-6 shadow-sm",
+      !isFreePlan ? "bg-gradient-to-br from-white to-gray-50" : "bg-gray-50"
     )}>
       <h3 className="font-semibold text-md mb-5 flex items-center gap-2 text-purple-800">
         <Sparkles className="h-5 w-5 text-purple-600" />
@@ -41,24 +57,44 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
       
       <div className="space-y-5 text-sm">
         {isFreePlan ? (
-          <div className="flex justify-between items-center p-4 bg-green-50 rounded-md border border-green-100">
+          <div className="flex justify-between items-center p-4 bg-gray-50 rounded-md border border-gray-200">
             <div className="flex items-center">
-              <CalendarIcon className="h-5 w-5 mr-3 text-green-500" />
-              <span className="font-medium">Free listing</span>
+              <AlertTriangle className="h-5 w-5 mr-3 text-amber-500" />
+              <span className="font-medium text-gray-700">Basic - Limited Reach</span>
             </div>
-            <span className="font-medium">30 days</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="font-medium flex items-center">
+                    30 days
+                    <Info className="h-4 w-4 ml-1 text-gray-400" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="p-2">
+                  <p className="text-sm">Free listings have limited visibility</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-md border border-gray-100">
+            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
+              <div className="flex items-center">
+                <Sparkles className="h-5 w-5 mr-3 text-purple-500" />
+                <span className="font-medium">{getPricingTitle()} Plan</span>
+              </div>
+              <span className="font-medium">${basePrice.toFixed(2)}/month</span>
+            </div>
+            
+            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
               <div className="flex items-center">
                 <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
-                <span>Listing duration</span>
+                <span>Duration</span>
               </div>
               <span className="font-medium">{duration} {duration === 1 ? 'month' : 'months'}</span>
             </div>
             
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-md border border-gray-100">
+            <div className="flex justify-between items-center p-4 bg-white rounded-md border border-gray-100 shadow-sm">
               <div className="flex items-center">
                 <CalendarIcon className="h-5 w-5 mr-3 text-blue-500" />
                 <span>Expires on</span>
