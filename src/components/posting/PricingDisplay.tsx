@@ -23,19 +23,20 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   discountPercentage,
 }) => {
   const isFreePlan = pricingId === 'free';
+  const dollarSavings = originalPrice - finalPrice;
 
   return (
     <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
-      <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 border-b">
-        <h3 className="font-medium text-lg text-purple-800">Payment Summary</h3>
+      <div className="bg-gradient-to-r from-[#F8F8FF] to-[#f7e7ce25] p-4 border-b">
+        <h3 className="font-medium text-lg font-playfair text-[#1D1E1E]">Payment Summary</h3>
       </div>
       
       <div className="p-4 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start">
-            <CreditCard className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+            <CreditCard className="h-5 w-5 text-[#F7E7CE] mr-3 mt-0.5 stroke-[#1D1E1E]" />
             <div>
-              <span className="font-medium">
+              <span className="font-medium font-playfair">
                 {isFreePlan ? 'Free Basic Plan' : `${duration} Month${duration > 1 ? 's' : ''} Plan`}
               </span>
               {!isFreePlan && (
@@ -51,7 +52,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
         </div>
         
         {!isFreePlan && discountPercentage > 0 && (
-          <div className="flex items-start justify-between text-green-700">
+          <div className="flex items-start justify-between text-[#50C878]">
             <div className="flex items-start">
               <Check className="h-5 w-5 mr-3 mt-0.5" />
               <div>
@@ -61,7 +62,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
                 </div>
               </div>
             </div>
-            <div className="font-medium">-${(originalPrice - finalPrice).toFixed(2)}</div>
+            <div className="font-medium">-${dollarSavings.toFixed(2)}</div>
           </div>
         )}
 
@@ -80,8 +81,8 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
         
         <div className="border-t pt-4 mt-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-lg font-semibold text-gray-800">Total</span>
-            <span className="text-xl font-bold text-purple-800">
+            <span className="text-lg font-semibold text-[#1D1E1E] font-playfair">Total</span>
+            <span className="text-xl font-bold text-[#1D1E1E] font-playfair">
               ${isFreePlan ? '0.00' : finalPrice.toFixed(2)}
             </span>
           </div>
@@ -100,8 +101,8 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
           )}
           
           {!isFreePlan && discountPercentage > 0 && (
-            <Badge variant="secondary" className="mt-2 bg-green-100 text-green-800 hover:bg-green-200">
-              You save ${(originalPrice - finalPrice).toFixed(2)} ({discountPercentage}%)
+            <Badge variant="secondary" className="mt-2 bg-[#50C878]/10 text-[#50C878] hover:bg-[#50C878]/20 font-medium">
+              You save ${dollarSavings.toFixed(2)} ({discountPercentage}%)
             </Badge>
           )}
         </div>

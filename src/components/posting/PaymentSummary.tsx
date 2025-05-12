@@ -35,11 +35,13 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   
   const formattedStartDate = format(today, 'MMM d, yyyy');
   const formattedEndDate = format(endDate, 'MMM d, yyyy');
+  
+  const dollarSavings = originalPrice - finalPrice;
 
   return (
     <Card className="overflow-hidden border shadow-sm">
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-b border-gray-200">
-        <h3 className="font-medium text-lg">
+      <div className="bg-gradient-to-r from-[#F8F8FF] to-[#F7E7CE]/10 p-4 border-b border-gray-200">
+        <h3 className="font-medium text-lg font-playfair text-[#1D1E1E]">
           {isFreePlan ? t('Confirm Free Listing', 'Xác nhận niêm yết miễn phí') : t('Order Summary', 'Tóm tắt đơn hàng')}
         </h3>
       </div>
@@ -69,7 +71,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               </div>
               
               {discountPercentage > 0 && (
-                <div className="flex justify-between items-center text-green-700">
+                <div className="flex justify-between items-center text-[#50C878]">
                   <span>{t('Discount', 'Giảm giá')}</span>
                   <span>{discountPercentage}%</span>
                 </div>
@@ -77,13 +79,13 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               
               <div className="pt-3 border-t">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">{t('Total', 'Tổng cộng')}</span>
-                  <span className="font-bold text-lg">${finalPrice.toFixed(2)}</span>
+                  <span className="font-medium font-playfair">{t('Total', 'Tổng cộng')}</span>
+                  <span className="font-bold text-lg font-playfair">${finalPrice.toFixed(2)}</span>
                 </div>
                 
                 {discountPercentage > 0 && (
-                  <div className="text-right text-green-600 text-sm">
-                    {t('You save', 'Bạn tiết kiệm')}: ${(originalPrice - finalPrice).toFixed(2)}
+                  <div className="text-right text-[#50C878] text-sm">
+                    {t('You save', 'Bạn tiết kiệm')}: ${dollarSavings.toFixed(2)}
                   </div>
                 )}
               </div>
@@ -93,9 +95,9 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
 
         {/* Payment Security Notice */}
         {!isFreePlan && (
-          <div className="flex items-center justify-center mb-6 bg-gray-50 p-2 rounded-lg border border-gray-200">
-            <Lock className="h-4 w-4 text-gray-500 mr-2" />
-            <span className="text-xs text-gray-600">
+          <div className="flex items-center justify-center mb-6 bg-[#F8F8FF] p-2 rounded-lg border border-[#F7E7CE]/30">
+            <Lock className="h-4 w-4 text-[#1D1E1E]/70 mr-2" />
+            <span className="text-xs text-[#1D1E1E]/70">
               {t('Secure payment processing', 'Xử lý thanh toán an toàn')}
             </span>
           </div>
@@ -108,7 +110,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             "w-full py-2 h-auto font-medium shadow-sm",
             isFreePlan 
               ? "bg-gray-700 hover:bg-gray-800 focus:ring-gray-400" 
-              : "bg-purple-600 hover:bg-purple-700 focus:ring-purple-400"
+              : "bg-[#50C878] hover:bg-[#50C878]/90 focus:ring-[#50C878]/40"
           )}
         >
           {isSubmitting ? (

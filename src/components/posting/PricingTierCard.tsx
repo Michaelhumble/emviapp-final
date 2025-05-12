@@ -3,7 +3,7 @@ import React from 'react';
 import { JobPricingOption } from '@/utils/posting/types';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Check, X } from 'lucide-react';
+import { Check, X, Crown } from 'lucide-react';
 
 interface PricingTierCardProps {
   pricing: JobPricingOption;
@@ -52,7 +52,8 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
               ? "bg-gradient-to-br from-white via-amber-50 to-white"
               : isStandardPlan
                 ? "bg-gradient-to-br from-white via-blue-50 to-white"
-                : "bg-white"
+                : "bg-white",
+        isFreeVariant ? "scale-95" : ""
       )}
     >
       {/* Popular Tag */}
@@ -84,14 +85,16 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
         {/* Header */}
         <div className="text-center mb-4">
           <h3 className={cn(
-            "text-xl font-bold mb-1",
+            "font-playfair text-xl font-bold mb-1",
             isFreeVariant ? "text-gray-600" : "text-gray-800"
           )}>
-            {pricing.name}
+            {isFreeVariant ? "🧊 Basic Plan (Limited Reach)" : pricing.name}
           </h3>
-          {subtitle && (
-            <p className="text-xs text-gray-500 italic">{subtitle}</p>
-          )}
+          {subtitle || isFreeVariant ? (
+            <p className="text-xs text-gray-500 italic">
+              {isFreeVariant ? "Recommended only for testing the platform" : subtitle}
+            </p>
+          ) : null}
         </div>
 
         {/* Price */}
@@ -105,7 +108,10 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
             </div>
           )}
           <div className="flex items-center justify-center">
-            <span className="text-3xl font-bold">
+            <span className={cn(
+              "font-playfair text-3xl font-bold",
+              isFreeVariant ? "" : "text-[#1D1E1E]"
+            )}>
               {pricing.price > 0 ? `$${pricing.price}` : 'Free'}
             </span>
             {pricing.price > 0 && <span className="text-sm ml-1">/mo</span>}
@@ -146,12 +152,32 @@ const PricingTierCard: React.FC<PricingTierCardProps> = ({
           ))}
           
           {/* Negative Features */}
-          {negativeFeatures && negativeFeatures.map((feature, index) => (
-            <div key={`neg-${index}`} className="flex items-start">
-              <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
-              <span className="text-sm text-gray-500">{feature}</span>
-            </div>
-          ))}
+          {(negativeFeatures.length > 0 || isFreeVariant) && (
+            <>
+              {isFreeVariant && (
+                <>
+                  <div className="flex items-start">
+                    <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+                    <span className="text-sm text-gray-500">No Top placement</span>
+                  </div>
+                  <div className="flex items-start">
+                    <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+                    <span className="text-sm text-gray-500">No Highlight in search</span>
+                  </div>
+                  <div className="flex items-start">
+                    <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+                    <span className="text-sm text-gray-500">No Social media promotion</span>
+                  </div>
+                </>
+              )}
+              {negativeFeatures.map((feature, index) => (
+                <div key={`neg-${index}`} className="flex items-start">
+                  <X className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+                  <span className="text-sm text-gray-500">{feature}</span>
+                </div>
+              ))}
+            </>
+          )}
         </div>
 
         {/* Select Button */}
