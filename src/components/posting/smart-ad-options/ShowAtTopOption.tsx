@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 interface ShowAtTopOptionProps {
   onChange: (checked: boolean) => void;
@@ -11,7 +11,7 @@ interface ShowAtTopOptionProps {
 
 const ShowAtTopOption = ({ 
   onChange,
-  defaultChecked = false
+  defaultChecked = false 
 }: ShowAtTopOptionProps) => {
   const [checked, setChecked] = useState(defaultChecked);
   
@@ -24,12 +24,12 @@ const ShowAtTopOption = ({
     <Card>
       <CardContent className="p-4 flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-            <TrendingUp className="h-5 w-5" />
+          <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+            <ArrowUp className="h-5 w-5" />
           </div>
           <div>
-            <p className="font-medium">Show at Top of Results</p>
-            <p className="text-sm text-gray-500">Higher visibility in search results</p>
+            <p className="font-medium">Show At Top</p>
+            <p className="text-sm text-gray-500">Always appear at top of search results</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

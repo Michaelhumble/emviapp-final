@@ -1,97 +1,58 @@
 
-// Utility functions for generating promotional text and pricing
-
-// Base price based on post type and whether it's a first post
-export const getBasePrice = (postType: 'job' | 'salon', isFirstPost: boolean): number => {
-  switch (postType) {
-    case 'job':
-      return isFirstPost ? 9.99 : 19.99;
-    case 'salon':
-      return isFirstPost ? 19.99 : 29.99;
-    default:
-      return 9.99;
+/**
+ * Generates promotional text based on job listing details
+ * @param industry - The industry category
+ * @param hasWeeklyPay - Whether weekly pay is offered
+ * @returns A promotional blurb to highlight in the job listing
+ */
+export const generatePromotionalText = (
+  industry: string,
+  hasWeeklyPay: boolean = false
+): string => {
+  const industryText = {
+    nails: "nail technicians",
+    hair: "hair stylists",
+    tattoo: "tattoo artists",
+    eyebrowLash: "lash and brow specialists",
+    massage: "massage therapists"
+  };
+  
+  const industrySpecificText = industryText[industry as keyof typeof industryText] || "professionals";
+  
+  let promo = `Looking for experienced ${industrySpecificText}!`;
+  
+  if (hasWeeklyPay) {
+    promo += " Weekly pay available!";
   }
+  
+  return promo;
 };
 
-// Get price for nationwide visibility
-export const getNationwidePrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): number => {
-  switch (postType) {
-    case 'job': return 5;
-    case 'salon': return 10;
-    case 'booth': return 10;
-    case 'supply': return 5;
-    default: return 5;
+/**
+ * Generates Vietnamese promotional text based on job listing details
+ * @param industry - The industry category
+ * @param hasWeeklyPay - Whether weekly pay is offered
+ * @returns A promotional blurb in Vietnamese to highlight in the job listing
+ */
+export const generateVietnamesePromotionalText = (
+  industry: string,
+  hasWeeklyPay: boolean = false
+): string => {
+  const industryText = {
+    nails: "thợ nail",
+    hair: "thợ tóc",
+    tattoo: "nghệ sĩ xăm",
+    eyebrowLash: "chuyên gia lông mi và lông mày",
+    massage: "thợ massage"
+  };
+  
+  const industrySpecificText = industryText[industry as keyof typeof industryText] || "chuyên gia";
+  
+  let promo = `Đang tìm ${industrySpecificText} có kinh nghiệm!`;
+  
+  if (hasWeeklyPay) {
+    promo += " Trả lương hàng tuần!";
   }
-};
-
-// Get price for fast sale package
-export const getFastSalePackagePrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): number => {
-  switch (postType) {
-    case 'job': return 15;
-    case 'salon': return 20;
-    case 'booth': return 15;
-    case 'supply': return 10;
-    default: return 15;
-  }
-};
-
-// Get price for showing at top
-export const getShowAtTopPrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): number => {
-  switch (postType) {
-    case 'job': return 10;
-    case 'salon': return 15;
-    case 'booth': return 15;
-    case 'supply': return 10;
-    default: return 10;
-  }
-};
-
-// Get price for bundling with job post
-export const getJobPostBundlePrice = (postType: 'salon' | 'booth' | 'supply'): number => {
-  switch (postType) {
-    case 'salon': return 15;
-    case 'booth': return 10;
-    case 'supply': return 8;
-    default: return 15;
-  }
-};
-
-// Get price with discount applied
-export const getPriceWithDiscount = (price: number, hasReferrals: boolean): number => {
-  if (hasReferrals) {
-    return price * 0.8; // 20% discount
-  }
-  return price;
-};
-
-// Generate promotional text for different post types and options
-export const generatePromotionalText = (postType: string): string => {
-  switch (postType) {
-    case 'job':
-      return 'Post your job opportunity and reach qualified candidates today!';
-    case 'salon':
-      return 'Showcase your salon and attract new customers with a premium listing!';
-    case 'booth':
-      return 'Find the perfect booth renter with a targeted booth listing!';
-    case 'supply':
-      return 'Sell your supplies to professionals in the beauty industry!';
-    default:
-      return 'Post your listing and reach your target audience today!';
-  }
-};
-
-// Add the missing function for first post promotional text
-export const getFirstPostPromotionalText = (postType: string): string => {
-  switch (postType) {
-    case 'job':
-      return 'First job post: Save 50% with our special introductory offer!';
-    case 'salon':
-      return 'First salon listing: Enjoy special pricing for new users!';
-    case 'booth':
-      return 'First booth listing: Special introductory price!';
-    case 'supply':
-      return 'First supply listing: Special discount for new sellers!';
-    default:
-      return 'First post special: Save on your first listing!';
-  }
+  
+  return promo;
 };

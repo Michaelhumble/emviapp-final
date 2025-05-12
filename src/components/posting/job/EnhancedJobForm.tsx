@@ -8,6 +8,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import JobPostingHeader from '../JobPostingHeader';
 import UpsellSidebar from '../upsell/UpsellSidebar';
 import MotivationalFooter from '../MotivationalFooter';
+import SmartAdOptions from '../SmartAdOptions';
+import WeeklyPaySuggestion from '../WeeklyPaySuggestion';
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -28,6 +30,22 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 }) => {
   const { userProfile } = useAuth(); // Get user profile with contact details
   const { t, isVietnamese, toggleLanguage } = useTranslation();
+  const [weeklyPay, setWeeklyPay] = useState(defaultValues?.weeklyPay || false);
+  const [isNationwide, setIsNationwide] = useState(false);
+  
+  // Enhanced submit handler to include upsell options
+  const handleSubmit = (values: JobFormValues) => {
+    // Add upsell options to the submitted values
+    const enhancedValues = {
+      ...values,
+      weeklyPay,
+      pricingOptions: {
+        isNationwide
+      }
+    };
+    
+    onSubmit(enhancedValues);
+  };
   
   return (
     <div className="space-y-8">
@@ -61,7 +79,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100">
             <JobForm 
-              onSubmit={onSubmit}
+              onSubmit={handleSubmit}
               photoUploads={photoUploads}
               setPhotoUploads={setPhotoUploads}
               isSubmitting={isSubmitting}
@@ -69,6 +87,22 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
               industry={industry}
               userProfile={userProfile} // Pass the user profile with contact info
             />
+          </div>
+          
+          <div className="mt-6 space-y-6">
+            <WeeklyPaySuggestion checked={weeklyPay} onChange={setWeeklyPay} />
+            
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-medium mb-4">
+                {t("Job Post Options", "Tuỳ chọn đăng tuyển")}
+              </h3>
+              <SmartAdOptions 
+                postType="job"
+                isFirstPost={!userProfile?.has_posted_job}
+                hasReferrals={userProfile?.has_referral_credits}
+                onNationwideChange={setIsNationwide}
+              />
+            </div>
           </div>
         </div>
         
