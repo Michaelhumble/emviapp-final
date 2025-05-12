@@ -22,7 +22,7 @@ export const JobSummary = ({
   phoneNumber,
   contactEmail
 }: JobSummaryProps) => {
-  const { session } = useAuth();
+  const { user } = useAuth();
   
   const formatPostedDate = (dateString: string) => {
     try {
@@ -63,7 +63,7 @@ export const JobSummary = ({
         </div>
       )}
       
-      {session?.user && (phoneNumber || contactEmail) && (
+      {user && (phoneNumber || contactEmail) && (
         <div className="mt-2 text-sm text-gray-600 border-t pt-3 border-gray-100">
           <h4 className="font-medium text-gray-700 mb-1">Contact Information</h4>
           {phoneNumber && (

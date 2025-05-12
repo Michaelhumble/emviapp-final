@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { JobForm } from './JobForm';
 import { JobFormValues } from './jobFormSchema';
@@ -11,13 +12,15 @@ interface EnhancedJobFormProps {
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
+  defaultValues?: JobFormValues;
 }
 
 export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
   onSubmit, 
   photoUploads, 
   setPhotoUploads, 
-  isSubmitting 
+  isSubmitting,
+  defaultValues
 }) => {
   return (
     <div className="space-y-8">
@@ -34,6 +37,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
               photoUploads={photoUploads}
               setPhotoUploads={setPhotoUploads}
               isSubmitting={isSubmitting}
+              defaultValues={defaultValues}
             />
           </div>
         </div>
