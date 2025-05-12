@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SectionHeaderProps {
   title: string;
@@ -12,14 +13,16 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   emoji, 
   description 
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="mb-6">
       <h3 className="text-xl font-medium flex items-center gap-2">
         {emoji && <span className="text-2xl">{emoji}</span>}
-        {title}
+        {t(title)}
       </h3>
       {description && (
-        <p className="text-muted-foreground text-sm mt-1">{description}</p>
+        <p className="text-muted-foreground text-sm mt-1">{t(description)}</p>
       )}
     </div>
   );

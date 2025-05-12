@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { JobForm } from './JobForm';
 import { JobFormValues } from './jobFormSchema';
 import { Separator } from '@/components/ui/separator';
-import PostHeader from '../PostHeader';
-import MotivationalFooter from '../MotivationalFooter';
+import { useAuth } from '@/context/auth'; 
+import { useTranslation } from '@/hooks/useTranslation';
+import JobPostingHeader from '../JobPostingHeader';
 import UpsellSidebar from '../upsell/UpsellSidebar';
-import { useAuth } from '@/context/auth'; // Add auth context import
+import MotivationalFooter from '../MotivationalFooter';
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -26,13 +27,35 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   industry = "nails" // Default to nails
 }) => {
   const { userProfile } = useAuth(); // Get user profile with contact details
+  const { t, isVietnamese, toggleLanguage } = useTranslation();
   
   return (
     <div className="space-y-8">
-      <PostHeader 
-        title="Find your next artist — the one who stays, thrives, and grows your salon."
-        subtitle="Post smart. We'll guide you every step."
+      <JobPostingHeader 
+        currentStep={1}
+        totalSteps={2}
       />
+      
+      <div className="text-center mb-8">
+        <h2 className="text-3xl md:text-4xl font-playfair font-semibold text-gray-900 mb-3">
+          {t("Let's Create a Beautiful Job Post Together 💅", "Hãy Cùng Tạo Một Bài Đăng Tuyển Tuyệt Đẹp 💅")}
+        </h2>
+        <p className="text-gray-600 text-lg">
+          {t("It only takes a few minutes. Vietnamese included ❤️", "Chỉ mất vài phút. Có hỗ trợ tiếng Việt ❤️")}
+        </p>
+        
+        {industry === "nails" && (
+          <div className="mt-4 inline-flex items-center bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-2 rounded-full shadow-sm border border-purple-100">
+            <span className="mr-2">🇺🇸 🇻🇳</span>
+            <button
+              onClick={toggleLanguage}
+              className="text-sm text-purple-700 hover:text-purple-900 transition-colors"
+            >
+              {isVietnamese ? "Switch to English" : "Chuyển sang tiếng Việt"}
+            </button>
+          </div>
+        )}
+      </div>
       
       <div className="lg:grid lg:grid-cols-3 lg:gap-8">
         <div className="lg:col-span-2">

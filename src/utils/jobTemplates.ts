@@ -40,6 +40,17 @@ export const jobTemplates: Record<string, Partial<JobFormValues>> = {
   },
 };
 
+// Vietnamese translations for nail industry templates
+export const vietnameseTemplates: Record<string, Partial<JobFormValues>> = {
+  nails: {
+    title: "Thợ Nail – Toàn Thời Gian",
+    jobType: "full-time", 
+    location: "San Jose, CA",
+    salary: "Lên đến $1,200/tuần",
+    jobSummary: "Cần thợ nail thân thiện, đáng tin cậy có kinh nghiệm làm bột, gel, và vẽ móng. Tiệm đông khách, môi trường làm việc tốt, trả lương hàng tuần.",
+  }
+};
+
 // Get template merged with user information
 export const getJobTemplate = (industry: string, userData?: { 
   phoneNumber?: string;
@@ -53,4 +64,9 @@ export const getJobTemplate = (industry: string, userData?: {
     ...(userData?.phoneNumber ? { phoneNumber: userData.phoneNumber } : {}),
     ...(userData?.email ? { contactEmail: userData.email } : {})
   };
+};
+
+// Get Vietnamese template for the industry if available
+export const getVietnameseTemplate = (industry: string): Partial<JobFormValues> | null => {
+  return vietnameseTemplates[industry] || null;
 };
