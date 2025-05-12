@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { JobForm } from './JobForm';
 import { JobFormValues } from './jobFormSchema';
 import { Separator } from '@/components/ui/separator';
@@ -13,6 +12,7 @@ interface EnhancedJobFormProps {
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
   defaultValues?: JobFormValues;
+  industry?: string;
 }
 
 export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
@@ -20,7 +20,8 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   photoUploads, 
   setPhotoUploads, 
   isSubmitting,
-  defaultValues
+  defaultValues,
+  industry = "nails" // Default to nails
 }) => {
   return (
     <div className="space-y-8">
@@ -38,6 +39,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
               setPhotoUploads={setPhotoUploads}
               isSubmitting={isSubmitting}
               defaultValues={defaultValues}
+              industry={industry}
             />
           </div>
         </div>
