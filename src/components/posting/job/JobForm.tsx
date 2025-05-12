@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle } from 'lucide-react';
-import PhotoUpload from '../PhotoUpload';
+// Remove the PhotoUpload import that's causing issues
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -150,10 +150,10 @@ export const JobForm: React.FC<JobFormProps> = ({
             Showcase your salon's vibe. First photo will be featured.
           </p>
           
-          <PhotoUpload 
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-          />
+          {/* Replace PhotoUpload component with a placeholder or comment */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <p className="text-gray-500">Photo upload functionality temporarily unavailable</p>
+          </div>
         </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
