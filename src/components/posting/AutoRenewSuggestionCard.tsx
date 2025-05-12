@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { RefreshCw, Check, ArrowRight, Star } from 'lucide-react';
+import { RefreshCw, Check, ArrowRight, Star, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
@@ -51,7 +51,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 sm:space-x-4 relative z-10">
             <div className="flex-1">
               <h3 className="text-lg font-medium text-[#1D1E1E] flex items-center font-playfair">
-                <Star className="h-5 w-5 mr-2 text-[#F7E7CE] stroke-amber-600" />
+                <Crown className="h-5 w-5 mr-2 text-amber-500" />
                 {upgradeInfo.title}
               </h3>
               <p className="text-sm mt-1 text-[#1D1E1E]/80">
@@ -75,7 +75,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
               >
                 <Button 
                   onClick={onUpgrade} 
-                  className="bg-[#50C878] hover:bg-[#50C878]/90 text-white font-medium shadow-sm"
+                  className="bg-gradient-to-r from-[#50C878] to-[#43a868] hover:bg-[#50C878]/90 text-white font-medium shadow-sm"
                 >
                   {upgradeInfo.buttonText} <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
@@ -92,7 +92,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
     <Card className="p-5 bg-gradient-to-r from-[#F8F8FF] to-[#F7E7CE]/10 border-[#F7E7CE]/30 shadow-md">
       <div className="flex items-center">
         <div className="flex-shrink-0 mr-4">
-          <div className="h-12 w-12 rounded-full bg-[#F7E7CE]/20 flex items-center justify-center">
+          <div className="h-12 w-12 rounded-full bg-[#F7E7CE]/30 flex items-center justify-center">
             <RefreshCw className="h-6 w-6 text-[#1D1E1E]/80" />
           </div>
         </div>

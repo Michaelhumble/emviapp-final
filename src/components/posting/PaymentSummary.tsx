@@ -2,10 +2,11 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Loader2, Lock } from 'lucide-react';
+import { ArrowRight, CreditCard, Loader2, Lock, CircleDollarSign } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { format, addMonths } from 'date-fns';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface PaymentSummaryProps {
   basePrice: number;
@@ -45,14 +46,14 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="overflow-hidden border shadow-sm">
-        <div className="bg-gradient-to-r from-[#F8F8FF] to-[#F7E7CE]/10 p-4 border-b border-gray-200">
-          <h3 className="font-medium text-lg font-playfair text-[#1D1E1E]">
+      <Card className="overflow-hidden border border-[#F7E7CE]/40 shadow-sm">
+        <div className="bg-gradient-to-r from-[#F8F8FF] to-[#F7E7CE]/10 p-5 border-b border-[#F7E7CE]/20">
+          <h3 className="font-medium text-xl font-playfair text-[#1D1E1E]">
             {isFreePlan ? t('Confirm Free Listing', 'Xác nhận niêm yết miễn phí') : t('Order Summary', 'Tóm tắt đơn hàng')}
           </h3>
         </div>
         
-        <div className="p-4">
+        <div className="p-5">
           <div className="space-y-4 mb-6">
             <div className="flex justify-between items-center">
               <span className="text-gray-600">{t('Start date', 'Ngày bắt đầu')}</span>
@@ -83,14 +84,14 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
                   </div>
                 )}
                 
-                <div className="pt-3 border-t">
+                <div className="pt-3 border-t border-[#F7E7CE]/20">
                   <div className="flex justify-between items-center">
                     <span className="font-medium font-playfair">{t('Total', 'Tổng cộng')}</span>
-                    <span className="font-bold text-lg font-playfair">${finalPrice.toFixed(2)}</span>
+                    <span className="font-bold text-xl font-playfair">${finalPrice.toFixed(2)}</span>
                   </div>
                   
                   {discountPercentage > 0 && (
-                    <div className="text-right text-[#50C878] text-sm">
+                    <div className="text-right text-[#50C878] text-sm font-medium">
                       {t('You save', 'Bạn tiết kiệm')}: ${dollarSavings.toFixed(2)}
                     </div>
                   )}
@@ -101,7 +102,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
 
           {/* Payment Security Notice */}
           {!isFreePlan && (
-            <div className="flex items-center justify-center mb-6 bg-[#F8F8FF] p-2 rounded-lg border border-[#F7E7CE]/30">
+            <div className="flex items-center justify-center mb-6 bg-[#F8F8FF] p-3 rounded-lg border border-[#F7E7CE]/30">
               <Lock className="h-4 w-4 text-[#1D1E1E]/70 mr-2" />
               <span className="text-xs text-[#1D1E1E]/70">
                 {t('Secure payment processing', 'Xử lý thanh toán an toàn')}
@@ -117,15 +118,15 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               onClick={onProceedToPayment}
               disabled={isSubmitting}
               className={cn(
-                "w-full py-2 h-auto font-medium shadow-sm",
+                "w-full py-3 h-auto font-medium shadow-sm text-base",
                 isFreePlan 
-                  ? "bg-gray-700 hover:bg-gray-800 focus:ring-gray-400" 
-                  : "bg-[#50C878] hover:bg-[#50C878]/90 focus:ring-[#50C878]/40"
+                  ? "bg-gray-800 hover:bg-gray-900 focus:ring-gray-400" 
+                  : "bg-gradient-to-r from-[#50C878] to-[#43a868] hover:from-[#43a868] hover:to-[#50C878] focus:ring-[#50C878]/40"
               )}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   {t('Processing...', 'Đang xử lý...')}
                 </>
               ) : (
@@ -134,11 +135,11 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
                     t('Confirm Free Listing', 'Xác nhận niêm yết miễn phí')
                   ) : (
                     <>
-                      <CreditCard className="mr-2 h-4 w-4" />
+                      <CreditCard className="mr-2 h-5 w-5" />
                       {t('Proceed to Payment', 'Tiếp tục thanh toán')}
                     </>
                   )}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </>
               )}
             </Button>
@@ -148,7 +149,5 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
     </motion.div>
   );
 };
-
-import { cn } from '@/lib/utils';
 
 export default PaymentSummary;
