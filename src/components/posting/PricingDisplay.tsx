@@ -26,12 +26,12 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   const dollarSavings = originalPrice - finalPrice;
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
-      <div className="bg-gradient-to-r from-[#F8F8FF] to-[#f7e7ce25] p-4 border-b">
+    <div className="bg-white rounded-xl border shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+      <div className="bg-gradient-to-r from-[#F8F8FF] to-[#f7e7ce25] p-5 border-b">
         <h3 className="font-medium text-lg font-playfair text-[#1D1E1E]">Payment Summary</h3>
       </div>
       
-      <div className="p-4 space-y-4">
+      <div className="p-5 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start">
             <CreditCard className="h-5 w-5 text-[#F7E7CE] mr-3 mt-0.5 stroke-[#1D1E1E]" />

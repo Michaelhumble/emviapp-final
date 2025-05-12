@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { RefreshCw, Check, ArrowRight } from 'lucide-react';
+import { RefreshCw, Check, ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -14,7 +14,7 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
   const getUpgradeMessage = () => {
     if (selectedPricing === 'standard') {
       return {
-        title: "Want to double your chances?",
+        title: "Want to double your hiring chances?",
         description: "For just $5 more, get front-page exposure for 30 days and hire up to 3× faster.",
         buttonText: "Upgrade for $5 more"
       };
@@ -92,8 +92,5 @@ const AutoRenewSuggestionCard: React.FC<AutoRenewSuggestionCardProps> = ({ onUpg
     </Card>
   );
 };
-
-// Import Star icon for the upgrade variant
-import { Star } from 'lucide-react';
 
 export default AutoRenewSuggestionCard;
