@@ -49,6 +49,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const handleSubmitForm = (values: JobFormValues) => {
     // If it's a paid plan, show the boost modal first
     if (pricingOptions.selectedPricingTier !== 'free' && pricingOptions.selectedPricingTier !== 'basic') {
+      // Make sure we show the boost modal first
       setIsBoostModalOpen(true);
     } else {
       // For free plans, submit directly
