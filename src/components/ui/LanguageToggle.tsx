@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Globe } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Check } from "lucide-react";
 import { getLanguagePreference, setLanguagePreference, addLanguageChangeListener } from "@/utils/languagePreference";
@@ -39,9 +38,8 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
           className="flex items-center gap-1.5 hover:bg-gray-100/80 rounded-full px-3 py-1.5 h-auto"
           aria-label="Language Selection"
         >
-          <Globe className="h-4 w-4" />
           <span className="text-sm font-medium">
-            {language === "en" ? "EN" : "VI"}
+            {language === "en" ? "English / Tiếng Việt" : "Tiếng Việt / English"}
           </span>
         </Button>
       </DrawerTrigger>
@@ -53,7 +51,7 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
             className="w-full h-14 justify-start text-lg font-medium"
             onClick={() => handleLanguageChange('en')}
           >
-            <span className="mr-2">🇺🇸</span> English
+            English
             {language === 'en' && <Check className="ml-auto h-4 w-4" />}
           </Button>
           <Button
@@ -61,7 +59,7 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
             className="w-full h-14 justify-start text-lg font-medium"
             onClick={() => handleLanguageChange('vi')}
           >
-            <span className="mr-2">🇻🇳</span> Tiếng Việt
+            Tiếng Việt
             {language === 'vi' && <Check className="ml-auto h-4 w-4" />}
           </Button>
         </div>
@@ -87,7 +85,7 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
           className="flex items-center gap-2 hover:bg-primary/5 transition-colors"
         >
           <span className="text-sm">
-            {language === "en" ? "English | Tiếng Việt" : "Tiếng Việt | English"}
+            {language === "en" ? "English / Tiếng Việt" : "Tiếng Việt / English"}
           </span>
         </Button>
       </div>

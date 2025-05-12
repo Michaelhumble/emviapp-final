@@ -11,6 +11,7 @@ import { PricingOptions } from '@/types/job';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/context/auth';
+import { usePostPayment } from '@/hooks/usePostPayment';
 
 const JobPost = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,6 +29,7 @@ const JobPost = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { userProfile } = useAuth();
+  const { initiatePayment, isLoading } = usePostPayment();
   
   // Default user posting stats
   const userPostingStats: UserPostingStats = {
@@ -45,21 +47,73 @@ const JobPost = () => {
     // Process job posting
     setIsSubmitting(true);
     
-    // Simulate API call with timeout
-    setTimeout(() => {
-      toast({
-        title: "Job posting created!",
-        description: "Your job has been successfully created and is now live.",
-      });
-      setIsSubmitting(false);
-      
-      // Navigate to success page or job details
-      navigate('/jobs');
-    }, 1500);
+    // Calculate the final price
+    const basePrice = 19.99;
+    let adjustedBasePrice = basePrice;
+    
+    // Add $5 for nationwide visibility
+    if (pricingOptions.isNationwide) {
+      adjustedBasePrice += 5;
+    }
+    
+    // Add $5 for fast sale package
+    if (pricingOptions.fastSalePackage) {
+      adjustedBasePrice += 5;
+    }
+    
+    const priceInfo = calculateFinalPrice(adjustedBasePrice, pricingOptions.durationMonths || 1);
+    const finalPrice = typeof priceInfo.finalPrice === 'number' ? priceInfo.finalPrice : 0;
+    
+    // If the price is greater than 0, redirect to Stripe
+    if (finalPrice > 0) {
+      initiatePayment('job', values, pricingOptions)
+        .then(response => {
+          setIsSubmitting(false);
+          if (!response?.success) {
+            toast({
+              title: "Payment error",
+              description: "There was an error processing your payment. Please try again.",
+              variant: "destructive"
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Payment initiation error:", error);
+          setIsSubmitting(false);
+          toast({
+            title: "Payment error",
+            description: "There was an error processing your payment. Please try again.",
+            variant: "destructive"
+          });
+        });
+    } else {
+      // For free listings, show success and redirect
+      setTimeout(() => {
+        toast({
+          title: "Job posting created!",
+          description: "Your job has been successfully created and is now live.",
+        });
+        setIsSubmitting(false);
+        navigate('/jobs');
+      }, 1500);
+    }
   };
   
-  // Calculate final price - passing both required arguments: basePrice and durationMonths
-  const priceInfo = calculateFinalPrice(19.99, pricingOptions.durationMonths || 1);
+  // Calculate final price - including nationwide and fast sale adjustments
+  const basePrice = 19.99;
+  let adjustedBasePrice = basePrice;
+  
+  // Add $5 for nationwide visibility
+  if (pricingOptions.isNationwide) {
+    adjustedBasePrice += 5;
+  }
+  
+  // Add $5 for fast sale package
+  if (pricingOptions.fastSalePackage) {
+    adjustedBasePrice += 5;
+  }
+  
+  const priceInfo = calculateFinalPrice(adjustedBasePrice, pricingOptions.durationMonths || 1);
   // Safely extract the finalPrice as a number
   const finalPrice = typeof priceInfo.finalPrice === 'number' ? priceInfo.finalPrice : 0;
   
@@ -85,6 +139,8 @@ const JobPost = () => {
                 photoUploads={photoUploads}
                 setPhotoUploads={setPhotoUploads}
                 isSubmitting={isSubmitting}
+                pricingOptions={pricingOptions}
+                setPricingOptions={setPricingOptions}
               />
             </CardContent>
           </Card>
@@ -102,7 +158,7 @@ const JobPost = () => {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span>Standard Job Listing</span>
-                  <span>${(19.99).toFixed(2)}</span>
+                  <span>${basePrice.toFixed(2)}</span>
                 </div>
                 
                 {pricingOptions.isNationwide && (
@@ -128,16 +184,16 @@ const JobPost = () => {
                 
                 <Button 
                   className="w-full mt-4" 
-                  disabled={isSubmitting}
-                  onClick={() => handleJobFormSubmit(jobDetails as JobFormValues)}
+                  disabled={isSubmitting || isLoading}
+                  onClick={() => jobDetails ? handleJobFormSubmit(jobDetails) : null}
                 >
-                  {isSubmitting ? (
+                  {isSubmitting || isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Processing...
                     </>
                   ) : (
-                    "Continue to Payment"
+                    finalPrice > 0 ? "Continue to Payment" : "Post Job"
                   )}
                 </Button>
               </div>

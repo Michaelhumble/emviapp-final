@@ -33,22 +33,33 @@ export function useTranslation() {
   }, [isVietnamese]);
   
   // Updated translation function to handle both object and string arguments
+  // With "nghệ sĩ" replaced with "thợ" in all Vietnamese texts
   const t = useCallback((
     englishOrTranslation: string | Translation,
     vietnameseText?: string
   ): string => {
+    let translatedText = '';
+    
     // Handle case when called with Translation object
     if (typeof englishOrTranslation === 'object' && englishOrTranslation !== null) {
-      return isVietnamese ? englishOrTranslation.vietnamese : englishOrTranslation.english;
+      translatedText = isVietnamese ? englishOrTranslation.vietnamese : englishOrTranslation.english;
     }
     
     // Handle case when called with separate strings
-    if (typeof englishOrTranslation === 'string' && typeof vietnameseText === 'string') {
-      return isVietnamese ? vietnameseText : englishOrTranslation;
+    else if (typeof englishOrTranslation === 'string' && typeof vietnameseText === 'string') {
+      translatedText = isVietnamese ? vietnameseText : englishOrTranslation;
+    }
+    // Fallback: return the first argument as is
+    else {
+      translatedText = typeof englishOrTranslation === 'string' ? englishOrTranslation : '';
     }
     
-    // Fallback: return the first argument as is
-    return typeof englishOrTranslation === 'string' ? englishOrTranslation : '';
+    // Replace nghệ sĩ with thợ in Vietnamese text if it's currently in Vietnamese
+    if (isVietnamese) {
+      translatedText = translatedText.replace(/nghệ sĩ/gi, 'thợ');
+    }
+    
+    return translatedText;
   }, [isVietnamese]);
   
   return { isVietnamese, toggleLanguage, t };
