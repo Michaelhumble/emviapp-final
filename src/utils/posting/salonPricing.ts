@@ -42,9 +42,11 @@ export const calculateSalonPostPrice = (options: PricingOptions) => {
     basePrice = Math.max(basePrice - 10, 0);
   }
   
+  const finalPrice = basePrice;
+  
   return {
     basePrice,
-    finalPrice: basePrice,
+    finalPrice,
     discountApplied: options.isFirstPost
   };
 };

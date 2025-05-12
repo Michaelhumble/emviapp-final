@@ -34,6 +34,10 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
   // Calculate the current price based on selected options
   const price = calculateSalonPostPrice(localOptions);
 
+  const displayFinalPrice = (priceInfo: ReturnType<typeof calculateSalonPostPrice>): string => {
+    return `$${priceInfo.finalPrice.toFixed(2)}`;
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">{t('Enhance Your Listing', 'Nâng cao tin đăng của bạn')}</h3>
@@ -129,7 +133,7 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
       <div className="mt-4 pt-4 border-t">
         <div className="flex justify-between items-center">
           <span className="font-medium">{t('Current Price', 'Giá hiện tại')}:</span>
-          <span className="font-bold text-lg">${price.toFixed(2)}</span>
+          <span className="font-bold text-lg">${displayFinalPrice(price)}</span>
         </div>
       </div>
     </div>

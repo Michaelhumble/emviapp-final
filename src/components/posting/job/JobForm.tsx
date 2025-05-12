@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -151,7 +150,7 @@ export const JobForm: React.FC<JobFormProps> = ({
                   <div className="mt-2 text-sm text-gray-500">
                     {isVietnamese ? (
                       <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                        ✨ English: {jobFormSchema.shape.title._def.defaultValue || "Nail Technician – Full Time"}
+                        ✨ English: {jobFormSchema.shape.title.default()}
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
@@ -198,7 +197,7 @@ export const JobForm: React.FC<JobFormProps> = ({
                     </span>
                     <p className="text-sm text-gray-600">
                       {isVietnamese 
-                        ? jobFormSchema.shape.jobSummary?._def.defaultValue || "Looking for a friendly, reliable nail tech with experience in dip, gel, and design. Great team, busy salon, weekly pay."
+                        ? jobFormSchema.shape.jobSummary.default() || "Looking for a friendly, reliable nail tech with experience in dip, gel, and design. Great team, busy salon, weekly pay."
                         : vietnameseTemplate.jobSummary}
                     </p>
                   </div>

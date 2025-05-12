@@ -56,3 +56,14 @@ export const generateVietnamesePromotionalText = (
   
   return promo;
 };
+
+/**
+ * Generates promotional text for first-time posters
+ * @param isFirstPost - Whether this is the user's first post
+ * @returns A promotional blurb for first-time posters
+ */
+export const getFirstPostPromotionalText = (isFirstPost: boolean): string => {
+  return isFirstPost 
+    ? "First post discount applied!" 
+    : "";
+};

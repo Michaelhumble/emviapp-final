@@ -1,6 +1,13 @@
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
+export interface UserPostingStats {
+  hasPostedJobs?: boolean;
+  totalPostCount?: number;
+  isFirstTimeUser?: boolean;
+  referralCredits?: number;
+}
+
 export interface JobPricingOption {
   id: string;
   name: string;
