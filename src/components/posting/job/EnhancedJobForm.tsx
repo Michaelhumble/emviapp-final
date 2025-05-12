@@ -2,7 +2,6 @@
 import React from 'react';
 import { JobForm } from './JobForm';
 import { JobFormValues } from './jobFormSchema';
-import JobPostingHeader from '../JobPostingHeader';
 import { Separator } from '@/components/ui/separator';
 import PostHeader from '../PostHeader';
 import MotivationalFooter from '../MotivationalFooter';
@@ -27,9 +26,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         subtitle="Post smart. We'll guide you every step."
       />
       
-      <Separator className="my-8" />
-      
-      <div className="bg-white rounded-xl shadow-sm p-6 sm:p-8 border">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <JobForm 
           onSubmit={onSubmit}
           photoUploads={photoUploads}

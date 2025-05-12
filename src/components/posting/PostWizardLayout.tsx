@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import JobPostingHeader from './JobPostingHeader';
+import { motion } from 'framer-motion';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -31,10 +32,15 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
   const isLastStep = currentStep === totalSteps;
   
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 bg-gray-50">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-4xl mx-auto px-4 py-8 md:py-12"
+    >
       <JobPostingHeader currentStep={currentStep} totalSteps={totalSteps} />
       
-      <div className="bg-white p-6 rounded-lg border shadow-sm mb-8">
+      <div className="mb-8">
         {children}
       </div>
       
@@ -76,7 +82,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           </Button>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
