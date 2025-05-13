@@ -1,41 +1,45 @@
 
-export type PostType = 'job' | 'salon' | 'booth' | 'supply';
-
 export interface UserPostingStats {
-  hasPostedJobs?: boolean;
+  jobPostCount: number;
+  salonPostCount: number;
+  boothPostCount: number;
+  supplyPostCount: number;
   totalPostCount?: number;
-  isFirstTimeUser?: boolean;
-  referralCredits?: number;
+  hasReferrals?: boolean;
 }
+
+export interface PricingOptions {
+  selectedPricingTier: string;
+  isFirstPost?: boolean;
+  isRenewal?: boolean;
+  durationMonths?: number;
+  isNationwide?: boolean;
+  fastSalePackage?: boolean;
+  showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
+  hasReferrals?: boolean;
+  autoRenew?: boolean;
+  isHotListing?: boolean;
+}
+
+export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
 export interface JobPricingOption {
   id: string;
   name: string;
   price: number;
   wasPrice?: number;
+  basePrice?: number;
+  finalPrice?: number;
   description: string;
   vietnameseDescription?: string;
-  features: string[];
-  tier: string;
   tag?: string;
-  hidden?: boolean;
+  popular?: boolean;
+  discountPercentage?: number;
+  features: string[];
+  isFirstPost?: boolean;
+  tier?: JobPricingTier;
+  hidden?: boolean; // Add hidden property
 }
 
-export interface PricingOptions {
-  isFirstPost?: boolean;
-  isNationwide?: boolean;
-  fastSalePackage?: boolean;
-  showAtTop?: boolean;
-  isHotListing?: boolean;
-  isUrgent?: boolean;
-  bundleWithJobPost?: boolean;
-  bundleWithSalonPost?: boolean;
-  boostVisibility?: boolean;
-  featuredListing?: boolean;
-  extendedDuration?: boolean;
-  hasReferrals?: boolean;
-  isRenewal?: boolean;
-  selectedPricingTier?: string;
-  autoRenew?: boolean;
-  durationMonths?: number;
-}
+export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';

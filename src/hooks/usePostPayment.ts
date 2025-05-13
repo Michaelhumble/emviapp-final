@@ -50,8 +50,6 @@ export const usePostPayment = () => {
       console.log("Payment parameters:", {
         tier: selectedPricingTier,
         duration: durationMonths,
-        nationwide: pricingOptions?.isNationwide,
-        fastSale: pricingOptions?.fastSalePackage,
         autoRenew: pricingOptions?.autoRenew
       });
       

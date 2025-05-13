@@ -1,7 +1,6 @@
-
-import { PricingOptions } from "./types";
+import { PricingOptions, UserPostingStats } from "./types";
 
 // Placeholder for future supply pricing implementation
-export const calculateSupplyPostPrice = (options: PricingOptions): number => {
+export const calculateSupplyPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
   return 14.99; // Default price
 };

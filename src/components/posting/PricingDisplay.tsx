@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Flame, Star, Diamond, RefreshCw } from 'lucide-react';
+import { Flame, Star, Diamond } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PricingMicroCopy from './PricingMicroCopy';
-import { useTranslation } from '@/hooks/useTranslation';
 
 interface PricingDisplayProps {
   pricingId: string;
@@ -14,10 +12,6 @@ interface PricingDisplayProps {
   originalPrice: number;
   finalPrice: number;
   discountPercentage: number;
-  extraCharges?: {
-    nationwide?: boolean;
-    fastSale?: boolean;
-  };
 }
 
 const PricingDisplay: React.FC<PricingDisplayProps> = ({
@@ -28,10 +22,8 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   originalPrice,
   finalPrice,
   discountPercentage,
-  extraCharges = {}
 }) => {
   const isFreePlan = pricingId === 'free';
-  const { t } = useTranslation();
   
   const formatCurrency = (value: number): string => {
     return value.toLocaleString('en-US', {
@@ -60,15 +52,15 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   const getPlanName = () => {
     switch (pricingId) {
       case 'standard':
-        return t("Standard", "Tiêu chuẩn");
+        return "Standard";
       case 'premium':
-        return t("Premium Listing", "Gói cao cấp");
+        return "Premium Listing";
       case 'gold':
-        return t("Gold Featured", "Nổi bật");
+        return "Gold Featured";
       case 'free':
-        return t("Basic Plan", "Gói cơ bản");
+        return "Basic Plan";
       default:
-        return t("Selected Plan", "Gói đã chọn");
+        return "Selected Plan";
     }
   };
   
@@ -121,7 +113,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
           </div>
           {!isFreePlan && (
             <span className="px-2 py-1 text-xs rounded-full bg-opacity-20 font-medium bg-white">
-              {duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}
+              {duration} {duration === 1 ? 'month' : 'months'}
             </span>
           )}
         </div>
@@ -132,52 +124,38 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
           pricingId === 'gold' ? "text-amber-700" :
           "text-gray-600"
         )}>
-          {isFreePlan ? t("Limited visibility posting", "Đăng tin với hiển thị giới hạn") : t("Premium job placement", "Đăng tin với hiển thị tốt")}
+          {isFreePlan ? "Limited visibility posting" : "Premium job placement"}
         </CardDescription>
       </CardHeader>
       
       <CardContent className="p-5 space-y-4">
         {isFreePlan ? (
           <div className="text-center py-2">
-            <p className="text-2xl font-medium mb-1">{t("Free", "Miễn phí")}</p>
-            <p className="text-sm text-gray-500">{t("For first-time users only", "Chỉ dành cho người dùng lần đầu")}</p>
+            <p className="text-2xl font-medium mb-1">Free</p>
+            <p className="text-sm text-gray-500">For first-time users only</p>
           </div>
         ) : (
           <>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{t("Base price", "Giá cơ bản")}</span>
+                <span className="text-sm text-gray-600">Base price</span>
                 <span className="font-medium">{formatCurrency(basePrice)}/mo</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{t("Duration", "Thời hạn")}</span>
-                <span className="font-medium">{duration} {duration === 1 ? t('month', 'tháng') : t('months', 'tháng')}</span>
+                <span className="text-sm text-gray-600">Duration</span>
+                <span className="font-medium">{duration} {duration === 1 ? 'month' : 'months'}</span>
               </div>
-
-              {extraCharges?.nationwide && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">{t("Nationwide Visibility", "Hiển thị toàn quốc")}</span>
-                  <span className="font-medium">+$5.00</span>
-                </div>
-              )}
-
-              {extraCharges?.fastSale && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">{t("Fast Sale Package", "Gói bán nhanh")}</span>
-                  <span className="font-medium">+$50.00</span>
-                </div>
-              )}
 
               {discountPercentage > 0 && (
                 <>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">{t("Subtotal", "Tạm tính")}</span>
+                    <span className="text-sm text-gray-600">Subtotal</span>
                     <span className="font-medium">{formatCurrency(originalPrice)}</span>
                   </div>
                   
                   <div className="flex justify-between items-center text-green-700">
-                    <span className="text-sm font-medium">{t("Discount", "Giảm giá")} ({discountPercentage}%)</span>
+                    <span className="text-sm font-medium">Discount ({discountPercentage}%)</span>
                     <span className="font-medium">-{formatCurrency(originalPrice - finalPrice)}</span>
                   </div>
                 </>
@@ -185,7 +163,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
               
               <div className="pt-2 border-t border-gray-200">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-gray-900">{t("Total", "Tổng cộng")}</span>
+                  <span className="font-medium text-gray-900">Total</span>
                   <span className="text-xl font-bold">
                     {formatCurrency(finalPrice)}
                   </span>
@@ -196,7 +174,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
                 <div className="pt-3 text-xs text-gray-600">
                   <p className="flex items-center">
                     <RefreshCw className="h-3.5 w-3.5 mr-1 text-green-600" />
-                    {t("Auto-renewal is enabled. You can cancel anytime.", "Đã bật tự động gia hạn. Bạn có thể hủy bất kỳ lúc nào.")}
+                    Auto-renewal is enabled. You can cancel anytime.
                   </p>
                 </div>
               )}
@@ -210,5 +188,8 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
     </Card>
   );
 };
+
+// Import RefreshCw from lucide-react
+import { RefreshCw } from 'lucide-react';
 
 export default PricingDisplay;

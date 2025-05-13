@@ -1,4 +1,3 @@
-
 import { JobPricingOption, PricingOptions } from './types';
 import { DurationOption } from '@/types/pricing';
 

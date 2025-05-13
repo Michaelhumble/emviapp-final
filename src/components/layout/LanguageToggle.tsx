@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
-import { Check, X } from 'lucide-react';
+import { Globe, Check, X } from 'lucide-react';
 import { setLanguagePreference, getLanguagePreference, addLanguageChangeListener } from '@/utils/languagePreference';
 
 interface LanguageToggleProps {
@@ -39,8 +39,9 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
           size="sm" 
           className="flex items-center gap-2 border border-gray-200 rounded-full px-3 py-1 h-9"
         >
+          <Globe className="h-4 w-4 text-gray-500" />
           <span className="text-sm font-medium">
-            {language === "en" ? "English / Tiếng Việt" : "Tiếng Việt / English"}
+            {language === "en" ? "English" : "Tiếng Việt"}
           </span>
         </Button>
       </DrawerTrigger>
@@ -60,7 +61,7 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
             className="w-full h-10 justify-start text-base font-medium"
             onClick={() => handleLanguageChange('en')}
           >
-            English
+            <span className="mr-2">🇺🇸</span> English
             {language === 'en' && <Check className="ml-auto h-4 w-4" />}
           </Button>
           <Button
@@ -68,7 +69,7 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
             className="w-full h-10 justify-start text-base font-medium"
             onClick={() => handleLanguageChange('vi')}
           >
-            Tiếng Việt
+            <span className="mr-2">🇻🇳</span> Tiếng Việt
             {language === 'vi' && <Check className="ml-auto h-4 w-4" />}
           </Button>
         </div>

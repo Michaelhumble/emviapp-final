@@ -27,21 +27,21 @@ const SalonPost: React.FC = () => {
     }
 
     // Calculate price
-    const priceInfo = calculateSalonPostPrice(pricingOptions);
+    const price = calculateSalonPostPrice(pricingOptions);
 
     // TODO: Upload photos to storage
 
     // TODO: Create salon post in database
 
     // If price is greater than 0, proceed to payment
-    if (priceInfo.finalPrice > 0) {
+    if (price > 0) {
       // Navigate to payment page with salon data
       navigate('/payment', { 
         state: { 
           type: 'salon',
           data: values,
           options: pricingOptions,
-          price: priceInfo
+          price
         } 
       });
     } else {

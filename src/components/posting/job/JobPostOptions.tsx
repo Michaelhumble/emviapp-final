@@ -1,177 +1,166 @@
 
-import React, { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import NationwideOption from '@/components/posting/smart-ad-options/NationwideOption';
-import FastSalePackage from '@/components/posting/smart-ad-options/FastSalePackage';
-import { useTranslation } from '@/hooks/useTranslation';
-import { durationOptions, DurationSelectorProps } from '@/utils/posting/upsellOptions';
-import { PricingOptions } from '@/utils/posting/types';
-import PricingTierSelector from '@/components/posting/PricingTierSelector';
+import React, { useState, useEffect } from 'react';
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import SectionHeader from "../SectionHeader";
+import { useAuth } from "@/context/auth";
+import { useNavigate } from 'react-router-dom';
+import { PricingOptions, UserPostingStats } from '@/utils/posting/types';
+import { generatePromotionalText, getFirstPostPromotionalText } from '@/utils/posting/promotionalText';
+import { CheckCircle, Globe, Zap } from 'lucide-react';
 
-export interface JobPostOptionsProps {
-  isFirstPost?: boolean;
-  hasReferrals?: boolean;
-  setPricingOptions: (options: Partial<PricingOptions>) => void;
+interface JobPostOptionsProps {
   pricingOptions: PricingOptions;
+  setPricingOptions: (options: PricingOptions) => void;
 }
 
-const JobPostOptions: React.FC<JobPostOptionsProps> = ({ 
-  isFirstPost = false,
-  hasReferrals = false,
-  setPricingOptions,
-  pricingOptions
-}) => {
-  const { t } = useTranslation();
+const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPricingOptions }) => {
+  const { user, userProfile } = useAuth();
+  const navigate = useNavigate();
   
-  const handleNationwideChange = (checked: boolean) => {
-    setPricingOptions({ isNationwide: checked });
-  };
+  const [totalJobPosts, setTotalJobPosts] = useState(0);
+  const [totalSalonPosts, setTotalSalonPosts] = useState(0);
+  const [totalBoothPosts, setTotalBoothPosts] = useState(0);
+  const [totalSupplyPosts, setTotalSupplyPosts] = useState(0);
+  const [referralCount, setReferralCount] = useState(0);
+  const [isFirstPost, setIsFirstPost] = useState(true);
   
-  const handleFastSaleChange = (checked: boolean) => {
-    setPricingOptions({ fastSalePackage: checked });
-  };
-
-  const handleDurationChange = (months: number) => {
-    setPricingOptions({ durationMonths: months });
-  };
-
-  const handleAutoRenewChange = (checked: boolean) => {
-    setPricingOptions({ autoRenew: checked });
-  };
-
-  const handlePricingTierChange = (tier: string) => {
-    setPricingOptions({ selectedPricingTier: tier });
-  };
-
-  // Use safe access to pricingOptions with fallbacks
-  const selectedTier = pricingOptions?.selectedPricingTier || 'standard';
-  const durationMonths = pricingOptions?.durationMonths || 1;
-  const isNationwide = pricingOptions?.isNationwide || false;
-  const fastSalePackage = pricingOptions?.fastSalePackage || false;
-  const autoRenew = pricingOptions?.autoRenew || false;
-
-  // Only show auto-renew option for subscription plans
-  const showAutoRenew = selectedTier !== 'free';
-  
-  // Disable upsells for free tier
-  const isFreeSelected = selectedTier === 'free';
-  
-  // Reset upsells if free tier is selected
   useEffect(() => {
-    if (isFreeSelected && (isNationwide || fastSalePackage)) {
-      setPricingOptions({ 
-        isNationwide: false, 
-        fastSalePackage: false
-      });
-    }
-  }, [isFreeSelected, isNationwide, fastSalePackage, setPricingOptions]);
-
+    if (!user) return;
+    
+    // Mock data - replace with actual data fetching from backend
+    setTotalJobPosts(3);
+    setTotalSalonPosts(1);
+    setTotalBoothPosts(2);
+    setTotalSupplyPosts(0);
+    
+    // Safely get referral count from user profile
+    const userReferralCount = userProfile?.referral_count || 0;
+    setReferralCount(userReferralCount);
+    
+    // Determine if it's the user's first post
+    setIsFirstPost(totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts === 0);
+  }, [user, userProfile, totalJobPosts, totalSalonPosts, totalBoothPosts, totalSupplyPosts]);
+  
+  const handleCheckboxChange = (option: keyof PricingOptions) => {
+    setPricingOptions({
+      ...pricingOptions,
+      [option]: !pricingOptions[option]
+    });
+  };
+  
+  const getPostStats = (): UserPostingStats => {
+    // Create an object that matches the UserPostingStats interface
+    return {
+      jobPostCount: totalJobPosts,
+      salonPostCount: totalSalonPosts,
+      boothPostCount: totalBoothPosts,
+      supplyPostCount: totalSupplyPosts,
+      totalPostCount: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
+      hasReferrals: referralCount > 0
+    };
+  };
+  
+  const postStats = getPostStats();
+  
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-medium">
-            {t("Job Post Options", "Tuỳ chọn đăng tuyển")}
-          </CardTitle>
-          <CardDescription>
-            {t("Choose options to maximize your post's reach", "Chọn các tùy chọn để tối đa hóa phạm vi tiếp cận của bài đăng")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Pricing Tier Selector */}
-          <PricingTierSelector 
-            selectedTier={selectedTier}
-            onTierChange={handlePricingTierChange}
-            isFirstPost={isFirstPost}
-          />
-          
-          <Separator className="my-4" />
-          
-          {/* Nationwide Visibility Option */}
-          <NationwideOption 
-            postType="job"
-            isFirstPost={isFirstPost}
-            onChange={handleNationwideChange}
-            defaultChecked={isNationwide}
-            disabled={isFreeSelected}
-          />
-          
-          {/* Fast Sale Package */}
-          <FastSalePackage 
-            onChange={handleFastSaleChange}
-            defaultChecked={fastSalePackage}
-            disabled={isFreeSelected}
-          />
-          
-          <Separator className="my-4" />
-          
-          {/* Duration Selector */}
-          <div className="space-y-3">
-            <h3 className="font-medium text-sm">
-              {t("Post Duration", "Thời hạn đăng bài")}
-            </h3>
-            <DurationSelector 
-              selectedMonths={durationMonths}
-              onChange={handleDurationChange}
+    <Card className="border-2 shadow-sm">
+      <CardContent className="space-y-4 pt-6">
+        <SectionHeader 
+          title="Job Post Options" 
+          emoji="📦"
+          description="Boost your visibility to find artists faster"
+        />
+        
+        {isFirstPost && (
+          <div className="bg-green-50 border border-green-200 p-3 rounded-md">
+            <p className="text-sm text-green-700 font-medium">
+              {getFirstPostPromotionalText('job')}
+            </p>
+          </div>
+        )}
+        
+        <div className="space-y-3">
+          <div className="flex items-center p-3 bg-white border rounded-lg hover:bg-purple-50 transition-colors">
+            <div className="flex-1 flex items-start gap-3">
+              <div className="p-2 rounded-full bg-purple-100 text-purple-600">
+                <Globe className="h-5 w-5" />
+              </div>
+              <div>
+                <Label htmlFor="isNationwide" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Nationwide Reach
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  📍 Show up in every artist's radar — from Houston to San Jose.
+                </p>
+              </div>
+            </div>
+            <Checkbox
+              id="isNationwide"
+              checked={pricingOptions.isNationwide || false}
+              onCheckedChange={() => handleCheckboxChange('isNationwide')}
+              className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600 h-5 w-5"
             />
+            {pricingOptions.isNationwide && (
+              <CheckCircle className="ml-1 h-4 w-4 text-purple-500 animate-in fade-in-50 duration-300" />
+            )}
           </div>
           
-          {/* Auto Renew Option - Only show for paid plans */}
-          {showAutoRenew && (
-            <div className="pt-2">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="auto-renew"
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
-                  checked={autoRenew}
-                  onChange={(e) => handleAutoRenewChange(e.target.checked)}
-                />
-                <label htmlFor="auto-renew" className="text-sm font-medium text-gray-700">
-                  {t("Auto-renew my plan (can cancel anytime)", "Tự động gia hạn gói của tôi (có thể hủy bất kỳ lúc nào)")}
-                </label>
+          <div className="flex items-center p-3 bg-white border rounded-lg hover:bg-purple-50 transition-colors">
+            <div className="flex-1 flex items-start gap-3">
+              <div className="p-2 rounded-full bg-amber-100 text-amber-600">
+                <Zap className="h-5 w-5" />
               </div>
-              <p className="text-xs text-gray-500 ml-6 mt-1">
-                {t("Avoid interruption in visibility by auto-renewing at the end of your term", "Tránh gián đoạn hiển thị bằng cách tự động gia hạn vào cuối thời hạn")}
-              </p>
+              <div>
+                <Label htmlFor="fastSalePackage" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  Fast Sale Package
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  ⚡ Get seen first. More artists apply faster.
+                </p>
+              </div>
+            </div>
+            <Checkbox
+              id="fastSalePackage"
+              checked={pricingOptions.fastSalePackage || false}
+              onCheckedChange={() => handleCheckboxChange('fastSalePackage')}
+              className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600 h-5 w-5"
+            />
+            {pricingOptions.fastSalePackage && (
+              <CheckCircle className="ml-1 h-4 w-4 text-purple-500 animate-in fade-in-50 duration-300" />
+            )}
+          </div>
+          
+          {postStats.salonPostCount === 0 && (
+            <div className="flex items-center p-3 bg-white border rounded-lg hover:bg-purple-50 transition-colors">
+              <div className="flex-1 flex items-start gap-3">
+                <div className="p-2 rounded-full bg-green-100 text-green-600">
+                  <CheckCircle className="h-5 w-5" />
+                </div>
+                <div>
+                  <Label htmlFor="bundleWithJobPost" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    Bundle with Salon Post
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    🏪 Get a salon profile that artists can browse and contact you directly.
+                  </p>
+                </div>
+              </div>
+              <Checkbox
+                id="bundleWithJobPost"
+                checked={pricingOptions.bundleWithJobPost || false}
+                onCheckedChange={() => handleCheckboxChange('bundleWithJobPost')}
+                className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600 h-5 w-5"
+              />
+              {pricingOptions.bundleWithJobPost && (
+                <CheckCircle className="ml-1 h-4 w-4 text-purple-500 animate-in fade-in-50 duration-300" />
+              )}
             </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-// Duration Selector Component
-const DurationSelector: React.FC<DurationSelectorProps> = ({ selectedMonths, onChange }) => {
-  const { t, isVietnamese } = useTranslation();
-  
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      {durationOptions.map((option) => (
-        <button
-          key={option.months}
-          type="button"
-          onClick={() => onChange(option.months)}
-          className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors ${
-            selectedMonths === option.months
-              ? "bg-primary/10 border-primary text-primary font-medium"
-              : "bg-background border-border hover:bg-muted/50"
-          }`}
-        >
-          <span className="text-lg font-medium">{option.months}</span>
-          <span className="text-xs">
-            {isVietnamese ? option.vietnameseLabel : option.label}
-          </span>
-          {option.discount > 0 && (
-            <span className="text-xs text-green-600 mt-1">
-              -{option.discount}%
-            </span>
-          )}
-        </button>
-      ))}
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

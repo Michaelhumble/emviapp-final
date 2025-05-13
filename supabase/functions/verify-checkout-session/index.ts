@@ -78,17 +78,6 @@ serve(async (req) => {
     // Get metadata from the session
     const metadata = session.metadata || {};
     
-    // Check if payment is complete
-    if (session.payment_status !== "paid") {
-      return new Response(JSON.stringify({ 
-        error: "Payment not completed", 
-        status: session.payment_status 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    
     // Find the related payment log
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
@@ -100,40 +89,13 @@ serve(async (req) => {
       console.error("Error fetching payment log:", paymentLogError);
     }
 
-    // If we have a post_id in metadata, update the job status
-    if (metadata.post_id) {
-      const { error: updateJobError } = await supabaseAdmin
-        .from('jobs')
-        .update({ 
-          status: 'active',
-          expires_at: metadata.expires_at
-        })
-        .eq('id', metadata.post_id);
-        
-      if (updateJobError) {
-        console.error("Error updating job status:", updateJobError);
-      }
-    }
-    
-    // Update payment log status
-    if (paymentLog?.id) {
-      const { error: updateLogError } = await supabaseAdmin
-        .from('payment_logs')
-        .update({ payment_status: 'success' })
-        .eq('id', paymentLog.id);
-        
-      if (updateLogError) {
-        console.error("Error updating payment log:", updateLogError);
-      }
-    }
-
     return new Response(
       JSON.stringify({
         success: true,
         post_id: metadata.post_id || paymentLog?.listing_id,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
-        pricing_tier: metadata.pricing_tier,
+        pricing_tier: metadata.pricing_tier || paymentLog?.pricing_tier,
         payment_log_id: paymentLog?.id
       }),
       {
