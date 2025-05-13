@@ -5,9 +5,11 @@ import { Container } from '@/components/ui/container';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/layout';
 import { Helmet } from 'react-helmet';
+import { useAuth } from '@/context/auth';
 
 const JobPost: React.FC = () => {
   const navigate = useNavigate();
+  const { userProfile } = useAuth();
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,12 +33,15 @@ const JobPost: React.FC = () => {
       </Helmet>
       <Container className="py-8">
         <h1 className="text-3xl font-playfair mb-8">Post a Job</h1>
-        <JobForm
-          onSubmit={handleSubmit}
-          photoUploads={photoUploads}
-          setPhotoUploads={setPhotoUploads}
-          isSubmitting={isSubmitting}
-        />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <JobForm
+            onSubmit={handleSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            isSubmitting={isSubmitting}
+            userProfile={userProfile}
+          />
+        </div>
       </Container>
     </Layout>
   );

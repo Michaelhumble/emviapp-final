@@ -3,38 +3,34 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { jobFormSchema } from './jobFormSchema';
-import { z } from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ClipboardList, Pencil, Camera, Phone, Sparkles } from 'lucide-react';
 
-// Export the type for use in other components
-export type JobFormValues = z.infer<typeof jobFormSchema>;
+// Ensure this type is exported so other components can use it
+export type JobFormValues = {
+  title: string;
+  description: string;
+  location: string;
+  salary?: string;
+  contactEmail: string;
+  phoneNumber: string;
+  jobType: "full-time" | "part-time" | "contract" | "temporary";
+  requirements?: string[];
+  jobSummary?: string;
+};
 
-// Define props for JobForm component
 export interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
   defaultValues?: JobFormValues;
-  industry?: string; // Add industry prop to match EnhancedJobForm usage
-  userProfile?: any; // Add userProfile prop
+  industry?: string;
+  userProfile?: any;
 }
 
 const JobForm: React.FC<JobFormProps> = ({
@@ -44,71 +40,67 @@ const JobForm: React.FC<JobFormProps> = ({
   isSubmitting,
   defaultValues,
   industry = "nails",
-  userProfile,
+  userProfile
 }) => {
-  // Initialize the form with react-hook-form
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: defaultValues || {
       title: '',
       description: '',
-      location: userProfile?.location || '',
+      location: '',
       salary: '',
       contactEmail: userProfile?.email || '',
-      phoneNumber: userProfile?.phone || '',
+      phoneNumber: userProfile?.phoneNumber || '',
       jobType: 'full-time',
-      requirements: [],
       jobSummary: ''
-    },
+    }
   });
 
-  // Handle form submission
-  const handleSubmit = form.handleSubmit((data) => {
-    onSubmit(data);
-  });
+  const handleSubmit = (values: JobFormValues) => {
+    onSubmit(values);
+  };
+
+  // Required field indicator component
+  const RequiredIndicator = () => <span className="text-red-500 ml-1">*</span>;
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Section 1: Basic Job Information */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-medium mb-4 flex items-center">
-            <span className="mr-2">📝</span>
-            Basic Job Information
-          </h2>
-          
-          {/* Job Title */}
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 p-6">
+        {/* SECTION 1: Basic Job Information */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <ClipboardList className="h-6 w-6" />
+            <h2 className="text-2xl font-semibold">Basic Job Information</h2>
+          </div>
+
           <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
               <FormItem className="mb-4">
-                <FormLabel>Job Title <span className="text-red-500">*</span></FormLabel>
+                <FormLabel className="font-medium text-base">
+                  Job Title<RequiredIndicator />
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="e.g., Nail Technician, Hair Stylist"
-                    {...field}
-                  />
+                  <Input {...field} placeholder="e.g. Nail Technician, Hair Stylist" className="w-full" />
                 </FormControl>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mt-1">
                   Be clear and specific. Ex: Nail Tech – Full Time (Dip/Gel Experience)
                 </p>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {/* Job Type */}
+
           <FormField
             control={form.control}
             name="jobType"
             render={({ field }) => (
               <FormItem className="mb-4">
-                <FormLabel>Job Type <span className="text-red-500">*</span></FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <FormLabel className="font-medium text-base">
+                  Job Type<RequiredIndicator />
+                </FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select job type" />
@@ -125,39 +117,35 @@ const JobForm: React.FC<JobFormProps> = ({
               </FormItem>
             )}
           />
-          
-          {/* Location */}
+
           <FormField
             control={form.control}
             name="location"
             render={({ field }) => (
               <FormItem className="mb-4">
-                <FormLabel>Location <span className="text-red-500">*</span></FormLabel>
+                <FormLabel className="font-medium text-base">
+                  Location<RequiredIndicator />
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="e.g., San Jose, CA"
-                    {...field}
-                  />
+                  <Input {...field} placeholder="City, State" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {/* Salary */}
+
           <FormField
             control={form.control}
             name="salary"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Salary / Compensation</FormLabel>
+              <FormItem className="mb-4">
+                <FormLabel className="font-medium text-base">
+                  Salary / Compensation
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="e.g., $20-25/hr or $60k-70k/year"
-                    {...field}
-                  />
+                  <Input {...field} placeholder="e.g., $25-30/hr or $50,000-60,000/year" />
                 </FormControl>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mt-1">
                   Adding a salary range increases application rates by 30%
                 </p>
                 <FormMessage />
@@ -166,103 +154,104 @@ const JobForm: React.FC<JobFormProps> = ({
           />
         </div>
 
-        {/* Section 2: Job Details */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-medium mb-4 flex items-center">
-            <span className="mr-2">📄</span>
-            Job Details
-          </h2>
-          
-          {/* Job Summary */}
+        {/* SECTION 2: Job Details */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Pencil className="h-6 w-6" />
+            <h2 className="text-2xl font-semibold">Job Details</h2>
+          </div>
+
           <FormField
             control={form.control}
             name="jobSummary"
             render={({ field }) => (
               <FormItem className="mb-4">
-                <FormLabel>Job Summary</FormLabel>
+                <FormLabel className="font-medium text-base">
+                  Job Summary
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Brief one-line summary of the position"
-                    {...field}
+                  <Textarea 
+                    {...field} 
+                    placeholder="A brief summary of the role" 
+                    className="min-h-[80px]" 
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {/* Job Description */}
+
           <FormField
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Job Description <span className="text-red-500">*</span></FormLabel>
+              <FormItem className="mb-4">
+                <FormLabel className="font-medium text-base">
+                  Job Description<RequiredIndicator />
+                </FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Describe responsibilities, benefits, and other important details."
-                    className="min-h-[120px]"
-                    {...field}
+                  <Textarea 
+                    {...field} 
+                    placeholder="Describe responsibilities, benefits, and other important details" 
+                    className="min-h-[120px]" 
                   />
                 </FormControl>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Describe responsibilities, benefits, and other important details.
+                </p>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
 
-        {/* Section 3: Photos (Optional) */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-medium mb-4 flex items-center">
-            <span className="mr-2">📷</span>
-            Photos (Optional)
-          </h2>
-          
-          <div className="border border-dashed border-gray-300 rounded-md p-6 text-center bg-gray-50">
-            <p className="text-muted-foreground">
+        {/* SECTION 3: Photos */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Camera className="h-6 w-6" />
+            <h2 className="text-2xl font-semibold">Photos (Optional)</h2>
+          </div>
+
+          <div className="border border-dashed border-gray-300 bg-muted/20 py-8 px-4 rounded-md text-center">
+            <p className="text-sm text-muted-foreground">
               Photo upload functionality will be available soon. Adding photos can increase applications by up to 35%.
             </p>
           </div>
         </div>
 
-        {/* Section 4: Contact Info */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-medium mb-4 flex items-center">
-            <span className="mr-2">📞</span>
-            Contact Info
-          </h2>
-          
-          {/* Contact Email */}
+        {/* SECTION 4: Contact Info */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Phone className="h-6 w-6" />
+            <h2 className="text-2xl font-semibold">Contact Info</h2>
+          </div>
+
           <FormField
             control={form.control}
             name="contactEmail"
             render={({ field }) => (
               <FormItem className="mb-4">
-                <FormLabel>Contact Email</FormLabel>
+                <FormLabel className="font-medium text-base">
+                  Contact Email<RequiredIndicator />
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="e.g., hiring@yoursalon.com"
-                    type="email"
-                    {...field}
-                  />
+                  <Input {...field} type="email" placeholder="your@email.com" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {/* Phone Number */}
+
           <FormField
             control={form.control}
             name="phoneNumber"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
+              <FormItem className="mb-4">
+                <FormLabel className="font-medium text-base">
+                  Phone Number<RequiredIndicator />
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="e.g., (555) 123-4567"
-                    {...field}
-                  />
+                  <Input {...field} placeholder="(123) 456-7890" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -270,57 +259,48 @@ const JobForm: React.FC<JobFormProps> = ({
           />
         </div>
 
-        {/* Section 5: Get Better Results */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-lg font-medium mb-4 flex items-center text-purple-700">
-            <span className="mr-2">💜</span>
-            Get Better Results
-          </h2>
-          
+        {/* SECTION 5: Get Better Results */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="h-6 w-6 text-purple-600" />
+            <h2 className="text-2xl font-semibold">Get Better Results</h2>
+          </div>
+
           <div className="space-y-3 bg-purple-50 p-4 rounded-md">
             <div className="flex items-start">
-              <div className="h-5 w-5 rounded border border-purple-400 bg-purple-100 flex items-center justify-center mr-3 mt-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-purple-700" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Highlight your listing</p>
-                <p className="text-xs text-gray-600">Make your job stand out with premium placement</p>
+              <input type="checkbox" checked disabled className="mt-1" />
+              <div className="ml-2">
+                <p className="font-medium">Highlight your listing</p>
+                <p className="text-sm text-muted-foreground">Make your job stand out with premium placement</p>
               </div>
             </div>
             
             <div className="flex items-start">
-              <div className="h-5 w-5 rounded border border-purple-400 bg-purple-100 flex items-center justify-center mr-3 mt-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-purple-700" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Extended visibility</p>
-                <p className="text-xs text-gray-600">Your job will be visible longer to attract more candidates</p>
+              <input type="checkbox" checked disabled className="mt-1" />
+              <div className="ml-2">
+                <p className="font-medium">Extended visibility</p>
+                <p className="text-sm text-muted-foreground">Your job will be visible longer to attract more candidates</p>
               </div>
             </div>
             
             <div className="flex items-start">
-              <div className="h-5 w-5 rounded border border-purple-400 bg-purple-100 flex items-center justify-center mr-3 mt-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-purple-700" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm font-medium">Smart matching</p>
-                <p className="text-xs text-gray-600">We'll match your job with qualified candidates in your area</p>
+              <input type="checkbox" checked disabled className="mt-1" />
+              <div className="ml-2">
+                <p className="font-medium">Smart matching</p>
+                <p className="text-sm text-muted-foreground">We'll match your job with qualified candidates in your area</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Form Submit Button */}
+        <div className="text-center">
+          <p className="text-sm font-medium text-gray-600 mb-3">✨ You're almost done — one more step to attract your perfect candidate!</p>
+        </div>
+
         <Button 
           type="submit" 
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 rounded-md font-medium text-lg"
           disabled={isSubmitting}
+          className="mt-6 w-full px-6 py-3 text-base md:text-lg font-semibold bg-purple-600 hover:opacity-90"
         >
           {isSubmitting ? 'Processing...' : 'Continue to Pricing'}
         </Button>

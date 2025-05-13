@@ -70,7 +70,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   );
 };
 
-// Create mobile floating upsell button component
+// Mobile upsell button component
 const MobileUpsellButton = () => {
   const [showButton, setShowButton] = React.useState(false);
   const [selectedPlan, setSelectedPlan] = React.useState('basic'); // This would be connected to your actual state
