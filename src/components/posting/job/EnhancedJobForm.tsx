@@ -3,10 +3,7 @@ import React, { useState } from 'react';
 import { JobForm } from './JobForm';
 import { JobFormValues } from './jobFormSchema';
 import { Separator } from '@/components/ui/separator';
-import PostHeader from '../PostHeader';
-import MotivationalFooter from '../MotivationalFooter';
-import UpsellSidebar from '../upsell/UpsellSidebar';
-import { useAuth } from '@/context/auth'; // Add auth context import
+import { useAuth } from '@/context/auth';
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -29,10 +26,14 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   
   return (
     <div className="space-y-8">
-      <PostHeader 
-        title="Find your next artist — the one who stays, thrives, and grows your salon."
-        subtitle="Post smart. We'll guide you every step."
-      />
+      <div className="max-w-4xl mx-auto mb-8">
+        <h1 className="text-3xl font-semibold text-center mb-3">
+          Find your next artist — the one who stays
+        </h1>
+        <p className="text-gray-600 text-center">
+          Post smart. We'll guide you every step.
+        </p>
+      </div>
       
       <div className="lg:grid lg:grid-cols-3 lg:gap-8">
         <div className="lg:col-span-2">
@@ -50,35 +51,34 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         </div>
         
         <div className="hidden lg:block">
-          <UpsellSidebar />
+          <div className="p-6 bg-gray-50 rounded-xl border border-gray-100">
+            <h3 className="text-xl font-medium mb-4">Tips for Success</h3>
+            <ul className="space-y-3 text-gray-600">
+              <li>• Be specific about compensation</li>
+              <li>• Include working hours and days</li>
+              <li>• Mention any benefits or perks</li>
+              <li>• Describe the work environment</li>
+              <li>• Specify skills or experience needed</li>
+            </ul>
+          </div>
         </div>
       </div>
       
-      {/* Mobile upsell will appear here via floating button */}
+      {/* Mobile tips will appear here via floating button */}
       <MobileUpsellButton />
       
-      <div className="max-w-3xl mx-auto">
-        <MotivationalFooter 
-          icon="🫶"
-          message="Artists check for new jobs every morning. Make yours the one they remember."
-          subMessage="Post now — and let the best talent come to you."
-        />
+      <div className="max-w-3xl mx-auto text-center mt-8">
+        <p className="text-sm text-gray-500">
+          Artists check for new jobs every morning. Make yours the one they remember.
+        </p>
       </div>
-      
-      <p className="text-xs text-neutral-400 text-center mt-6">
-        🌞 Inspired by Sunshine — we're here to help your salon grow, one great hire at a time.
-      </p>
     </div>
   );
 };
 
-// Create mobile floating upsell button component
+// Simple mobile floating tips button component
 const MobileUpsellButton = () => {
   const [showButton, setShowButton] = React.useState(false);
-  const [selectedPlan, setSelectedPlan] = React.useState('basic'); // This would be connected to your actual state
-
-  // Only show for Basic or Standard plans
-  const shouldShow = selectedPlan === 'basic' || selectedPlan === 'standard';
   
   React.useEffect(() => {
     const handleScroll = () => {
@@ -87,7 +87,7 @@ const MobileUpsellButton = () => {
       const pageHeight = document.body.scrollHeight - window.innerHeight;
       const scrollThreshold = pageHeight * 0.7;
       
-      if (scrollPosition > scrollThreshold && shouldShow) {
+      if (scrollPosition > scrollThreshold) {
         setShowButton(true);
       } else {
         setShowButton(false);
@@ -96,17 +96,17 @@ const MobileUpsellButton = () => {
     
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [shouldShow]);
+  }, []);
 
   if (!showButton) return null;
   
   return (
     <div className="fixed bottom-4 w-full px-4 md:hidden z-50">
       <button 
-        className="w-full bg-gradient-to-r from-yellow-400 to-orange-400 text-white py-3 rounded-lg shadow-xl"
-        onClick={() => console.log("Upgrade clicked")}
+        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg shadow-xl"
+        onClick={() => console.log("Tips button clicked")}
       >
-        🔼 Boost My Post (+$5)
+        See Tips for Better Results
       </button>
     </div>
   );

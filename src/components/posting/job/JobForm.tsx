@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+
+import React from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { jobFormSchema, JobFormValues } from './jobFormSchema';
 import { Input } from '@/components/ui/input';
-import { FormLabel } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import SectionHeader from '@/components/posting/SectionHeader';
-import { Separator } from '@/components/ui/separator';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useTranslation } from '@/hooks/useTranslation';
+import { UserProfile } from '@/context/auth';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -18,18 +17,19 @@ interface JobFormProps {
   isSubmitting: boolean;
   defaultValues?: JobFormValues;
   industry?: string;
-  userProfile?: any; // User profile with contact info
+  userProfile?: UserProfile;
 }
 
-export const JobForm: React.FC<JobFormProps> = ({
+export const JobForm = ({
   onSubmit,
-  photoUploads,
+  photoUploads = [],
   setPhotoUploads,
-  isSubmitting,
+  isSubmitting = false,
   defaultValues,
-  industry = "nails",
+  industry = 'nails',
   userProfile
-}) => {
+}: JobFormProps) => {
+  const { t } = useTranslation();
   
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
@@ -39,179 +39,195 @@ export const JobForm: React.FC<JobFormProps> = ({
       location: '',
       salary: '',
       contactEmail: userProfile?.email || '',
-      phoneNumber: userProfile?.phone || '',
+      phoneNumber: userProfile?.phoneNumber || '',
       jobType: 'full-time',
       requirements: [],
       jobSummary: ''
-    }
+    },
   });
 
-  const { register, handleSubmit, formState, watch } = form;
-  const { errors } = formState;
-
-  const handleFormSubmit = (data: JobFormValues) => {
+  const handleSubmit = form.handleSubmit((data) => {
     onSubmit(data);
-  };
+  });
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8 pb-10">
-      {/* Job Details Section */}
-      <div className="space-y-6">
-        <SectionHeader 
-          title="Job Details" 
-          emoji="💼" 
-          description="Provide the essential information about the job opening"
-        />
-        
-        {/* Job Title */}
-        <div className="space-y-2">
-          <FormLabel htmlFor="title">Job Title *</FormLabel>
-          <Input
-            id="title"
-            placeholder="e.g., Experienced Nail Technician"
-            {...register('title')}
-            className={errors.title ? 'border-red-500' : ''}
-          />
-          {errors.title && (
-            <p className="text-red-500 text-sm">{errors.title.message}</p>
-          )}
-        </div>
-        
-        {/* Job Description */}
-        <div className="space-y-2">
-          <FormLabel htmlFor="description">Job Description *</FormLabel>
-          <Textarea
-            id="description"
-            placeholder="Describe the role, responsibilities, and your salon environment..."
-            rows={6}
-            {...register('description')}
-            className={errors.description ? 'border-red-500' : ''}
-          />
-          {errors.description && (
-            <p className="text-red-500 text-sm">{errors.description.message}</p>
-          )}
-        </div>
-      </div>
-      
-      <Separator />
-      
-      {/* Location & Salary */}
-      <div className="space-y-6">
-        <SectionHeader 
-          title="Location & Salary" 
-          emoji="📍" 
-          description="Help artists find this job by location and compensation"
-        />
-        
-        {/* Location */}
-        <div className="space-y-2">
-          <FormLabel htmlFor="location">Location *</FormLabel>
-          <Input
-            id="location"
-            placeholder="e.g., Miami, FL"
-            {...register('location')}
-            className={errors.location ? 'border-red-500' : ''}
-          />
-          {errors.location && (
-            <p className="text-red-500 text-sm">{errors.location.message}</p>
-          )}
-        </div>
-        
-        {/* Salary Range */}
-        <div className="space-y-2">
-          <FormLabel htmlFor="salary">Salary Range</FormLabel>
-          <Input
-            id="salary"
-            placeholder="e.g., $50,000-$70,000/year or $25-35/hour"
-            {...register('salary')}
-          />
-        </div>
-      </div>
-      
-      <Separator />
-      
-      {/* Job Type */}
-      <div className="space-y-6">
-        <SectionHeader 
-          title="Employment Type" 
-          emoji="⏱️" 
-          description="Select the type of employment being offered"
-        />
-        
-        <div className="space-y-4">
-          <RadioGroup defaultValue="full-time">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="full-time" id="full-time" {...register('jobType')} />
-              <FormLabel htmlFor="full-time" className="font-normal">Full-time</FormLabel>
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit} className="space-y-8 p-6">
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">
+            {t('Job Details', 'Chi tiết công việc')}
+          </h2>
+          
+          <Form>
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Job Title', 'Chức danh')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('e.g. Nail Technician', 'VD: Thợ Nail')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="jobType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Job Type', 'Loại công việc')}</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-wrap gap-3">
+                        {['full-time', 'part-time', 'contract', 'temporary'].map((type) => (
+                          <Button
+                            key={type}
+                            type="button"
+                            variant={field.value === type ? "default" : "outline"}
+                            onClick={() => form.setValue('jobType', type as any)}
+                            className="flex-1"
+                          >
+                            {t(type, type)}
+                          </Button>
+                        ))}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="part-time" id="part-time" {...register('jobType')} />
-              <FormLabel htmlFor="part-time" className="font-normal">Part-time</FormLabel>
+            
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Location', 'Địa điểm')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('e.g. Los Angeles, CA', 'VD: Los Angeles, CA')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="contract" id="contract" {...register('jobType')} />
-              <FormLabel htmlFor="contract" className="font-normal">Contract</FormLabel>
+            
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="salary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Salary/Compensation', 'Lương/Thù lao')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('e.g. $25-35/hr or 60%', 'VD: $25-35/giờ hoặc 60%')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="temporary" id="temporary" {...register('jobType')} />
-              <FormLabel htmlFor="temporary" className="font-normal">Temporary</FormLabel>
+            
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Job Description', 'Mô tả công việc')}</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder={t('Describe the job duties and requirements', 'Mô tả nhiệm vụ công việc và yêu cầu')} 
+                        className="min-h-[120px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          </RadioGroup>
-        </div>
-      </div>
-      
-      <Separator />
-      
-      {/* Contact Information */}
-      <div className="space-y-6">
-        <SectionHeader 
-          title="Contact Information" 
-          emoji="📞" 
-          description="How should candidates contact you about this position?"
-        />
-        
-        {/* Contact Email */}
-        <div className="space-y-2">
-          <FormLabel htmlFor="contactEmail">Email</FormLabel>
-          <Input
-            id="contactEmail"
-            type="email"
-            placeholder="your@email.com"
-            {...register('contactEmail')}
-            className={errors.contactEmail ? 'border-red-500' : ''}
-          />
-          {errors.contactEmail && (
-            <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>
-          )}
+            
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="jobSummary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Job Summary (Optional)', 'Tóm tắt công việc (Không bắt buộc)')}</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder={t('A brief summary of the position', 'Tóm tắt ngắn gọn về vị trí')} 
+                        className="min-h-[80px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </Form>
         </div>
         
-        {/* Phone Number */}
-        <div className="space-y-2">
-          <FormLabel htmlFor="phoneNumber">Phone Number</FormLabel>
-          <Input
-            id="phoneNumber"
-            placeholder="(123) 456-7890"
-            {...register('phoneNumber')}
-          />
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">
+            {t('Contact Information', 'Thông tin liên lạc')}
+          </h2>
+          
+          <Form>
+            <FormField
+              control={form.control}
+              name="contactEmail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Email Address', 'Địa chỉ email')}</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="example@email.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="mt-4">
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Phone Number', 'Số điện thoại')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder="(555) 123-4567" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </Form>
         </div>
         
-        {/* Photo Upload */}
-        <div className="space-y-3">
-          <FormLabel>Photos (optional)</FormLabel>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <p className="text-gray-500">Drag & drop photos here or click to browse</p>
-            <p className="text-sm text-gray-400 mt-1">Upload up to 3 photos of your salon or workspace</p>
+        <div className="pt-6 border-t border-gray-200">
+          <div className="flex justify-end">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="min-w-[150px]"
+            >
+              {isSubmitting 
+                ? t('Submitting...', 'Đang gửi...') 
+                : t('Continue to Pricing', 'Tiếp tục đến Giá')}
+            </Button>
           </div>
-          <p className="text-sm text-gray-500">You can add up to 3 photos</p>
         </div>
-      </div>
-      
-      <div className="pt-4">
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? 'Submitting...' : 'Post Job'}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </FormProvider>
   );
 };
 
