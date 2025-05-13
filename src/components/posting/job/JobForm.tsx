@@ -1,286 +1,552 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import { getJobTemplate } from '@/utils/jobTemplates';
-import { UserProfile } from '@/context/auth/types'; // Import the correct type
+import { JobFormSchema, JobFormValues } from './jobFormSchema';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Dropzone } from '@/components/ui/dropzone';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Badge } from '@/components/ui/badge';
 
-interface JobFormProps {
+export const JobForm: React.FC<{
   onSubmit: (values: JobFormValues) => void;
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
   defaultValues?: JobFormValues;
   industry?: string;
-  userProfile?: UserProfile; // Accept userProfile instead of User
-}
-
-export const JobForm: React.FC<JobFormProps> = ({
-  onSubmit,
-  photoUploads,
-  setPhotoUploads,
+  userProfile?: any;
+}> = ({ 
+  onSubmit, 
+  photoUploads, 
+  setPhotoUploads, 
   isSubmitting,
   defaultValues,
-  industry = "nails", // Default to nails industry
+  industry = "nails",
   userProfile
 }) => {
+  const { t, isVietnamese } = useTranslation();
+  
   const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: defaultValues || {}
+    resolver: zodResolver(JobFormSchema),
+    defaultValues: defaultValues || {
+      job_title: '',
+      job_type: 'full_time',
+      specialties: [],
+      address: '',
+      city: '',
+      state: '',
+      zip_code: '',
+      compensation_type: 'hourly',
+      compensation_details: '',
+      tip_range: '',
+      summary: '',
+      description: '',
+      years_experience_required: '0',
+      weekly_pay: false,
+      contact_info: {
+        owner_name: userProfile?.name || '',
+        phone: userProfile?.phone || '',
+        email: userProfile?.email || '',
+        zalo: '',
+        notes: ''
+      }
+    }
   });
 
-  // Apply templates when the form first loads if no existing values
-  useEffect(() => {
-    if (!defaultValues) {
-      // Get template based on industry and user contact info
-      const template = getJobTemplate(industry, {
-        phoneNumber: userProfile?.phone || "",
-        email: userProfile?.email || ""
-      });
-      
-      // Set form values from template
-      Object.entries(template).forEach(([field, value]) => {
-        form.setValue(field as keyof JobFormValues, value as any);
-      });
-    }
-  }, [form, defaultValues, industry, userProfile]);
-
-  // Handler for form submission
   const handleSubmit = (values: JobFormValues) => {
     onSubmit(values);
   };
 
+  const specialtiesList = [
+    "Nail Technician",
+    "Hair Stylist",
+    "Esthetician",
+    "Massage Therapist",
+    "Salon Manager",
+    "Cosmetologist",
+    "Barber",
+    "Makeup Artist",
+    "Eyelash Technician",
+    "Waxing Specialist",
+    "Receptionist",
+    "Assistant"
+  ];
+
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>(defaultValues?.specialties || []);
+
+  useEffect(() => {
+    form.setValue("specialties", selectedSpecialties);
+  }, [selectedSpecialties, form.setValue]);
+
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} className="p-6 space-y-6">
-      {/* Job Title */}
-      <div className="space-y-2">
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-          Job Title
-        </label>
-        <input
-          type="text"
-          id="title"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          placeholder="e.g. Nail Technician - Full Time"
-          {...form.register('title')}
-        />
-        {form.formState.errors.title && (
-          <p className="mt-1 text-sm text-red-600">{form.formState.errors.title.message}</p>
-        )}
-      </div>
-
-      {/* Job Type */}
-      <div className="space-y-2">
-        <label htmlFor="jobType" className="block text-sm font-medium text-gray-700">
-          Job Type
-        </label>
-        <select
-          id="jobType"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          {...form.register('jobType')}
-        >
-          <option value="full-time">Full-time</option>
-          <option value="part-time">Part-time</option>
-          <option value="contract">Contract</option>
-          <option value="temporary">Temporary</option>
-        </select>
-        {form.formState.errors.jobType && (
-          <p className="mt-1 text-sm text-red-600">{form.formState.errors.jobType.message}</p>
-        )}
-      </div>
-
-      {/* Location */}
-      <div className="space-y-2">
-        <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-          Location
-        </label>
-        <input
-          type="text"
-          id="location"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          placeholder="e.g. San Francisco, CA"
-          {...form.register('location')}
-        />
-        {form.formState.errors.location && (
-          <p className="mt-1 text-sm text-red-600">{form.formState.errors.location.message}</p>
-        )}
-      </div>
-
-      {/* Salary */}
-      <div className="space-y-2">
-        <label htmlFor="salary" className="block text-sm font-medium text-gray-700">
-          Salary/Compensation
-        </label>
-        <input
-          type="text"
-          id="salary"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          placeholder="e.g. $25-30/hr or Commission-based"
-          {...form.register('salary')}
-        />
-        {form.formState.errors.salary && (
-          <p className="mt-1 text-sm text-red-600">{form.formState.errors.salary.message}</p>
-        )}
-      </div>
-
-      {/* Job Summary */}
-      <div className="space-y-2">
-        <label htmlFor="jobSummary" className="block text-sm font-medium text-gray-700">
-          Job Summary
-        </label>
-        <textarea
-          id="jobSummary"
-          rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          placeholder="Brief overview of the position"
-          {...form.register('jobSummary')}
-        />
-        {form.formState.errors.jobSummary && (
-          <p className="mt-1 text-sm text-red-600">{form.formState.errors.jobSummary.message}</p>
-        )}
-      </div>
-
-      {/* Full Description */}
-      <div className="space-y-2">
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Full Job Description
-        </label>
-        <textarea
-          id="description"
-          rows={6}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          placeholder="Detailed job description, responsibilities, and requirements"
-          {...form.register('description')}
-        />
-        {form.formState.errors.description && (
-          <p className="mt-1 text-sm text-red-600">{form.formState.errors.description.message}</p>
-        )}
-      </div>
-
-      {/* Contact Information */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Contact Information</h3>
-        
-        {/* Phone Number */}
-        <div className="space-y-2">
-          <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
-            Phone Number (Optional)
-          </label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            placeholder="e.g. (555) 123-4567"
-            {...form.register('phoneNumber')}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <div className="space-y-6">
+          {/* Job Title Field */}
+          <FormField
+            control={form.control}
+            name="job_title"
+            render={({ field }) => (
+              <FormItem className="mb-6">
+                <FormLabel className="text-base font-medium">
+                  {t('Job Title', 'Tên Công Việc')} <span className="text-red-500">*</span>
+                </FormLabel>
+                <Input 
+                  placeholder={t('e.g. Experienced Nail Technician', 'VD: Thợ Nail Có Kinh Nghiệm')} 
+                  {...field} 
+                  className="w-full"
+                />
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {form.formState.errors.phoneNumber && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.phoneNumber.message}</p>
-          )}
-        </div>
-        
-        {/* Email */}
-        <div className="space-y-2">
-          <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">
-            Email (Optional)
-          </label>
-          <input
-            type="email"
-            id="contactEmail"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            placeholder="e.g. hiring@yoursalon.com"
-            {...form.register('contactEmail')}
+          
+          {/* Job Type Field */}
+          <FormField
+            control={form.control}
+            name="job_type"
+            render={({ field }) => (
+              <FormItem className="mb-6">
+                <FormLabel className="text-base font-medium">
+                  {t('Job Type', 'Loại Công Việc')} <span className="text-red-500">*</span>
+                </FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t('Select job type', 'Chọn loại công việc')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="full_time">{t('Full-time', 'Toàn thời gian')}</SelectItem>
+                    <SelectItem value="part_time">{t('Part-time', 'Bán thời gian')}</SelectItem>
+                    <SelectItem value="contract">{t('Contract', 'Hợp đồng')}</SelectItem>
+                    <SelectItem value="temporary">{t('Temporary', 'Tạm thời')}</SelectItem>
+                    <SelectItem value="flexible">{t('Flexible', 'Linh hoạt')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {form.formState.errors.contactEmail && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.contactEmail.message}</p>
-          )}
-        </div>
-      </div>
 
-      {/* Photo Upload Section */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Upload Photos (Optional)
-        </label>
-        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-          <div className="space-y-1 text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 48 48"
-              aria-hidden="true"
-            >
-              <path
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <div className="flex text-sm text-gray-600">
-              <label
-                htmlFor="file-upload"
-                className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-              >
-                <span>Upload files</span>
-                <input
-                  id="file-upload"
-                  name="file-upload"
-                  type="file"
-                  className="sr-only"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      const filesArray = Array.from(e.target.files);
-                      setPhotoUploads([...photoUploads, ...filesArray]);
+          {/* Specialties Field */}
+          <div className="mb-6">
+            <FormLabel className="text-base font-medium">
+              {t('Specialties', 'Chuyên Môn')}
+            </FormLabel>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {specialtiesList.map((specialty) => (
+                <Badge
+                  key={specialty}
+                  variant={selectedSpecialties.includes(specialty) ? "default" : "outline"}
+                  onClick={() => {
+                    if (selectedSpecialties.includes(specialty)) {
+                      setSelectedSpecialties(selectedSpecialties.filter((s) => s !== specialty));
+                    } else {
+                      setSelectedSpecialties([...selectedSpecialties, specialty]);
                     }
                   }}
-                />
-              </label>
-              <p className="pl-1">or drag and drop</p>
+                  className="cursor-pointer"
+                >
+                  {t(specialty, specialty)}
+                </Badge>
+              ))}
             </div>
-            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+          </div>
+          
+          {/* Location Section */}
+          <div className="mt-8 mb-6">
+            <h3 className="text-lg font-medium mb-4">{t('Location', 'Địa Điểm')}</h3>
+            
+            <div className="space-y-6">
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Address', 'Địa Chỉ')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Input 
+                      placeholder={t('Street address', 'Địa chỉ đường phố')} 
+                      {...field}
+                      className="w-full" 
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">
+                        {t('City', 'Thành Phố')} <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <Input 
+                        placeholder={t('City', 'Thành phố')} 
+                        {...field} 
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">
+                        {t('State', 'Tiểu Bang')} <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <Input 
+                        placeholder={t('State', 'Tiểu bang')} 
+                        {...field} 
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="zip_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">
+                        {t('ZIP Code', 'Mã ZIP')}
+                      </FormLabel>
+                      <Input 
+                        placeholder={t('ZIP code', 'Mã ZIP')} 
+                        {...field} 
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Compensation Section */}
+          <div className="mt-8 mb-6">
+            <h3 className="text-lg font-medium mb-4">{t('Compensation', 'Thù Lao')}</h3>
+            
+            <div className="space-y-6">
+              <FormField
+                control={form.control}
+                name="compensation_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Compensation Type', 'Loại Thù Lao')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('Select compensation type', 'Chọn loại thù lao')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hourly">{t('Hourly', 'Theo giờ')}</SelectItem>
+                        <SelectItem value="commission">{t('Commission', 'Hoa hồng')}</SelectItem>
+                        <SelectItem value="salary">{t('Salary', 'Lương')}</SelectItem>
+                        <SelectItem value="mixed">{t('Mixed (Salary + Commission)', 'Hỗn hợp (Lương + Hoa hồng)')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="compensation_details"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Compensation Details', 'Chi Tiết Thù Lao')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Input 
+                      placeholder={t('e.g. $25-35/hr or 60% commission', 'VD: $25-35/giờ hoặc 60% hoa hồng')} 
+                      {...field} 
+                      className="w-full"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="tip_range"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Expected Tip Range (Optional)', 'Phạm Vi Tiền Tip Dự Kiến (Không bắt buộc)')}
+                    </FormLabel>
+                    <Input 
+                      placeholder={t('e.g. $100-200/day', 'VD: $100-200/ngày')} 
+                      {...field} 
+                      className="w-full"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="weekly_pay"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={field.onChange}
+                      className="h-4 w-4 mt-1"
+                    />
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="text-base">
+                        {t('Weekly Pay Available', 'Trả Lương Hàng Tuần')}
+                      </FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        {t('Check this if you offer weekly payment options', 'Chọn nếu bạn cung cấp lựa chọn trả lương hàng tuần')}
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          
+          {/* Experience Section */}
+          <div className="mt-8 mb-6">
+            <FormField
+              control={form.control}
+              name="years_experience_required"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">
+                    {t('Years of Experience Required', 'Số Năm Kinh Nghiệm Yêu Cầu')}
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t('Select years', 'Chọn số năm')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">{t('No experience required', 'Không yêu cầu kinh nghiệm')}</SelectItem>
+                      <SelectItem value="1">{t('1+ year', '1+ năm')}</SelectItem>
+                      <SelectItem value="2">{t('2+ years', '2+ năm')}</SelectItem>
+                      <SelectItem value="3">{t('3+ years', '3+ năm')}</SelectItem>
+                      <SelectItem value="5">{t('5+ years', '5+ năm')}</SelectItem>
+                      <SelectItem value="7">{t('7+ years', '7+ năm')}</SelectItem>
+                      <SelectItem value="10">{t('10+ years', '10+ năm')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          {/* Job Summary Field */}
+          <div className="mt-8 mb-6">
+            <FormField
+              control={form.control}
+              name="summary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">
+                    {t('Job Summary', 'Tóm Tắt Công Việc')} <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <Textarea 
+                    placeholder={t('Brief overview of the position (1-2 sentences)', 'Tổng quan ngắn gọn về vị trí (1-2 câu)')} 
+                    {...field} 
+                    className="w-full min-h-[100px]"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          {/* Job Description Field */}
+          <div className="mt-8 mb-6">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">
+                    {t('Job Description', 'Mô Tả Công Việc')} <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <Textarea 
+                    placeholder={t('Detailed job description, responsibilities, and requirements', 'Mô tả chi tiết công việc, trách nhiệm và yêu cầu')} 
+                    {...field} 
+                    className="w-full min-h-[200px]"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Contact Information Section */}
+          <div className="mt-10 bg-gray-50 p-6 rounded-lg border border-gray-100">
+            <h3 className="text-lg font-medium mb-6">{t('Contact Information', 'Thông Tin Liên Hệ')}</h3>
+            
+            <div className="space-y-6">
+              <FormField
+                control={form.control}
+                name="contact_info.owner_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Contact Name', 'Tên Liên Hệ')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Input 
+                      placeholder={t('Your name or business name', 'Tên của bạn hoặc tên doanh nghiệp')} 
+                      {...field} 
+                      className="w-full"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="contact_info.phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Phone Number', 'Số Điện Thoại')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Input 
+                      placeholder={t('e.g. (555) 123-4567', 'VD: (555) 123-4567')} 
+                      {...field} 
+                      className="w-full"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="contact_info.email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Email Address', 'Địa Chỉ Email')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <Input 
+                      placeholder={t('e.g. youremail@example.com', 'VD: email@example.com')} 
+                      {...field} 
+                      className="w-full"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="contact_info.zalo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Zalo (Optional)', 'Zalo (Không bắt buộc)')}
+                    </FormLabel>
+                    <Input 
+                      placeholder={t('Your Zalo contact', 'Liên hệ Zalo của bạn')} 
+                      {...field} 
+                      className="w-full"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="contact_info.notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      {t('Additional Contact Notes', 'Ghi Chú Liên Hệ Bổ Sung')}
+                    </FormLabel>
+                    <Textarea 
+                      placeholder={t('Best time to contact, preferred method, etc.', 'Thời gian liên hệ tốt nhất, phương thức ưa thích, v.v.')} 
+                      {...field} 
+                      className="w-full min-h-[100px]"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          
+          {/* Photo Upload Section */}
+          <div className="mt-10 bg-gray-50 p-6 rounded-lg border border-gray-100">
+            <h3 className="text-lg font-medium mb-6">{t('Upload Photos', 'Tải Lên Hình Ảnh')}</h3>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                {t('Upload photos of your salon or work environment. Photos help attract more candidates.', 
+                   'Tải lên hình ảnh của tiệm hoặc môi trường làm việc của bạn. Hình ảnh giúp thu hút nhiều ứng viên hơn.')}
+              </p>
+              
+              <Dropzone
+                value={photoUploads}
+                onChange={setPhotoUploads}
+                maxFiles={5}
+                maxSize={5 * 1024 * 1024} // 5MB
+                accept={{
+                  'image/*': ['.png', '.jpg', '.jpeg', '.gif']
+                }}
+              />
+              
+              {photoUploads.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm text-gray-600 mb-2">
+                    {t('Uploaded Photos:', 'Hình Ảnh Đã Tải Lên:')}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {photoUploads.map((file, index) => (
+                      <Badge key={index} variant="secondary" className="py-1 px-2">
+                        {file.name} ({Math.round(file.size / 1024)}KB)
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        
-        {/* Preview uploaded photos */}
-        {photoUploads.length > 0 && (
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {photoUploads.map((file, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={`Upload ${index + 1}`}
-                  className="h-24 w-full object-cover rounded-md"
-                />
-                <button
-                  type="button"
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                  onClick={() => {
-                    const newUploads = [...photoUploads];
-                    newUploads.splice(index, 1);
-                    setPhotoUploads(newUploads);
-                  }}
-                >
-                  &times;
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Submit Button */}
-      <div className="pt-5">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-        >
-          {isSubmitting ? 'Posting...' : 'Post Job'}
-        </button>
-      </div>
-    </form>
+        <div className="flex justify-end mt-8">
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="rounded-md bg-primary py-3 px-8 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            {isSubmitting ? 
+              t('Processing...', 'Đang xử lý...') : 
+              t('Submit Job Posting', 'Đăng Tin Tuyển Dụng')}
+          </button>
+        </div>
+      </form>
+    </Form>
   );
 };
