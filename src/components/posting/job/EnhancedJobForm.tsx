@@ -7,6 +7,7 @@ import PostHeader from '../PostHeader';
 import MotivationalFooter from '../MotivationalFooter';
 import UpsellSidebar from '../upsell/UpsellSidebar';
 import { useAuth } from '@/context/auth'; // Add auth context import
+import BetterResultsSection from './BetterResultsSection'; // Import new component
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -46,6 +47,12 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
               industry={industry}
               userProfile={userProfile} // Pass the user profile with contact info
             />
+            
+            {/* Add the Better Results Section after the form but before pricing */}
+            <div className="px-6 py-4">
+              <Separator className="my-6" />
+              <BetterResultsSection />
+            </div>
           </div>
         </div>
         
