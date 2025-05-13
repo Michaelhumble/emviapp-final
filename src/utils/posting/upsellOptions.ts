@@ -1,5 +1,15 @@
 
-import { UpsellOption } from "@/types/job";
+// Define the UpsellOption type locally instead of importing it
+export interface UpsellOption {
+  id: string;
+  name: string;
+  vietnameseName: string;
+  description: string;
+  vietnameseDescription: string;
+  price: number;
+  type: "toggle" | "radio" | "checkbox"; // Correct type union
+  defaultEnabled: boolean;
+}
 
 // Export the array of upsell options
 export const jobUpsellOptions: UpsellOption[] = [
