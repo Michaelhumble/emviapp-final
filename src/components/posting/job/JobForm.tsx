@@ -1,436 +1,268 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import SectionHeader from "../SectionHeader";
-import { JobFormValues, jobFormSchema } from "./jobFormSchema";
-import { useState } from "react";
-import { PricingDisplay } from "../PricingDisplay";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PricingMicroCopy } from "../PricingMicroCopy";
-import BetterResultsBox from "./BetterResultsBox";
 
-export const JobForm = ({ onSubmit, isSubmitting }) => {
-  const [jobType, setJobType] = useState<string>("");
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  
-  const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      title: "",
-      jobType: "",
-      location: "",
-      compensation: {
-        type: "",
-        hourlyRate: "",
-        commissionType: "",
-        commissionValue: "",
-      },
-      summary: "",
-      description: "",
-      contactInfo: {
-        name: "",
-        email: "",
-        phone: "",
-        preferredContact: "",
-      },
-      expireAfterDays: 30,
-    },
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema, JobFormValues } from './jobFormSchema';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form';
+import { UserProfile } from '@/context/auth/types';
+import { getJobTemplate } from '@/utils/jobTemplates';
+
+interface JobFormProps {
+  onSubmit: (values: JobFormValues) => void;
+  photoUploads: File[];
+  setPhotoUploads: (files: File[]) => void;
+  isSubmitting: boolean;
+  defaultValues?: Partial<JobFormValues>;
+  industry?: string;
+  userProfile?: UserProfile;
+}
+
+export const JobForm: React.FC<JobFormProps> = ({
+  onSubmit,
+  photoUploads,
+  setPhotoUploads,
+  isSubmitting,
+  defaultValues,
+  industry = "nails",
+  userProfile
+}) => {
+  // Use industry-specific templates merged with any user data
+  const templateValues = getJobTemplate(industry, {
+    email: userProfile?.email,
+    phoneNumber: userProfile?.phone
   });
 
-  const handleSubmit = async (values: JobFormValues) => {
-    console.log("Form values:", values);
-    console.log("Photo uploads:", photoUploads);
-    
-    // Simulate submission delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    onSubmit(values);
+  // Merge passed defaultValues with template values
+  const initialValues = {
+    ...templateValues,
+    ...defaultValues,
   };
 
-  const handleCompensationTypeChange = (value: string) => {
-    form.setValue("compensation.type", value);
+  const form = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: initialValues,
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      // Convert FileList to Array and add to existing uploads
+      const newFiles = Array.from(files);
+      setPhotoUploads([...photoUploads, ...newFiles]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    const newFiles = [...photoUploads];
+    newFiles.splice(index, 1);
+    setPhotoUploads(newFiles);
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      {/* Job Title Section */}
-      <div className="space-y-6">
-        <div>
-          <Label htmlFor="title">Job Title *</Label>
-          <Input
-            id="title"
-            placeholder="e.g. Experienced Nail Technician Needed"
-            {...form.register("title")}
-            className="mt-1.5"
-          />
-          {form.formState.errors.title && (
-            <p className="text-sm text-red-500 mt-1">{form.formState.errors.title.message}</p>
-          )}
-        </div>
-
-        {/* Job Type Section */}
-        <div className="mb-6">
-          <Label htmlFor="jobType">Job Type *</Label>
-          <Select
-            onValueChange={(value) => {
-              setJobType(value);
-              form.setValue("jobType", value);
-            }}
-          >
-            <SelectTrigger className="mt-1.5">
-              <SelectValue placeholder="Select job type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fullTime">Full Time</SelectItem>
-              <SelectItem value="partTime">Part Time</SelectItem>
-              <SelectItem value="contract">Contract</SelectItem>
-              <SelectItem value="booth">Booth Rental</SelectItem>
-              <SelectItem value="commission">Commission</SelectItem>
-            </SelectContent>
-          </Select>
-          {form.formState.errors.jobType && (
-            <p className="text-sm text-red-500 mt-1">{form.formState.errors.jobType.message}</p>
-          )}
-        </div>
-
-        {/* Location Section */}
-        <div className="mb-6">
-          <Label htmlFor="location">Location *</Label>
-          <Input
-            id="location"
-            placeholder="e.g. Los Angeles, CA"
-            {...form.register("location")}
-            className="mt-1.5"
-          />
-          {form.formState.errors.location && (
-            <p className="text-sm text-red-500 mt-1">{form.formState.errors.location.message}</p>
-          )}
-        </div>
-
-        {/* Compensation Section */}
-        <div className="mb-6">
-          <SectionHeader
-            title="Compensation"
-            emoji="💰"
-            description="Let artists know what they can expect to earn"
-          />
-
-          <div className="mt-4">
-            <Label htmlFor="compensationType">Compensation Type *</Label>
-            <Select
-              onValueChange={(value) => {
-                form.setValue("compensation.type", value);
-              }}
-            >
-              <SelectTrigger className="mt-1.5">
-                <SelectValue placeholder="Select compensation type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="hourly">Hourly</SelectItem>
-                <SelectItem value="salary">Salary</SelectItem>
-                <SelectItem value="commission">Commission</SelectItem>
-                <SelectItem value="mixed">Mixed (Commission + Base)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {form.watch("compensation.type") === "hourly" && (
-            <div className="mt-4">
-              <Label htmlFor="hourlyRate">Hourly Rate *</Label>
-              <Input
-                id="hourlyRate"
-                placeholder="e.g. $20/hour"
-                {...form.register("compensation.hourlyRate")}
-                className="mt-1.5"
-              />
-              {form.formState.errors.compensation?.hourlyRate && (
-                <p className="text-sm text-red-500 mt-1">
-                  {form.formState.errors.compensation.hourlyRate.message}
-                </p>
+    <div className="p-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold">Job Details</h2>
+            
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Experienced Nail Technician" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
-          )}
-
-          {form.watch("compensation.type") === "commission" && (
-            <div className="mt-4">
-              <Label htmlFor="commissionType">Commission Type *</Label>
-              <Select
-                onValueChange={(value) => {
-                  form.setValue("compensation.commissionType", value);
-                }}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select commission type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="percentage">Percentage</SelectItem>
-                  <SelectItem value="fixed">Fixed Amount</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {form.watch("compensation.type") === "commission" &&
-            form.watch("compensation.commissionType") === "percentage" && (
-              <div className="mt-4">
-                <Label htmlFor="commissionValue">Commission Percentage *</Label>
-                <Input
-                  id="commissionValue"
-                  placeholder="e.g. 50%"
-                  {...form.register("compensation.commissionValue")}
-                  className="mt-1.5"
-                />
-                {form.formState.errors.compensation?.commissionValue && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {form.formState.errors.compensation.commissionValue.message}
-                  </p>
-                )}
-              </div>
-            )}
-
-          {form.watch("compensation.type") === "commission" &&
-            form.watch("compensation.commissionType") === "fixed" && (
-              <div className="mt-4">
-                <Label htmlFor="commissionValue">Commission Amount *</Label>
-                <Input
-                  id="commissionValue"
-                  placeholder="e.g. $50 per service"
-                  {...form.register("compensation.commissionValue")}
-                  className="mt-1.5"
-                />
-                {form.formState.errors.compensation?.commissionValue && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {form.formState.errors.compensation.commissionValue.message}
-                  </p>
-                )}
-              </div>
-            )}
-        </div>
-
-        {/* Job Summary Section */}
-        <div className="mb-6">
-          <Label htmlFor="summary">
-            Job Summary * <span className="text-sm text-muted-foreground">(1-2 sentences)</span>
-          </Label>
-          <Input
-            id="summary"
-            placeholder="Brief overview of the position"
-            {...form.register("summary")}
-            className="mt-1.5"
-          />
-          {form.formState.errors.summary && (
-            <p className="text-sm text-red-500 mt-1">{form.formState.errors.summary.message}</p>
-          )}
-        </div>
-
-        {/* Job Description Section */}
-        <div className="mb-6">
-          <Label htmlFor="description">
-            Job Description * <span className="text-sm text-muted-foreground">(Full details)</span>
-          </Label>
-          <Textarea
-            id="description"
-            placeholder="Detailed job description, requirements, benefits, etc."
-            rows={6}
-            {...form.register("description")}
-            className="mt-1.5"
-          />
-          {form.formState.errors.description && (
-            <p className="text-sm text-red-500 mt-1">{form.formState.errors.description.message}</p>
-          )}
-        </div>
-        
-        {/* Better Results Box - NEW COMPONENT */}
-        <BetterResultsBox />
-
-        {/* Contact Information Section */}
-        <div className="mb-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
-          <SectionHeader
-            title="Contact Information"
-            emoji="📞"
-            description="How should candidates get in touch with you?"
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <Label htmlFor="contactName">Contact Name *</Label>
-              <Input
-                id="contactName"
-                placeholder="e.g. John Doe"
-                {...form.register("contactInfo.name")}
-                className="mt-1.5"
-              />
-              {form.formState.errors.contactInfo?.name && (
-                <p className="text-sm text-red-500 mt-1">
-                  {form.formState.errors.contactInfo.name.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="contactEmail">Contact Email *</Label>
-              <Input
-                id="contactEmail"
-                placeholder="e.g. john@example.com"
-                type="email"
-                {...form.register("contactInfo.email")}
-                className="mt-1.5"
-              />
-              {form.formState.errors.contactInfo?.email && (
-                <p className="text-sm text-red-500 mt-1">
-                  {form.formState.errors.contactInfo.email.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="contactPhone">Contact Phone</Label>
-              <Input
-                id="contactPhone"
-                placeholder="e.g. (123) 456-7890"
-                type="tel"
-                {...form.register("contactInfo.phone")}
-                className="mt-1.5"
-              />
-              {form.formState.errors.contactInfo?.phone && (
-                <p className="text-sm text-red-500 mt-1">
-                  {form.formState.errors.contactInfo.phone.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="preferredContact">Preferred Contact Method *</Label>
-              <Select
-                onValueChange={(value) => {
-                  form.setValue("contactInfo.preferredContact", value);
-                }}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select contact method" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="phone">Phone</SelectItem>
-                </SelectContent>
-              </Select>
-              {form.formState.errors.contactInfo?.preferredContact && (
-                <p className="text-sm text-red-500 mt-1">
-                  {form.formState.errors.contactInfo.preferredContact.message}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Photo Upload Section */}
-        <div className="mb-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
-          <SectionHeader
-            title="Upload Photos"
-            emoji="📷"
-            description="Add photos of your salon or workspace (optional)"
-          />
-          
-          <div>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={(e) => {
-                if (e.target.files) {
-                  setPhotoUploads(Array.from(e.target.files));
-                }
-              }}
             />
+
+            <FormField
+              control={form.control}
+              name="jobType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select job type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="full-time">Full-time</SelectItem>
+                      <SelectItem value="part-time">Part-time</SelectItem>
+                      <SelectItem value="contract">Contract</SelectItem>
+                      <SelectItem value="temporary">Temporary</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="City, State or Zip Code" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="salary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Compensation</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. $25-35/hr, $1,000/week, etc." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="jobSummary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Summary</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Brief summary of the position (1-2 sentences)" 
+                      className="resize-none" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Detailed Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Describe the position, responsibilities, qualifications, etc." 
+                      className="min-h-[120px]" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 space-y-4">
+            <h2 className="font-medium">Contact Information</h2>
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="contactEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="contact@yoursalon.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="(123) 456-7890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Photo Upload Section */}
+          <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
+            <h2 className="font-medium mb-4">Attract More Candidates with Photos</h2>
+            
+            <div className="mb-4">
+              <Label htmlFor="photoUpload" className="block mb-2">
+                Upload Photos (optional)
+              </Label>
+              <Input 
+                id="photoUpload" 
+                type="file" 
+                accept="image/*" 
+                multiple
+                onChange={handleFileChange}
+                className="cursor-pointer"
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Add photos of your salon to attract more qualified candidates.
+              </p>
+            </div>
+
+            {/* Display uploaded photos */}
             {photoUploads.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm text-muted-foreground">
-                  {photoUploads.length} photos selected
-                </p>
+                <h3 className="text-sm font-medium mb-2">Uploaded Photos ({photoUploads.length})</h3>
+                <div className="flex flex-wrap gap-2">
+                  {photoUploads.map((file, index) => (
+                    <div key={index} className="relative">
+                      <div className="h-16 w-16 rounded overflow-hidden">
+                        <img 
+                          src={URL.createObjectURL(file)} 
+                          alt={`Upload ${index + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(index)}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
-        </div>
-      </div>
-      
-      {/* Listing Duration Section */}
-      <div className="mb-6">
-        <SectionHeader
-          title="Listing Duration"
-          emoji="📅"
-          description="How long should your job posting remain active?"
-        />
-        
-        <Select
-          onValueChange={(value) => {
-            form.setValue("expireAfterDays", parseInt(value));
-          }}
-        >
-          <SelectTrigger className="mt-1.5">
-            <SelectValue placeholder="Select duration" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7">7 Days</SelectItem>
-            <SelectItem value="14">14 Days</SelectItem>
-            <SelectItem value="30">30 Days</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
-      {/* Post Visibility Options */}
-      <div className="mb-6">
-        <SectionHeader
-          title="Post Visibility Options"
-          emoji="👁️"
-          description="Boost your job posting to reach more candidates"
-        />
-        
-        <div className="mt-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="featured" {...form.register("featured")} />
-            <label
-              htmlFor="featured"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Feature this job posting
-            </label>
+          <div className="text-right">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Continue to Pricing'}
+            </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Your job posting will be highlighted and appear at the top of search results.
-          </p>
-        </div>
-      </div>
-
-      {/* Pricing Section */}
-      <div className="mb-6">
-        <PricingDisplay jobType={jobType} />
-        <PricingMicroCopy />
-      </div>
-
-      {/* Terms and Conditions */}
-      <div className="flex items-start space-x-2 mb-8">
-        <Checkbox id="terms" {...form.register("acceptTerms")} />
-        <div className="grid gap-1.5 leading-none">
-          <label
-            htmlFor="terms"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            I agree to the Terms and Conditions
-          </label>
-          <p className="text-sm text-muted-foreground">
-            By posting this job, you agree to our terms of service and privacy policy.
-          </p>
-        </div>
-      </div>
-
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? "Creating Your Job Post..." : "Post Job Now"}
-      </Button>
-    </form>
+        </form>
+      </Form>
+    </div>
   );
 };
 
