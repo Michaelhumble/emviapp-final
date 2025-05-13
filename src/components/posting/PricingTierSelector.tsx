@@ -25,6 +25,8 @@ const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
   
   const getTierIcon = (tierId: string) => {
     switch (tierId) {
+      case "free":
+        return <Flame size={20} className="text-gray-500" />;
       case 'standard':
         return <Flame size={20} className="text-blue-500" />;
       case 'premium':
