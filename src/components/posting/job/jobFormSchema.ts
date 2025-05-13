@@ -10,7 +10,9 @@ export const jobFormSchema = z.object({
   contactEmail: z.string().email("Please enter a valid email"),
   phoneNumber: z.string().min(10, "Please enter a valid phone number"),
   jobType: z.enum(["full-time", "part-time", "contract", "temporary"]),
-  jobSummary: z.string().optional()
+  jobSummary: z.string().optional(),
+  heartfeltMessage: z.string().optional(),
+  isUrgent: z.boolean().default(false)
 });
 
 // Export the type for use in components
