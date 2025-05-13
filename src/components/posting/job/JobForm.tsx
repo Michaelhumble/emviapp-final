@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import { Button } from '@/components/ui/button';
+import { JobFormValues, jobFormSchema } from './jobFormSchema';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form';
 import { UserProfile } from '@/context/auth/types';
 import { getJobTemplate } from '@/utils/jobTemplates';
 import BetterResultsBox from './BetterResultsBox';
+import YesLadderSection from './YesLadderSection';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -160,12 +159,12 @@ export const JobForm: React.FC<JobFormProps> = ({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Detailed Description</FormLabel>
+                  <FormLabel>Job Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Describe the position, responsibilities, qualifications, etc." 
-                      className="min-h-[120px]" 
-                      {...field} 
+                    <Textarea
+                      placeholder="Describe the job in detail. What does a typical day look like? What are the responsibilities? What type of person would be a good fit?"
+                      className="min-h-[150px]"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -175,6 +174,10 @@ export const JobForm: React.FC<JobFormProps> = ({
 
             {/* Insert BetterResultsBox right after job description and before contact info */}
             <BetterResultsBox />
+            
+            {/* Insert YesLadderSection after BetterResultsBox */}
+            <YesLadderSection />
+
           </div>
 
           <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 space-y-4">
