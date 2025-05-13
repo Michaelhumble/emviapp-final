@@ -37,7 +37,7 @@ const JobPost: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100">
           <AuthPostGuard>
             <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-2 p-6">
                 <JobForm
                   onSubmit={handleSubmit}
                   photoUploads={photoUploads}
