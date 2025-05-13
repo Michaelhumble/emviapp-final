@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import NationwideOption from '@/components/posting/smart-ad-options/NationwideOption';
@@ -7,6 +7,7 @@ import FastSalePackage from '@/components/posting/smart-ad-options/FastSalePacka
 import { useTranslation } from '@/hooks/useTranslation';
 import { durationOptions, DurationSelectorProps } from '@/utils/posting/upsellOptions';
 import { PricingOptions } from '@/utils/posting/types';
+import PricingTierSelector from '@/components/posting/PricingTierSelector';
 
 export interface JobPostOptionsProps {
   isFirstPost?: boolean;
@@ -39,6 +40,10 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
     setPricingOptions({ autoRenew: checked });
   };
 
+  const handlePricingTierChange = (tier: string) => {
+    setPricingOptions({ selectedPricingTier: tier });
+  };
+
   // Use safe access to pricingOptions with fallbacks
   const selectedTier = pricingOptions?.selectedPricingTier || 'standard';
   const durationMonths = pricingOptions?.durationMonths || 1;
@@ -48,6 +53,19 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
 
   // Only show auto-renew option for subscription plans
   const showAutoRenew = selectedTier !== 'free';
+  
+  // Disable upsells for free tier
+  const isFreeSelected = selectedTier === 'free';
+  
+  // Reset upsells if free tier is selected
+  useEffect(() => {
+    if (isFreeSelected && (isNationwide || fastSalePackage)) {
+      setPricingOptions({ 
+        isNationwide: false, 
+        fastSalePackage: false
+      });
+    }
+  }, [isFreeSelected, isNationwide, fastSalePackage, setPricingOptions]);
 
   return (
     <div className="space-y-4">
@@ -61,18 +79,29 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Pricing Tier Selector */}
+          <PricingTierSelector 
+            selectedTier={selectedTier}
+            onTierChange={handlePricingTierChange}
+            isFirstPost={isFirstPost}
+          />
+          
+          <Separator className="my-4" />
+          
           {/* Nationwide Visibility Option */}
           <NationwideOption 
             postType="job"
             isFirstPost={isFirstPost}
             onChange={handleNationwideChange}
             defaultChecked={isNationwide}
+            disabled={isFreeSelected}
           />
           
           {/* Fast Sale Package */}
           <FastSalePackage 
             onChange={handleFastSaleChange}
             defaultChecked={fastSalePackage}
+            disabled={isFreeSelected}
           />
           
           <Separator className="my-4" />
