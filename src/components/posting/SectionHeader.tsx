@@ -2,24 +2,22 @@
 import React from 'react';
 
 interface SectionHeaderProps {
-  title: string;
   emoji?: string;
+  title: string;
   description?: string;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({ 
-  title, 
-  emoji, 
-  description 
-}) => {
+const SectionHeader: React.FC<SectionHeaderProps> = ({ emoji, title, description }) => {
   return (
     <div className="mb-6">
-      <h3 className="text-xl font-medium flex items-center gap-2">
-        {emoji && <span className="text-2xl">{emoji}</span>}
-        {title}
-      </h3>
+      {emoji && (
+        <div className="text-2xl mb-3">
+          {emoji}
+        </div>
+      )}
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
       {description && (
-        <p className="text-muted-foreground text-sm mt-1">{description}</p>
+        <p className="text-gray-500">{description}</p>
       )}
     </div>
   );
