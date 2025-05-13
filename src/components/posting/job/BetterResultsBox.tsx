@@ -4,53 +4,53 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const BetterResultsBox = () => {
   return (
-    <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 my-6">
+    <div className="bg-[#F8F6FF] p-6 rounded-lg border border-[#E5DEFF] my-6">
       <h3 className="text-base font-medium mb-4">❤️ Want Better Results?</h3>
       
       <div className="space-y-3">
         <div className="flex items-start space-x-2">
-          <Checkbox id="quick-apply" defaultChecked />
+          <Checkbox id="attract-technicians" defaultChecked />
           <label
-            htmlFor="quick-apply"
+            htmlFor="attract-technicians"
             className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 pt-0.5"
           >
-            I want more artists to apply quickly
+            Attract more experienced technicians
           </label>
         </div>
         
         <div className="flex items-start space-x-2">
-          <Checkbox id="writing-suggestions" defaultChecked />
+          <Checkbox id="boost-listing" defaultChecked />
           <label
-            htmlFor="writing-suggestions"
+            htmlFor="boost-listing"
             className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 pt-0.5"
           >
-            I'm open to writing suggestions to make my post stand out
+            Boost your listing placement in search
           </label>
         </div>
         
         <div className="flex items-start space-x-2">
-          <Checkbox id="upload-photos" defaultChecked />
+          <Checkbox id="increase-views" defaultChecked />
           <label
-            htmlFor="upload-photos"
+            htmlFor="increase-views"
             className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 pt-0.5"
           >
-            I want to upload photos to attract more views
+            Increase views with smarter descriptions
           </label>
         </div>
         
         <div className="flex items-start space-x-2">
-          <Checkbox id="hiring-immediately" defaultChecked />
+          <Checkbox id="get-noticed" defaultChecked />
           <label
-            htmlFor="hiring-immediately"
+            htmlFor="get-noticed"
             className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 pt-0.5"
           >
-            I'm hiring immediately and ready to respond
+            Get noticed by better-fit artists
           </label>
         </div>
       </div>
       
       <p className="text-sm text-muted-foreground mt-4">
-        These settings won't affect pricing. They help us personalize your visibility.
+        These tips help improve results but don't affect pricing or submission.
       </p>
     </div>
   );

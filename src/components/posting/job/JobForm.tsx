@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form';
 import { UserProfile } from '@/context/auth/types';
 import { getJobTemplate } from '@/utils/jobTemplates';
+import BetterResultsBox from './BetterResultsBox';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -154,6 +154,7 @@ export const JobForm: React.FC<JobFormProps> = ({
               )}
             />
 
+            {/* Job Description field */}
             <FormField
               control={form.control}
               name="description"
@@ -171,6 +172,9 @@ export const JobForm: React.FC<JobFormProps> = ({
                 </FormItem>
               )}
             />
+
+            {/* Insert BetterResultsBox right after job description and before contact info */}
+            <BetterResultsBox />
           </div>
 
           <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 space-y-4">
