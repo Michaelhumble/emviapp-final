@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import JobForm from '@/components/posting/job/JobForm';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Container } from '@/components/ui/container';
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +31,7 @@ const JobPost: React.FC = () => {
         <title>Post a Job | EmviApp</title>
       </Helmet>
       <Container className="py-8">
-        <EnhancedJobForm
+        <JobForm
           onSubmit={handleSubmit}
           photoUploads={photoUploads}
           setPhotoUploads={setPhotoUploads}
