@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
-import JobForm, { JobFormValues } from './JobForm';
+import React from 'react';
+import JobForm from './JobForm';
+import { JobFormValues } from './jobFormSchema';
 import PostHeader from '../PostHeader';
 import MotivationalFooter from '../MotivationalFooter';
 import UpsellSidebar from '../upsell/UpsellSidebar';
@@ -11,7 +12,7 @@ interface EnhancedJobFormProps {
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
-  defaultValues?: JobFormValues;
+  defaultValues?: Partial<JobFormValues>;
   industry?: string;
 }
 

@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
-import JobForm, { JobFormValues } from '@/components/posting/job/JobForm';
-import { Container } from '@/components/ui/container';
 import { useNavigate } from 'react-router-dom';
-import { Layout } from '@/components/layout';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/context/auth';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import JobForm from '@/components/posting/job/JobForm';
+import { Container } from '@/components/ui/container';
+import { Layout } from '@/components/layout';
+import AuthPostGuard from '@/components/posting/AuthPostGuard';
 
 const JobPost: React.FC = () => {
   const navigate = useNavigate();
@@ -34,13 +36,15 @@ const JobPost: React.FC = () => {
       <Container className="py-8">
         <h1 className="text-3xl font-playfair mb-8">Post a Job</h1>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-          <JobForm
-            onSubmit={handleSubmit}
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            isSubmitting={isSubmitting}
-            userProfile={userProfile}
-          />
+          <AuthPostGuard>
+            <JobForm
+              onSubmit={handleSubmit}
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              isSubmitting={isSubmitting}
+              userProfile={userProfile}
+            />
+          </AuthPostGuard>
         </div>
       </Container>
     </Layout>
