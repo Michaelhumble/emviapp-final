@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { jobFormSchema, JobFormValues } from './jobFormSchema';
@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { DropzoneInput } from '@/components/ui/dropzone-input';
-import SectionHeader from '@/components/posting/SectionHeader'; // Fixed import
+import { FileUploader } from '@/components/ui/file-uploader';
+import SectionHeader from '@/components/posting/SectionHeader';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -206,7 +207,7 @@ export const JobForm: React.FC<JobFormProps> = ({
         {/* Photo Upload */}
         <div className="space-y-3">
           <FormLabel>Photos (optional)</FormLabel>
-          <DropzoneInput
+          <FileUploader
             value={photoUploads}
             onChange={setPhotoUploads}
             maxFiles={3}
