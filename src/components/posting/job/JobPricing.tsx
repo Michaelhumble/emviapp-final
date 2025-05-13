@@ -2,9 +2,9 @@
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Switch } from '@/components/ui/switch';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Card, CardContent } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 interface JobPricingProps {
   form: any;
@@ -12,83 +12,76 @@ interface JobPricingProps {
   isFirstPost?: boolean;
 }
 
-export const JobPricing: React.FC<JobPricingProps> = ({ form, price, isFirstPost = false }) => {
+export const JobPricing: React.FC<JobPricingProps> = ({ form, price, isFirstPost }) => {
   const { t } = useTranslation();
+
+  const pricingTiers = [
+    {
+      id: 'standard',
+      title: t('Standard', 'Tiêu chuẩn'),
+      price: 49,
+      description: t('30-day listing with standard visibility', 'Đăng tin 30 ngày với khả năng hiển thị tiêu chuẩn')
+    },
+    {
+      id: 'premium',
+      title: t('Premium', 'Cao cấp'),
+      price: 99,
+      description: t('30-day listing with boosted visibility and highlighted placement', 'Đăng tin 30 ngày với khả năng hiển thị nâng cao và vị trí nổi bật')
+    },
+    {
+      id: 'diamond',
+      title: t('Diamond', 'Kim cương'),
+      price: 199,
+      description: t('30-day featured placement with maximum visibility and top positioning', 'Đăng tin 30 ngày với vị trí nổi bật nhất và khả năng hiển thị tối đa')
+    }
+  ];
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">{t('Pricing & Visibility', 'Giá & khả năng hiển thị')}</h2>
-      
+      <h2 className="text-xl font-semibold">{t('Job Post Options', 'Tùy chọn đăng tin')}</h2>
+
+      {isFirstPost && (
+        <Card className="bg-green-50 border border-green-100 shadow-sm">
+          <CardContent className="pt-4">
+            <p className="text-sm text-green-700 font-medium">
+              {t('First Post Discount: 50% off your first job listing!', 'Giảm giá bài đăng đầu tiên: Giảm 50% cho bài đăng việc làm đầu tiên của bạn!')}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <FormField
         control={form.control}
         name="pricingTier"
         render={({ field }) => (
           <FormItem className="space-y-3">
-            <FormLabel>{t('Select Pricing Tier', 'Chọn gói')}</FormLabel>
             <FormControl>
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                className="flex flex-col space-y-3"
               >
-                <FormItem>
-                  <FormControl>
-                    <Card className={`border-2 cursor-pointer ${field.value === 'standard' ? 'border-primary' : 'border-gray-200'} h-full`}>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="standard" id="standard" />
-                          <FormLabel htmlFor="standard" className="font-semibold text-lg cursor-pointer">
-                            {t('Standard', 'Tiêu chuẩn')}
-                          </FormLabel>
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {t('Basic visibility for 30 days', 'Hiển thị cơ bản trong 30 ngày')}
-                        </p>
-                        <p className="mt-4 font-bold text-xl">
-                          {isFirstPost ? t('FREE', 'MIỄN PHÍ') : '$49'}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </FormControl>
-                </FormItem>
-
-                <FormItem>
-                  <FormControl>
-                    <Card className={`border-2 cursor-pointer ${field.value === 'featured' ? 'border-primary' : 'border-gray-200'} h-full`}>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="featured" id="featured" />
-                          <FormLabel htmlFor="featured" className="font-semibold text-lg cursor-pointer">
-                            {t('Featured', 'Nổi bật')}
-                          </FormLabel>
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {t('Higher visibility + 45 days', 'Hiển thị cao hơn + 45 ngày')}
-                        </p>
-                        <p className="mt-4 font-bold text-xl">$99</p>
-                      </CardContent>
-                    </Card>
-                  </FormControl>
-                </FormItem>
-
-                <FormItem>
-                  <FormControl>
-                    <Card className={`border-2 cursor-pointer ${field.value === 'premium' ? 'border-primary' : 'border-gray-200'} h-full`}>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="premium" id="premium" />
-                          <FormLabel htmlFor="premium" className="font-semibold text-lg cursor-pointer">
-                            {t('Premium', 'Cao cấp')}
-                          </FormLabel>
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {t('Maximum visibility + 60 days', 'Hiển thị tối đa + 60 ngày')}
-                        </p>
-                        <p className="mt-4 font-bold text-xl">$149</p>
-                      </CardContent>
-                    </Card>
-                  </FormControl>
-                </FormItem>
+                {pricingTiers.map(tier => (
+                  <FormItem key={tier.id} className="flex items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value={tier.id} id={tier.id} className="mt-1" />
+                    </FormControl>
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-4 md:gap-4 items-center">
+                      <FormLabel 
+                        htmlFor={tier.id}
+                        className="md:col-span-2 font-medium cursor-pointer"
+                      >
+                        {tier.title}
+                      </FormLabel>
+                      <div className="md:col-span-1 text-sm text-muted-foreground">
+                        ${isFirstPost ? tier.price / 2 : tier.price}
+                      </div>
+                      <div className="md:col-span-1 text-sm text-muted-foreground">
+                        {tier.description}
+                      </div>
+                    </div>
+                  </FormItem>
+                ))}
               </RadioGroup>
             </FormControl>
             <FormMessage />
@@ -97,112 +90,114 @@ export const JobPricing: React.FC<JobPricingProps> = ({ form, price, isFirstPost
       />
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">{t('Additional Options', 'Tùy chọn bổ sung')}</h3>
-        
-        <FormField
-          control={form.control}
-          name="showAtTop"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">
-                  {t('Show at Top of Listings', 'Hiển thị ở đầu danh sách')}
-                </FormLabel>
-                <FormDescription>
-                  {t('Your job will appear at the top of search results', 'Công việc của bạn sẽ xuất hiện ở đầu kết quả tìm kiếm')}
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <h3 className="text-lg font-medium">{t('Enhancement Options', 'Tùy chọn nâng cao')}</h3>
 
-        <FormField
-          control={form.control}
-          name="isHotListing"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">
-                  {t('Mark as Hot Listing', 'Đánh dấu là tin nóng')}
-                </FormLabel>
-                <FormDescription>
-                  {t('Add a "Hot" badge to make your listing stand out', 'Thêm huy hiệu "Hot" để làm nổi bật tin đăng của bạn')}
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <div className="space-y-3">
+          <FormField
+            control={form.control}
+            name="isUrgent"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                  <FormLabel className="font-medium">
+                    {t('Urgent Listing', 'Đăng tin khẩn cấp')}
+                  </FormLabel>
+                  <FormDescription>
+                    {t('Mark your listing as "Urgent" to attract immediate attention', 'Đánh dấu tin đăng của bạn là "Khẩn cấp" để thu hút sự chú ý ngay lập tức')}
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="isUrgent"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">
-                  {t('Mark as Urgent', 'Đánh dấu là khẩn cấp')}
-                </FormLabel>
-                <FormDescription>
-                  {t('Add an "Urgent" badge to attract immediate attention', 'Thêm huy hiệu "Khẩn cấp" để thu hút sự chú ý ngay lập tức')}
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="showAtTop"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                  <FormLabel className="font-medium">
+                    {t('Top Placement', 'Vị trí hàng đầu')}
+                  </FormLabel>
+                  <FormDescription>
+                    {t('Keep your listing at the top of the search results', 'Giữ bài đăng của bạn ở đầu kết quả tìm kiếm')}
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="autoRenew"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">
-                  {t('Auto-renew', 'Tự động gia hạn')}
-                </FormLabel>
-                <FormDescription>
-                  {t('Automatically renew this posting when it expires', 'Tự động gia hạn tin đăng này khi hết hạn')}
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-      </div>
+          <FormField
+            control={form.control}
+            name="isHotListing"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                  <FormLabel className="font-medium">
+                    {t('Hot Listing', 'Bài đăng nổi bật')}
+                  </FormLabel>
+                  <FormDescription>
+                    {t('Highlight your listing with a special "Hot" badge', 'Làm nổi bật tin đăng của bạn với huy hiệu "Hot" đặc biệt')}
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-      <div className="rounded-lg bg-primary/10 p-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">{t('Total', 'Tổng cộng')}</h3>
-          <p className="text-xl font-bold">${price}</p>
+          <FormField
+            control={form.control}
+            name="autoRenew"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                  <FormLabel className="font-medium">
+                    {t('Auto-Renew', 'Tự động gia hạn')}
+                  </FormLabel>
+                  <FormDescription>
+                    {t('Automatically renew your listing when it expires', 'Tự động gia hạn tin đăng của bạn khi hết hạn')}
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         </div>
-        {isFirstPost && (
-          <p className="mt-2 text-sm text-green-600 font-medium">
-            {t('First post is free!', 'Bài đăng đầu tiên miễn phí!')}
-          </p>
-        )}
       </div>
+
+      <Card className="border-purple-200 bg-purple-50/50 shadow-sm">
+        <CardContent className="pt-6">
+          <div className="flex justify-between items-center">
+            <h3 className="font-semibold text-lg">{t('Total Price', 'Tổng giá')}</h3>
+            <span className="font-bold text-xl">${price}</span>
+          </div>
+        </CardContent>
+        <CardFooter className="border-t border-purple-100 bg-purple-50/80 text-sm text-slate-600 pt-3">
+          {t('You will only be charged when you submit your job listing', 'Bạn sẽ chỉ bị tính phí khi bạn gửi bài đăng việc làm')}
+        </CardFooter>
+      </Card>
     </div>
   );
 };

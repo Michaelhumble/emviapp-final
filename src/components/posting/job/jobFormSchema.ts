@@ -1,26 +1,24 @@
 
 import { z } from 'zod';
 
-// Define the basic job form schema
 export const jobFormSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
-  location: z.string().min(2, "Location is required"),
-  jobType: z.enum(["full-time", "part-time", "contract", "temporary"]),
+  title: z.string().min(2, 'Title must be at least 2 characters'),
+  location: z.string().min(2, 'Location is required'),
+  jobType: z.string(),
   salary: z.string().optional(),
-  jobSummary: z.string().optional(),
-  fullDescription: z.string().min(20, "Please provide a detailed description"),
-  requirements: z.string().optional(),
+  jobSummary: z.string().min(10, 'Job summary must be at least 10 characters'),
+  fullDescription: z.string().min(20, 'Job description must be at least 20 characters'),
+  requirements: z.string().min(10, 'Requirements must be at least 10 characters'),
   benefits: z.string().optional(),
-  contactName: z.string().optional(),
-  contactEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
-  phoneNumber: z.string().optional(),
-  pricingTier: z.enum(["standard", "featured", "premium", "gold"]),
+  phoneNumber: z.string().min(10, 'Phone number is required'),
+  contactEmail: z.string().email('Invalid email').or(z.string().length(0)).optional(),
+  contactName: z.string().min(2, 'Contact name is required'),
+  pricingTier: z.enum(['standard', 'premium', 'diamond']),
   showAtTop: z.boolean().default(false),
   isHotListing: z.boolean().default(false),
   isUrgent: z.boolean().default(false),
   autoRenew: z.boolean().default(false),
-  industry: z.string().default("nails")
+  industry: z.string()
 });
 
-// Export the type for use in components
 export type JobFormValues = z.infer<typeof jobFormSchema>;

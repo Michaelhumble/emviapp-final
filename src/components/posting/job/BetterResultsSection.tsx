@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 const BetterResultsSection: React.FC = () => {
   // Default all checkboxes to checked
   const [selectedOptions, setSelectedOptions] = useState<string[]>([
-    'serious', 'moreViews', 'loyal', 'rightPeople', 'quickly', 'aiAssist', 'upgrades', 'serious', 'peaceOfMind'
+    'weeklyPay', 'friendly', 'bilingual', 'photos', 'details', 'flexible', 'highPay', 'reviews', 'promotion'
   ]);
 
   const handleCheckboxChange = (id: string, checked: boolean) => {
@@ -19,60 +19,51 @@ const BetterResultsSection: React.FC = () => {
 
   const options = [
     {
-      id: 'serious',
-      label: 'I want my post to stand out and attract serious applicants',
-      description: 'Artists are more likely to apply when your listing feels confident and clear.'
+      id: 'weeklyPay',
+      label: 'Weekly pay attracts top Thợ Giỏi (artists)',
     },
     {
-      id: 'moreViews',
-      label: 'I want help getting more views on this job post',
-      description: 'We can quietly boost your visibility if results slow down.'
+      id: 'friendly',
+      label: 'Having a friendly work environment helps get more applicants',
     },
     {
-      id: 'loyal',
-      label: 'I care about building a loyal team I can trust',
-      description: 'Thợ giỏi stay longer when they feel respected and supported.'
+      id: 'bilingual',
+      label: 'Posting your job in both English and Vietnamese can increase visibility',
     },
     {
-      id: 'rightPeople',
-      label: 'I\'d rather not waste time interviewing the wrong people',
-      description: 'Our smart filters help match you with better-fit applicants.'
+      id: 'photos',
+      label: 'Sharing real nail photos builds more trust with artists',
     },
     {
-      id: 'quickly',
-      label: 'I want this job filled quickly so my business doesn\'t slow down',
-      description: 'Faster posts = less revenue loss.'
+      id: 'details',
+      label: 'More job details = more serious applicants',
     },
     {
-      id: 'aiAssist',
-      label: 'I want EmviApp AI to assist if this post doesn\'t perform',
-      description: 'Let us auto-adjust visibility in the background if needed.'
+      id: 'flexible',
+      label: 'Many artists want to work part-time or flexible hours',
     },
     {
-      id: 'upgrades',
-      label: 'I\'m open to small upgrades if it helps me hire faster',
-      description: 'Sometimes, $5 can save you weeks of stress.'
+      id: 'highPay',
+      label: 'Mentioning high pay upfront improves response rate',
     },
     {
-      id: 'professional',
-      label: 'I want my post to reflect how serious I am about hiring',
-      description: 'Professional listings attract professional results.'
+      id: 'reviews',
+      label: 'Reviews and testimonials build trust',
     },
     {
-      id: 'peaceOfMind',
-      label: 'I want peace of mind while EmviApp works in the background',
-      description: 'Focus on your salon. We\'ll handle the hiring.'
+      id: 'promotion',
+      label: 'EmviApp will help promote your listing to more artists for you',
     }
   ];
 
   return (
-    <div className="space-y-5 rounded-lg border border-slate-100 bg-slate-50/50 p-5 my-8">
+    <div className="space-y-5 rounded-lg border border-purple-100 bg-purple-50/50 p-5 my-8">
       <div className="mb-5">
         <h3 className="text-lg font-medium flex items-center gap-2">
-          <span className="text-rose-500">❤️</span> I want better results from this post
+          <span className="text-purple-500">💜</span> Want Better Results?
         </h3>
         <p className="text-sm text-slate-500 mt-1">
-          You're not alone. Here's what works for thousands of salons — just check what fits you:
+          These tips can help attract better candidates
         </p>
       </div>
 
@@ -92,7 +83,6 @@ const BetterResultsSection: React.FC = () => {
               >
                 {option.label}
               </Label>
-              <p className="text-sm text-slate-500 mt-1">{option.description}</p>
             </div>
           </div>
         ))}
