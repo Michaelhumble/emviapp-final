@@ -30,6 +30,7 @@ const JobPost: React.FC = () => {
         <title>Post a Job | EmviApp</title>
       </Helmet>
       <Container className="py-8">
+        <h1 className="text-3xl font-playfair mb-8">Post a Job</h1>
         <JobForm
           onSubmit={handleSubmit}
           photoUploads={photoUploads}
