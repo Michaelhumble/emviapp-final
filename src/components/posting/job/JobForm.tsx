@@ -1,77 +1,81 @@
 
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { 
-  Form, 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import SectionHeader from '@/components/posting/SectionHeader';
+import { NotebookPen, FileText, Phone, Camera } from 'lucide-react';
+import { jobFormSchema } from './jobFormSchema';
 
-interface JobFormProps {
+// Export the JobFormValues type
+export type JobFormValues = z.infer<typeof jobFormSchema>;
+
+export interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
-  photoUploads?: File[];
-  setPhotoUploads?: (files: File[]) => void;
-  isSubmitting?: boolean;
+  photoUploads: File[];
+  setPhotoUploads: (files: File[]) => void;
+  isSubmitting: boolean;
+  defaultValues?: Partial<JobFormValues>;
+  industry?: string;
+  userProfile?: any;
 }
 
 const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
-  photoUploads = [],
-  setPhotoUploads = () => {},
-  isSubmitting = false
+  photoUploads,
+  setPhotoUploads,
+  isSubmitting,
+  defaultValues,
+  industry = 'nails',
 }) => {
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: {
+    defaultValues: defaultValues || {
       title: '',
+      jobType: 'full-time',
       location: '',
       salary: '',
-      jobType: 'full-time',
+      jobSummary: '',
       description: '',
       contactEmail: '',
       phoneNumber: '',
-      jobSummary: '',
-      requirements: []
-    }
+    },
   });
 
-  const handleSubmit = (values: JobFormValues) => {
-    onSubmit(values);
-  };
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-        {/* Basic Job Information */}
-        <div className="space-y-6">
-          <SectionHeader 
-            title="Basic Job Information" 
-            emoji="📝" 
-          />
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Basic Job Information Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <NotebookPen className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-semibold">Basic Job Information</h2>
+          </div>
 
           <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Job Title *</FormLabel>
+                <FormLabel>Job Title*</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="e.g., Nail Technician, Hair Stylist" 
@@ -88,7 +92,7 @@ const JobForm: React.FC<JobFormProps> = ({
             name="jobType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Job Type *</FormLabel>
+                <FormLabel>Job Type*</FormLabel>
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
@@ -115,7 +119,7 @@ const JobForm: React.FC<JobFormProps> = ({
             name="location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Location *</FormLabel>
+                <FormLabel>Location*</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="e.g., San Jose, CA" 
@@ -140,7 +144,7 @@ const JobForm: React.FC<JobFormProps> = ({
                   />
                 </FormControl>
                 <FormDescription>
-                  Adding salary information can increase application rates.
+                  Adding a salary range increases application rates by 30%
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -148,13 +152,13 @@ const JobForm: React.FC<JobFormProps> = ({
           />
         </div>
 
-        {/* Job Details */}
-        <div className="space-y-6">
-          <SectionHeader 
-            title="Job Details" 
-            emoji="📄" 
-          />
-          
+        {/* Job Details Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <FileText className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-semibold">Job Details</h2>
+          </div>
+
           <FormField
             control={form.control}
             name="jobSummary"
@@ -177,7 +181,7 @@ const JobForm: React.FC<JobFormProps> = ({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Job Description *</FormLabel>
+                <FormLabel>Job Description*</FormLabel>
                 <FormControl>
                   <Textarea 
                     placeholder="Describe responsibilities, benefits, and other important details." 
@@ -191,38 +195,37 @@ const JobForm: React.FC<JobFormProps> = ({
           />
         </div>
 
-        {/* Photos Section */}
-        <div className="space-y-6">
-          <SectionHeader 
-            title="Photos" 
-            emoji="📷" 
-            description="(Optional)" 
-          />
+        {/* Photos Section (Placeholder) */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Camera className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-semibold">Photos (Optional)</h2>
+          </div>
           
-          <div className="border border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 text-center">
-            <p className="text-muted-foreground">
+          <div className="bg-gray-100 border border-gray-200 rounded-md p-4">
+            <p className="text-gray-600">
               Photo upload functionality will be available soon. Adding photos can increase applications by up to 35%.
             </p>
           </div>
         </div>
 
-        {/* Contact Information */}
-        <div className="space-y-6">
-          <SectionHeader 
-            title="Contact Information" 
-            emoji="☎️" 
-          />
-          
+        {/* Contact Info Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Phone className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-semibold">Contact Info</h2>
+          </div>
+
           <FormField
             control={form.control}
             name="contactEmail"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contact Email *</FormLabel>
+                <FormLabel>Contact Email*</FormLabel>
                 <FormControl>
                   <Input 
-                    type="email"
                     placeholder="e.g., hiring@yoursalon.com" 
+                    type="email"
                     {...field} 
                   />
                 </FormControl>
@@ -236,7 +239,7 @@ const JobForm: React.FC<JobFormProps> = ({
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number *</FormLabel>
+                <FormLabel>Phone Number*</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="e.g., (555) 123-4567" 
@@ -250,60 +253,36 @@ const JobForm: React.FC<JobFormProps> = ({
         </div>
 
         {/* Get Better Results Box */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mt-8">
-          <h3 className="text-lg font-medium text-purple-800 mb-4">Get Better Results</h3>
-          <div className="space-y-3">
-            <div className="flex items-start">
-              <div className="flex-shrink-0 mt-0.5">
-                <div className="bg-purple-100 border border-purple-300 rounded w-5 h-5 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-purple-800" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-800">Highlight your listing — Make your job stand out with premium placement</p>
-              </div>
+        <div className="border rounded-lg overflow-hidden">
+          <div className="bg-purple-100 border-b border-purple-200 px-4 py-3">
+            <h3 className="text-lg font-semibold text-purple-800">Get Better Results</h3>
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="flex items-start gap-2">
+              <div className="bg-green-100 text-green-600 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">✓</div>
+              <p>Highlight your listing — Make your job stand out with premium placement</p>
             </div>
-            <div className="flex items-start">
-              <div className="flex-shrink-0 mt-0.5">
-                <div className="bg-purple-100 border border-purple-300 rounded w-5 h-5 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-purple-800" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-800">Extended visibility — Your job will be visible longer to attract more candidates</p>
-              </div>
+            <div className="flex items-start gap-2">
+              <div className="bg-green-100 text-green-600 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">✓</div>
+              <p>Extended visibility — Your job will be visible longer to attract more candidates</p>
             </div>
-            <div className="flex items-start">
-              <div className="flex-shrink-0 mt-0.5">
-                <div className="bg-purple-100 border border-purple-300 rounded w-5 h-5 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-purple-800" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-800">Smart matching — We'll match your job with qualified candidates in your area</p>
-              </div>
+            <div className="flex items-start gap-2">
+              <div className="bg-green-100 text-green-600 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">✓</div>
+              <p>Smart matching — We'll match your job with qualified candidates in your area</p>
             </div>
           </div>
         </div>
 
         {/* Submit Button */}
-        <div className="pt-6">
-          <Button
-            type="submit"
-            className="w-full md:w-auto bg-purple-600 hover:bg-purple-700"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Processing...' : 'Continue to Pricing'}
-          </Button>
-        </div>
+        <Button 
+          type="submit" 
+          className="w-full bg-purple-600 hover:bg-purple-700" 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Processing...' : 'Continue to Pricing'}
+        </Button>
       </form>
-    </Form>
+    </FormProvider>
   );
 };
 
