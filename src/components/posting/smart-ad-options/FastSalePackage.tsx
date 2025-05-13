@@ -8,11 +8,13 @@ import { Zap } from "lucide-react";
 interface FastSalePackageProps {
   onChange: (checked: boolean) => void;
   defaultChecked?: boolean;
+  disabled?: boolean; // Adding disabled prop
 }
 
 const FastSalePackage = ({ 
   onChange,
-  defaultChecked = false 
+  defaultChecked = false,
+  disabled = false // Set default to false
 }: FastSalePackageProps) => {
   const [checked, setChecked] = useState(defaultChecked);
   
@@ -41,6 +43,7 @@ const FastSalePackage = ({
           <Switch 
             checked={checked} 
             onCheckedChange={handleChange}
+            disabled={disabled}
           />
         </div>
       </CardContent>
