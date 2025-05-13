@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/context/auth';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { JobFormValues } from '@/components/posting/job/JobForm';
 import JobForm from '@/components/posting/job/JobForm';
 import { Container } from '@/components/ui/container';
 import { Layout } from '@/components/layout';

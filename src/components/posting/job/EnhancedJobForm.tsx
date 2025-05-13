@@ -1,7 +1,6 @@
 
 import React from 'react';
-import JobForm from './JobForm';
-import { JobFormValues } from './jobFormSchema';
+import JobForm, { JobFormValues } from './JobForm';
 import PostHeader from '../PostHeader';
 import MotivationalFooter from '../MotivationalFooter';
 import UpsellSidebar from '../upsell/UpsellSidebar';

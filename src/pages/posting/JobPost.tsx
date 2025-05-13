@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import JobForm, { JobFormValues } from '@/components/posting/job/JobForm';
+import JobForm from '@/components/posting/job/JobForm';
+import { JobFormValues } from '@/components/posting/job/JobForm';
 import { Container } from '@/components/ui/container';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/layout';
