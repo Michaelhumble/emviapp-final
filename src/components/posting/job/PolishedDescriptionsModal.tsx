@@ -5,16 +5,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { 
-  Lightbulb, 
+  Briefcase, 
   Sparkles, 
-  Star, 
-  Clock, 
-  Award, 
   Heart, 
-  Gem, 
-  Search, 
-  Flame, 
-  Target 
+  Zap, 
+  Diamond, 
+  FileText, 
+  Clock, 
+  Crown, 
+  ArrowRight, 
+  TrendingUp
 } from "lucide-react";
 
 interface PolishedDescriptionModalProps {

@@ -1,554 +1,693 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema } from './jobFormSchema';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Dialog } from '@/components/ui/dialog';
-import { Sparkles, Info, Lightbulb, Camera, Clock, Award, Heart, Gem, Search, Flame, Target } from 'lucide-react';
+import { UserProfile } from '@/context/auth/types';
+import { 
+  jobFormSchema, 
+  JobFormValues, 
+  JOB_TEMPLATES, 
+  JOB_TYPES,
+  getTemplateContent
+} from './jobFormSchema';
+import { useImageUpload } from '@/hooks/useImageUpload';
+import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
 import PolishedDescriptionsModal from './PolishedDescriptionsModal';
 
-export interface JobFormValues {
-  title: string;
-  description: string;
-  location: string;
-  salary?: string;
-  contactEmail: string;
-  phoneNumber: string;
-  jobType: "full-time" | "part-time" | "contract" | "temporary";
-  jobSummary?: string;
-  heartfeltMessage?: string;
-  isUrgent: boolean;
-}
+// UI Components
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage,
+  FormDescription
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import SectionHeader from '@/components/posting/SectionHeader';
+
+// Icons
+import { 
+  Sparkles, 
+  ImagePlus, 
+  X, 
+  Loader2, 
+  AlertCircle, 
+  ArrowRight, 
+  Flame 
+} from 'lucide-react';
 
 export interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
-  defaultValues?: Partial<JobFormValues>;
+  userProfile?: UserProfile | null;
   industry?: string;
-  userProfile?: any;
+  defaultValues?: Partial<JobFormValues>;
 }
 
-// Define job templates
-const JOB_TEMPLATES = [
-  {
-    label: "Select a Template...",
-    value: "",
-  },
-  {
-    label: "Nail Technician (Vietnamese-style)",
-    value: "nail-tech-vietnamese",
-    title: "Experienced Nail Technician - Vietnamese Style",
-    summary: "Join our busy salon specializing in Vietnamese nail techniques. Great pay + tips!",
-    description: "We are looking for skilled nail technicians who are experienced in Vietnamese nail art and techniques. Our busy salon caters to a high-end clientele who appreciate quality work and attention to detail. We offer competitive pay, flexible hours, and a friendly work environment.\n\nRequirements:\n- At least 1 year experience\n- Knowledge of acrylic, gel, dip powder, and nail art\n- Valid nail technician license\n- Excellent customer service skills\n- Vietnamese speaking ability is a plus but not required",
-    salary: "$800-1200/week + tips",
-    message: "Our salon is like a family. We support each other and help our team members grow their skills and client base."
-  },
-  {
-    label: "Hair Stylist (Salon)",
-    value: "hair-stylist",
-    title: "Professional Hair Stylist - Full Service Salon",
-    summary: "Creative hair stylist needed for upscale salon. Build your clientele with our marketing support.",
-    description: "Our growing salon is seeking a talented hair stylist to join our team. We provide continuous education, marketing support to help you build your clientele, and a beautiful, modern workspace.\n\nResponsibilities include:\n- Haircuts, coloring, styling, and treatments\n- Client consultations and recommendations\n- Retail product knowledge and recommendations\n\nIdeal candidates have:\n- Cosmetology license with 2+ years experience\n- Color certification preferred\n- Portfolio of work\n- Excellent communication skills",
-    salary: "Commission-based (up to 60%)",
-    message: "We believe in work-life balance and supporting our stylists' creative vision and career growth."
-  },
-  {
-    label: "Lash Tech (Home-Based)",
-    value: "lash-tech",
-    title: "Certified Lash Artist - Home Studio",
-    summary: "Join our cozy home-based lash studio. Perfect for artists seeking flexible hours.",
-    description: "We are looking for a certified lash artist to join our intimate home-based studio. This position offers tremendous flexibility and a peaceful working environment away from the typical salon chaos.\n\nWe're seeking someone who specializes in:\n- Classic lash extensions\n- Volume/hybrid techniques\n- Lash lifts and tints\n\nThe ideal candidate will have:\n- Lash certification\n- At least 6 months experience\n- Own transportation\n- Ability to work independently\n- Strong attention to detail",
-    salary: "$25-35/hr + commission opportunities",
-    message: "We've created a stress-free environment where you can focus on your artistry without salon politics or pressure."
-  },
-  {
-    label: "Barber (Shop)",
-    value: "barber",
-    title: "Experienced Barber - Traditional & Modern Cuts",
-    summary: "Skilled barber needed for busy shop. Strong clientele and walk-ins daily.",
-    description: "Our established barber shop is looking for a skilled barber who can handle both traditional cuts and modern styles. We have a loyal customer base and steady walk-in traffic.\n\nSkills needed:\n- Precision haircuts and fades\n- Beard trimming and shaping\n- Hot towel straight razor shaves\n- Line-ups and designs (a plus)\n\nRequirements:\n- Barber license\n- Minimum 1 year professional experience\n- Reliable and punctual\n- Customer-focused attitude",
-    salary: "Base pay + commission (averaging $1000-1500/week)",
-    message: "Our shop has a great vibe with regular clients who appreciate quality work. We treat our team like family and celebrate each other's success."
-  },
-  {
-    label: "Tattoo Artist (Studio)",
-    value: "tattoo-artist",
-    title: "Talented Tattoo Artist - Established Studio",
-    summary: "Creative tattoo artist wanted for our client-focused studio. Bring your portfolio and passion.",
-    description: "Our reputable tattoo studio is seeking an experienced tattoo artist to join our team. We provide a clean, professional environment with a steady flow of clients.\n\nWe're looking for someone who:\n- Has a strong, diverse portfolio\n- Excels in both custom designs and flash work\n- Maintains impeccable hygiene standards\n- Can communicate effectively with clients\n\nRequirements:\n- Minimum 3 years professional experience\n- Current bloodborne pathogen certification\n- Digital design skills a plus\n- Strong drawing abilities",
-    salary: "70/30 commission split in your favor",
-    message: "We've built a reputation for quality work in a drama-free environment. Our artists support each other and collaborate often."
-  },
-  {
-    label: "Licensed Esthetician (Spa)",
-    value: "esthetician",
-    title: "Medical Esthetician - Luxury Day Spa",
-    summary: "Join our upscale spa team. Advanced skincare knowledge and excellent client care required.",
-    description: "Our luxury day spa is looking for a licensed medical esthetician to perform advanced skincare treatments. You'll work in a serene environment with high-end products and the latest technology.\n\nResponsibilities:\n- Customized facials and skin analysis\n- Chemical peels and microdermabrasion\n- Laser treatments and light therapy\n- Product recommendations\n\nQualifications:\n- Current esthetician license\n- Additional certification in medical esthetics\n- 2+ years experience\n- Knowledge of medical-grade skincare lines",
-    salary: "$25-35/hour plus commission and tips",
-    message: "We value continuous education and provide regular training on new treatments and technologies to help our team excel."
-  },
-  {
-    label: "Masseuse (On-call)",
-    value: "massage-therapist",
-    title: "Licensed Massage Therapist - Flexible Hours",
-    summary: "Seeking talented massage therapists for our growing client base. On-call positions available.",
-    description: "We are expanding our therapeutic massage services and need licensed massage therapists who can work on an on-call basis. Perfect for professionals looking to supplement their income or build their practice.\n\nSpecialties we're seeking:\n- Deep tissue massage\n- Swedish massage\n- Sports massage\n- Hot stone therapy\n- Prenatal massage\n\nRequirements:\n- Current massage therapy license\n- Liability insurance\n- 1+ year professional experience\n- Excellent time management",
-    salary: "$40-60 per session + gratuity",
-    message: "We respect your expertise and techniques. Our goal is to provide you with clients who appreciate your specific skills while offering you maximum scheduling flexibility."
-  },
-  {
-    label: "Makeup Artist (Freelancer)",
-    value: "makeup-artist",
-    title: "Freelance Makeup Artist - Bridal & Special Events",
-    summary: "Creative makeup artist needed for weddings and special events. Build your portfolio with us.",
-    description: "Our beauty team is looking for a talented makeup artist specializing in bridal and special event makeup. This is a freelance position with regular bookings, especially during wedding season.\n\nServices you'll provide:\n- Bridal makeup (trials and wedding day)\n- Special event makeup\n- Group makeup services (bridal parties, proms)\n- Occasional photo shoots\n\nIdeal candidate has:\n- Professional makeup kit with quality products\n- Portfolio showing range of skin tones and styles\n- Ability to work early mornings\n- Excellent interpersonal skills\n- Reliable transportation",
-    salary: "$150-300 per client + travel fees",
-    message: "We focus on creating stress-free, memorable experiences for clients on their special days, and value artists who bring both technical skill and a calming presence."
-  },
-  {
-    label: "Studio Room for Rent (Beauty Space)",
-    value: "studio-room",
-    title: "Private Studio Room Available - Established Beauty Center",
-    summary: "Beautiful private room for rent in busy beauty center. Perfect for independent beauty professionals.",
-    description: "Prime opportunity for beauty professionals looking to operate independently! We have a private studio room available for rent in our established, high-traffic beauty center.\n\nSpace details:\n- 120 sq ft private room\n- Built-in cabinetry and sink\n- Large mirror with excellent lighting\n- Shared reception and waiting area\n- 24/7 secure access\n- Utilities included\n- WiFi and marketing support available\n\nIdeal for:\n- Estheticians\n- Lash artists\n- Permanent makeup specialists\n- Microblading artists\n- Massage therapists\n- Brow specialists",
-    salary: "$900/month (weekly and daily options available)",
-    message: "We've created a supportive community of beauty entrepreneurs who respect each other's businesses while enjoying the benefits of a shared, professional location."
-  }
-];
-
-const JobForm: React.FC<JobFormProps> = ({ 
-  onSubmit, 
-  photoUploads, 
-  setPhotoUploads, 
-  isSubmitting, 
-  defaultValues = {},
+const JobForm: React.FC<JobFormProps> = ({
+  onSubmit,
+  photoUploads,
+  setPhotoUploads,
+  isSubmitting,
+  userProfile,
   industry = "nails",
-  userProfile
+  defaultValues
 }) => {
-  const [showPolishedModal, setShowPolishedModal] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState("");
-  const [currentDescription, setCurrentDescription] = useState("");
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  
+  // Setup form with validation schema
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      title: defaultValues.title || "",
-      description: defaultValues.description || "",
-      location: defaultValues.location || "",
-      salary: defaultValues.salary || "",
-      contactEmail: defaultValues.contactEmail || (userProfile?.email || ""),
-      phoneNumber: defaultValues.phoneNumber || (userProfile?.phoneNumber || ""),
-      jobType: defaultValues.jobType || "full-time",
-      jobSummary: defaultValues.jobSummary || "",
-      heartfeltMessage: defaultValues.heartfeltMessage || "",
-      isUrgent: defaultValues.isUrgent || false,
-    },
+    defaultValues: defaultValues || {
+      title: '',
+      description: '',
+      location: userProfile?.location || '',
+      salary: '',
+      contactEmail: userProfile?.email || '',
+      phoneNumber: userProfile?.phone || '',
+      jobType: 'full-time',
+      jobSummary: '',
+      heartfeltMessage: '',
+      isUrgent: false,
+      weeklyPay: false,
+      providesLunch: false,
+      latestProducts: false,
+      flexibleSchedule: false,
+      growthOpportunities: false,
+      customerReviewBonuses: false
+    }
   });
+  
+  // Setup hooks for image upload and AI description polishing
+  const { uploadMultipleImages, isUploading, uploadError } = useImageUpload();
+  const { polishedVersions, generateVersions, isLoading: isGeneratingDescriptions } = usePolishedDescriptions();
+  
+  // State management
+  const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
+  const [isPolishModalOpen, setIsPolishModalOpen] = useState(false);
+  const [uploadedPhotoUrls, setUploadedPhotoUrls] = useState<string[]>([]);
+  
+  // Refs
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Scroll management for template selection
+  const titleFieldRef = useRef<HTMLDivElement>(null);
 
-  // When template changes, update form values
-  const handleTemplateChange = (value: string) => {
-    setSelectedTemplate(value);
+  // Handle template selection
+  const handleTemplateChange = (templateId: string) => {
+    const template = getTemplateContent(templateId);
     
-    const selectedTemplate = JOB_TEMPLATES.find(template => template.value === value);
-    if (selectedTemplate && value !== "") {
-      form.setValue("title", selectedTemplate.title);
-      form.setValue("jobSummary", selectedTemplate.summary);
-      form.setValue("description", selectedTemplate.description);
-      
-      if (selectedTemplate.salary) {
-        form.setValue("salary", selectedTemplate.salary);
-      }
-      
-      if (selectedTemplate.message) {
-        form.setValue("heartfeltMessage", selectedTemplate.message);
-      }
-      
-      // Scroll to title input for editing
-      setTimeout(() => {
-        if (titleInputRef.current) {
-          titleInputRef.current.focus();
-          titleInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 100);
+    // Update form fields with template values
+    form.setValue('title', template.title);
+    form.setValue('jobSummary', template.jobSummary);
+    form.setValue('description', template.description);
+    if (template.salary) form.setValue('salary', template.salary);
+    
+    // Scroll to title field for user to start editing
+    setTimeout(() => {
+      titleFieldRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  // Handle photo uploads
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    const newFiles = Array.from(e.target.files);
+    const totalFiles = [...photoUploads, ...newFiles];
+    
+    // Limit to 5 photos
+    if (totalFiles.length > 5) {
+      alert('You can upload a maximum of 5 photos');
+      return;
+    }
+    
+    setPhotoUploads(totalFiles);
+    
+    // Generate preview URLs
+    const newPreviewUrls = newFiles.map(file => URL.createObjectURL(file));
+    setPhotoPreviewUrls([...photoPreviewUrls, ...newPreviewUrls]);
+  };
+
+  // Remove a photo from the list
+  const handleRemovePhoto = (index: number) => {
+    const updatedUploads = [...photoUploads];
+    updatedUploads.splice(index, 1);
+    setPhotoUploads(updatedUploads);
+    
+    const updatedPreviews = [...photoPreviewUrls];
+    URL.revokeObjectURL(updatedPreviews[index]);
+    updatedPreviews.splice(index, 1);
+    setPhotoPreviewUrls(updatedPreviews);
+  };
+
+  // Handle AI polish for job description
+  const handlePolishDescription = () => {
+    const description = form.getValues('description');
+    if (!description || description.trim().length < 20) {
+      form.setError('description', { 
+        type: 'manual', 
+        message: 'Please enter at least 20 characters to polish description' 
+      });
+      return;
+    }
+    
+    // Generate AI polished versions
+    generateVersions(description);
+    setIsPolishModalOpen(true);
+  };
+
+  // Select a polished description version
+  const handleSelectPolishedVersion = (description: string) => {
+    form.setValue('description', description);
+    form.clearErrors('description');
+    setIsPolishModalOpen(false);
+  };
+
+  // Form submission handler
+  const handleSubmit = async (values: JobFormValues) => {
+    if (photoUploads.length > 0) {
+      // Upload photos first if there are any
+      const urls = await uploadMultipleImages(photoUploads);
+      setUploadedPhotoUrls(urls);
+      // Add photo URLs to form data and submit
+      onSubmit({ ...values, photoUrls: urls });
+    } else {
+      // Submit form without photos
+      onSubmit(values);
     }
   };
 
-  const handlePolishClick = () => {
-    const description = form.getValues("description");
-    setCurrentDescription(description);
-    setShowPolishedModal(true);
-  };
-
-  const handleSelectPolishedVersion = (newDescription: string) => {
-    form.setValue("description", newDescription);
-    setShowPolishedModal(false);
-  };
-
-  const polishedVersions = [
-    {
-      theme: "Friendly & Welcoming",
-      icon: <Heart className="h-4 w-4 text-rose-500" />,
-      description: currentDescription ? `${currentDescription}\n\nWe're a friendly, supportive team looking for someone who loves what they do! You'll be welcomed into our salon family where we celebrate each other's successes and grow together. We believe in creating a positive environment where both our team and clients feel valued and appreciated.` : "",
-    },
-    {
-      theme: "Professional & Established",
-      icon: <Award className="h-4 w-4 text-blue-500" />,
-      description: currentDescription ? `${currentDescription}\n\nWith over 10 years in the industry, our established salon provides a professional environment where excellence is standard. We maintain high standards and offer continuous professional development opportunities. Our reputation for quality has built a loyal client base that values expertise and professionalism.` : "",
-    },
-    {
-      theme: "Growth & Opportunity",
-      icon: <Target className="h-4 w-4 text-green-500" />,
-      description: currentDescription ? `${currentDescription}\n\nThis role offers exceptional growth potential for the right candidate. We believe in promoting from within and providing clear advancement paths. You'll receive mentorship from industry veterans and opportunities to expand your skills and clientele. Ambitious professionals will thrive in our growth-oriented environment.` : "",
-    },
-    {
-      theme: "Luxury & Premium",
-      icon: <Gem className="h-4 w-4 text-purple-500" />,
-      description: currentDescription ? `${currentDescription}\n\nJoin our premium salon where we cater to discerning clients who expect excellence. Our elegant, well-appointed space reflects the high-end services we provide. As a team member, you'll work with top-tier products and a clientele that appreciates and rewards quality craftsmanship and attention to detail.` : "",
-    },
-    {
-      theme: "Urgent Hiring Need",
-      icon: <Flame className="h-4 w-4 text-orange-500" />,
-      description: currentDescription ? `${currentDescription}\n\nIMMEDIATE OPPORTUNITY! Due to increasing demand, we need to fill this position quickly. The right candidate can start immediately with an expedited onboarding process. This urgent opening comes with fast-track training and immediate client bookings. Don't miss this chance to join our busy, successful team right away!` : "",
-    },
-    {
-      theme: "Work-Life Balance",
-      icon: <Clock className="h-4 w-4 text-indigo-500" />,
-      description: currentDescription ? `${currentDescription}\n\nWe understand that life extends beyond work. Our salon prioritizes reasonable hours, flexible scheduling options, and respects personal time. We've created a sustainable work environment where you can build a rewarding career while maintaining your personal commitments and avoiding burnout.` : "",
-    },
-    {
-      theme: "High Earning Potential",
-      icon: <Sparkles className="h-4 w-4 text-amber-500" />,
-      description: currentDescription ? `${currentDescription}\n\nThis position offers exceptional earning potential for motivated professionals. Beyond the competitive base compensation, you'll benefit from our busy location, generous commission structure, and abundant opportunities for tips. Top performers in our salon regularly exceed industry standard incomes.` : "",
-    },
-    {
-      theme: "Learning & Development",
-      icon: <Lightbulb className="h-4 w-4 text-yellow-500" />,
-      description: currentDescription ? `${currentDescription}\n\nWe invest heavily in our team's ongoing education. You'll receive regular training on the latest techniques and trends, with opportunities to attend industry events and certification courses. We believe that continuous learning is essential for career growth and client satisfaction.` : "",
-    },
-    {
-      theme: "SEO Optimized",
-      icon: <Search className="h-4 w-4 text-emerald-500" />,
-      description: currentDescription ? `${currentDescription}\n\nJoin our highly-rated nail salon [city location] specializing in acrylic nails, gel manicures, pedicures, and nail art. We offer competitive compensation for licensed nail technicians with experience in Vietnamese techniques. Our busy salon environment provides consistent clientele, guaranteed hourly rates plus tips, and opportunities for career advancement.` : "",
-    },
-    {
-      theme: "Community & Team Spirit",
-      icon: <Heart className="h-4 w-4 text-pink-500" />,
-      description: currentDescription ? `${currentDescription}\n\nWe're more than colleagues – we're a community that supports each other professionally and personally. Our team celebrates birthdays, shares meals, and collaborates on creative projects. We believe a strong salon culture leads to better client experiences and more fulfilling careers for our team members.` : "",
-    },
-  ];
-
-  // Photo upload handling would go here
+  // Cleanup preview URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      photoPreviewUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [photoPreviewUrls]);
 
   return (
-    <>
-      <div className="space-y-8">
-        {/* Step tracker */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center w-full max-w-md">
-            <div className="flex flex-col items-center flex-1">
-              <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
-                1
-              </div>
-              <div className="text-xs mt-1 text-primary font-medium">Job Info</div>
-            </div>
-            <div className="h-1 flex-1 bg-muted mx-2">
-              <div className="h-full w-0 bg-primary"></div>
-            </div>
-            <div className="flex flex-col items-center flex-1">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center">
-                2
-              </div>
-              <div className="text-xs mt-1 text-muted-foreground">Add Photos</div>
-            </div>
-            <div className="h-1 flex-1 bg-muted mx-2">
-              <div className="h-full w-0 bg-primary"></div>
-            </div>
-            <div className="flex flex-col items-center flex-1">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center">
-                3
-              </div>
-              <div className="text-xs mt-1 text-muted-foreground">Choose Pricing</div>
-            </div>
-          </div>
-        </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            {/* Template selection */}
-            <div className="space-y-1.5">
-              <label htmlFor="template" className="text-sm font-medium flex items-center gap-1.5">
-                <Sparkles className="h-4 w-4 text-amber-500" />
-                Start with a Template
-              </label>
-              <Select
-                value={selectedTemplate}
-                onValueChange={handleTemplateChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a template..." />
+    <div className="py-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          {/* Section 1: Start with a Template */}
+          <div className="space-y-4">
+            <SectionHeader 
+              title="Start with a Template" 
+              emoji="✨" 
+              description="Choose a starting point and customize it to fit your needs"
+            />
+            
+            <div className="grid grid-cols-1">
+              <Select onValueChange={handleTemplateChange} defaultValue="">
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Choose a starting template..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {JOB_TEMPLATES.map((template) => (
-                    <SelectItem key={template.value} value={template.value}>
+                  {JOB_TEMPLATES.map(template => (
+                    <SelectItem key={template.id} value={template.id}>
                       {template.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
-            {/* Title */}
+          {/* Section 2: Basic Job Information */}
+          <div className="space-y-4">
+            <SectionHeader 
+              title="Basic Job Information" 
+              emoji="📝" 
+              description="Let talented artists know what position you're offering"
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem ref={titleFieldRef}>
+                    <FormLabel>Job Title <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., Nail Technician, Hair Stylist, Spa Manager" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="jobType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Job Type <span className="text-red-500">*</span></FormLabel>
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select job type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {JOB_TYPES.map(type => (
+                          <SelectItem key={type.id} value={type.id}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="City, State" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="salary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      Salary/Compensation
+                      <Badge variant="outline" className="font-normal text-xs">
+                        30% more applications
+                      </Badge>
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., $25-30/hr, $800-1200/week, etc." />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
             <FormField
               control={form.control}
-              name="title"
+              name="isUrgent"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Title</FormLabel>
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel className="flex items-center gap-2">
+                      Mark as Urgent
+                      <Flame className="h-4 w-4 text-orange-500" />
+                    </FormLabel>
+                    <FormDescription>
+                      Adds an urgency badge to attract immediate attention
+                    </FormDescription>
+                  </div>
                   <FormControl>
-                    <Input 
-                      ref={titleInputRef}
-                      placeholder="e.g., Experienced Nail Technician" 
-                      {...field} 
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
 
-            {/* Summary */}
+          {/* Section 3: Job Details */}
+          <div className="space-y-4">
+            <SectionHeader 
+              title="Job Details" 
+              emoji="📋" 
+              description="Provide more information about the position"
+            />
+            
             <FormField
               control={form.control}
               name="jobSummary"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex justify-between items-center">
-                    <FormLabel>Job Summary</FormLabel>
-                    <FormField
-                      control={form.control}
-                      name="isUrgent"
-                      render={({ field: urgentField }) => (
-                        <div className="flex items-center space-x-2">
-                          <Switch
-                            id="urgentJob"
-                            checked={urgentField.value}
-                            onCheckedChange={urgentField.onChange}
-                          />
-                          <label
-                            htmlFor="urgentJob"
-                            className="text-sm font-medium flex items-center"
-                          >
-                            <Flame className="h-4 w-4 mr-1 text-orange-500" />
-                            Mark as Urgent
-                          </label>
-                        </div>
-                      )}
-                    />
-                  </div>
+                  <FormLabel>Job Summary (Optional)</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="Brief summary of the position (appears in search results)" 
-                      {...field} 
-                    />
+                    <Input {...field} placeholder="A brief one-line summary of the position" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* Description */}
+            
             <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex justify-between items-center">
-                    <FormLabel>Job Description</FormLabel>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <FormLabel>Job Description <span className="text-red-500">*</span></FormLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
                       size="sm"
-                      onClick={handlePolishClick}
-                      className="flex items-center gap-1"
+                      onClick={handlePolishDescription}
+                      disabled={isGeneratingDescriptions || !field.value || field.value.length < 20}
+                      className="text-xs gap-1"
                     >
-                      <Sparkles className="h-4 w-4 text-amber-500" />
-                      <span className="hidden sm:inline">Polish with AI</span>
-                      <span className="sm:hidden">Polish</span>
+                      {isGeneratingDescriptions ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3 w-3 text-yellow-500" />
+                      )}
+                      Polish with AI
                     </Button>
                   </div>
                   <FormControl>
                     <Textarea
-                      placeholder="Detailed job description, requirements, responsibilities..."
-                      className="min-h-[200px]"
                       {...field}
+                      placeholder="Describe the position, responsibilities, and ideal candidate. Include experience required, working hours, and what makes your workplace special."
+                      className="min-h-[180px]"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
 
-            {/* Heartfelt Message */}
-            <FormField
-              control={form.control}
-              name="heartfeltMessage"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    <div className="flex items-center gap-1">
-                      <Heart className="h-4 w-4 text-rose-500" />
-                      Optional: Say something from the heart
-                    </div>
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="We're a family-run salon and care deeply about our team..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          {/* Section 4: Photos */}
+          <div className="space-y-4">
+            <SectionHeader 
+              title="Photos (Optional)" 
+              emoji="📸" 
+              description="Show off your salon space or work environment"
             />
-
-            {/* Location */}
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="City, State" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Salary */}
-            <FormField
-              control={form.control}
-              name="salary"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-1.5">
-                    <FormLabel>Salary or Pay Range</FormLabel>
-                    <div className="relative group">
-                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      <div className="hidden group-hover:block absolute z-50 bottom-full mb-2 p-2 bg-white border rounded shadow-lg w-60 text-xs">
-                        We only show this to verified artists after your job is live. Helps reduce back-and-forth.
-                      </div>
-                    </div>
-                  </div>
-                  <FormControl>
-                    <Input placeholder="e.g., $25-30/hr or $800-1000/week + tips" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Job Type */}
-            <FormField
-              control={form.control}
-              name="jobType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select job type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="full-time">Full-time</SelectItem>
-                      <SelectItem value="part-time">Part-time</SelectItem>
-                      <SelectItem value="contract">Contract</SelectItem>
-                      <SelectItem value="temporary">Temporary</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Contact Email */}
-            <FormField
-              control={form.control}
-              name="contactEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Phone Number */}
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-1.5">
-                    <FormLabel>Phone Number</FormLabel>
-                    <div className="relative group">
-                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      <div className="hidden group-hover:block absolute z-50 bottom-full mb-2 p-2 bg-white border rounded shadow-lg w-60 text-xs">
-                        We only show this to verified artists after your job is live. Helps reduce back-and-forth.
-                      </div>
-                    </div>
-                  </div>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Submit */}
-            <div className="flex justify-between pt-6">
-              <Button type="button" variant="outline">
-                Preview
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Continue to Pricing"}
-              </Button>
+            
+            <div className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-muted/40 transition-colors">
+              <div className="space-y-4">
+                <div>
+                  <ImagePlus className="h-10 w-10 mx-auto text-muted-foreground" />
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Drag photos here or click to upload (max 5)
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Adding photos can increase applications by up to 35%
+                  </p>
+                </div>
+                
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>Select Photos</>
+                  )}
+                </Button>
+                
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handlePhotoChange}
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                />
+              </div>
             </div>
-          </form>
-        </Form>
-      </div>
+            
+            {uploadError && (
+              <div className="text-sm text-red-500 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4" />
+                {uploadError}
+              </div>
+            )}
+            
+            {photoPreviewUrls.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+                {photoPreviewUrls.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img 
+                      src={url} 
+                      alt={`Preview ${index}`} 
+                      className="h-24 w-full object-cover rounded-md border" 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePhoto(index)}
+                      className="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-      {/* Polish Modal */}
-      <PolishedDescriptionsModal 
-        isOpen={showPolishedModal}
-        onClose={() => setShowPolishedModal(false)}
-        originalDescription={currentDescription}
+          {/* Section 5: Yes Ladder (Trust Building) */}
+          <div className="space-y-4">
+            <SectionHeader 
+              title="Your Workplace Benefits (Optional)" 
+              emoji="☀️" 
+              description="Let artists know what makes your workplace special"
+            />
+            
+            <div className="grid grid-cols-1 gap-2">
+              <FormField
+                control={form.control}
+                name="weeklyPay"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="weeklyPay"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="weeklyPay">
+                      We pay weekly — artists appreciate fast pay
+                    </Label>
+                  </div>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="providesLunch"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="providesLunch"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="providesLunch">
+                      We provide lunch on busy days
+                    </Label>
+                  </div>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="latestProducts"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="latestProducts"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="latestProducts">
+                      We use the latest Dip/Gel/Acrylic products
+                    </Label>
+                  </div>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="flexibleSchedule"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="flexibleSchedule"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="flexibleSchedule">
+                      We're flexible with days off or vacation
+                    </Label>
+                  </div>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="growthOpportunities"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="growthOpportunities"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="growthOpportunities">
+                      We give everyone a chance to grow and be seen
+                    </Label>
+                  </div>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="customerReviewBonuses"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="customerReviewBonuses"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label htmlFor="customerReviewBonuses">
+                      We offer bonuses for great customer reviews
+                    </Label>
+                  </div>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Section 6: Contact Info */}
+          <div className="space-y-4">
+            <SectionHeader 
+              title="Contact Info" 
+              emoji="📞" 
+              description="How applicants can reach you"
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="contactEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} type="email" placeholder="your@email.com" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone <span className="text-red-500">*</span></FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="(555) 123-4567" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Section 7: Boost Your Listing */}
+          <div className="space-y-4">
+            <SectionHeader 
+              title="Boost Your Listing" 
+              emoji="💎" 
+              description="Optional upgrades to increase visibility"
+            />
+            
+            <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-4 border border-amber-200">
+              <h4 className="font-medium text-amber-800 mb-2">Looking to attract more applicants?</h4>
+              <p className="text-sm text-amber-700 mb-4">You'll be able to select premium visibility options in the next step.</p>
+              <div className="space-y-2 text-sm text-amber-700">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <p>Highlight your listing</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <p>Extended visibility</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <p>Smart Matching</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Submission Button */}
+          <div className="pt-4 flex justify-end">
+            <Button 
+              type="submit"
+              disabled={isSubmitting || isUploading} 
+              className="gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  Continue to Preview
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+      
+      {/* Polished Descriptions Modal */}
+      <PolishedDescriptionsModal
+        isOpen={isPolishModalOpen}
+        onClose={() => setIsPolishModalOpen(false)}
+        originalDescription={form.getValues('description') || ''}
         polishedVersions={polishedVersions}
         onSelectVersion={handleSelectPolishedVersion}
       />
-    </>
+    </div>
   );
 };
 
 export default JobForm;
+export type { JobFormValues };
