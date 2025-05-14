@@ -23,7 +23,7 @@ const EmviLogo: React.FC<EmviLogoProps> = ({
   return (
     <div className={`flex items-center ${className}`}>
       <img 
-        src="/images/logo/emvi-logo.png" 
+        src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png" 
         alt="EmviApp logo" 
         width={imageWidth} 
         height="auto" 
