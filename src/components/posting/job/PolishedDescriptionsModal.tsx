@@ -95,7 +95,9 @@ const PolishedDescriptionsModal = ({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>
+            {isVietnamese ? 'Huỷ' : 'Cancel'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

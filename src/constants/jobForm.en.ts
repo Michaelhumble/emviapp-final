@@ -12,35 +12,45 @@ export const jobFormEn = {
   templates: [
     "Nail Technician",
     "Hair Stylist",
-    "Esthetician",
-    "Salon Receptionist",
-    "Salon Manager",
+    "Spa Technician",
+    "Receptionist",
+    "Manager",
     "Massage Therapist",
-    "Lash Tech",
+    "Lash Technician",
     "Tattoo Artist",
     "Makeup Artist",
+    "Microblading Artist",
+    "Barber",
+    "Waxing Specialist",
+    "Threading Expert",
+    "Facialist",
+    "Skincare Consultant", 
+    "Brow Technician",
+    "Piercing Specialist",
     "Permanent Makeup Artist",
-    "Other",
+    "Booth Renter",
+    "Freelance Beauty Pro",
+    "Other"
   ],
 
   // Job Info
   jobTypeLabel: "Job Type",
   jobTypeOptions: {
-    fullTime: "Full-time",
-    partTime: "Part-time",
+    fullTime: "Full Time",
+    partTime: "Part Time",
     contract: "Contract",
     freelance: "Freelance",
     other: "Other",
   },
-  locationLabel: "Location",
+  locationLabel: "Work Location",
   compensationLabel: "Compensation (optional)",
-  compensationPlaceholder: "E.g., $25–$35/hr or 60% commission",
+  compensationPlaceholder: "Ex: $25–$35/hour or 60% commission",
 
   // Job Description
   descriptionLabel: "Job Description *",
-  descriptionPlaceholder: "Describe the job, requirements, and salon highlights...",
-  summaryLabel: "Brief Summary (Optional)",
-  summaryPlaceholder: "An attention-grabbing headline",
+  descriptionPlaceholder: "Clearly describe the job, requirements, and salon highlights...",
+  summaryLabel: "Job Title Summary (Optional)",
+  summaryPlaceholder: "Catchy headline to grab attention",
 
   // Contact Info
   emailLabel: "Contact Email *",
@@ -49,15 +59,15 @@ export const jobFormEn = {
 
   // Polish with AI
   polishWithAI: "Polish with AI ✨",
-  loadingPolish: "Generating polished descriptions...",
-  polishResultLabel: "Suggested Description",
+  loadingPolish: "Creating polished descriptions...",
+  polishResultLabel: "Suggested Descriptions",
 
   // Boost & Perks
-  perksLabel: "Salon Perks (Make your job more attractive)",
+  perksLabel: "Salon Perks (Increases attractiveness to candidates)",
   perks: {
     flexibleHours: "Flexible Hours",
     weeklyPay: "Weekly Pay",
-    provideLunch: "Provide Lunch",
+    provideLunch: "Lunch Provided",
     qualityProducts: "Quality Products",
     reviewBonuses: "Review Bonuses",
     growthOpportunities: "Growth Opportunities",
@@ -65,17 +75,17 @@ export const jobFormEn = {
 
   // Urgent Badge
   urgentLabel: "Mark as URGENT HIRING",
-  urgentHint: "Will add an 'Urgent' tag to grab attention",
+  urgentHint: "Will add an 'Urgent' tag for higher visibility",
 
   // Upload Section
-  uploadLabel: "Images (Optional)",
-  uploadPlaceholder: "Drag & drop images or click to browse",
-  uploadLimitText: "0 / 5 photos",
+  uploadLabel: "Photos (Optional)",
+  uploadPlaceholder: "Drag & drop or click to upload",
+  uploadLimitText: "0 / 5 images",
 
   // Errors
   errors: {
     required: "This field is required.",
-    invalidEmail: "Please enter a valid email address.",
-    invalidPhone: "Please enter a valid phone number.",
+    invalidEmail: "Invalid email address.",
+    invalidPhone: "Invalid phone number.",
   },
 };
