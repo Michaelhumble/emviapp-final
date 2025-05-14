@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema, JobFormValues } from './jobFormSchema';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
@@ -10,25 +15,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import { JobPostPhotoUpload } from './JobPostPhotoUpload';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Sparkles } from 'lucide-react';
+import JobPostPhotoUpload from './JobPostPhotoUpload';
+import { JOB_TYPES, JOB_TEMPLATES } from './jobFormConstants';
+import PolishedDescriptionsModal from './PolishedDescriptionsModal';
 import { useTranslation } from '@/hooks/useTranslation';
-import { jobFormEn } from '@/constants/jobForm.en';
-import { jobFormVi } from '@/constants/jobForm.vi';
-import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import { PolishedDescriptionsModal } from './PolishedDescriptionsModal';
-import { JOB_TEMPLATES } from './jobFormConstants';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -43,11 +42,11 @@ const JobForm: React.FC<JobFormProps> = ({
   photoUploads,
   setPhotoUploads,
   isSubmitting = false,
-  defaultValues = {},
+  defaultValues = {}
 }) => {
   const { isVietnamese, t } = useTranslation();
-  const formText = isVietnamese ? jobFormVi : jobFormEn;
   const [isPolishModalOpen, setIsPolishModalOpen] = useState(false);
+  const [currentJobType, setCurrentJobType] = useState('');
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
@@ -60,57 +59,78 @@ const JobForm: React.FC<JobFormProps> = ({
       contactEmail: '',
       contactPhone: '',
       isUrgent: false,
-      // Ensure we're using isUrgent instead of urgent to match the schema
-      ...defaultValues,
-    },
+      ...defaultValues
+    }
   });
 
-  const handleTemplateSelect = (templateId: string) => {
-    const template = JOB_TEMPLATES.find(t => t.id === templateId);
+  const watchedDescription = form.watch('description');
+  const watchedType = form.watch('type');
+
+  // Update form when a template is selected
+  const applyTemplate = (templateId: string) => {
+    const selectedTemplate = JOB_TEMPLATES.find(template => template.id === templateId);
     
-    if (template) {
-      form.setValue('title', template.title || '');
-      form.setValue('description', template.description || '');
-      form.setValue('summary', template.summary || '');
-      form.setValue('type', template.type || '');
+    if (selectedTemplate) {
+      form.setValue('title', selectedTemplate.title);
+      form.setValue('description', selectedTemplate.description);
+      form.setValue('type', selectedTemplate.type || '');
+      // Only try to set summary if it exists in the form schema
+      if ('summary' in form.getValues()) {
+        form.setValue('summary', selectedTemplate.summary || '');
+      }
     }
   };
 
-  const handlePolishedDescription = (description: string) => {
-    form.setValue('description', description);
-    setIsPolishModalOpen(false);
+  // Use the polished description text when selected from modal
+  const handleSelectPolishedDescription = (polishedText: string) => {
+    form.setValue('description', polishedText);
+  };
+
+  useEffect(() => {
+    // Track current job type for polish modal
+    if (watchedType) {
+      setCurrentJobType(watchedType);
+    }
+  }, [watchedType]);
+
+  const handleSubmit = (values: JobFormValues) => {
+    onSubmit(values);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Template Selection */}
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        {/* Job Template Selection */}
         <FormField
           control={form.control}
           name="template"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{formText.templateLabel}</FormLabel>
-              <Select 
+              <FormLabel>{isVietnamese ? "Mẫu đăng tin" : "Job template"}</FormLabel>
+              <Select
                 onValueChange={(value) => {
                   field.onChange(value);
-                  handleTemplateSelect(value);
+                  applyTemplate(value);
                 }}
                 value={field.value}
               >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={formText.templatePlaceholder} />
-                  </SelectTrigger>
-                </FormControl>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={isVietnamese ? "Chọn mẫu đăng tin" : "Select a template"} />
+                </SelectTrigger>
                 <SelectContent>
                   {JOB_TEMPLATES.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
-                      {template.label}
+                      {template.title}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <FormDescription>
+                {isVietnamese 
+                  ? "Tiết kiệm thời gian với mẫu có sẵn" 
+                  : "Save time with a pre-made template"}
+              </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -121,24 +141,9 @@ const JobForm: React.FC<JobFormProps> = ({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{formText.titleLabel} {formText.requiredLabel}</FormLabel>
+              <FormLabel>{isVietnamese ? "Tiêu đề công việc" : "Job title"}</FormLabel>
               <FormControl>
-                <Input placeholder={formText.titlePlaceholder} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Location */}
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{formText.locationLabel} {formText.requiredLabel}</FormLabel>
-              <FormControl>
-                <Input placeholder={formText.locationPlaceholder} {...field} />
+                <Input placeholder={isVietnamese ? "VD: Cần thợ Nail" : "E.g. Nail Technician Needed"} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -151,52 +156,33 @@ const JobForm: React.FC<JobFormProps> = ({
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{formText.jobTypeLabel} {formText.optionalLabel}</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={formText.jobTypePlaceholder} />
-                  </SelectTrigger>
-                </FormControl>
+              <FormLabel>{isVietnamese ? "Loại công việc" : "Job type"}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={isVietnamese ? "Chọn loại công việc" : "Select job type"} />
+                </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="fullTime">{formText.jobTypeOptions.fullTime}</SelectItem>
-                  <SelectItem value="partTime">{formText.jobTypeOptions.partTime}</SelectItem>
-                  <SelectItem value="contract">{formText.jobTypeOptions.contract}</SelectItem>
-                  <SelectItem value="freelance">{formText.jobTypeOptions.freelance}</SelectItem>
-                  <SelectItem value="other">{formText.jobTypeOptions.other}</SelectItem>
+                  {JOB_TYPES.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {isVietnamese && type.labelVi ? type.labelVi : type.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Description */}
+        {/* Location */}
         <FormField
           control={form.control}
-          name="description"
+          name="location"
           render={({ field }) => (
             <FormItem>
-              <div className="flex justify-between items-center">
-                <FormLabel>{formText.descriptionLabel} {formText.requiredLabel}</FormLabel>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setIsPolishModalOpen(true)}
-                  className="text-xs"
-                >
-                  {formText.aiPolishButton}
-                </Button>
-              </div>
+              <FormLabel>{isVietnamese ? "Địa điểm" : "Location"}</FormLabel>
               <FormControl>
-                <Textarea 
-                  placeholder={formText.descriptionPlaceholder} 
-                  rows={6}
-                  {...field}
-                />
+                <Input placeholder={isVietnamese ? "VD: Houston, TX" : "E.g. Houston, TX"} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -209,50 +195,76 @@ const JobForm: React.FC<JobFormProps> = ({
           name="compensation"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{formText.compensationLabel} {formText.optionalLabel}</FormLabel>
+              <FormLabel>{isVietnamese ? "Lương / Ăn chia" : "Compensation"}</FormLabel>
               <FormControl>
-                <Input placeholder={formText.compensationPlaceholder} {...field} />
+                <Input 
+                  placeholder={isVietnamese ? "VD: $1,000/tuần + ăn chia" : "E.g. $1,000/week + commission"} 
+                  {...field} 
+                />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Contact Info Section */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">{formText.contactInfoLabel}</h3>
-          
-          {/* Email */}
+        {/* Description */}
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <div className="flex items-center justify-between">
+                <FormLabel>{isVietnamese ? "Mô tả công việc" : "Job description"}</FormLabel>
+                <Button 
+                  type="button" 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => setIsPolishModalOpen(true)}
+                  className="flex items-center gap-1 text-xs"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {isVietnamese ? "Làm chuyên nghiệp với AI" : "Polish with AI"}
+                </Button>
+              </div>
+              <FormControl>
+                <Textarea 
+                  placeholder={isVietnamese 
+                    ? "Mô tả chi tiết về công việc, yêu cầu và phúc lợi..." 
+                    : "Describe the job, requirements, and benefits..."
+                  } 
+                  className="min-h-[200px]"
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Contact Information */}
+        <div className="grid sm:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="contactEmail"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{formText.contactInfoEmail} {formText.requiredLabel}</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder={formText.contactInfoEmailPlaceholder} 
-                    {...field} 
-                  />
+                  <Input type="email" placeholder="contact@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {/* Phone */}
+
           <FormField
             control={form.control}
             name="contactPhone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{formText.contactInfoPhone} {formText.requiredLabel}</FormLabel>
+                <FormLabel>{isVietnamese ? "Số điện thoại" : "Phone"}</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="tel" 
-                    placeholder={formText.contactInfoPhonePlaceholder} 
-                    {...field} 
-                  />
+                  <Input placeholder="(123) 456-7890" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -260,57 +272,70 @@ const JobForm: React.FC<JobFormProps> = ({
           />
         </div>
 
-        {/* Photo Upload */}
-        <JobPostPhotoUpload 
-          photos={photoUploads} 
-          setPhotos={setPhotoUploads} 
-          formText={formText}
-        />
-
-        {/* Mark as Urgent */}
+        {/* Urgent Checkbox */}
         <FormField
           control={form.control}
           name="isUrgent"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-              <div className="space-y-0.5">
-                <FormLabel>{formText.urgentLabel}</FormLabel>
-                <FormDescription>
-                  {formText.urgentHelpText}
-                </FormDescription>
-              </div>
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
-                <Switch
+                <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>
+                  {isVietnamese ? "Tuyển GẤP" : "Urgent hiring"}
+                </FormLabel>
+                <FormDescription>
+                  {isVietnamese 
+                    ? "Đánh dấu tin của bạn là tuyển gấp" 
+                    : "Mark your posting as urgent hiring"}
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
 
+        {/* Photo Upload */}
+        <div className="space-y-2">
+          <FormLabel>{isVietnamese ? "Hình ảnh" : "Photos"}</FormLabel>
+          <JobPostPhotoUpload
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            maxPhotos={5}
+            translations={{
+              dragDropText: isVietnamese 
+                ? "Kéo và thả hình ảnh hoặc nhấn để chọn" 
+                : "Drag and drop images or click to select",
+              photoCountText: (count: number, max: number) => 
+                isVietnamese 
+                  ? `${count} / ${max} ảnh đã thêm` 
+                  : `${count} / ${max} photos added`
+            }}
+          />
+        </div>
+
         {/* Submit Button */}
         <Button 
           type="submit" 
-          className="w-full"
+          className="w-full" 
           disabled={isSubmitting}
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {formText.submitting}
-            </>
-          ) : formText.continue}
+          {isSubmitting 
+            ? (isVietnamese ? "Đang lưu..." : "Saving...")
+            : (isVietnamese ? "Tiếp tục" : "Continue")
+          }
         </Button>
       </form>
 
-      {/* Polish with AI Modal */}
+      {/* Polished Descriptions Modal */}
       <PolishedDescriptionsModal
-        isOpen={isPolishModalOpen}
-        onClose={() => setIsPolishModalOpen(false)}
-        onSelect={handlePolishedDescription}
-        currentDescription={form.getValues('description')}
-        industry="nail" // Assuming default industry, adjust as needed
+        open={isPolishModalOpen}
+        onOpenChange={setIsPolishModalOpen}
+        onSelectDescription={handleSelectPolishedDescription}
+        jobType={currentJobType}
       />
     </Form>
   );

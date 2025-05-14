@@ -1,81 +1,106 @@
-// Job templates constants for use in the job posting form
-// Contains structured templates for different job types
+import { JobTemplateOption } from './types';
 
-export const JOB_TEMPLATES = [
+export const JOB_TYPES = [
+  { value: 'nail-tech', label: 'Nail Technician', labelVi: 'Thợ Nail' },
+  { value: 'hair-stylist', label: 'Hair Stylist', labelVi: 'Thợ Tóc' },
+  { value: 'barber', label: 'Barber', labelVi: 'Thợ Cắt Tóc Nam' },
+  { value: 'esthetician', label: 'Esthetician', labelVi: 'Thợ Chăm Sóc Da' },
+  { value: 'massage-therapist', label: 'Massage Therapist', labelVi: 'Thợ Massage' },
+  { value: 'makeup-artist', label: 'Makeup Artist', labelVi: 'Thợ Trang Điểm' },
+  { value: 'lash-tech', label: 'Lash Technician', labelVi: 'Thợ Mi' },
+  { value: 'eyebrow-tech', label: 'Eyebrow Technician', labelVi: 'Thợ Lông Mày' },
+  { value: 'spa-manager', label: 'Spa Manager', labelVi: 'Quản Lý Spa' },
+  { value: 'receptionist', label: 'Receptionist', labelVi: 'Lễ Tân' },
+  { value: 'other', label: 'Other', labelVi: 'Khác' },
+];
+
+// This is the interface expected by JobForm when mapping templates
+export const JOB_TEMPLATES: {
+  id: string;
+  title: string;
+  type: string;
+  description: string;
+  summary?: string;
+}[] = [
   {
-    id: 'nail-technician',
-    title: 'Nail Technician',
-    type: 'fullTime',
-    description: 'We are looking for experienced nail technicians to join our upscale salon. Must be proficient in manicures, pedicures, gel polish, and nail art. We offer competitive pay, flexible schedules, and a positive work environment. Join our team today!'
+    id: 'nail-tech',
+    title: 'Nail Technician Needed',
+    type: 'nail-tech',
+    description: 'We are looking for an experienced nail technician to join our salon team. The ideal candidate should have at least 2 years of experience, strong customer service skills, and knowledge of acrylic/gel applications, manicures, and pedicures.\n\nResponsibilities:\n- Provide high-quality nail services\n- Maintain a clean and sanitized workspace\n- Build client relationships\n- Assist in inventory management when needed\n\nBenefits:\n- Competitive compensation\n- Flexible scheduling\n- Paid training opportunities\n- Professional work environment',
+    summary: 'Experienced nail tech for upscale salon'
   },
   {
     id: 'hair-stylist',
-    title: 'Hair Stylist',
-    type: 'fullTime',
-    description: 'Experienced hair stylist needed for busy salon. Skills required include cutting, coloring, styling, and customer service. Must have a positive attitude and work well in a team environment. Full-time position with competitive compensation.'
+    title: 'Hair Stylist Position Available',
+    type: 'hair-stylist',
+    description: 'Our growing salon is seeking a talented hair stylist with cutting and coloring expertise. We value creativity, technical skill, and excellent customer service.\n\nResponsibilities:\n- Provide professional hair services including cuts, colors, and styling\n- Consult with clients on hair care and styling options\n- Keep up with current trends and techniques\n- Maintain clean and organized station\n\nBenefits:\n- Competitive commission structure\n- Flexible schedule\n- Continuing education opportunities\n- Product discounts',
+    summary: 'Creative stylist for modern salon'
   },
   {
-    id: 'spa-technician',
-    title: 'Spa Technician',
-    type: 'fullTime',
-    description: 'Join our wellness spa as a Spa Technician. Responsibilities include facials, massage therapy, body treatments, and providing exceptional client care. Certification required. We offer competitive pay, benefits, and a serene work environment.'
+    id: 'esthetician',
+    title: 'Esthetician / Skin Care Specialist',
+    type: 'esthetician',
+    description: 'We are looking for a licensed esthetician passionate about skin care to join our team. The ideal candidate will have experience with various facial treatments, waxing services, and product knowledge.\n\nResponsibilities:\n- Perform facial treatments and skin analyses\n- Provide waxing and other skin care services\n- Recommend appropriate products and home care\n- Maintain a clean and sanitary environment\n\nBenefits:\n- Base pay plus commission\n- Retail commission opportunities\n- Continuing education\n- Professional development',
+    summary: 'Licensed esthetician for spa services'
   },
   {
-    id: 'salon-receptionist',
-    title: 'Salon Receptionist',
-    type: 'fullTime',
-    description: 'We are seeking a professional and friendly receptionist for our salon. Duties include scheduling appointments, answering phones, greeting clients, and processing payments. Must have excellent communication skills and basic computer knowledge.'
+    id: 'massage-therapist',
+    title: 'Licensed Massage Therapist',
+    type: 'massage-therapist',
+    description: 'Our spa is seeking a licensed massage therapist to provide therapeutic and relaxation massages. Experience with multiple modalities including Swedish, deep tissue, and hot stone preferred.\n\nResponsibilities:\n- Perform various massage techniques\n- Customize treatments to client needs\n- Maintain proper documentation\n- Ensure cleanliness of treatment rooms\n\nBenefits:\n- Competitive pay structure\n- Flexible scheduling\n- Loyal client base\n- Professional, upscale environment',
+    summary: 'Experienced LMT for busy spa'
   },
   {
-    id: 'other',
-    title: 'Other',
-    type: 'other',
-    description: 'Please enter the job details for your custom position.'
+    id: 'receptionist',
+    title: 'Salon Receptionist / Front Desk',
+    type: 'receptionist',
+    description: 'We are looking for a friendly, organized receptionist to manage our front desk operations. The ideal candidate will have excellent customer service skills and basic computer knowledge.\n\nResponsibilities:\n- Greet clients and manage the appointment schedule\n- Process payments and handle retail sales\n- Answer phones and respond to inquiries\n- Maintain the reception area\n\nBenefits:\n- Hourly pay plus tips\n- Potential for growth\n- Professional work environment\n- Staff discounts on services and products',
+    summary: 'Front desk professional for salon'
   }
 ];
 
-// English job description templates organized by style and job category
+// Define Vietnamese polish styles for job descriptions
+export const POLISH_UI_TRANSLATIONS = {
+  en: {
+    title: "Polish with AI",
+    subtitle: "Choose a professional style for your job description",
+    selectStyle: "Select a style",
+    preview: "Preview",
+    cancel: "Cancel",
+    useStyle: "Use this style"
+  },
+  vi: {
+    title: "Làm chuyên nghiệp với AI",
+    subtitle: "Chọn phong cách cho mô tả công việc của bạn",
+    selectStyle: "Chọn phong cách",
+    preview: "Xem trước",
+    cancel: "Hủy",
+    useStyle: "Sử dụng phong cách này"
+  }
+};
+
+// English polished descriptions
 export const POLISHED_DESCRIPTIONS_EN = {
   nail: [
     {
-      title: "Professional & Concise",
-      description: "We are seeking experienced nail technicians to join our established salon. Applicants must be skilled in manicures, pedicures, gel, and acrylic services. We offer competitive compensation, a pleasant work environment, and a steady client base. Full-time and part-time positions available. License required."
+      title: "Professional",
+      description: "We are seeking an experienced nail technician to join our established salon. The ideal candidate will have at least 2 years of experience with acrylic, gel, and natural nail services. Must be professional, detail-oriented, and provide excellent customer service.\n\nResponsibilities include:\n- Performing manicures and pedicures\n- Applying and maintaining artificial nails\n- Nail art and specialized treatments\n- Maintaining a clean, sanitized workspace\n\nWe offer competitive pay (commission or hourly with tips), a friendly team environment, and a loyal client base. Part-time and full-time positions available."
     },
     {
-      title: "Friendly & Welcoming",
-      description: "Join our nail salon family! We're looking for talented nail artists who love creating beautiful nails and making clients feel special. Our team is supportive, our clients are wonderful, and our salon is a happy place to work. Great pay, flexible hours, and a fun atmosphere await the right candidates!"
+      title: "Friendly & Casual",
+      description: "Join our nail salon family! We're looking for friendly, talented nail techs who love what they do. Experience with acrylics, gel, and natural nails preferred, but we're willing to train the right person with basic skills and a great attitude.\n\nWhat you'll do:\n- Make our clients feel amazing with beautiful nail services\n- Bring your creativity to nail art and designs\n- Enjoy a drama-free, supportive workplace\n\nWe offer flexible schedules, great pay, and a fun place to work. Bonus: we celebrate birthdays and have team lunches! Come grow with us!"
     },
     {
-      title: "Luxury & High-End",
-      description: "Prestigious nail salon seeking exceptional technicians to serve our discerning clientele. Candidates must demonstrate mastery in luxury nail services including gel extensions, detailed nail art, and impeccable finishing techniques. We offer premium compensation, an elegant work environment, and opportunities to advance your artistry in the nail industry."
+      title: "Luxury Salon",
+      description: "An exclusive opportunity awaits at our premium nail salon. We are seeking an exceptional nail artist with impeccable skills and a sophisticated approach to join our prestigious team.\n\nThe ideal candidate possesses:\n- Extensive experience in luxury nail services\n- Mastery of gel, acrylic, and specialty techniques\n- Immaculate attention to detail\n- Refined client interaction abilities\n\nIn return, we offer an upscale work environment, sophisticated clientele, superior compensation, and opportunities for artistic expression and professional advancement. Only those committed to excellence need apply."
     },
     {
-      title: "Casual & Approachable",
-      description: "Hey nail pros! Our chill, busy salon needs talented people like you. Good vibes, steady clients, and no salon drama. We keep things simple - you do great nails, we provide great pay and a supportive team. Full-time or part-time, experienced or ambitious beginners, we want to meet you!"
+      title: "Growth Opportunity",
+      description: "Growing salon seeking nail technicians ready to build their career! Whether you're experienced or recently licensed, we offer a path to success with our tiered advancement program.\n\nWhat we provide:\n- Guaranteed base pay + commission structure\n- Paid training and certification opportunities\n- Career advancement potential\n- Benefits for full-time staff\n\nJoin our positive, educational environment where your skills and client list can flourish. Perfect for motivated professionals looking to increase their earnings while developing their expertise. Mentorship available for newer technicians."
     },
     {
-      title: "Detailed & Informative",
-      description: "Nail Technician Position: Responsibilities include providing manicures, pedicures, gel applications, acrylics, and nail art. Requirements: Valid license, 1+ years experience preferred, excellent sanitization practices, and customer service skills. Benefits include base pay plus commission, paid vacation after probationary period, flexible scheduling options, and continuing education opportunities. Weekend availability required."
-    },
-    {
-      title: "Modern & Trendy",
-      description: "Calling creative nail artists! Our Instagram-worthy salon specializes in trendy designs and cutting-edge techniques. We're looking for nail techs who stay up-to-date with the latest styles and love creating social media-worthy nail art. Bring your portfolio and your passion - we offer competitive pay, product discounts, and the chance to build your following while working with a contemporary clientele."
-    },
-    {
-      title: "Community & Family-Oriented",
-      description: "Family-owned nail salon seeking caring professionals to join our tight-knit team. We value long-term relationships with both our staff and clients, many of whom have been with us for years. We offer stable income, reasonable hours that accommodate family responsibilities, and a drama-free environment where everyone supports each other. License required, heart and dedication valued above all."
-    },
-    {
-      title: "Growth & Opportunity",
-      description: "Ambitious nail technicians - this is your opportunity! Fast-growing salon with multiple locations seeking talented nail professionals. We provide clear advancement paths, from junior tech to senior artist or even management. Comprehensive training, competitive base pay with performance bonuses, and benefits rare in the industry. Join us and grow your career beyond the nail table!"
-    },
-    {
-      title: "Direct & No-Nonsense",
-      description: "Nail tech needed. Busy location. $XX-XX/hour plus tips. Must know acrylics, gel, and basic nail art. Weekend shifts required. Clean work, good attitude, reliable attendance expected. Start immediately. Text [number] with your experience and availability."
-    },
-    {
-      title: "Supportive & Educational",
-      description: "Nail salon committed to professional development seeking licensed technicians at all experience levels. We provide ongoing training, mentorship from senior staff, and regular workshops on new techniques and trends. Our supportive environment helps both new and experienced techs thrive while expanding their skills. Competitive compensation includes education stipends and performance bonuses."
+      title: "High-Volume",
+      description: "Busy nail salon needs experienced technicians ASAP! High-traffic location with steady client flow guarantees excellent earning potential. Full-time positions available with immediate start.\n\nRequirements:\n- Speed and efficiency without sacrificing quality\n- Experience with quick-service manicures/pedicures\n- Ability to handle multiple clients\n- Reliable and punctual work ethic\n\nTop earners at our salon make $1000-1500+ weekly including tips. Walk-in clients daily plus established appointment book available for the right candidate. Weekend availability required."
     }
   ],
   hair: [
@@ -120,7 +145,7 @@ export const POLISHED_DESCRIPTIONS_EN = {
   ]
 };
 
-// Vietnamese job description templates organized by style and job category
+// Vietnamese polished descriptions
 export const POLISHED_DESCRIPTIONS_VI = {
   nail: [
     {
@@ -128,80 +153,40 @@ export const POLISHED_DESCRIPTIONS_VI = {
       description: "Cần thợ nails kinh nghiệm, tiệm Mỹ trắng, khách sang, tip cao. Bao lương $1,700/tuần + ăn chia. Chủ dễ chịu, làm lâu dài, khu vực an ninh, có chỗ ở riêng."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Thợ Bột & Gel",
       description: "Tuyển thợ bột & gel, lương cao, tip mỗi ngày $200+, làm khu Mỹ trắng, tiệm đông khách quanh năm, hỗ trợ chỗ ở sạch sẽ."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Thợ Tay Chân Nước",
       description: "Tuyển thợ tay chân nước, lương căn bản $1,600/tuần, khách Mỹ trắng, tip rất cao, không áp lực doanh số. Tiệm sang trọng, chủ vui vẻ."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Thợ Bột Mới Ra Nghề",
       description: "Cần thợ bột, bao lương $1,400/tuần, tiệm Việt đông khách, khách quen nhiều, làm việc ổn định quanh năm. Nhận thợ mới ra nghề, chỉ dẫn tận tình."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Nam/Nữ, Bao Lương",
       description: "Tiệm nails khu đông người, cần thợ nam/nữ, bao lương + ăn chia, môi trường thân thiện, chủ dễ chịu, khách tip tốt."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Ăn Chia 6/4",
       description: "Tuyển thợ nail có tay nghề, làm ăn chia 6/4 hoặc lương căn bản, khách ổn định, chỗ ở riêng, nhận thợ part-time."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Tiệm Mới Mở",
       description: "Tiệm mới mở cần thợ tay chân nước, nhận cả thợ mới ra nghề, bao lương $1,200/tuần, khách ổn định, có cơ hội học thêm bột & design."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Part-time/Cuối Tuần",
       description: "Cần thợ làm theo ca hoặc cuối tuần, lương hấp dẫn + tip, phù hợp cho sinh viên hoặc ai muốn làm thêm. Không áp lực, thời gian linh động."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Design Nails",
       description: "Tuyển thợ nail sáng tạo, thích vẽ design, làm việc môi trường trẻ trung, chủ trẻ, khách trẻ trung, lương căn bản + % hoa hồng."
     },
     {
-      title: "Chuyên nghiệp",
+      title: "Cần Gấp",
       description: "Tin hot: Cần thợ nail gấp, khách đợi sẵn, chỉ cần có tay nghề cơ bản là được! Lương + tip cao, vào làm liền, thử việc được hỗ trợ. Inbox để biết thêm chi tiết (chỉ mở cho thành viên)."
-    },
-    {
-      title: "Ấm áp & Thân thiện",
-      description: "Chào mừng bạn đến với salon nails thân thiện của chúng tôi! Cần tìm thợ nail có kinh nghiệm làm móng bột, gel, đắp hoa, vẽ móng. Khách sang, tip cao, chủ dễ chịu, môi trường làm việc như gia đình. Lương căn bản + ăn chia hấp dẫn, nhiều khách Mỹ trắng, khách đặt hẹn sẵn, không lo ngồi không!"
-    },
-    {
-      title: "Chuyên nghiệp & Lịch sự",
-      description: "Salon nails khu Mỹ trắng cần thợ nail tay nghề cứng, biết làm bột, gel, chân tay nước. Khách quen, giá nails cao, môi trường chuyên nghiệp, làm việc đúng giờ, lịch sự, ổn định lâu dài. Chủ có tâm, lương ổn định, có bonus, chủ yếu làm khách appointment."
-    },
-    {
-      title: "Sáng tạo & Nghệ thuật",
-      description: "Salon nghệ thuật cần thợ biết vẽ móng, design ombre, đính đá, làm mẫu. Tự do sáng tạo, không áp lực, khách trẻ trung, nhiều cơ hội phát triển bản thân. Thu nhập cao, môi trường năng động, hỗ trợ sản phẩm tốt."
-    },
-    {
-      title: "Địa phương & Gần gũi",
-      description: "Salon nails khu đông người Việt, khách dễ thương, cần tìm thợ biết làm đủ các dịch vụ (bột, gel, chân tay nước). Chủ bao lương, môi trường vui vẻ, phù hợp anh chị em muốn ổn định, sống lâu dài gần cộng đồng người Việt."
-    },
-    {
-      title: "Ngắn gọn & Trực tiếp",
-      description: "Cần thợ nail biết làm bột, gel, chân tay nước, khách đông quanh năm, tip tốt, chủ dễ tính. Lương cao, có chỗ ở nếu cần. Nhắn tin trực tiếp nếu muốn làm ngay!"
-    },
-    {
-      title: "Đam mê & Nhiệt huyết",
-      description: "Bạn đam mê nghề nails? Hãy về đội với chúng tôi! Salon đông khách, khách Mỹ trắng, cần người chịu khó, muốn phát triển nghề. Môi trường trẻ, vui vẻ, được training thêm nếu cần."
-    },
-    {
-      title: "Hỗ trợ & Đoàn kết",
-      description: "Salon nhỏ, chủ thân thiện, đồng nghiệp dễ thương, cần thêm thợ làm bột hoặc chân tay nước. Chủ bao lương tháng đầu, ưu tiên biết tiếng Anh cơ bản, khách ổn định, tip chia đều."
-    },
-    {
-      title: "Đầu tư lâu dài",
-      description: "Salon mới remodel, vị trí đẹp, cần thợ gắn bó lâu dài, ưu tiên ai muốn tìm môi trường làm việc ổn định, có chính sách nghỉ phép và thưởng lễ."
-    },
-    {
-      title: "Nhẹ nhàng & Tình cảm",
-      description: "Salon như gia đình nhỏ, chủ tận tâm, khách quen lâu năm, cần thợ biết làm căn bản. Không yêu cầu áp lực doanh số, chỉ cần vui vẻ, hoà đồng, trung thực."
-    },
-    {
-      title: "Đẳng cấp & Cao cấp",
-      description: "Salon luxury khu trung tâm, khách sành điệu, cần thợ tay nghề cao về design, đắp bột, gel. Thu nhập cao nhất khu vực, khách bo nhiều, chủ hỗ trợ sản phẩm cao cấp, môi trường chuyên nghiệp."
     }
   ],
   hair: [
@@ -244,26 +229,6 @@ export const POLISHED_DESCRIPTIONS_VI = {
       description: "Cơ sở làm đẹp thân thiện cần nhân viên vui vẻ, hoà đồng, ham học hỏi. Không yêu cầu kinh nghiệm, sẽ được đào tạo. Lương thưởng rõ ràng."
     }
   ]
-};
-
-// UI translations for the AI Polish modal
-export const POLISH_UI_TRANSLATIONS = {
-  en: {
-    title: "Polish with AI",
-    subtitle: "Choose a style that matches your brand voice",
-    preview: "Preview",
-    selectStyle: "Select a Style",
-    cancel: "Cancel",
-    useStyle: "Use This Style"
-  },
-  vi: {
-    title: "Trợ Giúp Từ AI",
-    subtitle: "Chọn phong cách phù hợp với thương hiệu của bạn",
-    preview: "Xem trước",
-    selectStyle: "Chọn phong cách",
-    cancel: "Hủy",
-    useStyle: "Sử dụng phong cách này"
-  }
 };
 
 // Default job descriptions for common roles
