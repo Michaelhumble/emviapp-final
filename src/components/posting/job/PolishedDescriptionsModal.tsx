@@ -17,7 +17,7 @@ const STYLE_TABS = [
   { value: "detailed", label: "Detailed" }
 ];
 
-interface PolishedDescriptionsModalProps {
+export interface PolishedDescriptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
   descriptions: string[];
