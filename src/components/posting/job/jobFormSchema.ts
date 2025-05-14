@@ -26,4 +26,5 @@ export const jobFormSchema = z.object({
   compensation_details: z.string().optional(),
 });
 
+// Export the type for use in components
 export type JobFormValues = z.infer<typeof jobFormSchema>;

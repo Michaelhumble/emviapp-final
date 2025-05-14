@@ -8,10 +8,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { PolishedDescription } from '@/hooks/usePolishedDescriptions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { LoaderCircle } from 'lucide-react';
+
+export interface PolishedDescription {
+  style: string;
+  text: string;
+}
 
 interface PolishedDescriptionsModalProps {
   isOpen: boolean;

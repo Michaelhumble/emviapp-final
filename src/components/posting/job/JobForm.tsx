@@ -1,51 +1,138 @@
 
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { jobFormSchema, JobFormValues } from './jobFormSchema';
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { 
-  Input,
-  Textarea,
-  Button,
-  Checkbox,
+  Form,
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui";
-import { AlertCircle, Sparkles } from "lucide-react";
-import { JOB_TYPES, JOB_TEMPLATES, YES_LADDER_OPTIONS } from './jobFormConstants';
-import JobPostPhotoUpload from './JobFormPhotoUpload';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/select';
+import { jobFormSchema, type JobFormValues } from './jobFormSchema';
+import { JOB_TEMPLATES, JOB_TYPES, YES_LADDER_OPTIONS } from './jobFormConstants';
+import { Card, CardContent } from '@/components/ui/card';
+import { Sparkles, Upload, X } from 'lucide-react';
 import PolishedDescriptionsModal from './PolishedDescriptionsModal';
-import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
 
-interface JobFormProps {
-  onSubmit: (values: JobFormValues) => void;
-  photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  isSubmitting?: boolean;
-  defaultValues?: Partial<JobFormValues>;
-}
+// Simplified mock version of usePolishedDescriptions for now
+const usePolishedDescriptions = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-const JobForm: React.FC<JobFormProps> = ({ 
+  const generatePolishedDescriptions = async () => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    
+    setIsLoading(false);
+    return [
+      { 
+        style: "Professional", 
+        text: "We are seeking a skilled nail technician with at least 2 years of experience. The ideal candidate will excel in nail art, acrylics, and gel applications. Join our growing salon team in a collaborative environment with opportunities for advancement." 
+      },
+      { 
+        style: "Warm & Friendly", 
+        text: "Join our salon family! We're looking for a passionate nail tech who loves creating beautiful nail designs. If you enjoy working with clients and have strong technical skills, we'd love to meet you. Weekly pay and flexible hours available." 
+      }
+    ];
+  };
+
+  return { generatePolishedDescriptions, isLoading, error };
+};
+
+// This would typically be a separate component file
+const JobPostPhotoUpload = ({ 
+  photoUploads, 
+  setPhotoUploads, 
+  maxPhotos = 5 
+}) => {
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setPhotoUploads(prev => [...prev, ...files].slice(0, maxPhotos));
+    }
+  };
+
+  const removePhoto = (index) => {
+    setPhotoUploads(prev => prev.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-3">
+        {photoUploads.map((file, index) => (
+          <div key={index} className="relative w-20 h-20">
+            <img
+              src={URL.createObjectURL(file)}
+              alt={`Upload ${index}`}
+              className="w-full h-full object-cover rounded-md"
+            />
+            <button
+              type="button"
+              onClick={() => removePhoto(index)}
+              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {photoUploads.length < maxPhotos && (
+        <div className="flex items-center">
+          <label
+            htmlFor="photo-upload"
+            className="cursor-pointer flex items-center gap-2 text-sm text-blue-500 hover:text-blue-700"
+          >
+            <Upload className="w-4 h-4" />
+            Add photos (optional)
+            <input
+              id="photo-upload"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+          <span className="text-xs text-gray-400 ml-2">
+            {photoUploads.length}/{maxPhotos}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const JobForm = ({
   onSubmit,
   photoUploads,
   setPhotoUploads,
   isSubmitting = false,
   defaultValues
 }) => {
-  const { 
-    register, 
-    handleSubmit, 
-    control, 
-    setValue,
-    watch,
-    formState: { errors } 
-  } = useForm<JobFormValues>({
+  const [isDescModalOpen, setIsDescModalOpen] = useState(false);
+  const { generatePolishedDescriptions, isLoading, error } = usePolishedDescriptions();
+  const [polishedVersions, setPolishedVersions] = useState([]);
+
+  // Setup form with validation
+  const form = useForm({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: {
+    defaultValues: defaultValues || {
       template: '',
       title: '',
       type: '',
@@ -62,372 +149,321 @@ const JobForm: React.FC<JobFormProps> = ({
       flexibleTime: false,
       growthOpportunity: false,
       reviewBonuses: false,
-      ...defaultValues
     }
   });
 
-  // Fixed: Using proper type assertion for the event target
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.name as keyof JobFormValues, e.target.checked);
-  };
-
-  // State for the AI description modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { generatePolishedDescriptions, isLoading, descriptions, error } = usePolishedDescriptions();
-
-  // Function to handle the "Polish with AI" button click
-  const handlePolishDescription = async () => {
-    const currentDescription = watch('description');
-    if (!currentDescription || currentDescription.length < 10) {
-      alert("Please add a description of at least 10 characters before using AI polish.");
-      return;
-    }
-    
-    await generatePolishedDescriptions(currentDescription);
-    setIsModalOpen(true);
-  };
-
-  // Function to handle selecting a polished description version
-  const handleSelectVersion = (text: string) => {
-    setValue('description', text);
-    setIsModalOpen(false);
-  };
-
-  // Extract template data
-  const handleTemplateChange = (value: string) => {
-    const template = JOB_TEMPLATES.find(template => template.id === value);
-    
-    if (template) {
-      // Update form values with template data
-      setValue('title', template.title || '');
-      setValue('type', template.type || '');
-      setValue('description', template.description || '');
-      // Update other fields as needed
+  // Handle template selection
+  const handleTemplateChange = (templateId) => {
+    const selectedTemplate = JOB_TEMPLATES.find(tpl => tpl.id === templateId);
+    if (selectedTemplate) {
+      form.setValue('title', selectedTemplate.title);
+      form.setValue('type', selectedTemplate.type);
+      form.setValue('description', selectedTemplate.description);
     }
   };
 
-  // Watch values for conditional rendering
-  const watchedType = watch('type');
-  const watchedDescription = watch('description');
+  // Handle file uploads
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setPhotoUploads(prev => [...prev, ...files].slice(0, 5));
+    }
+  };
+
+  const removePhoto = (index) => {
+    setPhotoUploads(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Handle AI description generation
+  const handleGenerateDescriptions = async () => {
+    try {
+      const versions = await generatePolishedDescriptions();
+      setPolishedVersions(versions);
+      setIsDescModalOpen(true);
+    } catch (err) {
+      console.error("Error generating descriptions:", err);
+    }
+  };
+
+  const selectPolishedVersion = (text) => {
+    form.setValue('description', text);
+    setIsDescModalOpen(false);
+  };
+
+  // Submit handler
+  const handleSubmit = (values) => {
+    onSubmit({ ...values, images: photoUploads.map(file => URL.createObjectURL(file)) });
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Job Template Selection */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-playfair font-medium mb-4">Start with a Template</h2>
-        <p className="text-gray-600 mb-4">
-          Choose a template to get started or create your own job posting from scratch.
-        </p>
-        
-        <Controller
-          name="template"
-          control={control}
-          render={({ field }) => (
-            <Select
-              onValueChange={(value) => {
-                field.onChange(value);
-                handleTemplateChange(value);
-              }}
-              value={field.value}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a template (optional)" />
-              </SelectTrigger>
-              <SelectContent>
-                {JOB_TEMPLATES.map((template) => (
-                  <SelectItem key={template.id} value={template.id}>
-                    {template.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-      </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <Card>
+          <CardContent className="pt-6">
+            <FormField
+              control={form.control}
+              name="template"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start with a template (optional)</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      handleTemplateChange(value);
+                    }}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a template" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="">None</SelectItem>
+                      {JOB_TEMPLATES.map((template) => (
+                        <SelectItem key={template.id} value={template.id}>
+                          {template.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
 
-      {/* Job Details */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-playfair font-medium">Job Details</h2>
-        
-        {/* Job Title */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Job Title*</label>
-          <Input
-            {...register('title')}
-            placeholder="e.g. Nail Technician, Stylist, Receptionist"
-            className={errors.title ? "border-red-500" : ""}
-          />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.title.message}
-            </p>
-          )}
-        </div>
-        
-        {/* Job Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Job Type*</label>
-          <Controller
-            name="type"
-            control={control}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="title"
             render={({ field }) => (
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-              >
-                <SelectTrigger className={errors.type ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select job type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {JOB_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormItem>
+                <FormLabel>Job Title *</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. Experienced Nail Technician" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
-          {errors.type && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.type.message}
-            </p>
-          )}
-        </div>
-        
-        {/* Location */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location*</label>
-          <Input
-            {...register('location')}
-            placeholder="e.g. Los Angeles, CA"
-            className={errors.location ? "border-red-500" : ""}
+
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Job Type *</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select job type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {JOB_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.location && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.location.message}
-            </p>
-          )}
         </div>
-        
-        {/* Compensation */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Compensation</label>
-          <Input
-            {...register('compensation')}
-            placeholder="e.g. $25-35/hr + tips, $60k-80k/year"
-            className={errors.compensation ? "border-red-500" : ""}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location *</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. Los Angeles, CA" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.compensation && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.compensation.message}
-            </p>
-          )}
-        </div>
-        
-        {/* Urgent Checkbox */}
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="isUrgent" 
-            checked={watch('isUrgent')}
-            onCheckedChange={(checked) => setValue('isUrgent', checked === true)}
+
+          <FormField
+            control={form.control}
+            name="compensation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Compensation</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. $25-30/hr plus tips" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <label 
-            htmlFor="isUrgent" 
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Mark as Urgent (Highlight in search results)
-          </label>
         </div>
-      </div>
-      
-      {/* Job Description */}
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-playfair font-medium">Job Description</h2>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handlePolishDescription}
-            disabled={!watchedDescription || watchedDescription.length < 10 || isLoading}
-            className="flex items-center gap-2 border-purple-200 hover:bg-purple-50"
-          >
-            <Sparkles className="h-4 w-4 text-purple-500" />
-            Polish with AI
+
+        <FormField
+          control={form.control}
+          name="summary"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Brief Summary (optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="Quick highlight about this position" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Job Description *</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-500">
+                      Describe responsibilities, requirements and benefits
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateDescriptions}
+                      disabled={isLoading}
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" /> 
+                      Polish with AI
+                    </Button>
+                  </div>
+                  <FormControl>
+                    <Textarea rows={6} placeholder="Enter job description..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Yes ladder section */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-medium mb-2">Highlight Special Benefits</h3>
+              <p className="text-sm text-gray-500">
+                Select benefits that make your job opportunity stand out
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {YES_LADDER_OPTIONS.map((option) => (
+                <FormField
+                  key={option.id}
+                  control={form.control}
+                  name={option.id}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0 rounded-md border p-3">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal cursor-pointer">
+                        {option.label}
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="contactEmail"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contact Email *</FormLabel>
+                <FormControl>
+                  <Input placeholder="someone@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="contactPhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contact Phone *</FormLabel>
+                <FormControl>
+                  <Input placeholder="(555) 123-4567" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="isUrgent"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Mark as Urgent</FormLabel>
+                <div className="text-sm text-muted-foreground">
+                  Highlight this as an urgent hiring need
+                </div>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        {/* Photo upload section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Add Photos (Optional)</h3>
+          <JobPostPhotoUpload 
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            maxPhotos={5}
+          />
+        </div>
+
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Next: Choose Pricing Plan"}
           </Button>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Summary (optional)</label>
-          <Input
-            {...register('summary')}
-            placeholder="Brief overview of the position"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description*</label>
-          <Textarea
-            {...register('description')}
-            placeholder="Describe the job, responsibilities, qualifications, etc."
-            className={`min-h-[150px] ${errors.description ? "border-red-500" : ""}`}
-          />
-          {errors.description && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.description.message}
-            </p>
-          )}
-        </div>
-      </div>
-      
-      {/* Contact Information */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-playfair font-medium">Contact Information</h2>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email*</label>
-          <Input
-            {...register('contactEmail')}
-            placeholder="email@example.com"
-            className={errors.contactEmail ? "border-red-500" : ""}
-          />
-          {errors.contactEmail && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.contactEmail.message}
-            </p>
-          )}
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number*</label>
-          <Input
-            {...register('contactPhone')}
-            placeholder="(555) 555-5555"
-            className={errors.contactPhone ? "border-red-500" : ""}
-          />
-          {errors.contactPhone && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.contactPhone.message}
-            </p>
-          )}
-        </div>
-      </div>
-      
-      {/* Yes Ladder */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-playfair font-medium">Tell Candidates About Your Benefits</h2>
-        <p className="text-gray-600">
-          Select the benefits you offer to help attract more candidates.
-        </p>
-        
-        <Tabs defaultValue="standard" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="standard">Standard Benefits</TabsTrigger>
-            <TabsTrigger value="advanced">Advanced Benefits</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="standard" className="border rounded-md p-4 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="payWeekly"
-                  checked={watch('payWeekly')}
-                  onCheckedChange={(checked) => setValue('payWeekly', checked === true)}
-                />
-                <label htmlFor="payWeekly" className="text-sm">Weekly Pay</label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="provideLunch" 
-                  checked={watch('provideLunch')}
-                  onCheckedChange={(checked) => setValue('provideLunch', checked === true)}
-                />
-                <label htmlFor="provideLunch" className="text-sm">Provide Lunch</label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="qualityProducts"
-                  checked={watch('qualityProducts')}
-                  onCheckedChange={(checked) => setValue('qualityProducts', checked === true)}
-                />
-                <label htmlFor="qualityProducts" className="text-sm">Quality Products</label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="flexibleTime"
-                  checked={watch('flexibleTime')}
-                  onCheckedChange={(checked) => setValue('flexibleTime', checked === true)}
-                />
-                <label htmlFor="flexibleTime" className="text-sm">Flexible Hours</label>
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="advanced" className="border rounded-md p-4 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="growthOpportunity"
-                  checked={watch('growthOpportunity')}
-                  onCheckedChange={(checked) => setValue('growthOpportunity', checked === true)}
-                />
-                <label htmlFor="growthOpportunity" className="text-sm">Growth Opportunities</label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="reviewBonuses"
-                  checked={watch('reviewBonuses')}
-                  onCheckedChange={(checked) => setValue('reviewBonuses', checked === true)}
-                />
-                <label htmlFor="reviewBonuses" className="text-sm">Review Bonuses</label>
-              </div>
-              
-              {/* You can add more advanced benefits here */}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-      
-      {/* Photo Upload */}
-      <JobPostPhotoUpload 
-        photoUploads={photoUploads}
-        setPhotoUploads={setPhotoUploads}
-      />
-      
-      {/* Submit */}
-      <div className="flex justify-end">
-        <Button 
-          type="submit"
-          disabled={isSubmitting}
-          className="px-6"
-        >
-          {isSubmitting ? "Submitting..." : "Continue to Pricing"}
-        </Button>
-      </div>
+      </form>
 
-      {/* Polish with AI Modal */}
       <PolishedDescriptionsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        descriptions={descriptions}
+        isOpen={isDescModalOpen}
+        onClose={() => setIsDescModalOpen(false)}
         isLoading={isLoading}
-        onSelectVersion={handleSelectVersion}
+        descriptions={polishedVersions}
+        onSelectVersion={selectPolishedVersion}
         error={error}
       />
-    </form>
+    </Form>
   );
 };
 
-export type { JobFormValues };
+export { JobFormValues };
 export default JobForm;

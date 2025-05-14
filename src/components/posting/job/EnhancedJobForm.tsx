@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import JobForm, { JobFormValues } from './JobForm';
+import JobForm from './JobForm';
+import { JobFormValues } from './jobFormSchema';
 import { useToast } from '@/hooks/use-toast';
 
 interface EnhancedJobFormProps {
