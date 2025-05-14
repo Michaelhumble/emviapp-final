@@ -3,16 +3,13 @@ import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { UploadCloud } from 'lucide-react';
 
-export interface JobPostPhotoUploadProps {
+interface JobPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
   maxPhotos?: number;
   translations?: {
     dragDropText: string;
-    photoCountText: string | ((count: number, max: number) => string);
-  } | {
-    dragDropText?: string;
-    photoCountText?: string;
+    photoCount: (count: number, max: number) => string;
   };
 }
 
@@ -22,7 +19,7 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
   maxPhotos = 5,
   translations = {
     dragDropText: 'Drag and drop images or click to select',
-    photoCountText: (count: number, max: number) => `${count} / ${max} photos added`
+    photoCount: (count: number, max: number) => `${count} / ${max} photos added`
   }
 }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -49,23 +46,6 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
     setPhotoUploads(current => current.filter((_, i) => i !== index));
   };
 
-  // Handle both function and string for photoCountText
-  const getPhotoCountText = () => {
-    if (typeof translations.photoCountText === 'function') {
-      return translations.photoCountText(photoUploads.length, maxPhotos);
-    }
-    if (typeof translations.photoCountText === 'string') {
-      return translations.photoCountText
-        .replace('{count}', String(photoUploads.length))
-        .replace('{max}', String(maxPhotos));
-    }
-    return `${photoUploads.length} / ${maxPhotos} photos added`;
-  };
-
-  const getDragDropText = () => {
-    return translations.dragDropText || 'Drag and drop images or click to select';
-  };
-
   return (
     <div className="space-y-3">
       {/* Dropzone */}
@@ -77,10 +57,12 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
         <input {...getInputProps()} />
         <UploadCloud className="w-10 h-10 mb-2 text-gray-400" />
         <p className="text-sm text-gray-600">
-          {getDragDropText()}
+          {translations?.dragDropText || 'Drag and drop images or click to select'}
         </p>
         <p className="mt-1 text-xs text-gray-500">
-          {getPhotoCountText()}
+          {translations?.photoCount 
+            ? translations.photoCount(photoUploads.length, maxPhotos) 
+            : `${photoUploads.length} / ${maxPhotos} photos added`}
         </p>
       </div>
 

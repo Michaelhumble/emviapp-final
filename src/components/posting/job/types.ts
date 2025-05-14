@@ -1,12 +1,9 @@
 
 export interface JobTemplateOption {
   id: string;
-  title: string;
-  description: string;
-  defaultTitle?: string;
-  defaultDescription?: string;
-  summary?: string;
+  label: string;
+  defaultTitle: string;
+  defaultDescription: string;
   defaultSummary?: string;
-  type?: string;
   defaultType?: string;
 }
