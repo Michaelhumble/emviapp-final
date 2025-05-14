@@ -43,7 +43,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between mx-auto h-16 px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <EmviLogo size="small" />
+          <img src="/images/logo/emvi-logo.png" alt="EmviApp logo" width={120} height="auto" />
         </Link>
 
         {/* Main navigation - centered (hidden on mobile) */}
