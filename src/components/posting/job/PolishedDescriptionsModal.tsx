@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Check, Sparkles, Globe } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { POLISHED_DESCRIPTIONS_EN, POLISHED_DESCRIPTIONS_VI } from './jobFormConstants';
+import { POLISHED_DESCRIPTIONS_EN, POLISHED_DESCRIPTIONS_VI, POLISH_UI_TRANSLATIONS } from './jobFormConstants';
 import { getLanguagePreference } from '@/utils/languagePreference';
 
 interface PolishedDescriptionsModalProps {
@@ -47,10 +47,13 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
 
   // Toggle language
   const toggleLanguage = () => {
-    setLanguagePreference(prev => prev === 'en' ? 'vi' : 'en');
+    const newLanguage = languagePreference === 'en' ? 'vi' : 'en';
+    setLanguagePreference(newLanguage);
+    setSelectedDescription(null); // Reset selection when switching languages
   };
   
   const descriptions = getDescriptions();
+  const translations = languagePreference === 'vi' ? POLISH_UI_TRANSLATIONS.vi : POLISH_UI_TRANSLATIONS.en;
 
   useEffect(() => {
     if (descriptions.length > 0 && !selectedDescription) {
@@ -76,7 +79,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              {languagePreference === 'en' ? 'Polish with AI' : 'Trợ Giúp Từ AI'}
+              {translations.title}
             </DialogTitle>
             <Button 
               variant="outline" 
@@ -89,9 +92,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            {languagePreference === 'en' 
-              ? 'Choose a style that matches your brand voice' 
-              : 'Chọn phong cách phù hợp với thương hiệu của bạn'}
+            {translations.subtitle}
           </p>
         </DialogHeader>
         
@@ -100,7 +101,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
             <ScrollArea className="h-full">
               <div className="p-4">
                 <h3 className="font-medium mb-3">
-                  {languagePreference === 'en' ? 'Select a Style' : 'Chọn phong cách'}
+                  {translations.selectStyle}
                 </h3>
                 <div className="space-y-1.5">
                   {descriptions.map((item, index) => (
@@ -127,7 +128,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
             <ScrollArea className="h-full p-4">
               <div className="p-2">
                 <h3 className="font-medium mb-3">
-                  {languagePreference === 'en' ? 'Preview' : 'Xem trước'}
+                  {translations.preview}
                 </h3>
                 <div className="whitespace-pre-wrap">
                   {selectedDescription}
@@ -139,10 +140,10 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
         
         <div className="flex justify-end space-x-2 pt-2">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            {languagePreference === 'en' ? 'Cancel' : 'Hủy'}
+            {translations.cancel}
           </Button>
           <Button onClick={handleConfirm}>
-            {languagePreference === 'en' ? 'Use This Style' : 'Sử dụng phong cách này'}
+            {translations.useStyle}
           </Button>
         </div>
       </DialogContent>
