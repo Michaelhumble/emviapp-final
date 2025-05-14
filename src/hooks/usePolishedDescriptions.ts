@@ -22,6 +22,11 @@ export const usePolishedDescriptions = (): PolishedDescriptionsHook => {
 
   // This function would typically call an AI API, but for demo we'll generate variations locally
   const fetchPolishedDescriptions = async (text: string): Promise<void> => {
+    if (!text || text.trim().length === 0) {
+      setPolishedDescriptions([]);
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
@@ -72,7 +77,7 @@ function generatePolishedVersion(text: string, style: string, variant: number): 
   // In production this would be replaced with an API call to a language model
   
   // Simple rule-based enhancement for demo
-  const enhancements = {
+  const enhancements: Record<string, string[]> = {
     "professional and concise": [
       `${text}\n\nWe are a professional establishment seeking qualified candidates. Our salon maintains the highest standards of service and cleanliness.`,
       `${text}\n\nJoin our team of professionals in a fast-paced, growth-oriented environment. We're seeking reliable, skilled individuals who take pride in their work.`
@@ -95,5 +100,11 @@ function generatePolishedVersion(text: string, style: string, variant: number): 
     ]
   };
   
-  return enhancements[style as keyof typeof enhancements][variant - 1] || text;
+  // Ensure the style exists in our enhancements object, and return a valid variation
+  if (enhancements[style] && enhancements[style].length >= variant) {
+    return enhancements[style][variant - 1];
+  }
+  
+  // Fallback if style or variant doesn't exist
+  return `${text}\n\n(Enhanced version)`;
 }

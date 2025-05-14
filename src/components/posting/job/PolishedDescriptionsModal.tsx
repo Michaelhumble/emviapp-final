@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Loader2, Sparkles, Check } from 'lucide-react';
+import { Loader2, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
@@ -39,7 +39,7 @@ const PolishedDescriptionsModal = ({
   
   // Get descriptions for the current tab/style
   const getFilteredDescriptions = () => {
-    if (!descriptions.length) return [];
+    if (!descriptions || !descriptions.length) return [];
     
     // If we have 10 descriptions, split them into 5 style groups of 2 variations each
     const totalStyles = STYLE_TABS.length;
@@ -93,19 +93,27 @@ const PolishedDescriptionsModal = ({
               <TabsContent value={selectedTab} className="mt-0">
                 <ScrollArea className="h-[300px] pr-4">
                   <div className="space-y-4">
-                    {filteredDescriptions.map((description, index) => (
-                      <div 
-                        key={index}
-                        className={`p-4 border rounded-md cursor-pointer transition-colors ${
-                          selectedDescription === description 
-                            ? 'border-primary/70 bg-primary/5 shadow-sm' 
-                            : 'hover:border-primary/40'
-                        }`}
-                        onClick={() => handleSelectDescription(description)}
-                      >
-                        <p className="whitespace-pre-wrap">{description}</p>
+                    {filteredDescriptions.length > 0 ? (
+                      filteredDescriptions.map((description, index) => (
+                        <div 
+                          key={index}
+                          className={`p-4 border rounded-md cursor-pointer transition-colors ${
+                            selectedDescription === description 
+                              ? 'border-primary/70 bg-primary/5 shadow-sm' 
+                              : 'hover:border-primary/40'
+                          }`}
+                          onClick={() => handleSelectDescription(description)}
+                        >
+                          <p className="whitespace-pre-wrap">{description}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-muted-foreground">
+                        {isVietnamese 
+                          ? "Không có gợi ý nào. Vui lòng thử lại với mô tả dài hơn." 
+                          : "No suggestions available. Please try again with a longer description."}
                       </div>
-                    ))}
+                    )}
                   </div>
                 </ScrollArea>
               </TabsContent>

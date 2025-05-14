@@ -1,110 +1,89 @@
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { X, Upload } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { UploadCloud } from 'lucide-react';
 
 interface JobPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  maxFiles: number;
-  validateUpload: (files: File[]) => { valid: boolean; message: string };
-  placeholder: string;
-  uploadLimitText: string;
+  maxPhotos?: number;
+  translations?: {
+    dragDropText: string;
+    photoCount: (count: number, max: number) => string;
+  };
 }
 
 const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
   photoUploads,
   setPhotoUploads,
-  maxFiles,
-  validateUpload,
-  placeholder,
-  uploadLimitText
+  maxPhotos = 5,
+  translations = {
+    dragDropText: 'Drag and drop images or click to select',
+    photoCount: (count: number, max: number) => `${count} / ${max} photos added`
+  }
 }) => {
-  const [error, setError] = useState<string | null>(null);
-  
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      // Validate if adding these files would exceed the max
-      if (photoUploads.length + acceptedFiles.length > maxFiles) {
-        setError(`Maximum ${maxFiles} images allowed`);
-        return;
-      }
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    // Handle file drops, ensuring we don't exceed max photos
+    setPhotoUploads(current => {
+      const availableSlots = maxPhotos - current.length;
+      if (availableSlots <= 0) return current;
       
-      // Validate files
-      const validation = validateUpload(acceptedFiles);
-      if (!validation.valid) {
-        setError(validation.message);
-        return;
-      }
-
-      setError(null);
-      setPhotoUploads(prev => [...prev, ...acceptedFiles]);
-    },
-    [maxFiles, photoUploads, setPhotoUploads, validateUpload]
-  );
+      const newFiles = acceptedFiles.slice(0, availableSlots);
+      return [...current, ...newFiles];
+    });
+  }, [setPhotoUploads, maxPhotos]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/jpeg': [],
-      'image/png': [],
-      'image/webp': []
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif']
     },
-    maxFiles: maxFiles - photoUploads.length
+    maxFiles: Math.max(0, maxPhotos - photoUploads.length),
+    disabled: photoUploads.length >= maxPhotos
   });
 
   const removePhoto = (index: number) => {
-    const newPhotos = [...photoUploads];
-    newPhotos.splice(index, 1);
-    setPhotoUploads(newPhotos);
-    setError(null);
+    setPhotoUploads(current => current.filter((_, i) => i !== index));
   };
 
   return (
-    <div className="space-y-4">
-      <div
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 hover:scale-105 ${
-          isDragActive
-            ? 'border-primary bg-primary/5'
-            : 'border-gray-200 hover:border-primary/50'
-        } ${photoUploads.length >= maxFiles ? 'opacity-50 pointer-events-none' : ''}`}
+    <div className="space-y-3">
+      {/* Dropzone */}
+      <div 
+        {...getRootProps()} 
+        className={`border-2 border-dashed rounded-xl p-6 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-200 ease-in-out
+          ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary/50 hover:scale-[1.01]'}`}
       >
         <input {...getInputProps()} />
-        <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-        <p className="text-sm font-medium text-muted-foreground">
-          {placeholder}
+        <UploadCloud className="w-10 h-10 mb-2 text-gray-400" />
+        <p className="text-sm text-gray-600">
+          {translations.dragDropText}
         </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          {uploadLimitText}
+        <p className="mt-1 text-xs text-gray-500">
+          {translations.photoCount(photoUploads.length, maxPhotos)}
         </p>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
+      {/* Preview of uploaded images */}
       {photoUploads.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {photoUploads.map((file, index) => (
-            <div
-              key={`${file.name}-${index}`}
-              className="relative group aspect-square rounded-md overflow-hidden border shadow-sm"
-            >
+            <div key={index} className="relative group">
               <img
                 src={URL.createObjectURL(file)}
-                alt={`Upload ${index + 1}`}
-                className="w-full h-full object-cover"
+                alt={`Upload preview ${index + 1}`}
+                className="h-24 w-full object-cover rounded-md"
               />
-              <Button
+              <button
                 type="button"
-                variant="destructive"
-                size="icon"
-                className="absolute top-1 right-1 h-6 w-6 opacity-80 group-hover:opacity-100"
-                onClick={() => removePhoto(index)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removePhoto(index);
+                }}
+                className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <X className="h-3 w-3" />
-                <span className="sr-only">Remove</span>
-              </Button>
+                ✕
+              </button>
             </div>
           ))}
         </div>
