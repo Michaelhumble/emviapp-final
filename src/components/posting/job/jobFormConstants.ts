@@ -1,3 +1,4 @@
+
 export const JOB_TEMPLATES = [
   {
     id: 'nail-tech',
@@ -93,11 +94,26 @@ export const JOB_TYPES = {
 // Add empty placeholder structure for Vietnamese polished descriptions
 export const POLISHED_DESCRIPTIONS_VI = {
   nail: {
-    professional: [],
-    friendly: [],
-    luxury: [],
-    casual: [],
-    detailed: [],
+    professional: [
+      "Cần thợ tay chân nước làm liền, khách sang, tip cao, khu Mỹ trắng, có chỗ ở riêng. Lương cao nếu làm giỏi.",
+      "Tiệm đông khách quanh năm, cần thợ bột biết ombré, vẽ đơn giản. Bao lương $1,600/tuần + chỗ ở sạch sẽ."
+    ],
+    friendly: [
+      "Tuyển thợ nữ biết dipping và tay chân nước. Khách Mỹ trắng, tiệm trong mall sang, làm 6 ngày, tip nhiều.",
+      "Cần thợ bột hoặc nước đi làm liền. Chủ dễ chịu, khách quen, lương ổn định, bao ăn ở, không drama."
+    ],
+    luxury: [
+      "Tiệm family khu sang, đang cần gấp 1 thợ giỏi có tâm, tip mỗi tuần $1,800+. Làm vui vẻ, không áp lực.",
+      "Tuyển thợ full set có kinh nghiệm. Giá nails cao, khách Mỹ trắng, làm lâu dài sẽ có thưởng + tăng lương."
+    ],
+    casual: [
+      "Tiệm ở khu Houston, cần 2 thợ tay chân nước, bao lương + tip cao. Ưu tiên thợ biết design đơn giản.",
+      "Tuyển thợ nước làm tại spa decor đẹp, khách dễ thương, bao ăn ở, lương + tip $1,500+/tuần."
+    ],
+    detailed: [
+      "Tiệm không thiếu khách, cần thợ bột biết vẽ đơn giản, có chỗ ở riêng, không chung chủ, làm thoải mái.",
+      "Cần thợ nails đi làm liền – càng giỏi càng tốt. Tiệm khách sang, chủ vui vẻ, làm không stress, có tiền liền!"
+    ],
   },
   hair: {
     professional: [],
