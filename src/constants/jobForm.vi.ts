@@ -1,81 +1,67 @@
 
 export const jobFormVi = {
-  // Section Titles
-  title: "Đăng Tuyển Thợ Làm Đẹp",
-  optionalLabel: "(Không bắt buộc)",
-  requiredLabel: "* Bắt buộc",
-  continue: "Tiếp tục đến phần Giá",
-  submit: "Đăng Tin Tuyển Dụng",
-
-  // Template Dropdown
-  templatePlaceholder: "Chọn mẫu gợi ý (tuỳ chọn)",
-  templates: [
-    "Thợ Nail",
-    "Thợ Tóc",
-    "Kỹ Thuật Viên Spa",
-    "Lễ Tân Tiệm",
-    "Quản Lý Tiệm",
-    "Thợ Massage",
-    "Thợ Nối Mi",
-    "Thợ Xăm",
-    "Thợ Makeup",
-    "Thợ Phun Xăm",
-    "Khác",
-  ],
-
-  // Job Info
-  jobTypeLabel: "Loại Công Việc",
+  title: 'Đăng Công Việc',
+  optionalLabel: '(Không bắt buộc)',
+  requiredLabel: '*',
+  continue: 'Tiếp tục đến Bảng giá',
+  submit: 'Đăng Công Việc',
+  
+  // Template
+  templateLabel: 'Chọn mẫu',
+  templatePlaceholder: 'Chọn mẫu công việc',
+  templates: ['Thợ Nail', 'Thợ Tóc', 'Kỹ thuật viên Spa', 'Lễ tân Salon', 'Khác'],
+  
+  // Job Fields
+  titleLabel: 'Tiêu đề công việc',
+  titlePlaceholder: 'Nhập tiêu đề công việc',
+  
+  locationLabel: 'Địa điểm',
+  locationPlaceholder: 'Nhập địa điểm làm việc',
+  
+  jobTypeLabel: 'Loại công việc',
+  jobTypePlaceholder: 'Chọn loại công việc',
   jobTypeOptions: {
-    fullTime: "Toàn thời gian",
-    partTime: "Bán thời gian",
-    contract: "Theo hợp đồng",
-    freelance: "Làm tự do",
-    other: "Khác",
+    fullTime: 'Toàn thời gian',
+    partTime: 'Bán thời gian',
+    contract: 'Theo hợp đồng',
+    freelance: 'Làm tự do',
+    other: 'Khác'
   },
-  locationLabel: "Địa Chỉ Làm Việc",
-  compensationLabel: "Lương (tuỳ chọn)",
-  compensationPlaceholder: "VD: $25–$35/giờ hoặc 60% hoa hồng",
-
-  // Job Description
-  descriptionLabel: "Mô Tả Công Việc *",
-  descriptionPlaceholder: "Mô tả rõ công việc, yêu cầu, và điểm nổi bật của tiệm...",
-  summaryLabel: "Tiêu Đề Ngắn Gọn (Không bắt buộc)",
-  summaryPlaceholder: "Tiêu đề hấp dẫn để thu hút sự chú ý",
-
-  // Contact Info
-  emailLabel: "Email Liên Hệ *",
-  phoneLabel: "Số Điện Thoại *",
-  phonePlaceholder: "(123) 456-7890",
-
-  // Polish with AI
-  polishWithAI: "Làm Đẹp Mô Tả Bằng AI ✨",
-  loadingPolish: "Đang tạo mô tả đẹp hơn...",
-  polishResultLabel: "Mô Tả Gợi Ý",
-
-  // Boost & Perks
-  perksLabel: "Tiện Ích Của Tiệm (Tăng độ hấp dẫn với thợ)",
-  perks: {
-    flexibleHours: "Giờ giấc linh hoạt",
-    weeklyPay: "Trả lương mỗi tuần",
-    provideLunch: "Có ăn trưa",
-    qualityProducts: "Sản phẩm chất lượng",
-    reviewBonuses: "Thưởng đánh giá tốt",
-    growthOpportunities: "Cơ hội phát triển",
-  },
-
-  // Urgent Badge
-  urgentLabel: "Đánh dấu là ĐANG TUYỂN GẤP",
-  urgentHint: "Sẽ thêm tag 'Tuyển Gấp' để tăng sự chú ý",
-
-  // Upload Section
-  uploadLabel: "Hình Ảnh (Không bắt buộc)",
-  uploadPlaceholder: "Kéo thả hình ảnh hoặc bấm để chọn",
-  uploadLimitText: "0 / 5 hình",
-
-  // Errors
+  
+  descriptionLabel: 'Mô tả công việc',
+  descriptionPlaceholder: 'Nhập mô tả công việc',
+  
+  compensationLabel: 'Lương thưởng',
+  compensationPlaceholder: 'Ví dụ: $20-25/giờ hoặc $50k-60k/năm',
+  
+  // Contact Section
+  contactInfoLabel: 'Thông tin liên hệ',
+  contactInfoEmail: 'Email',
+  contactInfoEmailPlaceholder: 'Nhập email liên hệ',
+  contactInfoPhone: 'Số điện thoại',
+  contactInfoPhonePlaceholder: 'Nhập số điện thoại',
+  
+  // Photo Upload
+  photosLabel: 'Thêm ảnh (Không bắt buộc)',
+  dragDropText: 'Kéo thả hình ảnh hoặc bấm để chọn',
+  photoCountText: '{count} / {max} ảnh được thêm',
+  
+  // Urgent
+  urgentLabel: 'Đánh dấu là khẩn cấp',
+  urgentHelpText: 'Làm nổi bật bài đăng của bạn',
+  
+  // AI Polish
+  aiPolishButton: '✨ Trợ Giúp Từ AI',
+  
+  // Submission
+  submitting: 'Đang gửi...',
+  
+  // Form errors
   errors: {
-    required: "Trường này là bắt buộc.",
-    invalidEmail: "Email không hợp lệ.",
-    invalidPhone: "Số điện thoại không hợp lệ.",
-  },
+    title: 'Tiêu đề là bắt buộc',
+    description: 'Mô tả phải có ít nhất 10 ký tự',
+    location: 'Địa điểm là bắt buộc',
+    email: 'Vui lòng nhập email hợp lệ',
+    phone: 'Vui lòng nhập số điện thoại hợp lệ'
+  }
 };

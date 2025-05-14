@@ -57,10 +57,12 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
         <input {...getInputProps()} />
         <UploadCloud className="w-10 h-10 mb-2 text-gray-400" />
         <p className="text-sm text-gray-600">
-          {translations.dragDropText}
+          {translations?.dragDropText || 'Drag and drop images or click to select'}
         </p>
         <p className="mt-1 text-xs text-gray-500">
-          {translations.photoCount(photoUploads.length, maxPhotos)}
+          {translations?.photoCount 
+            ? translations.photoCount(photoUploads.length, maxPhotos) 
+            : `${photoUploads.length} / ${maxPhotos} photos added`}
         </p>
       </div>
 

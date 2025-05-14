@@ -39,14 +39,14 @@ const PolishedDescriptionsModal = ({
   
   // Get descriptions for the current tab/style
   const getFilteredDescriptions = () => {
-    if (!descriptions || !descriptions.length) return [];
+    if (!descriptions || descriptions.length === 0) return [];
     
     // If we have 10 descriptions, split them into 5 style groups of 2 variations each
     const totalStyles = STYLE_TABS.length;
     const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
     
     const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
-    const startIndex = styleIndex * descriptionsPerStyle;
+    const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
     
     return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
   };

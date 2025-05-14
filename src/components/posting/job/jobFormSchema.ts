@@ -12,7 +12,16 @@ export const jobFormSchema = z.object({
   isUrgent: z.boolean().default(false),
   template: z.string().optional(),
   perks: z.array(z.string()).optional(),
-  summary: z.string().optional()
+  summary: z.string().optional(),
+  
+  // Additional fields from the provided schema
+  shortSummary: z.string().optional(),
+  payWeekly: z.boolean().optional(),
+  provideLunch: z.boolean().optional(),
+  qualityProducts: z.boolean().optional(),
+  reviewBonuses: z.boolean().optional(),
+  flexibleHours: z.boolean().optional(),
+  growthOpportunities: z.boolean().optional()
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
