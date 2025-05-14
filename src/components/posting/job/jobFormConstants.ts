@@ -1,4 +1,3 @@
-
 export const JOB_TEMPLATES = [
   {
     id: 'nail-tech',
@@ -88,5 +87,79 @@ export const JOB_TYPES = {
   other: {
     en: 'Other',
     vi: 'Khác'
+  }
+};
+
+// Add empty placeholder structure for Vietnamese polished descriptions
+export const POLISHED_DESCRIPTIONS_VI = {
+  nail: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  hair: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  massage: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  tattoo: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  spa: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  lash: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  makeup: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  booth: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  manager: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
+  },
+  other: {
+    professional: [],
+    friendly: [],
+    luxury: [],
+    casual: [],
+    detailed: [],
   }
 };
