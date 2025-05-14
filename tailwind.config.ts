@@ -16,6 +16,7 @@ const config: Config = {
       },
       fontFamily: {
         playfair: ["'Playfair Display'", "serif"],
+        inter: ["'Inter'", "sans-serif"],
       },
     },
   },
