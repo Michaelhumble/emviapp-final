@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/hooks/useTranslation';
+import EmviLogo from '@/components/branding/EmviLogo';
 
 const JobPost: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const JobPost: React.FC = () => {
           <h1 className="text-3xl font-serif font-bold">
             {t("Post a New Job", "Đăng tin tuyển dụng mới")}
           </h1>
-          {/* Logo removed */}
+          <EmviLogo size="small" />
         </div>
 
         <Card className="mb-8">
