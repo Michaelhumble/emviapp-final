@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,10 +20,14 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video relative bg-gray-100">
-        <ImageWithFallback
-          src={imageUrl}
+        <img
+          src={imageUrl || "/images/fallback.png"}
           alt={listing.title || "Listing"}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/images/fallback.png";
+          }}
         />
       </div>
       <CardContent className="p-4">

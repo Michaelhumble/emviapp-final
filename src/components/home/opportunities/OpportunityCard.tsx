@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,7 +7,6 @@ import { Job } from '@/types/job';
 import { Badge } from '@/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface OpportunityCardProps {
   listing: Job & { 
@@ -46,10 +46,14 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     >
       <Card className="overflow-hidden h-full flex flex-col">
         <div className="relative aspect-video bg-gray-100">
-          <ImageWithFallback 
-            src={imageUrl} 
+          <img 
+            src={imageUrl || "/images/fallback.png"} 
             alt={listing.title || listing.company || "Beauty opportunity"} 
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/images/fallback.png";
+            }}
           />
           
           <div className="absolute bottom-3 left-3">
