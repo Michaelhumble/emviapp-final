@@ -1,11 +1,10 @@
+
 import { useState } from 'react';
 
 interface PolishedDescriptionsHook {
   polishedDescriptions: string[];
   isLoading: boolean;
-  isLoadingDescriptions: boolean; // Added for compatibility
   fetchPolishedDescriptions: (text: string) => Promise<void>;
-  getPolishedDescriptions: (text: string) => Promise<void>; // Added for compatibility
 }
 
 // Sample polish styles for different tone options
@@ -66,15 +65,10 @@ export const usePolishedDescriptions = (): PolishedDescriptionsHook => {
     }
   };
 
-  // Alias for compatibility
-  const getPolishedDescriptions = fetchPolishedDescriptions;
-
   return {
     polishedDescriptions,
     isLoading,
-    isLoadingDescriptions: isLoading, // Alias for compatibility
     fetchPolishedDescriptions,
-    getPolishedDescriptions
   };
 };
 
