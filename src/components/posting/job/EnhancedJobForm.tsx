@@ -31,11 +31,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       // Process form submission
       onSubmit(values);
       
-      // Show success toast
-      toast({
-        title: "Successfully saved your job details",
-        description: "Please select a pricing plan to publish your job post.",
-      });
+      // Show success toast - this will be shown by the parent component now
+      // so we don't need to duplicate the toast notification
     } catch (error) {
       console.error("Error submitting job form:", error);
       

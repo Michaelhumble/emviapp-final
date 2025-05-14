@@ -10,11 +10,26 @@ export interface JobPostPhotoUploadProps {
   maxPhotos: number;
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+
 const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({ 
   photoUploads, 
   setPhotoUploads,
   maxPhotos = 5 
 }) => {
+  const validateFile = (file: File): { valid: boolean; message?: string } => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      return { valid: false, message: 'File type not supported. Please upload JPG, PNG, or WebP images.' };
+    }
+    
+    if (file.size > MAX_FILE_SIZE) {
+      return { valid: false, message: 'File size exceeds 5MB limit.' };
+    }
+    
+    return { valid: true };
+  };
+
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
@@ -23,6 +38,15 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
       // Limit the number of photos
       if (totalFiles.length > maxPhotos) {
         alert(`You can upload a maximum of ${maxPhotos} photos.`);
+        return;
+      }
+      
+      // Validate each file
+      const invalidFiles = newFiles.filter(file => !validateFile(file).valid);
+      if (invalidFiles.length > 0) {
+        const file = invalidFiles[0];
+        const validation = validateFile(file);
+        alert(validation.message || 'Invalid file');
         return;
       }
       

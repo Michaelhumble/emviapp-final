@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,11 +11,14 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
+import { PolishedDescription } from '@/hooks/usePolishedDescriptions';
 
 interface PolishedDescriptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
   originalDescription: string;
+  descriptions: PolishedDescription[];
+  isLoading: boolean;
   onApply: (description: string) => void;
 }
 
@@ -23,100 +26,91 @@ export const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps>
   isOpen,
   onClose,
   originalDescription,
+  descriptions,
+  isLoading,
   onApply,
 }) => {
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [polishedDescription, setPolishedDescription] = useState('');
+  const [selectedDescription, setSelectedDescription] = useState<string>('');
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
 
-  // Simulate AI enhancement - in a real implementation, this would call an API
-  React.useEffect(() => {
-    if (isOpen && originalDescription && !polishedDescription) {
-      setIsGenerating(true);
-      
-      // Simulate API delay
-      const timer = setTimeout(() => {
-        // This is a placeholder for the actual AI enhancement
-        // In a real implementation, we would call an AI service
-        const enhanced = enhanceDescription(originalDescription);
-        setPolishedDescription(enhanced);
-        setIsGenerating(false);
-      }, 1500);
-      
-      return () => clearTimeout(timer);
+  // Reset selected description on modal open and when new descriptions arrive
+  useEffect(() => {
+    if (descriptions.length > 0 && !selectedStyle) {
+      setSelectedDescription(descriptions[0].text);
+      setSelectedStyle(descriptions[0].style);
     }
-  }, [isOpen, originalDescription, polishedDescription]);
+  }, [descriptions, selectedStyle]);
 
-  // Simple enhancement function - would be replaced by AI service call
-  const enhanceDescription = (description: string): string => {
-    // This is just a simple example enhancement - in reality you'd use an AI service
-    let enhanced = description;
-    
-    // Add some professional touch
-    if (!enhanced.includes("competitive")) {
-      enhanced += "\n\nWe offer competitive compensation and a supportive work environment.";
-    }
-    
-    if (!enhanced.includes("experience")) {
-      enhanced += " The ideal candidate will have relevant experience and excellent customer service skills.";
-    }
-    
-    // Add clear call to action
-    if (!enhanced.includes("apply")) {
-      enhanced += "\n\nApply now to join our team of professionals!";
-    }
-    
-    return enhanced;
+  const handleStyleSelect = (style: string, text: string) => {
+    setSelectedStyle(style);
+    setSelectedDescription(text);
   };
 
   const handleClose = () => {
-    setPolishedDescription('');
+    setSelectedStyle(null);
+    setSelectedDescription('');
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Enhanced Job Description</DialogTitle>
           <DialogDescription>
-            We've polished your job description to make it more appealing to candidates.
+            Choose from AI-enhanced versions of your job description.
           </DialogDescription>
         </DialogHeader>
         
-        <div className="grid gap-4 py-4">
-          {isGenerating ? (
-            <div className="flex flex-col items-center justify-center py-10">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-              <p>Enhancing your description with AI...</p>
-            </div>
-          ) : (
-            <>
-              <div>
-                <h4 className="mb-2 font-medium">Original Text:</h4>
-                <div className="border rounded-md p-3 bg-muted/20 text-muted-foreground">
-                  {originalDescription}
-                </div>
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p>Enhancing your description with AI...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-hidden flex-grow">
+            <div className="md:col-span-1 overflow-y-auto border-r pr-4 space-y-2 max-h-[50vh]">
+              <div className="font-medium text-sm mb-2">Original Text:</div>
+              <div className="border rounded-md p-3 bg-muted/20 text-muted-foreground text-sm mb-4">
+                {originalDescription}
               </div>
               
-              <div>
-                <h4 className="mb-2 font-medium">Enhanced Version:</h4>
-                <Textarea 
-                  value={polishedDescription} 
-                  onChange={(e) => setPolishedDescription(e.target.value)}
-                  className="min-h-32"
-                />
+              <div className="font-medium text-sm mb-2">Style Options:</div>
+              <div className="space-y-1">
+                {descriptions.map((desc) => (
+                  <Button
+                    key={desc.style}
+                    variant={selectedStyle === desc.style ? "default" : "outline"}
+                    size="sm"
+                    className="w-full justify-start text-left font-normal text-sm mb-1"
+                    onClick={() => handleStyleSelect(desc.style, desc.text)}
+                  >
+                    {desc.style}
+                  </Button>
+                ))}
               </div>
-            </>
-          )}
-        </div>
+            </div>
+            
+            <div className="md:col-span-2 overflow-hidden flex flex-col">
+              <div className="font-medium text-sm mb-2">
+                {selectedStyle ? `${selectedStyle} Version:` : 'Enhanced Version:'}
+              </div>
+              <Textarea 
+                value={selectedDescription} 
+                onChange={(e) => setSelectedDescription(e.target.value)}
+                className="min-h-[300px] flex-grow resize-none overflow-y-auto"
+              />
+            </div>
+          </div>
+        )}
         
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
           <Button 
-            onClick={() => onApply(polishedDescription)}
-            disabled={isGenerating}
+            onClick={() => onApply(selectedDescription)}
+            disabled={isLoading || !selectedDescription}
           >
             Apply Changes
           </Button>
@@ -125,3 +119,5 @@ export const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps>
     </Dialog>
   );
 };
+
+export default PolishedDescriptionsModal;
