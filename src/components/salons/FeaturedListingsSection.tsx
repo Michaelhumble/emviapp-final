@@ -4,7 +4,6 @@ import { Star, MapPin, DollarSign } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Job } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface FeaturedListingsSectionProps {
   featuredListings: Job[];
@@ -45,13 +44,12 @@ const FeaturedListingsSection: React.FC<FeaturedListingsSectionProps> = ({
             key={listing.id} 
             className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-purple-100"
           >
-            <div className="h-52 relative">
-              <ImageWithFallback 
-                src={listing.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80'} 
-                alt={listing.title || "Premium Salon"} 
-                className="w-full h-full object-cover"
-                fallbackSrc="/images/fallback.png"
-              />
+            <div 
+              className="h-52 bg-cover bg-center relative" 
+              style={{ 
+                backgroundImage: `url(${listing.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80'})` 
+              }}
+            >
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
                 <Badge className="absolute top-3 right-3 bg-purple-600 text-white border-none font-medium px-2.5">
                   <Star className="h-3.5 w-3.5 mr-1 fill-white" /> Featured

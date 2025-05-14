@@ -17,7 +17,6 @@ interface SalonCardProps {
     willTrain: boolean;
     featured: boolean;
     image?: string;
-    photo?: string;
     images?: string[];
     description?: {
       en: string;
@@ -37,14 +36,9 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
     return { text: "Fair Price", color: "bg-blue-100 text-blue-800" };
   })();
 
-  // Get salon image, prioritizing photo field first
+  // Get salon image, always prioritizing the original image
   const getSalonImage = () => {
-    // First check the photo field, which is our standard
-    if (salon.photo && salon.photo.trim() !== '') {
-      return salon.photo;
-    }
-    
-    // Then check image field
+    // Always use original image if provided (both premium and non-premium listings)
     if (salon.image && salon.image.trim() !== '') {
       return salon.image;
     }
@@ -60,8 +54,8 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
       salon.name
     );
     
-    // Fallback to our global fallback
-    return '/images/fallback.png';
+    // Use category-based fallback
+    return `/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png`;
   };
 
   return (
@@ -73,7 +67,6 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
             alt={salon.name} 
             className="w-full h-full object-cover"
             businessName={salon.name}
-            fallbackSrc="/images/fallback.png"
           />
         </div>
         {salon.featured && (

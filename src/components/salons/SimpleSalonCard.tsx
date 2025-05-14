@@ -20,14 +20,10 @@ interface SimpleSalonCardProps {
 const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Determine appropriate salon image - standardized to check photo field first
+  // Determine appropriate salon image - PRESERVE ORIGINAL IMAGES
   const getSalonImage = () => {
     try {
-      // Always prioritize existing valid images
-      if (salon.photo && typeof salon.photo === 'string' && salon.photo.trim() !== '') {
-        return salon.photo;
-      }
-      
+      // Always prioritize existing valid images - DO NOT OVERWRITE
       if (salon.image && typeof salon.image === 'string' && salon.image.trim() !== '') {
         return salon.image;
       }
@@ -45,7 +41,7 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
       return getDefaultSalonImage(category as any, salon.isPremium || false);
     } catch (error) {
       console.error('Error getting salon image:', error);
-      return '/images/fallback.png';
+      return getDefaultSalonImage('generic' as any);
     }
   };
   
@@ -108,7 +104,8 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
             businessName={salon.name || 'Salon'}
             category={salon.category as any}
-            fallbackSrc="/images/fallback.png"
+            showPremiumBadge={salon.isPremium}
+            priority={true}
           />
         </div>
       </ValidatedLink>

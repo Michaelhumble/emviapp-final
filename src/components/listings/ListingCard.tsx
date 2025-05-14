@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Building, MapPin } from 'lucide-react';
 import { Listing } from '@/types/listing';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface ListingCardProps {
   listing: Listing;
@@ -14,20 +13,13 @@ interface ListingCardProps {
 const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
   const navigate = useNavigate();
 
-  // Standardize image field access
-  const imageUrl = listing.photo || listing.image || listing.imageUrl;
-
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video relative bg-gray-100">
         <img
-          src={imageUrl || "/images/fallback.png"}
-          alt={listing.title || "Listing"}
+          src={listing.image || '/placeholder.svg'}
+          alt={listing.title}
           className="w-full h-full object-cover"
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "/images/fallback.png";
-          }}
         />
       </div>
       <CardContent className="p-4">

@@ -31,3 +31,4 @@ const CustomerDashboardHeader = ({ profile }: CustomerDashboardHeaderProps) => {
 };
 
 export default CustomerDashboardHeader;
+

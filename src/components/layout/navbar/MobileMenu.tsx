@@ -6,7 +6,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { mainNavigation } from "./config/navigationItems";
-import EmviLogo from "@/components/branding/EmviLogo";
 
 // Define the MobileMenuProps interface
 interface MobileMenuProps {
@@ -55,11 +54,6 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
         </SheetTrigger>
         <SheetContent side="right" className="w-[80%] px-6 py-4 rounded-l-xl shadow-lg">
           <div className="flex flex-col gap-6 h-full">
-            {/* Logo at the top of mobile menu */}
-            <div className="flex items-center mb-2">
-              <EmviLogo size="small" />
-            </div>
-            
             {/* Post Job Button */}
             <Button 
               className="w-full rounded-full font-medium flex gap-2 items-center justify-center bg-purple-600 hover:bg-purple-700 text-white py-6"

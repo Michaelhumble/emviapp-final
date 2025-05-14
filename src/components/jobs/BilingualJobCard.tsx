@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,14 +51,11 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   // Check if this is a free or starter tier listing to show contact info without login
   const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
-  // Standardize image access
-  const imageUrl = job.photo || job.image || job.imageUrl;
-
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
         <ImageWithFallback
-          src={imageUrl}
+          src={job.image || ''}
           alt={job.title || 'Job listing'}
           className="w-full h-full object-cover"
         />

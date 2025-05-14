@@ -55,7 +55,7 @@ const HairListingsSection: React.FC = () => {
                         src={imageSrc} 
                         alt={`Luxury Hair Salon ${index + 1}`} 
                         className="w-full h-full object-cover"
-                        fallbackSrc="/images/fallback.png"
+                        category="hair"
                       />
                     </div>
                     
@@ -97,7 +97,7 @@ const HairListingsSection: React.FC = () => {
                           src={imageSrc} 
                           alt={`Luxury Hair Salon ${index + 1}`} 
                           className="w-full h-full object-cover"
-                          fallbackSrc="/images/fallback.png"
+                          category="hair"
                         />
                       </div>
                       

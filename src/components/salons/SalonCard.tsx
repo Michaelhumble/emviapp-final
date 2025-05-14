@@ -1,6 +1,7 @@
 import { ArrowRight, Building, Calendar, MapPin, Star, TrendingUp, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { determineSalonCategory } from "@/utils/salonImageFallbacks";
 
 interface SalonCardProps {
@@ -52,20 +53,36 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
   }
 
   // Get salon image, always prioritizing the original image
-  const salonImage = salon.image || (salon.images && salon.images.length > 0 ? salon.images[0] : '');
+  const getSalonImage = () => {
+    // Always use original image if provided (both premium and non-premium listings)
+    if (salon.image && salon.image.trim() !== '') {
+      return salon.image;
+    }
+    
+    // If we have images array with valid URLs, use the first one
+    if (salon.images && salon.images.length > 0 && salon.images[0].trim() !== '') {
+      return salon.images[0];
+    }
+    
+    // Only if no image exists, use appropriate fallback based on salon type
+    const salonCategory = determineSalonCategory(
+      salon.description?.en || '',
+      salon.name
+    );
+    
+    // Use category-based fallback
+    return `/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png`;
+  };
 
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col">
       <div className="relative">
         <div className="aspect-video bg-gray-100 w-full overflow-hidden">
-          <img 
-            src={salonImage || "/images/fallback.png"} 
+          <ImageWithFallback 
+            src={getSalonImage()} 
             alt={salon.name} 
             className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/images/fallback.png";
-            }}
+            businessName={salon.name}
           />
         </div>
         {salon.featured && (

@@ -30,14 +30,11 @@ const EmviLogo: React.FC<EmviLogoProps> = ({
 
   return (
     <div className={`flex items-center ${className}`}>
-      <div className={`${sizeClasses} relative flex-shrink-0 overflow-hidden`}>
+      <div className={`${sizeClasses} relative`}>
         <img 
-          src="/images/logo/emvi-logo.png" 
-          alt="EmviApp logo" 
-          width={120} 
-          height="auto" 
-          loading="eager" 
-          className="w-full h-full object-contain flex-shrink-0 overflow-hidden"
+          src="/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png" 
+          alt="EmviApp Logo" 
+          className="w-full h-full object-contain"
         />
       </div>
       

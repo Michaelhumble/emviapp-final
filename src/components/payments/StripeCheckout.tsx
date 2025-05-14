@@ -81,8 +81,7 @@ const StripeCheckout = ({
           mode, 
           isSubscription,
           subscriptionInterval,
-          setupOnly,
-          logoUrl: 'https://emvi.app/images/logo/emvi-logo.png' // Updated logo URL for Stripe checkout
+          setupOnly
         }
       });
       

@@ -52,7 +52,7 @@ const MakeupListingsSection: React.FC = () => {
                         src={imageSrc} 
                         alt={`Makeup Studio ${index + 1}`} 
                         className="w-full h-full object-cover"
-                        fallbackSrc="/images/fallback.png"
+                        category="makeup"
                       />
                     </div>
                     
@@ -94,7 +94,7 @@ const MakeupListingsSection: React.FC = () => {
                           src={imageSrc} 
                           alt={`Makeup Studio ${index + 1}`} 
                           className="w-full h-full object-cover"
-                          fallbackSrc="/images/fallback.png"
+                          category="makeup"
                         />
                       </div>
                       
