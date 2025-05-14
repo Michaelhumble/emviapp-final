@@ -35,6 +35,8 @@ const EmviLogo: React.FC<EmviLogoProps> = ({
           src="/images/logo/emvi-logo.png" 
           alt="EmviApp Logo" 
           className="w-full h-full object-contain"
+          width={120} 
+          height="auto"
         />
       </div>
       
