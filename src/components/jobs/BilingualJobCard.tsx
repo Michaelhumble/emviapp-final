@@ -51,13 +51,17 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   // Check if this is a free or starter tier listing to show contact info without login
   const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
+  // Standardize image access
+  const imageUrl = job.image || job.photo;
+
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
         <ImageWithFallback
-          src={job.image || ''}
+          src={imageUrl || ''}
           alt={job.title || 'Job listing'}
           className="w-full h-full object-cover"
+          fallbackSrc="/images/fallback.png"
         />
         {job.is_featured && (
           <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">

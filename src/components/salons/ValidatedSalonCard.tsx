@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,13 +23,16 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
     return 'Unnamed Salon';
   };
 
-  // Get the image URL depending on salon type - ENHANCED to prioritize existing images
+  // Get the image URL depending on salon type - standardized to use photo or image
   const getImageUrl = () => {
     // Always prioritize existing valid images - NEVER overwrite them
-    if ('image' in salon && salon.image && salon.image.includes('lovable-uploads')) 
+    if ('image' in salon && salon.image) 
       return salon.image;
       
-    if ('imageUrl' in salon && salon.imageUrl && salon.imageUrl.includes('lovable-uploads')) 
+    if ('photo' in salon && salon.photo) 
+      return salon.photo;
+      
+    if ('imageUrl' in salon && salon.imageUrl) 
       return salon.imageUrl;
     
     // If no valid image exists, determine category and get appropriate image
@@ -108,8 +112,7 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
             businessName={name}
             category={category}
-            showPremiumBadge={'isPremium' in salon ? !!salon.isPremium : false}
-            priority={true}
+            fallbackSrc="/images/fallback.png"
           />
           
           {features && features.length > 0 && (

@@ -13,12 +13,19 @@ interface ListingCardProps {
 const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
   const navigate = useNavigate();
 
+  // Standardize image field access
+  const imageUrl = listing.image || listing.photo || '/images/fallback.png';
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video relative bg-gray-100">
         <img
-          src={listing.image || '/placeholder.svg'}
-          alt={listing.title}
+          src={imageUrl}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = '/images/fallback.png';
+          }}
+          alt={listing.title || "Listing"}
           className="w-full h-full object-cover"
         />
       </div>

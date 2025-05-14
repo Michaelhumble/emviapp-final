@@ -33,6 +33,9 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
+  // Standardize image field
+  const imageUrl = listing.photo || listing.image;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -44,18 +47,13 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     >
       <Card className="overflow-hidden h-full flex flex-col">
         <div className="relative aspect-video bg-gray-100">
-          {listing.image ? (
-            <ImageWithFallback 
-              src={listing.image} 
-              alt={listing.title || listing.company || "Beauty opportunity"} 
-              className="w-full h-full object-cover"
-              businessName={listing.title || listing.company}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-              <span className="text-gray-400 text-xl">No Image</span>
-            </div>
-          )}
+          <ImageWithFallback 
+            src={imageUrl} 
+            alt={listing.title || listing.company || "Beauty opportunity"} 
+            className="w-full h-full object-cover"
+            businessName={listing.title || listing.company}
+            fallbackSrc="/images/fallback.png"
+          />
           
           <div className="absolute bottom-3 left-3">
             <Badge className="bg-white text-black hover:bg-white rounded-full border border-amber-300">

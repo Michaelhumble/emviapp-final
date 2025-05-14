@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,7 @@ const transformJobData = (job: any): Job => {
     location: job.location || '',
     created_at: job.posted || new Date().toISOString(), 
     description: job.description || '',
-    image: job.image || '',
+    image: job.image || job.photo || '',
     price: job.price || '',
     status: 'active',
     // Add other required fields with safe defaults
@@ -62,6 +63,7 @@ export default function HiringSalonsShowcase() {
                   alt={job.title || 'Salon job opportunity'}
                   className="w-full h-full object-cover"
                   businessName={job.company || 'Nail Salon'}
+                  fallbackSrc="/images/fallback.png"
                 />
               </div>
               <CardContent className="p-5">
