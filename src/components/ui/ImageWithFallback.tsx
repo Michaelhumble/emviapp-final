@@ -1,42 +1,38 @@
 
 import React, { useState } from 'react';
 
-interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  fallbackSrc?: string;
+interface ImageWithFallbackProps {
+  src?: string;
+  alt: string;
+  className?: string;
   businessName?: string;
-  category?: string;
   priority?: boolean;
-  showPremiumBadge?: boolean;
 }
 
-const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({ 
+const ImageWithFallback = ({ 
   src, 
   alt, 
-  fallbackSrc = '/images/fallback.png',
+  className = '', 
   businessName,
-  category,
-  priority,
-  showPremiumBadge,
-  ...props 
-}) => {
-  const [imgSrc, setImgSrc] = useState(src);
+  priority = false,
+}: ImageWithFallbackProps) => {
+  const [error, setError] = useState(false);
 
-  const handleError = () => {
-    if (imgSrc !== fallbackSrc) {
-      setImgSrc(fallbackSrc);
-    }
-  };
+  // Get the most appropriate image source
+  const imageSource = error ? '/images/fallback.png' : (src || '/images/fallback.png');
 
   return (
     <img
-      {...props}
-      src={imgSrc || fallbackSrc}
-      alt={alt || (businessName ? `${businessName} image` : 'Listing image')}
-      onError={handleError}
+      src={imageSource}
+      alt={alt}
+      className={className}
+      loading={priority ? "eager" : "lazy"}
+      onError={(e) => {
+        e.currentTarget.onerror = null;
+        setError(true);
+      }}
     />
   );
 };
 
-export { ImageWithFallback };
 export default ImageWithFallback;
-export type { ImageWithFallbackProps };

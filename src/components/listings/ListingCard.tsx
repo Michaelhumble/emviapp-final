@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,7 +14,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
   const navigate = useNavigate();
 
   // Standardize image field access
-  const imageUrl = listing.image || listing.photo || '/images/fallback.png';
+  const imageUrl = listing.photo || listing.image || listing.imageUrl;
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -24,7 +23,6 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
           src={imageUrl}
           alt={listing.title || "Listing"}
           className="w-full h-full object-cover"
-          fallbackSrc="/images/fallback.png"
         />
       </div>
       <CardContent className="p-4">

@@ -1,4 +1,3 @@
-
 export type ListingType = 'salon' | 'job' | 'opportunity';
 
 export type ListingFeature = 
@@ -10,15 +9,16 @@ export type ListingFeature =
   | 'high_traffic';
 
 export interface Listing {
-  id: string;
-  type: ListingType;
+  id: string | number;
   title: string;
+  description?: string;
   location: string;
   price: number;
+  photo?: string;
+  image?: string;
+  imageUrl?: string;
   features: ListingFeature[];
   tags: string[];
-  image?: string;
-  description?: string;
   contact?: {
     name?: string;
     email?: string;

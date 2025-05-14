@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -33,8 +32,8 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
-  // Standardize image field
-  const imageUrl = listing.image || listing.photo;
+  // Standardize image field access
+  const imageUrl = listing.photo || listing.image || listing.imageUrl;
 
   return (
     <motion.div
@@ -51,8 +50,6 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
             src={imageUrl} 
             alt={listing.title || listing.company || "Beauty opportunity"} 
             className="w-full h-full object-cover"
-            businessName={listing.title || listing.company}
-            fallbackSrc="/images/fallback.png"
           />
           
           <div className="absolute bottom-3 left-3">

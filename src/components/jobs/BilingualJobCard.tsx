@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,16 +51,15 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
   // Standardize image access
-  const imageUrl = job.image || job.photo;
+  const imageUrl = job.photo || job.image || job.imageUrl;
 
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
         <ImageWithFallback
-          src={imageUrl || ''}
+          src={imageUrl}
           alt={job.title || 'Job listing'}
           className="w-full h-full object-cover"
-          fallbackSrc="/images/fallback.png"
         />
         {job.is_featured && (
           <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
