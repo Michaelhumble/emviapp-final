@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ const STYLE_TABS = [
 interface PolishedDescriptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  descriptions: Array<{ title: string; description: string }>;
+  descriptions: string[];
   onSelect: (description: string) => void;
   isLoading: boolean;
 }
@@ -40,15 +41,7 @@ const PolishedDescriptionsModal = ({
   const getFilteredDescriptions = () => {
     if (!descriptions || descriptions.length === 0) return [];
     
-    // First, check if our descriptions have titles that match the current style
-    const styleDescriptions = descriptions.filter(desc => 
-      desc.title.toLowerCase().includes(STYLE_TABS.find(tab => tab.value === selectedTab)?.label.toLowerCase() || '')
-    );
-    
-    // If we found matching descriptions by title, return them
-    if (styleDescriptions.length > 0) return styleDescriptions;
-    
-    // Otherwise, use the original logic of splitting up the array
+    // If we have 10 descriptions, split them into 5 style groups of 2 variations each
     const totalStyles = STYLE_TABS.length;
     const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
     
@@ -67,7 +60,6 @@ const PolishedDescriptionsModal = ({
   const handleUseDescription = () => {
     if (selectedDescription) {
       onSelect(selectedDescription);
-      onClose();
     }
   };
 
@@ -106,16 +98,13 @@ const PolishedDescriptionsModal = ({
                         <div 
                           key={index}
                           className={`p-4 border rounded-md cursor-pointer transition-colors ${
-                            selectedDescription === description.description 
+                            selectedDescription === description 
                               ? 'border-primary/70 bg-primary/5 shadow-sm' 
                               : 'hover:border-primary/40'
                           }`}
-                          onClick={() => handleSelectDescription(description.description)}
+                          onClick={() => handleSelectDescription(description)}
                         >
-                          <div className="mb-2">
-                            <h4 className="font-medium">{description.title}</h4>
-                          </div>
-                          <p className="whitespace-pre-wrap text-sm">{description.description}</p>
+                          <p className="whitespace-pre-wrap">{description}</p>
                         </div>
                       ))
                     ) : (
