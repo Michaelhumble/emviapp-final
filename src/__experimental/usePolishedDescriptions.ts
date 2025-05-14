@@ -1,65 +1,94 @@
-// This file is kept for reference but is no longer in use
-// The active implementation has been moved to src/hooks/usePolishedDescriptions.ts
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { POLISHED_DESCRIPTIONS } from '@/components/posting/job/jobFormConstants';
 
-interface PolishedDescription {
-  style: string;
-  text: string;
-}
+export type PolishedDescriptionsProps = {
+  initialContent?: string;
+  jobType?: string;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSelect: (description: string) => void;
+};
 
-export const usePolishedDescriptions = (description: string) => {
+/**
+ * Hook to handle polished job descriptions
+ */
+export const usePolishedDescriptions = ({
+  initialContent = '',
+  jobType = '',
+  isOpen,
+  onOpenChange,
+  onSelect,
+}: PolishedDescriptionsProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [polishedVersions, setPolishedVersions] = useState<PolishedDescription[]>([]);
-  
-  // Generate 10 polished descriptions from a base description
-  const generatePolishedDescriptions = async (): Promise<PolishedDescription[]> => {
-    if (!description || description.trim().length < 10) {
-      setError('Please provide a longer description to polish');
-      return [];
-    }
+  const [descriptions, setDescriptions] = useState<string[]>([]);
+  const { isVietnamese } = useTranslation();
 
+  const generateDescriptions = async () => {
     setIsLoading(true);
-    setError(null);
-
+    
     try {
-      // Mock implementation
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // For now, we'll use our predefined descriptions
+      // In a real implementation, this would call an API
       
-      const versions = [
-        {
-          style: "Friendly & Warm",
-          text: `We're so excited to welcome a new talent to our friendly team! ${description} We're like a family here, and we can't wait to meet you!`
-        },
-        {
-          style: "Professional & Sharp",
-          text: `We're seeking an exceptional professional to join our established team. ${description} Qualified candidates will receive competitive compensation and opportunities for growth.`
-        },
-        // Other styles would be here
-      ];
+      const templateKey = jobType ? jobType.toLowerCase().replace(/\s+/g, '-') : 'nail-technician';
       
-      setPolishedVersions(versions);
-      return versions;
-    } catch (err) {
-      setError('Failed to generate polished descriptions. Please try again.');
-      return [];
+      // Generate an array of descriptions for each style
+      const generatedDescriptions: string[] = [];
+      
+      // Add descriptions for each style (professional, friendly, luxury, casual, detailed)
+      if (isVietnamese) {
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.professionalVi[templateKey as keyof typeof POLISHED_DESCRIPTIONS.professionalVi] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.friendlyVi[templateKey as keyof typeof POLISHED_DESCRIPTIONS.friendlyVi] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.luxuryVi[templateKey as keyof typeof POLISHED_DESCRIPTIONS.luxuryVi] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.casualVi[templateKey as keyof typeof POLISHED_DESCRIPTIONS.casualVi] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.detailedVi[templateKey as keyof typeof POLISHED_DESCRIPTIONS.detailedVi] || '');
+      } else {
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.professional[templateKey as keyof typeof POLISHED_DESCRIPTIONS.professional] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.friendly[templateKey as keyof typeof POLISHED_DESCRIPTIONS.friendly] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.luxury[templateKey as keyof typeof POLISHED_DESCRIPTIONS.luxury] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.casual[templateKey as keyof typeof POLISHED_DESCRIPTIONS.casual] || '');
+        generatedDescriptions.push(POLISHED_DESCRIPTIONS.detailed[templateKey as keyof typeof POLISHED_DESCRIPTIONS.detailed] || '');
+      }
+      
+      // Filter out any empty descriptions
+      const filteredDescriptions = generatedDescriptions.filter(desc => desc.length > 0);
+      
+      setDescriptions(filteredDescriptions.length > 0 ? filteredDescriptions : [
+        isVietnamese 
+          ? "Tiệm nail đang tuyển thợ có kinh nghiệm làm móng tay, móng chân, đắp bột và sơn gel. Môi trường làm việc thoải mái, lương cao, tip hậu, khách đông."
+          : "We are looking for experienced nail technicians to join our team. Must be skilled in manicures, pedicures, gel polish, and acrylic application. Competitive pay and great working environment."
+      ]);
+      
+      // In a real implementation, you would use the API response here
+    } catch (error) {
+      console.error('Error generating descriptions:', error);
+      
+      // Fallback descriptions in case of error
+      setDescriptions([
+        isVietnamese 
+          ? "Tiệm nail đang tuyển thợ có kinh nghiệm làm móng tay, móng chân, đắp bột và sơn gel. Môi trường làm việc thoải mái, lương cao, tip hậu, khách đông."
+          : "We are looking for experienced nail technicians to join our team. Must be skilled in manicures, pedicures, gel polish, and acrylic application. Competitive pay and great working environment."
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Memoize the function to prevent unnecessary re-renders
-  const polishDescription = useMemo(() => {
-    return {
-      generatePolishedDescriptions,
-      polishedVersions,
-      isLoading,
-      error
-    };
-  }, [description, isLoading, error, polishedVersions]);
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      generateDescriptions();
+    }
+    onOpenChange(open);
+  };
 
-  return polishDescription;
+  return {
+    descriptions,
+    isLoading,
+    isOpen,
+    handleOpenChange,
+    onSelect,
+    selectedTemplate: jobType ? jobType.toLowerCase().replace(/\s+/g, '-') : 'nail-technician'
+  };
 };
-
-export default usePolishedDescriptions;

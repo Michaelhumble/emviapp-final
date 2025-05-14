@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -8,6 +7,7 @@ import { Loader2, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
+import { POLISHED_DESCRIPTIONS } from './jobFormConstants';
 
 const STYLE_TABS = [
   { value: "professional", label: "Professional", labelVi: "Chuyên nghiệp" },
@@ -23,6 +23,7 @@ interface PolishedDescriptionsModalProps {
   descriptions: string[];
   onSelect: (description: string) => void;
   isLoading: boolean;
+  selectedTemplate?: string;
 }
 
 const PolishedDescriptionsModal = ({
@@ -30,25 +31,50 @@ const PolishedDescriptionsModal = ({
   onClose,
   descriptions,
   onSelect,
-  isLoading
+  isLoading,
+  selectedTemplate = "nail-technician"
 }: PolishedDescriptionsModalProps) => {
   const { isVietnamese } = useTranslation();
   const t = isVietnamese ? jobFormVi : jobFormEn;
   const [selectedTab, setSelectedTab] = useState("professional");
   const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
   
-  // Get descriptions for the current tab/style
+  // Get template-based descriptions for the current tab/style
   const getFilteredDescriptions = () => {
-    if (!descriptions || descriptions.length === 0) return [];
+    if (isLoading || !selectedTemplate) {
+      return [];
+    }
     
-    // If we have 10 descriptions, split them into 5 style groups of 2 variations each
-    const totalStyles = STYLE_TABS.length;
-    const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
+    // If we have AI-generated descriptions from the API, use those
+    if (descriptions && descriptions.length > 0) {
+      // If we have 10 descriptions (2 per style), split them into 5 style groups of 2 variations each
+      const totalStyles = STYLE_TABS.length;
+      const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
+      
+      const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
+      const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
+      
+      return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
+    }
     
-    const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
-    const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
-    
-    return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
+    // Otherwise, fall back to pre-defined templates based on job type and language
+    const templateKey = selectedTemplate || 'nail-technician';
+    if (isVietnamese) {
+      // Get Vietnamese templates for the selected style
+      const styleKey = `${selectedTab}Vi` as keyof typeof POLISHED_DESCRIPTIONS;
+      const templateDescriptions = POLISHED_DESCRIPTIONS[styleKey];
+      
+      return templateDescriptions && templateDescriptions[templateKey] 
+        ? [templateDescriptions[templateKey]] 
+        : [POLISHED_DESCRIPTIONS.professionalVi['nail-technician']]; // Fallback
+    } else {
+      // Get English templates for the selected style
+      const templateDescriptions = POLISHED_DESCRIPTIONS[selectedTab as keyof typeof POLISHED_DESCRIPTIONS];
+      
+      return templateDescriptions && templateDescriptions[templateKey]
+        ? [templateDescriptions[templateKey]]
+        : [POLISHED_DESCRIPTIONS.professional['nail-technician']]; // Fallback
+    }
   };
 
   const filteredDescriptions = getFilteredDescriptions();
@@ -60,8 +86,14 @@ const PolishedDescriptionsModal = ({
   const handleUseDescription = () => {
     if (selectedDescription) {
       onSelect(selectedDescription);
+      onClose();
     }
   };
+
+  // Reset selected description when tab changes
+  useEffect(() => {
+    setSelectedDescription(null);
+  }, [selectedTab]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
