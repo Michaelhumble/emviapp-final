@@ -1,29 +1,29 @@
-
-import React, { useState, useCallback } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { JobPostPhotoUpload } from './JobPostPhotoUpload';
+import { JOB_TEMPLATES, JOB_TYPES } from './jobFormConstants';
+import { jobFormSchema, JobFormValues } from './jobFormSchema';
+import PolishedDescriptionsModal from './PolishedDescriptionsModal';
+import { Sparkles } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
-import JobPostPhotoUpload from './JobPostPhotoUpload';
-import { JOB_TEMPLATES, JOB_TYPES } from './jobFormConstants';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
-import PolishedDescriptionsModal from './PolishedDescriptionsModal';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  isSubmitting: boolean;
+  isSubmitting?: boolean;
   defaultValues?: Partial<JobFormValues>;
 }
 
@@ -31,315 +31,322 @@ const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
   photoUploads,
   setPhotoUploads,
-  isSubmitting,
+  isSubmitting = false,
   defaultValues = {}
 }) => {
-  const { isVietnamese } = useTranslation();
-  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const { isVietnamese, t } = useTranslation();
+  const formText = isVietnamese ? jobFormVi : jobFormEn;
   
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const { 
-    polishedDescriptions, 
-    isLoading: isPolishing, 
-    fetchPolishedDescriptions 
-  } = usePolishedDescriptions();
+  const [showPolishModal, setShowPolishModal] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState('');
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      location: '',
-      type: '',
-      compensation: '',
-      contactEmail: '',
-      contactPhone: '',
-      isUrgent: false,
-      template: '',
-      ...defaultValues
-    }
+      title: defaultValues.title || '',
+      location: defaultValues.location || '',
+      type: defaultValues.type || '',
+      description: defaultValues.description || '',
+      contactEmail: defaultValues.contactEmail || '',
+      contactPhone: defaultValues.contactPhone || '',
+    },
+    mode: "onChange"
   });
-  
-  const { watch, setValue, getValues } = form;
-  const description = watch('description');
 
-  const handlePolishClick = () => {
-    const currentDescription = getValues('description');
-    if (currentDescription && currentDescription.trim().length > 0) {
-      fetchPolishedDescriptions(currentDescription);
-      setIsAIModalOpen(true);
-    } else {
-      // Handle empty description - could show a toast notification here
-      console.log('Please add a description first');
-    }
-  };
+  const { watch } = form;
+  const descriptionValue = watch("description");
 
-  const handleSelectDescription = (selectedDescription: string) => {
-    if (selectedDescription) {
-      setValue('description', selectedDescription, { shouldValidate: true });
-    }
-    setIsAIModalOpen(false);
-  };
-
-  const handleTemplateChange = (templateId: string) => {
-    if (!templateId) return;
-    
-    const selectedTemplate = JOB_TEMPLATES.find(template => template.id === templateId);
-    
+  useEffect(() => {
     if (selectedTemplate) {
-      setValue('title', selectedTemplate.title || '', { shouldValidate: true });
-      setValue('description', selectedTemplate.description || '', { shouldValidate: true });
-      setValue('type', selectedTemplate.type || '', { shouldValidate: true });
+      const template = JOB_TEMPLATES.find(t => t.id === selectedTemplate);
+      if (template) {
+        form.setValue('title', template.title);
+        form.setValue('type', template.type);
+        form.setValue('description', template.description);
+      }
     }
+  }, [selectedTemplate, form]);
+
+  const handleSubmit = (values: JobFormValues) => {
+    onSubmit(values);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Template Selection */}
-        <FormField
-          control={form.control}
-          name="template"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.templateLabel || 'Choose a Template'}</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  handleTemplateChange(value);
-                }}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t.templatePlaceholder} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {JOB_TEMPLATES.map(template => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <Card className="bg-white shadow-md rounded-lg">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="template"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{formText.templateLabel}</FormLabel>
+                    <Select onValueChange={(value) => {
+                      field.onChange(value);
+                      setSelectedTemplate(value);
+                    }}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={formText.templatePlaceholder} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {JOB_TEMPLATES.map((template) => (
+                          <SelectItem key={template.id} value={template.id}>{template.title}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      {isVietnamese
+                        ? "Chọn mẫu công việc giúp bạn điền nhanh hơn"
+                        : "Choose a job template to fill the form faster"}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-white shadow-md rounded-lg">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {formText.titleLabel}
+                      <span className="text-red-500">{formText.requiredLabel}</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder={formText.titlePlaceholder} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Job Title */}
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.titleLabel || 'Job Title'} *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t.titlePlaceholder || 'Enter job title'} 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {formText.locationLabel}
+                      <span className="text-red-500">{formText.requiredLabel}</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder={formText.locationPlaceholder} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Location */}
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.locationLabel || 'Location'} *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t.locationPlaceholder || 'Enter job location'} 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{formText.jobTypeLabel}</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={formText.jobTypePlaceholder} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.entries(JOB_TYPES).map(([key, value]) => (
+                          <SelectItem key={key} value={key}>{isVietnamese ? value.vi : value.en}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Job Type */}
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.jobTypeLabel || 'Job Type'}</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t.jobTypePlaceholder || 'Select job type'} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="fullTime">{t.jobTypeOptions?.fullTime || JOB_TYPES.fullTime.en}</SelectItem>
-                  <SelectItem value="partTime">{t.jobTypeOptions?.partTime || JOB_TYPES.partTime.en}</SelectItem>
-                  <SelectItem value="contract">{t.jobTypeOptions?.contract || JOB_TYPES.contract.en}</SelectItem>
-                  <SelectItem value="freelance">{t.jobTypeOptions?.freelance || JOB_TYPES.freelance.en}</SelectItem>
-                  <SelectItem value="other">{t.jobTypeOptions?.other || JOB_TYPES.other.en}</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {formText.descriptionLabel}
+                      <span className="text-red-500">{formText.requiredLabel}</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={formText.descriptionPlaceholder}
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {isVietnamese
+                        ? `Tối thiểu 10 ký tự. Còn ${Math.max(0, 500 - (descriptionValue?.length || 0))} ký tự`
+                        : `Minimum 10 characters. ${Math.max(0, 500 - (descriptionValue?.length || 0))} characters remaining`}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex items-center justify-between mb-2">
-                <FormLabel>{t.descriptionLabel || 'Job Description'} *</FormLabel>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePolishClick}
-                  className="flex items-center gap-1 text-xs"
-                >
-                  <Sparkles className="h-3 w-3" />
-                  {isVietnamese ? '✨ Trợ Giúp Từ AI' : 'Polish with AI ✨'}
-                </Button>
-              </div>
-              <FormControl>
-                <Textarea
-                  placeholder={t.descriptionPlaceholder || 'Enter job description'}
-                  className="min-h-32"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="compensation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{formText.compensationLabel}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={formText.compensationPlaceholder} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-white shadow-md rounded-lg">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold">{formText.contactInfoLabel}</h4>
 
-        {/* Compensation */}
-        <FormField
-          control={form.control}
-          name="compensation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.compensationLabel || 'Compensation'}</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t.compensationPlaceholder || 'E.g., $20-25/hr or $50k-60k/year'} 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="contactEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{formText.contactInfoEmail}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={formText.contactInfoEmailPlaceholder} type="email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Contact Information Section */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">{t.contactInfoLabel || 'Contact Information'}</h3>
-          
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="contactEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.contactInfoEmail || 'Email'} *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder={t.contactInfoEmailPlaceholder || 'Enter contact email'} 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Phone */}
-          <FormField
-            control={form.control}
-            name="contactPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.contactInfoPhone || 'Phone Number'} *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="tel" 
-                    placeholder={t.contactInfoPhonePlaceholder || 'Enter contact phone number'} 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="contactPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{formText.contactInfoPhone}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={formText.contactInfoPhonePlaceholder} type="tel" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-white shadow-md rounded-lg">
+          <CardContent className="p-6">
+            <JobPostPhotoUpload
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+            />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-white shadow-md rounded-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <FormField
+                control={form.control}
+                name="urgent"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <div className="space-y-0">
+                      <FormLabel>{formText.urgentLabel}</FormLabel>
+                      <FormDescription>
+                        {formText.urgentHelpText}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* AI Polish button and modal */}
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setShowPolishModal(true)}
+            disabled={isSubmitting || !form.getValues('description')}
+          >
+            {formText.aiPolishButton}
+            <Sparkles className="w-4 h-4 ml-2" />
+          </Button>
         </div>
 
-        {/* Photo Upload Section */}
-        <div className="space-y-2">
-          <FormLabel>{t.photosLabel || 'Add Photos'}</FormLabel>
-          <JobPostPhotoUpload 
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            translations={{
-              dragDropText: t.dragDropText || 'Drag and drop images or click to select',
-              photoCount: (count: number, max: number) => 
-                t.photoCountText ? 
-                  t.photoCountText.replace('{count}', count.toString()).replace('{max}', max.toString()) : 
-                  `${count} / ${max} photos added`
-            }}
-          />
-        </div>
-
-        {/* Is Urgent Checkbox */}
-        <FormField
-          control={form.control}
-          name="isUrgent"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  {t.urgentLabel || 'Mark as Urgent'}
-                  <span className="ml-2 text-sm text-muted-foreground">({t.urgentHelpText || 'Highlights your post'})</span>
-                </FormLabel>
-              </div>
-            </FormItem>
-          )}
+        <PolishedDescriptionsModal
+          show={showPolishModal}
+          onClose={() => setShowPolishModal(false)}
+          description={form.getValues('description') || ''}
+          form={form}
         />
-
-        {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t.submitting || 'Submitting...'}
-            </>
-          ) : (
-            t.continue || 'Continue to Pricing'
-          )}
+        
+        {/* Submit button */}
+        <Button disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {formText.continue}
         </Button>
+        
+        {/* 🔒 YES LADDER SECTION – Visual Trust + Emotional Support */}
+        {isVietnamese && (
+          <Card className="bg-white shadow-xl rounded-2xl p-6 border border-gray-200 mt-6">
+            <h3 className="text-xl font-semibold mb-4">🌟 Sẵn sàng tìm thợ giỏi chưa?</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Checkbox checked disabled id="yes-1" />
+                <label htmlFor="yes-1" className="text-sm">Tôi muốn tuyển người làm liền, không đợi lâu.</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox checked disabled id="yes-2" />
+                <label htmlFor="yes-2" className="text-sm">Tôi muốn tiệm được thấy đầu trang để nhiều người apply.</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox checked disabled id="yes-3" />
+                <label htmlFor="yes-3" className="text-sm">Tôi muốn nhận tip cao và khách sang mỗi ngày.</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox checked disabled id="yes-4" />
+                <label htmlFor="yes-4" className="text-sm">Tôi muốn có hình đẹp, bài viết ấn tượng để tuyển thợ giỏi.</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox checked disabled id="yes-5" />
+                <label htmlFor="yes-5" className="text-sm">Tôi sẵn sàng đầu tư để tiệm phát triển lâu dài.</label>
+              </div>
+            </div>
+            <div className="mt-4 text-center">
+              <Button type="button" className="bg-rose-600 text-white rounded-full px-6 py-3 text-lg shadow-md hover:bg-rose-700">
+                👉 Xem các gói đăng bài nổi bật
+              </Button>
+            </div>
+          </Card>
+        )}
       </form>
-      
-      {/* AI Polish Modal */}
-      <PolishedDescriptionsModal
-        isOpen={isAIModalOpen}
-        onClose={() => setIsAIModalOpen(false)}
-        descriptions={polishedDescriptions || []}
-        onSelect={handleSelectDescription}
-        isLoading={isPolishing}
-      />
     </Form>
   );
 };
