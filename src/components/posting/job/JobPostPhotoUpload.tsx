@@ -3,13 +3,13 @@ import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { UploadCloud } from 'lucide-react';
 
-interface JobPostPhotoUploadProps {
+export interface JobPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
   maxPhotos?: number;
   translations?: {
     dragDropText: string;
-    photoCountText: (count: number, max: number) => string;
+    photoCountText: string | ((count: number, max: number) => string);
   } | {
     dragDropText?: string;
     photoCountText?: string;

@@ -1,15 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Check, Sparkles, Globe } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { POLISHED_DESCRIPTIONS_EN, POLISHED_DESCRIPTIONS_VI, POLISH_UI_TRANSLATIONS } from './jobFormConstants';
 import { getLanguagePreference } from '@/utils/languagePreference';
 
-interface PolishedDescriptionsModalProps {
+export interface PolishedDescriptionsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectDescription: (description: string) => void;
