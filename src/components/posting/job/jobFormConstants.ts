@@ -1,99 +1,45 @@
 
+// This file contains constants used by the job form components
+
+import { JobFormValues } from "./jobFormSchema";
+
+// Job templates for quick selection
 export const JOB_TEMPLATES = [
   {
-    id: 'nail-tech',
-    title: 'Nail Technician',
-    type: 'fullTime',
-    description: 'Looking for an experienced Nail Technician to join our busy salon. Must be skilled in manicures, pedicures, acrylics, and gel. Full-time position with competitive pay and tips.'
+    id: "nail-technician",
+    title: "Nail Technician",
+    type: "Full Time",
+    description: "We are looking for an experienced Nail Technician to join our team. The ideal candidate has strong skills in manicures, pedicures, and nail enhancements. You should be professional, detail-oriented, and enjoy creating a great experience for our clients."
   },
   {
-    id: 'hair-stylist',
-    title: 'Hair Stylist',
-    type: 'fullTime',
-    description: 'Seeking a professional Hair Stylist with at least 2 years of experience. Skills in cutting, coloring, and styling required. Join our friendly team in a modern salon with loyal clientele.'
+    id: "hair-stylist",
+    title: "Hair Stylist",
+    type: "Full Time",
+    description: "Experienced Hair Stylist wanted for a busy salon. Must be skilled in cutting, coloring, and styling for diverse clientele. The right candidate will have excellent customer service skills and the ability to build a loyal client base."
   },
   {
-    id: 'spa-tech',
-    title: 'Spa Technician',
-    type: 'fullTime',
-    description: 'Now hiring a Spa Technician with experience in facials, waxing, and body treatments. Must have excellent customer service skills and knowledge of skincare products.'
+    id: "receptionist",
+    title: "Salon Receptionist",
+    type: "Part Time",
+    description: "We're seeking a friendly, organized Salon Receptionist to manage our front desk operations. Responsibilities include greeting clients, scheduling appointments, answering phones, and processing payments. Must have excellent communication skills and a professional demeanor."
   },
   {
-    id: 'receptionist',
-    title: 'Salon Receptionist',
-    type: 'partTime',
-    description: 'Looking for a friendly, organized Receptionist to handle bookings, answer calls, and greet clients. Experience with salon software preferred. Part-time position available weekends.'
+    id: "esthetician",
+    title: "Esthetician",
+    type: "Full Time",
+    description: "Join our spa team as an Esthetician providing facial treatments, body treatments, and waxing services. The ideal candidate will have a valid license, experience with various skin types, and knowledge of skincare products and techniques."
   },
   {
-    id: 'manager',
-    title: 'Salon Manager',
-    type: 'fullTime',
-    description: 'Experienced Salon Manager needed to oversee daily operations, staff management, and client relations. Must have previous salon management experience and excellent leadership skills.'
-  },
-  {
-    id: 'massage',
-    title: 'Massage Therapist',
-    type: 'contract',
-    description: 'Licensed Massage Therapist needed for upscale spa. Must be skilled in various massage techniques including deep tissue, hot stone, and relaxation. Flexible hours available.'
-  },
-  {
-    id: 'lash',
-    title: 'Lash Technician',
-    type: 'fullTime',
-    description: 'Certified Lash Technician wanted for busy beauty salon. Experience with classic and volume lash extensions required. Build your clientele with our marketing support.'
-  },
-  {
-    id: 'tattoo',
-    title: 'Tattoo Artist',
-    type: 'fullTime',
-    description: 'Professional Tattoo Artist wanted for established studio. Must have strong portfolio showing versatility in styles. Health certifications required. Commission-based position.'
-  },
-  {
-    id: 'makeup',
-    title: 'Makeup Artist',
-    type: 'freelance',
-    description: 'Freelance Makeup Artist needed for bridal and special events. Experience with diverse skin tones and photography makeup a plus. Weekend availability essential.'
-  },
-  {
-    id: 'booth-rental',
-    title: 'Booth Rental Available',
-    type: 'other',
-    description: 'Premium booth space available for rent in busy salon. Great location with high foot traffic. Perfect for established beauty professionals looking for a new space. All utilities included.'
-  },
-  {
-    id: 'other',
-    title: 'Other Beauty Professional',
-    type: 'fullTime',
-    description: 'Seeking a skilled beauty professional to join our team. Please specify your expertise and experience when applying.'
+    id: "massage-therapist",
+    title: "Massage Therapist",
+    type: "Part Time",
+    description: "Licensed Massage Therapist needed for our growing spa. Must be proficient in various massage modalities including Swedish, deep tissue, and hot stone. Strong communication skills and ability to customize treatments to client needs required."
   }
 ];
 
-export const JOB_TYPES = {
-  fullTime: {
-    en: 'Full Time',
-    vi: 'Toàn thời gian'
-  },
-  partTime: {
-    en: 'Part Time',
-    vi: 'Bán thời gian'
-  },
-  contract: {
-    en: 'Contract',
-    vi: 'Theo hợp đồng'
-  },
-  freelance: {
-    en: 'Freelance',
-    vi: 'Làm tự do'
-  },
-  other: {
-    en: 'Other',
-    vi: 'Khác'
-  }
-};
-
-// Add empty placeholder structure for Vietnamese polished descriptions
+// Polish descriptions for Vietnamese language 
 export const POLISHED_DESCRIPTIONS_VI = {
-  nail: {
+  nails: {
     professional: [
       "Cần thợ nails giỏi gấp! Tiệm khu Mỹ trắng, tip cao, khách sang. Lương hấp dẫn, bao ăn ở. Làm là mê ngay!",
       "Tuyển gấp thợ bột + chân tay nước. Tiệm đông khách, chủ dễ thương, khách đều quanh năm. Lương rõ ràng, không áp lực!"
@@ -120,62 +66,27 @@ export const POLISHED_DESCRIPTIONS_VI = {
     friendly: [],
     luxury: [],
     casual: [],
-    detailed: [],
-  },
-  massage: {
-    professional: [],
-    friendly: [],
-    luxury: [],
-    casual: [],
-    detailed: [],
-  },
-  tattoo: {
-    professional: [],
-    friendly: [],
-    luxury: [],
-    casual: [],
-    detailed: [],
+    detailed: []
   },
   spa: {
     professional: [],
     friendly: [],
     luxury: [],
     casual: [],
-    detailed: [],
+    detailed: []
   },
-  lash: {
+  barber: {
     professional: [],
     friendly: [],
     luxury: [],
     casual: [],
-    detailed: [],
+    detailed: []
   },
   makeup: {
     professional: [],
     friendly: [],
     luxury: [],
     casual: [],
-    detailed: [],
-  },
-  booth: {
-    professional: [],
-    friendly: [],
-    luxury: [],
-    casual: [],
-    detailed: [],
-  },
-  manager: {
-    professional: [],
-    friendly: [],
-    luxury: [],
-    casual: [],
-    detailed: [],
-  },
-  other: {
-    professional: [],
-    friendly: [],
-    luxury: [],
-    casual: [],
-    detailed: [],
+    detailed: []
   }
 };
