@@ -9,6 +9,7 @@ export interface PolishedDescription {
 export const usePolishedDescriptions = (description: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [polishedVersions, setPolishedVersions] = useState<PolishedDescription[]>([]);
   
   // Generate 10 polished descriptions from a base description
   const generatePolishedDescriptions = async (): Promise<PolishedDescription[]> => {
@@ -26,7 +27,7 @@ export const usePolishedDescriptions = (description: string) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Mock response with various styles
-      return [
+      const versions = [
         {
           style: "Friendly & Warm",
           text: `We're so excited to welcome a new talent to our friendly team! ${description} We're like a family here, and we can't wait to meet you!`
@@ -68,6 +69,9 @@ export const usePolishedDescriptions = (description: string) => {
           text: `Ready to achieve your career dreams? ${description} We believe in your potential and will help you reach new heights.`
         }
       ];
+      
+      setPolishedVersions(versions);
+      return versions;
     } catch (err) {
       setError('Failed to generate polished descriptions. Please try again.');
       return [];
@@ -80,10 +84,11 @@ export const usePolishedDescriptions = (description: string) => {
   const polishDescription = useMemo(() => {
     return {
       generatePolishedDescriptions,
+      polishedVersions,
       isLoading,
       error
     };
-  }, [description, isLoading, error]);
+  }, [description, isLoading, error, polishedVersions]);
 
   return polishDescription;
 };

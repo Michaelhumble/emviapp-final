@@ -19,6 +19,13 @@ export const jobFormSchema = z.object({
   growthOpportunity: z.boolean().default(false),
   reviewBonuses: z.boolean().default(false),
   images: z.array(z.string()).optional(),
+  // Additional fields needed by the form UI
+  employment_type: z.string().optional(),
+  compensation_type: z.string().optional(),
+  compensation_details: z.string().optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
+
+// Export these to be used in the form
+export { JOB_TYPES, JOB_TEMPLATES } from './jobFormConstants';
