@@ -1,6 +1,4 @@
 
-import { JobTemplateOption } from "./types";
-
 export const JOB_TYPES = [
   { value: "full_time", label: "Full-Time" },
   { value: "part_time", label: "Part-Time" },
@@ -12,7 +10,7 @@ export const JOB_TYPES = [
   { value: "internship", label: "Internship" },
 ];
 
-export const JOB_TEMPLATES: JobTemplateOption[] = [
+export const JOB_TEMPLATES = [
   {
     id: "nail_salon",
     label: "Nail Salon Hiring",
