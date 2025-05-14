@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Loader2, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
+import { POLISHED_DESCRIPTIONS_VI } from './jobFormConstants';
 
 const STYLE_TABS = [
   { value: "professional", label: "Professional" },
@@ -41,7 +41,12 @@ const PolishedDescriptionsModal = ({
   const getFilteredDescriptions = () => {
     if (!descriptions || descriptions.length === 0) return [];
     
-    // If we have 10 descriptions, split them into 5 style groups of 2 variations each
+    // If we're using Vietnamese and have nail descriptions available
+    if (isVietnamese && POLISHED_DESCRIPTIONS_VI.nail && POLISHED_DESCRIPTIONS_VI.nail[selectedTab]) {
+      return POLISHED_DESCRIPTIONS_VI.nail[selectedTab];
+    }
+    
+    // Otherwise use the standard descriptions as before
     const totalStyles = STYLE_TABS.length;
     const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
     
