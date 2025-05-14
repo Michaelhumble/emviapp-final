@@ -1,23 +1,24 @@
 
-import React, { useState, useCallback } from 'react';
-import { z } from 'zod';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Sparkles } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { jobFormEn } from '@/constants/jobForm.en';
-import { jobFormVi } from '@/constants/jobForm.vi';
-import JobPostPhotoUpload from './JobPostPhotoUpload';
-import { JOB_TEMPLATES, JOB_TYPES } from './jobFormConstants';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
+import { jobFormSchema, JobFormValues } from './jobFormSchema';
+import { JOB_TEMPLATES } from './jobFormConstants';
+import { useToast } from '@/hooks/use-toast';
+import { Switch } from '@/components/ui/switch';
+import { Sparkles } from 'lucide-react';
 import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
 import PolishedDescriptionsModal from './PolishedDescriptionsModal';
+import { useTranslation } from '@/hooks/useTranslation';
+import JobPostPhotoUpload from './JobPostPhotoUpload';
+import { jobFormEn } from '@/constants/jobForm.en';
+import { jobFormVi } from '@/constants/jobForm.vi';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -34,16 +35,11 @@ const JobForm: React.FC<JobFormProps> = ({
   isSubmitting,
   defaultValues = {}
 }) => {
-  const { isVietnamese } = useTranslation();
-  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const { toast } = useToast();
+  const { isVietnamese, t } = useTranslation();
+  const formText = isVietnamese ? jobFormVi : jobFormEn;
+  const [isPolishModalOpen, setIsPolishModalOpen] = useState(false);
   
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const { 
-    polishedDescriptions, 
-    isLoading: isPolishing, 
-    fetchPolishedDescriptions 
-  } = usePolishedDescriptions();
-
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
@@ -55,181 +51,122 @@ const JobForm: React.FC<JobFormProps> = ({
       contactEmail: '',
       contactPhone: '',
       isUrgent: false,
-      template: '',
       ...defaultValues
-    }
+    },
   });
-  
-  const { watch, setValue, getValues } = form;
-  const description = watch('description');
 
-  const handlePolishClick = () => {
-    const currentDescription = getValues('description');
-    if (currentDescription && currentDescription.trim().length > 0) {
-      fetchPolishedDescriptions(currentDescription);
-      setIsAIModalOpen(true);
-    } else {
-      // Handle empty description - could show a toast notification here
-      console.log('Please add a description first');
-    }
+  const handleSubmit = (values: JobFormValues) => {
+    onSubmit(values);
   };
 
-  const handleSelectDescription = (selectedDescription: string) => {
-    if (selectedDescription) {
-      setValue('description', selectedDescription, { shouldValidate: true });
-    }
-    setIsAIModalOpen(false);
-  };
-
-  const handleTemplateChange = (templateId: string) => {
-    if (!templateId) return;
-    
-    const selectedTemplate = JOB_TEMPLATES.find(template => template.id === templateId);
-    
-    if (selectedTemplate) {
-      setValue('title', selectedTemplate.title || '', { shouldValidate: true });
-      setValue('description', selectedTemplate.description || '', { shouldValidate: true });
-      setValue('type', selectedTemplate.type || '', { shouldValidate: true });
-    }
+  const addPolishedDescription = (description: string) => {
+    form.setValue('description', description);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         {/* Template Selection */}
         <FormField
           control={form.control}
           name="template"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.templateLabel || 'Choose a Template'}</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  handleTemplateChange(value);
-                }}
-                value={field.value}
-              >
+              <FormLabel>{formText.templateLabel}</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={t.templatePlaceholder} />
+                    <SelectValue placeholder={formText.templatePlaceholder} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {JOB_TEMPLATES.map(template => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.title}
+                  {formText.templates.map((template, index) => (
+                    <SelectItem key={index} value={JOB_TEMPLATES[index]?.id || `template-${index}`}>
+                      {template}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           )}
         />
-
-        {/* Job Title */}
+        
+        {/* Job Details */}
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.titleLabel || 'Job Title'} *</FormLabel>
+              <FormLabel>{formText.titleLabel} {formText.requiredLabel}</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder={t.titlePlaceholder || 'Enter job title'} 
-                  {...field} 
-                />
+                <Input placeholder={formText.titlePlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {/* Location */}
+        
         <FormField
           control={form.control}
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.locationLabel || 'Location'} *</FormLabel>
+              <FormLabel>{formText.locationLabel} {formText.requiredLabel}</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder={t.locationPlaceholder || 'Enter job location'} 
-                  {...field} 
-                />
+                <Input placeholder={formText.locationPlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {/* Job Type */}
+        
         <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.jobTypeLabel || 'Job Type'}</FormLabel>
+              <FormLabel>{formText.jobTypeLabel}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={t.jobTypePlaceholder || 'Select job type'} />
+                    <SelectValue placeholder={formText.jobTypePlaceholder} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="fullTime">{t.jobTypeOptions?.fullTime || JOB_TYPES.fullTime.en}</SelectItem>
-                  <SelectItem value="partTime">{t.jobTypeOptions?.partTime || JOB_TYPES.partTime.en}</SelectItem>
-                  <SelectItem value="contract">{t.jobTypeOptions?.contract || JOB_TYPES.contract.en}</SelectItem>
-                  <SelectItem value="freelance">{t.jobTypeOptions?.freelance || JOB_TYPES.freelance.en}</SelectItem>
-                  <SelectItem value="other">{t.jobTypeOptions?.other || JOB_TYPES.other.en}</SelectItem>
+                  <SelectItem value="fullTime">{formText.jobTypeOptions.fullTime}</SelectItem>
+                  <SelectItem value="partTime">{formText.jobTypeOptions.partTime}</SelectItem>
+                  <SelectItem value="contract">{formText.jobTypeOptions.contract}</SelectItem>
+                  <SelectItem value="freelance">{formText.jobTypeOptions.freelance}</SelectItem>
+                  <SelectItem value="other">{formText.jobTypeOptions.other}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {/* Description */}
+        
         <FormField
           control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
-              <div className="flex items-center justify-between mb-2">
-                <FormLabel>{t.descriptionLabel || 'Job Description'} *</FormLabel>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePolishClick}
-                  className="flex items-center gap-1 text-xs"
+              <div className="flex justify-between items-center">
+                <FormLabel>{formText.descriptionLabel} {formText.requiredLabel}</FormLabel>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsPolishModalOpen(true)}
+                  className="text-sm flex items-center gap-1 h-auto py-1"
                 >
-                  <Sparkles className="h-3 w-3" />
-                  {isVietnamese ? '✨ Trợ Giúp Từ AI' : 'Polish with AI ✨'}
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  {formText.aiPolishButton}
                 </Button>
               </div>
               <FormControl>
-                <Textarea
-                  placeholder={t.descriptionPlaceholder || 'Enter job description'}
-                  className="min-h-32"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Compensation */}
-        <FormField
-          control={form.control}
-          name="compensation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.compensationLabel || 'Compensation'}</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t.compensationPlaceholder || 'E.g., $20-25/hr or $50k-60k/year'} 
+                <Textarea 
+                  placeholder={formText.descriptionPlaceholder} 
+                  rows={6} 
                   {...field} 
                 />
               </FormControl>
@@ -237,108 +174,103 @@ const JobForm: React.FC<JobFormProps> = ({
             </FormItem>
           )}
         />
-
-        {/* Contact Information Section */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">{t.contactInfoLabel || 'Contact Information'}</h3>
-          
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="contactEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.contactInfoEmail || 'Email'} *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder={t.contactInfoEmailPlaceholder || 'Enter contact email'} 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Phone */}
-          <FormField
-            control={form.control}
-            name="contactPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.contactInfoPhone || 'Phone Number'} *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="tel" 
-                    placeholder={t.contactInfoPhonePlaceholder || 'Enter contact phone number'} 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        {/* Photo Upload Section */}
-        <div className="space-y-2">
-          <FormLabel>{t.photosLabel || 'Add Photos'}</FormLabel>
-          <JobPostPhotoUpload 
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            translations={{
-              dragDropText: t.dragDropText || 'Drag and drop images or click to select',
-              photoCount: (count: number, max: number) => 
-                t.photoCountText ? 
-                  t.photoCountText.replace('{count}', count.toString()).replace('{max}', max.toString()) : 
-                  `${count} / ${max} photos added`
-            }}
-          />
-        </div>
-
-        {/* Is Urgent Checkbox */}
+        
         <FormField
           control={form.control}
-          name="isUrgent"
+          name="compensation"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormItem>
+              <FormLabel>{formText.compensationLabel} {formText.optionalLabel}</FormLabel>
               <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Input placeholder={formText.compensationPlaceholder} {...field} />
               </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  {t.urgentLabel || 'Mark as Urgent'}
-                  <span className="ml-2 text-sm text-muted-foreground">({t.urgentHelpText || 'Highlights your post'})</span>
-                </FormLabel>
-              </div>
+              <FormMessage />
             </FormItem>
           )}
         />
-
+        
+        {/* Contact Information */}
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-medium mb-4">{formText.contactInfoLabel}</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="contactEmail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{formText.contactInfoEmail} {formText.requiredLabel}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={formText.contactInfoEmailPlaceholder} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="contactPhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{formText.contactInfoPhone} {formText.requiredLabel}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={formText.contactInfoPhonePlaceholder} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        
+        {/* Photo Upload Section */}
+        <div className="border-t pt-6">
+          <FormLabel className="block mb-4">{formText.photosLabel}</FormLabel>
+          <JobPostPhotoUpload
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            dragDropText={formText.dragDropText}
+            photoCountText={formText.photoCountText}
+          />
+        </div>
+        
+        {/* Urgent Toggle */}
+        <div className="border-t pt-6">
+          <FormField
+            control={form.control}
+            name="isUrgent"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base">{formText.urgentLabel}</FormLabel>
+                  <div className="text-sm text-muted-foreground">
+                    {formText.urgentHelpText}
+                  </div>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+        
         {/* Submit Button */}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t.submitting || 'Submitting...'}
-            </>
-          ) : (
-            t.continue || 'Continue to Pricing'
-          )}
+          {isSubmitting ? formText.submitting : formText.continue}
         </Button>
       </form>
-      
-      {/* AI Polish Modal */}
+
+      {/* Polish Descriptions Modal */}
       <PolishedDescriptionsModal
-        isOpen={isAIModalOpen}
-        onClose={() => setIsAIModalOpen(false)}
-        descriptions={polishedDescriptions || []}
-        onSelect={handleSelectDescription}
-        isLoading={isPolishing}
+        open={isPolishModalOpen}
+        onOpenChange={setIsPolishModalOpen}
+        onSelectDescription={addPolishedDescription}
+        jobType={form.watch('template') || form.watch('title') || ''}
       />
     </Form>
   );
