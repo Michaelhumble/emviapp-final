@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, X, Loader2, Info } from "lucide-react";
@@ -9,9 +8,14 @@ import { v4 as uuidv4 } from 'uuid';
 interface JobPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  maxPhotos?: number; // Make this optional with a default value
 }
 
-export const JobPostPhotoUpload = ({ photoUploads, setPhotoUploads }: JobPostPhotoUploadProps) => {
+export const JobPostPhotoUpload = ({ 
+  photoUploads, 
+  setPhotoUploads, 
+  maxPhotos = 6  // Default to 6 photos max if not specified
+}: JobPostPhotoUploadProps) => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   
@@ -20,11 +24,21 @@ export const JobPostPhotoUpload = ({ photoUploads, setPhotoUploads }: JobPostPho
     if (!files || files.length === 0) return;
     
     const newFiles = Array.from(files);
-    setPhotoUploads(prev => [...prev, ...newFiles]);
+    // Check if adding these files would exceed the maximum
+    if (photoUploads.length + newFiles.length > maxPhotos) {
+      alert(`You can only upload a maximum of ${maxPhotos} photos.`);
+      // Only add files up to the maximum
+      const availableSlots = maxPhotos - photoUploads.length;
+      if (availableSlots <= 0) return;
+      
+      setPhotoUploads(prev => [...prev, ...newFiles.slice(0, availableSlots)]);
+    } else {
+      setPhotoUploads(prev => [...prev, ...newFiles]);
+    }
     
     // Reset the input value to allow selecting the same file again
     event.target.value = '';
-  }, [setPhotoUploads]);
+  }, [photoUploads, setPhotoUploads, maxPhotos]);
 
   const removePhoto = useCallback((index: number) => {
     setPhotoUploads(prev => prev.filter((_, i) => i !== index));
@@ -71,7 +85,7 @@ export const JobPostPhotoUpload = ({ photoUploads, setPhotoUploads }: JobPostPho
     <div className="space-y-6">
       <h2 className="text-2xl font-playfair font-medium">Job Photos</h2>
       <p className="text-gray-600">
-        Upload high-quality photos for your job post. Photos significantly increase application rates.
+        Upload high-quality photos for your job post (maximum {maxPhotos}). Photos significantly increase application rates.
       </p>
 
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">

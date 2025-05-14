@@ -1,6 +1,7 @@
 
 import { z } from "zod";
 
+// Define the job form schema
 export const jobFormSchema = z.object({
   template: z.string().optional(),
   title: z.string().min(2, { message: "Job title is required" }),
@@ -19,13 +20,10 @@ export const jobFormSchema = z.object({
   growthOpportunity: z.boolean().default(false),
   reviewBonuses: z.boolean().default(false),
   images: z.array(z.string()).optional(),
-  // Additional fields needed by the form UI
+  // Optional fields for form handling
   employment_type: z.string().optional(),
   compensation_type: z.string().optional(),
   compensation_details: z.string().optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
-
-// Export these to be used in the form
-export { JOB_TYPES, JOB_TEMPLATES } from './jobFormConstants';
