@@ -1,143 +1,91 @@
 
-// This is the original problematic hook that's been moved to the experimental folder
-// for debugging later without affecting the main application
-import { useState } from 'react';
-import { POLISH_THEMES } from '@/components/posting/job/jobFormSchema';
-import { Briefcase, Heart, Zap, Diamond, FileText, TrendingUp, Clock, Crown, ArrowRight } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
-// Placeholder for actual API call to AI service
-const generatePolishedDescriptions = async (originalDescription: string): Promise<Array<{theme: string, description: string}>> => {
-  // In a real implementation, this would call an AI service API
-  // For now, we'll generate placeholder variations based on the original text
-  
-  const themes = POLISH_THEMES.map(theme => theme.id);
-  
-  // Simple text transformations to simulate AI variations
-  return themes.map(theme => {
-    let polished = originalDescription;
-    
-    switch(theme) {
-      case 'professional':
-        polished = `${originalDescription}\n\nQualifications and requirements:\n• Proven experience in the field\n• Strong attention to detail\n• Excellent customer service skills\n• Ability to work in a team environment`;
-        break;
-      case 'warm':
-        polished = `We're not just looking for an employee - we're looking for a new member of our family!\n\n${originalDescription}\n\nOur team is supportive, friendly, and we celebrate each other's successes. We can't wait to welcome you!`;
-        break;
-      case 'energetic':
-        polished = `READY TO CRUSH IT? 🚀\n\n${originalDescription}\n\nThis is a FAST-PACED opportunity for a MOTIVATED professional who wants to MAXIMIZE their potential and EARN what they're worth!`;
-        break;
-      case 'luxury':
-        polished = `Join our distinguished team of elite professionals.\n\n${originalDescription}\n\nWe offer an exclusive environment that cultivates excellence and provides premium services to a discerning clientele.`;
-        break;
-      case 'concise':
-        // Just take the first paragraph and condense
-        polished = originalDescription.split('\n')[0] + '\n\nKey points:\n• Experience required\n• Competitive pay\n• Flexible schedule\n• Great team';
-        break;
-      case 'growth':
-        polished = `${originalDescription}\n\nThis position offers significant growth potential. We invest in our team through ongoing education, mentorship, and clear paths for advancement. Join us to build your skills and career.`;
-        break;
-      case 'flexible':
-        polished = `Work-life balance matters here.\n\n${originalDescription}\n\nWe offer flexible scheduling, a relaxed atmosphere, and understand that your life outside work is important too.`;
-        break;
-      case 'boss':
-        polished = `Looking for a LEADER, not just an employee.\n\n${originalDescription}\n\nThis role is for professionals who take ownership, make decisions confidently, and inspire others. Show us your leadership potential.`;
-        break;
-      case 'artistic':
-        polished = `Express your creativity and artistic vision with us!\n\n${originalDescription}\n\nWe encourage innovation, unique perspectives, and the freedom to develop your signature style while delighting clients.`;
-        break;
-      case 'direct':
-        // Extract main points only
-        polished = `THE OPPORTUNITY:\n\n• ${originalDescription.split('\n').filter(line => line.trim() !== '').join('\n• ')}\n\nInterested? Apply now.`;
-        break;
-      default:
-        break;
-    }
-    
-    return {
-      theme: theme,
-      description: polished
-    };
-  });
-};
+interface PolishedDescription {
+  style: string;
+  text: string;
+}
 
-export const usePolishedDescriptions = () => {
+export const usePolishedDescriptions = (description: string) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [polishedVersions, setPolishedVersions] = useState<Array<{
-    theme: string;
-    icon: JSX.Element;
-    description: string;
-  }>>([]);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Generate 10 polished descriptions from a base description
+  const generatePolishedDescriptions = async () => {
+    if (!description || description.trim().length < 10) {
+      setError('Please provide a longer description to polish');
+      return [];
+    }
 
-  const generateVersions = async (originalDescription: string) => {
     setIsLoading(true);
+    setError(null);
+
     try {
-      const versions = await generatePolishedDescriptions(originalDescription);
+      // In a real implementation, this would call an API
+      // For now we'll simulate the API call with a delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Map the icon components to each theme
-      const versionsWithIcons = versions.map(v => {
-        const theme = POLISH_THEMES.find(t => t.id === v.theme);
-        let icon;
-        
-        // Map theme to icon component
-        switch (v.theme) {
-          case 'professional':
-            icon = <Briefcase className="h-4 w-4" />;
-            break;
-          case 'warm':
-            icon = <Heart className="h-4 w-4 text-pink-500" />;
-            break;
-          case 'energetic':
-            icon = <Zap className="h-4 w-4 text-yellow-500" />;
-            break;
-          case 'luxury':
-            icon = <Diamond className="h-4 w-4 text-purple-500" />;
-            break;
-          case 'concise':
-            icon = <FileText className="h-4 w-4 text-blue-500" />;
-            break;
-          case 'growth':
-            icon = <TrendingUp className="h-4 w-4 text-green-500" />;
-            break;
-          case 'flexible':
-            icon = <Clock className="h-4 w-4 text-teal-500" />;
-            break;
-          case 'boss':
-            icon = <Crown className="h-4 w-4 text-amber-500" />;
-            break;
-          case 'artistic':
-            icon = <Diamond className="h-4 w-4 text-rose-500" />;
-            break;
-          case 'direct':
-            icon = <ArrowRight className="h-4 w-4 text-gray-500" />;
-            break;
-          default:
-            icon = <Briefcase className="h-4 w-4" />;
+      // Mock response with various styles
+      return [
+        {
+          style: "Friendly & Warm",
+          text: `We're so excited to welcome a new talent to our friendly team! ${description} We're like a family here, and we can't wait to meet you!`
+        },
+        {
+          style: "Professional & Sharp",
+          text: `We're seeking an exceptional professional to join our established team. ${description} Qualified candidates will receive competitive compensation and opportunities for growth.`
+        },
+        {
+          style: "Short & Direct",
+          text: `Now hiring. ${description} Apply today. Immediate start available.`
+        },
+        {
+          style: "Empathetic & Heartfelt",
+          text: `We understand finding the right workplace matters. ${description} We value your unique talents and will support your journey with us.`
+        },
+        {
+          style: "High-Energy",
+          text: `Ready to LEVEL UP your career?! ${description} Join our AMAZING team and transform your future TODAY!!`
+        },
+        {
+          style: "Creative & Artistic",
+          text: `Seeking artistic souls to add color to our canvas. ${description} Express yourself through your work in our inspiring space.`
+        },
+        {
+          style: "Smart & Modern",
+          text: `Join an innovative team embracing modern techniques. ${description} We leverage technology and data-driven approaches to stay ahead.`
+        },
+        {
+          style: "Recruiting-Focused",
+          text: `Top talent wanted for immediate position. ${description} Excellent career trajectory for the right candidate.`
+        },
+        {
+          style: "Local & Down-to-Earth",
+          text: `Local beauty business seeking new team member. ${description} We serve our community with pride and personal attention.`
+        },
+        {
+          style: "Inspired & Motivational",
+          text: `Ready to achieve your career dreams? ${description} We believe in your potential and will help you reach new heights.`
         }
-        
-        return {
-          theme: theme ? theme.label : v.theme,
-          icon: icon,
-          description: v.description
-        };
-      });
-      
-      setPolishedVersions(versionsWithIcons);
-    } catch (error) {
-      console.error("Error generating descriptions:", error);
-      // Provide fallback versions if API fails
-      setPolishedVersions([{
-        theme: 'Professional',
-        icon: <Briefcase className="h-4 w-4" />,
-        description: originalDescription
-      }]);
+      ];
+    } catch (err) {
+      setError('Failed to generate polished descriptions. Please try again.');
+      return [];
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    isLoading,
-    polishedVersions,
-    generateVersions
-  };
+  // Memoize the function to prevent unnecessary re-renders
+  const polishDescription = useMemo(() => {
+    return {
+      generatePolishedDescriptions,
+      isLoading,
+      error
+    };
+  }, [description, isLoading, error]);
+
+  return polishDescription;
 };
+
+export default usePolishedDescriptions;

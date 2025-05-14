@@ -1,43 +1,54 @@
 
-import { useState } from 'react';
-import { Briefcase } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
-export const usePolishedDescriptions = () => {
+interface PolishedDescription {
+  style: string;
+  text: string;
+}
+
+// This is a simplified version of the hook that just returns one polished description
+export const usePolishedDescriptions = (description: string) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [polishedVersions, setPolishedVersions] = useState<Array<{
-    theme: string;
-    icon: JSX.Element;
-    description: string;
-  }>>([]);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Generate a single polished description from the base description
+  const generatePolishedDescription = async () => {
+    if (!description || description.trim().length < 10) {
+      setError('Please provide a longer description to polish');
+      return null;
+    }
 
-  // Simplified version that just returns a single polished version
-  const generateVersions = async (originalDescription: string) => {
     setIsLoading(true);
+    setError(null);
+
     try {
-      // Generate a single enhanced version for now
-      const enhancedDescription = `${originalDescription}\n\n• Experience required\n• Competitive pay\n• Flexible schedule\n• Great team environment`;
+      // In a real implementation, this would call an API
+      // For now we'll simulate the API call with a delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Return a single version with the enhanced description
-      setPolishedVersions([{
-        theme: 'Professional',
-        icon: <Briefcase className="h-4 w-4" />,
-        description: enhancedDescription
-      }]);
-    } catch (error) {
-      console.error("Error generating description:", error);
-      setPolishedVersions([{
-        theme: 'Professional',
-        icon: <Briefcase className="h-4 w-4" />,
-        description: originalDescription
-      }]);
+      // Return a single polished description
+      return {
+        style: "Professional & Friendly",
+        text: `We're excited to welcome a new talent to join our team! ${description} We offer a supportive environment with opportunities for growth.`
+      };
+    } catch (err) {
+      setError('Failed to generate polished description. Please try again.');
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    isLoading,
-    polishedVersions,
-    generateVersions
-  };
+  // Memoize the function to prevent unnecessary re-renders
+  const polishDescription = useMemo(() => {
+    return {
+      generatePolishedDescription,
+      isLoading,
+      error
+    };
+  }, [description, isLoading, error]);
+
+  return polishDescription;
 };
+
+export default usePolishedDescriptions;
