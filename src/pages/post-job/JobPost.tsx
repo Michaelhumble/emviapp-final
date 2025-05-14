@@ -43,6 +43,16 @@ const JobPost: React.FC = () => {
     }
   };
 
+  // Add default empty values to prevent the build error
+  const defaultValues: Partial<JobFormValues> = {
+    title: '',
+    location: '',
+    type: '',
+    description: '',
+    contactEmail: '',
+    contactPhone: ''
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -57,6 +67,7 @@ const JobPost: React.FC = () => {
               photoUploads={photoUploads}
               setPhotoUploads={setPhotoUploads}
               isSubmitting={isSubmitting}
+              defaultValues={defaultValues}
             />
           </AuthPostGuard>
         </div>

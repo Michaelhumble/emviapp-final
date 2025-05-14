@@ -17,7 +17,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   photoUploads, 
   setPhotoUploads, 
   isSubmitting = false,
-  defaultValues
+  defaultValues = {}
 }) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<JobFormValues | null>(null);
