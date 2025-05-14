@@ -99,3 +99,5 @@ export const usePolishedDescriptions = () => {
     error
   };
 };
+
+export default usePolishedDescriptions;
