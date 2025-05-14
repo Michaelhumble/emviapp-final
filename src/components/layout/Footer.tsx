@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import EmviLogo from "@/components/branding/EmviLogo";
 
 const Footer = () => {
   return (
@@ -8,14 +9,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-1">
-            <div className="mb-4">
-              <img 
-                src="/images/logo/emvi-logo.png" 
-                alt="EmviApp logo" 
-                width={120} 
-                height="auto" 
-              />
-            </div>
+            <EmviLogo size="large" />
             <p className="text-gray-600 mt-4">
               The first platform purpose-built for the beauty industry with embedded AI intelligence.
             </p>
