@@ -4,7 +4,7 @@ import { z } from "zod";
 // Define the job form schema
 export const jobFormSchema = z.object({
   template: z.string().optional(),
-  title: z.string().min(2, { message: "Job title is required" }),
+  title: z.string().optional(),
   type: z.string().min(1, { message: "Job type is required" }),
   location: z.string().min(2, { message: "Location is required" }),
   compensation: z.string().optional(),

@@ -7,13 +7,19 @@ import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Container } from '@/components/ui/container';
 import { Layout } from '@/components/layout';
 import AuthPostGuard from '@/components/posting/AuthPostGuard';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import JobForm from '@/components/posting/job/JobForm';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
+import { jobFormEn } from '@/constants/jobForm.en';
+import { jobFormVi } from '@/constants/jobForm.vi';
 
 const JobPost: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { userProfile } = useAuth();
+  const { isVietnamese } = useTranslation();
+  const t = isVietnamese ? jobFormVi : jobFormEn;
+  
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -21,8 +27,29 @@ const JobPost: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      // Upload all photos to Supabase, if any
+      const imageUrls: string[] = [];
+      
+      if (photoUploads.length > 0) {
+        // This would be handled by JobPostPhotoUpload's uploadToBucket function in production
+        // For now, we'll just use the file names as placeholders
+        imageUrls.push(...photoUploads.map(file => URL.createObjectURL(file)));
+        
+        // In production, you would:
+        // for (const file of photoUploads) {
+        //   const url = await uploadToBucket(file);
+        //   imageUrls.push(url);
+        // }
+      }
+      
+      // Add image URLs to form data
+      const formData = {
+        ...values,
+        images: imageUrls
+      };
+      
       // Store the form data in session storage for the pricing page
-      sessionStorage.setItem('jobFormData', JSON.stringify(values));
+      sessionStorage.setItem('jobFormData', JSON.stringify(formData));
       
       toast({
         title: "Success",
@@ -46,28 +73,25 @@ const JobPost: React.FC = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Post a Job | EmviApp</title>
+        <title>{t.title} | EmviApp</title>
       </Helmet>
       <Container className="py-8">
-        <h1 className="text-3xl font-playfair mb-8">Post a Job</h1>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <AuthPostGuard>
-            <EnhancedJobForm
-              onSubmit={handleSubmit}
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              isSubmitting={isSubmitting}
-              defaultValues={{
-                title: '',
-                location: '',
-                type: '',
-                description: '',
-                contactEmail: userProfile?.email || '',
-                contactPhone: userProfile?.phone || ''
-              }}
-            />
-          </AuthPostGuard>
-        </div>
+        <AuthPostGuard>
+          <JobForm
+            onSubmit={handleSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            isSubmitting={isSubmitting}
+            defaultValues={{
+              title: '',
+              location: '',
+              type: '',
+              description: '',
+              contactEmail: userProfile?.email || '',
+              contactPhone: userProfile?.phone || ''
+            }}
+          />
+        </AuthPostGuard>
       </Container>
     </Layout>
   );

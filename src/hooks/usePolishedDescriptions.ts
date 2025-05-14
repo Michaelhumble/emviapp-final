@@ -1,103 +1,96 @@
 
 import { useState } from 'react';
 
-export interface PolishedDescription {
-  style: string;
-  text: string;
+interface PolishedDescriptionsHook {
+  polishedDescriptions: string[];
+  isLoading: boolean;
+  fetchPolishedDescriptions: (text: string) => Promise<void>;
 }
 
-export const usePolishedDescriptions = () => {
-  const [descriptions, setDescriptions] = useState<PolishedDescription[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+// Sample emotions for different tone options
+const POLISH_STYLES = [
+  "professional and concise",
+  "friendly and welcoming",
+  "luxury and high-end",
+  "casual and approachable",
+  "detailed and informative"
+];
 
-  // Define the styles we want to generate
-  const styles = [
-    { name: "Professional", prompt: "professional, formal, corporate" },
-    { name: "Friendly", prompt: "friendly, approachable, warm" },
-    { name: "Enthusiastic", prompt: "enthusiastic, exciting, energetic" },
-    { name: "Modern", prompt: "modern, contemporary, trendy" },
-    { name: "Detailed", prompt: "detailed, comprehensive, thorough" },
-    { name: "Concise", prompt: "concise, brief, to-the-point" },
-    { name: "Casual", prompt: "casual, conversational, relaxed" },
-    { name: "Premium", prompt: "premium, luxury, high-end" },
-    { name: "Engaging", prompt: "engaging, interesting, captivating" },
-    { name: "Supportive", prompt: "supportive, nurturing, inclusive" }
-  ];
+export const usePolishedDescriptions = (): PolishedDescriptionsHook => {
+  const [polishedDescriptions, setPolishedDescriptions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const generatePolishedDescriptions = async (originalText: string) => {
+  // This function would typically call an API, but for demo we'll generate variations locally
+  const fetchPolishedDescriptions = async (text: string): Promise<void> => {
     setIsLoading(true);
-    setError(null);
     
     try {
-      // For now, let's simulate the API call with mock data
-      // In a real implementation, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+      // In a real implementation, this would be an API call to a language model
+      // For now, we'll simulate the API with local variations
       
-      // Generate variations for each style
-      const generatedDescriptions: PolishedDescription[] = styles.map(style => {
-        // In a real implementation, this would use the API response
-        // Here we're just making simple modifications based on the style
-        let polishedText = originalText;
-        
-        // Apply simple transformations based on style
-        // This is just for demonstration - in production you'd use an AI service
-        switch (style.name) {
-          case "Professional":
-            polishedText = `We are seeking a dedicated professional to join our team. ${originalText.replace(/We are looking for/gi, "Our salon is seeking")}`;
-            break;
-          case "Friendly":
-            polishedText = `Hi there! We'd love to have you join our team! ${originalText.replace(/requirements/gi, "things we're hoping for")}`;
-            break;
-          case "Enthusiastic":
-            polishedText = `Exciting opportunity! Join our amazing team! ${originalText} We can't wait to meet you!`;
-            break;
-          case "Modern":
-            polishedText = `Ready to level up your career? ${originalText.replace(/experience/gi, "expertise")}`;
-            break;
-          case "Detailed":
-            polishedText = `${originalText} Additionally, the ideal candidate will demonstrate strong time management, attention to detail, and excellent customer service skills.`;
-            break;
-          case "Concise":
-            polishedText = originalText.split('.').slice(0, 2).join('.') + '.';
-            break;
-          case "Casual":
-            polishedText = `Hey! We're looking for someone awesome to join us. ${originalText.replace(/applicant/gi, "you")}`;
-            break;
-          case "Premium":
-            polishedText = `Exclusive opportunity at our luxury salon. ${originalText.replace(/job/gi, "position")}`;
-            break;
-          case "Engaging":
-            polishedText = `Imagine working in a place where your creativity shines! ${originalText}`;
-            break;
-          case "Supportive":
-            polishedText = `Join our inclusive and supportive team. We value your growth and well-being. ${originalText}`;
-            break;
-          default:
-            break;
-        }
-        
-        return {
-          style: style.name,
-          text: polishedText
-        };
-      });
+      // Generate 10 variations (2 variations for each style)
+      const variations: string[] = [];
       
-      setDescriptions(generatedDescriptions);
-    } catch (err) {
-      console.error('Error generating polished descriptions:', err);
-      setError('Failed to generate descriptions. Please try again.');
+      for (const style of POLISH_STYLES) {
+        // Generate two variations per style
+        const variation1 = generatePolishedVersion(text, style, 1);
+        const variation2 = generatePolishedVersion(text, style, 2);
+        
+        variations.push(variation1, variation2);
+      }
+      
+      // In production, you would call an actual API here
+      // const response = await fetch('/api/polish', { method: 'POST', body: JSON.stringify({ text }) });
+      // const data = await response.json();
+      // setPolishedDescriptions(data.variations);
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      setPolishedDescriptions(variations);
+    } catch (error) {
+      console.error('Error polishing text:', error);
+      // Fallback to original description
+      setPolishedDescriptions([text]);
     } finally {
       setIsLoading(false);
     }
   };
 
   return {
-    generatePolishedDescriptions,
-    descriptions,
+    polishedDescriptions,
     isLoading,
-    error
+    fetchPolishedDescriptions,
   };
 };
 
-export default usePolishedDescriptions;
+// Helper function to generate variations
+function generatePolishedVersion(text: string, style: string, variant: number): string {
+  // In production this would be replaced with an API call to a language model
+  
+  // Very simple rule-based enhancement for demo
+  const enhancements = {
+    "professional and concise": [
+      `${text}\n\nWe are a professional establishment seeking qualified candidates.`,
+      `${text}\n\nJoin our team of professionals in a fast-paced environment.`
+    ],
+    "friendly and welcoming": [
+      `${text}\n\nWe're a friendly team looking for passionate individuals!`,
+      `${text}\n\nCome join our welcoming salon family where everyone supports each other!`
+    ],
+    "luxury and high-end": [
+      `${text}\n\nJoin our premium salon catering to discerning clientele seeking excellence.`,
+      `${text}\n\nWe provide luxury services to high-end clients and seek exceptional talent.`
+    ],
+    "casual and approachable": [
+      `${text}\n\nOur laid-back team is looking for cool, talented people to join us.`,
+      `${text}\n\nWe keep things simple and drama-free. Come work with our awesome team!`
+    ],
+    "detailed and informative": [
+      `${text}\n\nPosition details: Full training provided. Opportunities for advancement based on performance metrics.`,
+      `${text}\n\nComprehensive benefits include: On-site training, product discounts, and career advancement opportunities.`
+    ]
+  };
+  
+  return enhancements[style as keyof typeof enhancements][variant - 1] || text;
+}

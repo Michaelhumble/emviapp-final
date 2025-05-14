@@ -1,119 +1,101 @@
 
-import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
-import { PolishedDescription } from '@/hooks/usePolishedDescriptions';
+import { useTranslation } from '@/hooks/useTranslation';
+import { jobFormEn } from '@/constants/jobForm.en';
+import { jobFormVi } from '@/constants/jobForm.vi';
+
+const STYLE_TABS = [
+  { value: "professional", label: "Professional" },
+  { value: "friendly", label: "Friendly" },
+  { value: "luxury", label: "Luxury" },
+  { value: "casual", label: "Casual" },
+  { value: "detailed", label: "Detailed" }
+];
 
 interface PolishedDescriptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  originalDescription: string;
-  descriptions: PolishedDescription[];
+  descriptions: string[];
+  onSelect: (description: string) => void;
   isLoading: boolean;
-  onApply: (description: string) => void;
 }
 
-export const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
+const PolishedDescriptionsModal = ({
   isOpen,
   onClose,
-  originalDescription,
   descriptions,
-  isLoading,
-  onApply,
-}) => {
-  const [selectedDescription, setSelectedDescription] = useState<string>('');
-  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-
-  // Reset selected description on modal open and when new descriptions arrive
-  useEffect(() => {
-    if (descriptions.length > 0 && !selectedStyle) {
-      setSelectedDescription(descriptions[0].text);
-      setSelectedStyle(descriptions[0].style);
-    }
-  }, [descriptions, selectedStyle]);
-
-  const handleStyleSelect = (style: string, text: string) => {
-    setSelectedStyle(style);
-    setSelectedDescription(text);
+  onSelect,
+  isLoading
+}: PolishedDescriptionsModalProps) => {
+  const { isVietnamese } = useTranslation();
+  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const [selectedTab, setSelectedTab] = useState("professional");
+  
+  // Get descriptions for the current tab/style
+  const getFilteredDescriptions = () => {
+    if (!descriptions.length) return [];
+    
+    // If we have 10 descriptions, split them into 5 style groups of 2 variations each
+    const totalStyles = STYLE_TABS.length;
+    const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
+    
+    const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
+    const startIndex = styleIndex * descriptionsPerStyle;
+    
+    return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
   };
 
-  const handleClose = () => {
-    setSelectedStyle(null);
-    setSelectedDescription('');
-    onClose();
-  };
+  const filteredDescriptions = getFilteredDescriptions();
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Enhanced Job Description</DialogTitle>
-          <DialogDescription>
-            Choose from AI-enhanced versions of your job description.
-          </DialogDescription>
+          <DialogTitle>{t.polishResultLabel}</DialogTitle>
         </DialogHeader>
-        
+
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-10">
+          <div className="flex flex-col items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p>Enhancing your description with AI...</p>
+            <p>{t.loadingPolish}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-hidden flex-grow">
-            <div className="md:col-span-1 overflow-y-auto border-r pr-4 space-y-2 max-h-[50vh]">
-              <div className="font-medium text-sm mb-2">Original Text:</div>
-              <div className="border rounded-md p-3 bg-muted/20 text-muted-foreground text-sm mb-4">
-                {originalDescription}
-              </div>
-              
-              <div className="font-medium text-sm mb-2">Style Options:</div>
-              <div className="space-y-1">
-                {descriptions.map((desc) => (
-                  <Button
-                    key={desc.style}
-                    variant={selectedStyle === desc.style ? "default" : "outline"}
-                    size="sm"
-                    className="w-full justify-start text-left font-normal text-sm mb-1"
-                    onClick={() => handleStyleSelect(desc.style, desc.text)}
-                  >
-                    {desc.style}
-                  </Button>
+          <>
+            <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
+              <TabsList className="grid grid-cols-5 mb-4">
+                {STYLE_TABS.map(tab => (
+                  <TabsTrigger key={tab.value} value={tab.value}>
+                    {tab.label}
+                  </TabsTrigger>
                 ))}
-              </div>
-            </div>
-            
-            <div className="md:col-span-2 overflow-hidden flex flex-col">
-              <div className="font-medium text-sm mb-2">
-                {selectedStyle ? `${selectedStyle} Version:` : 'Enhanced Version:'}
-              </div>
-              <Textarea 
-                value={selectedDescription} 
-                onChange={(e) => setSelectedDescription(e.target.value)}
-                className="min-h-[300px] flex-grow resize-none overflow-y-auto"
-              />
-            </div>
-          </div>
+              </TabsList>
+              
+              <TabsContent value={selectedTab} className="mt-0">
+                <ScrollArea className="h-[300px] pr-4">
+                  <div className="space-y-4">
+                    {filteredDescriptions.map((description, index) => (
+                      <div 
+                        key={index}
+                        className="p-4 border rounded-md hover:border-primary cursor-pointer transition-colors"
+                        onClick={() => onSelect(description)}
+                      >
+                        <p className="whitespace-pre-wrap">{description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
+          </>
         )}
-        
-        <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={() => onApply(selectedDescription)}
-            disabled={isLoading || !selectedDescription}
-          >
-            Apply Changes
-          </Button>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
