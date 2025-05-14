@@ -25,7 +25,7 @@ const AiDescriptionModal: React.FC<AiDescriptionModalProps> = ({
   onSelectDescription
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isVietnamese, t } = useTranslation();
+  const { isVietnamese } = useTranslation();
 
   const {
     isLoading,

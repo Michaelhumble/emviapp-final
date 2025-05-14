@@ -1,9 +1,17 @@
 
-export interface JobTemplateOption {
+export type JobType = 
+  | 'nail-technician'
+  | 'hair-stylist'
+  | 'esthetician'
+  | 'lash-tech'
+  | 'massage-therapist'
+  | 'salon-receptionist'
+  | 'salon-manager'
+  | 'other';
+
+export interface JobTemplate {
   id: string;
-  label: string;
-  defaultTitle: string;
-  defaultDescription: string;
-  defaultSummary?: string;
-  defaultType?: string;
+  title: string;
+  type: string;
+  description: string;
 }

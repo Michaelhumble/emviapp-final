@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { POLISHED_DESCRIPTIONS } from '@/components/posting/job/jobFormConstants';
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from '@/components/ui/button';
 
 export type PolishedDescriptionStyle = 'professional' | 'friendly' | 'luxury' | 'casual' | 'detailed';
 
@@ -29,7 +27,7 @@ export const usePolishedDescriptions = ({
   const [descriptions, setDescriptions] = useState<string[]>([]);
   const [activeStyle, setActiveStyle] = useState<PolishedDescriptionStyle>('professional');
   const [selectedTemplate, setSelectedTemplate] = useState<string>(jobType);
-  const { isVietnamese, t } = useTranslation();
+  const { isVietnamese } = useTranslation();
 
   // Effect to update the selected template when jobType changes
   useEffect(() => {
