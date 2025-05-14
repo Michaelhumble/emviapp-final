@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
   businessName?: string;
+  category?: string;
+  priority?: boolean;
+  showPremiumBadge?: boolean;
 }
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({ 
@@ -11,6 +14,9 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   alt, 
   fallbackSrc = '/images/fallback.png',
   businessName,
+  category,
+  priority,
+  showPremiumBadge,
   ...props 
 }) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -33,3 +39,4 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 
 export { ImageWithFallback };
 export default ImageWithFallback;
+export type { ImageWithFallbackProps };

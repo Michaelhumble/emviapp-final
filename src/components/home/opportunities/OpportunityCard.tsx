@@ -34,7 +34,7 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   };
 
   // Standardize image field
-  const imageUrl = listing.photo || listing.image;
+  const imageUrl = listing.image || listing.photo;
 
   return (
     <motion.div

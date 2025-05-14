@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Building, MapPin } from 'lucide-react';
 import { Listing } from '@/types/listing';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 interface ListingCardProps {
   listing: Listing;
@@ -19,14 +20,11 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-video relative bg-gray-100">
-        <img
+        <ImageWithFallback
           src={imageUrl}
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = '/images/fallback.png';
-          }}
           alt={listing.title || "Listing"}
           className="w-full h-full object-cover"
+          fallbackSrc="/images/fallback.png"
         />
       </div>
       <CardContent className="p-4">
