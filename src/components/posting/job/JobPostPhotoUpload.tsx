@@ -1,140 +1,113 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Upload, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
-import { v4 as uuidv4 } from 'uuid';
 
-export interface JobPostPhotoUploadProps {
+interface JobPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  maxPhotos: number;
+  maxFiles: number;
+  validateUpload: (files: File[]) => { valid: boolean; message: string };
+  placeholder: string;
+  uploadLimitText: string;
 }
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
-
-const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({ 
-  photoUploads, 
+const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
+  photoUploads,
   setPhotoUploads,
-  maxPhotos = 5 
+  maxFiles,
+  validateUpload,
+  placeholder,
+  uploadLimitText
 }) => {
-  // Upload file to Supabase storage
-  const uploadToBucket = async (file: File): Promise<string> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `job-listings/${fileName}`;
-    
-    const { data, error } = await supabase.storage
-      .from('public')
-      .upload(filePath, file);
-      
-    if (error) {
-      console.error('Error uploading file:', error);
-      throw new Error('Failed to upload image');
-    }
-    
-    const { data: urlData } = supabase.storage
-      .from('public')
-      .getPublicUrl(filePath);
-      
-    return urlData.publicUrl;
-  };
+  const [error, setError] = useState<string | null>(null);
   
-  // Validate file size and type
-  const validateFile = (file: File): { valid: boolean; message?: string } => {
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      return { valid: false, message: 'File type not supported. Please upload JPG, PNG, or WebP images.' };
-    }
-    
-    if (file.size > MAX_FILE_SIZE) {
-      return { valid: false, message: 'File size exceeds 5MB limit.' };
-    }
-    
-    return { valid: true };
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      // Validate if adding these files would exceed the max
+      if (photoUploads.length + acceptedFiles.length > maxFiles) {
+        setError(`Maximum ${maxFiles} images allowed`);
+        return;
+      }
+      
+      // Validate files
+      const validation = validateUpload(acceptedFiles);
+      if (!validation.valid) {
+        setError(validation.message);
+        return;
+      }
+
+      setError(null);
+      setPhotoUploads(prev => [...prev, ...acceptedFiles]);
+    },
+    [maxFiles, photoUploads, setPhotoUploads, validateUpload]
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/jpeg': [],
+      'image/png': [],
+      'image/webp': []
+    },
+    maxFiles: maxFiles - photoUploads.length
+  });
+
+  const removePhoto = (index: number) => {
+    const newPhotos = [...photoUploads];
+    newPhotos.splice(index, 1);
+    setPhotoUploads(newPhotos);
+    setError(null);
   };
-
-  // Handle file selection
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      const totalFiles = [...photoUploads, ...newFiles];
-      
-      // Limit the number of photos
-      if (totalFiles.length > maxPhotos) {
-        alert(`You can upload a maximum of ${maxPhotos} photos.`);
-        return;
-      }
-      
-      // Validate each file
-      const invalidFiles = newFiles.filter(file => !validateFile(file).valid);
-      if (invalidFiles.length > 0) {
-        const file = invalidFiles[0];
-        const validation = validateFile(file);
-        alert(validation.message || 'Invalid file');
-        return;
-      }
-      
-      setPhotoUploads(prev => [...prev, ...newFiles]);
-      e.target.value = ''; // Reset input value to allow selecting the same file again
-    }
-  }, [photoUploads, setPhotoUploads, maxPhotos]);
-
-  // Remove photo from list
-  const removePhoto = useCallback((index: number) => {
-    setPhotoUploads(prev => prev.filter((_, i) => i !== index));
-  }, [setPhotoUploads]);
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-4">
-        {photoUploads.map((file, index) => (
-          <div 
-            key={`${file.name}-${index}`} 
-            className="relative w-24 h-24 rounded-md overflow-hidden border border-gray-200"
-          >
-            <img 
-              src={URL.createObjectURL(file)} 
-              alt={`Upload ${index + 1}`} 
-              className="w-full h-full object-cover"
-            />
-            <button
-              type="button"
-              onClick={() => removePhoto(index)}
-              className="absolute top-1 right-1 bg-black bg-opacity-50 rounded-full p-1 hover:bg-opacity-70"
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+          isDragActive
+            ? 'border-primary bg-primary/5'
+            : 'border-gray-200 hover:border-primary/50'
+        } ${photoUploads.length >= maxFiles ? 'opacity-50 pointer-events-none' : ''}`}
+      >
+        <input {...getInputProps()} />
+        <p className="text-sm text-muted-foreground">
+          {placeholder}
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {photoUploads.length} / {maxFiles} {uploadLimitText}
+        </p>
+      </div>
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
+
+      {photoUploads.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+          {photoUploads.map((file, index) => (
+            <div
+              key={`${file.name}-${index}`}
+              className="relative group aspect-square rounded-md overflow-hidden border"
             >
-              <X className="h-4 w-4 text-white" />
-            </button>
-          </div>
-        ))}
-        
-        {photoUploads.length < maxPhotos && (
-          <div 
-            className={cn(
-              "w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors",
-              "relative overflow-hidden"
-            )}
-            onClick={() => document.getElementById('photo-upload')?.click()}
-          >
-            <Upload className="h-6 w-6 text-gray-400" />
-            <span className="text-xs text-gray-500 mt-1">Upload</span>
-            <input
-              id="photo-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-              multiple
-            />
-          </div>
-        )}
-      </div>
-      
-      <div className="text-sm text-gray-500">
-        {photoUploads.length} of {maxPhotos} photos - 
-        <Button variant="link" type="button" className="h-auto p-0 text-sm" onClick={() => document.getElementById('photo-upload')?.click()}>browse</Button>
-      </div>
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`Upload ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute top-1 right-1 h-6 w-6 opacity-80 group-hover:opacity-100"
+                onClick={() => removePhoto(index)}
+              >
+                <X className="h-3 w-3" />
+                <span className="sr-only">Remove</span>
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
