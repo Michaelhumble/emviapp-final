@@ -1,64 +1,33 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useState } from 'react';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UserProfile } from '@/context/auth/types';
-import { 
-  jobFormSchema, 
-  JobFormValues, 
-  JOB_TEMPLATES, 
-  JOB_TYPES,
-  getTemplateContent
-} from './jobFormSchema';
-import { useImageUpload } from '@/hooks/useImageUpload';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, Sparkles, Upload, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { jobFormSchema, jobTemplates, JOB_TYPES, YES_LADDER_OPTIONS } from './jobFormSchema';
 import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
 import PolishedDescriptionsModal from './PolishedDescriptionsModal';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-// UI Components
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage,
-  FormDescription
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import SectionHeader from '@/components/posting/SectionHeader';
+export type JobFormValues = z.infer<typeof jobFormSchema>;
 
-// Icons
-import { 
-  Sparkles, 
-  ImagePlus, 
-  X, 
-  Loader2, 
-  AlertCircle, 
-  ArrowRight, 
-  Flame 
-} from 'lucide-react';
-
-export interface JobFormProps {
+interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
-  userProfile?: UserProfile | null;
-  industry?: string;
   defaultValues?: Partial<JobFormValues>;
+  industry?: string;
+  userProfile?: any;
 }
 
 const JobForm: React.FC<JobFormProps> = ({
@@ -66,185 +35,176 @@ const JobForm: React.FC<JobFormProps> = ({
   photoUploads,
   setPhotoUploads,
   isSubmitting,
-  userProfile,
+  defaultValues = {},
   industry = "nails",
-  defaultValues
+  userProfile
 }) => {
-  // Setup form with validation schema
+  const [isPolishModalOpen, setIsPolishModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Use our simplified hook for now
+  const { isLoading: isPolishing, polishedVersions, generateVersions } = usePolishedDescriptions();
+
+  // Initialize the form with default values
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: defaultValues || {
-      title: '',
-      description: '',
-      location: userProfile?.location || '',
-      salary: '',
-      contactEmail: userProfile?.email || '',
-      phoneNumber: userProfile?.phone || '',
-      jobType: 'full-time',
-      jobSummary: '',
-      heartfeltMessage: '',
-      isUrgent: false,
-      weeklyPay: false,
-      providesLunch: false,
-      latestProducts: false,
-      flexibleSchedule: false,
-      growthOpportunities: false,
-      customerReviewBonuses: false
+    defaultValues: {
+      title: defaultValues.title || '',
+      description: defaultValues.description || '',
+      location: userProfile?.location || defaultValues.location || '',
+      jobType: defaultValues.jobType || 'full-time',
+      salary: defaultValues.salary || '',
+      contactEmail: userProfile?.email || defaultValues.contactEmail || '',
+      phoneNumber: userProfile?.phone || defaultValues.phoneNumber || '',
+      jobSummary: defaultValues.jobSummary || '',
+      heartfeltMessage: defaultValues.heartfeltMessage || '',
+      isUrgent: defaultValues.isUrgent || false,
+      yesLadderOptions: defaultValues.yesLadderOptions || [],
     }
   });
-  
-  // Setup hooks for image upload and AI description polishing
-  const { uploadMultipleImages, isUploading, uploadError } = useImageUpload();
-  const { polishedVersions, generateVersions, isLoading: isGeneratingDescriptions } = usePolishedDescriptions();
-  
-  // State management
-  const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
-  const [isPolishModalOpen, setIsPolishModalOpen] = useState(false);
-  const [uploadedPhotoUrls, setUploadedPhotoUrls] = useState<string[]>([]);
-  
-  // Refs
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Scroll management for template selection
-  const titleFieldRef = useRef<HTMLDivElement>(null);
 
-  // Handle template selection
-  const handleTemplateChange = (templateId: string) => {
-    const template = getTemplateContent(templateId);
-    
-    // Update form fields with template values
-    form.setValue('title', template.title);
-    form.setValue('jobSummary', template.jobSummary);
-    form.setValue('description', template.description);
-    if (template.salary) form.setValue('salary', template.salary);
-    
-    // Scroll to title field for user to start editing
-    setTimeout(() => {
-      titleFieldRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
-  // Handle photo uploads
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
-    const newFiles = Array.from(e.target.files);
-    const totalFiles = [...photoUploads, ...newFiles];
-    
-    // Limit to 5 photos
-    if (totalFiles.length > 5) {
-      alert('You can upload a maximum of 5 photos');
+  const handleSelectTemplate = (templateId: string) => {
+    if (!templateId || templateId === 'custom') {
+      setSelectedTemplate(undefined);
       return;
     }
     
-    setPhotoUploads(totalFiles);
+    setSelectedTemplate(templateId);
+    const template = jobTemplates.find(t => t.id === templateId);
     
-    // Generate preview URLs
-    const newPreviewUrls = newFiles.map(file => URL.createObjectURL(file));
-    setPhotoPreviewUrls([...photoPreviewUrls, ...newPreviewUrls]);
+    if (template) {
+      form.setValue('title', template.title);
+      form.setValue('description', template.description);
+      form.setValue('jobSummary', template.summary || '');
+      // Don't override user's location or contact info
+    }
   };
 
-  // Remove a photo from the list
-  const handleRemovePhoto = (index: number) => {
-    const updatedUploads = [...photoUploads];
-    updatedUploads.splice(index, 1);
-    setPhotoUploads(updatedUploads);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
     
-    const updatedPreviews = [...photoPreviewUrls];
-    URL.revokeObjectURL(updatedPreviews[index]);
-    updatedPreviews.splice(index, 1);
-    setPhotoPreviewUrls(updatedPreviews);
+    if (!files || files.length === 0) return;
+    
+    const newFiles = Array.from(files);
+    setPhotoUploads((prev) => [...prev, ...newFiles]);
+    
+    // Upload to Supabase
+    for (const file of newFiles) {
+      setUploadingImage(true);
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `job-photos/${fileName}`;
+        
+        const { error: uploadError, data } = await supabase.storage
+          .from('nails')
+          .upload(filePath, file);
+          
+        if (uploadError) {
+          toast.error('Error uploading image');
+          console.error('Upload error:', uploadError);
+          continue;
+        }
+        
+        // Get the public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('nails')
+          .getPublicUrl(filePath);
+          
+        setImageUrls(prev => [...prev, publicUrl]);
+      } catch (error) {
+        toast.error('Error uploading image');
+        console.error('Upload error:', error);
+      }
+    }
+    setUploadingImage(false);
+    
+    // Reset the input
+    e.target.value = '';
   };
 
-  // Handle AI polish for job description
-  const handlePolishDescription = () => {
-    const description = form.getValues('description');
-    if (!description || description.trim().length < 20) {
-      form.setError('description', { 
-        type: 'manual', 
-        message: 'Please enter at least 20 characters to polish description' 
-      });
+  const handleRemoveImage = (index: number) => {
+    setPhotoUploads((prev) => prev.filter((_, i) => i !== index));
+    setImageUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handlePolishDescription = async () => {
+    const currentDescription = form.getValues('description');
+    if (!currentDescription) {
+      toast.error('Please add a job description first');
       return;
     }
     
-    // Generate AI polished versions
-    generateVersions(description);
+    await generateVersions(currentDescription);
     setIsPolishModalOpen(true);
   };
 
-  // Select a polished description version
   const handleSelectPolishedVersion = (description: string) => {
     form.setValue('description', description);
-    form.clearErrors('description');
     setIsPolishModalOpen(false);
   };
 
-  // Form submission handler
-  const handleSubmit = async (values: JobFormValues) => {
-    if (photoUploads.length > 0) {
-      // Upload photos first if there are any
-      const urls = await uploadMultipleImages(photoUploads);
-      setUploadedPhotoUrls(urls);
-      // Add photo URLs to form data and submit
-      onSubmit({ ...values, photoUrls: urls });
-    } else {
-      // Submit form without photos
-      onSubmit(values);
-    }
+  const handleFormSubmit = (values: JobFormValues) => {
+    const finalValues = {
+      ...values,
+      imageUrls
+    };
+    onSubmit(finalValues);
   };
 
-  // Cleanup preview URLs when component unmounts
-  useEffect(() => {
-    return () => {
-      photoPreviewUrls.forEach(url => URL.revokeObjectURL(url));
-    };
-  }, [photoPreviewUrls]);
-
   return (
-    <div className="py-6">
+    <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          {/* Section 1: Start with a Template */}
-          <div className="space-y-4">
-            <SectionHeader 
-              title="Start with a Template" 
-              emoji="✨" 
-              description="Choose a starting point and customize it to fit your needs"
+        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+          {/* 1. Start with a Template */}
+          <div className="bg-muted/30 p-6 rounded-lg space-y-4">
+            <h2 className="text-xl font-semibold">Start with a Template</h2>
+            <FormField
+              control={form.control}
+              name="template"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Choose a starting template</FormLabel>
+                  <Select 
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      handleSelectTemplate(value);
+                    }}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a template" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {jobTemplates.map((template) => (
+                        <SelectItem key={template.id} value={template.id}>
+                          {template.label}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="custom">Custom (Start from scratch)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
             />
-            
-            <div className="grid grid-cols-1">
-              <Select onValueChange={handleTemplateChange} defaultValue="">
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Choose a starting template..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {JOB_TEMPLATES.map(template => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
-
-          {/* Section 2: Basic Job Information */}
-          <div className="space-y-4">
-            <SectionHeader 
-              title="Basic Job Information" 
-              emoji="📝" 
-              description="Let talented artists know what position you're offering"
-            />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* 2. Basic Job Information */}
+          <div className="bg-white p-6 rounded-lg border border-gray-100 space-y-4">
+            <h2 className="text-xl font-semibold">Basic Job Information</h2>
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem ref={titleFieldRef}>
-                    <FormLabel>Job Title <span className="text-red-500">*</span></FormLabel>
+                  <FormItem>
+                    <FormLabel>Job Title *</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g., Nail Technician, Hair Stylist, Spa Manager" />
+                      <Input placeholder="e.g., Nail Technician" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -256,19 +216,16 @@ const JobForm: React.FC<JobFormProps> = ({
                 name="jobType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Job Type <span className="text-red-500">*</span></FormLabel>
-                    <Select
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
+                    <FormLabel>Job Type *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select job type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {JOB_TYPES.map(type => (
-                          <SelectItem key={type.id} value={type.id}>
+                        {JOB_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
                             {type.label}
                           </SelectItem>
                         ))}
@@ -278,17 +235,15 @@ const JobForm: React.FC<JobFormProps> = ({
                   </FormItem>
                 )}
               />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
               <FormField
                 control={form.control}
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel>Location *</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="City, State" />
+                      <Input placeholder="e.g., Los Angeles, CA" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -300,310 +255,237 @@ const JobForm: React.FC<JobFormProps> = ({
                 name="salary"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      Salary/Compensation
-                      <Badge variant="outline" className="font-normal text-xs">
-                        30% more applications
-                      </Badge>
-                    </FormLabel>
+                    <FormLabel>Salary/Compensation (Optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g., $25-30/hr, $800-1200/week, etc." />
+                      <Input placeholder="e.g., $25-30/hr + tips" {...field} />
+                    </FormControl>
+                    <FormDescription>Posts with salary info get 30% more applications</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="isUrgent"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                      <FormLabel>🔥 Mark as Urgent</FormLabel>
+                      <FormDescription>
+                        Adds an urgency badge to your listing
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          
+          {/* 3. Job Details */}
+          <div className="bg-white p-6 rounded-lg border border-gray-100 space-y-4">
+            <h2 className="text-xl font-semibold">Job Details</h2>
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="jobSummary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Job Summary (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Quick summary of the position" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>Job Description *</FormLabel>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePolishDescription}
+                        disabled={isPolishing || !field.value}
+                        className="flex items-center gap-1"
+                      >
+                        {isPolishing ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+                        ) : (
+                          <Sparkles className="h-3.5 w-3.5 mr-1 text-yellow-500" />
+                        )}
+                        Polish with AI
+                      </Button>
+                    </div>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe the position, responsibilities, and requirements..."
+                        className="min-h-[200px]"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            
-            <FormField
-              control={form.control}
-              name="isUrgent"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
-                  <div className="space-y-0.5">
-                    <FormLabel className="flex items-center gap-2">
-                      Mark as Urgent
-                      <Flame className="h-4 w-4 text-orange-500" />
-                    </FormLabel>
-                    <FormDescription>
-                      Adds an urgency badge to attract immediate attention
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
           </div>
-
-          {/* Section 3: Job Details */}
-          <div className="space-y-4">
-            <SectionHeader 
-              title="Job Details" 
-              emoji="📋" 
-              description="Provide more information about the position"
-            />
+          
+          {/* 4. Photos */}
+          <div className="bg-white p-6 rounded-lg border border-gray-100 space-y-4">
+            <h2 className="text-xl font-semibold">📸 Photos (Optional)</h2>
+            <p className="text-sm text-gray-500">
+              Adding photos can increase applications by up to 35%.
+            </p>
             
-            <FormField
-              control={form.control}
-              name="jobSummary"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Summary (Optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="A brief one-line summary of the position" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex justify-between items-center">
-                    <FormLabel>Job Description <span className="text-red-500">*</span></FormLabel>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePolishDescription}
-                      disabled={isGeneratingDescriptions || !field.value || field.value.length < 20}
-                      className="text-xs gap-1"
-                    >
-                      {isGeneratingDescriptions ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <Sparkles className="h-3 w-3 text-yellow-500" />
-                      )}
-                      Polish with AI
-                    </Button>
-                  </div>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Describe the position, responsibilities, and ideal candidate. Include experience required, working hours, and what makes your workplace special."
-                      className="min-h-[180px]"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Section 4: Photos */}
-          <div className="space-y-4">
-            <SectionHeader 
-              title="Photos (Optional)" 
-              emoji="📸" 
-              description="Show off your salon space or work environment"
-            />
-            
-            <div className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-muted/40 transition-colors">
-              <div className="space-y-4">
-                <div>
-                  <ImagePlus className="h-10 w-10 mx-auto text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Drag photos here or click to upload (max 5)
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Adding photos can increase applications by up to 35%
-                  </p>
-                </div>
-                
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
+            <div className="grid gap-5">
+              <div className="flex items-center justify-center w-full">
+                <label
+                  htmlFor="image-upload"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>Select Photos</>
-                  )}
-                </Button>
-                
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handlePhotoChange}
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                />
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                    <p className="mb-2 text-sm text-gray-500">
+                      <span className="font-semibold">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF (MAX. 5MB)</p>
+                  </div>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    disabled={uploadingImage}
+                  />
+                </label>
               </div>
-            </div>
-            
-            {uploadError && (
-              <div className="text-sm text-red-500 flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" />
-                {uploadError}
-              </div>
-            )}
-            
-            {photoPreviewUrls.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
-                {photoPreviewUrls.map((url, index) => (
-                  <div key={index} className="relative group">
-                    <img 
-                      src={url} 
-                      alt={`Preview ${index}`} 
-                      className="h-24 w-full object-cover rounded-md border" 
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePhoto(index)}
-                      className="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Section 5: Yes Ladder (Trust Building) */}
-          <div className="space-y-4">
-            <SectionHeader 
-              title="Your Workplace Benefits (Optional)" 
-              emoji="☀️" 
-              description="Let artists know what makes your workplace special"
-            />
-            
-            <div className="grid grid-cols-1 gap-2">
-              <FormField
-                control={form.control}
-                name="weeklyPay"
-                render={({ field }) => (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="weeklyPay"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <Label htmlFor="weeklyPay">
-                      We pay weekly — artists appreciate fast pay
-                    </Label>
-                  </div>
-                )}
-              />
               
-              <FormField
-                control={form.control}
-                name="providesLunch"
-                render={({ field }) => (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="providesLunch"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <Label htmlFor="providesLunch">
-                      We provide lunch on busy days
-                    </Label>
-                  </div>
-                )}
-              />
+              {/* Image preview */}
+              {(photoUploads.length > 0 || imageUrls.length > 0) && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                  {photoUploads.map((file, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Upload ${index + 1}`}
+                        className="h-24 w-full object-cover rounded-md"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleRemoveImage(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {imageUrls.map((url, index) => (
+                    <div key={`url-${index}`} className="relative group">
+                      <img
+                        src={url}
+                        alt={`Upload ${index + 1}`}
+                        className="h-24 w-full object-cover rounded-md"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleRemoveImage(index + photoUploads.length)}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               
-              <FormField
-                control={form.control}
-                name="latestProducts"
-                render={({ field }) => (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="latestProducts"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <Label htmlFor="latestProducts">
-                      We use the latest Dip/Gel/Acrylic products
-                    </Label>
-                  </div>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="flexibleSchedule"
-                render={({ field }) => (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="flexibleSchedule"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <Label htmlFor="flexibleSchedule">
-                      We're flexible with days off or vacation
-                    </Label>
-                  </div>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="growthOpportunities"
-                render={({ field }) => (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="growthOpportunities"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <Label htmlFor="growthOpportunities">
-                      We give everyone a chance to grow and be seen
-                    </Label>
-                  </div>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="customerReviewBonuses"
-                render={({ field }) => (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="customerReviewBonuses"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <Label htmlFor="customerReviewBonuses">
-                      We offer bonuses for great customer reviews
-                    </Label>
-                  </div>
-                )}
-              />
+              {uploadingImage && (
+                <div className="flex items-center justify-center my-2">
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  <span className="text-sm">Uploading...</span>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Section 6: Contact Info */}
-          <div className="space-y-4">
-            <SectionHeader 
-              title="Contact Info" 
-              emoji="📞" 
-              description="How applicants can reach you"
-            />
+          
+          {/* 5. Yes Ladder */}
+          <div className="bg-muted/20 p-6 rounded-lg border border-gray-100 space-y-4">
+            <h2 className="text-xl font-semibold">☀️ Trust Building (Optional)</h2>
+            <p className="text-sm text-gray-500">
+              These checkboxes signal you're a great employer without making promises.
+            </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="yesLadderOptions"
+              render={() => (
+                <FormItem>
+                  <div className="grid gap-3">
+                    {YES_LADDER_OPTIONS.map((option) => (
+                      <FormField
+                        key={option.value}
+                        control={form.control}
+                        name="yesLadderOptions"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={option.value}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(option.value)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value, option.value])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== option.value
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {option.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          {/* 6. Contact Info */}
+          <div className="bg-white p-6 rounded-lg border border-gray-100 space-y-4">
+            <h2 className="text-xl font-semibold">Contact Info</h2>
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="contactEmail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel>Email *</FormLabel>
                     <FormControl>
-                      <Input {...field} type="email" placeholder="your@email.com" />
+                      <Input type="email" placeholder="contact@yoursalon.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -615,9 +497,9 @@ const JobForm: React.FC<JobFormProps> = ({
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone <span className="text-red-500">*</span></FormLabel>
+                    <FormLabel>Phone *</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="(555) 123-4567" />
+                      <Input placeholder="(123) 456-7890" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -625,69 +507,41 @@ const JobForm: React.FC<JobFormProps> = ({
               />
             </div>
           </div>
-
-          {/* Section 7: Boost Your Listing */}
-          <div className="space-y-4">
-            <SectionHeader 
-              title="Boost Your Listing" 
-              emoji="💎" 
-              description="Optional upgrades to increase visibility"
-            />
-            
-            <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-4 border border-amber-200">
-              <h4 className="font-medium text-amber-800 mb-2">Looking to attract more applicants?</h4>
-              <p className="text-sm text-amber-700 mb-4">You'll be able to select premium visibility options in the next step.</p>
-              <div className="space-y-2 text-sm text-amber-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <p>Highlight your listing</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <p>Extended visibility</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <p>Smart Matching</p>
-                </div>
-              </div>
-            </div>
+          
+          {/* 7. Boost Your Listing */}
+          <div className="bg-gradient-to-r from-amber-100 to-yellow-100 p-6 rounded-lg border border-amber-200 space-y-4">
+            <h2 className="text-xl font-semibold">💎 Boost Your Listing</h2>
+            <p className="text-sm">
+              Select a plan on the next page to highlight your job post and reach more qualified artists.
+            </p>
           </div>
-
-          {/* Form Submission Button */}
-          <div className="pt-4 flex justify-end">
-            <Button 
-              type="submit"
-              disabled={isSubmitting || isUploading} 
-              className="gap-2"
-            >
+          
+          {/* Submit Button */}
+          <div className="flex justify-between">
+            <Button type="submit" className="w-full" disabled={isSubmitting} size="lg">
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Processing...
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
                 </>
               ) : (
-                <>
-                  Continue to Preview
-                  <ArrowRight className="h-4 w-4" />
-                </>
+                <>Preview Post</>
               )}
             </Button>
           </div>
         </form>
       </Form>
       
-      {/* Polished Descriptions Modal */}
+      {/* Polish Modal */}
       <PolishedDescriptionsModal
         isOpen={isPolishModalOpen}
         onClose={() => setIsPolishModalOpen(false)}
-        originalDescription={form.getValues('description') || ''}
+        originalDescription={form.getValues('description')}
         polishedVersions={polishedVersions}
         onSelectVersion={handleSelectPolishedVersion}
       />
-    </div>
+    </>
   );
 };
 
 export default JobForm;
-export type { JobFormValues };

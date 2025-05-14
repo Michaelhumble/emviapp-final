@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import JobForm, { JobFormValues } from './JobForm';
 import PostHeader from '../PostHeader';
 import MotivationalFooter from '../MotivationalFooter';
@@ -15,7 +15,7 @@ interface EnhancedJobFormProps {
   industry?: string;
 }
 
-export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
   onSubmit, 
   photoUploads, 
   setPhotoUploads, 

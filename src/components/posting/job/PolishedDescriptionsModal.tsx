@@ -4,18 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { 
-  Briefcase, 
-  Sparkles, 
-  Heart, 
-  Zap, 
-  Diamond, 
-  FileText, 
-  Clock, 
-  Crown, 
-  ArrowRight, 
-  TrendingUp
-} from "lucide-react";
+import { Briefcase, Sparkles } from "lucide-react";
 
 interface PolishedDescriptionModalProps {
   isOpen: boolean;
@@ -42,16 +31,16 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionModalProps> = ({
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-yellow-500" />
-            AI-Polished Description Versions
+            AI-Polished Description
           </DialogTitle>
         </DialogHeader>
         
         <div className="text-sm text-muted-foreground mb-4">
-          Choose a version that best matches your style. You can edit it further after selecting.
+          Here's an AI-enhanced version of your job description. You can select it or continue using your original.
         </div>
         
         <ScrollArea className="h-[calc(90vh-200px)]">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {polishedVersions.map((version, index) => (
               <Card key={index} className="border overflow-hidden hover:shadow-md transition-shadow">
                 <CardHeader className="py-3 px-4 bg-muted/30 border-b">
@@ -61,9 +50,8 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionModalProps> = ({
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="text-sm h-32 overflow-y-auto">
-                    {version.description.substring(0, 200)}
-                    {version.description.length > 200 ? '...' : ''}
+                  <div className="text-sm whitespace-pre-wrap">
+                    {version.description}
                   </div>
                 </CardContent>
                 <CardFooter className="p-3 bg-muted/10 border-t">
