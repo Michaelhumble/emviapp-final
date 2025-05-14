@@ -57,7 +57,10 @@ export const usePostPayment = () => {
         body: { 
           postType,
           postDetails,
-          pricingOptions
+          pricingOptions,
+          brandInfo: {
+            logo: 'https://emvi.app/images/logo/emvi-logo.png'
+          }
         }
       });
 
