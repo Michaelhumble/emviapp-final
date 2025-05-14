@@ -12,13 +12,14 @@ import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
+import PostHeader from '@/components/posting/PostHeader';
 
 const JobPost: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { userProfile } = useAuth();
-  const { isVietnamese } = useTranslation();
-  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const { isVietnamese, t } = useTranslation();
+  const formText = isVietnamese ? jobFormVi : jobFormEn;
   
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,8 +53,10 @@ const JobPost: React.FC = () => {
       sessionStorage.setItem('jobFormData', JSON.stringify(formData));
       
       toast({
-        title: "Success",
-        description: "Your job information has been saved. Let's choose a pricing plan.",
+        title: isVietnamese ? "Thành công" : "Success",
+        description: isVietnamese 
+          ? "Thông tin công việc đã được lưu. Hãy chọn gói đăng tin."
+          : "Your job information has been saved. Let's choose a pricing plan.",
       });
       
       // Navigate to pricing page
@@ -61,8 +64,10 @@ const JobPost: React.FC = () => {
     } catch (error) {
       console.error('Error submitting job post:', error);
       toast({
-        title: "Error",
-        description: "There was a problem saving your job post. Please try again.",
+        title: isVietnamese ? "Lỗi" : "Error",
+        description: isVietnamese
+          ? "Đã xảy ra lỗi khi lưu thông tin. Vui lòng thử lại."
+          : "There was a problem saving your job post. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -73,24 +78,33 @@ const JobPost: React.FC = () => {
   return (
     <Layout>
       <Helmet>
-        <title>{t.title} | EmviApp</title>
+        <title>{formText.title} | EmviApp</title>
       </Helmet>
       <Container className="py-8">
+        <PostHeader 
+          title={formText.title}
+          subtitle={isVietnamese 
+            ? "Hãy cho chúng tôi biết về công việc bạn cần tuyển, chúng tôi sẽ tìm ứng viên phù hợp cho bạn."
+            : "Tell us about the job you're hiring for, and we'll help you find the perfect candidates."
+          }
+        />
         <AuthPostGuard>
-          <JobForm
-            onSubmit={handleSubmit}
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            isSubmitting={isSubmitting}
-            defaultValues={{
-              title: '',
-              location: '',
-              type: '',
-              description: '',
-              contactEmail: userProfile?.email || '',
-              contactPhone: userProfile?.phone || ''
-            }}
-          />
+          <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-sm border">
+            <JobForm
+              onSubmit={handleSubmit}
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              isSubmitting={isSubmitting}
+              defaultValues={{
+                title: '',
+                location: '',
+                type: '',
+                description: '',
+                contactEmail: userProfile?.email || '',
+                contactPhone: userProfile?.phone || ''
+              }}
+            />
+          </div>
         </AuthPostGuard>
       </Container>
     </Layout>

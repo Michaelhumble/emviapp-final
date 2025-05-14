@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
@@ -35,6 +35,7 @@ const PolishedDescriptionsModal = ({
   const { isVietnamese } = useTranslation();
   const t = isVietnamese ? jobFormVi : jobFormEn;
   const [selectedTab, setSelectedTab] = useState("professional");
+  const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
   
   // Get descriptions for the current tab/style
   const getFilteredDescriptions = () => {
@@ -52,17 +53,31 @@ const PolishedDescriptionsModal = ({
 
   const filteredDescriptions = getFilteredDescriptions();
 
+  const handleSelectDescription = (description: string) => {
+    setSelectedDescription(description);
+  };
+
+  const handleUseDescription = () => {
+    if (selectedDescription) {
+      onSelect(selectedDescription);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>{t.polishResultLabel}</DialogTitle>
+          <DialogTitle className="font-playfair text-xl">
+            {isVietnamese ? "Gợi ý từ AI" : "AI Suggestions"}
+          </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p>{t.loadingPolish}</p>
+            <p className="text-center text-muted-foreground">
+              {isVietnamese ? "AI đang hoàn thiện mô tả của bạn..." : "AI is polishing your description..."}
+            </p>
           </div>
         ) : (
           <>
@@ -81,8 +96,12 @@ const PolishedDescriptionsModal = ({
                     {filteredDescriptions.map((description, index) => (
                       <div 
                         key={index}
-                        className="p-4 border rounded-md hover:border-primary cursor-pointer transition-colors"
-                        onClick={() => onSelect(description)}
+                        className={`p-4 border rounded-md cursor-pointer transition-colors ${
+                          selectedDescription === description 
+                            ? 'border-primary/70 bg-primary/5 shadow-sm' 
+                            : 'hover:border-primary/40'
+                        }`}
+                        onClick={() => handleSelectDescription(description)}
                       >
                         <p className="whitespace-pre-wrap">{description}</p>
                       </div>
@@ -91,6 +110,18 @@ const PolishedDescriptionsModal = ({
                 </ScrollArea>
               </TabsContent>
             </Tabs>
+            
+            {selectedDescription && (
+              <div className="mt-4 flex justify-end">
+                <Button 
+                  onClick={handleUseDescription} 
+                  className="gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  {isVietnamese ? 'Sử dụng mô tả này' : 'Use This Description'}
+                </Button>
+              </div>
+            )}
           </>
         )}
 

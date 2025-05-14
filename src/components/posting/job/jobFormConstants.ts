@@ -1,144 +1,92 @@
 
-// Job form templates for quick job posting
 export const JOB_TEMPLATES = [
   {
-    id: 'nail-technician',
+    id: 'nail-tech',
     title: 'Nail Technician',
-    type: 'full-time',
-    description: 'We are seeking a skilled and creative Nail Technician to join our team. The ideal candidate should have experience with manicures, pedicures, nail art, and client consultation.'
+    type: 'fullTime',
+    description: 'Looking for an experienced Nail Technician to join our busy salon. Must be skilled in manicures, pedicures, acrylics, and gel. Full-time position with competitive pay and tips.'
   },
   {
     id: 'hair-stylist',
     title: 'Hair Stylist',
-    type: 'full-time',
-    description: 'We are looking for an experienced Hair Stylist with a passion for creating beautiful, trendy styles. The successful candidate will provide excellent service while maintaining a friendly and welcoming atmosphere.'
+    type: 'fullTime',
+    description: 'Seeking a professional Hair Stylist with at least 2 years of experience. Skills in cutting, coloring, and styling required. Join our friendly team in a modern salon with loyal clientele.'
   },
   {
-    id: 'esthetician',
-    title: 'Esthetician',
-    type: 'full-time',
-    description: 'We are seeking a licensed Esthetician to join our team. The ideal candidate will have experience with facials, waxing, and skincare consultations to help our clients look and feel their best.'
+    id: 'spa-tech',
+    title: 'Spa Technician',
+    type: 'fullTime',
+    description: 'Now hiring a Spa Technician with experience in facials, waxing, and body treatments. Must have excellent customer service skills and knowledge of skincare products.'
   },
   {
-    id: 'salon-receptionist',
+    id: 'receptionist',
     title: 'Salon Receptionist',
-    type: 'part-time',
-    description: 'We are looking for a friendly and organized Receptionist to join our salon team. Responsibilities include greeting clients, scheduling appointments, answering phones, and maintaining a clean and welcoming reception area.'
+    type: 'partTime',
+    description: 'Looking for a friendly, organized Receptionist to handle bookings, answer calls, and greet clients. Experience with salon software preferred. Part-time position available weekends.'
   },
   {
-    id: 'salon-manager',
+    id: 'manager',
     title: 'Salon Manager',
-    type: 'full-time',
-    description: 'We are seeking an experienced Salon Manager to oversee daily operations, staff management, and client relations. The ideal candidate will have proven leadership skills and a passion for the beauty industry.'
+    type: 'fullTime',
+    description: 'Experienced Salon Manager needed to oversee daily operations, staff management, and client relations. Must have previous salon management experience and excellent leadership skills.'
   },
   {
-    id: 'massage-therapist',
+    id: 'massage',
     title: 'Massage Therapist',
-    type: 'full-time',
-    description: 'We are looking for a licensed Massage Therapist to join our team. The ideal candidate will have experience with various massage techniques and the ability to customize treatments to client needs.'
+    type: 'contract',
+    description: 'Licensed Massage Therapist needed for upscale spa. Must be skilled in various massage techniques including deep tissue, hot stone, and relaxation. Flexible hours available.'
   },
   {
-    id: 'lash-tech',
+    id: 'lash',
     title: 'Lash Technician',
-    type: 'full-time',
-    description: 'We are seeking a skilled Lash Technician with experience in lash extensions, lifts, and tints. The ideal candidate will have attention to detail and excellent customer service skills.'
+    type: 'fullTime',
+    description: 'Certified Lash Technician wanted for busy beauty salon. Experience with classic and volume lash extensions required. Build your clientele with our marketing support.'
   },
   {
-    id: 'barber',
-    title: 'Barber',
-    type: 'full-time',
-    description: 'We are looking for an experienced Barber with skills in cutting, styling, and grooming. The ideal candidate will be passionate about men\'s hair and providing exceptional service.'
-  },
-  // Additional job templates
-  {
-    id: 'tattoo-artist',
+    id: 'tattoo',
     title: 'Tattoo Artist',
-    type: 'full-time',
-    description: 'We are looking for a talented Tattoo Artist with a strong portfolio and excellent client consultation skills. The ideal candidate should be experienced in various tattoo styles and techniques.'
+    type: 'fullTime',
+    description: 'Professional Tattoo Artist wanted for established studio. Must have strong portfolio showing versatility in styles. Health certifications required. Commission-based position.'
   },
   {
-    id: 'makeup-artist',
+    id: 'makeup',
     title: 'Makeup Artist',
-    type: 'full-time',
-    description: 'We are seeking a creative Makeup Artist with experience in various makeup techniques and styles. The ideal candidate will have excellent client communication skills and a passion for beauty.'
+    type: 'freelance',
+    description: 'Freelance Makeup Artist needed for bridal and special events. Experience with diverse skin tones and photography makeup a plus. Weekend availability essential.'
   },
   {
-    id: 'waxing-specialist',
-    title: 'Waxing Specialist',
-    type: 'full-time',
-    description: 'We are looking for a skilled Waxing Specialist with experience in all types of waxing services. The ideal candidate will be detail-oriented and able to provide a comfortable experience for clients.'
+    id: 'booth-rental',
+    title: 'Booth Rental Available',
+    type: 'other',
+    description: 'Premium booth space available for rent in busy salon. Great location with high foot traffic. Perfect for established beauty professionals looking for a new space. All utilities included.'
   },
   {
-    id: 'microblading-artist',
-    title: 'Microblading Artist',
-    type: 'full-time',
-    description: 'We are seeking an experienced Microblading Artist with a keen eye for detail and symmetry. The ideal candidate will have a portfolio demonstrating precision and natural-looking results.'
-  },
-  {
-    id: 'threading-expert',
-    title: 'Threading Expert',
-    type: 'full-time',
-    description: 'We are looking for a skilled Threading Expert with experience in eyebrow and facial threading techniques. The ideal candidate will have excellent precision and attention to detail.'
-  },
-  {
-    id: 'facialist',
-    title: 'Facialist',
-    type: 'full-time',
-    description: 'We are seeking a licensed Facialist with knowledge of various skincare treatments and products. The ideal candidate will be able to customize treatments based on client skin concerns.'
-  },
-  {
-    id: 'skincare-consultant',
-    title: 'Skincare Consultant',
-    type: 'full-time',
-    description: 'We are looking for a knowledgeable Skincare Consultant with experience in analyzing skin types and recommending appropriate products and treatments. The ideal candidate will stay updated on skincare trends and innovations.'
-  },
-  {
-    id: 'brow-technician',
-    title: 'Brow Technician',
-    type: 'full-time',
-    description: 'We are seeking a skilled Brow Technician with experience in various brow shaping, tinting, and styling techniques. The ideal candidate will have a good understanding of face shapes and symmetry.'
-  },
-  {
-    id: 'piercing-specialist',
-    title: 'Piercing Specialist',
-    type: 'full-time',
-    description: 'We are looking for an experienced Piercing Specialist with knowledge of proper piercing techniques, aftercare, and jewelry options. The ideal candidate will prioritize safety and client comfort.'
-  },
-  {
-    id: 'permanent-makeup-artist',
-    title: 'Permanent Makeup Artist',
-    type: 'full-time',
-    description: 'We are seeking a licensed Permanent Makeup Artist with experience in techniques like microblading, powder brows, and lip blush. The ideal candidate will have an excellent eye for detail and color.'
-  },
-  {
-    id: 'booth-renter',
-    title: 'Booth Renter',
-    type: 'contract',
-    description: 'We have booth rental opportunities for beauty professionals looking for a space to grow their business. Ideal candidates will have an established clientele and good business management skills.'
-  },
-  {
-    id: 'freelance-beauty-pro',
-    title: 'Freelance Beauty Pro',
-    type: 'contract',
-    description: 'We are looking to collaborate with Freelance Beauty Professionals for special events and client services. Ideal candidates will be flexible, professional, and have their own kit/supplies.'
+    id: 'other',
+    title: 'Other Beauty Professional',
+    type: 'fullTime',
+    description: 'Seeking a skilled beauty professional to join our team. Please specify your expertise and experience when applying.'
   }
 ];
 
-// Job types
-export const JOB_TYPES = [
-  { value: 'full-time', label: 'Full-time' },
-  { value: 'part-time', label: 'Part-time' },
-  { value: 'contract', label: 'Contract/Freelance' },
-  { value: 'temporary', label: 'Temporary' },
-  { value: 'internship', label: 'Internship' }
-];
-
-// Yes ladder options 
-export const YES_LADDER_OPTIONS = [
-  { id: 'flexibleTime', label: 'Flexible Hours' },
-  { id: 'provideLunch', label: 'Provide Lunch' },
-  { id: 'reviewBonuses', label: 'Review Bonuses' },
-  { id: 'qualityProducts', label: 'Quality Products' },
-  { id: 'growthOpportunity', label: 'Growth Opportunities' },
-  { id: 'payWeekly', label: 'Weekly Pay' }
-];
+export const JOB_TYPES = {
+  fullTime: {
+    en: 'Full Time',
+    vi: 'Toàn thời gian'
+  },
+  partTime: {
+    en: 'Part Time',
+    vi: 'Bán thời gian'
+  },
+  contract: {
+    en: 'Contract',
+    vi: 'Theo hợp đồng'
+  },
+  freelance: {
+    en: 'Freelance',
+    vi: 'Làm tự do'
+  },
+  other: {
+    en: 'Other',
+    vi: 'Khác'
+  }
+};

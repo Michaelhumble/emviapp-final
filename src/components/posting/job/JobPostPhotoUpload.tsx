@@ -1,7 +1,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { X } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface JobPostPhotoUploadProps {
@@ -65,18 +65,19 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
     <div className="space-y-4">
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 hover:scale-105 ${
           isDragActive
             ? 'border-primary bg-primary/5'
             : 'border-gray-200 hover:border-primary/50'
         } ${photoUploads.length >= maxFiles ? 'opacity-50 pointer-events-none' : ''}`}
       >
         <input {...getInputProps()} />
-        <p className="text-sm text-muted-foreground">
+        <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+        <p className="text-sm font-medium text-muted-foreground">
           {placeholder}
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          {photoUploads.length} / {maxFiles} {uploadLimitText}
+          {uploadLimitText}
         </p>
       </div>
 
@@ -87,7 +88,7 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
           {photoUploads.map((file, index) => (
             <div
               key={`${file.name}-${index}`}
-              className="relative group aspect-square rounded-md overflow-hidden border"
+              className="relative group aspect-square rounded-md overflow-hidden border shadow-sm"
             >
               <img
                 src={URL.createObjectURL(file)}
