@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -7,14 +8,13 @@ import { Loader2, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
-import { POLISHED_DESCRIPTIONS } from './jobFormConstants';
 
 const STYLE_TABS = [
-  { value: "professional", label: "Professional", labelVi: "Chuyên nghiệp" },
-  { value: "friendly", label: "Friendly", labelVi: "Thân thiện" },
-  { value: "luxury", label: "Luxury", labelVi: "Cao cấp" },
-  { value: "casual", label: "Casual", labelVi: "Thoải mái" },
-  { value: "detailed", label: "Detailed", labelVi: "Chi tiết" }
+  { value: "professional", label: "Professional" },
+  { value: "friendly", label: "Friendly" },
+  { value: "luxury", label: "Luxury" },
+  { value: "casual", label: "Casual" },
+  { value: "detailed", label: "Detailed" }
 ];
 
 interface PolishedDescriptionsModalProps {
@@ -23,7 +23,6 @@ interface PolishedDescriptionsModalProps {
   descriptions: string[];
   onSelect: (description: string) => void;
   isLoading: boolean;
-  selectedTemplate?: string;
 }
 
 const PolishedDescriptionsModal = ({
@@ -31,50 +30,25 @@ const PolishedDescriptionsModal = ({
   onClose,
   descriptions,
   onSelect,
-  isLoading,
-  selectedTemplate = "nail-technician"
+  isLoading
 }: PolishedDescriptionsModalProps) => {
   const { isVietnamese } = useTranslation();
   const t = isVietnamese ? jobFormVi : jobFormEn;
   const [selectedTab, setSelectedTab] = useState("professional");
   const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
   
-  // Get template-based descriptions for the current tab/style
+  // Get descriptions for the current tab/style
   const getFilteredDescriptions = () => {
-    if (isLoading || !selectedTemplate) {
-      return [];
-    }
+    if (!descriptions || descriptions.length === 0) return [];
     
-    // If we have AI-generated descriptions from the API, use those
-    if (descriptions && descriptions.length > 0) {
-      // If we have 10 descriptions (2 per style), split them into 5 style groups of 2 variations each
-      const totalStyles = STYLE_TABS.length;
-      const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
-      
-      const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
-      const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
-      
-      return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
-    }
+    // If we have 10 descriptions, split them into 5 style groups of 2 variations each
+    const totalStyles = STYLE_TABS.length;
+    const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
     
-    // Otherwise, fall back to pre-defined templates based on job type and language
-    const templateKey = selectedTemplate || 'nail-technician';
-    if (isVietnamese) {
-      // Get Vietnamese templates for the selected style
-      const styleKey = `${selectedTab}Vi` as keyof typeof POLISHED_DESCRIPTIONS;
-      const templateDescriptions = POLISHED_DESCRIPTIONS[styleKey];
-      
-      return templateDescriptions && templateDescriptions[templateKey] 
-        ? [templateDescriptions[templateKey]] 
-        : [POLISHED_DESCRIPTIONS.professionalVi['nail-technician']]; // Fallback
-    } else {
-      // Get English templates for the selected style
-      const templateDescriptions = POLISHED_DESCRIPTIONS[selectedTab as keyof typeof POLISHED_DESCRIPTIONS];
-      
-      return templateDescriptions && templateDescriptions[templateKey]
-        ? [templateDescriptions[templateKey]]
-        : [POLISHED_DESCRIPTIONS.professional['nail-technician']]; // Fallback
-    }
+    const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
+    const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
+    
+    return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
   };
 
   const filteredDescriptions = getFilteredDescriptions();
@@ -86,14 +60,8 @@ const PolishedDescriptionsModal = ({
   const handleUseDescription = () => {
     if (selectedDescription) {
       onSelect(selectedDescription);
-      onClose();
     }
   };
-
-  // Reset selected description when tab changes
-  useEffect(() => {
-    setSelectedDescription(null);
-  }, [selectedTab]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -117,7 +85,7 @@ const PolishedDescriptionsModal = ({
               <TabsList className="grid grid-cols-5 mb-4">
                 {STYLE_TABS.map(tab => (
                   <TabsTrigger key={tab.value} value={tab.value}>
-                    {isVietnamese ? tab.labelVi : tab.label}
+                    {tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -158,7 +126,7 @@ const PolishedDescriptionsModal = ({
                   className="gap-2"
                 >
                   <Check className="h-4 w-4" />
-                  {isVietnamese ? 'Dùng mô tả này' : 'Use This Description'}
+                  {isVietnamese ? 'Sử dụng mô tả này' : 'Use This Description'}
                 </Button>
               </div>
             )}

@@ -1,15 +1,15 @@
 
 export const jobFormVi = {
-  title: 'Đăng tin tuyển dụng',
-  optionalLabel: '(Tùy chọn)',
+  title: 'Đăng Công Việc',
+  optionalLabel: '(Không bắt buộc)',
   requiredLabel: '*',
-  continue: 'Tiếp tục chọn gói đăng tin',
-  submit: 'Đăng tin',
+  continue: 'Tiếp tục đến Bảng giá',
+  submit: 'Đăng Công Việc',
   
   // Template
   templateLabel: 'Chọn mẫu',
   templatePlaceholder: 'Chọn mẫu công việc',
-  templates: ['Thợ làm móng', 'Thợ làm tóc', 'Thợ spa', 'Lễ tân salon', 'Khác'],
+  templates: ['Thợ Nail', 'Thợ Tóc', 'Kỹ thuật viên Spa', 'Lễ tân Salon', 'Khác'],
   
   // Job Fields
   titleLabel: 'Tiêu đề công việc',
@@ -23,35 +23,35 @@ export const jobFormVi = {
   jobTypeOptions: {
     fullTime: 'Toàn thời gian',
     partTime: 'Bán thời gian',
-    contract: 'Hợp đồng',
-    freelance: 'Tự do',
+    contract: 'Theo hợp đồng',
+    freelance: 'Làm tự do',
     other: 'Khác'
   },
   
   descriptionLabel: 'Mô tả công việc',
   descriptionPlaceholder: 'Nhập mô tả công việc',
   
-  compensationLabel: 'Mức lương',
-  compensationPlaceholder: 'VD: $20-25/giờ hoặc $50k-60k/năm',
+  compensationLabel: 'Lương thưởng',
+  compensationPlaceholder: 'Ví dụ: $20-25/giờ hoặc $50k-60k/năm',
   
   // Contact Section
   contactInfoLabel: 'Thông tin liên hệ',
   contactInfoEmail: 'Email',
   contactInfoEmailPlaceholder: 'Nhập email liên hệ',
   contactInfoPhone: 'Số điện thoại',
-  contactInfoPhonePlaceholder: 'Nhập số điện thoại liên hệ',
+  contactInfoPhonePlaceholder: 'Nhập số điện thoại',
   
   // Photo Upload
-  photosLabel: 'Thêm hình ảnh (tùy chọn)',
+  photosLabel: 'Thêm ảnh (Không bắt buộc)',
   dragDropText: 'Kéo thả hình ảnh hoặc bấm để chọn',
-  photoCountText: '{count} / {max} hình ảnh đã thêm',
+  photoCountText: '{count} / {max} ảnh được thêm',
   
   // Urgent
-  urgentLabel: 'Đánh dấu là gấp',
+  urgentLabel: 'Đánh dấu là khẩn cấp',
   urgentHelpText: 'Làm nổi bật bài đăng của bạn',
   
   // AI Polish
-  aiPolishButton: 'Trợ giúp từ AI ✨',
+  aiPolishButton: '✨ Trợ Giúp Từ AI',
   
   // Submission
   submitting: 'Đang gửi...',
@@ -61,7 +61,7 @@ export const jobFormVi = {
     title: 'Tiêu đề là bắt buộc',
     description: 'Mô tả phải có ít nhất 10 ký tự',
     location: 'Địa điểm là bắt buộc',
-    email: 'Vui lòng nhập địa chỉ email hợp lệ',
+    email: 'Vui lòng nhập email hợp lệ',
     phone: 'Vui lòng nhập số điện thoại hợp lệ'
   }
 };
