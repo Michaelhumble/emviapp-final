@@ -1,11 +1,10 @@
 
 import React, { useState } from 'react';
-import JobForm from '@/components/posting/job/JobForm';
-import { JobFormValues } from '@/components/posting/job/JobForm';
-import { Container } from '@/components/ui/container';
 import { useNavigate } from 'react-router-dom';
-import { Layout } from '@/components/layout';
 import { Helmet } from 'react-helmet';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { Container } from '@/components/ui/container';
+import { Layout } from '@/components/layout';
 
 const JobPost: React.FC = () => {
   const navigate = useNavigate();
@@ -31,12 +30,12 @@ const JobPost: React.FC = () => {
         <title>Post a Job | EmviApp</title>
       </Helmet>
       <Container className="py-8">
-        <JobForm
-          onSubmit={handleSubmit}
-          photoUploads={photoUploads}
-          setPhotoUploads={setPhotoUploads}
-          isSubmitting={isSubmitting}
-        />
+        <h1 className="text-3xl font-playfair mb-8">Post a Job</h1>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          {/* The JobForm component will be imported from 
+              @/components/posting/job/JobForm once we 
+              update that component too */}
+        </div>
       </Container>
     </Layout>
   );

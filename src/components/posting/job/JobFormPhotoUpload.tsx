@@ -6,12 +6,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
 
-interface JobPostPhotoUploadProps {
+export interface JobPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  maxPhotos?: number; // Added maxPhotos as optional prop
 }
 
-export const JobPostPhotoUpload = ({ photoUploads, setPhotoUploads }: JobPostPhotoUploadProps) => {
+export const JobPostPhotoUpload = ({ 
+  photoUploads, 
+  setPhotoUploads, 
+  maxPhotos = 5 // Default to 5 photos if not specified
+}: JobPostPhotoUploadProps) => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   
@@ -20,11 +25,18 @@ export const JobPostPhotoUpload = ({ photoUploads, setPhotoUploads }: JobPostPho
     if (!files || files.length === 0) return;
     
     const newFiles = Array.from(files);
-    setPhotoUploads(prev => [...prev, ...newFiles]);
+    
+    // Limit the number of photos that can be uploaded
+    const availableSlots = maxPhotos - photoUploads.length;
+    const filesToAdd = newFiles.slice(0, availableSlots);
+    
+    if (filesToAdd.length > 0) {
+      setPhotoUploads(prev => [...prev, ...filesToAdd]);
+    }
     
     // Reset the input value to allow selecting the same file again
     event.target.value = '';
-  }, [setPhotoUploads]);
+  }, [setPhotoUploads, photoUploads.length, maxPhotos]);
 
   const removePhoto = useCallback((index: number) => {
     setPhotoUploads(prev => prev.filter((_, i) => i !== index));
@@ -74,52 +86,54 @@ export const JobPostPhotoUpload = ({ photoUploads, setPhotoUploads }: JobPostPho
         Upload high-quality photos for your job post. Photos significantly increase application rates.
       </p>
 
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <input
-          id="photo-upload"
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-          disabled={uploading}
-        />
-        
-        <div className="flex flex-col items-center justify-center space-y-3">
-          <div className="h-12 w-12 rounded-full bg-purple-50 flex items-center justify-center">
-            <Upload className="h-6 w-6 text-purple-600" />
+      {photoUploads.length < maxPhotos && (
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+          <input
+            id="photo-upload"
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={uploading || photoUploads.length >= maxPhotos}
+          />
+          
+          <div className="flex flex-col items-center justify-center space-y-3">
+            <div className="h-12 w-12 rounded-full bg-purple-50 flex items-center justify-center">
+              <Upload className="h-6 w-6 text-purple-600" />
+            </div>
+            <div>
+              <p className="font-medium text-gray-800">
+                {uploading 
+                  ? "Uploading images..." 
+                  : "Drag photos here or click to upload"}
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Support: JPG, PNG, WEBP. Max 5MB each. {photoUploads.length}/{maxPhotos} photos.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => document.getElementById('photo-upload')?.click()}
+              disabled={uploading || photoUploads.length >= maxPhotos}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                'Select Photos'
+              )}
+            </Button>
           </div>
-          <div>
-            <p className="font-medium text-gray-800">
-              {uploading 
-                ? "Uploading images..." 
-                : "Drag photos here or click to upload"}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              Support: JPG, PNG, WEBP. Max 5MB each.
-            </p>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => document.getElementById('photo-upload')?.click()}
-            disabled={uploading}
-          >
-            {uploading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Uploading...
-              </>
-            ) : (
-              'Select Photos'
-            )}
-          </Button>
         </div>
-      </div>
+      )}
 
       {photoUploads.length > 0 && (
         <div className="mt-6">
-          <h3 className="font-medium mb-3">Uploaded Photos ({photoUploads.length})</h3>
+          <h3 className="font-medium mb-3">Uploaded Photos ({photoUploads.length}/{maxPhotos})</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {photoUploads.map((file, index) => (
               <div key={`${file.name}-${index}`} className="relative group">
