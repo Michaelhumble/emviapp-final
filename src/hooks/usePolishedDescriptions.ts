@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useTranslation } from './useTranslation';
 
 interface PolishedDescriptionsHook {
   polishedDescriptions: string[];
@@ -16,9 +16,33 @@ const POLISH_STYLES = [
   "detailed and informative"
 ];
 
+const VIETNAMESE_SUGGESTIONS = {
+  "professional and concise": [
+    "Ứng viên cần có tay nghề vững vàng trong việc làm móng tay, móng chân, đắp bột, gel. Làm việc toàn thời gian với mức lương cạnh tranh và tiền tip tốt.",
+    "Chúng tôi tìm kiếm thợ chuyên nghiệp có kinh nghiệm và kỹ năng cao. Môi trường làm việc chuyên nghiệp, lương thưởng hấp dẫn và cơ hội phát triển."
+  ],
+  "friendly and welcoming": [
+    "Chúng tôi đang tìm một người dễ thương, thân thiện để gia nhập tiệm! Có tay nghề là điểm cộng. Môi trường làm việc thoải mái, vui vẻ, nhiều khách quen.",
+    "Gia đình tiệm chúng tôi đang tìm thêm thành viên mới! Nếu bạn thích không khí vui vẻ và muốn làm việc trong môi trường như gia đình, hãy liên hệ ngay nhé."
+  ],
+  "luxury and high-end": [
+    "Làm việc tại tiệm cao cấp, chuyên phục vụ khách VIP. Yêu cầu tay nghề cao, thái độ chuyên nghiệp, lương và tip cao.",
+    "Salon cao cấp của chúng tôi đang tìm kiếm những người thợ xuất sắc để phục vụ khách hàng tinh tế. Chúng tôi sử dụng sản phẩm hạng sang và cung cấp môi trường làm việc đẳng cấp."
+  ],
+  "casual and approachable": [
+    "Tiệm bận rộn, cần người có tay nghề cơ bản là được. Làm full-time, có khách đều.",
+    "Chúng tôi cần thêm thợ để phục vụ lượng khách đông đảo. Không cần quá nhiều kinh nghiệm, chỉ cần bạn chăm chỉ và có tinh thần học hỏi."
+  ],
+  "detailed and informative": [
+    "Cần thợ có kinh nghiệm trong làm móng tay, móng chân, đắp bột, sơn gel. Có huấn luyện thêm nếu cần. Môi trường ổn định, lương hàng tuần, thưởng thêm nếu làm tốt.",
+    "Yêu cầu cụ thể: ít nhất 2 năm kinh nghiệm, thông thạo các kỹ thuật làm móng hiện đại. Làm việc từ 9h-19h, nghỉ thứ Hai. Lương từ $XX-$XX/ngày tùy theo năng lực, trả hàng tuần, có tip."
+  ]
+};
+
 export const usePolishedDescriptions = (): PolishedDescriptionsHook => {
   const [polishedDescriptions, setPolishedDescriptions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { isVietnamese } = useTranslation();
 
   // This function would typically call an AI API, but for demo we'll generate variations locally
   const fetchPolishedDescriptions = async (text: string): Promise<void> => {
@@ -36,12 +60,27 @@ export const usePolishedDescriptions = (): PolishedDescriptionsHook => {
       // Generate variations for each style
       const variations: string[] = [];
       
-      for (const style of POLISH_STYLES) {
-        // Generate two variations per style
-        const variation1 = generatePolishedVersion(text, style, 1);
-        const variation2 = generatePolishedVersion(text, style, 2);
-        
-        variations.push(variation1, variation2);
+      // If Vietnamese language is selected, use predefined Vietnamese suggestions
+      if (isVietnamese) {
+        for (const style of POLISH_STYLES) {
+          if (VIETNAMESE_SUGGESTIONS[style]) {
+            variations.push(...VIETNAMESE_SUGGESTIONS[style]);
+          } else {
+            variations.push(
+              `${text}\n\n(Phiên bản nâng cao - ${style})`,
+              `${text}\n\n(Phiên bản chỉnh sửa - ${style})`
+            );
+          }
+        }
+      } else {
+        // English version - keep the original implementation
+        for (const style of POLISH_STYLES) {
+          // Generate two variations per style
+          const variation1 = generatePolishedVersion(text, style, 1);
+          const variation2 = generatePolishedVersion(text, style, 2);
+          
+          variations.push(variation1, variation2);
+        }
       }
       
       // In production, you would call an actual API here
@@ -57,7 +96,7 @@ export const usePolishedDescriptions = (): PolishedDescriptionsHook => {
       console.error('Error polishing text:', error);
       // Fallback to original description with minor enhancement
       setPolishedDescriptions([
-        `${text}\n\nThis job post was enhanced to highlight key benefits and requirements.`,
+        `${text}\n\n${isVietnamese ? 'Mô tả này đã được nâng cao để thu hút ứng viên.' : 'This job post was enhanced to highlight key benefits and requirements.'}`,
         text
       ]);
     } finally {

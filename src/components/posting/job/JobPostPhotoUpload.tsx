@@ -2,6 +2,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { UploadCloud } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobPostPhotoUploadProps {
   photoUploads: File[];
@@ -17,11 +18,21 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
   photoUploads,
   setPhotoUploads,
   maxPhotos = 5,
-  translations = {
-    dragDropText: 'Drag and drop images or click to select',
-    photoCount: (count: number, max: number) => `${count} / ${max} photos added`
-  }
+  translations
 }) => {
+  const { isVietnamese } = useTranslation();
+  
+  const defaultTranslations = {
+    dragDropText: isVietnamese 
+      ? 'Kéo thả hình ảnh vào đây hoặc bấm để chọn – Gợi ý: Thêm hình sẽ giúp bài đăng nổi bật hơn!' 
+      : 'Drag and drop images or click to select',
+    photoCount: (count: number, max: number) => isVietnamese 
+      ? `${count} / ${max} ảnh được thêm` 
+      : `${count} / ${max} photos added`
+  };
+  
+  const finalTranslations = translations || defaultTranslations;
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Handle file drops, ensuring we don't exceed max photos
     setPhotoUploads(current => {
@@ -56,13 +67,11 @@ const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
       >
         <input {...getInputProps()} />
         <UploadCloud className="w-10 h-10 mb-2 text-gray-400" />
-        <p className="text-sm text-gray-600">
-          {translations?.dragDropText || 'Drag and drop images or click to select'}
+        <p className="text-sm text-gray-600 font-inter">
+          {finalTranslations.dragDropText}
         </p>
-        <p className="mt-1 text-xs text-gray-500">
-          {translations?.photoCount 
-            ? translations.photoCount(photoUploads.length, maxPhotos) 
-            : `${photoUploads.length} / ${maxPhotos} photos added`}
+        <p className="mt-1 text-xs text-gray-500 font-inter">
+          {finalTranslations.photoCount(photoUploads.length, maxPhotos)}
         </p>
       </div>
 

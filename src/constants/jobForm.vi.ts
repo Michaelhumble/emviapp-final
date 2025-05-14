@@ -9,7 +9,7 @@ export const jobFormVi = {
   // Template
   templateLabel: 'Chọn mẫu',
   templatePlaceholder: 'Chọn mẫu công việc',
-  templates: ['Thợ Nail', 'Thợ Tóc', 'Kỹ thuật viên Spa', 'Lễ tân Salon', 'Khác'],
+  templates: ['Thợ Nail', 'Thợ Làm Tóc', 'Kỹ thuật viên Spa', 'Lễ tân Tiệm', 'Quản Lý Tiệm', 'Thợ Massage', 'Thợ Nối Mi', 'Thợ Xăm', 'Thợ Trang Điểm', 'Cho Thuê Bàn/Chỗ Ngồi', 'Ngành Làm Đẹp Khác'],
   
   // Job Fields
   titleLabel: 'Tiêu đề công việc',
@@ -43,7 +43,7 @@ export const jobFormVi = {
   
   // Photo Upload
   photosLabel: 'Thêm ảnh (Không bắt buộc)',
-  dragDropText: 'Kéo thả hình ảnh hoặc bấm để chọn',
+  dragDropText: 'Kéo thả hình ảnh vào đây hoặc bấm để chọn – Gợi ý: Thêm hình sẽ giúp bài đăng nổi bật hơn!',
   photoCountText: '{count} / {max} ảnh được thêm',
   
   // Urgent

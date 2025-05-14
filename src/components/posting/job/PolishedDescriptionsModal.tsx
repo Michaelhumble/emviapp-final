@@ -10,11 +10,11 @@ import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
 
 const STYLE_TABS = [
-  { value: "professional", label: "Professional" },
-  { value: "friendly", label: "Friendly" },
-  { value: "luxury", label: "Luxury" },
-  { value: "casual", label: "Casual" },
-  { value: "detailed", label: "Detailed" }
+  { value: "professional", label: "Professional", labelVi: "Chuyên nghiệp" },
+  { value: "friendly", label: "Friendly", labelVi: "Thân thiện" },
+  { value: "luxury", label: "Luxury", labelVi: "Cao cấp" },
+  { value: "casual", label: "Casual", labelVi: "Thoải mái" },
+  { value: "detailed", label: "Detailed", labelVi: "Chi tiết" }
 ];
 
 interface PolishedDescriptionsModalProps {
@@ -85,7 +85,7 @@ const PolishedDescriptionsModal = ({
               <TabsList className="grid grid-cols-5 mb-4">
                 {STYLE_TABS.map(tab => (
                   <TabsTrigger key={tab.value} value={tab.value}>
-                    {tab.label}
+                    {isVietnamese ? tab.labelVi : tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -126,7 +126,7 @@ const PolishedDescriptionsModal = ({
                   className="gap-2"
                 >
                   <Check className="h-4 w-4" />
-                  {isVietnamese ? 'Sử dụng mô tả này' : 'Use This Description'}
+                  {isVietnamese ? 'Dùng mô tả này' : 'Use This Description'}
                 </Button>
               </div>
             )}
