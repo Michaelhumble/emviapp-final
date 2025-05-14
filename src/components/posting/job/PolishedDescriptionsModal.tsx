@@ -14,7 +14,18 @@ const STYLE_TABS = [
   { value: "friendly", label: "Friendly" },
   { value: "luxury", label: "Luxury" },
   { value: "casual", label: "Casual" },
-  { value: "detailed", label: "Detailed" }
+  { value: "detailed", label: "Detailed" },
+  // New Vietnamese style tabs only shown for Vietnamese language
+  { value: "warm", label: "Ấm áp & Thân thiện", viOnly: true },
+  { value: "polite", label: "Chuyên nghiệp & Lịch sự", viOnly: true },
+  { value: "creative", label: "Sáng tạo & Nghệ thuật", viOnly: true },
+  { value: "local", label: "Địa phương & Gần gũi", viOnly: true },
+  { value: "direct", label: "Ngắn gọn & Trực tiếp", viOnly: true },
+  { value: "passionate", label: "Đam mê & Nhiệt huyết", viOnly: true },
+  { value: "supportive", label: "Hỗ trợ & Đoàn kết", viOnly: true },
+  { value: "longterm", label: "Đầu tư lâu dài", viOnly: true },
+  { value: "gentle", label: "Nhẹ nhàng & Tình cảm", viOnly: true },
+  { value: "premium", label: "Đẳng cấp & Cao cấp", viOnly: true }
 ];
 
 interface PolishedDescriptionsModalProps {
@@ -37,6 +48,11 @@ const PolishedDescriptionsModal = ({
   const [selectedTab, setSelectedTab] = useState("professional");
   const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
   
+  // Filter tabs based on language
+  const visibleTabs = STYLE_TABS.filter(tab => 
+    !tab.viOnly || (tab.viOnly && isVietnamese)
+  );
+  
   // Get descriptions for the current tab/style
   const getFilteredDescriptions = () => {
     if (!descriptions || descriptions.length === 0) return [];
@@ -47,7 +63,7 @@ const PolishedDescriptionsModal = ({
     }
     
     // Otherwise use the standard descriptions as before
-    const totalStyles = STYLE_TABS.length;
+    const totalStyles = STYLE_TABS.filter(tab => !tab.viOnly).length;
     const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
     
     const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
@@ -88,11 +104,23 @@ const PolishedDescriptionsModal = ({
           <>
             <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
               <TabsList className="grid grid-cols-5 mb-4">
-                {STYLE_TABS.map(tab => (
-                  <TabsTrigger key={tab.value} value={tab.value}>
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
+                {visibleTabs.length > 5 ? (
+                  <ScrollArea className="w-full">
+                    <div className="flex space-x-2 p-1">
+                      {visibleTabs.map(tab => (
+                        <TabsTrigger key={tab.value} value={tab.value} className="whitespace-nowrap">
+                          {tab.label}
+                        </TabsTrigger>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  visibleTabs.map(tab => (
+                    <TabsTrigger key={tab.value} value={tab.value}>
+                      {tab.label}
+                    </TabsTrigger>
+                  ))
+                )}
               </TabsList>
               
               <TabsContent value={selectedTab} className="mt-0">

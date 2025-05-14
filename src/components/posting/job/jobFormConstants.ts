@@ -114,6 +114,37 @@ export const POLISHED_DESCRIPTIONS_VI = {
       "Tiệm không thiếu khách, cần thợ bột biết vẽ đơn giản, có chỗ ở riêng, không chung chủ, làm thoải mái.",
       "Cần thợ nails đi làm liền – càng giỏi càng tốt. Tiệm khách sang, chủ vui vẻ, làm không stress, có tiền liền!"
     ],
+    // Add the 10 new Vietnamese templates
+    "warm": [
+      "Chào mừng bạn đến với salon nails thân thiện của chúng tôi! Cần tìm thợ nail có kinh nghiệm làm móng bột, gel, đắp hoa, vẽ móng. Khách sang, tip cao, chủ dễ chịu, môi trường làm việc như gia đình. Lương căn bản + ăn chia hấp dẫn, nhiều khách Mỹ trắng, khách đặt hẹn sẵn, không lo ngồi không!"
+    ],
+    "polite": [
+      "Salon nails khu Mỹ trắng cần thợ nail tay nghề cứng, biết làm bột, gel, chân tay nước. Khách quen, giá nails cao, môi trường chuyên nghiệp, làm việc đúng giờ, lịch sự, ổn định lâu dài. Chủ có tâm, lương ổn định, có bonus, chủ yếu làm khách appointment."
+    ],
+    "creative": [
+      "Salon nghệ thuật cần thợ biết vẽ móng, design ombre, đính đá, làm mẫu. Tự do sáng tạo, không áp lực, khách trẻ trung, nhiều cơ hội phát triển bản thân. Thu nhập cao, môi trường năng động, hỗ trợ sản phẩm tốt."
+    ],
+    "local": [
+      "Salon nails khu đông người Việt, khách dễ thương, cần tìm thợ biết làm đủ các dịch vụ (bột, gel, chân tay nước). Chủ bao lương, môi trường vui vẻ, phù hợp anh chị em muốn ổn định, sống lâu dài gần cộng đồng người Việt."
+    ],
+    "direct": [
+      "Cần thợ nail biết làm bột, gel, chân tay nước, khách đông quanh năm, tip tốt, chủ dễ tính. Lương cao, có chỗ ở nếu cần. Nhắn tin trực tiếp nếu muốn làm ngay!"
+    ],
+    "passionate": [
+      "Bạn đam mê nghề nails? Hãy về đội với chúng tôi! Salon đông khách, khách Mỹ trắng, cần người chịu khó, muốn phát triển nghề. Môi trường trẻ, vui vẻ, được training thêm nếu cần."
+    ],
+    "supportive": [
+      "Salon nhỏ, chủ thân thiện, đồng nghiệp dễ thương, cần thêm thợ làm bột hoặc chân tay nước. Chủ bao lương tháng đầu, ưu tiên biết tiếng Anh cơ bản, khách ổn định, tip chia đều."
+    ],
+    "longterm": [
+      "Salon mới remodel, vị trí đẹp, cần thợ gắn bó lâu dài, ưu tiên ai muốn tìm môi trường làm việc ổn định, có chính sách nghỉ phép và thưởng lễ."
+    ],
+    "gentle": [
+      "Salon như gia đình nhỏ, chủ tận tâm, khách quen lâu năm, cần thợ biết làm căn bản. Không yêu cầu áp lực doanh số, chỉ cần vui vẻ, hoà đồng, trung thực."
+    ],
+    "premium": [
+      "Salon luxury khu trung tâm, khách sành điệu, cần thợ tay nghề cao về design, đắp bột, gel. Thu nhập cao nhất khu vực, khách bo nhiều, chủ hỗ trợ sản phẩm cao cấp, môi trường chuyên nghiệp."
+    ]
   },
   hair: {
     professional: [],
