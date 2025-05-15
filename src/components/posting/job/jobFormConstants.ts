@@ -1,6 +1,6 @@
-import { JobTemplateOption, JobType, PolishedDescriptions } from "./types";
+import { JobTemplateOption, JobType, PolishedDescription, PolishedDescriptions } from "./types";
 
-// English job templates
+// English Job Templates
 export const JOB_TEMPLATES_EN: JobTemplateOption[] = [
   {
     id: "nail-technician",
@@ -39,7 +39,7 @@ export const JOB_TEMPLATES_EN: JobTemplateOption[] = [
   }
 ];
 
-// Vietnamese job templates
+// Vietnamese Job Templates 
 export const JOB_TEMPLATES_VI: JobTemplateOption[] = [
   {
     id: "tho-nail",
@@ -78,25 +78,47 @@ export const JOB_TEMPLATES_VI: JobTemplateOption[] = [
   }
 ];
 
-// English job types
+// Updated English Job Types
 export const JOB_TYPES_EN: JobType[] = [
   { value: "fullTime", label: "Full Time" },
   { value: "partTime", label: "Part Time" },
   { value: "contract", label: "Contract" },
   { value: "freelance", label: "Freelance" },
+  { value: "nailTechnician", label: "Nail Technician" },
+  { value: "hairStylist", label: "Hair Stylist" },
+  { value: "spaTechnician", label: "Spa Technician" },
+  { value: "salonReceptionist", label: "Salon Receptionist" },
+  { value: "salonManager", label: "Salon Manager" },
+  { value: "massageTherapist", label: "Massage Therapist" },
+  { value: "lashTechnician", label: "Lash Technician" },
+  { value: "tattooArtist", label: "Tattoo Artist" },
+  { value: "makeupArtist", label: "Makeup Artist" },
+  { value: "boothRental", label: "Booth Rental Available" },
+  { value: "otherBeauty", label: "Other Beauty Professional" },
   { value: "other", label: "Other" }
 ];
 
-// Vietnamese job types
+// Updated Vietnamese Job Types with translations
 export const JOB_TYPES_VI: JobType[] = [
   { value: "fullTime", label: "Toàn thời gian" },
   { value: "partTime", label: "Bán thời gian" },
   { value: "contract", label: "Theo hợp đồng" },
   { value: "freelance", label: "Làm tự do" },
+  { value: "nailTechnician", label: "Thợ Nail" },
+  { value: "hairStylist", label: "Thợ Tóc" },
+  { value: "spaTechnician", label: "Kỹ thuật viên Spa" },
+  { value: "salonReceptionist", label: "Lễ tân Salon" },
+  { value: "salonManager", label: "Quản lý Salon" },
+  { value: "massageTherapist", label: "Thợ Massage" },
+  { value: "lashTechnician", label: "Thợ Nối Mi" },
+  { value: "tattooArtist", label: "Thợ Xăm" },
+  { value: "makeupArtist", label: "Thợ Trang Điểm" },
+  { value: "boothRental", label: "Cho Thuê Ghế" },
+  { value: "otherBeauty", label: "Chuyên Gia Sắc Đẹp Khác" },
   { value: "other", label: "Khác" }
 ];
 
-// English polished descriptions
+// English AI Polish descriptions
 export const POLISHED_DESCRIPTIONS_EN: PolishedDescriptions = {
   nail: [
     {
@@ -156,7 +178,7 @@ export const POLISHED_DESCRIPTIONS_EN: PolishedDescriptions = {
   ]
 };
 
-// Vietnamese polished descriptions
+// Vietnamese AI Polish descriptions
 export const POLISHED_DESCRIPTIONS_VI: PolishedDescriptions = {
   nail: [
     {

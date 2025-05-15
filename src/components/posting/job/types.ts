@@ -1,4 +1,7 @@
 
+import { z } from 'zod';
+import { jobFormSchema } from './jobFormSchema';
+
 export interface JobTemplateOption {
   id: string;
   label: string;
@@ -23,3 +26,5 @@ export interface PolishedDescriptions {
   spa: PolishedDescription[];
   other: PolishedDescription[];
 }
+
+export type JobFormValues = z.infer<typeof jobFormSchema>;
