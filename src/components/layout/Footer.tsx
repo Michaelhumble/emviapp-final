@@ -9,12 +9,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-1">
-            <img 
-              src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png" 
-              alt="EmviApp logo" 
-              width={160} 
-              height="auto" 
-            />
+            <EmviLogo size="large" />
             <p className="text-gray-600 mt-4">
               The first platform purpose-built for the beauty industry with embedded AI intelligence.
             </p>

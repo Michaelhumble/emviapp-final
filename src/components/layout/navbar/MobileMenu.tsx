@@ -54,11 +54,6 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
         </SheetTrigger>
         <SheetContent side="right" className="w-[80%] px-6 py-4 rounded-l-xl shadow-lg">
           <div className="flex flex-col gap-6 h-full">
-            {/* Logo at the top of mobile menu */}
-            <div className="flex justify-center mb-2">
-              <img src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png" alt="EmviApp logo" width={120} height="auto" />
-            </div>
-            
             {/* Post Job Button */}
             <Button 
               className="w-full rounded-full font-medium flex gap-2 items-center justify-center bg-purple-600 hover:bg-purple-700 text-white py-6"

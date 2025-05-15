@@ -16,7 +16,6 @@ export interface PaymentConfirmationModalProps {
   options: PricingOptions;
   originalPrice: number;
   discountPercentage: number;
-  jobData?: any; // Optional job data for preview
 }
 
 const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
@@ -27,8 +26,7 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
   amount,
   options,
   originalPrice,
-  discountPercentage,
-  jobData
+  discountPercentage
 }) => {
   const { t } = useTranslation();
 
@@ -61,21 +59,6 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
         </DialogHeader>
         
         <div className="space-y-4">
-          {/* Job Summary Preview */}
-          {jobData && (
-            <div className="border rounded-lg p-4 bg-gray-50 mb-4">
-              <h3 className="font-medium mb-2 text-gray-800">
-                {t('Job Details', 'Chi tiết công việc')}
-              </h3>
-              
-              <div className="text-sm space-y-1 text-gray-700">
-                <p><strong>{t('Title', 'Tiêu đề')}:</strong> {jobData.title}</p>
-                <p><strong>{t('Type', 'Loại')}:</strong> {jobData.jobType}</p>
-                <p><strong>{t('Location', 'Địa điểm')}:</strong> {jobData.location}</p>
-              </div>
-            </div>
-          )}
-          
           <div className="border rounded-lg p-4 bg-gray-50">
             <h3 className="font-medium mb-3 flex items-center gap-2 text-gray-800">
               <CreditCard className="h-4 w-4 text-purple-600" />

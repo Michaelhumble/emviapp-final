@@ -15,13 +15,7 @@ const CustomerDashboardHeader = ({ profile }: CustomerDashboardHeaderProps) => {
   return (
     <div className="mb-6 relative">
       <div className="flex items-center mb-3">
-        <img 
-          src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png"
-          alt="EmviApp logo"
-          width={80}
-          height="auto"
-          className="mr-3"
-        />
+        <EmviLogo size="small" className="mr-3" />
         <h1 className="text-2xl font-bold text-gray-900">
           Welcome, {userDisplayData?.full_name || 'Customer'}!
         </h1>
@@ -37,3 +31,4 @@ const CustomerDashboardHeader = ({ profile }: CustomerDashboardHeaderProps) => {
 };
 
 export default CustomerDashboardHeader;
+
