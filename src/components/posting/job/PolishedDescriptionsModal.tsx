@@ -1,199 +1,176 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Loader2, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
-import { cn } from '@/lib/utils';
+import { jobFormEn } from '@/constants/jobForm.en';
+import { jobFormVi } from '@/constants/jobForm.vi';
+import { POLISHED_DESCRIPTIONS_VI } from './jobFormConstants';
 
-// Fix for the import error - updating to the correct path based on available files
-import { JOB_TEMPLATES } from '@/components/posting/job/jobFormConstants';
+const STYLE_TABS = [
+  { value: "professional", label: "Professional" },
+  { value: "friendly", label: "Friendly" },
+  { value: "luxury", label: "Luxury" },
+  { value: "casual", label: "Casual" },
+  { value: "detailed", label: "Detailed" },
+  // New Vietnamese style tabs only shown for Vietnamese language
+  { value: "warm", label: "Ấm áp & Thân thiện", viOnly: true },
+  { value: "polite", label: "Chuyên nghiệp & Lịch sự", viOnly: true },
+  { value: "creative", label: "Sáng tạo & Nghệ thuật", viOnly: true },
+  { value: "local", label: "Địa phương & Gần gũi", viOnly: true },
+  { value: "direct", label: "Ngắn gọn & Trực tiếp", viOnly: true },
+  { value: "passionate", label: "Đam mê & Nhiệt huyết", viOnly: true },
+  { value: "supportive", label: "Hỗ trợ & Đoàn kết", viOnly: true },
+  { value: "longterm", label: "Đầu tư lâu dài", viOnly: true },
+  { value: "gentle", label: "Nhẹ nhàng & Tình cảm", viOnly: true },
+  { value: "premium", label: "Đẳng cấp & Cao cấp", viOnly: true }
+];
 
 interface PolishedDescriptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  currentDescription: string;
-  onSelectDescription: (description: string) => void;
-  jobType?: string;
+  descriptions: string[];
+  onSelect: (description: string) => void;
+  isLoading: boolean;
 }
 
-export const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
+const PolishedDescriptionsModal = ({
   isOpen,
   onClose,
-  currentDescription,
-  onSelectDescription,
-  jobType
-}) => {
+  descriptions,
+  onSelect,
+  isLoading
+}: PolishedDescriptionsModalProps) => {
   const { isVietnamese } = useTranslation();
-  const { polishedDescriptions, isLoading, fetchPolishedDescriptions } = usePolishedDescriptions();
-  const [selectedTab, setSelectedTab] = useState('professional');
+  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const [selectedTab, setSelectedTab] = useState("professional");
   const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isOpen && currentDescription) {
-      fetchPolishedDescriptions(currentDescription);
+  
+  // Filter tabs based on language
+  const visibleTabs = STYLE_TABS.filter(tab => 
+    !tab.viOnly || (tab.viOnly && isVietnamese)
+  );
+  
+  // Get descriptions for the current tab/style
+  const getFilteredDescriptions = () => {
+    if (!descriptions || descriptions.length === 0) return [];
+    
+    // If we're using Vietnamese and have nail descriptions available
+    if (isVietnamese && POLISHED_DESCRIPTIONS_VI.nail && POLISHED_DESCRIPTIONS_VI.nail[selectedTab]) {
+      return POLISHED_DESCRIPTIONS_VI.nail[selectedTab];
     }
-  }, [isOpen, currentDescription, fetchPolishedDescriptions]);
-
-  const handleApply = () => {
-    if (selectedDescription) {
-      onSelectDescription(selectedDescription);
-      onClose();
-    }
+    
+    // Otherwise use the standard descriptions as before
+    const totalStyles = STYLE_TABS.filter(tab => !tab.viOnly).length;
+    const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
+    
+    const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
+    const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
+    
+    return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
   };
 
-  // Group descriptions by style/category
-  const styleGroups = {
-    professional: polishedDescriptions.filter((_, index) => index % 5 === 0),
-    friendly: polishedDescriptions.filter((_, index) => index % 5 === 1),
-    luxury: polishedDescriptions.filter((_, index) => index % 5 === 2),
-    casual: polishedDescriptions.filter((_, index) => index % 5 === 3),
-    detailed: polishedDescriptions.filter((_, index) => index % 5 === 4),
+  const filteredDescriptions = getFilteredDescriptions();
+
+  const handleSelectDescription = (description: string) => {
+    setSelectedDescription(description);
+  };
+
+  const handleUseDescription = () => {
+    if (selectedDescription) {
+      onSelect(selectedDescription);
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>
-            {isVietnamese ? 'Cải thiện bài đăng của bạn với AI ✨' : 'Enhance Your Job Post with AI ✨'}
+          <DialogTitle className="font-playfair text-xl">
+            {isVietnamese ? "Gợi ý từ AI" : "AI Suggestions"}
           </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-2 text-lg">{isVietnamese ? 'Đang tạo bản mẫu...' : 'Generating suggestions...'}</span>
+          <div className="flex flex-col items-center justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="text-center text-muted-foreground">
+              {isVietnamese ? "AI đang hoàn thiện mô tả của bạn..." : "AI is polishing your description..."}
+            </p>
           </div>
         ) : (
           <>
             <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
-              <TabsList className="w-full justify-start overflow-x-auto">
-                <TabsTrigger value="professional">
-                  {isVietnamese ? 'Chuyên nghiệp' : 'Professional'}
-                </TabsTrigger>
-                <TabsTrigger value="friendly">
-                  {isVietnamese ? 'Thân thiện' : 'Friendly'}
-                </TabsTrigger>
-                <TabsTrigger value="luxury">
-                  {isVietnamese ? 'Cao cấp' : 'Luxury'}
-                </TabsTrigger>
-                <TabsTrigger value="casual">
-                  {isVietnamese ? 'Thoải mái' : 'Casual'}
-                </TabsTrigger>
-                <TabsTrigger value="detailed">
-                  {isVietnamese ? 'Chi tiết' : 'Detailed'}
-                </TabsTrigger>
-                
-                {/* Show Vietnamese tab only when language is set to Vietnamese */}
-                {isVietnamese && (
-                  <TabsTrigger value="vietnamese">
-                    Tiếng Việt
-                  </TabsTrigger>
+              <TabsList className="grid grid-cols-5 mb-4">
+                {visibleTabs.length > 5 ? (
+                  <ScrollArea className="w-full">
+                    <div className="flex space-x-2 p-1">
+                      {visibleTabs.map(tab => (
+                        <TabsTrigger key={tab.value} value={tab.value} className="whitespace-nowrap">
+                          {tab.label}
+                        </TabsTrigger>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  visibleTabs.map(tab => (
+                    <TabsTrigger key={tab.value} value={tab.value}>
+                      {tab.label}
+                    </TabsTrigger>
+                  ))
                 )}
               </TabsList>
-
-              {/* Tab content for each style */}
-              <TabsContent value="professional" className="space-y-4 pt-2">
-                {styleGroups.professional.map((description, index) => (
-                  <div
-                    key={`professional-${index}`}
-                    className={cn(
-                      "cursor-pointer rounded-md border p-4 hover:bg-muted/50",
-                      selectedDescription === description ? "border-primary bg-muted/30" : "border-border"
-                    )}
-                    onClick={() => setSelectedDescription(description)}
-                  >
-                    <p className="whitespace-pre-wrap">{description}</p>
-                  </div>
-                ))}
-              </TabsContent>
               
-              <TabsContent value="friendly" className="space-y-4 pt-2">
-                {styleGroups.friendly.map((description, index) => (
-                  <div
-                    key={`friendly-${index}`}
-                    className={cn(
-                      "cursor-pointer rounded-md border p-4 hover:bg-muted/50",
-                      selectedDescription === description ? "border-primary bg-muted/30" : "border-border"
+              <TabsContent value={selectedTab} className="mt-0">
+                <ScrollArea className="h-[300px] pr-4">
+                  <div className="space-y-4">
+                    {filteredDescriptions.length > 0 ? (
+                      filteredDescriptions.map((description, index) => (
+                        <div 
+                          key={index}
+                          className={`p-4 border rounded-md cursor-pointer transition-colors ${
+                            selectedDescription === description 
+                              ? 'border-primary/70 bg-primary/5 shadow-sm' 
+                              : 'hover:border-primary/40'
+                          }`}
+                          onClick={() => handleSelectDescription(description)}
+                        >
+                          <p className="whitespace-pre-wrap">{description}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-muted-foreground">
+                        {isVietnamese 
+                          ? "Không có gợi ý nào. Vui lòng thử lại với mô tả dài hơn." 
+                          : "No suggestions available. Please try again with a longer description."}
+                      </div>
                     )}
-                    onClick={() => setSelectedDescription(description)}
-                  >
-                    <p className="whitespace-pre-wrap">{description}</p>
                   </div>
-                ))}
+                </ScrollArea>
               </TabsContent>
-
-              <TabsContent value="luxury" className="space-y-4 pt-2">
-                {styleGroups.luxury.map((description, index) => (
-                  <div
-                    key={`luxury-${index}`}
-                    className={cn(
-                      "cursor-pointer rounded-md border p-4 hover:bg-muted/50",
-                      selectedDescription === description ? "border-primary bg-muted/30" : "border-border"
-                    )}
-                    onClick={() => setSelectedDescription(description)}
-                  >
-                    <p className="whitespace-pre-wrap">{description}</p>
-                  </div>
-                ))}
-              </TabsContent>
-
-              <TabsContent value="casual" className="space-y-4 pt-2">
-                {styleGroups.casual.map((description, index) => (
-                  <div
-                    key={`casual-${index}`}
-                    className={cn(
-                      "cursor-pointer rounded-md border p-4 hover:bg-muted/50",
-                      selectedDescription === description ? "border-primary bg-muted/30" : "border-border"
-                    )}
-                    onClick={() => setSelectedDescription(description)}
-                  >
-                    <p className="whitespace-pre-wrap">{description}</p>
-                  </div>
-                ))}
-              </TabsContent>
-
-              <TabsContent value="detailed" className="space-y-4 pt-2">
-                {styleGroups.detailed.map((description, index) => (
-                  <div
-                    key={`detailed-${index}`}
-                    className={cn(
-                      "cursor-pointer rounded-md border p-4 hover:bg-muted/50",
-                      selectedDescription === description ? "border-primary bg-muted/30" : "border-border"
-                    )}
-                    onClick={() => setSelectedDescription(description)}
-                  >
-                    <p className="whitespace-pre-wrap">{description}</p>
-                  </div>
-                ))}
-              </TabsContent>
-              
-              {/* Vietnamese tab - will be populated later, just adding the structure now */}
-              {isVietnamese && (
-                <TabsContent value="vietnamese" className="space-y-4 pt-2">
-                  {/* Vietnamese templates will be added here in a future update */}
-                  <div className="rounded-md border p-4 bg-muted/30">
-                    <p>{isVietnamese ? 'Bản mẫu tiếng Việt sẽ sớm có mặt tại đây.' : 'Vietnamese templates will be available here soon.'}</p>
-                  </div>
-                </TabsContent>
-              )}
             </Tabs>
-
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button variant="outline" onClick={onClose}>
-                {isVietnamese ? 'Hủy' : 'Cancel'}
-              </Button>
-              <Button
-                disabled={!selectedDescription}
-                onClick={handleApply}
-              >
-                {isVietnamese ? 'Áp dụng' : 'Apply'}
-              </Button>
-            </div>
+            
+            {selectedDescription && (
+              <div className="mt-4 flex justify-end">
+                <Button 
+                  onClick={handleUseDescription} 
+                  className="gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  {isVietnamese ? 'Sử dụng mô tả này' : 'Use This Description'}
+                </Button>
+              </div>
+            )}
           </>
         )}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            {isVietnamese ? 'Huỷ' : 'Cancel'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
