@@ -2,7 +2,7 @@
 // This file is needed for backward compatibility, but we've moved the actual templates to jobFormConstants.ts
 import { JobFormValues } from "@/components/posting/job/jobFormSchema";
 
-// Import correctly from jobFormConstants - using only the existing exports
+// Import the templates from our new location
 import { JOB_TEMPLATES } from "@/components/posting/job/jobFormConstants";
 
 // Export the templates in the format expected by any existing code
