@@ -72,13 +72,13 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
           </div>
         ) : (
           <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
-            <div className="overflow-x-auto pb-1">
-              <TabsList className="flex min-w-max gap-1 mb-4">
+            <div className="overflow-x-auto pb-2">
+              <TabsList className="flex min-w-max gap-2 mb-6">
                 {jobTemplates.map(template => (
                   <TabsTrigger 
                     key={template.id} 
                     value={template.id} 
-                    className="px-4 py-2.5 min-w-[100px] text-sm whitespace-nowrap"
+                    className="px-4 py-2.5 min-w-[115px] text-xs sm:text-sm whitespace-nowrap"
                   >
                     {template.title}
                   </TabsTrigger>
