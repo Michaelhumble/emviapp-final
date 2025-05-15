@@ -1,93 +1,101 @@
 
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { UploadCloud } from 'lucide-react';
+import { ImagePlus, X, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobPostPhotoUploadProps {
   photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  maxPhotos?: number;
-  translations?: {
-    dragDropText: string;
-    photoCount: (count: number, max: number) => string;
-  };
+  setPhotoUploads: (files: File[]) => void;
+  isUploading?: boolean;
 }
 
 const JobPostPhotoUpload: React.FC<JobPostPhotoUploadProps> = ({
   photoUploads,
   setPhotoUploads,
-  maxPhotos = 5,
-  translations = {
-    dragDropText: 'Drag and drop images or click to select',
-    photoCount: (count: number, max: number) => `${count} / ${max} photos added`
-  }
+  isUploading = false
 }) => {
+  const { t } = useTranslation();
+  const MAX_FILES = 4;
+  
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Handle file drops, ensuring we don't exceed max photos
-    setPhotoUploads(current => {
-      const availableSlots = maxPhotos - current.length;
-      if (availableSlots <= 0) return current;
-      
-      const newFiles = acceptedFiles.slice(0, availableSlots);
-      return [...current, ...newFiles];
-    });
-  }, [setPhotoUploads, maxPhotos]);
-
+    // Only add new files up to the maximum allowed
+    const remainingSlots = MAX_FILES - photoUploads.length;
+    const newFiles = acceptedFiles.slice(0, remainingSlots);
+    
+    if (newFiles.length > 0) {
+      setPhotoUploads([...photoUploads, ...newFiles]);
+    }
+  }, [photoUploads, setPhotoUploads]);
+  
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif']
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
     },
-    maxFiles: Math.max(0, maxPhotos - photoUploads.length),
-    disabled: photoUploads.length >= maxPhotos
+    maxFiles: MAX_FILES - photoUploads.length,
+    disabled: photoUploads.length >= MAX_FILES || isUploading
   });
-
+  
   const removePhoto = (index: number) => {
-    setPhotoUploads(current => current.filter((_, i) => i !== index));
+    const newPhotos = [...photoUploads];
+    newPhotos.splice(index, 1);
+    setPhotoUploads(newPhotos);
   };
-
+  
   return (
-    <div className="space-y-3">
-      {/* Dropzone */}
-      <div 
-        {...getRootProps()} 
-        className={`border-2 border-dashed rounded-xl p-6 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-200 ease-in-out
-          ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary/50 hover:scale-[1.01]'}`}
-      >
-        <input {...getInputProps()} />
-        <UploadCloud className="w-10 h-10 mb-2 text-gray-400" />
-        <p className="text-sm text-gray-600">
-          {translations?.dragDropText || 'Drag and drop images or click to select'}
-        </p>
-        <p className="mt-1 text-xs text-gray-500">
-          {translations?.photoCount 
-            ? translations.photoCount(photoUploads.length, maxPhotos) 
-            : `${photoUploads.length} / ${maxPhotos} photos added`}
-        </p>
-      </div>
-
-      {/* Preview of uploaded images */}
+    <div className="space-y-4">
       {photoUploads.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {photoUploads.map((file, index) => (
-            <div key={index} className="relative group">
+            <div key={index} className="relative border rounded overflow-hidden aspect-square">
               <img
                 src={URL.createObjectURL(file)}
-                alt={`Upload preview ${index + 1}`}
-                className="h-24 w-full object-cover rounded-md"
+                alt={`Upload ${index + 1}`}
+                className="w-full h-full object-cover"
               />
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removePhoto(index);
-                }}
-                className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => removePhoto(index)}
+                className="absolute top-1 right-1 bg-white rounded-full p-1 shadow hover:bg-gray-100"
+                disabled={isUploading}
               >
-                ✕
+                <X size={14} />
               </button>
             </div>
           ))}
+        </div>
+      )}
+      
+      {photoUploads.length < MAX_FILES && (
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-md p-8 text-center cursor-pointer hover:border-primary transition-colors ${
+            isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300'
+          }`}
+        >
+          <input {...getInputProps()} />
+          {isUploading ? (
+            <div className="flex flex-col items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+              <p className="text-sm text-muted-foreground">
+                {t("Uploading...", "Đang tải lên...")}
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <ImagePlus className="h-8 w-8 text-gray-400 mb-2" />
+              <p className="text-sm font-medium">
+                {t("Add photos (optional)", "Thêm hình ảnh (tùy chọn)")}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {t(
+                  `Drag & drop or click to upload (${photoUploads.length}/${MAX_FILES})`,
+                  `Kéo & thả hoặc nhấp để tải lên (${photoUploads.length}/${MAX_FILES})`
+                )}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
