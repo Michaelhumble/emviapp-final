@@ -4,6 +4,22 @@ export interface JobTemplateOption {
   label: string;
   defaultTitle: string;
   defaultDescription: string;
-  defaultSummary?: string;
   defaultType?: string;
+}
+
+export interface JobType {
+  value: string;
+  label: string;
+}
+
+export interface PolishedDescription {
+  title: string;
+  description: string;
+}
+
+export interface PolishedDescriptions {
+  nail: PolishedDescription[];
+  hair: PolishedDescription[];
+  spa: PolishedDescription[];
+  other: PolishedDescription[];
 }
