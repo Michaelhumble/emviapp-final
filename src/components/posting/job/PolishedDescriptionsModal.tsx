@@ -96,7 +96,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
           <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
             <div className="overflow-x-auto pb-4 mb-6">
               <TabsList className="flex min-w-max gap-4 p-1.5">
-                {jobTemplates.map(template => (
+                {jobTemplates.map((template: Template) => (
                   <TabsTrigger 
                     key={template.id} 
                     value={template.id} 
@@ -110,7 +110,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
               </TabsList>
             </div>
 
-            {jobTemplates.map(template => (
+            {jobTemplates.map((template: Template) => (
               <TabsContent key={template.id} value={template.id} className="space-y-5">
                 <div className="border rounded-2xl p-8 bg-muted/30 shadow-xl hover:shadow-md transition-shadow">
                   <h3 className="font-medium text-lg mb-4">{template.title} {isVietnamese ? 'Phong Cách' : 'Style'}</h3>
