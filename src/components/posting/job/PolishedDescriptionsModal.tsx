@@ -15,6 +15,14 @@ interface PolishedDescriptionsModalProps {
   currentText: string;
 }
 
+// Update the template interface to include the icon property
+interface Template {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string; // Make icon optional
+}
+
 const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
   isOpen,
   onClose,
@@ -44,7 +52,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
     }
   }, [isOpen]);
 
-  const handleSelectTemplate = (template: { id: string; title: string; description: string }) => {
+  const handleSelectTemplate = (template: Template) => {
     onSelect(template.description);
     onClose();
   };
@@ -94,6 +102,7 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
                     value={template.id} 
                     className="px-6 py-3.5 min-w-[130px] text-base whitespace-nowrap flex items-center gap-2 font-medium"
                   >
+                    {/* Check if icon exists before rendering it */}
                     {template.icon && <span>{template.icon}</span>}
                     {template.title}
                   </TabsTrigger>
