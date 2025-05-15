@@ -1,185 +1,176 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { vietnameseNailTemplates } from '@/constants/vietnameseNailTemplates';
-import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Loader2, Check } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { jobFormEn } from '@/constants/jobForm.en';
+import { jobFormVi } from '@/constants/jobForm.vi';
+import { POLISHED_DESCRIPTIONS_VI } from './jobFormConstants';
+
+const STYLE_TABS = [
+  { value: "professional", label: "Professional" },
+  { value: "friendly", label: "Friendly" },
+  { value: "luxury", label: "Luxury" },
+  { value: "casual", label: "Casual" },
+  { value: "detailed", label: "Detailed" },
+  // New Vietnamese style tabs only shown for Vietnamese language
+  { value: "warm", label: "Ấm áp & Thân thiện", viOnly: true },
+  { value: "polite", label: "Chuyên nghiệp & Lịch sự", viOnly: true },
+  { value: "creative", label: "Sáng tạo & Nghệ thuật", viOnly: true },
+  { value: "local", label: "Địa phương & Gần gũi", viOnly: true },
+  { value: "direct", label: "Ngắn gọn & Trực tiếp", viOnly: true },
+  { value: "passionate", label: "Đam mê & Nhiệt huyết", viOnly: true },
+  { value: "supportive", label: "Hỗ trợ & Đoàn kết", viOnly: true },
+  { value: "longterm", label: "Đầu tư lâu dài", viOnly: true },
+  { value: "gentle", label: "Nhẹ nhàng & Tình cảm", viOnly: true },
+  { value: "premium", label: "Đẳng cấp & Cao cấp", viOnly: true }
+];
 
 interface PolishedDescriptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectTemplate: (template: string) => void;
-  jobType?: string;
+  descriptions: string[];
+  onSelect: (description: string) => void;
+  isLoading: boolean;
 }
 
-const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
+const PolishedDescriptionsModal = ({
   isOpen,
   onClose,
-  onSelectTemplate,
-  jobType,
-}) => {
+  descriptions,
+  onSelect,
+  isLoading
+}: PolishedDescriptionsModalProps) => {
   const { isVietnamese } = useTranslation();
-  const [activeTab, setActiveTab] = useState('ai-polish');
-  const [showVietnameseTemplates, setShowVietnameseTemplates] = useState(false);
+  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const [selectedTab, setSelectedTab] = useState("professional");
+  const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
+  
+  // Filter tabs based on language
+  const visibleTabs = STYLE_TABS.filter(tab => 
+    !tab.viOnly || (tab.viOnly && isVietnamese)
+  );
+  
+  // Get descriptions for the current tab/style
+  const getFilteredDescriptions = () => {
+    if (!descriptions || descriptions.length === 0) return [];
+    
+    // If we're using Vietnamese and have nail descriptions available
+    if (isVietnamese && POLISHED_DESCRIPTIONS_VI.nail && POLISHED_DESCRIPTIONS_VI.nail[selectedTab]) {
+      return POLISHED_DESCRIPTIONS_VI.nail[selectedTab];
+    }
+    
+    // Otherwise use the standard descriptions as before
+    const totalStyles = STYLE_TABS.filter(tab => !tab.viOnly).length;
+    const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
+    
+    const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
+    const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
+    
+    return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
+  };
 
-  useEffect(() => {
-    // Show Vietnamese templates when both conditions are met:
-    // 1. The app language is set to Vietnamese
-    // 2. The selected job type is "Nail Technician" (or its Vietnamese equivalent)
-    const isNailTechnician = jobType === 'Nail Technician' || jobType === 'Thợ Nail';
-    setShowVietnameseTemplates(isVietnamese && isNailTechnician);
-  }, [isVietnamese, jobType]);
+  const filteredDescriptions = getFilteredDescriptions();
 
-  // English templates remain unchanged
-  const templates = [
-    {
-      id: 'professional',
-      title: 'Professional',
-      content: 'We are seeking a skilled professional to join our team. The ideal candidate will have experience in our industry and a commitment to excellence. We offer competitive compensation and a positive work environment.'
-    },
-    {
-      id: 'conversational',
-      title: 'Conversational',
-      content: 'Hey there! We're looking for someone great to join our awesome team! If you're passionate about what you do and want to work in a fun, supportive environment, we'd love to hear from you. Come grow with us!'
-    },
-    {
-      id: 'detailed',
-      title: 'Detailed',
-      content: 'Our established salon is currently hiring for a position that requires at least 2 years of experience in the field. Responsibilities include serving clients, maintaining workspace cleanliness, and contributing to our positive atmosphere. Compensation includes base pay plus tips, with potential earnings of $800-1200 weekly depending on skills and clientele.'
-    },
-    {
-      id: 'minimalist',
-      title: 'Minimalist',
-      content: 'Experienced professional needed. Competitive pay. Pleasant work environment. Immediate start available. Contact for details.'
-    },
-    {
-      id: 'enthusiastic',
-      title: 'Enthusiastic',
-      content: 'Join our AMAZING team! We're GROWING FAST and need YOUR talents! Top pay for top talent, incredible work environment, and the BEST clients in town! Don't miss this OPPORTUNITY to advance your career! Apply TODAY!'
-    },
-  ];
+  const handleSelectDescription = (description: string) => {
+    setSelectedDescription(description);
+  };
+
+  const handleUseDescription = () => {
+    if (selectedDescription) {
+      onSelect(selectedDescription);
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>
-            {isVietnamese ? "Chọn Mẫu Mô Tả Công Việc" : "Choose a Description Template"}
+          <DialogTitle className="font-playfair text-xl">
+            {isVietnamese ? "Gợi ý từ AI" : "AI Suggestions"}
           </DialogTitle>
         </DialogHeader>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-2 mb-4">
-            <TabsTrigger value="ai-polish">
-              {isVietnamese ? "Gợi Ý AI" : "AI Polish"}
-            </TabsTrigger>
-            <TabsTrigger value="templates">
-              {isVietnamese ? "Mẫu Có Sẵn" : "Templates"}
-            </TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="ai-polish" className="mt-0">
-            <p className="text-sm text-muted-foreground mb-4">
-              {isVietnamese 
-                ? "Chọn một trong những mẫu này để làm nổi bật bài đăng của bạn."
-                : "Select one of these AI-polished descriptions to enhance your job posting."}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="text-center text-muted-foreground">
+              {isVietnamese ? "AI đang hoàn thiện mô tả của bạn..." : "AI is polishing your description..."}
             </p>
-
-            {showVietnameseTemplates ? (
-              <Tabs defaultValue="vn-templates" className="w-full">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="vn-templates">
-                    Tiếng Việt
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="vn-templates">
-                  <ScrollArea className="h-[400px] pr-4">
-                    <div className="space-y-3">
-                      {vietnameseNailTemplates.map((template) => (
-                        <div key={template.id} className="p-3 border rounded-md cursor-pointer hover:bg-accent transition-colors"
-                          onClick={() => onSelectTemplate(template.content)}>
-                          <h4 className="font-medium mb-1">{template.title}</h4>
-                          <p className="text-sm text-muted-foreground">{template.content}</p>
-                        </div>
+          </div>
+        ) : (
+          <>
+            <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
+              <TabsList className="grid grid-cols-5 mb-4">
+                {visibleTabs.length > 5 ? (
+                  <ScrollArea className="w-full">
+                    <div className="flex space-x-2 p-1">
+                      {visibleTabs.map(tab => (
+                        <TabsTrigger key={tab.value} value={tab.value} className="whitespace-nowrap">
+                          {tab.label}
+                        </TabsTrigger>
                       ))}
                     </div>
                   </ScrollArea>
-                </TabsContent>
-              </Tabs>
-            ) : (
-              <ScrollArea className="h-[400px] pr-4">
-                <div className="space-y-3">
-                  {templates.map((template) => (
-                    <div key={template.id} className="p-3 border rounded-md cursor-pointer hover:bg-accent transition-colors"
-                      onClick={() => onSelectTemplate(template.content)}>
-                      <h4 className="font-medium mb-1">{template.title}</h4>
-                      <p className="text-sm text-muted-foreground">{template.content}</p>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="templates" className="mt-0">
-            <p className="text-sm text-muted-foreground mb-4">
-              {isVietnamese 
-                ? "Chọn từ các mẫu đơn giản để bắt đầu."
-                : "Choose from simple templates to get started."}
-            </p>
+                ) : (
+                  visibleTabs.map(tab => (
+                    <TabsTrigger key={tab.value} value={tab.value}>
+                      {tab.label}
+                    </TabsTrigger>
+                  ))
+                )}
+              </TabsList>
+              
+              <TabsContent value={selectedTab} className="mt-0">
+                <ScrollArea className="h-[300px] pr-4">
+                  <div className="space-y-4">
+                    {filteredDescriptions.length > 0 ? (
+                      filteredDescriptions.map((description, index) => (
+                        <div 
+                          key={index}
+                          className={`p-4 border rounded-md cursor-pointer transition-colors ${
+                            selectedDescription === description 
+                              ? 'border-primary/70 bg-primary/5 shadow-sm' 
+                              : 'hover:border-primary/40'
+                          }`}
+                          onClick={() => handleSelectDescription(description)}
+                        >
+                          <p className="whitespace-pre-wrap">{description}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-muted-foreground">
+                        {isVietnamese 
+                          ? "Không có gợi ý nào. Vui lòng thử lại với mô tả dài hơn." 
+                          : "No suggestions available. Please try again with a longer description."}
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
             
-            <ScrollArea className="h-[400px] pr-4">
-              <div className="space-y-3">
-                <div className="p-3 border rounded-md cursor-pointer hover:bg-accent"
-                  onClick={() => onSelectTemplate(isVietnamese 
-                    ? "Chúng tôi đang tìm kiếm nhân viên có kinh nghiệm để tham gia vào đội ngũ của chúng tôi. Lương thưởng hấp dẫn, môi trường làm việc thân thiện."
-                    : "We are looking for experienced staff to join our team. Competitive salary, friendly work environment."
-                  )}>
-                  <h4 className="font-medium mb-1">{isVietnamese ? "Cơ bản" : "Basic"}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {isVietnamese 
-                      ? "Chúng tôi đang tìm kiếm nhân viên có kinh nghiệm để tham gia vào đội ngũ của chúng tôi. Lương thưởng hấp dẫn, môi trường làm việc thân thiện."
-                      : "We are looking for experienced staff to join our team. Competitive salary, friendly work environment."}
-                  </p>
-                </div>
-                
-                <div className="p-3 border rounded-md cursor-pointer hover:bg-accent"
-                  onClick={() => onSelectTemplate(isVietnamese 
-                    ? "Tuyển dụng vị trí [Vị Trí]. Yêu cầu: [Kỹ năng]. Lương: [Mức lương]. Liên hệ: [Thông tin liên hệ]."
-                    : "Hiring for [Position]. Required: [Skills]. Pay: [Salary]. Contact: [Contact Info]."
-                  )}>
-                  <h4 className="font-medium mb-1">{isVietnamese ? "Ngắn gọn" : "Concise"}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {isVietnamese 
-                      ? "Tuyển dụng vị trí [Vị Trí]. Yêu cầu: [Kỹ năng]. Lương: [Mức lương]. Liên hệ: [Thông tin liên hệ]."
-                      : "Hiring for [Position]. Required: [Skills]. Pay: [Salary]. Contact: [Contact Info]."}
-                  </p>
-                </div>
-                
-                <div className="p-3 border rounded-md cursor-pointer hover:bg-accent"
-                  onClick={() => onSelectTemplate(isVietnamese 
-                    ? "Chúng tôi cần tuyển [Vị Trí] có kinh nghiệm tối thiểu [X năm]. Mức lương cạnh tranh, từ [Mức lương] tùy theo năng lực. Môi trường làm việc chuyên nghiệp, thân thiện. Thời gian làm việc: [Giờ làm việc]. Liên hệ ngay để biết thêm chi tiết!"
-                    : "We are hiring for [Position] with minimum [X years] experience. Competitive salary, ranging from [Salary] depending on skills. Professional, friendly work environment. Working hours: [Working hours]. Contact us now for more details!"
-                  )}>
-                  <h4 className="font-medium mb-1">{isVietnamese ? "Chi tiết" : "Detailed"}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {isVietnamese 
-                      ? "Chúng tôi cần tuyển [Vị Trí] có kinh nghiệm tối thiểu [X năm]. Mức lương cạnh tranh, từ [Mức lương] tùy theo năng lực. Môi trường làm việc chuyên nghiệp, thân thiện. Thời gian làm việc: [Giờ làm việc]. Liên hệ ngay để biết thêm chi tiết!"
-                      : "We are hiring for [Position] with minimum [X years] experience. Competitive salary, ranging from [Salary] depending on skills. Professional, friendly work environment. Working hours: [Working hours]. Contact us now for more details!"}
-                  </p>
-                </div>
+            {selectedDescription && (
+              <div className="mt-4 flex justify-end">
+                <Button 
+                  onClick={handleUseDescription} 
+                  className="gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  {isVietnamese ? 'Sử dụng mô tả này' : 'Use This Description'}
+                </Button>
               </div>
-            </ScrollArea>
-          </TabsContent>
-        </Tabs>
-        
-        <div className="flex justify-end mt-4">
+            )}
+          </>
+        )}
+
+        <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            {isVietnamese ? "Đóng" : "Close"}
+            {isVietnamese ? 'Huỷ' : 'Cancel'}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
