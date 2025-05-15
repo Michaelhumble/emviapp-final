@@ -1,29 +1,36 @@
 
-import React, { useState, useCallback } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Sparkles } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { jobFormEn } from '@/constants/jobForm.en';
-import { jobFormVi } from '@/constants/jobForm.vi';
-import JobPostPhotoUpload from './JobPostPhotoUpload';
-import { JOB_TEMPLATES, JOB_TYPES } from './jobFormConstants';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
-import PolishedDescriptionsModal from './PolishedDescriptionsModal';
+import React, { useState, useEffect } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { jobFormSchema, JobFormValues } from "./jobFormSchema";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { useTranslation } from "@/hooks/useTranslation";
+import { getPrefillContent, PROFESSIONAL_TYPES_EN, PROFESSIONAL_TYPES_VI, JOB_TYPES_EN, JOB_TYPES_VI } from "./jobFormConstants";
+import JobTemplateSelector from "./JobTemplateSelector";
+import YesLadder from "./YesLadder";
+import JobPostHeader from "./JobPostHeader";
+import LanguageSelector from "./LanguageSelector";
+import { Loader2 } from "lucide-react";
+
+// Form fields
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  isSubmitting: boolean;
+  isSubmitting?: boolean;
   defaultValues?: Partial<JobFormValues>;
 }
 
@@ -31,316 +38,295 @@ const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
   photoUploads,
   setPhotoUploads,
-  isSubmitting,
+  isSubmitting = false,
   defaultValues = {}
 }) => {
   const { isVietnamese } = useTranslation();
-  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const [professionalType, setProfessionalType] = useState<string>("");
+  const [enhancementOptions, setEnhancementOptions] = useState<Record<string, boolean>>({});
   
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const { 
-    polishedDescriptions, 
-    isLoading: isPolishing, 
-    fetchPolishedDescriptions 
-  } = usePolishedDescriptions();
-
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      location: '',
-      type: '',
-      compensation: '',
-      contactEmail: '',
-      contactPhone: '',
+      title: "",
+      description: "",
+      location: "",
+      type: "",
+      compensation: "",
+      contactEmail: "",
+      contactPhone: "",
       isUrgent: false,
-      template: '',
       ...defaultValues
     }
   });
+
+  const handleProfessionalTypeChange = (value: string) => {
+    setProfessionalType(value);
+    
+    // Get prefilled content based on professional type
+    const content = getPrefillContent(value, isVietnamese);
+    
+    if (content) {
+      form.setValue("title", content.title);
+      form.setValue("description", content.description);
+      form.setValue("type", content.type);
+    }
+  };
   
-  const { watch, setValue, getValues } = form;
-  const description = watch('description');
-
-  const handlePolishClick = () => {
-    const currentDescription = getValues('description');
-    if (currentDescription && currentDescription.trim().length > 0) {
-      fetchPolishedDescriptions(currentDescription);
-      setIsAIModalOpen(true);
-    } else {
-      // Handle empty description - could show a toast notification here
-      console.log('Please add a description first');
-    }
+  const handleTemplateSelect = (templateValues: Partial<JobFormValues>) => {
+    Object.entries(templateValues).forEach(([key, value]) => {
+      if (value !== undefined) {
+        form.setValue(key as any, value);
+      }
+    });
   };
-
-  const handleSelectDescription = (selectedDescription: string) => {
-    if (selectedDescription) {
-      setValue('description', selectedDescription, { shouldValidate: true });
-    }
-    setIsAIModalOpen(false);
-  };
-
-  const handleTemplateChange = (templateId: string) => {
-    if (!templateId) return;
+  
+  const handleYesLadderChange = (questionId: string, value: boolean) => {
+    setEnhancementOptions(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
     
-    const selectedTemplate = JOB_TEMPLATES.find(template => template.id === templateId);
-    
-    if (selectedTemplate) {
-      setValue('title', selectedTemplate.title || '', { shouldValidate: true });
-      setValue('description', selectedTemplate.description || '', { shouldValidate: true });
-      setValue('type', selectedTemplate.type || '', { shouldValidate: true });
+    // Update the form values accordingly
+    if (questionId === 'urgent_tag' && value !== undefined) {
+      form.setValue('isUrgent', value);
     }
   };
+
+  const formSubmit = (values: JobFormValues) => {
+    // Combine form values with enhancement options
+    const enhancedValues = {
+      ...values,
+      enhancementOptions
+    };
+    
+    onSubmit(enhancedValues);
+  };
+
+  useEffect(() => {
+    // Update form when language changes
+    if (professionalType) {
+      const content = getPrefillContent(professionalType, isVietnamese);
+      if (content) {
+        form.setValue("title", content.title);
+        form.setValue("description", content.description);
+        form.setValue("type", content.type);
+      }
+    }
+  }, [isVietnamese]);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Template Selection */}
-        <FormField
-          control={form.control}
-          name="template"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.templateLabel || 'Choose a Template'}</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  handleTemplateChange(value);
-                }}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t.templatePlaceholder} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {JOB_TEMPLATES.map(template => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-
-        {/* Job Title */}
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.titleLabel || 'Job Title'} *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t.titlePlaceholder || 'Enter job title'} 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Location */}
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.locationLabel || 'Location'} *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t.locationPlaceholder || 'Enter job location'} 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Job Type */}
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.jobTypeLabel || 'Job Type'}</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t.jobTypePlaceholder || 'Select job type'} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="fullTime">{t.jobTypeOptions?.fullTime || JOB_TYPES.fullTime.en}</SelectItem>
-                  <SelectItem value="partTime">{t.jobTypeOptions?.partTime || JOB_TYPES.partTime.en}</SelectItem>
-                  <SelectItem value="contract">{t.jobTypeOptions?.contract || JOB_TYPES.contract.en}</SelectItem>
-                  <SelectItem value="freelance">{t.jobTypeOptions?.freelance || JOB_TYPES.freelance.en}</SelectItem>
-                  <SelectItem value="other">{t.jobTypeOptions?.other || JOB_TYPES.other.en}</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex items-center justify-between mb-2">
-                <FormLabel>{t.descriptionLabel || 'Job Description'} *</FormLabel>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePolishClick}
-                  className="flex items-center gap-1 text-xs"
-                >
-                  <Sparkles className="h-3 w-3" />
-                  {isVietnamese ? '✨ Trợ Giúp Từ AI' : 'Polish with AI ✨'}
-                </Button>
-              </div>
-              <FormControl>
-                <Textarea
-                  placeholder={t.descriptionPlaceholder || 'Enter job description'}
-                  className="min-h-32"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Compensation */}
-        <FormField
-          control={form.control}
-          name="compensation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.compensationLabel || 'Compensation'}</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t.compensationPlaceholder || 'E.g., $20-25/hr or $50k-60k/year'} 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Contact Information Section */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">{t.contactInfoLabel || 'Contact Information'}</h3>
-          
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="contactEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.contactInfoEmail || 'Email'} *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder={t.contactInfoEmailPlaceholder || 'Enter contact email'} 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Phone */}
-          <FormField
-            control={form.control}
-            name="contactPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.contactInfoPhone || 'Phone Number'} *</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="tel" 
-                    placeholder={t.contactInfoPhonePlaceholder || 'Enter contact phone number'} 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        {/* Photo Upload Section */}
-        <div className="space-y-2">
-          <FormLabel>{t.photosLabel || 'Add Photos'}</FormLabel>
-          <JobPostPhotoUpload 
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            translations={{
-              dragDropText: t.dragDropText || 'Drag and drop images or click to select',
-              photoCount: (count: number, max: number) => 
-                t.photoCountText ? 
-                  t.photoCountText.replace('{count}', count.toString()).replace('{max}', max.toString()) : 
-                  `${count} / ${max} photos added`
-            }}
-          />
-        </div>
-
-        {/* Is Urgent Checkbox */}
-        <FormField
-          control={form.control}
-          name="isUrgent"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  {t.urgentLabel || 'Mark as Urgent'}
-                  <span className="ml-2 text-sm text-muted-foreground">({t.urgentHelpText || 'Highlights your post'})</span>
-                </FormLabel>
-              </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t.submitting || 'Submitting...'}
-            </>
-          ) : (
-            t.continue || 'Continue to Pricing'
-          )}
-        </Button>
-      </form>
+    <div className="max-w-3xl mx-auto">
+      <JobPostHeader />
       
-      {/* AI Polish Modal */}
-      <PolishedDescriptionsModal
-        isOpen={isAIModalOpen}
-        onClose={() => setIsAIModalOpen(false)}
-        descriptions={polishedDescriptions || []}
-        onSelect={handleSelectDescription}
-        isLoading={isPolishing}
-      />
-    </Form>
+      <LanguageSelector />
+      
+      <JobTemplateSelector onSelectTemplate={handleTemplateSelect} />
+      
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(formSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              {/* Professional Type */}
+              <div className="space-y-2">
+                <Label htmlFor="professionalType" className="text-base">
+                  {isVietnamese ? "Loại Thợ" : "Professional Type"} *
+                </Label>
+                <Select
+                  value={professionalType}
+                  onValueChange={handleProfessionalTypeChange}
+                >
+                  <SelectTrigger id="professionalType" className="w-full">
+                    <SelectValue placeholder={isVietnamese ? "Chọn loại thợ" : "Select professional type"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(isVietnamese ? PROFESSIONAL_TYPES_VI : PROFESSIONAL_TYPES_EN).map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Job Title */}
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-base">
+                  {isVietnamese ? "Tiêu Đề Công Việc" : "Job Title"} *
+                </Label>
+                <Input
+                  id="title"
+                  {...form.register("title")}
+                  className="w-full"
+                  placeholder={isVietnamese ? "Nhập tiêu đề công việc" : "Enter job title"}
+                />
+                {form.formState.errors.title && (
+                  <p className="text-red-500 text-sm">{form.formState.errors.title.message}</p>
+                )}
+              </div>
+
+              {/* Job Type */}
+              <div className="space-y-2">
+                <Label htmlFor="type" className="text-base">
+                  {isVietnamese ? "Loại Công Việc" : "Job Type"} *
+                </Label>
+                <Select
+                  value={form.watch("type")}
+                  onValueChange={(value) => form.setValue("type", value)}
+                >
+                  <SelectTrigger id="type" className="w-full">
+                    <SelectValue placeholder={isVietnamese ? "Chọn loại công việc" : "Select job type"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(isVietnamese ? JOB_TYPES_VI : JOB_TYPES_EN).map((type) => (
+                      <SelectItem key={type.value} value={type.label}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {form.formState.errors.type && (
+                  <p className="text-red-500 text-sm">{form.formState.errors.type.message}</p>
+                )}
+              </div>
+
+              {/* Location */}
+              <div className="space-y-2">
+                <Label htmlFor="location" className="text-base">
+                  {isVietnamese ? "Địa Điểm" : "Location"} *
+                </Label>
+                <Input
+                  id="location"
+                  {...form.register("location")}
+                  className="w-full"
+                  placeholder={isVietnamese ? "Nhập địa chỉ" : "Enter location"}
+                />
+                {form.formState.errors.location && (
+                  <p className="text-red-500 text-sm">{form.formState.errors.location.message}</p>
+                )}
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-base">
+                  {isVietnamese ? "Mô Tả Công Việc" : "Job Description"} *
+                </Label>
+                <Textarea
+                  id="description"
+                  {...form.register("description")}
+                  className="w-full min-h-[150px]"
+                  placeholder={isVietnamese ? "Mô tả chi tiết về công việc" : "Describe the job in detail"}
+                />
+                {form.formState.errors.description && (
+                  <p className="text-red-500 text-sm">{form.formState.errors.description.message}</p>
+                )}
+              </div>
+
+              {/* Compensation */}
+              <div className="space-y-2">
+                <Label htmlFor="compensation" className="text-base">
+                  {isVietnamese ? "Lương/Hoa Hồng" : "Compensation"} 
+                  <span className="text-gray-500 ml-1 text-sm">
+                    ({isVietnamese ? "Tùy chọn" : "Optional"})
+                  </span>
+                </Label>
+                <Input
+                  id="compensation"
+                  {...form.register("compensation")}
+                  className="w-full"
+                  placeholder={isVietnamese ? "Ví dụ: $20-25/giờ hoặc 60% hoa hồng" : "E.g., $20-25/hr or 60% commission"}
+                />
+              </div>
+
+              {/* Contact Information */}
+              <div className="space-y-4 pt-4 border-t border-gray-100">
+                <h3 className="font-medium text-lg">
+                  {isVietnamese ? "Thông Tin Liên Hệ" : "Contact Information"}
+                </h3>
+                
+                {/* Contact Email */}
+                <div className="space-y-2">
+                  <Label htmlFor="contactEmail" className="text-base">
+                    {isVietnamese ? "Email" : "Email"} *
+                  </Label>
+                  <Input
+                    id="contactEmail"
+                    {...form.register("contactEmail")}
+                    className="w-full"
+                    placeholder={isVietnamese ? "Nhập email liên hệ" : "Enter contact email"}
+                    type="email"
+                  />
+                  {form.formState.errors.contactEmail && (
+                    <p className="text-red-500 text-sm">{form.formState.errors.contactEmail.message}</p>
+                  )}
+                </div>
+                
+                {/* Contact Phone */}
+                <div className="space-y-2">
+                  <Label htmlFor="contactPhone" className="text-base">
+                    {isVietnamese ? "Số Điện Thoại" : "Phone Number"} *
+                  </Label>
+                  <Input
+                    id="contactPhone"
+                    {...form.register("contactPhone")}
+                    className="w-full"
+                    placeholder={isVietnamese ? "Nhập số điện thoại" : "Enter contact phone"}
+                    type="tel"
+                  />
+                  {form.formState.errors.contactPhone && (
+                    <p className="text-red-500 text-sm">{form.formState.errors.contactPhone.message}</p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Photos section would go here - placeholder for now */}
+              <div className="space-y-2">
+                <Label className="text-base flex items-center gap-2">
+                  <span>{isVietnamese ? "Thêm Hình Ảnh" : "Add Photos"}</span>
+                  <span className="text-gray-500 text-sm">
+                    ({isVietnamese ? "Tùy chọn" : "Optional"})
+                  </span>
+                </Label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                  <p className="text-gray-500">
+                    {isVietnamese 
+                      ? "Kéo và thả hình ảnh vào đây hoặc nhấp để chọn" 
+                      : "Drag and drop images here or click to select"}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Yes Ladder Section */}
+            <YesLadder onYesAnswered={handleYesLadderChange} />
+            
+            {/* Submit Button */}
+            <div>
+              <Button 
+                type="submit" 
+                className="w-full py-6 text-lg shadow-sm"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    {isVietnamese ? "Đang Gửi..." : "Submitting..."}
+                  </>
+                ) : (
+                  isVietnamese ? "Tiếp Tục Để Chọn Giá" : "Continue to Pricing"
+                )}
+              </Button>
+              
+              <p className="text-center text-sm text-gray-500 mt-4">
+                {isVietnamese 
+                  ? "Bằng cách gửi, bạn đồng ý với Điều khoản Dịch vụ của chúng tôi" 
+                  : "By submitting, you agree to our Terms of Service"}
+              </p>
+            </div>
+          </form>
+        </FormProvider>
+      </div>
+    </div>
   );
 };
 

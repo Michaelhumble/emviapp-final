@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import JobForm from './JobForm';
 import { JobFormValues } from './jobFormSchema';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from "sonner";
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -19,7 +19,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   isSubmitting = false,
   defaultValues = {}
 }) => {
-  const { toast } = useToast();
   const [formData, setFormData] = useState<JobFormValues | null>(null);
 
   const handleFormSubmit = (values: JobFormValues) => {
@@ -31,29 +30,24 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       // Process form submission
       onSubmit(values);
       
-      // Show success toast - this will be shown by the parent component now
-      // so we don't need to duplicate the toast notification
+      // Success handling is done in the parent component
     } catch (error) {
       console.error("Error submitting job form:", error);
       
       // Show error toast
-      toast({
-        title: "Error submitting form",
-        description: "There was a problem saving your job details. Please try again.",
-        variant: "destructive"
-      });
+      toast.error("There was a problem saving your job details. Please try again.");
     }
   };
 
-  return (
-    <JobForm
-      onSubmit={handleFormSubmit}
-      photoUploads={photoUploads}
-      setPhotoUploads={setPhotoUploads}
-      isSubmitting={isSubmitting}
-      defaultValues={defaultValues}
-    />
-  );
+  const jobFormProps = {
+    onSubmit: handleFormSubmit,
+    photoUploads,
+    setPhotoUploads,
+    isSubmitting,
+    defaultValues
+  };
+
+  return <JobForm {...jobFormProps} />;
 };
 
 export default EnhancedJobForm;
