@@ -32,9 +32,9 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
 
   // Map job types to categories in the descriptions object
   const getDescriptionCategory = (type: string): keyof typeof descriptionsByType => {
-    if (type.includes('nail')) return 'nail';
-    if (type.includes('hair')) return 'hair';
-    if (type.includes('spa')) return 'spa';
+    if (type.toLowerCase().includes('nail')) return 'nail';
+    if (type.toLowerCase().includes('hair')) return 'hair';
+    if (type.toLowerCase().includes('spa')) return 'spa';
     return 'other';
   };
 

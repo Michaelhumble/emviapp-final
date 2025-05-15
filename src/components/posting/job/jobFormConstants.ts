@@ -1,33 +1,33 @@
-import { JobTemplateOption } from './types';
+import { JobTemplateOption, JobType, PolishedDescriptions } from "./types";
 
-// English Job Templates - Keep these exactly as they are
+// English job templates
 export const JOB_TEMPLATES_EN: JobTemplateOption[] = [
   {
-    id: "nail_technician",
+    id: "nail-technician",
     label: "Nail Technician",
-    defaultTitle: "Nail Technician Needed",
-    defaultDescription: "We are looking for an experienced nail technician to join our team. The ideal candidate should have experience with manicures, pedicures, and nail extensions. Must be reliable and customer-focused.",
+    defaultTitle: "Nail Technician",
+    defaultDescription: "Looking for an experienced Nail Technician to join our busy salon. Must be skilled in manicures, pedicures, acrylics, and gel.",
     defaultType: "fullTime"
   },
   {
-    id: "hair_stylist",
+    id: "hair-stylist",
     label: "Hair Stylist",
-    defaultTitle: "Hair Stylist Position Available",
-    defaultDescription: "Seeking a talented hair stylist with experience in cutting, coloring, and styling. Must have good communication skills and the ability to understand client needs.",
+    defaultTitle: "Hair Stylist",
+    defaultDescription: "Seeking a creative Hair Stylist with experience in cutting, coloring, and styling. Must have a strong portfolio and excellent customer service.",
     defaultType: "fullTime"
   },
   {
-    id: "spa_technician",
-    label: "Spa Technician", 
-    defaultTitle: "Spa Technician Wanted",
-    defaultDescription: "Seeking a qualified spa technician with experience in facials, body treatments, and massage therapy. Must be professional and detail-oriented.",
-    defaultType: "fullTime"
+    id: "spa-technician",
+    label: "Spa Technician",
+    defaultTitle: "Spa Technician",
+    defaultDescription: "Looking for a licensed massage therapist or esthetician to join our spa team. Experience with various massage techniques and skincare services required.",
+    defaultType: "partTime"
   },
   {
-    id: "receptionist",
+    id: "salon-receptionist",
     label: "Salon Receptionist",
-    defaultTitle: "Salon Receptionist Position",
-    defaultDescription: "Looking for a friendly and organized receptionist to welcome clients, manage appointments, and handle phone calls. Experience with salon software is a plus.",
+    defaultTitle: "Salon Receptionist",
+    defaultDescription: "Seeking a friendly, organized receptionist to manage appointments, greet clients, and handle phone calls for our busy salon.",
     defaultType: "fullTime"
   },
   {
@@ -39,87 +39,38 @@ export const JOB_TEMPLATES_EN: JobTemplateOption[] = [
   }
 ];
 
-// Vietnamese Job Templates
+// Vietnamese job templates
 export const JOB_TEMPLATES_VI: JobTemplateOption[] = [
   {
-    id: "nail_technician",
+    id: "tho-nail",
     label: "Thợ Nail",
-    defaultTitle: "Cần Tuyển Thợ Nail",
-    defaultDescription: "Chúng tôi đang tìm kiếm thợ nail có kinh nghiệm để gia nhập đội ngũ của chúng tôi. Ứng viên lý tưởng nên có kinh nghiệm với dịch vụ làm móng tay, móng chân và nối móng. Phải đáng tin cậy và tập trung vào khách hàng.",
+    defaultTitle: "Thợ Nail",
+    defaultDescription: "Cần tuyển thợ nail có kinh nghiệm, làm đầy đủ các dịch vụ (bột, gel, dip, pedicure). Lương cao, tip tốt, môi trường làm việc thân thiện.",
     defaultType: "fullTime"
   },
   {
-    id: "nail_technician_experienced",
-    label: "Thợ Nail Có Kinh Nghiệm",
-    defaultTitle: "Cần Gấp Thợ Nail Có Kinh Nghiệm",
-    defaultDescription: "Salon tại vị trí đẹp cần tuyển thợ nail có kinh nghiệm. Bao lương $800-1200/tuần tùy theo kinh nghiệm. Môi trường làm việc thân thiện, tips cao, có khách sẵn.",
-    defaultType: "fullTime"
-  },
-  {
-    id: "nail_technician_all_positions",
-    label: "Thợ Nail Mọi Vị Trí",
-    defaultTitle: "Tuyển Thợ Nail Mọi Vị Trí",
-    defaultDescription: "Salon vị trí trung tâm cần tuyển thợ nail mọi vị trí (bột, gel, chân tay nước). Lương thưởng hậu hĩnh, môi trường làm việc chuyên nghiệp, có thể bao lương tùy năng lực.",
-    defaultType: "fullTime"
-  },
-  {
-    id: "nail_technician_part_time",
-    label: "Thợ Nail Part-time",
-    defaultTitle: "Tuyển Thợ Nail Part-time",
-    defaultDescription: "Salon khu sang cần tuyển thợ nail làm part-time cuối tuần. Cần có kinh nghiệm cơ bản, lương + tips hấp dẫn. Liên hệ ngay để được phỏng vấn.",
-    defaultType: "partTime"
-  },
-  {
-    id: "hair_stylist",
+    id: "tho-toc",
     label: "Thợ Tóc",
-    defaultTitle: "Cần Tuyển Thợ Tóc",
-    defaultDescription: "Tìm kiếm thợ tóc tài năng có kinh nghiệm cắt, nhuộm và tạo kiểu tóc. Phải có kỹ năng giao tiếp tốt và khả năng hiểu nhu cầu của khách hàng.",
+    defaultTitle: "Thợ Tóc",
+    defaultDescription: "Cần tuyển thợ tóc có kinh nghiệm cắt, nhuộm và tạo kiểu. Yêu cầu có tay nghề cao và khả năng giao tiếp tốt với khách hàng.",
     defaultType: "fullTime"
   },
   {
-    id: "hair_stylist_experienced",
-    label: "Thợ Tóc Chuyên Nghiệp",
-    defaultTitle: "Cần Thợ Tóc Chuyên Nghiệp",
-    defaultDescription: "Salon tóc cao cấp cần thợ tóc có kinh nghiệm nhuộm highlight và balayage. Lương $900-1300/tuần tùy theo khả năng. Có chỗ ở cho thợ ở xa.",
-    defaultType: "fullTime"
-  },
-  {
-    id: "spa_technician",
-    label: "Kỹ Thuật Viên Spa",
-    defaultTitle: "Cần Tuyển Kỹ Thuật Viên Spa",
-    defaultDescription: "Tìm kiếm kỹ thuật viên spa có trình độ với kinh nghiệm về chăm sóc da mặt, điều trị cơ thể và liệu pháp massage. Phải chuyên nghiệp và chú ý đến từng chi tiết.",
-    defaultType: "fullTime"
-  },
-  {
-    id: "spa_technician_facial",
-    label: "Chuyên Viên Chăm Sóc Da",
-    defaultTitle: "Tuyển Chuyên Viên Chăm Sóc Da",
-    defaultDescription: "Spa sang trọng cần tuyển chuyên viên chăm sóc da có kinh nghiệm làm facial, trị mụn, trị nám. Lương thỏa thuận theo năng lực, môi trường làm việc đẳng cấp.",
-    defaultType: "fullTime"
-  },
-  {
-    id: "receptionist",
-    label: "Lễ Tân Salon",
-    defaultTitle: "Tuyển Lễ Tân Salon",
-    defaultDescription: "Tìm kiếm lễ tân thân thiện và có tổ chức để chào đón khách hàng, quản lý lịch hẹn và xử lý cuộc gọi điện thoại. Kinh nghiệm với phần mềm salon là một lợi thế.",
-    defaultType: "fullTime"
-  },
-  {
-    id: "manager",
-    label: "Quản Lý Salon",
-    defaultTitle: "Tuyển Quản Lý Salon",
-    defaultDescription: "Salon lớn tìm người quản lý có kinh nghiệm điều hành. Yêu cầu tiếng Anh tốt, kỹ năng lãnh đạo, quản lý nhân sự và kế toán cơ bản. Mức lương cạnh tranh cho ứng viên phù hợp.",
-    defaultType: "fullTime"
-  },
-  {
-    id: "apprentice",
-    label: "Thợ Học Việc",
-    defaultTitle: "Nhận Thợ Học Việc",
-    defaultDescription: "Cơ hội cho người mới muốn vào nghề nail/tóc. Chủ salon sẽ đào tạo từ cơ bản đến nâng cao. Không cần kinh nghiệm, chỉ cần chăm chỉ và có tinh thần học hỏi.",
+    id: "ky-thuat-vien-spa",
+    label: "Kỹ thuật viên Spa",
+    defaultTitle: "Kỹ thuật viên Spa",
+    defaultDescription: "Tuyển kỹ thuật viên spa có chứng chỉ và kinh nghiệm làm việc. Yêu cầu thành thạo các kỹ thuật massage và dịch vụ chăm sóc da.",
     defaultType: "partTime"
   },
   {
-    id: "other",
+    id: "le-tan-salon",
+    label: "Lễ tân Salon",
+    defaultTitle: "Lễ tân Salon",
+    defaultDescription: "Cần tuyển nhân viên lễ tân có khả năng giao tiếp tốt, sắp xếp lịch hẹn và đón tiếp khách hàng cho salon của chúng tôi.",
+    defaultType: "fullTime"
+  },
+  {
+    id: "khac",
     label: "Khác",
     defaultTitle: "",
     defaultDescription: "",
@@ -127,8 +78,8 @@ export const JOB_TEMPLATES_VI: JobTemplateOption[] = [
   }
 ];
 
-// English Job Types - Keep these exactly as they are
-export const JOB_TYPES_EN = [
+// English job types
+export const JOB_TYPES_EN: JobType[] = [
   { value: "fullTime", label: "Full Time" },
   { value: "partTime", label: "Part Time" },
   { value: "contract", label: "Contract" },
@@ -136,8 +87,8 @@ export const JOB_TYPES_EN = [
   { value: "other", label: "Other" }
 ];
 
-// Vietnamese Job Types
-export const JOB_TYPES_VI = [
+// Vietnamese job types
+export const JOB_TYPES_VI: JobType[] = [
   { value: "fullTime", label: "Toàn thời gian" },
   { value: "partTime", label: "Bán thời gian" },
   { value: "contract", label: "Theo hợp đồng" },
@@ -145,26 +96,26 @@ export const JOB_TYPES_VI = [
   { value: "other", label: "Khác" }
 ];
 
-// English Polish Descriptions - Keep these exactly as they are
-export const POLISHED_DESCRIPTIONS_EN = {
+// English polished descriptions
+export const POLISHED_DESCRIPTIONS_EN: PolishedDescriptions = {
   nail: [
     {
-      title: "Professional & Concise",
-      description: "Looking for experienced nail technician with minimum 2 years experience. Must be proficient in acrylics, gel, and nail art. Competitive pay structure with benefits and flexible scheduling available. Join our established salon with loyal client base."
+      title: "Experienced Nail Technician",
+      description: "We are seeking an experienced nail technician to join our busy salon. The ideal candidate has 2+ years of experience with acrylic, gel, dip powder, and nail art. Must be licensed, detail-oriented, and provide excellent customer service. Competitive pay, flexible scheduling, and a friendly work environment."
     },
     {
-      title: "Warm & Welcoming",
-      description: "Join our nail salon family! We're looking for passionate nail artists who love creating beautiful nails and making clients feel special. Our friendly team offers support, growth opportunities, and a positive work environment. Competitive compensation with loyal clientele."
+      title: "Full Service Nail Artist",
+      description: "Looking for a talented nail artist skilled in manicures, pedicures, acrylic, gel, and nail art. Must have excellent customer service skills and the ability to maintain a loyal clientele. We offer competitive commission, guaranteed hourly wage, and flexible hours."
     },
     {
-      title: "Luxury & High-End",
-      description: "Premium nail salon seeking exceptional talent to serve our discerning clientele. We offer an elegant work environment with high-end products and equipment. Candidates must demonstrate flawless technique in luxury nail services. Excellent compensation package reflecting your expertise."
+      title: "Nail Technician - High End Salon",
+      description: "Luxury nail salon seeking licensed nail technician with 3+ years of experience. Must excel in all nail services including complex designs and be committed to providing an exceptional client experience. We offer a beautiful workspace, premium products, and generous compensation package."
     }
   ],
   hair: [
     {
-      title: "Professional & Concise",
-      description: "Established salon seeking licensed hair stylist with minimum 2 years experience. Must excel in cutting, coloring, and styling for diverse clientele. Commission-based compensation with retail bonus opportunities. Bring your existing clients or build from our steady customer flow."
+      title: "Creative Hair Stylist",
+      description: "Seeking a passionate hair stylist with expertise in cutting, coloring, and styling. Must have a strong portfolio demonstrating versatility and creativity. We provide ongoing education, competitive pay, and a collaborative team environment."
     },
     {
       title: "Warm & Welcoming",
@@ -177,8 +128,8 @@ export const POLISHED_DESCRIPTIONS_EN = {
   ],
   spa: [
     {
-      title: "Professional & Concise",
-      description: "Seeking licensed esthetician/massage therapist with minimum 2 years experience. Must be proficient in facials, body treatments, and massage therapy. Competitive pay structure with benefits and flexible scheduling. Join our established spa with loyal clientele."
+      title: "Licensed Massage Therapist",
+      description: "Upscale day spa seeking licensed massage therapist skilled in Swedish, deep tissue, and hot stone massage. Must have excellent customer service skills and the ability to customize treatments to client needs. Flexible scheduling with competitive pay and benefits."
     },
     {
       title: "Warm & Welcoming",
@@ -205,74 +156,62 @@ export const POLISHED_DESCRIPTIONS_EN = {
   ]
 };
 
-// Vietnamese Polish Descriptions
-export const POLISHED_DESCRIPTIONS_VI = {
+// Vietnamese polished descriptions
+export const POLISHED_DESCRIPTIONS_VI: PolishedDescriptions = {
   nail: [
     {
-      title: "Chuyên nghiệp & Súc tích",
-      description: "Cần tuyển thợ nail có kinh nghiệm tối thiểu 2 năm. Phải thành thạo bột, gel, và nail art. Cơ cấu lương thưởng cạnh tranh với phúc lợi và lịch làm việc linh hoạt. Gia nhập salon uy tín của chúng tôi với lượng khách hàng trung thành."
+      title: "Thợ Nail Chuyên Nghiệp",
+      description: "Cần tuyển thợ Nail có kinh nghiệm 2+ năm, thành thạo bột, gel, dip và vẽ nail. Yêu cầu có bằng, tỉ mỉ và phục vụ khách hàng tốt. Lương cao, giờ làm linh hoạt, môi trường làm việc thân thiện."
     },
     {
-      title: "Thân thiện & Chào đón",
-      description: "Gia nhập gia đình salon nail của chúng tôi! Chúng tôi đang tìm kiếm những nghệ nhân nail nhiệt huyết, yêu thích việc tạo ra những bộ móng đẹp và làm cho khách hàng cảm thấy đặc biệt. Đội ngũ thân thiện của chúng tôi luôn hỗ trợ, tạo cơ hội phát triển và môi trường làm việc tích cực. Mức lương cạnh tranh với lượng khách hàng trung thành."
+      title: "Thợ Nail Đầy Đủ Dịch Vụ",
+      description: "Tìm thợ nail có tay nghề cao, thành thạo các dịch vụ nail (manicure, pedicure, bột, gel, vẽ). Yêu cầu kỹ năng giao tiếp tốt và có khả năng giữ chân khách hàng. Chúng tôi cung cấp hoa hồng cạnh tranh, đảm bảo lương theo giờ và giờ làm việc linh hoạt."
     },
     {
-      title: "Sang trọng & Cao cấp",
-      description: "Salon nail cao cấp tìm kiếm nhân tài xuất sắc để phục vụ khách hàng tinh tế. Chúng tôi cung cấp môi trường làm việc thanh lịch với sản phẩm và thiết bị cao cấp. Ứng viên phải thể hiện kỹ thuật hoàn hảo trong các dịch vụ nail cao cấp. Gói lương thưởng tuyệt vời phản ánh chuyên môn của bạn."
-    },
-    {
-      title: "Thực tế & Hấp dẫn",
-      description: "Salon khu vực đông khách đang tuyển thợ nail full-time và part-time. Lương $800-1100/tuần tùy theo kinh nghiệm, tip cao và ổn định. Môi trường làm việc vui vẻ, không drama, chủ dễ tính. Có hỗ trợ chỗ ở cho thợ từ xa. Bao định cư cho thợ giỏi."
-    },
-    {
-      title: "Chi tiết & Đầy đủ",
-      description: "Cần tuyển thợ nail có kinh nghiệm làm bột, gel, chân tay nước. Yêu cầu làm việc sạch sẽ, tỉ mỉ, giao tiếp tốt với khách hàng. Thu nhập $900-1300/tuần (bao lương hoặc chia 6/4 tùy thỏa thuận). Làm việc 5-6 ngày/tuần, giờ linh hoạt. Salon có khách walk-in ổn định, tips hậu hĩnh. Không khấu trừ tiền vật liệu, hỗ trợ đào tạo nâng cao tay nghề."
+      title: "Thợ Nail - Salon Cao Cấp",
+      description: "Salon nail cao cấp cần tuyển thợ nail có bằng và kinh nghiệm 3+ năm. Phải thành thạo tất cả các dịch vụ nail bao gồm các thiết kế phức tạp và cam kết mang đến trải nghiệm khách hàng xuất sắc. Chúng tôi cung cấp không gian làm việc đẹp, sản phẩm cao cấp và chế độ lương thưởng hấp dẫn."
     }
   ],
   hair: [
     {
-      title: "Chuyên nghiệp & Súc tích",
-      description: "Salon uy tín cần tuyển thợ tóc có bằng cấp với tối thiểu 2 năm kinh nghiệm. Phải xuất sắc trong cắt, nhuộm và tạo kiểu cho đa dạng khách hàng. Lương theo hoa hồng với cơ hội thưởng bán sản phẩm. Mang theo khách hàng hiện có hoặc xây dựng từ lượng khách đều đặn của chúng tôi."
+      title: "Thợ Tóc Sáng Tạo",
+      description: "Tìm kiếm thợ tóc đam mê với chuyên môn về cắt, nhuộm và tạo kiểu tóc. Yêu cầu có portfolio mạnh thể hiện sự đa dạng và sáng tạo. Chúng tôi cung cấp đào tạo liên tục, lương cạnh tranh và môi trường làm việc hợp tác."
     },
     {
-      title: "Thân thiện & Chào đón",
-      description: "Gia nhập gia đình salon tóc của chúng tôi! Chúng tôi đang tìm kiếm những stylist đam mê tạo ra những kiểu tóc đẹp và kết nối có ý nghĩa với khách hàng. Đội ngũ hỗ trợ của chúng tôi tôn vinh sự sáng tạo và phát triển trong môi trường tích cực, không drama. Mức lương cạnh tranh với lượng khách hàng trung thành."
+      title: "Warm & Welcoming",
+      description: "Join our hair salon family! We're looking for passionate stylists who create beautiful transformations and meaningful client connections. Our supportive team celebrates creativity and growth in a positive, drama-free environment. Competitive compensation with loyal clientele."
     },
     {
-      title: "Sang trọng & Cao cấp",
-      description: "Salon danh tiếng tìm kiếm thợ tóc chuyên nghiệp để phục vụ khách hàng cao cấp. Ứng viên phải thể hiện kỹ thuật xuất sắc trong cắt tóc chính xác, pha màu nhuộm nâng cao và tạo kiểu theo xu hướng. Chúng tôi cung cấp không gian thanh lịch, công cụ cao cấp và mức lương xứng đáng với chuyên môn của bạn."
-    },
-    {
-      title: "Thực tế & Hấp dẫn",
-      description: "Salon khu vực trung tâm cần tuyển thợ tóc nam/nữ có kinh nghiệm. Lương $900-1400/tuần tùy năng lực. Yêu cầu thợ làm tốt uốn, duỗi, nhuộm highlight. Khách ổn định, tips cao, môi trường làm việc thoải mái. Có hỗ trợ chỗ ở cho thợ từ xa."
+      title: "Luxury & High-End",
+      description: "Prestigious salon seeking master hair stylist to serve our exclusive clientele. Candidates must demonstrate exceptional technique in precision cutting, advanced color formulation, and editorial styling. We offer an elegant atmosphere, premium tools, and compensation reflecting your expertise."
     }
   ],
   spa: [
     {
-      title: "Chuyên nghiệp & Súc tích",
-      description: "Tìm kiếm kỹ thuật viên spa/massage có bằng cấp với tối thiểu 2 năm kinh nghiệm. Phải thành thạo chăm sóc da mặt, điều trị cơ thể và liệu pháp massage. Cơ cấu lương thưởng cạnh tranh với phúc lợi và lịch làm việc linh hoạt. Gia nhập spa uy tín của chúng tôi với lượng khách hàng trung thành."
+      title: "Chuyên Viên Massage Có Chứng Chỉ",
+      description: "Spa cao cấp tìm kiếm chuyên viên massage có chứng chỉ, thành thạo các kỹ thuật massage Thụy Điển, deep tissue và đá nóng. Yêu cầu kỹ năng phục vụ khách hàng tốt và khả năng điều chỉnh liệu pháp theo nhu cầu khách hàng. Lịch làm việc linh hoạt với lương và phúc lợi cạnh tranh."
     },
     {
-      title: "Thân thiện & Chào đón",
-      description: "Gia nhập gia đình spa của chúng tôi! Chúng tôi đang tìm kiếm những chuyên viên trị liệu tận tâm, tạo ra những trải nghiệm thư giãn và giúp khách hàng cảm thấy tốt nhất. Đội ngũ thân thiện của chúng tôi luôn hỗ trợ, tạo cơ hội phát triển và môi trường làm việc hài hòa. Mức lương cạnh tranh với lượng khách hàng ổn định."
+      title: "Warm & Welcoming",
+      description: "Join our spa family! We're looking for caring therapists who create rejuvenating experiences and help clients feel their best. Our friendly team offers support, growth opportunities, and a harmonious work environment. Competitive compensation with steady clientele."
     },
     {
-      title: "Sang trọng & Cao cấp",
-      description: "Spa cao cấp tìm kiếm nhân tài xuất sắc để phục vụ khách hàng tinh tế. Chúng tôi cung cấp môi trường thanh lịch với sản phẩm cao cấp và thiết bị hiện đại. Ứng viên phải thể hiện sự thông thạo các kỹ thuật trị liệu và liệu pháp cao cấp. Mức lương tuyệt vời phản ánh chuyên môn của bạn."
+      title: "Luxury & High-End",
+      description: "Exclusive spa seeking exceptional talent to serve our discerning clientele. We provide an elegant environment with premium products and advanced equipment. Candidates must demonstrate mastery of therapeutic techniques and luxury treatments. Excellent compensation reflecting your expertise."
     }
   ],
   other: [
     {
-      title: "Chuyên nghiệp & Súc tích",
-      description: "Tìm kiếm chuyên gia làm đẹp có trình độ với kinh nghiệm và chứng chỉ liên quan. Phải đáng tin cậy, tập trung vào khách hàng và định hướng làm việc nhóm. Cơ cấu lương thưởng cạnh tranh với cơ hội phát triển. Gia nhập doanh nghiệp uy tín của chúng tôi với lượng khách hàng trung thành tại vị trí đắc địa."
+      title: "Salon Receptionist",
+      description: "Busy salon seeking friendly, organized receptionist to manage front desk operations. Responsibilities include scheduling appointments, greeting clients, processing payments, and maintaining a clean reception area. Must have excellent communication skills and the ability to multitask in a fast-paced environment."
     },
     {
-      title: "Thân thiện & Chào đón",
-      description: "Gia nhập gia đình làm đẹp của chúng tôi! Chúng tôi đang tìm kiếm những chuyên gia nhiệt huyết, yêu thích nghề nghiệp và tạo trải nghiệm tuyệt vời cho khách hàng. Đội ngũ hỗ trợ của chúng tôi mang đến môi trường tích cực, không drama nơi bạn có thể phát triển. Mức lương cạnh tranh với lượng khách hàng ổn định."
+      title: "Warm & Welcoming",
+      description: "Join our beauty family! We're looking for passionate professionals who love their craft and creating wonderful client experiences. Our supportive team offers a positive, drama-free environment where you can thrive. Competitive compensation with steady clientele."
     },
     {
-      title: "Sang trọng & Cao cấp",
-      description: "Cơ sở cao cấp tìm kiếm nhân tài xuất sắc để phục vụ khách hàng tinh tế. Chúng tôi cung cấp không gian thanh lịch với sản phẩm và thiết bị cao cấp. Ứng viên phải thể hiện sự thông thạo các kỹ thuật và phong cách chuyên nghiệp. Mức lương tuyệt vời phản ánh chuyên môn của bạn."
+      title: "Luxury & High-End",
+      description: "Premium establishment seeking exceptional talent to serve our discerning clientele. We offer an elegant atmosphere with high-end products and equipment. Candidates must demonstrate mastery of techniques and professional presence. Excellent compensation reflecting your expertise."
     }
   ]
 };
