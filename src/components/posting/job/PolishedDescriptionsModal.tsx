@@ -8,6 +8,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { jobFormEn } from '@/constants/jobForm.en';
 import { jobFormVi } from '@/constants/jobForm.vi';
 import { POLISHED_DESCRIPTIONS_VI } from './jobFormConstants';
+import { usePolishedDescriptions } from '@/hooks/usePolishedDescriptions';
+import { POLISH_TEMPLATES_VI } from './jobFormConstants';
 
 const STYLE_TABS = [
   { value: "professional", label: "Professional" },
