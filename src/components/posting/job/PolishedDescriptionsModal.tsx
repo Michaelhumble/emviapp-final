@@ -1,179 +1,293 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Loader2, Check } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { jobFormEn } from '@/constants/jobForm.en';
-import { jobFormVi } from '@/constants/jobForm.vi';
-import { POLISHED_DESCRIPTIONS_VI } from './jobFormConstants';
 
-const STYLE_TABS = [
-  { value: "professional", label: "Professional" },
-  { value: "friendly", label: "Friendly" },
-  { value: "luxury", label: "Luxury" },
-  { value: "casual", label: "Casual" },
-  { value: "detailed", label: "Detailed" },
-  // New Vietnamese style tabs only shown for Vietnamese language
-  { value: "warm", label: "Ấm áp & Thân thiện", viOnly: true },
-  { value: "polite", label: "Chuyên nghiệp & Lịch sự", viOnly: true },
-  { value: "creative", label: "Sáng tạo & Nghệ thuật", viOnly: true },
-  { value: "local", label: "Địa phương & Gần gũi", viOnly: true },
-  { value: "direct", label: "Ngắn gọn & Trực tiếp", viOnly: true },
-  { value: "passionate", label: "Đam mê & Nhiệt huyết", viOnly: true },
-  { value: "supportive", label: "Hỗ trợ & Đoàn kết", viOnly: true },
-  { value: "longterm", label: "Đầu tư lâu dài", viOnly: true },
-  { value: "gentle", label: "Nhẹ nhàng & Tình cảm", viOnly: true },
-  { value: "premium", label: "Đẳng cấp & Cao cấp", viOnly: true }
-];
+import React from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LucideReplaceAll } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface PolishedDescriptionsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  descriptions: string[];
-  onSelect: (description: string) => void;
-  isLoading: boolean;
+interface Template {
+  id: string;
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
 }
 
-const PolishedDescriptionsModal = ({
-  isOpen,
-  onClose,
-  descriptions,
+export interface PolishedDescriptionsModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  templates: Template[];
+  isLoading?: boolean;
+  onSelect: (description: string) => void;
+}
+
+export function PolishedDescriptionsModal({
+  open,
+  onOpenChange,
+  templates,
+  isLoading = false,
   onSelect,
-  isLoading
-}: PolishedDescriptionsModalProps) => {
-  const { isVietnamese } = useTranslation();
-  const t = isVietnamese ? jobFormVi : jobFormEn;
-  const [selectedTab, setSelectedTab] = useState("professional");
-  const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
-  
-  // Filter tabs based on language
-  const visibleTabs = STYLE_TABS.filter(tab => 
-    !tab.viOnly || (tab.viOnly && isVietnamese)
-  );
-  
-  // Get descriptions for the current tab/style
-  const getFilteredDescriptions = () => {
-    if (!descriptions || descriptions.length === 0) return [];
-    
-    // If we're using Vietnamese and have nail descriptions available
-    if (isVietnamese && POLISHED_DESCRIPTIONS_VI.nail && POLISHED_DESCRIPTIONS_VI.nail[selectedTab]) {
-      return POLISHED_DESCRIPTIONS_VI.nail[selectedTab];
-    }
-    
-    // Otherwise use the standard descriptions as before
-    const totalStyles = STYLE_TABS.filter(tab => !tab.viOnly).length;
-    const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
-    
-    const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
-    const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
-    
-    return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
-  };
-
-  const filteredDescriptions = getFilteredDescriptions();
-
-  const handleSelectDescription = (description: string) => {
-    setSelectedDescription(description);
-  };
-
-  const handleUseDescription = () => {
-    if (selectedDescription) {
-      onSelect(selectedDescription);
-    }
+}: PolishedDescriptionsModalProps) {
+  const handleSelect = (description: string) => {
+    onSelect(description);
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle className="font-playfair text-xl">
-            {isVietnamese ? "Gợi ý từ AI" : "AI Suggestions"}
-          </DialogTitle>
-        </DialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[900px] p-0">
+        <div className="p-6 pb-2 border-b">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Làm Mịn Bài Viết Với AI
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Chọn một mẫu để thay thế hoặc nâng cao bài viết của bạn
+          </p>
+        </div>
 
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-center text-muted-foreground">
-              {isVietnamese ? "AI đang hoàn thiện mô tả của bạn..." : "AI is polishing your description..."}
-            </p>
+        <Tabs defaultValue="all" className="w-full">
+          <div className="px-6 pt-2">
+            <TabsList className="w-full justify-start mb-4">
+              <TabsTrigger value="all" className="text-sm">
+                Tất Cả
+              </TabsTrigger>
+              <TabsTrigger value="professional" className="text-sm">
+                Chuyên Nghiệp
+              </TabsTrigger>
+              <TabsTrigger value="friendly" className="text-sm">
+                Thân Thiện
+              </TabsTrigger>
+              <TabsTrigger value="luxury" className="text-sm">
+                Sang Trọng
+              </TabsTrigger>
+              <TabsTrigger value="detailed" className="text-sm">
+                Chi Tiết
+              </TabsTrigger>
+            </TabsList>
           </div>
-        ) : (
-          <>
-            <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
-              <TabsList className="grid grid-cols-5 mb-4">
-                {visibleTabs.length > 5 ? (
-                  <ScrollArea className="w-full">
-                    <div className="flex space-x-2 p-1">
-                      {visibleTabs.map(tab => (
-                        <TabsTrigger key={tab.value} value={tab.value} className="whitespace-nowrap">
-                          {tab.label}
-                        </TabsTrigger>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                ) : (
-                  visibleTabs.map(tab => (
-                    <TabsTrigger key={tab.value} value={tab.value}>
-                      {tab.label}
-                    </TabsTrigger>
-                  ))
-                )}
-              </TabsList>
-              
-              <TabsContent value={selectedTab} className="mt-0">
-                <ScrollArea className="h-[300px] pr-4">
-                  <div className="space-y-4">
-                    {filteredDescriptions.length > 0 ? (
-                      filteredDescriptions.map((description, index) => (
-                        <div 
-                          key={index}
-                          className={`p-4 border rounded-md cursor-pointer transition-colors ${
-                            selectedDescription === description 
-                              ? 'border-primary/70 bg-primary/5 shadow-sm' 
-                              : 'hover:border-primary/40'
-                          }`}
-                          onClick={() => handleSelectDescription(description)}
-                        >
-                          <p className="whitespace-pre-wrap">{description}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center text-muted-foreground">
-                        {isVietnamese 
-                          ? "Không có gợi ý nào. Vui lòng thử lại với mô tả dài hơn." 
-                          : "No suggestions available. Please try again with a longer description."}
-                      </div>
-                    )}
-                  </div>
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
-            
-            {selectedDescription && (
-              <div className="mt-4 flex justify-end">
-                <Button 
-                  onClick={handleUseDescription} 
-                  className="gap-2"
-                >
-                  <Check className="h-4 w-4" />
-                  {isVietnamese ? 'Sử dụng mô tả này' : 'Use This Description'}
-                </Button>
-              </div>
-            )}
-          </>
-        )}
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {isVietnamese ? 'Huỷ' : 'Cancel'}
-          </Button>
-        </DialogFooter>
+          <ScrollArea className="h-[500px] px-6 pb-6">
+            <TabsContent value="all" className="m-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {templates.map((template) => (
+                  <div
+                    key={template.id}
+                    onClick={() => handleSelect(template.description)}
+                    className={cn(
+                      "p-6 rounded-2xl shadow-xl bg-white border border-neutral-100",
+                      "transition-all duration-200 cursor-pointer",
+                      "hover:border-primary/20 hover:shadow-2xl hover:scale-[1.01]"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      {template.icon && (
+                        <div className="text-primary">{template.icon}</div>
+                      )}
+                      <h3 className="font-medium text-lg tracking-tight">
+                        {template.title}
+                      </h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {template.description.length > 250
+                        ? `${template.description.substring(0, 250)}...`
+                        : template.description}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-4"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelect(template.description);
+                      }}
+                    >
+                      <LucideReplaceAll className="mr-1 h-3 w-3" />
+                      Sử dụng mẫu này
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="professional" className="m-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {templates
+                  .filter((t) => t.id.includes("chuyen_nghiep"))
+                  .map((template) => (
+                    <div
+                      key={template.id}
+                      onClick={() => handleSelect(template.description)}
+                      className={cn(
+                        "p-6 rounded-2xl shadow-xl bg-white border border-neutral-100",
+                        "transition-all duration-200 cursor-pointer",
+                        "hover:border-primary/20 hover:shadow-2xl hover:scale-[1.01]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        {template.icon && (
+                          <div className="text-primary">{template.icon}</div>
+                        )}
+                        <h3 className="font-medium text-lg tracking-tight">
+                          {template.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {template.description.length > 250
+                          ? `${template.description.substring(0, 250)}...`
+                          : template.description}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelect(template.description);
+                        }}
+                      >
+                        <LucideReplaceAll className="mr-1 h-3 w-3" />
+                        Sử dụng mẫu này
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="friendly" className="m-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {templates
+                  .filter((t) => t.id.includes("than_thien"))
+                  .map((template) => (
+                    <div
+                      key={template.id}
+                      onClick={() => handleSelect(template.description)}
+                      className={cn(
+                        "p-6 rounded-2xl shadow-xl bg-white border border-neutral-100",
+                        "transition-all duration-200 cursor-pointer",
+                        "hover:border-primary/20 hover:shadow-2xl hover:scale-[1.01]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        {template.icon && (
+                          <div className="text-primary">{template.icon}</div>
+                        )}
+                        <h3 className="font-medium text-lg tracking-tight">
+                          {template.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {template.description.length > 250
+                          ? `${template.description.substring(0, 250)}...`
+                          : template.description}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelect(template.description);
+                        }}
+                      >
+                        <LucideReplaceAll className="mr-1 h-3 w-3" />
+                        Sử dụng mẫu này
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="luxury" className="m-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {templates
+                  .filter((t) => t.id.includes("sang_trong"))
+                  .map((template) => (
+                    <div
+                      key={template.id}
+                      onClick={() => handleSelect(template.description)}
+                      className={cn(
+                        "p-6 rounded-2xl shadow-xl bg-white border border-neutral-100",
+                        "transition-all duration-200 cursor-pointer",
+                        "hover:border-primary/20 hover:shadow-2xl hover:scale-[1.01]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        {template.icon && (
+                          <div className="text-primary">{template.icon}</div>
+                        )}
+                        <h3 className="font-medium text-lg tracking-tight">
+                          {template.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {template.description.length > 250
+                          ? `${template.description.substring(0, 250)}...`
+                          : template.description}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelect(template.description);
+                        }}
+                      >
+                        <LucideReplaceAll className="mr-1 h-3 w-3" />
+                        Sử dụng mẫu này
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="detailed" className="m-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {templates
+                  .filter((t) => t.id.includes("chi_tiet"))
+                  .map((template) => (
+                    <div
+                      key={template.id}
+                      onClick={() => handleSelect(template.description)}
+                      className={cn(
+                        "p-6 rounded-2xl shadow-xl bg-white border border-neutral-100",
+                        "transition-all duration-200 cursor-pointer",
+                        "hover:border-primary/20 hover:shadow-2xl hover:scale-[1.01]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        {template.icon && (
+                          <div className="text-primary">{template.icon}</div>
+                        )}
+                        <h3 className="font-medium text-lg tracking-tight">
+                          {template.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {template.description.length > 250
+                          ? `${template.description.substring(0, 250)}...`
+                          : template.description}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelect(template.description);
+                        }}
+                      >
+                        <LucideReplaceAll className="mr-1 h-3 w-3" />
+                        Sử dụng mẫu này
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+            </TabsContent>
+          </ScrollArea>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default PolishedDescriptionsModal;
+}
