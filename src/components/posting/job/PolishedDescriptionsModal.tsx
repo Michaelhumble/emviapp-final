@@ -54,12 +54,12 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">
+          <DialogTitle className="text-xl font-semibold text-center sm:text-left">
             {isVietnamese ? 'Trợ Giúp AI: Cải Thiện Mô Tả Công Việc' : 'AI Polish: Enhance Job Description'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-center sm:text-left">
             {isVietnamese 
               ? 'Chọn một phong cách để cải thiện mô tả công việc của bạn'
               : 'Choose a style to enhance your job description'}
@@ -86,14 +86,15 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
           </div>
         ) : (
           <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
-            <div className="overflow-x-auto pb-2 mb-6">
-              <TabsList className="flex min-w-max gap-3">
+            <div className="overflow-x-auto pb-4 mb-6">
+              <TabsList className="flex min-w-max gap-4 p-1.5">
                 {jobTemplates.map(template => (
                   <TabsTrigger 
                     key={template.id} 
                     value={template.id} 
-                    className="px-4 py-3 min-w-[120px] text-sm sm:text-sm whitespace-nowrap"
+                    className="px-6 py-3.5 min-w-[130px] text-base whitespace-nowrap flex items-center gap-2 font-medium"
                   >
+                    {template.icon && <span>{template.icon}</span>}
                     {template.title}
                   </TabsTrigger>
                 ))}
@@ -101,12 +102,12 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
             </div>
 
             {jobTemplates.map(template => (
-              <TabsContent key={template.id} value={template.id} className="space-y-4">
-                <div className="border rounded-lg p-6 bg-muted/30">
-                  <h3 className="font-medium mb-3">{template.title} {isVietnamese ? 'Phong Cách' : 'Style'}</h3>
-                  <div className="whitespace-pre-wrap text-sm">{template.description}</div>
+              <TabsContent key={template.id} value={template.id} className="space-y-5">
+                <div className="border rounded-2xl p-8 bg-muted/30 shadow-xl hover:shadow-md transition-shadow">
+                  <h3 className="font-medium text-lg mb-4">{template.title} {isVietnamese ? 'Phong Cách' : 'Style'}</h3>
+                  <div className="whitespace-pre-wrap text-base leading-relaxed">{template.description}</div>
                 </div>
-                <div className="flex justify-end gap-3">
+                <div className="flex justify-end gap-3 pt-2">
                   <Button variant="outline" onClick={onClose}>
                     {isVietnamese ? 'Hủy' : 'Cancel'}
                   </Button>
