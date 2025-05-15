@@ -1,133 +1,176 @@
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Loader2, Check } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { jobFormEn } from '@/constants/jobForm.en';
+import { jobFormVi } from '@/constants/jobForm.vi';
+import { POLISHED_DESCRIPTIONS_VI } from './jobFormConstants';
 
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
-import { POLISH_TEMPLATES, POLISH_TEMPLATES_VI } from "./jobFormConstants";
+const STYLE_TABS = [
+  { value: "professional", label: "Professional" },
+  { value: "friendly", label: "Friendly" },
+  { value: "luxury", label: "Luxury" },
+  { value: "casual", label: "Casual" },
+  { value: "detailed", label: "Detailed" },
+  // New Vietnamese style tabs only shown for Vietnamese language
+  { value: "warm", label: "Ấm áp & Thân thiện", viOnly: true },
+  { value: "polite", label: "Chuyên nghiệp & Lịch sự", viOnly: true },
+  { value: "creative", label: "Sáng tạo & Nghệ thuật", viOnly: true },
+  { value: "local", label: "Địa phương & Gần gũi", viOnly: true },
+  { value: "direct", label: "Ngắn gọn & Trực tiếp", viOnly: true },
+  { value: "passionate", label: "Đam mê & Nhiệt huyết", viOnly: true },
+  { value: "supportive", label: "Hỗ trợ & Đoàn kết", viOnly: true },
+  { value: "longterm", label: "Đầu tư lâu dài", viOnly: true },
+  { value: "gentle", label: "Nhẹ nhàng & Tình cảm", viOnly: true },
+  { value: "premium", label: "Đẳng cấp & Cao cấp", viOnly: true }
+];
 
 interface PolishedDescriptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (text: string) => void;
-  jobType: string;
-  currentText: string;
+  descriptions: string[];
+  onSelect: (description: string) => void;
+  isLoading: boolean;
 }
 
-// Update the template interface to include the icon property
-interface Template {
-  id: string;
-  title: string;
-  description: string;
-  icon?: string; // Make icon optional
-}
-
-const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
+const PolishedDescriptionsModal = ({
   isOpen,
   onClose,
+  descriptions,
   onSelect,
-  jobType = "nail-technician",
-  currentText = ""
-}) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState("professional");
+  isLoading
+}: PolishedDescriptionsModalProps) => {
   const { isVietnamese } = useTranslation();
+  const t = isVietnamese ? jobFormVi : jobFormEn;
+  const [selectedTab, setSelectedTab] = useState("professional");
+  const [selectedDescription, setSelectedDescription] = useState<string | null>(null);
   
-  // Set up templates based on language
-  const templates = isVietnamese ? POLISH_TEMPLATES_VI : POLISH_TEMPLATES;
+  // Filter tabs based on language
+  const visibleTabs = STYLE_TABS.filter(tab => 
+    !tab.viOnly || (tab.viOnly && isVietnamese)
+  );
   
-  // Get the job-specific templates or fallback to a default
-  const jobTemplates = templates[jobType as keyof typeof templates] || templates["nail-technician"];
-
-  useEffect(() => {
-    if (isOpen) {
-      // Simulate loading for a better UX
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setIsLoading(true);
+  // Get descriptions for the current tab/style
+  const getFilteredDescriptions = () => {
+    if (!descriptions || descriptions.length === 0) return [];
+    
+    // If we're using Vietnamese and have nail descriptions available
+    if (isVietnamese && POLISHED_DESCRIPTIONS_VI.nail && POLISHED_DESCRIPTIONS_VI.nail[selectedTab]) {
+      return POLISHED_DESCRIPTIONS_VI.nail[selectedTab];
     }
-  }, [isOpen]);
-
-  const handleSelectTemplate = (template: Template) => {
-    onSelect(template.description);
-    onClose();
+    
+    // Otherwise use the standard descriptions as before
+    const totalStyles = STYLE_TABS.filter(tab => !tab.viOnly).length;
+    const descriptionsPerStyle = Math.max(1, Math.floor(descriptions.length / totalStyles));
+    
+    const styleIndex = STYLE_TABS.findIndex(tab => tab.value === selectedTab);
+    const startIndex = styleIndex !== -1 ? styleIndex * descriptionsPerStyle : 0;
+    
+    return descriptions.slice(startIndex, startIndex + descriptionsPerStyle);
   };
 
-  // Display a message if no templates are available in the selected language for this job type
-  const hasTemplates = jobTemplates && jobTemplates.length > 0;
-  
+  const filteredDescriptions = getFilteredDescriptions();
+
+  const handleSelectDescription = (description: string) => {
+    setSelectedDescription(description);
+  };
+
+  const handleUseDescription = () => {
+    if (selectedDescription) {
+      onSelect(selectedDescription);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-center sm:text-left">
-            {isVietnamese ? 'Trợ Giúp AI: Cải Thiện Mô Tả Công Việc' : 'AI Polish: Enhance Job Description'}
+          <DialogTitle className="font-playfair text-xl">
+            {isVietnamese ? "Gợi ý từ AI" : "AI Suggestions"}
           </DialogTitle>
-          <DialogDescription className="text-center sm:text-left">
-            {isVietnamese 
-              ? 'Chọn một phong cách để cải thiện mô tả công việc của bạn'
-              : 'Choose a style to enhance your job description'}
-          </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="mt-4 text-muted-foreground">
-              {isVietnamese ? 'Đang chuẩn bị mẫu mô tả...' : 'Preparing description templates...'}
-            </p>
-          </div>
-        ) : !hasTemplates ? (
-          <div className="flex flex-col items-center justify-center p-8">
+          <div className="flex flex-col items-center justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
             <p className="text-center text-muted-foreground">
-              {isVietnamese 
-                ? 'Chức năng đang cập nhật cho loại công việc này. Vui lòng thử lại sau.'
-                : 'Templates for this job type are being updated. Please try again later.'}
+              {isVietnamese ? "AI đang hoàn thiện mô tả của bạn..." : "AI is polishing your description..."}
             </p>
-            <Button onClick={onClose} className="mt-4">
-              {isVietnamese ? 'Đóng' : 'Close'}
-            </Button>
           </div>
         ) : (
-          <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
-            <div className="overflow-x-auto pb-4 mb-6">
-              <TabsList className="flex min-w-max gap-4 p-1.5">
-                {jobTemplates.map((template: Template) => (
-                  <TabsTrigger 
-                    key={template.id} 
-                    value={template.id} 
-                    className="px-6 py-3.5 min-w-[130px] text-base whitespace-nowrap flex items-center gap-2 font-medium"
-                  >
-                    {/* Check if icon exists before rendering it */}
-                    {template.icon && <span>{template.icon}</span>}
-                    {template.title}
-                  </TabsTrigger>
-                ))}
+          <>
+            <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
+              <TabsList className="grid grid-cols-5 mb-4">
+                {visibleTabs.length > 5 ? (
+                  <ScrollArea className="w-full">
+                    <div className="flex space-x-2 p-1">
+                      {visibleTabs.map(tab => (
+                        <TabsTrigger key={tab.value} value={tab.value} className="whitespace-nowrap">
+                          {tab.label}
+                        </TabsTrigger>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  visibleTabs.map(tab => (
+                    <TabsTrigger key={tab.value} value={tab.value}>
+                      {tab.label}
+                    </TabsTrigger>
+                  ))
+                )}
               </TabsList>
-            </div>
-
-            {jobTemplates.map((template: Template) => (
-              <TabsContent key={template.id} value={template.id} className="space-y-5">
-                <div className="border rounded-2xl p-8 bg-muted/30 shadow-xl hover:shadow-md transition-shadow">
-                  <h3 className="font-medium text-lg mb-4">{template.title} {isVietnamese ? 'Phong Cách' : 'Style'}</h3>
-                  <div className="whitespace-pre-wrap text-base leading-relaxed">{template.description}</div>
-                </div>
-                <div className="flex justify-end gap-3 pt-2">
-                  <Button variant="outline" onClick={onClose}>
-                    {isVietnamese ? 'Hủy' : 'Cancel'}
-                  </Button>
-                  <Button onClick={() => handleSelectTemplate(template)}>
-                    {isVietnamese ? 'Sử Dụng Mẫu Này' : 'Use This Template'}
-                  </Button>
-                </div>
+              
+              <TabsContent value={selectedTab} className="mt-0">
+                <ScrollArea className="h-[300px] pr-4">
+                  <div className="space-y-4">
+                    {filteredDescriptions.length > 0 ? (
+                      filteredDescriptions.map((description, index) => (
+                        <div 
+                          key={index}
+                          className={`p-4 border rounded-md cursor-pointer transition-colors ${
+                            selectedDescription === description 
+                              ? 'border-primary/70 bg-primary/5 shadow-sm' 
+                              : 'hover:border-primary/40'
+                          }`}
+                          onClick={() => handleSelectDescription(description)}
+                        >
+                          <p className="whitespace-pre-wrap">{description}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-muted-foreground">
+                        {isVietnamese 
+                          ? "Không có gợi ý nào. Vui lòng thử lại với mô tả dài hơn." 
+                          : "No suggestions available. Please try again with a longer description."}
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
               </TabsContent>
-            ))}
-          </Tabs>
+            </Tabs>
+            
+            {selectedDescription && (
+              <div className="mt-4 flex justify-end">
+                <Button 
+                  onClick={handleUseDescription} 
+                  className="gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  {isVietnamese ? 'Sử dụng mô tả này' : 'Use This Description'}
+                </Button>
+              </div>
+            )}
+          </>
         )}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            {isVietnamese ? 'Huỷ' : 'Cancel'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
