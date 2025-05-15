@@ -1,340 +1,307 @@
 
-// This file contains templates for job posts in both English and Vietnamese
-// It's used by the job form and the polish descriptions modal
+// Job form constants including templates and options for both English and Vietnamese
 
-// Export templates in English 
+// English job templates for the Polish with AI feature
 export const POLISH_TEMPLATES = {
   "nail-technician": [
     {
       id: "professional",
       title: "Professional",
-      description: "Looking for a skilled nail technician with at least 2 years of experience. Must be proficient in acrylic, gel, dip powder, and nail art. Excellent customer service skills are required. We offer competitive pay, flexible hours, and a friendly work environment. Full-time and part-time positions available."
+      description: "We are seeking a skilled Nail Technician to join our established salon. The ideal candidate will have experience in manicures, pedicures, and nail enhancements. You'll provide exceptional service in a clean, professional environment. Attention to detail, knowledge of current trends, and excellent customer service skills are essential. Competitive compensation and a positive work environment await the right candidate."
     },
     {
       id: "friendly",
       title: "Friendly",
-      description: "Join our nail salon family! We're seeking a friendly nail tech who loves creating beautiful nails and making clients feel special. Experience with acrylic, gel, and basic nail art preferred. Our team is supportive and our clients are wonderful. Flexible schedule and great earning potential!"
+      description: "Join our nail salon family! We're looking for a friendly and talented Nail Tech who loves making clients feel amazing. Our team is supportive, fun, and passionate about beauty. You'll get to work with wonderful clients in a positive atmosphere where your creativity is valued. Great earning potential, flexible schedule, and a drama-free workplace!"
+    },
+    {
+      id: "luxury",
+      title: "Luxury",
+      description: "Exclusive opportunity for an exceptional Nail Artist to join our premium beauty destination. We cater to discerning clientele who expect impeccable service and flawless results. Our elegant salon offers a sophisticated environment with high-end products and amenities. Qualified candidates will possess refined technique, artistic vision, and the ability to deliver a truly elevated experience. Compensation commensurate with expertise."
+    },
+    {
+      id: "casual",
+      title: "Casual",
+      description: "Hey nail pros! We need your awesome skills at our chill, laid-back salon. No drama, just good vibes and happy clients. Bring your creativity and people skills - we'll provide the rest. Flexible hours that work with your life, great pay, and cool coworkers included! Experience preferred but talent and attitude matter most."
     },
     {
       id: "detailed",
       title: "Detailed",
-      description: "Nail Technician Position: Requirements include valid license, 1+ years experience, proficiency in acrylic/gel applications, dip powder systems, nail art, and pedicure services. Hours: Tuesday-Saturday, 9:30am-7:30pm. Compensation: Base pay plus commission structure, earning $800-1200+ weekly depending on clientele. Benefits include paid vacation after 1 year, professional development opportunities, and employee discount on services and products."
+      description: "Nail Technician Position: Requirements include state license, 2+ years experience with acrylic, gel, and natural nail services. Hours: Tuesday-Saturday, 9:30am-7:30pm with 30-60 minute lunch breaks. Compensation: $25-35/hour plus tips (averaging $150-250 daily), commission structure available. Benefits include paid vacation after 6 months, product discounts, and continuing education allowance. Must maintain appointment schedule, adhere to sanitation protocols, and contribute to salon cleanliness."
+    },
+    {
+      id: "urgent",
+      title: "Urgent",
+      description: "IMMEDIATE OPENING FOR NAIL TECHNICIAN! High-traffic salon needs skilled nail tech RIGHT NOW! Guaranteed clients from day one - start earning immediately! Experience with acrylics, gel, and dipping powder required. GREAT compensation for qualified candidates. Walk-in interview available daily 10am-5pm or call now to secure this position before it's filled!"
+    },
+    {
+      id: "benefits",
+      title: "Benefits-Focused",
+      description: "Nail Technician Wanted - Exceptional Benefits Package! Join our team and enjoy: Guaranteed base pay + commission, health insurance contribution, 2 weeks paid vacation, 401(k) matching, paid ongoing training, flexible scheduling options, modern equipment and premium products, client loyalty program ensuring steady bookings, and opportunities for advancement. We invest in our nail professionals because your success is our success!"
+    },
+    {
+      id: "training",
+      title: "Training Opportunity",
+      description: "Perfect opportunity for Licensed Nail Technicians - all experience levels welcome! Our successful training program will help develop your skills and build your clientele. Receive hands-on guidance from seasoned professionals while earning. Learn advanced techniques, customer retention strategies, and retail skills. Great potential for growth and increasing income as you progress. Supportive team environment focused on helping you succeed!"
+    },
+    {
+      id: "creative",
+      title: "Creative",
+      description: "Calling all creative Nail Artists! Do you love pushing the boundaries of nail art? We're looking for someone who brings imagination and technical expertise to create stunning, Instagram-worthy designs. Our clients request everything from minimalist elegance to elaborate 3D creations. Your portfolio should showcase your range and artistic vision. Join a salon that encourages innovation and helps showcase your work to a wider audience."
+    },
+    {
+      id: "bilingual",
+      title: "Bilingual",
+      description: "Bilingual Nail Technician needed for our diverse clientele. English and Vietnamese language skills highly desired. You'll provide exceptional nail services while ensuring clear communication and cultural understanding. Welcoming environment with an international team and clients from various backgrounds. Great earning potential through our diverse and loyal customer base. Build meaningful connections while practicing your craft!"
     }
   ],
   "hair-stylist": [
     {
       id: "professional",
       title: "Professional",
-      description: "Seeking an experienced hair stylist to join our premium salon. The ideal candidate has 3+ years of experience with cutting, coloring, and styling techniques. Must have excellent customer service skills and the ability to build clientele. We offer competitive commission, continuing education, and a collaborative team environment."
+      description: "Licensed Hair Stylist wanted for established salon. Must be skilled in cutting, coloring, and styling techniques for diverse hair types. Strong communication and customer service skills required. Join our professional team in a clean, well-equipped environment. Competitive compensation package available."
     },
     {
       id: "friendly",
       title: "Friendly",
-      description: "Join our fun and supportive hair salon! We're looking for a passionate stylist who loves creating beautiful hair and connecting with clients. Experience with cutting, coloring, and styling preferred. We offer a welcoming atmosphere, flexible scheduling, and great earning potential. Come grow with us!"
+      description: "Join our hair salon family! We're looking for a talented stylist who enjoys making clients look and feel their best. Our team is supportive and passionate about beauty. Positive atmosphere, great clients, and excellent earning potential await!"
     },
     {
       id: "detailed",
       title: "Detailed",
-      description: "Hair Stylist Position: Requirements include cosmetology license, 2+ years salon experience, proficiency in current cutting and coloring techniques, balayage/highlighting expertise, and men's cutting skills. Hours flexible within salon operating times. Compensation includes commission structure (up to 50%), retail commission, and tip income. Benefits include continuing education allowance, product discounts, and health insurance options for full-time stylists."
+      description: "Hair Stylist Position: Requirements include cosmetology license, 2+ years salon experience with proficiency in cutting, coloring, balayage, and styling. Hours: Tuesday-Saturday with flexible scheduling. Compensation includes competitive commission structure and product sales bonuses. Skills in client consultation, color formulation, and trend awareness essential."
     }
   ],
-  "massage-therapist": [
+  "spa-technician": [
     {
       id: "professional",
       title: "Professional",
-      description: "Licensed Massage Therapist wanted for established spa. Must be certified with 500+ hours of training and 1+ year of professional experience. Proficiency in Swedish, deep tissue, and hot stone techniques required. We provide a tranquil working environment, booking management, and competitive pay structure."
-    },
-    {
-      id: "friendly",
-      title: "Friendly",
-      description: "Join our wellness team as a massage therapist! We're looking for someone who is passionate about healing and client care. Licensed therapists with knowledge of various massage techniques welcome. We offer a peaceful workspace, supportive team, and loyal clientele. Flexible scheduling available!"
+      description: "Licensed Spa Technician needed for upscale spa facility. Experience with facials, body treatments, and various massage techniques required. Must maintain spotless sanitation standards and provide exceptional customer care. Join our wellness-focused team and help clients achieve relaxation and rejuvenation."
     },
     {
       id: "detailed",
       title: "Detailed",
-      description: "Massage Therapist Position: Requirements include massage therapy license, 600+ training hours, 1+ year experience, and proficiency in Swedish, deep tissue, sports massage, and prenatal techniques. Hours include evenings and weekends, with 20-30 hours available weekly. Compensation starts at $25-35 per session hour plus tips, with opportunity for raises based on performance and retention. Benefits include free continuing education, liability insurance coverage, and complimentary services."
+      description: "Spa Technician Position: Must possess esthetician license with 1+ year experience in facials, chemical peels, and body treatments. Knowledge of skincare lines and ability to recommend appropriate products essential. Part-time and full-time schedules available with competitive hourly rate plus commission and gratuities."
     }
   ],
-  "esthetician": [
+  "salon-receptionist": [
+    {
+      id: "professional", 
+      title: "Professional",
+      description: "Salon Receptionist position available for organized individual with excellent communication skills. Responsibilities include scheduling appointments, greeting clients, managing phone calls, processing payments, and maintaining salon appearance. Computer proficiency and multitasking abilities required. Previous reception experience preferred but not essential for the right candidate."
+    },
+    {
+      id: "detailed",
+      title: "Detailed",
+      description: "Salon Receptionist Duties: Manage appointment scheduling system, confirm bookings, process payments, reconcile daily sales, maintain product inventory, coordinate staff schedules, and ensure exceptional client experience. Hours: Wednesday-Sunday with one weekend day required. Compensation: $16-18/hour plus retail commission. Benefits include product discounts and flexible scheduling."
+    }
+  ],
+  "other": [
     {
       id: "professional",
       title: "Professional",
-      description: "Seeking a licensed Esthetician to join our skincare team. Candidates must have 1+ years of experience with facials, waxing, and skincare consultations. Knowledge of product lines and ability to recommend appropriate treatments is essential. We offer a clean, modern facility and competitive compensation."
-    },
-    {
-      id: "friendly",
-      title: "Friendly",
-      description: "Passionate about skincare? Join our spa family as an esthetician! We're looking for a friendly professional who enjoys helping clients look and feel their best. Experience with facials, waxing, and skin treatments preferred. Great work atmosphere with supportive team members and loyal clients!"
+      description: "Beauty professional position available at established salon. The ideal candidate will be licensed, experienced, and passionate about their specialty. You'll work with a supportive team in a clean, well-maintained environment. Customer service skills and professional demeanor essential. Competitive compensation based on experience and skillset."
     },
     {
       id: "detailed",
       title: "Detailed",
-      description: "Esthetician Position: Requirements include valid esthetician license, 1+ years experience in spa setting, proficiency in facials, chemical peels, microdermabrasion, waxing services, and lash services. Hours are primarily Thursday-Sunday with some evening appointments. Compensation includes hourly base ($15-18) plus service commission (30-40%) and retail commission (10%). Benefits include product allowance, discounted services, and continuing education reimbursement."
-    }
-  ],
-  "barber": [
-    {
-      id: "professional",
-      title: "Professional",
-      description: "Professional Barber needed for established barbershop. Must have valid license and 2+ years of experience with traditional and modern cutting techniques. Skills in fade techniques, beard grooming, and straight razor shaves required. We offer a high-traffic location and competitive chair rental or commission options."
-    },
-    {
-      id: "friendly",
-      title: "Friendly",
-      description: "Join our barbershop crew! We're looking for a talented barber who enjoys creating great looks and building client relationships. Experience with fades, tapers, beard trims, and current men's styling preferred. Our shop has a fun atmosphere, loyal clients, and flexible scheduling!"
-    },
-    {
-      id: "detailed",
-      title: "Detailed",
-      description: "Barber Position: Requirements include barber license, 2+ years experience, expertise in modern fade techniques, traditional cuts, beard sculpting, straight razor shaves, and men's hair styling. Hours available Tuesday-Saturday with rotating schedule options. Compensation options include chair rental ($150-200 weekly) or commission structure (60/40 split). Benefits include continuing education opportunities, barber battle sponsorship, and product discounts. Must provide own basic tools."
-    }
-  ],
-  "makeup-artist": [
-    {
-      id: "professional",
-      title: "Professional",
-      description: "Seeking experienced Makeup Artist with portfolio demonstrating versatility in techniques from natural to glamour. Must have knowledge of current trends and products, with experience in wedding and special occasion makeup. Excellent interpersonal skills and the ability to work under time constraints required."
-    },
-    {
-      id: "friendly",
-      title: "Friendly",
-      description: "Creative makeup artist wanted for our beauty studio! We're looking for someone who loves enhancing natural beauty and creating special occasion looks. Experience with various skin types and tones preferred. Join our supportive team in a fun atmosphere with wonderful clients!"
-    },
-    {
-      id: "detailed",
-      title: "Detailed",
-      description: "Makeup Artist Position: Requirements include professional training/certification, 1+ years experience, strong portfolio featuring bridal, special occasion, and editorial work, knowledge of hygiene protocols, and expertise with diverse skin types/tones. Hours vary seasonally, with weekend availability essential during wedding season. Compensation includes service rates of $85-150 per application plus retail commission (15%). Kit allowance provided quarterly and opportunities for paid photoshoots and demonstrations."
-    }
-  ],
-  "lash-technician": [
-    {
-      id: "professional",
-      title: "Professional",
-      description: "Licensed Lash Artist needed for busy beauty studio. Must be certified in classic and volume lash extensions with at least 1 year of experience. Attention to detail, steady hands, and knowledge of proper application techniques are essential. We provide a clean, organized workspace and competitive commission."
-    },
-    {
-      id: "friendly",
-      title: "Friendly",
-      description: "Join our lash studio family! We're looking for a passionate lash artist who loves creating beautiful, customized lash sets. Experience with classic and volume techniques preferred. Our studio is modern and clean with a supportive team and loyal clients. Flexible scheduling available!"
-    },
-    {
-      id: "detailed",
-      title: "Detailed",
-      description: "Lash Technician Position: Requirements include lash certification, cosmetology or esthetician license (state requirement), 1+ years experience with classic and volume application, knowledge of proper isolation techniques, and retention optimization. Hours available are Tuesday-Saturday with 2-3 weekday evenings. Compensation is commission-based (50-60% depending on experience) with retail bonuses. Benefits include continuing education for advanced techniques, product discounts, and complementary fills."
-    }
-  ],
-  "brow-technician": [
-    {
-      id: "professional",
-      title: "Professional",
-      description: "Seeking experienced Brow Technician skilled in shaping, tinting, and microblading/microshading. Must have proper certification and at least 1 year of professional experience. Strong understanding of facial proportions and brow mapping techniques required. We offer a modern studio environment and competitive pay structure."
-    },
-    {
-      id: "friendly",
-      title: "Friendly",
-      description: "Brow artist wanted for our beauty studio! We're looking for someone who loves creating perfectly shaped brows that enhance our clients' natural beauty. Experience with waxing, tinting, and brow mapping preferred. Join our fun team in a beautiful workspace with great earning potential!"
-    },
-    {
-      id: "detailed",
-      title: "Detailed",
-      description: "Brow Technician Position: Requirements include esthetician license, specialized brow training, 1+ years experience, proficiency in waxing, threading, tinting, lamination, and henna techniques. Microblading certification a plus. Hours are flexible within studio operating hours, typically requiring 25-30 hours weekly. Compensation includes service commission (45-55%) plus product commission (10%). Free brow services for technician and immediate family members, product discounts, and advanced training opportunities provided."
+      description: "Position Details: License/certification in specialty area required. Experience level: minimum 1 year preferred. Schedule options include full-time and part-time with potential for flexible hours. Compensation structure based on experience and performance with opportunity for growth. Must maintain professional standards and contribute positively to salon atmosphere."
     }
   ]
 };
 
-// Export templates in Vietnamese
+// Vietnamese job templates for the Polish with AI feature
 export const POLISH_TEMPLATES_VI = {
   "nail-technician": [
     {
       id: "professional",
       title: "Chuyên Nghiệp",
-      description: "Cần tuyển thợ nail có ít nhất 2 năm kinh nghiệm. Phải thành thạo bột, gel, dip powder và nail art. Yêu cầu kỹ năng phục vụ khách hàng tốt. Chúng tôi cung cấp mức lương cạnh tranh, giờ giấc linh hoạt và môi trường làm việc thân thiện. Có vị trí toàn thời gian và bán thời gian."
+      description: "Chúng tôi đang tìm kiếm Thợ Nail có kỹ năng để tham gia vào tiệm salon của chúng tôi. Ứng viên lý tưởng sẽ có kinh nghiệm về dịch vụ làm móng tay, móng chân, và đắp móng. Bạn sẽ cung cấp dịch vụ xuất sắc trong môi trường sạch sẽ, chuyên nghiệp. Sự chú ý đến chi tiết, kiến thức về xu hướng hiện tại và kỹ năng phục vụ khách hàng tuyệt vời là điều cần thiết. Mức lương cạnh tranh và môi trường làm việc tích cực đang chờ đợi ứng viên phù hợp."
     },
     {
       id: "friendly",
       title: "Thân Thiện",
-      description: "Hãy tham gia gia đình tiệm nail của chúng tôi! Chúng tôi đang tìm kiếm thợ nail thân thiện, yêu thích tạo ra những bộ móng đẹp và làm cho khách hàng cảm thấy đặc biệt. Ưu tiên có kinh nghiệm về bột, gel và nail art cơ bản. Đội ngũ của chúng tôi nhiệt tình hỗ trợ và khách hàng rất tuyệt vời. Lịch làm việc linh hoạt và tiềm năng thu nhập cao!"
+      description: "Hãy tham gia vào gia đình tiệm nail của chúng tôi! Chúng tôi đang tìm kiếm một Thợ Nail thân thiện và tài năng, người yêu thích việc làm cho khách hàng cảm thấy tuyệt vời. Đội ngũ của chúng tôi nhiệt tình, vui vẻ và đam mê về làm đẹp. Bạn sẽ được làm việc với những khách hàng tuyệt vời trong bầu không khí tích cực nơi sự sáng tạo của bạn được đánh giá cao. Tiềm năng thu nhập tốt, lịch làm việc linh hoạt và nơi làm việc không drama!"
+    },
+    {
+      id: "luxury",
+      title: "Cao Cấp",
+      description: "Cơ hội độc quyền cho Nghệ Nhân Nail xuất sắc tham gia vào điểm đến làm đẹp cao cấp của chúng tôi. Chúng tôi phục vụ khách hàng tinh tế, những người mong đợi dịch vụ hoàn hảo và kết quả hoàn mỹ. Salon thanh lịch của chúng tôi cung cấp môi trường tinh tế với sản phẩm và tiện nghi cao cấp. Ứng viên đủ điều kiện sẽ sở hữu kỹ thuật tinh tế, tầm nhìn nghệ thuật và khả năng mang đến trải nghiệm thực sự đẳng cấp. Mức lương tương xứng với chuyên môn."
+    },
+    {
+      id: "casual",
+      title: "Thông Thường",
+      description: "Này các thợ nail chuyên nghiệp! Chúng tôi cần kỹ năng tuyệt vời của bạn tại salon thoải mái của chúng tôi. Không có drama, chỉ có năng lượng tốt và khách hàng hài lòng. Mang theo sự sáng tạo và kỹ năng giao tiếp của bạn - chúng tôi sẽ cung cấp phần còn lại. Giờ làm việc linh hoạt phù hợp với cuộc sống của bạn, lương tốt và đồng nghiệp tuyệt vời! Ưu tiên có kinh nghiệm nhưng tài năng và thái độ quan trọng nhất."
     },
     {
       id: "detailed",
       title: "Chi Tiết",
-      description: "Vị Trí Thợ Nail: Yêu cầu bằng hành nghề hợp lệ, kinh nghiệm 1+ năm, thành thạo đắp bột/gel, hệ thống dip powder, nail art và dịch vụ pedicure. Giờ làm: Thứ Ba-Thứ Bảy, 9:30 sáng-7:30 tối. Thù lao: Lương cơ bản cộng hoa hồng, thu nhập $800-1200+ mỗi tuần tùy thuộc vào lượng khách. Phúc lợi bao gồm nghỉ phép có lương sau 1 năm, cơ hội phát triển chuyên môn và giảm giá cho nhân viên đối với các dịch vụ và sản phẩm."
-    }
-  ],
-  "hair-stylist": [
-    {
-      id: "professional",
-      title: "Chuyên Nghiệp",
-      description: "Tìm kiếm stylist tóc có kinh nghiệm để tham gia salon cao cấp của chúng tôi. Ứng viên lý tưởng có hơn 3 năm kinh nghiệm với kỹ thuật cắt, nhuộm và tạo kiểu tóc. Phải có kỹ năng phục vụ khách hàng xuất sắc và khả năng xây dựng lượng khách hàng. Chúng tôi cung cấp hoa hồng cạnh tranh, đào tạo liên tục và môi trường làm việc hợp tác."
+      description: "Vị Trí Thợ Nail: Yêu cầu giấy phép tiểu bang, trên 2 năm kinh nghiệm với dịch vụ móng acrylic, gel và móng tự nhiên. Giờ làm việc: Thứ Ba-Thứ Bảy, 9:30 sáng-7:30 tối với thời gian nghỉ trưa 30-60 phút. Lương: $25-35/giờ cộng với tiền tip (trung bình $150-250 mỗi ngày), có cấu trúc hoa hồng. Phúc lợi bao gồm nghỉ phép có lương sau 6 tháng, giảm giá sản phẩm và phụ cấp đào tạo liên tục. Phải duy trì lịch hẹn, tuân thủ quy trình vệ sinh và góp phần vào sự sạch sẽ của salon."
     },
     {
-      id: "friendly",
-      title: "Thân Thiện",
-      description: "Tham gia salon tóc vui vẻ và hỗ trợ của chúng tôi! Chúng tôi đang tìm kiếm một stylist đam mê, yêu thích việc tạo ra kiểu tóc đẹp và kết nối với khách hàng. Ưu tiên có kinh nghiệm cắt, nhuộm và tạo kiểu tóc. Chúng tôi cung cấp môi trường thân thiện, lịch làm việc linh hoạt và tiềm năng thu nhập tốt. Hãy cùng phát triển với chúng tôi!"
+      id: "urgent",
+      title: "Khẩn Cấp",
+      description: "MỞ NGAY VỊ TRÍ THỢ NAIL! Salon có lượng khách lớn cần thợ nail có tay nghề NGAY BÂY GIỜ! Đảm bảo có khách từ ngày đầu tiên - bắt đầu kiếm tiền ngay lập tức! Yêu cầu kinh nghiệm với acrylic, gel và bột nhúng. Lương TUYỆT VỜI cho ứng viên đủ tiêu chuẩn. Phỏng vấn trực tiếp hàng ngày từ 10 giờ sáng đến 5 giờ chiều hoặc gọi ngay để đảm bảo vị trí này trước khi hết!"
     },
     {
-      id: "detailed",
-      title: "Chi Tiết",
-      description: "Vị Trí Stylist Tóc: Yêu cầu bằng hành nghề thẩm mỹ, kinh nghiệm làm việc tại salon 2+ năm, thành thạo các kỹ thuật cắt và nhuộm hiện đại, chuyên môn về balayage/highlight và kỹ năng cắt tóc nam. Giờ làm linh hoạt trong thời gian hoạt động của salon. Thù lao bao gồm cấu trúc hoa hồng (lên đến 50%), hoa hồng bán lẻ và thu nhập từ tiền tip. Phúc lợi bao gồm trợ cấp đào tạo tiếp tục, giảm giá sản phẩm và các lựa chọn bảo hiểm y tế cho stylist toàn thời gian."
-    }
-  ],
-  "massage-therapist": [
-    {
-      id: "professional",
-      title: "Chuyên Nghiệp",
-      description: "Cần tuyển Chuyên viên Massage có giấy phép cho spa đã thành lập. Phải được chứng nhận với hơn 500 giờ đào tạo và hơn 1 năm kinh nghiệm chuyên môn. Yêu cầu thành thạo các kỹ thuật mát-xa Thụy Điển, deep tissue và đá nóng. Chúng tôi cung cấp môi trường làm việc yên tĩnh, quản lý đặt lịch và cơ cấu lương cạnh tranh."
+      id: "benefits",
+      title: "Nhiều Phúc Lợi",
+      description: "Cần Thợ Nail - Gói Phúc Lợi Đặc Biệt! Tham gia vào đội ngũ của chúng tôi và tận hưởng: Lương cơ bản đảm bảo + hoa hồng, đóng góp bảo hiểm sức khỏe, 2 tuần nghỉ phép có lương, đóng góp 401(k), đào tạo liên tục được trả lương, lịch làm việc linh hoạt, thiết bị hiện đại và sản phẩm cao cấp, chương trình khách hàng thân thiết đảm bảo đặt lịch ổn định, và cơ hội thăng tiến. Chúng tôi đầu tư vào các thợ nail chuyên nghiệp vì thành công của bạn là thành công của chúng tôi!"
     },
     {
-      id: "friendly",
-      title: "Thân Thiện",
-      description: "Tham gia đội ngũ wellness của chúng tôi với tư cách là chuyên viên massage! Chúng tôi đang tìm kiếm người đam mê về chữa lành và chăm sóc khách hàng. Chào đón các chuyên viên có giấy phép với kiến thức về các kỹ thuật massage khác nhau. Chúng tôi cung cấp không gian làm việc yên bình, đội ngũ hỗ trợ và khách hàng trung thành. Có lịch làm việc linh hoạt!"
+      id: "training",
+      title: "Cơ Hội Đào Tạo",
+      description: "Cơ hội hoàn hảo cho Thợ Nail có Giấy phép - chào đón mọi cấp độ kinh nghiệm! Chương trình đào tạo thành công của chúng tôi sẽ giúp phát triển kỹ năng và xây dựng khách hàng của bạn. Nhận hướng dẫn thực hành từ các chuyên gia giàu kinh nghiệm trong khi kiếm tiền. Học các kỹ thuật nâng cao, chiến lược giữ chân khách hàng và kỹ năng bán lẻ. Tiềm năng tuyệt vời cho sự phát triển và tăng thu nhập khi bạn tiến bộ. Môi trường nhóm hỗ trợ tập trung vào việc giúp bạn thành công!"
     },
     {
-      id: "detailed",
-      title: "Chi Tiết",
-      description: "Vị Trí Chuyên Viên Massage: Yêu cầu giấy phép hành nghề, hơn 600 giờ đào tạo, kinh nghiệm 1+ năm, và thành thạo các kỹ thuật massage Thụy Điển, deep tissue, thể thao và thai sản. Giờ làm bao gồm buổi tối và cuối tuần, với 20-30 giờ mỗi tuần. Thù lao bắt đầu từ $25-35 mỗi giờ phục vụ cộng với tiền tip, với cơ hội tăng lương dựa trên hiệu suất và khả năng giữ chân khách hàng. Phúc lợi bao gồm đào tạo liên tục miễn phí, bảo hiểm trách nhiệm và dịch vụ miễn phí."
-    }
-  ],
-  "esthetician": [
-    {
-      id: "professional",
-      title: "Chuyên Nghiệp",
-      description: "Tìm kiếm Kỹ thuật viên Thẩm mỹ có giấy phép để tham gia đội ngũ chăm sóc da của chúng tôi. Ứng viên phải có hơn 1 năm kinh nghiệm về facial, wax lông và tư vấn chăm sóc da. Kiến thức về các dòng sản phẩm và khả năng đề xuất các phương pháp điều trị phù hợp là điều cần thiết. Chúng tôi cung cấp cơ sở vật chất sạch sẽ, hiện đại và thù lao cạnh tranh."
+      id: "creative",
+      title: "Sáng Tạo",
+      description: "Gọi cho tất cả Nghệ sĩ Nail sáng tạo! Bạn có yêu thích việc mở rộng ranh giới của nghệ thuật nail? Chúng tôi đang tìm kiếm người mang đến trí tưởng tượng và chuyên môn kỹ thuật để tạo ra những thiết kế tuyệt đẹp, đáng đăng trên Instagram. Khách hàng của chúng tôi yêu cầu mọi thứ từ sự thanh lịch tối giản đến các sáng tạo 3D phức tạp. Portfolio của bạn nên thể hiện phạm vi và tầm nhìn nghệ thuật của bạn. Tham gia vào một salon khuyến khích đổi mới và giúp giới thiệu công việc của bạn đến khán giả rộng hơn."
     },
     {
-      id: "friendly",
-      title: "Thân Thiện",
-      description: "Đam mê về chăm sóc da? Hãy tham gia gia đình spa của chúng tôi với tư cách là kỹ thuật viên thẩm mỹ! Chúng tôi đang tìm kiếm một chuyên gia thân thiện thích giúp khách hàng trông đẹp và cảm thấy tốt nhất. Ưu tiên có kinh nghiệm về facial, wax lông và các phương pháp điều trị da. Môi trường làm việc tuyệt vời với các thành viên trong đội hỗ trợ và khách hàng trung thành!"
-    },
-    {
-      id: "detailed",
-      title: "Chi Tiết",
-      description: "Vị Trí Kỹ Thuật Viên Thẩm Mỹ: Yêu cầu giấy phép thẩm mỹ hợp lệ, kinh nghiệm 1+ năm trong môi trường spa, thành thạo về facial, peel hóa học, microdermabrasion, dịch vụ wax và dịch vụ mi. Giờ làm chủ yếu là Thứ Năm-Chủ Nhật với một số cuộc hẹn buổi tối. Thù lao bao gồm lương cơ bản theo giờ ($15-18) cộng hoa hồng dịch vụ (30-40%) và hoa hồng bán lẻ (10%). Phúc lợi bao gồm trợ cấp sản phẩm, giảm giá dịch vụ và hoàn trả chi phí đào tạo liên tục."
-    }
-  ],
-  "barber": [
-    {
-      id: "professional",
-      title: "Chuyên Nghiệp",
-      description: "Cần Barber chuyên nghiệp cho tiệm cắt tóc nam đã thành lập. Phải có giấy phép hợp lệ và hơn 2 năm kinh nghiệm với các kỹ thuật cắt truyền thống và hiện đại. Yêu cầu kỹ năng về kỹ thuật fade, chăm sóc râu và cạo râu bằng dao cạo. Chúng tôi cung cấp địa điểm có lưu lượng khách cao và các lựa chọn thuê ghế hoặc hoa hồng cạnh tranh."
-    },
-    {
-      id: "friendly",
-      title: "Thân Thiện",
-      description: "Tham gia đội ngũ tiệm cắt tóc của chúng tôi! Chúng tôi đang tìm kiếm một barber tài năng thích tạo ra kiểu tóc đẹp và xây dựng mối quan hệ với khách hàng. Ưu tiên có kinh nghiệm về fade, taper, tỉa râu và tạo kiểu tóc nam hiện đại. Tiệm của chúng tôi có không khí vui vẻ, khách hàng trung thành và lịch làm việc linh hoạt!"
-    },
-    {
-      id: "detailed",
-      title: "Chi Tiết",
-      description: "Vị Trí Barber: Yêu cầu giấy phép hành nghề, kinh nghiệm 2+ năm, chuyên môn về kỹ thuật fade hiện đại, kiểu cắt truyền thống, tạo kiểu râu, cạo râu bằng dao cạo và tạo kiểu tóc nam. Giờ làm từ Thứ Ba-Thứ Bảy với các lựa chọn lịch làm việc luân phiên. Các lựa chọn thù lao bao gồm thuê ghế ($150-200 mỗi tuần) hoặc cấu trúc hoa hồng (chia 60/40). Phúc lợi bao gồm cơ hội đào tạo liên tục, tài trợ cuộc thi barber và giảm giá sản phẩm. Phải tự cung cấp công cụ cơ bản."
-    }
-  ],
-  "makeup-artist": [
-    {
-      id: "professional",
-      title: "Chuyên Nghiệp",
-      description: "Tìm kiếm Chuyên gia Trang điểm có kinh nghiệm với bộ sưu tập thể hiện sự đa dạng trong kỹ thuật từ tự nhiên đến lộng lẫy. Phải có kiến thức về xu hướng và sản phẩm hiện tại, với kinh nghiệm trang điểm cưới và dịp đặc biệt. Yêu cầu kỹ năng giao tiếp tốt và khả năng làm việc dưới áp lực thời gian."
-    },
-    {
-      id: "friendly",
-      title: "Thân Thiện",
-      description: "Cần chuyên gia trang điểm sáng tạo cho studio làm đẹp của chúng tôi! Chúng tôi đang tìm kiếm người yêu thích việc nâng cao vẻ đẹp tự nhiên và tạo ra diện mạo cho các dịp đặc biệt. Ưu tiên có kinh nghiệm với các loại da và tông màu khác nhau. Tham gia đội ngũ hỗ trợ của chúng tôi trong một bầu không khí vui vẻ với những khách hàng tuyệt vời!"
-    },
-    {
-      id: "detailed",
-      title: "Chi Tiết",
-      description: "Vị Trí Chuyên Gia Trang Điểm: Yêu cầu đào tạo/chứng chỉ chuyên nghiệp, kinh nghiệm 1+ năm, bộ sưu tập mạnh mẽ có trang điểm cô dâu, dịp đặc biệt và quảng cáo, kiến thức về các quy trình vệ sinh và chuyên môn với các loại da/tông màu đa dạng. Giờ làm thay đổi theo mùa, với việc sẵn sàng làm việc cuối tuần là điều cần thiết trong mùa cưới. Thù lao bao gồm mức phí dịch vụ từ $85-150 mỗi lần trang điểm cộng hoa hồng bán lẻ (15%). Trợ cấp bộ dụng cụ mỗi quý và cơ hội cho các buổi chụp ảnh và trình diễn có trả phí."
-    }
-  ],
-  "lash-technician": [
-    {
-      id: "professional",
-      title: "Chuyên Nghiệp",
-      description: "Cần Kỹ thuật viên Nối Mi có giấy phép cho studio làm đẹp bận rộn. Phải được chứng nhận về nối mi classic và volume với ít nhất 1 năm kinh nghiệm. Sự chú ý đến chi tiết, tay nghề ổn định và kiến thức về kỹ thuật ứng dụng thích hợp là điều cần thiết. Chúng tôi cung cấp không gian làm việc sạch sẽ, có tổ chức và hoa hồng cạnh tranh."
-    },
-    {
-      id: "friendly",
-      title: "Thân Thiện",
-      description: "Tham gia gia đình studio nối mi của chúng tôi! Chúng tôi đang tìm kiếm một nghệ sĩ nối mi đam mê, thích tạo ra những bộ mi đẹp, tùy chỉnh. Ưu tiên có kinh nghiệm với kỹ thuật classic và volume. Studio của chúng tôi hiện đại và sạch sẽ với đội ngũ hỗ trợ và khách hàng trung thành. Có lịch làm việc linh hoạt!"
-    },
-    {
-      id: "detailed",
-      title: "Chi Tiết",
-      description: "Vị Trí Kỹ Thuật Viên Nối Mi: Yêu cầu chứng chỉ nối mi, giấy phép thẩm mỹ hoặc kỹ thuật viên thẩm mỹ (yêu cầu của tiểu bang), kinh nghiệm 1+ năm với ứng dụng classic và volume, kiến thức về kỹ thuật cách ly thích hợp và tối ưu hóa độ bền. Giờ làm từ Thứ Ba-Thứ Bảy với 2-3 buổi tối trong tuần. Thù lao dựa trên hoa hồng (50-60% tùy thuộc vào kinh nghiệm) với tiền thưởng bán lẻ. Phúc lợi bao gồm đào tạo nâng cao cho các kỹ thuật tiên tiến, giảm giá sản phẩm và fill mi miễn phí."
-    }
-  ],
-  "brow-technician": [
-    {
-      id: "professional",
-      title: "Chuyên Nghiệp",
-      description: "Tìm kiếm Kỹ thuật viên Chăm sóc Lông mày có kinh nghiệm, thành thạo trong tạo dáng, nhuộm và microblading/microshading. Phải có chứng chỉ phù hợp và ít nhất 1 năm kinh nghiệm chuyên nghiệp. Yêu cầu hiểu biết mạnh mẽ về tỷ lệ khuôn mặt và kỹ thuật mapping lông mày. Chúng tôi cung cấp môi trường studio hiện đại và cơ cấu lương cạnh tranh."
-    },
-    {
-      id: "friendly",
-      title: "Thân Thiện",
-      description: "Cần nghệ sĩ lông mày cho studio làm đẹp của chúng tôi! Chúng tôi đang tìm kiếm người yêu thích việc tạo ra hình dáng lông mày hoàn hảo, nâng cao vẻ đẹp tự nhiên của khách hàng. Ưu tiên có kinh nghiệm với waxing, nhuộm và mapping lông mày. Tham gia đội ngũ vui vẻ của chúng tôi trong một không gian làm việc đẹp với tiềm năng thu nhập cao!"
-    },
-    {
-      id: "detailed",
-      title: "Chi Tiết",
-      description: "Vị Trí Kỹ Thuật Viên Lông Mày: Yêu cầu giấy phép kỹ thuật viên thẩm mỹ, đào tạo chuyên biệt về lông mày, kinh nghiệm 1+ năm, thành thạo về waxing, threading, nhuộm, lamination và kỹ thuật henna. Chứng chỉ microblading là một lợi thế. Giờ làm linh hoạt trong giờ hoạt động của studio, thường yêu cầu 25-30 giờ mỗi tuần. Thù lao bao gồm hoa hồng dịch vụ (45-55%) cộng hoa hồng sản phẩm (10%). Dịch vụ lông mày miễn phí cho kỹ thuật viên và các thành viên gia đình trực tiếp, giảm giá sản phẩm và cơ hội đào tạo nâng cao được cung cấp."
+      id: "bilingual",
+      title: "Song Ngữ",
+      description: "Cần Thợ Nail song ngữ cho khách hàng đa dạng của chúng tôi. Kỹ năng tiếng Anh và tiếng Việt rất được mong muốn. Bạn sẽ cung cấp dịch vụ nail xuất sắc đồng thời đảm bảo giao tiếp rõ ràng và hiểu biết văn hóa. Môi trường chào đón với đội ngũ quốc tế và khách hàng từ nhiều nền tảng khác nhau. Tiềm năng kiếm tiền tuyệt vời thông qua cơ sở khách hàng đa dạng và trung thành của chúng tôi. Xây dựng kết nối có ý nghĩa trong khi thực hành nghề của bạn!"
     }
   ]
 };
 
-// Create job form templates from polish templates (for backwards compatibility)
+// Job template options for both English and Vietnamese
 export const JOB_FORM_TEMPLATES = [
   {
-    id: "nail-tech-full",
-    title: "Nail Technician - Full",
+    id: "nail-technician",
+    title: "Nail Technician",
     type: "nail-technician",
-    description: "Looking for a skilled nail technician with at least 2 years of experience. Must be proficient in acrylic, gel, dip powder, and nail art. Excellent customer service skills are required. We offer competitive pay, flexible hours, and a friendly work environment. Full-time and part-time positions available."
+    description: "We are seeking a skilled nail technician to join our team. The ideal candidate should have experience with acrylic, gel, and regular polish services. Must be able to provide manicures, pedicures, and nail art. Excellent customer service skills required."
   },
   {
-    id: "nail-tech-simple",
-    title: "Nail Technician - Simple",
-    type: "nail-technician",
-    description: "Looking for experienced nail technicians to join our team. Good pay and flexible hours."
-  },
-  {
-    id: "hair-stylist-full",
-    title: "Hair Stylist - Full",
+    id: "hair-stylist",
+    title: "Hair Stylist",
     type: "hair-stylist",
-    description: "Seeking an experienced hair stylist to join our premium salon. The ideal candidate has 3+ years of experience with cutting, coloring, and styling techniques. Must have excellent customer service skills and the ability to build clientele. We offer competitive commission, continuing education, and a collaborative team environment."
+    description: "Looking for an experienced hair stylist to join our salon. Skills should include cutting, coloring, styling, and customer consultation. Must be able to work with diverse hair types and stay current with trends."
   },
   {
-    id: "lash-tech-full",
-    title: "Lash Technician - Full",
+    id: "spa-technician",
+    title: "Spa Technician",
+    type: "spa-technician",
+    description: "Seeking a licensed spa technician with experience in facials, waxing, body treatments, and other spa services. Must maintain high standards of sanitation and provide exceptional customer care."
+  },
+  {
+    id: "salon-receptionist",
+    title: "Salon Receptionist",
+    type: "salon-receptionist",
+    description: "We need a friendly, organized receptionist to manage our salon front desk. Duties include scheduling appointments, greeting clients, answering phones, processing payments, and maintaining a clean reception area."
+  },
+  {
+    id: "salon-manager",
+    title: "Salon Manager",
+    type: "salon-manager",
+    description: "Experienced salon manager needed to oversee daily operations, staff management, inventory control, and business development. Must have previous management experience in a salon or spa environment."
+  },
+  {
+    id: "massage-therapist",
+    title: "Massage Therapist",
+    type: "massage-therapist",
+    description: "Licensed massage therapist needed for our spa. Should be skilled in various massage techniques including Swedish, deep tissue, hot stone, and aromatherapy. Must maintain proper certification and sanitation standards."
+  },
+  {
+    id: "lash-technician",
+    title: "Lash Technician",
     type: "lash-technician",
-    description: "Licensed Lash Artist needed for busy beauty studio. Must be certified in classic and volume lash extensions with at least 1 year of experience. Attention to detail, steady hands, and knowledge of proper application techniques are essential. We provide a clean, organized workspace and competitive commission."
+    description: "Seeking a certified lash technician to provide eyelash extensions, lifts, and tints. Must have attention to detail, steady hands, and knowledge of proper application techniques and aftercare."
+  },
+  {
+    id: "tattoo-artist",
+    title: "Tattoo Artist",
+    type: "tattoo-artist",
+    description: "Professional tattoo artist needed for our studio. Must have an impressive portfolio, experience with various styles, and strict adherence to safety and sanitation protocols."
+  },
+  {
+    id: "makeup-artist",
+    title: "Makeup Artist",
+    type: "makeup-artist",
+    description: "Makeup artist position available for various client services including special events, photoshoots, and everyday looks. Should be skilled with different skin tones, face shapes, and makeup styles."
+  },
+  {
+    id: "booth-rental",
+    title: "Booth Rental Available",
+    type: "booth-rental",
+    description: "Booth/station rental available in our established salon. Great location with high foot traffic and existing clientele. Perfect for experienced professionals looking for independence while working in a collaborative environment."
+  },
+  {
+    id: "other",
+    title: "Other Beauty Professional",
+    type: "other",
+    description: "We're looking for talented beauty professionals to join our team. Please specify your specialty and experience in your application."
   }
 ];
 
-// Create Vietnamese job form templates (for backwards compatibility)
+// Vietnamese job template options
 export const JOB_FORM_TEMPLATES_VI = [
   {
-    id: "nail-tech-full",
-    title: "Thợ Nail - Đầy Đủ",
+    id: "nail-technician",
+    title: "Thợ Nail",
     type: "nail-technician",
-    description: "Cần tuyển thợ nail có ít nhất 2 năm kinh nghiệm. Phải thành thạo bột, gel, dip powder và nail art. Yêu cầu kỹ năng phục vụ khách hàng tốt. Chúng tôi cung cấp mức lương cạnh tranh, giờ giấc linh hoạt và môi trường làm việc thân thiện. Có vị trí toàn thời gian và bán thời gian."
+    description: "Chúng tôi đang tìm kiếm thợ nail có kỹ năng để tham gia vào đội ngũ của chúng tôi. Ứng viên lý tưởng nên có kinh nghiệm với dịch vụ acrylic, gel và sơn thường. Phải có khả năng cung cấp dịch vụ làm móng tay, móng chân và nghệ thuật móng. Yêu cầu kỹ năng phục vụ khách hàng xuất sắc."
   },
   {
-    id: "nail-tech-simple",
-    title: "Thợ Nail - Đơn Giản",
-    type: "nail-technician",
-    description: "Cần thợ nail có kinh nghiệm để tham gia đội ngũ của chúng tôi. Lương cao và giờ giấc linh hoạt."
-  },
-  {
-    id: "hair-stylist-full",
-    title: "Thợ Tóc - Đầy Đủ",
+    id: "hair-stylist",
+    title: "Thợ Tóc",
     type: "hair-stylist",
-    description: "Tìm kiếm stylist tóc có kinh nghiệm để tham gia salon cao cấp của chúng tôi. Ứng viên lý tưởng có hơn 3 năm kinh nghiệm với kỹ thuật cắt, nhuộm và tạo kiểu tóc. Phải có kỹ năng phục vụ khách hàng xuất sắc và khả năng xây dựng lượng khách hàng. Chúng tôi cung cấp hoa hồng cạnh tranh, đào tạo liên tục và môi trường làm việc hợp tác."
+    description: "Đang tìm kiếm thợ tóc có kinh nghiệm để tham gia vào salon của chúng tôi. Kỹ năng nên bao gồm cắt, nhuộm, tạo kiểu và tư vấn khách hàng. Phải có khả năng làm việc với nhiều loại tóc khác nhau và cập nhật xu hướng hiện tại."
   },
   {
-    id: "lash-tech-full",
-    title: "Thợ Mi - Đầy Đủ",
+    id: "spa-technician",
+    title: "Kỹ Thuật Viên Spa",
+    type: "spa-technician",
+    description: "Tìm kiếm kỹ thuật viên spa có giấy phép với kinh nghiệm về chăm sóc da mặt, waxing, điều trị cơ thể, và các dịch vụ spa khác. Phải duy trì tiêu chuẩn vệ sinh cao và cung cấp dịch vụ chăm sóc khách hàng xuất sắc."
+  },
+  {
+    id: "salon-receptionist",
+    title: "Lễ Tân Salon",
+    type: "salon-receptionist",
+    description: "Chúng tôi cần một lễ tân thân thiện, có tổ chức để quản lý quầy lễ tân của salon. Nhiệm vụ bao gồm lên lịch hẹn, chào đón khách hàng, trả lời điện thoại, xử lý thanh toán và duy trì khu vực lễ tân sạch sẽ."
+  },
+  {
+    id: "salon-manager",
+    title: "Quản Lý Salon",
+    type: "salon-manager",
+    description: "Cần quản lý salon có kinh nghiệm để giám sát hoạt động hàng ngày, quản lý nhân viên, kiểm soát hàng tồn kho và phát triển kinh doanh. Phải có kinh nghiệm quản lý trước đây trong môi trường salon hoặc spa."
+  },
+  {
+    id: "massage-therapist",
+    title: "Kỹ Thuật Viên Massage",
+    type: "massage-therapist",
+    description: "Cần kỹ thuật viên massage có giấy phép cho spa của chúng tôi. Nên có kỹ năng về các kỹ thuật massage khác nhau bao gồm Thụy Điển, mô sâu, đá nóng và liệu pháp hương thơm. Phải duy trì chứng chỉ và tiêu chuẩn vệ sinh thích hợp."
+  },
+  {
+    id: "lash-technician",
+    title: "Thợ Nối Mi",
     type: "lash-technician",
-    description: "Cần Kỹ thuật viên Nối Mi có giấy phép cho studio làm đẹp bận rộn. Phải được chứng nhận về nối mi classic và volume với ít nhất 1 năm kinh nghiệm. Sự chú ý đến chi tiết, tay nghề ổn định và kiến thức về kỹ thuật ứng dụng thích hợp là điều cần thiết. Chúng tôi cung cấp không gian làm việc sạch sẽ, có tổ chức và hoa hồng cạnh tranh."
+    description: "Đang tìm kiếm thợ nối mi được chứng nhận để cung cấp dịch vụ nối mi, uốn và nhuộm mi. Phải có sự chú ý đến chi tiết, bàn tay vững vàng, và kiến thức về kỹ thuật ứng dụng thích hợp và chăm sóc sau đó."
+  },
+  {
+    id: "tattoo-artist",
+    title: "Thợ Xăm",
+    type: "tattoo-artist",
+    description: "Cần thợ xăm chuyên nghiệp cho studio của chúng tôi. Phải có portfolio ấn tượng, kinh nghiệm với các phong cách khác nhau, và tuân thủ nghiêm ngặt các quy tắc an toàn và vệ sinh."
+  },
+  {
+    id: "makeup-artist",
+    title: "Chuyên Viên Trang Điểm",
+    type: "makeup-artist",
+    description: "Có vị trí chuyên viên trang điểm cho các dịch vụ khách hàng khác nhau bao gồm sự kiện đặc biệt, chụp ảnh và kiểu dáng hàng ngày. Nên có kỹ năng với các tông da, hình dáng khuôn mặt và kiểu trang điểm khác nhau."
+  },
+  {
+    id: "booth-rental",
+    title: "Cho Thuê Bàn/Liên Kết",
+    type: "booth-rental",
+    description: "Có cho thuê bàn/trạm trong salon đã thành lập của chúng tôi. Vị trí tuyệt vời với lưu lượng khách đi lại cao và khách hàng sẵn có. Hoàn hảo cho các chuyên gia có kinh nghiệm đang tìm kiếm sự độc lập trong khi làm việc trong môi trường hợp tác."
+  },
+  {
+    id: "other",
+    title: "Chuyên Gia Làm Đẹp Khác",
+    type: "other",
+    description: "Chúng tôi đang tìm kiếm các chuyên gia làm đẹp có tài năng để tham gia vào đội ngũ của chúng tôi. Vui lòng nêu rõ chuyên môn và kinh nghiệm của bạn trong đơn xin việc."
   }
 ];
-

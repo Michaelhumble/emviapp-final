@@ -49,6 +49,9 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
     onClose();
   };
 
+  // Display a message if no templates are available in the selected language for this job type
+  const hasTemplates = jobTemplates && jobTemplates.length > 0;
+  
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl">
@@ -69,6 +72,17 @@ const PolishedDescriptionsModal: React.FC<PolishedDescriptionsModalProps> = ({
             <p className="mt-4 text-muted-foreground">
               {isVietnamese ? 'Đang chuẩn bị mẫu mô tả...' : 'Preparing description templates...'}
             </p>
+          </div>
+        ) : !hasTemplates ? (
+          <div className="flex flex-col items-center justify-center p-8">
+            <p className="text-center text-muted-foreground">
+              {isVietnamese 
+                ? 'Chức năng đang cập nhật cho loại công việc này. Vui lòng thử lại sau.'
+                : 'Templates for this job type are being updated. Please try again later.'}
+            </p>
+            <Button onClick={onClose} className="mt-4">
+              {isVietnamese ? 'Đóng' : 'Close'}
+            </Button>
           </div>
         ) : (
           <Tabs defaultValue="professional" value={selectedTab} onValueChange={setSelectedTab}>
