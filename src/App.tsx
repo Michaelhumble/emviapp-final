@@ -54,8 +54,9 @@ function App() {
                   {/* Explicitly define the /salons route to use StableSalonPage */}
                   <Route path="/salons" element={<StableSalonPage />} />
                   
-                  {/* Add our new job post route */}
+                  {/* Add our job post routes */}
                   <Route path="/post-job" element={<JobPost />} />
+                  <Route path="/post-job/pricing" element={<JobPost />} />
                   
                   {/* Explicitly add the /jobs route to ensure it uses the correct component */}
                   <Route path="/jobs" element={<Jobs />} />

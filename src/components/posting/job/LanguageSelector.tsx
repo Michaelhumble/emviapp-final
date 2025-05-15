@@ -2,16 +2,19 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
-import { getLanguagePreference, setLanguagePreference } from "@/utils/languagePreference";
+import { setLanguagePreference } from "@/utils/languagePreference";
+import { motion } from "framer-motion";
 
 interface LanguageSelectorProps {
   onChange?: (language: "en" | "vi") => void;
   className?: string;
+  sticky?: boolean;
 }
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ 
   onChange,
-  className = ""
+  className = "",
+  sticky = false
 }) => {
   const { isVietnamese } = useTranslation();
   
@@ -24,26 +27,31 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   };
   
   return (
-    <div className={`flex justify-center mb-6 ${className}`}>
-      <div className="inline-flex rounded-md p-1 bg-gray-100">
+    <motion.div 
+      className={`flex justify-center mb-6 ${sticky ? 'sticky top-4 z-50' : ''} ${className}`}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="inline-flex rounded-lg p-1 bg-gray-100 shadow-sm">
         <Button
           variant={isVietnamese ? "ghost" : "default"}
           size="sm"
           onClick={handleLanguageToggle}
-          className={`text-sm px-4 ${!isVietnamese ? 'shadow-sm' : ''}`}
+          className={`text-sm font-medium px-4 py-2 transition-all ${!isVietnamese ? 'shadow-sm' : ''}`}
         >
-          English
+          <span className="mr-1.5">🇺🇸</span> English
         </Button>
         <Button
           variant={!isVietnamese ? "ghost" : "default"}
           size="sm" 
           onClick={handleLanguageToggle}
-          className={`text-sm px-4 ${isVietnamese ? 'shadow-sm' : ''}`}
+          className={`text-sm font-medium px-4 py-2 transition-all ${isVietnamese ? 'shadow-sm' : ''}`}
         >
-          Tiếng Việt
+          <span className="mr-1.5">🇻🇳</span> Tiếng Việt
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

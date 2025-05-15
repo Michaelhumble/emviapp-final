@@ -24,8 +24,8 @@ const JobPost: React.FC = () => {
       
       toast.success(
         isVietnamese 
-          ? "Thông tin công việc đã được lưu." 
-          : "Your job information has been saved."
+          ? "Thông tin công việc đã được lưu. Hãy chọn gói đăng tin." 
+          : "Your job information has been saved. Let's choose a pricing plan."
       );
       
       // Simulate API call timing
@@ -44,20 +44,24 @@ const JobPost: React.FC = () => {
     }
   };
 
-  const jobFormProps = {
-    onSubmit: handleSubmit,
-    photoUploads,
-    setPhotoUploads,
-    isSubmitting
-  };
-
   return (
     <Layout>
       <Helmet>
-        <title>Post a Job | EmviApp</title>
+        <title>{isVietnamese ? "Đăng Tin Tuyển Dụng | EmviApp" : "Post a Job | EmviApp"}</title>
+        <meta 
+          name="description" 
+          content={isVietnamese 
+            ? "Đăng tin tuyển dụng trên EmviApp để kết nối với những chuyên gia làm đẹp giỏi nhất." 
+            : "Post your job on EmviApp to connect with top beauty professionals."}
+        />
       </Helmet>
       <Container className="py-8">
-        <JobForm {...jobFormProps} />
+        <JobForm 
+          onSubmit={handleSubmit}
+          photoUploads={photoUploads}
+          setPhotoUploads={setPhotoUploads}
+          isSubmitting={isSubmitting}
+        />
       </Container>
     </Layout>
   );

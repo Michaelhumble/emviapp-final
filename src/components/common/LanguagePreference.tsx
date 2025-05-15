@@ -90,7 +90,7 @@ const LanguagePreference = () => {
             onClick={() => setLanguage('vi')}
             disabled={loading}
           >
-            Tiếng Việt
+            <span className="mr-2">🇻🇳</span> Tiếng Việt
           </Button>
         </div>
         

@@ -25,6 +25,14 @@ export const setLanguagePreference = (language: Language): void => {
   listeners.forEach(listener => listener(language));
 };
 
+export const hasLanguagePreference = (): boolean => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  
+  return localStorage.getItem(LANGUAGE_PREFERENCE_KEY) !== null;
+};
+
 export const addLanguageChangeListener = (listener: LanguageChangeListener): () => void => {
   listeners.push(listener);
   

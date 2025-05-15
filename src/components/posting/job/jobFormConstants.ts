@@ -1,227 +1,190 @@
 
-import { JobFormValues } from "./jobFormSchema";
-
-// English job templates
 export const JOB_TEMPLATES_EN = [
   {
     id: "nail-tech",
-    title: "Experienced Nail Technician",
-    type: "Full Time",
-    description: "Seeking an experienced nail technician to join our busy salon. The ideal candidate has at least 2 years of experience with acrylics, gel, and natural nails. We offer competitive commission, a friendly team environment, and a steady client base.",
-    shortSummary: "Full-time nail tech position at a busy salon with competitive pay and benefits."
+    title: "Nail Technician",
+    type: "full-time",
+    shortSummary: "Skilled nail technician needed for high-end salon. Experience with acrylics, gel, and nail art required.",
+    description: "We are seeking an experienced Nail Technician to join our team. The ideal candidate has at least 2 years of experience with acrylics, gel, and nail art. Must be passionate about customer service and maintaining a clean workspace. Competitive pay with benefits available.",
+    payWeekly: true,
+    provideLunch: true,
+    flexibleHours: true
   },
   {
     id: "hair-stylist",
-    title: "Creative Hair Stylist",
-    type: "Full Time",
-    description: "Join our award-winning salon team! We're looking for a talented hair stylist with color expertise and a passion for creating beautiful styles. You'll work with high-end products in a modern salon with a loyal clientele.",
-    shortSummary: "Stylist position at an upscale salon with growth opportunities and loyal clients."
+    title: "Hair Stylist",
+    type: "full-time",
+    shortSummary: "Creative hair stylist for upscale salon. Cut, color, and styling expertise with loyal clientele preferred.",
+    description: "Upscale salon seeking a talented Hair Stylist with proven expertise in cutting, coloring, and styling techniques. Minimum 3 years experience preferred. Bring your creativity and client-focused approach to our team. Booth rental and commission options available.",
+    qualityProducts: true,
+    reviewBonuses: true,
+    growthOpportunities: true
   },
   {
     id: "esthetician",
-    title: "Licensed Esthetician",
-    type: "Part Time",
-    description: "We need a skilled esthetician to perform facials, waxing, and skincare treatments. The right candidate has excellent customer service skills, knowledge of skincare products, and the ability to recommend home care routines.",
-    shortSummary: "Part-time esthetician role performing facials and skincare treatments."
+    title: "Esthetician",
+    type: "full-time",
+    shortSummary: "Licensed esthetician for luxury spa treatments. Facials, waxing, and body treatments experience needed.",
+    description: "Luxury spa looking for a licensed Esthetician to perform facials, waxing, and body treatments. Must have excellent customer service skills and knowledge of skincare products. Compensation includes base pay plus commission and tips.",
+    payWeekly: true,
+    growthOpportunities: true,
+    qualityProducts: true
   },
   {
-    id: "lash-tech",
-    title: "Lash Extension Specialist",
-    type: "Full Time",
-    description: "Busy beauty studio seeking a certified lash technician. You should be experienced in classic and volume techniques, maintaining a clean workspace, and building client relationships. Competitive commission with bonus opportunities.",
-    shortSummary: "Full-time lash artist position with competitive pay and growing clientele."
+    id: "massage-therapist",
+    title: "Massage Therapist",
+    type: "part-time",
+    shortSummary: "Licensed massage therapist for wellness center. Swedish, deep tissue, and hot stone experience preferred.",
+    description: "Wellness center seeking a licensed Massage Therapist for part-time position. Experience with Swedish, deep tissue, and hot stone techniques preferred. Must maintain professional demeanor and create relaxing client experience. Flexible hours available.",
+    flexibleHours: true,
+    reviewBonuses: true,
+    provideLunch: true
   },
   {
-    id: "spa-manager",
-    title: "Spa Manager / Receptionist",
-    type: "Full Time",
-    description: "Looking for an organized, professional spa manager to oversee daily operations, schedule appointments, manage inventory, and provide exceptional customer service. Experience in the beauty industry preferred.",
-    shortSummary: "Spa manager role handling operations, scheduling, and client relations."
+    id: "salon-manager",
+    title: "Salon Manager",
+    type: "full-time",
+    shortSummary: "Experienced salon manager to oversee daily operations, staff, and client relationships.",
+    description: "Busy salon seeking an experienced Salon Manager to oversee daily operations, inventory, scheduling, and staff management. Must have excellent leadership skills, beauty industry knowledge, and 3+ years of management experience. Competitive salary plus benefits and bonuses based on salon performance.",
+    growthOpportunities: true,
+    reviewBonuses: true,
+    qualityProducts: true
   }
 ];
 
-// Vietnamese job templates
 export const JOB_TEMPLATES_VI = [
   {
-    id: "nail-tech",
-    title: "Thợ Nail Có Kinh Nghiệm",
-    type: "Toàn Thời Gian",
-    description: "Cần thợ nail có ít nhất 2 năm kinh nghiệm làm bột, gel, và móng tự nhiên. Tiệm đông khách, tip cao, môi trường làm việc thân thiện, có thể bao lương tùy khả năng.",
-    shortSummary: "Vị trí thợ nail toàn thời gian tại tiệm đông khách với lương cạnh tranh."
+    id: "nail-tech-vi",
+    title: "Thợ Nail",
+    type: "full-time",
+    shortSummary: "Cần thợ nail có kinh nghiệm. Bao lương, tip cao, môi trường làm việc thoải mái.",
+    description: "Tiệm nail ở khu sang cần thợ nail có kinh nghiệm. Bao lương từ $xxx-$xxx/tuần tùy theo khả năng. Có thể giúp đỡ giấy tờ cho thợ mới qua. Môi trường làm việc sạch sẽ, thoải mái, tip cao. Liên hệ ngay để được tư vấn thêm.",
+    payWeekly: true,
+    provideLunch: true,
+    flexibleHours: true
   },
   {
-    id: "hair-stylist",
-    title: "Thợ Tóc Sáng Tạo",
-    type: "Toàn Thời Gian",
-    description: "Cần thợ tóc có kinh nghiệm nhuộm, uốn, và tạo kiểu tóc. Sẽ làm việc với sản phẩm cao cấp trong salon hiện đại với khách hàng thân thiết. Lương thưởng hấp dẫn.",
-    shortSummary: "Vị trí thợ tóc tại salon cao cấp với nhiều cơ hội phát triển."
+    id: "hair-stylist-vi",
+    title: "Thợ Tóc",
+    type: "full-time",
+    shortSummary: "Cần thợ tóc có kinh nghiệm cắt và nhuộm. Lương cao, có thể bao ăn ở.",
+    description: "Salon tóc cao cấp cần thợ tóc biết cắt và nhuộm. Yêu cầu ít nhất 2 năm kinh nghiệm. Lương cao, chia phần trăm tùy theo khả năng. Có thể bao ăn ở cho thợ ở xa. Môi trường làm việc chuyên nghiệp, thân thiện.",
+    qualityProducts: true,
+    reviewBonuses: true,
+    growthOpportunities: true
   },
   {
-    id: "esthetician",
-    title: "Kỹ Thuật Viên Chăm Sóc Da",
-    type: "Bán Thời Gian",
-    description: "Cần người có kinh nghiệm làm facial, wax, và các liệu trình chăm sóc da. Ứng viên phải có kỹ năng chăm sóc khách hàng tốt, hiểu biết về sản phẩm skincare.",
-    shortSummary: "Vị trí bán thời gian cho facial và chăm sóc da."
+    id: "esthetician-vi",
+    title: "Thợ Facial",
+    type: "full-time",
+    shortSummary: "Cần thợ facial chuyên nghiệp biết wax lông và chăm sóc da. Bao lương hoặc chia phần trăm.",
+    description: "Spa cao cấp cần tuyển thợ facial có kinh nghiệm. Yêu cầu biết wax lông, chăm sóc da và có kiến thức về sản phẩm skincare. Bao lương hoặc chia phần trăm tùy theo khả năng. Làm việc trong môi trường sang trọng, khách hàng cao cấp.",
+    payWeekly: true,
+    growthOpportunities: true,
+    qualityProducts: true
   },
   {
-    id: "lash-tech",
-    title: "Chuyên Gia Nối Mi",
-    type: "Toàn Thời Gian",
-    description: "Cần thợ nối mi có chứng chỉ và kinh nghiệm với kỹ thuật classic và volume. Yêu cầu giữ không gian làm việc sạch sẽ và biết cách xây dựng mối quan hệ với khách hàng.",
-    shortSummary: "Vị trí thợ mi toàn thời gian với lương cao và khách hàng ổn định."
+    id: "massage-therapist-vi",
+    title: "Thợ Massage",
+    type: "part-time",
+    shortSummary: "Cần thợ massage có bằng, biết nhiều loại massage. Lương cao, giờ giấc linh hoạt.",
+    description: "Trung tâm spa cần thợ massage có bằng và kinh nghiệm. Yêu cầu biết các loại massage: Swedish, deep tissue, và hot stone. Lương cạnh tranh tùy theo kinh nghiệm và bằng cấp. Môi trường làm việc thoải mái, giờ giấc linh hoạt.",
+    flexibleHours: true,
+    reviewBonuses: true,
+    provideLunch: true
   },
   {
-    id: "spa-manager",
-    title: "Quản Lý Spa / Lễ Tân",
-    type: "Toàn Thời Gian",
-    description: "Tìm người có kỹ năng tổ chức để quản lý hoạt động hàng ngày, lên lịch hẹn, quản lý hàng tồn kho và cung cấp dịch vụ khách hàng xuất sắc. Ưu tiên người có kinh nghiệm trong ngành làm đẹp.",
-    shortSummary: "Vị trí quản lý spa phụ trách vận hành và chăm sóc khách hàng."
+    id: "salon-manager-vi",
+    title: "Quản Lý Salon",
+    type: "full-time",
+    shortSummary: "Cần người quản lý salon có kinh nghiệm. Lương cao và nhiều phúc lợi.",
+    description: "Salon cao cấp cần tuyển quản lý có kinh nghiệm điều hành, quản lý nhân sự và chăm sóc khách hàng. Yêu cầu ít nhất 3 năm kinh nghiệm trong ngành làm đẹp. Lương thưởng hấp dẫn tương xứng với năng lực.",
+    growthOpportunities: true,
+    reviewBonuses: true,
+    qualityProducts: true
   }
 ];
 
-// Job Types - English
-export const JOB_TYPES_EN = [
-  { value: "full-time", label: "Full Time" },
-  { value: "part-time", label: "Part Time" },
-  { value: "contract", label: "Contract" },
-  { value: "temporary", label: "Temporary" },
-  { value: "flexible", label: "Flexible Hours" }
-];
-
-// Job Types - Vietnamese
-export const JOB_TYPES_VI = [
-  { value: "full-time", label: "Toàn Thời Gian" },
-  { value: "part-time", label: "Bán Thời Gian" },
-  { value: "contract", label: "Hợp Đồng" },
-  { value: "temporary", label: "Tạm Thời" },
-  { value: "flexible", label: "Giờ Giấc Linh Hoạt" }
-];
-
-// Professional Types - English
-export const PROFESSIONAL_TYPES_EN = [
-  { value: "nail-tech", label: "Nail Technician" },
-  { value: "hair-stylist", label: "Hair Stylist" },
-  { value: "esthetician", label: "Esthetician" },
-  { value: "lash-tech", label: "Lash Technician" },
-  { value: "makeup-artist", label: "Makeup Artist" },
-  { value: "massage-therapist", label: "Massage Therapist" },
-  { value: "receptionist", label: "Receptionist" },
-  { value: "salon-manager", label: "Salon Manager" },
-  { value: "other", label: "Other" }
-];
-
-// Professional Types - Vietnamese
-export const PROFESSIONAL_TYPES_VI = [
-  { value: "nail-tech", label: "Thợ Nail" },
-  { value: "hair-stylist", label: "Thợ Tóc" },
-  { value: "esthetician", label: "Chuyên Viên Chăm Sóc Da" },
-  { value: "lash-tech", label: "Thợ Mi" },
-  { value: "makeup-artist", label: "Chuyên Gia Trang Điểm" },
-  { value: "massage-therapist", label: "Thợ Massage" },
-  { value: "receptionist", label: "Lễ Tân" },
-  { value: "salon-manager", label: "Quản Lý Salon" },
-  { value: "other", label: "Khác" }
-];
-
-// Field-specific prefilled content based on professional type
-export const getPrefillContent = (professionalType: string, isVietnamese: boolean) => {
-  const templates = isVietnamese ? JOB_TEMPLATES_VI : JOB_TEMPLATES_EN;
-  const template = templates.find(t => t.id === professionalType);
-  
-  if (!template) {
-    return null;
-  }
-  
-  return template;
-};
-
-// Define job templates for the template selector
-export const JOB_TEMPLATES = [
-  ...JOB_TEMPLATES_EN.map(template => ({
-    ...template,
-    language: "english"
-  })),
-  ...JOB_TEMPLATES_VI.map(template => ({
-    ...template,
-    language: "vietnamese"
-  }))
-];
-
-// Yes Ladder questions
 export const YES_LADDER_QUESTIONS_EN = [
   {
-    id: "faster_visibility",
-    question: "Do you want more artists to see your job faster?",
-    feature: "Priority Placement",
-    description: "Your job will be shown to more qualified candidates within the first 24 hours."
-  },
-  {
-    id: "top_listing",
-    question: "Would you like your job to appear at the top of the list?",
-    feature: "Featured Listing",
-    description: "Your job will be pinned to the top of search results for maximum visibility."
-  },
-  {
-    id: "qualified_professionals",
-    question: "Want to reach the most qualified professionals first?",
-    feature: "Premium Targeting",
-    description: "Smart matching to show your job to professionals with the exact skills you need."
-  },
-  {
-    id: "add_photos",
-    question: "Add photos to attract more candidates?",
-    feature: "Visual Showcase",
-    description: "Jobs with photos receive 37% more applications on average."
-  },
-  {
-    id: "instant_applications",
-    question: "Enable instant applications to hire faster?",
-    feature: "Quick Apply",
-    description: "Let candidates apply with one click for faster response times."
+    id: "boost_visibility",
+    question: "Would you like your job to stand out and reach more candidates?",
+    feature: "Featured Job Listing",
+    description: "Your job will be highlighted and shown at the top of search results, attracting up to 3x more qualified applicants."
   },
   {
     id: "urgent_tag",
-    question: "Mark this position as urgent to attract immediate attention?",
-    feature: "Urgent Badge",
-    description: "Highlight your job with an eye-catching urgent tag for immediate responses."
+    question: "Do you need to fill this position quickly?",
+    feature: "Urgent Tag & Notification",
+    description: "Add an 'Urgent' tag to your listing and send notifications to matched candidates, increasing application speed by 74%."
+  },
+  {
+    id: "premium_placement",
+    question: "Would you like your job to appear in the Premium section?",
+    feature: "Premium Placement",
+    description: "Your job will appear in the exclusive Premium section, viewed by our most qualified and active candidates."
+  },
+  {
+    id: "smart_matching",
+    question: "Want our AI to match your job with the perfect candidates?",
+    feature: "Smart Candidate Matching",
+    description: "Our AI system will analyze your requirements and match your job with candidates who have the exact skills and experience you need."
+  },
+  {
+    id: "extended_duration",
+    question: "Would you like your listing to stay visible longer?",
+    feature: "Extended Visibility (60 days)",
+    description: "Double the standard listing duration to ensure you find the perfect candidate, even in competitive markets."
   }
 ];
 
 export const YES_LADDER_QUESTIONS_VI = [
   {
-    id: "faster_visibility",
-    question: "Bạn muốn nhiều thợ nhìn thấy tin tuyển dụng nhanh hơn?",
-    feature: "Vị Trí Ưu Tiên",
-    description: "Tin của bạn sẽ được hiển thị cho nhiều ứng viên chất lượng hơn trong 24 giờ đầu tiên."
-  },
-  {
-    id: "top_listing",
-    question: "Bạn muốn tin đăng xuất hiện ở đầu danh sách?",
-    feature: "Tin Nổi Bật",
-    description: "Tin của bạn sẽ được ghim ở đầu kết quả tìm kiếm để đạt khả năng hiển thị tối đa."
-  },
-  {
-    id: "qualified_professionals",
-    question: "Muốn tiếp cận những thợ giỏi nhất trước tiên?",
-    feature: "Tìm Kiếm Cao Cấp",
-    description: "Hệ thống thông minh ghép tin với những thợ có kỹ năng chính xác bạn cần."
-  },
-  {
-    id: "add_photos",
-    question: "Thêm hình ảnh để thu hút nhiều ứng viên hơn?",
-    feature: "Giới Thiệu Hình Ảnh",
-    description: "Tin đăng có hình nhận được nhiều đơn ứng tuyển hơn 37%."
-  },
-  {
-    id: "instant_applications",
-    question: "Bật ứng tuyển nhanh để tuyển nhanh hơn?",
-    feature: "Ứng Tuyển Nhanh",
-    description: "Cho phép ứng viên nộp đơn với một cú nhấp để có thời gian phản hồi nhanh hơn."
+    id: "boost_visibility",
+    question: "Bạn có muốn tin tuyển dụng của mình nổi bật và tiếp cận nhiều ứng viên hơn không?",
+    feature: "Tin Đăng Nổi Bật",
+    description: "Tin đăng của bạn sẽ được làm nổi bật và hiển thị ở đầu kết quả tìm kiếm, thu hút nhiều ứng viên chất lượng hơn gấp 3 lần."
   },
   {
     id: "urgent_tag",
-    question: "Đánh dấu vị trí này là khẩn cấp để thu hút sự chú ý ngay lập tức?",
-    feature: "Nhãn Khẩn Cấp",
-    description: "Làm nổi bật tin tuyển dụng với nhãn khẩn cấp để nhận phản hồi nhanh chóng."
+    question: "Bạn cần tuyển vị trí này nhanh chóng?",
+    feature: "Nhãn Khẩn Cấp & Thông Báo",
+    description: "Thêm nhãn 'Khẩn Cấp' vào tin đăng và gửi thông báo đến các ứng viên phù hợp, tăng tốc độ nhận hồ sơ lên 74%."
+  },
+  {
+    id: "premium_placement",
+    question: "Bạn muốn tin tuyển dụng xuất hiện trong mục Cao Cấp không?",
+    feature: "Vị Trí Cao Cấp",
+    description: "Tin đăng của bạn sẽ xuất hiện trong khu vực Cao Cấp độc quyền, được xem bởi những ứng viên chất lượng và năng động nhất của chúng tôi."
+  },
+  {
+    id: "smart_matching",
+    question: "Muốn AI của chúng tôi ghép đôi công việc của bạn với ứng viên hoàn hảo?",
+    feature: "Ghép Đôi Ứng Viên Thông Minh",
+    description: "Hệ thống AI của chúng tôi sẽ phân tích yêu cầu của bạn và ghép việc làm với những ứng viên có kỹ năng và kinh nghiệm chính xác mà bạn cần."
+  },
+  {
+    id: "extended_duration",
+    question: "Bạn muốn tin đăng của mình hiển thị lâu hơn không?",
+    feature: "Thời Gian Hiển Thị Mở Rộng (60 ngày)",
+    description: "Gấp đôi thời gian đăng tin tiêu chuẩn để đảm bảo bạn tìm được ứng viên hoàn hảo, ngay cả trong thị trường cạnh tranh."
   }
+];
+
+export const JOB_TYPES_EN = [
+  "Full-time",
+  "Part-time",
+  "Contract",
+  "Temporary",
+  "Booth Rental",
+  "Commission-based"
+];
+
+export const JOB_TYPES_VI = [
+  "Toàn thời gian",
+  "Bán thời gian",
+  "Hợp đồng",
+  "Tạm thời",
+  "Thuê quầy/ghế",
+  "Theo hoa hồng"
 ];
