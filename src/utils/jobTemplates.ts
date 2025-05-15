@@ -3,10 +3,10 @@
 import { JobFormValues } from "@/components/posting/job/jobFormSchema";
 
 // Import the templates from our new location
-import { JOB_TEMPLATES } from "@/components/posting/job/jobFormConstants";
+import { JOB_FORM_TEMPLATES } from "@/components/posting/job/jobFormConstants";
 
 // Export the templates in the format expected by any existing code
-export const jobTemplates: Partial<JobFormValues>[] = JOB_TEMPLATES.map(template => ({
+export const jobTemplates: Partial<JobFormValues>[] = JOB_FORM_TEMPLATES.map(template => ({
   template: template.id,
   title: template.title,
   type: template.type,
