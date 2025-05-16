@@ -19,7 +19,7 @@ interface JobDetailsSectionProps {
 }
 
 const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
-  const { t, isVietnamese } = useTranslation();
+  const { t } = useTranslation();
   
   return (
     <div className="space-y-6">
@@ -92,11 +92,11 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
           </div>
           
           <div className="grid gap-2">
-            <Label htmlFor="zip-code">
+            <Label htmlFor="postal-code">
               {t("ZIP/Postal Code")}
             </Label>
             <Input 
-              id="zip-code"
+              id="postal-code"
               value={details.postal_code || ''}
               onChange={(e) => onChange({ ...details, postal_code: e.target.value })}
               placeholder={t("e.g. 90210")}
