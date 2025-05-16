@@ -1,275 +1,152 @@
 
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger, 
-  SheetClose 
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import EmviLogo from '@/components/branding/EmviLogo';
-import LanguageToggle from '@/components/layout/LanguageToggle';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { toast } from 'sonner';
-import { 
-  Menu, 
-  X, 
-  Home, 
-  Search, 
-  Briefcase, 
-  Store, 
-  Users,
-  Info, 
-  Phone, 
-  HelpCircle,
-  LogIn,
-  UserPlus,
-  Settings,
-  LogOut,
-  CreditCard,
-  MessageSquare,
-  LayoutDashboard,
-  Globe,
-  User,
-  Scissors
-} from 'lucide-react';
-import { mainNavigation } from './config/navigationItems';
+import React, { useState } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { mainNavigation } from "./config/navigationItems";
+import Logo from "@/components/ui/Logo";
+import { useTranslation } from "@/hooks/useTranslation";
+import { toast } from "sonner";
 
+// Define interface for the component props
 interface MobileMenuProps {
   user: any;
-  handleSignOut: () => void;
+  handleSignOut: () => Promise<void>;
 }
 
-const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, toggleLanguage, isVietnamese } = useTranslation();
   
-  const getInitials = () => {
-    if (!user?.user_metadata?.full_name) return 'U';
-    const names = user.user_metadata.full_name.split(' ');
-    if (names.length > 1) {
-      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
-    }
-    return names[0][0].toUpperCase();
-  };
-  
-  const handleNavigate = (path: string) => {
+  const handleNavigation = (path: string) => {
     navigate(path);
     setOpen(false);
   };
   
-  const handleSignOutClick = () => {
-    handleSignOut();
+  const handleSignOutClick = async () => {
+    await handleSignOut();
     setOpen(false);
-    toast.success("You've been signed out successfully");
-  };
-  
-  const getIcon = (path: string) => {
-    switch (path) {
-      case '/': return <Home className="h-5 w-5" />;
-      case '/search': return <Search className="h-5 w-5" />;
-      case '/post-job': return <Briefcase className="h-5 w-5" />;
-      case '/jobs': return <Briefcase className="h-5 w-5" />;
-      case '/salons': return <Store className="h-5 w-5" />;
-      case '/artists': return <Scissors className="h-5 w-5" />;
-      case '/freelancers': return <Users className="h-5 w-5" />;
-      case '/about': return <Info className="h-5 w-5" />;
-      case '/contact': return <Phone className="h-5 w-5" />;
-      case '/help': return <HelpCircle className="h-5 w-5" />;
-      default: return <Home className="h-5 w-5" />;
-    }
+    toast.success(t("You've been signed out"));
   };
 
   return (
-    <div className="md:hidden">
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Menu">
-            <Menu className="h-6 w-6" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent 
-          side="right" 
-          className="mobile-glass-drawer overflow-y-auto flex flex-col p-0 border-none w-[90%] max-w-[400px]"
-        >
-          <div className="flex flex-col min-h-full">
-            {/* Header with Logo and Close */}
-            <div className="flex justify-between items-center p-4 border-b">
-              <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </SheetClose>
-              
-              <div className="mx-auto py-2">
-                <EmviLogo size="medium" />
-              </div>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" className="p-2 md:hidden">
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Toggle menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[80%] p-0 mobile-glass-drawer">
+        <div className="flex flex-col h-full p-0">
+          {/* Header with logo and close button */}
+          <div className="flex justify-between items-center p-4 border-b">
+            <div className="flex-grow flex justify-center">
+              <Logo size="medium" showText={true} />
             </div>
-            
-            {/* User Section */}
-            {user ? (
-              <div className="menu-card mt-6 mx-4 p-4">
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-10 w-10 border border-gray-200">
-                    <AvatarImage src={user.user_metadata?.avatar_url} />
-                    <AvatarFallback className="bg-purple-100 text-purple-700">
-                      {getInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div>
-                    <h3 className="font-medium">
-                      {user.user_metadata?.full_name || 'Welcome back!'}
-                    </h3>
-                    <p className="text-xs text-gray-500">
-                      {user.email}
-                    </p>
-                  </div>
+            <Button 
+              variant="ghost" 
+              className="p-2" 
+              onClick={() => setOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+          
+          {/* Menu items */}
+          <div className="flex-grow overflow-y-auto py-4 px-2">
+            <nav className="space-y-1">
+              {mainNavigation.map((item, index) => (
+                <div className="menu-item-enter" style={{ '--index': index }} key={item.path}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-lg py-6 font-medium"
+                    onClick={() => handleNavigation(item.path)}
+                  >
+                    {item.icon && <item.icon className="mr-3 h-5 w-5" />}
+                    {t(item.label)}
+                  </Button>
                 </div>
+              ))}
+            </nav>
+            
+            <div className="border-t border-gray-100 my-4"></div>
+            
+            {/* Auth section */}
+            {user ? (
+              <div className="space-y-2 px-2">
+                <div className="menu-card p-4 mb-4">
+                  <p className="text-sm text-gray-500">
+                    {t("Signed in as")}
+                  </p>
+                  <p className="font-medium truncate">
+                    {user.email}
+                  </p>
+                </div>
+                
+                <Button
+                  variant="default"
+                  className="w-full mb-2"
+                  onClick={() => handleNavigation("/dashboard")}
+                >
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  {t("Dashboard")}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleSignOutClick}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {t("Sign Out")}
+                </Button>
               </div>
             ) : (
-              <div className="flex flex-col gap-2 mt-6 mx-4">
+              <div className="space-y-3 px-2">
                 <Button
-                  onClick={() => handleNavigate('/sign-in')}
-                  variant="outline" 
-                  className="w-full justify-start menu-item-enter" 
-                  style={{ "--index": 0 } as React.CSSProperties}
+                  variant="default"
+                  className="w-full"
+                  onClick={() => handleNavigation("/sign-in")}
                 >
-                  <LogIn className="mr-2 h-4 w-4" />
                   {t("Sign In")}
                 </Button>
+                
                 <Button
-                  onClick={() => handleNavigate('/sign-up')}
-                  className="w-full justify-start menu-item-enter" 
-                  style={{ "--index": 1 } as React.CSSProperties}
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => handleNavigation("/sign-up")}
                 >
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  {t("Sign Up")}
+                  {t("Create Account")}
                 </Button>
               </div>
             )}
-
-            {/* Main Navigation */}
-            <nav className="mt-6 flex-1 px-4">
-              <div className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-2 px-2">
-                {t("Navigation")}
-              </div>
-              <div className="space-y-1">
-                {mainNavigation.map((item, index) => (
-                  <Button
-                    key={item.path}
-                    variant="ghost"
-                    className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
-                    style={{ "--index": index + 2 } as React.CSSProperties}
-                    onClick={() => handleNavigate(item.path)}
-                  >
-                    {getIcon(item.path)}
-                    <span className="ml-2">{t(item.label)}</span>
-                  </Button>
-                ))}
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
-                  style={{ "--index": mainNavigation.length + 2 } as React.CSSProperties}
-                  onClick={() => handleNavigate('/post-job')}
-                >
-                  <Briefcase className="h-5 w-5" />
-                  <span className="ml-2">{t("Post a Job")}</span>
-                </Button>
-              </div>
-
-              {/* User Account Section */}
-              {user && (
-                <div className="mt-6">
-                  <div className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-2 px-2">
-                    {t("Account")}
-                  </div>
-                  <div className="space-y-1">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
-                      style={{ "--index": mainNavigation.length + 3 } as React.CSSProperties}
-                      onClick={() => handleNavigate('/dashboard')}
-                    >
-                      <LayoutDashboard className="h-4 w-4 mr-2" />
-                      {t("Dashboard")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
-                      style={{ "--index": mainNavigation.length + 4 } as React.CSSProperties}
-                      onClick={() => handleNavigate('/profile')}
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      {t("Profile")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
-                      style={{ "--index": mainNavigation.length + 5 } as React.CSSProperties}
-                      onClick={() => {
-                        toast.info("Messages feature coming soon!");
-                        setOpen(false);
-                      }}
-                    >
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      {t("Messages")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
-                      style={{ "--index": mainNavigation.length + 6 } as React.CSSProperties}
-                      onClick={() => {
-                        toast.info("Credits feature coming soon!");
-                        setOpen(false);
-                      }}
-                    >
-                      <CreditCard className="h-4 w-4 mr-2" />
-                      {t("Credits")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
-                      style={{ "--index": mainNavigation.length + 7 } as React.CSSProperties}
-                      onClick={() => handleNavigate('/settings')}
-                    >
-                      <Settings className="h-4 w-4 mr-2" />
-                      {t("Settings")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-gray-700 hover:bg-rose-50 hover:text-rose-700 menu-item-enter"
-                      style={{ "--index": mainNavigation.length + 8 } as React.CSSProperties}
-                      onClick={handleSignOutClick}
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      {t("Sign Out")}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </nav>
-
-            {/* Language Toggle & Footer */}
-            <div className="mt-auto px-4 pb-6">
-              <div className="flex justify-center mb-4">
-                <div className="flex items-center justify-center px-4 py-2 rounded-full bg-gray-100 border border-gray-200">
-                  <Globe className="w-4 h-4 mr-2 text-gray-600" />
-                  <LanguageToggle minimal={true} />
-                </div>
-              </div>
-              
-              <div className="text-center text-xs text-gray-500 mt-6">
-                <p>Inspired by Sunshine ☀️</p>
-              </div>
+          </div>
+          
+          {/* Footer section */}
+          <div className="border-t border-gray-100 p-4 space-y-4">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-center"
+              onClick={toggleLanguage}
+            >
+              <Globe className="mr-2 h-4 w-4" />
+              {isVietnamese ? "Switch to English" : "Chuyển sang Tiếng Việt"}
+            </Button>
+            
+            <div className="text-center text-sm text-gray-500 pt-2">
+              <p className="opacity-70">Inspired by Sunshine ☀️</p>
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
-    </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
+
+// Add missing Lucide icon imports
+import { LayoutDashboard, LogOut, Globe } from "lucide-react";
 
 export default MobileMenu;

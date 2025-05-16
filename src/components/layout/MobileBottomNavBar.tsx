@@ -1,7 +1,9 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
+import Logo from "@/components/ui/Logo";
 
 // Use lucide icons for clean, scalable SVGs (matching user's provided icon set)
 import { Home, Search, Briefcase, Store, User } from "lucide-react";

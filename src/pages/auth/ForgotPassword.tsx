@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
-import EmviLogo from "@/components/branding/EmviLogo";
+import Logo from "@/components/ui/Logo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { getLanguagePreference } from "@/utils/languagePreference";
@@ -88,7 +87,7 @@ const ForgotPassword = () => {
       <div className="flex items-center justify-center min-h-[70vh] p-4 bg-background">
         <Card className="w-full max-w-md">
           <div className="flex justify-center pt-6">
-            <EmviLogo size="large" />
+            <Logo size="large" showText={true} />
           </div>
           
           <CardHeader className="space-y-1">

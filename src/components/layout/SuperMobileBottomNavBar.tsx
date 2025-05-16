@@ -1,9 +1,11 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Home, Search, Briefcase, Store, User } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getLanguagePreference } from "@/utils/languagePreference";
 import { useState, useEffect } from "react";
+import Logo from "@/components/ui/Logo";
 
 const SuperMobileBottomNavBar = () => {
   const location = useLocation();

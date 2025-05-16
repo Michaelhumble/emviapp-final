@@ -1,7 +1,7 @@
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import EmviLogo from "@/components/branding/EmviLogo";
+import Logo from "@/components/ui/Logo";
 import MainNavigation from "./navbar/MainNavigation";
 import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
@@ -39,7 +39,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between mx-auto h-16 px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <EmviLogo size="small" />
+          <Logo size="small" showText={true} />
         </Link>
 
         {/* Main navigation - centered (hidden on mobile) */}

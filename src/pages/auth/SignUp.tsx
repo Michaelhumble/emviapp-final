@@ -2,6 +2,7 @@
 import SignUpForm from "@/components/auth/SignUpForm";
 import { Card } from "@/components/ui/card";
 import { useLocation } from "react-router-dom";
+import Logo from "@/components/ui/Logo";
 
 const SignUp = () => {
   const location = useLocation();
@@ -11,7 +12,12 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
-      <SignUpForm redirectUrl={redirectUrl} />
+      <div className="w-full max-w-md">
+        <div className="flex justify-center mb-6">
+          <Logo size="large" showText={true} />
+        </div>
+        <SignUpForm redirectUrl={redirectUrl} />
+      </div>
     </div>
   );
 };

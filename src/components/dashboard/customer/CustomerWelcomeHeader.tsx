@@ -2,6 +2,7 @@
 import React from "react";
 import { useAuth } from "@/context/auth";
 import { Sparkles } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 
 const CustomerWelcomeHeader: React.FC = () => {
   const { userProfile } = useAuth();
