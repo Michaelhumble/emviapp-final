@@ -1,104 +1,84 @@
 
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Job } from '@/types/job';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { useTranslation } from '@/hooks/useTranslation';
 
-const JobDetailsSection = () => {
-  const { control } = useFormContext();
+interface JobDetailsSectionProps {
+  details: Partial<Job>;
+  onChange: (details: Partial<Job>) => void;
+}
 
+const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
+  const { t, isVietnamese } = useTranslation();
+  
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold">Job Details</h2>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">{t('Job Details', 'Chi tiết công việc')}</h2>
+      <p className="text-muted-foreground">{t('Basic information about the job position', 'Thông tin cơ bản về vị trí tuyển dụng')}</p>
       
-      <FormField
-        control={control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Job Title</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g. Nail Technician" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      
-      <FormField
-        control={control}
-        name="location"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Location</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g. Los Angeles, CA" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      
-      <FormField
-        control={control}
-        name="jobType"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Job Type</FormLabel>
-            <Select 
-              onValueChange={field.onChange} 
-              defaultValue={field.value}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select job type" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="full-time">Full-time</SelectItem>
-                <SelectItem value="part-time">Part-time</SelectItem>
-                <SelectItem value="contract">Contract</SelectItem>
-                <SelectItem value="temporary">Temporary</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      
-      <FormField
-        control={control}
-        name="jobSummary"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Job Summary</FormLabel>
-            <FormControl>
-              <Input placeholder="Brief summary of the position" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      
-      <FormField
-        control={control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Job Description</FormLabel>
-            <FormControl>
-              <Textarea 
-                placeholder="Detailed job description, responsibilities, etc." 
-                className="min-h-[120px]"
-                {...field} 
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="title">{t('Job Title', 'Chức danh')}</Label>
+          <Input 
+            id="title"
+            value={details.title || ''}
+            onChange={(e) => onChange({ ...details, title: e.target.value })}
+            placeholder={t('e.g. Nail Technician, Hair Stylist', 'VD: Thợ nail, Thợ tóc')}
+            required
+          />
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="location">{t('Location', 'Địa điểm')}</Label>
+          <Input 
+            id="location"
+            value={details.location || ''}
+            onChange={(e) => onChange({ ...details, location: e.target.value })}
+            placeholder={t('e.g. Los Angeles, CA', 'VD: Houston, TX')}
+            required
+          />
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="employment-type">{t('Employment Type', 'Loại việc làm')}</Label>
+          <Select 
+            value={details.employment_type || 'full-time'}
+            onValueChange={(value) => onChange({ ...details, employment_type: value })}
+          >
+            <SelectTrigger id="employment-type">
+              <SelectValue placeholder={t('Select employment type', 'Chọn loại việc làm')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="full-time">{t('Full-time', 'Toàn thời gian')}</SelectItem>
+              <SelectItem value="part-time">{t('Part-time', 'Bán thời gian')}</SelectItem>
+              <SelectItem value="contractor">{t('Contractor', 'Hợp đồng')}</SelectItem>
+              <SelectItem value="temporary">{t('Temporary', 'Tạm thời')}</SelectItem>
+              <SelectItem value="internship">{t('Internship', 'Thực tập')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="description">{t('Job Description', 'Mô tả công việc')}</Label>
+          <textarea
+            id="description"
+            className="min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            value={details.description || ''}
+            onChange={(e) => onChange({ ...details, description: e.target.value })}
+            placeholder={t('Describe the job position, responsibilities, and benefits', 'Mô tả vị trí công việc, trách nhiệm và quyền lợi')}
+            required
+          />
+        </div>
+      </div>
     </div>
   );
 };

@@ -31,28 +31,28 @@ const SuperMobileBottomNavBar = () => {
     { 
       path: "/", 
       icon: <Home strokeWidth={1.75} size={24} />, 
-      label: t({ english: "Home", vietnamese: "Trang chủ" })
+      label: t("Home", "Trang chủ") 
     },
     { 
       path: "/search", 
       icon: <Search strokeWidth={1.75} size={24} />, 
-      label: t({ english: "Search", vietnamese: "Tìm kiếm" })
+      label: t("Search", "Tìm kiếm") 
     },
     { 
       path: "/jobs", 
       icon: <Briefcase strokeWidth={1.75} size={language === "en" ? 30 : 28} />, 
-      label: t({ english: "Jobs", vietnamese: "Tuyển dụng" }),
+      label: t("Jobs", "Tuyển dụng"),
       isCenter: true
     },
     { 
       path: "/salons", 
       icon: <Store strokeWidth={1.75} size={24} />, 
-      label: t({ english: "Salons", vietnamese: "Tiệm Nail" })
+      label: t("Salons", "Tiệm Nail") 
     },
     { 
       path: "/contact", 
       icon: <User strokeWidth={1.75} size={24} />, 
-      label: t({ english: "Contact", vietnamese: "Liên hệ" })
+      label: t("Contact", "Liên hệ") 
     }
   ];
 

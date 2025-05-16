@@ -7,7 +7,7 @@ import { format, addDays } from "date-fns";
 interface ThankYouModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  postType: 'job' | 'salon' | 'booth' | 'supply';
+  postType: 'job' | 'salon' | 'booth';
   onBoostClick: () => void;
 }
 
@@ -50,7 +50,7 @@ const ThankYouModal = ({ open, onOpenChange, postType, onBoostClick }: ThankYouM
         <div className="flex flex-col items-center justify-center">
           <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
           <DialogHeader>
-            <DialogTitle className="text-2xl text-center font-playfair">{postTypeText.title}</DialogTitle>
+            <DialogTitle className="text-2xl text-center">{postTypeText.title}</DialogTitle>
             <DialogDescription className="text-center font-medium">
               {postTypeText.subtitle}
             </DialogDescription>

@@ -1,13 +1,14 @@
+
 import { JobPricingOption, PricingOptions } from './types';
 import { DurationOption } from '@/types/pricing';
 
 export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Basic (Limited Reach)',
+    name: 'Free',
     price: 0,
-    description: 'Free listing with very limited visibility',
-    vietnameseDescription: 'Đăng tin miễn phí với khả năng hiển thị rất hạn chế',
+    description: 'Free listing for 30 days',
+    vietnameseDescription: 'Đăng tin miễn phí trong 30 ngày',
     features: [
       'Limited visibility',
       'Standard placement in listings'
@@ -17,47 +18,40 @@ export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'standard',
     name: 'Standard',
-    price: 9.99,
-    wasPrice: 14.99,
-    description: 'Smart Choice for most businesses',
-    vietnameseDescription: 'Lựa chọn thông minh cho hầu hết các doanh nghiệp',
+    price: 49.99,
+    description: 'Standard listing with increased visibility',
+    vietnameseDescription: 'Đăng tin tiêu chuẩn với khả năng hiển thị cao',
     features: [
       'Increased visibility',
-      'Better search placement'
+      'Featured in search results'
     ],
-    tier: 'standard',
-    tag: '🔥 Chosen by over 8,000 salons this year'
+    tier: 'standard'
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: 19.99,
-    wasPrice: 24.99,
-    description: 'Top Pick by Salons',
-    vietnameseDescription: 'Lựa chọn hàng đầu của các salon',
+    price: 99.99,
+    description: 'Premium listing with top placement',
+    vietnameseDescription: 'Đăng tin cao cấp với vị trí hàng đầu',
     features: [
       'Top placement in listings',
-      'Highlighted in search results',
-      'Faster candidate matching'
+      'Highlight in search results',
+      'Social media promotion'
     ],
-    tier: 'premium',
-    tag: '⭐ Used by 4,500+ serious salons for better results'
+    tier: 'premium'
   },
   {
     id: 'gold',
-    name: 'Featured',
-    price: 29.99,
-    wasPrice: 39.99,
-    description: 'Fastest Hiring Plan',
-    vietnameseDescription: 'Kế hoạch tuyển dụng nhanh nhất',
+    name: 'Gold',
+    price: 199.99,
+    description: 'Gold listing with maximum exposure',
+    vietnameseDescription: 'Đăng tin vàng với khả năng hiển thị tối đa',
     features: [
-      'Premium placement',
-      'Homepage feature',
-      'Free listing boost',
-      'Priority support'
+      'Maximum visibility',
+      'Exclusive placement',
+      'Dedicated support'
     ],
-    tier: 'gold',
-    tag: '🏆 Preferred by growing brands – 1,200 upgraded last month'
+    tier: 'gold'
   },
   {
     id: 'diamond',
@@ -70,16 +64,15 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Priority placement',
       '24/7 dedicated support'
     ],
-    tier: 'diamond',
-    hidden: true // TODO: Diamond tier is temporarily hidden and will be accessible later via waitlist/bid flow
+    tier: 'diamond'
   }
 ];
 
 export const durationOptions: DurationOption[] = [
   { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 5 },  // 5% discount
-  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 10 }, // 10% discount
-  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 } // 20% discount
+  { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },
+  { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 15 },
+  { months: 12, label: '12 Months', vietnameseLabel: '12 Tháng', discount: 20 }
 ];
 
 export const getJobPostPricingSummary = (options: PricingOptions): string => {
@@ -116,8 +109,7 @@ export const getStripePriceId = (pricingTier: string): string | null => {
   }
 };
 
-// Calculates the final price based on base price and duration with appropriate discounts
-// Note: Free plan is always 30 days regardless of duration selection
+// Modify the calculateFinalPrice function to return an object with the expected properties
 export const calculateFinalPrice = (basePrice: number, durationMonths: number) => {
   // Calculate original price (before any discounts)
   const originalPrice = basePrice * durationMonths;
@@ -126,20 +118,20 @@ export const calculateFinalPrice = (basePrice: number, durationMonths: number) =
   let discountPercentage = 0;
   
   if (durationMonths === 3) {
-    discountPercentage = 5; // 5% discount for 3-month duration
+    discountPercentage = 10;
   } else if (durationMonths === 6) {
-    discountPercentage = 10; // 10% discount for 6-month duration
+    discountPercentage = 15;
   } else if (durationMonths >= 12) {
-    discountPercentage = 20; // 20% discount for 12-month or longer duration
+    discountPercentage = 20;
   }
   
   // Calculate final price after applying discount
   const discount = (originalPrice * discountPercentage) / 100;
-  const finalPrice = Number((originalPrice - discount).toFixed(2)); // Round to 2 decimal places at final step
+  const finalPrice = originalPrice - discount;
   
   // Return an object with all required properties
   return {
-    originalPrice: Number(originalPrice.toFixed(2)),
+    originalPrice,
     finalPrice,
     discountPercentage
   };
@@ -173,11 +165,11 @@ export const calculateJobPostPrice = (options: PricingOptions) => {
   let discountPercentage = 0;
   
   if (durationMonths === 3) {
-    discountPercentage = 5; // 5% discount for 3-month duration
+    discountPercentage = 10;
   } else if (durationMonths === 6) {
-    discountPercentage = 10; // 10% discount for 6-month duration
+    discountPercentage = 15;
   } else if (durationMonths >= 12) {
-    discountPercentage = 20; // 20% discount for 12-month or longer duration
+    discountPercentage = 20;
   }
   
   // Add first post discount if applicable
@@ -195,3 +187,4 @@ export const calculateJobPostPrice = (options: PricingOptions) => {
     discountPercentage
   };
 };
+

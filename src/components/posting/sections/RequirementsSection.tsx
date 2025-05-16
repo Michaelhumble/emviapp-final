@@ -1,110 +1,147 @@
 
 import React from 'react';
-import { Control } from 'react-hook-form';
-import { useFormContext } from 'react-hook-form';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Job } from '@/types/job';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Card,
+  CardContent
+} from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface RequirementsSectionProps {
-  control?: Control<any>;
-  form?: any;
+  details: Partial<Job>;
+  onChange: (details: Partial<Job>) => void;
 }
 
-const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control, form }) => {
-  const { t } = useTranslation();
-  const formContext = useFormContext();
+const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) => {
+  const { t, isVietnamese } = useTranslation();
   
-  const finalControl = control || form?.control || (formContext && formContext.control);
-  const formWatch = form?.watch || (formContext && formContext.watch);
-  const formSetValue = form?.setValue || (formContext && formContext.setValue);
-
-  // If no form context is available, show an error
-  if (!finalControl || !formWatch || !formSetValue) {
-    console.error('RequirementsSection: No form control available');
-    return null;
-  }
-
-  const requirements = formWatch('requirements') || [];
-  const [newRequirement, setNewRequirement] = React.useState('');
-
-  const addRequirement = () => {
-    if (newRequirement.trim() !== '') {
-      formSetValue('requirements', [...requirements, newRequirement]);
-      setNewRequirement('');
+  // Handle adding a requirement
+  const addRequirement = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && e.currentTarget.value) {
+      e.preventDefault();
+      const requirements = Array.isArray(details.requirements) 
+        ? [...details.requirements, e.currentTarget.value] 
+        : [e.currentTarget.value];
+      onChange({ ...details, requirements });
+      e.currentTarget.value = '';
     }
   };
 
+  // Handle removing a requirement
   const removeRequirement = (index: number) => {
-    formSetValue(
-      'requirements',
-      requirements.filter((_, i) => i !== index)
-    );
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addRequirement();
+    if (Array.isArray(details.requirements)) {
+      const requirements = [...details.requirements];
+      requirements.splice(index, 1);
+      onChange({ ...details, requirements });
     }
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold">{t('Requirements & Qualifications', 'Yêu cầu & Tiêu chuẩn')}</h2>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">{t('Job Requirements', 'Yêu cầu công việc')}</h2>
+      <p className="text-muted-foreground">{t('Specify what you\'re looking for in candidates', 'Chỉ rõ bạn đang tìm kiếm ứng viên như thế nào')}</p>
       
-      <div className="space-y-4">
-        <FormField
-          control={finalControl}
-          name="requirements"
-          render={() => (
-            <FormItem>
-              <FormLabel>{t('Requirements', 'Yêu cầu')}</FormLabel>
-              <div className="flex space-x-2">
-                <Input
-                  placeholder={t('e.g. 2+ years experience', 'VD: 2+ năm kinh nghiệm')}
-                  value={newRequirement}
-                  onChange={(e) => setNewRequirement(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-                <Button 
-                  type="button" 
-                  onClick={addRequirement} 
-                  variant="outline"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+      <div className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="experience-level">{t('Experience Level', 'Kinh nghiệm')}</Label>
+          <RadioGroup 
+            value={details.experience_level || 'any'} 
+            onValueChange={(value) => onChange({ ...details, experience_level: value })}
+            className="grid grid-cols-1 md:grid-cols-3 gap-2"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="any" id="any" />
+              <Label htmlFor="any">{t('Any Experience', 'Bất kỳ kinh nghiệm nào')}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="entry" id="entry" />
+              <Label htmlFor="entry">{t('Entry Level', 'Mới vào nghề')}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="experienced" id="experienced" />
+              <Label htmlFor="experienced">{t('Experienced', 'Có kinh nghiệm')}</Label>
+            </div>
+          </RadioGroup>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label>{t('Requirements', 'Yêu cầu')}</Label>
+          <div className="space-y-3">
+            <Input
+              placeholder={t('Add requirement and press Enter', 'Thêm yêu cầu và nhấn Enter')}
+              onKeyDown={addRequirement}
+            />
+            
+            {Array.isArray(details.requirements) && details.requirements.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {details.requirements.map((req, index) => (
+                  <Card key={index} className="bg-gray-100">
+                    <CardContent className="p-2 flex items-center">
+                      <span className="mr-2">{req}</span>
+                      <button 
+                        type="button"
+                        onClick={() => removeRequirement(index)}
+                        className="text-gray-500 hover:text-red-500"
+                      >
+                        ×
+                      </button>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {requirements.length > 0 && (
-          <div className="mt-4 space-y-2">
-            <p className="text-sm font-medium">{t('Added Requirements:', 'Yêu cầu đã thêm:')}</p>
-            <ul className="space-y-2">
-              {requirements.map((req: string, index: number) => (
-                <li 
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded-md border"
-                >
-                  <span className="text-sm">{req}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeRequirement(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </li>
-              ))}
-            </ul>
+            )}
           </div>
-        )}
+        </div>
+        
+        <div className="grid gap-2 mt-4">
+          <Label>{t('Additional Benefits', 'Phúc lợi bổ sung')}</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="has-housing"
+                checked={details.has_housing || false}
+                onChange={(e) => onChange({ ...details, has_housing: e.target.checked })}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor="has-housing">{t('Housing Available', 'Có nhà ở')}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="has-wax-room"
+                checked={details.has_wax_room || false}
+                onChange={(e) => onChange({ ...details, has_wax_room: e.target.checked })}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor="has-wax-room">{t('Wax Room Available', 'Có phòng wax')}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="no-supply-deduction"
+                checked={details.no_supply_deduction || false}
+                onChange={(e) => onChange({ ...details, no_supply_deduction: e.target.checked })}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor="no-supply-deduction">{t('No Supply Deduction', 'Không trừ tiền vật tư')}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="owner-will-train"
+                checked={details.owner_will_train || false}
+                onChange={(e) => onChange({ ...details, owner_will_train: e.target.checked })}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor="owner-will-train">{t('Owner Will Train', 'Chủ sẽ đào tạo')}</Label>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

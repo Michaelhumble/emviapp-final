@@ -1,121 +1,105 @@
 
 import React from 'react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { CalendarIcon, DollarSign, Crown } from 'lucide-react';
-import { durationOptions } from '@/utils/posting/jobPricing';
-import { motion } from 'framer-motion';
+import { DurationOption } from '@/types/pricing';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DurationSelectorProps {
   selectedDuration: number;
   onChange: (duration: number) => void;
-  selectedPricing: string;
+  className?: string;
+  durations?: DurationOption[];
+  disableSelection?: boolean;
+  selectedPricing?: string;
 }
 
 const DurationSelector: React.FC<DurationSelectorProps> = ({ 
   selectedDuration, 
   onChange,
+  className,
+  durations = [
+    { months: 1, label: '1 Month', vietnameseLabel: '1 tháng', discount: 0 },
+    { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 5 },
+    { months: 6, label: '6 Months', vietnameseLabel: '6 tháng', discount: 10 },
+    { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 20 }
+  ],
+  disableSelection = false,
   selectedPricing
 }) => {
-  const isPremiumPlan = selectedPricing === 'premium';
-  
-  // For Diamond tier, restrict to 12 months only
-  const filteredOptions = selectedPricing === 'diamond' 
-    ? durationOptions.filter(option => option.months === 12)
-    : durationOptions;
+  // For Diamond plan, we'll show a special message for non-yearly options
+  const isDiamondPlan = selectedPricing === 'diamond';
+  const showFullDurations = !isDiamondPlan;
   
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      {filteredOptions.map((option) => {
-        const isSelected = selectedDuration === option.months;
-        const isAnnual = option.months === 12;
-        
-        // Get Vietnamese subtitle based on duration
-        const getVietnameseSubtitle = () => {
-          if (option.months === 3) return "Tiết kiệm 10% - 3 tháng";
-          if (option.months === 6) return "Tiết kiệm 20% - 6 tháng";
-          if (option.months === 12) return "Ưu đãi nhất - 12 tháng";
-          return option.vietnameseLabel || "";
-        };
-        
-        return (
-          <motion.button
-            key={option.months}
-            whileHover={{ scale: 1.02 }}
-            onClick={() => onChange(option.months)}
-            className={cn(
-              "relative flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200 text-center",
-              isSelected 
-                ? isAnnual
-                  ? "border-amber-500 bg-gradient-to-r from-amber-50 to-amber-100 shadow-md ring-2 ring-amber-300 ring-opacity-50"
-                  : "border-purple-500 bg-purple-50 shadow-md"
-                : "border-gray-200 bg-white hover:border-purple-200"
-            )}
-          >
-            {option.discount > 0 && (
-              <span className={cn(
-                "absolute -top-2 -right-2 text-xs font-bold px-2 py-1 rounded-full border",
-                isSelected 
-                  ? isAnnual
-                    ? "bg-amber-500 text-white border-amber-600"
-                    : "bg-green-500 text-white border-green-600"
-                  : "bg-green-100 text-green-800 border-green-200"
-              )}>
-                {option.discount}% off
+    <div className={cn("space-y-2", className)}>
+      <RadioGroup
+        value={String(selectedDuration)}
+        onValueChange={(value) => onChange(Number(value))}
+        className="flex flex-wrap justify-center gap-2"
+        disabled={disableSelection}
+      >
+        {durations.map((duration) => {
+          // For Diamond plan, show tooltip on non-12-month options
+          const isDiamondNonYearly = isDiamondPlan && duration.months !== 12;
+          
+          return (
+            <div key={duration.months} className="flex flex-col items-center">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={cn(
+                      "relative flex items-center justify-center",
+                      "cursor-pointer transition-all duration-200",
+                      (isDiamondNonYearly) && "opacity-60 cursor-help"
+                    )}>
+                      <RadioGroupItem
+                        value={String(duration.months)}
+                        id={`duration-${duration.months}`}
+                        className="sr-only"
+                        disabled={disableSelection || isDiamondNonYearly}
+                      />
+                      <Label
+                        htmlFor={`duration-${duration.months}`}
+                        className={cn(
+                          "px-4 py-2 rounded-full border cursor-pointer transition-all",
+                          "text-sm font-medium flex items-center gap-1",
+                          selectedDuration === duration.months
+                            ? "bg-purple-600 text-white border-purple-600"
+                            : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700",
+                          (disableSelection || isDiamondNonYearly) && 
+                            "cursor-help hover:bg-white dark:hover:bg-gray-800"
+                        )}
+                      >
+                        {duration.label}
+                        {!isDiamondPlan && duration.discount > 0 && (
+                          <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 px-1.5 py-0.5 rounded-full ml-1">
+                            -{duration.discount}%
+                          </span>
+                        )}
+                        {isDiamondPlan && duration.months === 12 && (
+                          <span className="text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 px-1.5 py-0.5 rounded-full ml-1">
+                            -33%
+                          </span>
+                        )}
+                      </Label>
+                    </div>
+                  </TooltipTrigger>
+                  {isDiamondNonYearly && (
+                    <TooltipContent side="top" className="p-2 max-w-xs text-center">
+                      <p>Only 12-month plan unlocks special discount pricing.</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+              <span className="text-xs text-muted-foreground mt-1">
+                {duration.vietnameseLabel}
               </span>
-            )}
-            
-            <div className="mb-1">
-              {isAnnual && isSelected ? (
-                <Crown className={cn(
-                  "h-5 w-5 mx-auto mb-1 text-amber-500"
-                )} />
-              ) : (
-                <CalendarIcon className={cn(
-                  "h-5 w-5 mx-auto mb-1",
-                  isSelected ? isAnnual ? "text-amber-500" : "text-purple-500" : "text-gray-400"
-                )} />
-              )}
             </div>
-            
-            <div className={cn(
-              "font-medium",
-              isSelected 
-                ? isAnnual 
-                  ? "text-amber-800" 
-                  : "text-purple-800" 
-                : "text-gray-700"
-            )}>
-              {option.months} {option.months === 1 ? 'Month' : 'Months'}
-            </div>
-            
-            {option.discount > 0 && (
-              <>
-                <div className={cn(
-                  "text-xs mt-1",
-                  isSelected 
-                    ? isAnnual 
-                      ? "text-amber-700" 
-                      : "text-green-700" 
-                    : "text-green-600"
-                )}>
-                  Save {option.discount}%
-                </div>
-                <div className="text-xs mt-0.5 text-gray-500 italic">
-                  {getVietnameseSubtitle()}
-                </div>
-              </>
-            )}
-            
-            {isAnnual && (
-              <div className="absolute -bottom-2 transform translate-y-full w-full text-center">
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-medium">
-                  Best Value
-                </span>
-              </div>
-            )}
-          </motion.button>
-        );
-      })}
+          );
+        })}
+      </RadioGroup>
     </div>
   );
 };

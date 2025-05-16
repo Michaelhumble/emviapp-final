@@ -26,7 +26,7 @@ const iconMap: Record<string, React.FC<{ className?: string }>> = {
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
-  const { t, toggleLanguage } = useTranslation();
+  const { t, toggleLanguage, isVietnamese } = useTranslation();
   const navigate = useNavigate();
   
   const handleLinkClick = (path: string) => {
@@ -60,7 +60,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
               onClick={() => handleLinkClick("/post-job")}
             >
               <Flame className="h-5 w-5" />
-              {t({ english: "Post a Job for Free", vietnamese: "Đăng việc miễn phí" })}
+              {t("Post a Job for Free", "Đăng việc miễn phí")}
             </Button>
             
             {/* Language section */}
@@ -72,7 +72,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                 onClick={handleLanguageToggle}
               >
                 <Globe className="h-5 w-5" />
-                <span>{t({ english: "English", vietnamese: "Tiếng Việt" })}</span>
+                <span>{isVietnamese ? "English" : "Tiếng Việt"}</span>
               </Button>
             </div>
             

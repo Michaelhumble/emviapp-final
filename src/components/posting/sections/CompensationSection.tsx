@@ -1,79 +1,83 @@
 
 import React from 'react';
-import { Control } from 'react-hook-form';
-import { useFormContext } from 'react-hook-form';
+import { Job } from '@/types/job';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useTranslation } from '@/hooks/useTranslation';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 
-export interface CompensationSectionProps {
-  control?: Control<any>;
-  form?: any;
+interface CompensationSectionProps {
+  details: Partial<Job>;
+  onChange: (details: Partial<Job>) => void;
 }
 
-const CompensationSection: React.FC<CompensationSectionProps> = ({ control, form }) => {
-  const { t } = useTranslation();
-  const formContext = useFormContext();
+const CompensationSection = ({ details, onChange }: CompensationSectionProps) => {
+  const { t, isVietnamese } = useTranslation();
   
-  // Use either passed control or get it from form context
-  const formControl = control || form?.control || (formContext && formContext.control);
-
-  if (!formControl) {
-    console.error('CompensationSection: No form control available');
-    return null;
-  }
-
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-semibold">{t('Compensation', 'Lương & Thưởng')}</h2>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">{t('Compensation Details', 'Chi tiết lương thưởng')}</h2>
+      <p className="text-muted-foreground">{t('Provide compensation information to attract qualified candidates', 'Cung cấp thông tin lương thưởng để thu hút ứng viên phù hợp')}</p>
       
-      <FormField
-        control={formControl}
-        name="salary"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('Salary/Compensation', 'Lương/Thưởng')}</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder={t('e.g. $20-25/hr or 60% commission', 'VD: 200-250k/ngày hoặc 60% hoa hồng')} 
-                {...field} 
+      <div className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="compensation-type">{t('Compensation Type', 'Hình thức trả lương')}</Label>
+          <Select 
+            value={details.compensation_type || 'hourly'}
+            onValueChange={(value) => onChange({ ...details, compensation_type: value })}
+          >
+            <SelectTrigger id="compensation-type">
+              <SelectValue placeholder={t('Select compensation type', 'Chọn hình thức trả lương')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="hourly">{t('Hourly', 'Theo giờ')}</SelectItem>
+              <SelectItem value="commission">{t('Commission', 'Hoa hồng')}</SelectItem>
+              <SelectItem value="salary">{t('Salary', 'Lương')}</SelectItem>
+              <SelectItem value="mixed">{t('Mixed (Salary + Commission)', 'Hỗn hợp (Lương + Hoa hồng)')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="compensation-details">{t('Compensation Details', 'Chi tiết lương')}</Label>
+          <Input 
+            id="compensation-details"
+            value={details.compensation_details || ''}
+            onChange={(e) => onChange({ ...details, compensation_details: e.target.value })}
+            placeholder={t('e.g. $25-35/hr or 60% commission', 'VD: $25-35/giờ hoặc 60% hoa hồng')}
+          />
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="weekly-pay">
+            <div className="flex items-center gap-2">
+              <input 
+                type="checkbox" 
+                id="weekly-pay"
+                checked={details.weekly_pay || false}
+                onChange={(e) => onChange({ ...details, weekly_pay: e.target.checked })}
+                className="rounded border-gray-300"
               />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      
-      <div className="bg-blue-50 p-4 rounded-md">
-        <h3 className="text-sm font-medium mb-2 text-blue-800">
-          {t('Tips for Attracting More Applicants', 'Mẹo để thu hút nhiều ứng viên hơn')}
-        </h3>
-        <ul className="text-sm text-blue-700 space-y-1 list-disc pl-5">
-          <li>
-            {t(
-              'Be specific about pay structure (hourly, commission, etc.)',
-              'Cụ thể về cấu trúc lương (theo giờ, hoa hồng, v.v.)'
-            )}
-          </li>
-          <li>
-            {t(
-              'Include commission rates if applicable',
-              'Bao gồm tỷ lệ hoa hồng nếu có'
-            )}
-          </li>
-          <li>
-            {t(
-              'Mention benefits like health insurance or paid time off',
-              'Đề cập đến các quyền lợi như bảo hiểm y tế hoặc nghỉ phép có lương'
-            )}
-          </li>
-        </ul>
+              <span>{t('Weekly Pay Available', 'Trả lương hàng tuần')}</span>
+            </div>
+          </Label>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="tip-range">{t('Expected Tip Range (Optional)', 'Khoảng tip dự kiến (Không bắt buộc)')}</Label>
+          <Input 
+            id="tip-range"
+            value={details.tip_range || ''}
+            onChange={(e) => onChange({ ...details, tip_range: e.target.value })}
+            placeholder={t('e.g. $100-200/day', 'VD: $100-200/ngày')}
+          />
+        </div>
       </div>
     </div>
   );

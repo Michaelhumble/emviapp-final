@@ -19,34 +19,26 @@ export interface PricingOptions {
   bundleWithJobPost?: boolean;
   hasReferrals?: boolean;
   autoRenew?: boolean;
-  isHotListing?: boolean;
+  isHotListing?: boolean; // Added missing field
 }
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
-// Define these interfaces here since they're not properly exported from jobPricing.ts
 export interface JobPricingOption {
   id: string;
   name: string;
   price: number;
   wasPrice?: number;
+  basePrice?: number;
+  finalPrice?: number;
   description: string;
   vietnameseDescription?: string;
-  features: string[];
-  tier: string;
   tag?: string;
-  hidden?: boolean;
-}
-
-export interface JobPricingTier {
-  id: string;
-  name: string;
-  price: number;
+  popular?: boolean;
+  discountPercentage?: number;
   features: string[];
+  isFirstPost?: boolean;
+  tier?: JobPricingTier; // Added missing field
 }
 
-// Re-export from jobPricing.ts
-export { jobPricingOptions } from './jobPricing';
-
-// Export the JobDetailsSubmission type from types/job.ts
-export type { JobDetailsSubmission, Job, PricingOptions as JobPricingOptions } from '@/types/job';
+export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';

@@ -5,7 +5,6 @@ import { Copy } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useTranslation } from "@/hooks/useTranslation";
 
 interface ReferralLinkProps {
   referralLink: string;
@@ -16,7 +15,8 @@ interface ReferralLinkProps {
 const ReferralLink = ({ referralLink, onCopy, copied }: ReferralLinkProps) => {
   const { userProfile } = useAuth();
   const [justCopied, setJustCopied] = useState(false);
-  const { t, isVietnamese } = useTranslation();
+  const preferredLanguage = userProfile?.preferred_language || "English";
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink).then(() => {
@@ -29,10 +29,11 @@ const ReferralLink = ({ referralLink, onCopy, copied }: ReferralLinkProps) => {
         localStorage.setItem('referral_link_copied', 'true');
       }
       
-      toast.success(t({
-        english: "Referral link copied to clipboard!", 
-        vietnamese: "Đã sao chép đường dẫn giới thiệu!"
-      }));
+      toast.success(
+        isVietnamese ? 
+          "Đã sao chép đường dẫn giới thiệu!" : 
+          "Referral link copied to clipboard!"
+      );
     });
   };
 
@@ -49,10 +50,7 @@ const ReferralLink = ({ referralLink, onCopy, copied }: ReferralLinkProps) => {
   return (
     <div className="flex flex-col space-y-2">
       <p className="text-sm text-gray-600">
-        {t({
-          english: "Your referral link:", 
-          vietnamese: "Liên kết giới thiệu của bạn:"
-        })}
+        {isVietnamese ? "Liên kết giới thiệu của bạn:" : "Your referral link:"}
       </p>
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
@@ -67,10 +65,7 @@ const ReferralLink = ({ referralLink, onCopy, copied }: ReferralLinkProps) => {
             animate={justCopied ? { opacity: 1, y: -10 } : { opacity: 0, y: 0 }}
             className="absolute -top-6 left-0 right-0 text-center text-green-600 text-xs font-medium"
           >
-            {t({
-              english: "Copied!", 
-              vietnamese: "Đã sao chép!"
-            })}
+            {isVietnamese ? "Đã sao chép!" : "Copied!"}
           </motion.div>
         </div>
         <Button 
@@ -80,17 +75,13 @@ const ReferralLink = ({ referralLink, onCopy, copied }: ReferralLinkProps) => {
           className={copied ? "bg-green-50 text-green-600 border-green-200" : ""}
         >
           <Copy className="h-4 w-4 mr-1" /> 
-          {t({
-            english: "Copy", 
-            vietnamese: "Sao chép"
-          })}
+          {isVietnamese ? "Sao chép" : "Copy"}
         </Button>
       </div>
       <p className="text-xs text-gray-500">
-        {t({
-          english: "Share this link with other salon owners to earn rewards.", 
-          vietnamese: "Chia sẻ liên kết này với các chủ tiệm khác để nhận thưởng."
-        })}
+        {isVietnamese ? 
+          "Chia sẻ liên kết này với các chủ tiệm khác để nhận thưởng." : 
+          "Share this link with other salon owners to earn rewards."}
       </p>
     </div>
   );

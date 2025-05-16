@@ -1,201 +1,133 @@
 
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, ShieldCheck, Lock } from 'lucide-react';
+import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { PricingOptions } from '@/types/job';
+import { Card, CardContent } from '@/components/ui/card';
+import { format, addMonths } from 'date-fns';
 
 interface PaymentSummaryProps {
-  pricingOptions: PricingOptions;
-  calculatedPrice: number;
-  originalPrice?: number;
-  discount?: number;
-  isSaving?: boolean;
-  onSubmit?: () => void;
-  isButtonDisabled?: boolean;
+  basePrice: number;
+  duration: number;
+  autoRenew: boolean;
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
+  onProceedToPayment: () => void;
+  isFreePlan?: boolean;
+  isSubmitting?: boolean;
 }
 
-/**
- * Payment summary component that shows the selected pricing options and total
- */
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
-  pricingOptions,
-  calculatedPrice,
+  basePrice,
+  duration,
+  autoRenew,
   originalPrice,
-  discount = 0,
-  isSaving = false,
-  onSubmit,
-  isButtonDisabled = false
+  finalPrice,
+  discountPercentage,
+  onProceedToPayment,
+  isFreePlan = false,
+  isSubmitting = false
 }) => {
   const { t } = useTranslation();
-  const isFree = pricingOptions.selectedPricingTier === 'free';
-  const hasDiscount = discount > 0;
-  
-  // Format prices with $ and commas
-  const formatPrice = (price: number): string => {
-    return `$${price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  };
+  const expiryDate = addMonths(new Date(), duration);
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-xl flex justify-between">
-          {t({ english: "Payment Summary", vietnamese: "Tóm tắt thanh toán" })}
-          {isFree && (
-            <Badge className="ml-2 bg-green-500 text-white">
-              {t({ english: "FREE", vietnamese: "MIỄN PHÍ" })}
-            </Badge>
-          )}
-        </CardTitle>
-        <CardDescription>
-          {t({ english: "Selected plan and pricing details", vietnamese: "Chi tiết kế hoạch và giá đã chọn" })}
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>{t({ english: "Selected Plan", vietnamese: "Gói đã chọn" })}</span>
-            <span className="font-medium capitalize">{pricingOptions.selectedPricingTier}</span>
-          </div>
-          
-          <div className="flex justify-between text-sm">
-            <span>{t({ english: "Duration", vietnamese: "Thời hạn" })}</span>
-            <span className="font-medium">
-              {pricingOptions.durationMonths || 1} {t({ english: "months", vietnamese: "tháng" })}
-            </span>
-          </div>
-          
-          {pricingOptions.isNationwide && (
-            <div className="flex justify-between text-sm">
-              <span>{t({ english: "Nationwide Visibility", vietnamese: "Hiển thị trên toàn quốc" })}</span>
-              <span className="font-medium text-green-600">
-                <CheckCircle className="inline-block h-4 w-4 mr-1" />
-                {t({ english: "Included", vietnamese: "Bao gồm" })}
-              </span>
-            </div>
-          )}
-          
-          {pricingOptions.showAtTop && (
-            <div className="flex justify-between text-sm">
-              <span>{t({ english: "Premium Placement", vietnamese: "Vị trí cao cấp" })}</span>
-              <span className="font-medium text-green-600">
-                <CheckCircle className="inline-block h-4 w-4 mr-1" />
-                {t({ english: "Included", vietnamese: "Bao gồm" })}
-              </span>
-            </div>
-          )}
-          
-          {pricingOptions.isHotListing && (
-            <div className="flex justify-between text-sm">
-              <span>{t({ english: "Featured Listing", vietnamese: "Danh sách nổi bật" })}</span>
-              <span className="font-medium text-green-600">
-                <CheckCircle className="inline-block h-4 w-4 mr-1" />
-                {t({ english: "Included", vietnamese: "Bao gồm" })}
-              </span>
-            </div>
-          )}
-          
-          {pricingOptions.bundleWithJobPost && (
-            <div className="flex justify-between text-sm">
-              <span>{t({ english: "Job Post Bundle", vietnamese: "Gói đăng tin tuyển dụng" })}</span>
-              <span className="font-medium text-green-600">
-                <CheckCircle className="inline-block h-4 w-4 mr-1" />
-                {t({ english: "15% Savings Applied", vietnamese: "Đã áp dụng giảm giá 15%" })}
-              </span>
-            </div>
-          )}
-        </div>
+    <Card className="border border-gray-200">
+      <CardContent className="p-4 space-y-4">
+        <h3 className="font-semibold text-lg">
+          {isFreePlan 
+            ? t('Free Listing Summary', 'Tóm tắt đăng tin miễn phí') 
+            : t('Payment Summary', 'Tóm tắt thanh toán')}
+        </h3>
         
-        <Separator />
-        
-        <div className="space-y-2">
-          {originalPrice && originalPrice > calculatedPrice && (
-            <div className="flex justify-between text-sm">
-              <span>{t({ english: "Regular price", vietnamese: "Giá thông thường" })}</span>
-              <span className="line-through text-gray-500">{formatPrice(originalPrice)}</span>
+        {isFreePlan ? (
+          <div className="space-y-3">
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
+              <div>
+                <p className="font-medium">{t('Free listing valid for 30 days', 'Đăng tin miễn phí có hiệu lực trong 30 ngày')}</p>
+                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
+              </div>
             </div>
-          )}
-          
-          {hasDiscount && (
-            <div className="flex justify-between text-sm text-green-600">
-              <span>
-                {t({ english: "Limited time offer", vietnamese: "Khuyến mãi có thời hạn" })}
-              </span>
-              <span>-{formatPrice(discount)}</span>
-            </div>
-          )}
-          
-          {pricingOptions.isFirstPost && !isFree && (
-            <div className="flex justify-between text-sm text-green-600">
-              <span>{t({ english: "First time discount", vietnamese: "Giảm giá lần đầu" })}</span>
-              <span>-{formatPrice(29.99)}</span>
-            </div>
-          )}
-          
-          <div className="flex justify-between text-base font-bold pt-2">
-            <span>{t({ english: "Total", vietnamese: "Tổng cộng" })}</span>
-            <span>{formatPrice(calculatedPrice)}</span>
-          </div>
-          
-          {pricingOptions.autoRenew && (
-            <div className="text-xs text-gray-500 italic">
-              {t({ english: "Your subscription will automatically renew every", vietnamese: "Dịch vụ của bạn sẽ tự động gia hạn sau mỗi" })} {pricingOptions.durationMonths || 1} {t({ english: "months", vietnamese: "tháng" })}.
-            </div>
-          )}
-        </div>
-        
-        <div className="bg-green-50 p-3 rounded-md border border-green-100 mt-4">
-          <div className="flex items-start">
-            <div className="mr-3 mt-0.5">
-              <ShieldCheck className="h-5 w-5 text-green-600" />
-            </div>
-            <div className="text-sm text-green-800 space-y-1">
-              <p>{t({ english: "100% satisfaction guarantee", vietnamese: "Đảm bảo hài lòng 100%" })}</p>
-              <p>{t({ english: "Priority customer support", vietnamese: "Hỗ trợ khách hàng ưu tiên" })}</p>
+            
+            <div className="flex items-start">
+              <Shield className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
+              <div>
+                <p className="font-medium">{t('Limited visibility', 'Hiển thị hạn chế')}</p>
+                <p className="text-sm text-gray-600">{t('Standard placement in listings', 'Vị trí tiêu chuẩn trong danh sách')}</p>
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-      
-      <CardFooter className="flex-col space-y-3">
-        {onSubmit && (
-          <Button 
-            onClick={onSubmit} 
-            className="w-full" 
-            size="lg"
-            disabled={isButtonDisabled}
-          >
-            {isSaving ? (
-              <span className="flex items-center justify-center">
-                <span className="animate-spin mr-2">⊚</span>
-                {t({ english: "Processing...", vietnamese: "Đang xử lý..." })}
-              </span>
-            ) : isFree ? (
-              t({ english: "Post for Free", vietnamese: "Đăng miễn phí" })
-            ) : (
-              <>
-                {t({ english: "Secure Checkout", vietnamese: "Thanh toán an toàn" })}
-                <Lock className="ml-2 h-4 w-4" />
-              </>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-start">
+              <CalendarClock className="h-5 w-5 text-purple-500 mt-0.5 mr-2" /> 
+              <div>
+                <p className="font-medium">
+                  {duration === 1 
+                    ? t('1 month listing', '1 tháng đăng tin')
+                    : t(`${duration} months listing`, `${duration} tháng đăng tin`)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {t('Expires on', 'Hết hạn vào')}: {format(expiryDate, 'MMMM d, yyyy')}
+                </p>
+              </div>
+            </div>
+            
+            {autoRenew && (
+              <div className="flex items-start">
+                <RefreshCw className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
+                <div>
+                  <p className="font-medium">{t('Auto-renewal enabled', 'Tự động gia hạn được bật')}</p>
+                  <p className="text-sm text-gray-600">
+                    {t(
+                      'Your subscription will automatically renew on', 
+                      'Đăng ký của bạn sẽ tự động gia hạn vào'
+                    )}: {format(expiryDate, 'MMMM d, yyyy')}
+                  </p>
+                </div>
+              </div>
             )}
-          </Button>
+            
+            <div className="border-t border-gray-200 pt-3 space-y-1">
+              <div className="flex justify-between">
+                <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
+                <span className="text-gray-600">${originalPrice.toFixed(2)}</span>
+              </div>
+              
+              {discountPercentage > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
+                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between font-semibold text-lg">
+                <span>{t('Total', 'Tổng cộng')}:</span>
+                <span>${finalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
         )}
         
-        <div className="text-xs text-center text-gray-500">
-          {t({ english: "By proceeding, you agree to our terms of service", vietnamese: "Bằng cách tiếp tục, bạn đồng ý với điều khoản dịch vụ của chúng tôi" })}
-        </div>
-      </CardFooter>
+        <Button 
+          onClick={onProceedToPayment} 
+          className="w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <span>{isFreePlan ? t('Submitting...', 'Đang gửi...') : t('Processing...', 'Đang xử lý...')}</span>
+          ) : (
+            <>
+              {isFreePlan 
+                ? t('Complete Free Listing', 'Hoàn tất đăng tin miễn phí')
+                : t('Proceed to Payment', 'Tiến hành thanh toán')}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
+        </Button>
+      </CardContent>
     </Card>
   );
 };
