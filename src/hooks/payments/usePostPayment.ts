@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
+import { useTranslation } from '@/hooks/useTranslation';
 
-export const usePostPayment = () => {
+export const usePostPaymentLegacy = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const initiatePayment = async (postType: 'job' | 'salon') => {
     setIsLoading(true);
@@ -19,8 +21,8 @@ export const usePostPayment = () => {
       }
     } catch (error) {
       console.error('Payment initiation error:', error);
-      toast.error("Failed to initiate payment", {
-        description: "Please try again."
+      toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
+        description: t("Please try again.", "Vui lòng thử lại.")
       });
     } finally {
       setIsLoading(false);
