@@ -12,11 +12,7 @@ import Layout from './components/layout/Layout';
 import LanguagePreference from './components/common/LanguagePreference';
 
 function App() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { user } = useAuth();
 
   return (
     <Routes>
