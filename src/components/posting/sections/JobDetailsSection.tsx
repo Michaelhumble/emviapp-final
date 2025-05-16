@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Job } from '@/types/job';
 import {
   Select,
@@ -20,12 +20,6 @@ interface JobDetailsSectionProps {
 
 const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
   const { t } = useTranslation();
-  
-  // Debug log to inspect the Job interface properties
-  useEffect(() => {
-    console.log("Job details object:", details);
-    console.log("Job interface properties:", Object.keys(details));
-  }, [details]);
   
   return (
     <div className="space-y-6">
@@ -96,6 +90,38 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
               placeholder={t("City, State")}
             />
           </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="salary-range">
+              {t("Salary Range")}
+            </Label>
+            <Input 
+              id="salary-range"
+              value={details.salary_range || ''}
+              onChange={(e) => onChange({ ...details, salary_range: e.target.value })}
+              placeholder={t("e.g. $15-20/hour")}
+            />
+          </div>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="experience-level">
+            {t("Experience Level")}
+          </Label>
+          <Select 
+            value={details.experience_level || ''}
+            onValueChange={(value) => onChange({ ...details, experience_level: value })}
+          >
+            <SelectTrigger id="experience-level">
+              <SelectValue placeholder={t("Select experience level")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="entry">{t("Entry Level")}</SelectItem>
+              <SelectItem value="intermediate">{t("Intermediate")}</SelectItem>
+              <SelectItem value="experienced">{t("Experienced")}</SelectItem>
+              <SelectItem value="senior">{t("Senior")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
