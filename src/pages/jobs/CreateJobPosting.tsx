@@ -6,12 +6,14 @@ import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
 import { JobForm } from "@/components/posting/job/JobForm";
 import { JobFormValues } from "@/components/posting/job/jobFormSchema";
-import EnhancedJobForm from "@/components/posting/job/EnhancedJobForm";
+import PostWizardLayout from "@/components/posting/PostWizardLayout";
+import { useJobPosting } from "@/hooks/jobs/useJobPosting";
 
 const CreateJobPosting: React.FC = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const { handleJobPost } = useJobPosting();
   
   const handleSubmit = async (values: JobFormValues) => {
     setIsSubmitting(true);
@@ -21,14 +23,25 @@ const CreateJobPosting: React.FC = () => {
       console.log('Submitting job posting:', values);
       console.log('Photo uploads:', photoUploads);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Create job post
+      const jobData = {
+        ...values,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      };
       
-      // Show success message
-      toast.success("Job posting created successfully!");
+      // Call the job posting service
+      const success = await handleJobPost(jobData);
       
-      // Navigate to next step (pricing or preview)
-      navigate("/jobs/pricing");
+      if (success) {
+        // Show success message
+        toast.success("Job posting created successfully!");
+        
+        // Navigate to next step (pricing or preview)
+        navigate("/jobs/pricing");
+      } else {
+        throw new Error("Failed to create job posting");
+      }
     } catch (error) {
       console.error('Error creating job posting:', error);
       toast.error("There was an error creating your job posting. Please try again.");
@@ -47,14 +60,14 @@ const CreateJobPosting: React.FC = () => {
         />
       </Helmet>
       
-      <div className="container max-w-4xl mx-auto px-4 py-8 md:py-12">
+      <PostWizardLayout>
         <JobForm 
           onSubmit={handleSubmit}
           photoUploads={photoUploads}
           setPhotoUploads={setPhotoUploads}
           isSubmitting={isSubmitting}
         />
-      </div>
+      </PostWizardLayout>
     </Layout>
   );
 };
