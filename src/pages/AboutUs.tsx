@@ -1,147 +1,133 @@
 
 import React from 'react';
-import { 
-  Lightbulb, 
-  Rocket, 
-  BookOpen, 
-  Sparkles, 
-  MapPin 
-} from 'lucide-react';
-import Logo from '@/components/ui/Logo';
-import { Card } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Lightbulb, Clock, BookOpen, Sparkles, Compass } from 'lucide-react';
+import EmviLogo from '@/components/branding/EmviLogo';
 
-const AboutUs: React.FC = () => {
+const AboutUs = () => {
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="w-full max-w-7xl mx-auto px-4 py-16">
       {/* Hero Section */}
-      <div className="flex flex-col items-center justify-center mb-16 text-center">
-        <div className="mb-8">
-          <Logo showText size="large" />
+      <motion.section 
+        className="text-center mb-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="flex justify-center mb-8">
+          <EmviLogo size="xlarge" />
         </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-playfair mb-6 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+        
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6">
           Our Story. Our Journey. Our Purpose.
         </h1>
-        <p className="text-xl text-gray-700 max-w-3xl">
+        
+        <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
           Discover the heart behind EmviApp—a platform built by beauty professionals, for beauty professionals and customers.
         </p>
-      </div>
-
+      </motion.section>
+      
       {/* Timeline Section */}
-      <div className="max-w-4xl mx-auto mb-16 relative">
-        <h2 className="text-3xl font-playfair font-semibold mb-12 text-center">Our Journey</h2>
+      <section className="mb-20 relative">
+        <h2 className="text-2xl md:text-3xl font-serif text-center mb-12">Our Journey</h2>
         
-        {/* Vertical line */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-purple-600 via-indigo-500 to-blue-500 rounded-full"></div>
+        {/* Timeline line */}
+        <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-1 md:transform md:-translate-x-1/2 bg-gradient-to-b from-purple-300 via-purple-500 to-pink-500"></div>
         
-        {/* Timeline Items */}
-        <div className="space-y-24 relative">
+        {/* Timeline items */}
+        <div className="space-y-12 relative">
           {/* 2014: The Idea */}
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 md:pr-12 md:text-right mb-8 md:mb-0">
-              <h3 className="text-2xl font-playfair font-semibold mb-2">2014: The Idea</h3>
-              <p className="text-gray-700">A spark of inspiration from 25 years in beauty.</p>
-            </div>
-            <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg">
-                <Lightbulb size={24} />
-              </div>
-            </div>
-            <div className="md:w-1/2 md:pl-12">
-              <Card className="p-6 backdrop-blur-sm bg-white/80 border border-gray-100 shadow-xl rounded-xl">
-                <p className="text-gray-700">
-                  Our journey began with a simple observation: there was a disconnect in the beauty industry. 
-                  With 25 years of experience, we recognized that something essential was missing.
-                </p>
-              </Card>
-            </div>
-          </div>
+          <TimelineItem 
+            year="2014"
+            title="The Idea"
+            description="A spark of inspiration from 25 years in beauty."
+            icon={<Lightbulb className="w-6 h-6 text-purple-500" />}
+            position="right"
+          />
           
           {/* 2015: First Attempt */}
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 md:pr-12 md:text-right mb-8 md:mb-0 md:order-1 md:-order-1">
-              <Card className="p-6 backdrop-blur-sm bg-white/80 border border-gray-100 shadow-xl rounded-xl">
-                <p className="text-gray-700">
-                  We launched our first app with high hopes. Despite investing years and all our resources, 
-                  we learned that building the right solution would take more than we initially thought.
-                </p>
-              </Card>
-            </div>
-            <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg">
-                <Rocket size={24} />
-              </div>
-            </div>
-            <div className="md:w-1/2 md:pl-12 md:order-2">
-              <h3 className="text-2xl font-playfair font-semibold mb-2">2015: First Attempt</h3>
-              <p className="text-gray-700">Our first app was born; we spent years and all our resources, but still fell short.</p>
-            </div>
-          </div>
+          <TimelineItem 
+            year="2015"
+            title="First Attempt"
+            description="Our first app was born; we spent years and all our resources, but still fell short."
+            icon={<Clock className="w-6 h-6 text-purple-500" />}
+            position="left"
+          />
           
           {/* 2015–2023: Lessons & Perseverance */}
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 md:pr-12 md:text-right mb-8 md:mb-0">
-              <h3 className="text-2xl font-playfair font-semibold mb-2">2015–2023: Lessons & Perseverance</h3>
-              <p className="text-gray-700">Eight years of hard work, setbacks, but never giving up.</p>
-            </div>
-            <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg">
-                <BookOpen size={24} />
-              </div>
-            </div>
-            <div className="md:w-1/2 md:pl-12">
-              <Card className="p-6 backdrop-blur-sm bg-white/80 border border-gray-100 shadow-xl rounded-xl">
-                <p className="text-gray-700">
-                  These years were filled with learning, adjusting, and never losing sight of our vision. 
-                  Every setback taught us something valuable about what the beauty industry truly needed.
-                </p>
-              </Card>
-            </div>
-          </div>
+          <TimelineItem 
+            year="2015–2023"
+            title="Lessons & Perseverance"
+            description="Eight years of hard work, setbacks, but never giving up."
+            icon={<BookOpen className="w-6 h-6 text-purple-500" />}
+            position="right"
+          />
           
           {/* 2024: Rebirth */}
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 md:pr-12 md:text-right mb-8 md:mb-0 md:order-1 md:-order-1">
-              <Card className="p-6 backdrop-blur-sm bg-white/80 border border-gray-100 shadow-xl rounded-xl">
-                <p className="text-gray-700">
-                  With renewed vision and inspiration, EmviApp was reborn. We approached the problem with 
-                  fresh eyes and a deeper understanding of the industry's needs.
-                </p>
-              </Card>
-            </div>
-            <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg">
-                <Sparkles size={24} />
-              </div>
-            </div>
-            <div className="md:w-1/2 md:pl-12 md:order-2">
-              <h3 className="text-2xl font-playfair font-semibold mb-2">2024: Rebirth</h3>
-              <p className="text-gray-700">With new vision and the help of Sunshine, EmviApp is reborn.</p>
-            </div>
-          </div>
+          <TimelineItem 
+            year="2024"
+            title="Rebirth"
+            description="With new vision and the help of Sunshine, EmviApp is reborn."
+            icon={<Sparkles className="w-6 h-6 text-purple-500" />}
+            position="left"
+          />
           
           {/* Now: Our Journey Continues */}
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 md:pr-12 md:text-right mb-8 md:mb-0">
-              <h3 className="text-2xl font-playfair font-semibold mb-2">Now: Our Journey Continues</h3>
-              <p className="text-gray-700">We build bridges between artists, salons, and clients—so no one is ever lost again.</p>
-            </div>
-            <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg">
-                <MapPin size={24} />
-              </div>
-            </div>
-            <div className="md:w-1/2 md:pl-12">
-              <Card className="p-6 backdrop-blur-sm bg-white/80 border border-gray-100 shadow-xl rounded-xl">
-                <p className="text-gray-700">
-                  Today, we're committed to building the ultimate connection platform for the beauty industry. 
-                  Every feature is designed to ensure nobody feels lost or disconnected again.
-                </p>
-              </Card>
-            </div>
-          </div>
+          <TimelineItem 
+            year="Now"
+            title="Our Journey Continues"
+            description="We build bridges between artists, salons, and clients—so no one is ever lost again."
+            icon={<Compass className="w-6 h-6 text-purple-500" />}
+            position="right"
+          />
+        </div>
+      </section>
+    </div>
+  );
+};
+
+// Timeline Item Component
+interface TimelineItemProps {
+  year: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  position: 'left' | 'right';
+}
+
+const TimelineItem = ({ year, title, description, icon, position }: TimelineItemProps) => {
+  const isRight = position === 'right';
+  
+  return (
+    <motion.div 
+      className={`flex items-start ${isRight ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col`}
+      initial={{ opacity: 0, x: isRight ? 50 : -50 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5 }}
+      viewport={{ once: true, margin: "-100px" }}
+    >
+      {/* Content */}
+      <div className={`md:w-1/2 w-full ${isRight ? 'md:pr-12 md:text-right' : 'md:pl-12'} mb-6 md:mb-0`}>
+        <div className="bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <span className="text-sm font-medium text-purple-600 block mb-2">{year}</span>
+          <h3 className="text-xl font-serif font-semibold mb-2">{title}</h3>
+          <p className="text-gray-700">{description}</p>
         </div>
       </div>
-    </div>
+      
+      {/* Icon - Mobile: Hidden, Desktop: Shown in center */}
+      <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center justify-center w-12 h-12 rounded-full bg-white shadow-md border border-gray-200">
+        {icon}
+      </div>
+      
+      {/* Icon - Mobile: Shown to left, Desktop: Hidden */}
+      <div className="flex md:hidden absolute left-0 transform -translate-x-1/2 items-center justify-center w-8 h-8 rounded-full bg-white shadow-md border border-gray-200">
+        {icon}
+      </div>
+      
+      {/* Empty div for spacing on other side */}
+      <div className="md:w-1/2 hidden md:block"></div>
+    </motion.div>
   );
 };
 
