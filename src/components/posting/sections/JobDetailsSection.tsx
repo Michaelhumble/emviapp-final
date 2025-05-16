@@ -92,13 +92,13 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
           </div>
           
           <div className="grid gap-2">
-            <Label htmlFor="postal-code">
+            <Label htmlFor="zip-code">
               {t("ZIP/Postal Code")}
             </Label>
             <Input 
-              id="postal-code"
-              value={details.postal_code || ''}
-              onChange={(e) => onChange({ ...details, postal_code: e.target.value })}
+              id="zip-code"
+              value={details.zip_code || ''}
+              onChange={(e) => onChange({ ...details, zip_code: e.target.value })}
               placeholder={t("e.g. 90210")}
             />
           </div>
