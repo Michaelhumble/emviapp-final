@@ -1,12 +1,11 @@
 
 import React, { useState } from 'react';
-import { JobForm } from './JobForm';
+import JobForm from './JobForm';
 import { JobFormValues } from './jobFormSchema';
-import { Separator } from '@/components/ui/separator';
 import PostHeader from '../PostHeader';
 import MotivationalFooter from '../MotivationalFooter';
 import UpsellSidebar from '../upsell/UpsellSidebar';
-import { useAuth } from '@/context/auth'; // Add auth context import
+import { useAuth } from '@/context/auth';
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -23,9 +22,9 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   setPhotoUploads, 
   isSubmitting,
   defaultValues,
-  industry = "nails" // Default to nails
+  industry = "nails"
 }) => {
-  const { userProfile } = useAuth(); // Get user profile with contact details
+  const { userProfile } = useAuth();
   
   return (
     <div className="space-y-8">
@@ -44,7 +43,7 @@ export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
               isSubmitting={isSubmitting}
               defaultValues={defaultValues}
               industry={industry}
-              userProfile={userProfile} // Pass the user profile with contact info
+              userProfile={userProfile}
             />
           </div>
         </div>

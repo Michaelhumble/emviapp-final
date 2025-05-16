@@ -1,21 +1,20 @@
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
+import React from 'react';
+import { useForm, FormProvider, Controller, useFormContext } from 'react-hook-form';
 import { jobFormSchema, JobFormValues } from './jobFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ArrowRight, ImagePlus } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { 
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
 import { UserProfile } from '@/context/auth/types';
 
 interface JobFormProps {
@@ -34,8 +33,8 @@ export const JobForm: React.FC<JobFormProps> = ({
   setPhotoUploads,
   isSubmitting,
   defaultValues,
-  industry = 'nails',
-  userProfile,
+  industry = "nails",
+  userProfile
 }) => {
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
@@ -45,33 +44,24 @@ export const JobForm: React.FC<JobFormProps> = ({
       location: '',
       salary: '',
       contactEmail: userProfile?.email || '',
-      phoneNumber: userProfile?.phone_number || '',
+      phoneNumber: userProfile?.phoneNumber || '',
       jobType: 'full-time',
       requirements: [],
-      jobSummary: '',
+      jobSummary: ''
     },
   });
 
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const newFiles = Array.from(event.target.files);
-      setPhotoUploads([...photoUploads, ...newFiles]);
-    }
-  };
-
-  const removePhoto = (index: number) => {
-    const newUploads = [...photoUploads];
-    newUploads.splice(index, 1);
-    setPhotoUploads(newUploads);
+  const handleFormSubmit = (data: JobFormValues) => {
+    onSubmit(data);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-6 py-8">
-        <div className="space-y-8">
-          {/* Job Title Section */}
+    <FormProvider {...form}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6 p-6">
+          {/* Basic Job Information Section */}
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-800">Job Details</h2>
+            <h2 className="text-xl font-semibold">Basic Job Information</h2>
             
             <FormField
               control={form.control}
@@ -80,78 +70,57 @@ export const JobForm: React.FC<JobFormProps> = ({
                 <FormItem>
                   <FormLabel>Job Title</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="E.g., Nail Technician, Hair Stylist, etc."
-                      {...field}
-                    />
+                    <Input placeholder="e.g. Nail Technician needed" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="jobType"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Job Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select job type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="full-time">Full-time</SelectItem>
-                      <SelectItem value="part-time">Part-time</SelectItem>
-                      <SelectItem value="contract">Contract</SelectItem>
-                      <SelectItem value="temporary">Temporary</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <select 
+                      className="w-full p-2 border rounded-md" 
+                      {...field}
+                    >
+                      <option value="full-time">Full-time</option>
+                      <option value="part-time">Part-time</option>
+                      <option value="contract">Contract</option>
+                      <option value="temporary">Temporary</option>
+                    </select>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-
-          {/* Location Section */}
-          <div className="space-y-4 pt-6 border-t border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-800">Job Location</h2>
             
             <FormField
               control={form.control}
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Salon Address</FormLabel>
+                  <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter the salon address" {...field} />
+                    <Input placeholder="City, State" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-
-          {/* Compensation Section */}
-          <div className="space-y-4 pt-6 border-t border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-800">Compensation</h2>
             
             <FormField
               control={form.control}
               name="salary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Salary or Hourly Rate</FormLabel>
+                  <FormLabel>Compensation (Optional)</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="E.g., $20-25/hr, $50K-65K/year, etc."
-                      {...field}
-                    />
+                    <Input placeholder="e.g. $20-25/hour or $60K-70K/year" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,22 +128,18 @@ export const JobForm: React.FC<JobFormProps> = ({
             />
           </div>
 
-          {/* Job Description Section */}
-          <div className="space-y-4 pt-6 border-t border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-800">Job Description</h2>
+          {/* Job Details Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Job Details</h2>
             
             <FormField
               control={form.control}
               name="jobSummary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Job Summary</FormLabel>
+                  <FormLabel>Job Summary (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Write a short summary of the position"
-                      className="min-h-[80px]"
-                      {...field}
-                    />
+                    <Input placeholder="Brief summary of the position" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,12 +151,12 @@ export const JobForm: React.FC<JobFormProps> = ({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Detailed Description</FormLabel>
+                  <FormLabel>Job Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Describe the role, responsibilities, and ideal candidate"
-                      className="min-h-[150px]"
-                      {...field}
+                    <Textarea 
+                      placeholder="Describe the job responsibilities and requirements"
+                      className="min-h-[120px]"
+                      {...field} 
                     />
                   </FormControl>
                   <FormMessage />
@@ -201,9 +166,8 @@ export const JobForm: React.FC<JobFormProps> = ({
           </div>
 
           {/* Contact Information Section */}
-          <div className="space-y-4 p-6 bg-blue-50 rounded-lg border border-blue-100 mt-8">
-            <h2 className="text-xl font-semibold text-gray-800">Contact Information</h2>
-            <p className="text-sm text-gray-600">This is how applicants will reach you.</p>
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Contact Information</h2>
             
             <FormField
               control={form.control}
@@ -212,7 +176,7 @@ export const JobForm: React.FC<JobFormProps> = ({
                 <FormItem>
                   <FormLabel>Contact Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter contact email" {...field} />
+                    <Input type="email" placeholder="contact@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -224,9 +188,9 @@ export const JobForm: React.FC<JobFormProps> = ({
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number (optional)</FormLabel>
+                  <FormLabel>Phone Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter phone number" {...field} />
+                    <Input placeholder="(123) 456-7890" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -234,96 +198,60 @@ export const JobForm: React.FC<JobFormProps> = ({
             />
           </div>
 
-          {/* Photo Upload Section */}
-          <div className="space-y-4 p-6 bg-gray-50 rounded-lg border border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-800">Upload Photos</h2>
-            <p className="text-sm text-gray-600">
-              Add photos of your salon to attract the best candidates.
+          {/* Photo Upload Section - Placeholder */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Upload Photos (Optional)</h2>
+            <p className="text-sm text-gray-500">
+              Add photos of your salon or workplace to attract more applicants.
             </p>
-            
-            <div className="mt-2">
-              <Label htmlFor="photos" className="block text-sm font-medium text-gray-700">
-                Photo Upload (Max 5)
-              </Label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                <div className="space-y-1 text-center">
-                  <ImagePlus className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                    >
-                      <span>Upload files</span>
-                      <input
-                        id="file-upload"
-                        name="file-upload"
-                        type="file"
-                        className="sr-only"
-                        accept="image/*"
-                        multiple
-                        onChange={handlePhotoChange}
-                        disabled={photoUploads.length >= 5}
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                </div>
-              </div>
+
+            <div className="border-2 border-dashed rounded-lg p-6 text-center bg-gray-50">
+              <p className="text-sm text-gray-500">
+                Drop your images here or click to browse
+              </p>
+              <input 
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  if (e.target.files) {
+                    setPhotoUploads(Array.from(e.target.files));
+                  }
+                }}
+                className="mt-2"
+              />
             </div>
 
             {photoUploads.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium text-gray-700">Uploaded Photos</h3>
-                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+              <div>
+                <h3 className="font-medium text-sm mb-2">Uploaded Photos: {photoUploads.length}</h3>
+                <div className="flex gap-2 flex-wrap">
                   {photoUploads.map((file, index) => (
-                    <div key={index} className="relative group">
-                      <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg bg-gray-100">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Upload ${index + 1}`}
-                          className="object-cover"
-                        />
+                    <div key={index} className="relative">
+                      <div className="border rounded-md p-2">
+                        {file.name}
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(index)}
-                        className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <span className="sr-only">Remove</span>
-                        <svg
-                          className="h-4 w-4 text-red-500"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
           </div>
-        </div>
 
-        <div className="pt-8 border-t border-gray-200">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full"
-          >
-            {isSubmitting ? 'Submitting...' : 'Continue to Review'}
-            {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          {/* Submit Button */}
+          <div className="flex justify-end">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="px-6"
+            >
+              {isSubmitting ? 'Submitting...' : 'Continue to Pricing'}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </FormProvider>
   );
 };
+
+export default JobForm;
