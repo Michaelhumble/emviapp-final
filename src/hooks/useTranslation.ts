@@ -32,23 +32,17 @@ export function useTranslation() {
     setIsVietnamese(!isVietnamese);
   }, [isVietnamese]);
   
-  // Updated translation function to handle both object and string arguments
+  // Updated translation function to handle various formats of arguments
   const t = useCallback((
-    englishOrTranslation: string | Translation,
-    vietnameseText?: string
+    textOrTranslation: string | Translation | { english: string; vietnamese: string }
   ): string => {
     // Handle case when called with Translation object
-    if (typeof englishOrTranslation === 'object' && englishOrTranslation !== null) {
-      return isVietnamese ? englishOrTranslation.vietnamese : englishOrTranslation.english;
+    if (typeof textOrTranslation === 'object' && textOrTranslation !== null) {
+      return isVietnamese ? textOrTranslation.vietnamese : textOrTranslation.english;
     }
     
-    // Handle case when called with separate strings
-    if (typeof englishOrTranslation === 'string' && typeof vietnameseText === 'string') {
-      return isVietnamese ? vietnameseText : englishOrTranslation;
-    }
-    
-    // Fallback: return the first argument as is
-    return typeof englishOrTranslation === 'string' ? englishOrTranslation : '';
+    // Default case: string input returns as is
+    return typeof textOrTranslation === 'string' ? textOrTranslation : '';
   }, [isVietnamese]);
   
   return { isVietnamese, toggleLanguage, t };

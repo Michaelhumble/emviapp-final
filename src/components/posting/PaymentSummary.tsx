@@ -37,8 +37,15 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
       <CardContent className="p-4 space-y-4">
         <h3 className="font-semibold text-lg">
           {isFreePlan 
-            ? t('Free Listing Summary', 'Tóm tắt đăng tin miễn phí') 
-            : t('Payment Summary', 'Tóm tắt thanh toán')}
+            ? t({
+                english: "Free Listing Summary",
+                vietnamese: "Tóm tắt đăng tin miễn phí"
+              })
+            : t({
+                english: "Payment Summary",
+                vietnamese: "Tóm tắt thanh toán"
+              })
+          }
         </h3>
         
         {isFreePlan ? (
@@ -46,16 +53,28 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
               <div>
-                <p className="font-medium">{t('Free listing valid for 30 days', 'Đăng tin miễn phí có hiệu lực trong 30 ngày')}</p>
-                <p className="text-sm text-gray-600">{t('Expires', 'Hết hạn')}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
+                <p className="font-medium">{t({
+                  english: "Free listing valid for 30 days",
+                  vietnamese: "Đăng tin miễn phí có hiệu lực trong 30 ngày"
+                })}</p>
+                <p className="text-sm text-gray-600">{t({
+                  english: "Expires",
+                  vietnamese: "Hết hạn"
+                })}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
               </div>
             </div>
             
             <div className="flex items-start">
               <Shield className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
               <div>
-                <p className="font-medium">{t('Limited visibility', 'Hiển thị hạn chế')}</p>
-                <p className="text-sm text-gray-600">{t('Standard placement in listings', 'Vị trí tiêu chuẩn trong danh sách')}</p>
+                <p className="font-medium">{t({
+                  english: "Limited visibility",
+                  vietnamese: "Hiển thị hạn chế"
+                })}</p>
+                <p className="text-sm text-gray-600">{t({
+                  english: "Standard placement in listings",
+                  vietnamese: "Vị trí tiêu chuẩn trong danh sách"
+                })}</p>
               </div>
             </div>
           </div>
@@ -66,11 +85,21 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               <div>
                 <p className="font-medium">
                   {duration === 1 
-                    ? t('1 month listing', '1 tháng đăng tin')
-                    : t(`${duration} months listing`, `${duration} tháng đăng tin`)}
+                    ? t({
+                        english: "1 month listing",
+                        vietnamese: "1 tháng đăng tin"
+                      })
+                    : t({
+                        english: `${duration} months listing`,
+                        vietnamese: `${duration} tháng đăng tin`
+                      })
+                  }
                 </p>
                 <p className="text-sm text-gray-600">
-                  {t('Expires on', 'Hết hạn vào')}: {format(expiryDate, 'MMMM d, yyyy')}
+                  {t({
+                    english: "Expires on",
+                    vietnamese: "Hết hạn vào"
+                  })}: {format(expiryDate, 'MMMM d, yyyy')}
                 </p>
               </div>
             </div>
@@ -79,12 +108,15 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               <div className="flex items-start">
                 <RefreshCw className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
                 <div>
-                  <p className="font-medium">{t('Auto-renewal enabled', 'Tự động gia hạn được bật')}</p>
+                  <p className="font-medium">{t({
+                    english: "Auto-renewal enabled",
+                    vietnamese: "Tự động gia hạn được bật"
+                  })}</p>
                   <p className="text-sm text-gray-600">
-                    {t(
-                      'Your subscription will automatically renew on', 
-                      'Đăng ký của bạn sẽ tự động gia hạn vào'
-                    )}: {format(expiryDate, 'MMMM d, yyyy')}
+                    {t({
+                      english: "Your subscription will automatically renew on", 
+                      vietnamese: "Đăng ký của bạn sẽ tự động gia hạn vào"
+                    })}: {format(expiryDate, 'MMMM d, yyyy')}
                   </p>
                 </div>
               </div>
@@ -92,19 +124,28 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             
             <div className="border-t border-gray-200 pt-3 space-y-1">
               <div className="flex justify-between">
-                <span className="text-gray-600">{t('Original price', 'Giá gốc')}:</span>
+                <span className="text-gray-600">{t({
+                  english: "Original price",
+                  vietnamese: "Giá gốc"
+                })}:</span>
                 <span className="text-gray-600">${originalPrice.toFixed(2)}</span>
               </div>
               
               {discountPercentage > 0 && (
                 <div className="flex justify-between text-green-600">
-                  <span>{t('Discount', 'Giảm giá')} ({discountPercentage}%):</span>
+                  <span>{t({
+                    english: "Discount",
+                    vietnamese: "Giảm giá"
+                  })} ({discountPercentage}%):</span>
                   <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
                 </div>
               )}
               
               <div className="flex justify-between font-semibold text-lg">
-                <span>{t('Total', 'Tổng cộng')}:</span>
+                <span>{t({
+                  english: "Total",
+                  vietnamese: "Tổng cộng"
+                })}:</span>
                 <span>${finalPrice.toFixed(2)}</span>
               </div>
             </div>
@@ -117,12 +158,25 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-            <span>{isFreePlan ? t('Submitting...', 'Đang gửi...') : t('Processing...', 'Đang xử lý...')}</span>
+            <span>{isFreePlan ? t({
+              english: "Submitting...",
+              vietnamese: "Đang gửi..."
+            }) : t({
+              english: "Processing...",
+              vietnamese: "Đang xử lý..."
+            })}</span>
           ) : (
             <>
               {isFreePlan 
-                ? t('Complete Free Listing', 'Hoàn tất đăng tin miễn phí')
-                : t('Proceed to Payment', 'Tiến hành thanh toán')}
+                ? t({
+                    english: "Complete Free Listing",
+                    vietnamese: "Hoàn tất đăng tin miễn phí"
+                  })
+                : t({
+                    english: "Proceed to Payment",
+                    vietnamese: "Tiến hành thanh toán"
+                  })
+              }
               <ArrowRight className="ml-2 h-4 w-4" />
             </>
           )}

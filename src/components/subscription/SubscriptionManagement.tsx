@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/context/subscription";
@@ -11,11 +10,24 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAutoRenew } from "@/hooks/payments/useAutoRenew";
 
-const SubscriptionManagement = () => {
+const SubscriptionManagement = ({ /* ... existing props ... */ }) => {
+  const { t } = useTranslation();
+  
+  // Example changes for translation function calls
+  const currentPlanText = t({
+    english: "Current Plan",
+    vietnamese: "Gói hiện tại"
+  });
+  
+  const autoRenewText = t({
+    english: "Auto-renew",
+    vietnamese: "Tự động gia hạn"
+  });
+  
   const { currentPlan, hasActiveSubscription, cancelSubscription, refreshSubscriptionStatus } = useSubscription();
   const navigate = useNavigate();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const { t, isVietnamese } = useTranslation();
+  const { isVietnamese } = useTranslation();
   const { toggleAutoRenew, isUpdating } = useAutoRenew();
   
   // We'll use this state to track any active stripe payment ID from the current plan

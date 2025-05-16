@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { JobFormValues } from './jobFormSchema';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
@@ -15,6 +16,9 @@ export const JobForm: React.FC<JobFormProps> = ({
   setPhotoUploads, 
   isSubmitting 
 }) => {
+  // Add translation hook
+  const { t } = useTranslation();
+  
   // This is just a placeholder implementation
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,20 +42,32 @@ export const JobForm: React.FC<JobFormProps> = ({
       {/* Form fields would go here */}
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Job Title</label>
+          <label className="block text-sm font-medium text-gray-700">{t({
+            english: "Job Title",
+            vietnamese: "Tiêu đề công việc"
+          })}</label>
           <input 
             type="text" 
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            placeholder="Enter job title"
+            placeholder={t({
+              english: "Enter job title",
+              vietnamese: "Nhập tiêu đề công việc"
+            })}
             disabled={isSubmitting}
           />
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-gray-700">{t({
+            english: "Description",
+            vietnamese: "Mô tả"
+          })}</label>
           <textarea 
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            placeholder="Enter job description"
+            placeholder={t({
+              english: "Enter job description",
+              vietnamese: "Nhập mô tả công việc"
+            })}
             rows={4}
             disabled={isSubmitting}
           />
@@ -62,7 +78,13 @@ export const JobForm: React.FC<JobFormProps> = ({
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : "Submit Job Posting"}
+          {isSubmitting ? t({
+            english: "Submitting...",
+            vietnamese: "Đang gửi..."
+          }) : t({
+            english: "Submit Job Posting",
+            vietnamese: "Gửi tin tuyển dụng"
+          })}
         </button>
       </div>
     </form>

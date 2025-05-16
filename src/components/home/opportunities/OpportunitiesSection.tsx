@@ -10,12 +10,16 @@ import { Building } from 'lucide-react';
 import ValidatedLink from '@/components/common/ValidatedLink';
 
 interface OpportunitiesSectionProps {
-  diverseListings: Job[];
+  jobs?: Job[];
+  diverseListings?: Job[]; // Added to support both property names
 }
 
-const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) => {
+const OpportunitiesSection = ({ jobs, diverseListings }: OpportunitiesSectionProps) => {
+  // Use either jobs or diverseListings, prefer jobs if both are provided
+  const listings = jobs || diverseListings || [];
+  
   // Enhanced validation to ensure we only show valid listings with necessary data
-  const validListings = diverseListings.filter(listing => 
+  const validListings = listings.filter(listing => 
     listing && 
     listing.id && 
     (listing.title || listing.company) &&
@@ -30,8 +34,8 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
   );
   
   // Log any issues with listings for debugging
-  if (validListings.length < diverseListings.length) {
-    console.log(`⚠️ Filtered out ${diverseListings.length - validListings.length} invalid listings from Opportunities section`);
+  if (validListings.length < listings.length) {
+    console.log(`⚠️ Filtered out ${listings.length - validListings.length} invalid listings from Opportunities section`);
   }
 
   return (

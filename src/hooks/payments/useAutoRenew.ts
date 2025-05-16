@@ -22,8 +22,14 @@ export const useAutoRenew = () => {
         // Show success message
         toast.success(
           enableAutoRenew 
-            ? t("Auto-Renew enabled successfully", "Đã bật chức năng Tự động Gia hạn") 
-            : t("Auto-Renew turned off successfully", "Đã tắt chức năng Tự động Gia hạn")
+            ? t({
+                english: "Auto-Renew enabled successfully",
+                vietnamese: "Đã bật chức năng Tự động Gia hạn"
+              }) 
+            : t({
+                english: "Auto-Renew turned off successfully",
+                vietnamese: "Đã tắt chức năng Tự động Gia hạn"
+              })
         );
         return data.autoRenewEnabled;
       } else {
@@ -31,10 +37,10 @@ export const useAutoRenew = () => {
       }
     } catch (error) {
       console.error('Error toggling auto renew:', error);
-      toast.error(t(
-        "Failed to update auto-renew setting", 
-        "Không thể cập nhật chức năng tự động gia hạn"
-      ), {
+      toast.error(t({
+        english: "Failed to update auto-renew setting",
+        vietnamese: "Không thể cập nhật chức năng tự động gia hạn"
+      }), {
         description: isVietnamese ? "Vui lòng thử lại sau." : "Please try again later."
       });
       return null;

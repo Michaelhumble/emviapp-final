@@ -1,542 +1,742 @@
-
-import { Job } from "@/types/job";
-
-// Helper function to generate random date within the last 30 days
-const getRecentDate = (daysBack = 30) => {
-  const date = new Date();
-  date.setDate(date.getDate() - Math.floor(Math.random() * daysBack));
-  return date.toISOString();
-};
-
-// Helper function to get a random future date for expiration
-const getFutureDate = (daysAhead = 30) => {
-  const date = new Date();
-  date.setDate(date.getDate() + Math.floor(Math.random() * daysAhead) + 10);
-  return date.toISOString();
-};
-
-// Generate boosted until date (some will be boosted, some not)
-const getBoostedDate = () => {
-  if (Math.random() > 0.7) {
-    const date = new Date();
-    date.setDate(date.getDate() + Math.floor(Math.random() * 15) + 5);
-    return date.toISOString();
+export const mockPremiumSalons = [
+  {
+    id: "1",
+    title: "Luxury Nail Spa for Sale",
+    description: "Established nail salon with loyal clientele in upscale shopping center. 8 manicure stations, 6 pedicure chairs, all equipment included. Owner retiring after 15 years.",
+    vietnameseDescription: "Tiệm nail sang trọng đã hoạt động lâu năm với khách hàng thân thiết trong trung tâm mua sắm cao cấp. 8 bàn làm móng tay, 6 ghế làm móng chân, bao gồm tất cả thiết bị. Chủ nghỉ hưu sau 15 năm.",
+    location: {
+      city: "San Jose",
+      state: "CA",
+      zipCode: "95123"
+    },
+    contact: {
+      name: "Linda Tran",
+      phone: "(408) 555-1234",
+      email: "linda@example.com"
+    },
+    price: 120000,
+    monthlyRent: 3500,
+    size: 1800,
+    chairs: 14,
+    established: 2008,
+    reason: "Retirement",
+    images: [
+      "https://images.unsplash.com/photo-1522337660859-02fbefca4702",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250",
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9"
+    ],
+    features: ["Parking", "High Traffic", "Established Clientele", "All Equipment Included"],
+    category: "nail",
+    createdAt: "2023-09-15T14:30:00Z",
+    expiresAt: "2023-12-15T14:30:00Z",
+    status: "active",
+    premium: true,
+    views: 342,
+    saves: 28
+  },
+  {
+    id: "2",
+    title: "Profitable Hair Salon - Prime Location",
+    description: "Turnkey hair salon in downtown area with high foot traffic. 6 styling stations, 3 shampoo bowls, break room and office. Established for 7 years with strong repeat business.",
+    vietnameseDescription: "Tiệm tóc có lợi nhuận cao ở vị trí đắc địa trong khu trung tâm với lưu lượng người qua lại cao. 6 trạm cắt tóc, 3 bồn gội đầu, phòng nghỉ và văn phòng. Đã hoạt động 7 năm với nhiều khách hàng thường xuyên.",
+    location: {
+      city: "Houston",
+      state: "TX",
+      zipCode: "77002"
+    },
+    contact: {
+      name: "Michael Johnson",
+      phone: "(713) 555-6789",
+      email: "michael@example.com"
+    },
+    price: 95000,
+    monthlyRent: 2800,
+    size: 1500,
+    chairs: 6,
+    established: 2016,
+    reason: "Relocating",
+    images: [
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035",
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f",
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df"
+    ],
+    features: ["Prime Location", "Fully Equipped", "Loyal Clientele", "Modern Design"],
+    category: "hair",
+    createdAt: "2023-09-20T10:15:00Z",
+    expiresAt: "2023-12-20T10:15:00Z",
+    status: "active",
+    premium: true,
+    views: 289,
+    saves: 19
+  },
+  {
+    id: "3",
+    title: "Established Nail Salon with Housing",
+    description: "Successful nail salon with attached 2-bedroom apartment. Perfect owner-operator opportunity. 5 manicure tables, 4 pedicure chairs, waxing room. Consistent monthly income.",
+    vietnameseDescription: "Tiệm nail thành công với căn hộ 2 phòng ngủ đính kèm. Cơ hội tuyệt vời cho chủ sở hữu kiêm vận hành. 5 bàn làm móng tay, 4 ghế làm móng chân, phòng wax. Thu nhập hàng tháng ổn định.",
+    location: {
+      city: "Orlando",
+      state: "FL",
+      zipCode: "32801"
+    },
+    contact: {
+      name: "Kim Nguyen",
+      phone: "(407) 555-3456",
+      email: "kim@example.com"
+    },
+    price: 180000,
+    monthlyRent: 3200,
+    size: 2200,
+    chairs: 9,
+    established: 2014,
+    reason: "Family Reasons",
+    images: [
+      "https://images.unsplash.com/photo-1610991149688-c1321006bcc1",
+      "https://images.unsplash.com/photo-1632345031435-8727f6897d53",
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9"
+    ],
+    features: ["Housing Included", "Waxing Room", "Established 8+ Years", "Seller Financing Available"],
+    category: "nail",
+    createdAt: "2023-09-18T16:45:00Z",
+    expiresAt: "2023-12-18T16:45:00Z",
+    status: "active",
+    premium: true,
+    views: 412,
+    saves: 37,
+    hasHousing: true
+  },
+  {
+    id: "4",
+    title: "High-End Beauty Salon & Spa",
+    description: "Luxurious full-service salon and spa in affluent neighborhood. Hair, nails, facials, massage. 10 stations total. High-end clientele, premium pricing. Excellent reputation.",
+    vietnameseDescription: "Tiệm làm đẹp và spa cao cấp trong khu phố giàu có. Tóc, móng, chăm sóc da, massage. Tổng cộng 10 trạm. Khách hàng cao cấp, giá cao. Danh tiếng xuất sắc.",
+    location: {
+      city: "Scottsdale",
+      state: "AZ",
+      zipCode: "85251"
+    },
+    contact: {
+      name: "Jennifer Smith",
+      phone: "(480) 555-7890",
+      email: "jennifer@example.com"
+    },
+    price: 275000,
+    monthlyRent: 4800,
+    size: 2800,
+    chairs: 10,
+    established: 2012,
+    reason: "New Business Venture",
+    images: [
+      "https://images.unsplash.com/photo-1470259078422-826894b933aa",
+      "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250"
+    ],
+    features: ["Upscale Location", "Full Service", "High Profit Margin", "Established Brand"],
+    category: "beauty",
+    createdAt: "2023-09-10T09:20:00Z",
+    expiresAt: "2023-12-10T09:20:00Z",
+    status: "active",
+    premium: true,
+    views: 378,
+    saves: 42
+  },
+  {
+    id: "5",
+    title: "Turnkey Barbershop - Great Location",
+    description: "Modern barbershop with loyal clientele. 5 stations fully equipped. Located near business district with high foot traffic. Established 5 years with strong social media presence.",
+    vietnameseDescription: "Tiệm cắt tóc nam hiện đại với khách hàng trung thành. 5 trạm đầy đủ thiết bị. Nằm gần khu thương mại với lưu lượng người qua lại cao. Hoạt động 5 năm với sự hiện diện mạnh mẽ trên mạng xã hội.",
+    location: {
+      city: "Atlanta",
+      state: "GA",
+      zipCode: "30308"
+    },
+    contact: {
+      name: "Marcus Williams",
+      phone: "(404) 555-2345",
+      email: "marcus@example.com"
+    },
+    price: 85000,
+    monthlyRent: 2200,
+    size: 1200,
+    chairs: 5,
+    established: 2018,
+    reason: "Moving Out of State",
+    images: [
+      "https://images.unsplash.com/photo-1585747860715-2ba37e788b70",
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1",
+      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a"
+    ],
+    features: ["Modern Design", "Strong Social Media", "All Equipment Included", "Growing Revenue"],
+    category: "barber",
+    createdAt: "2023-09-22T11:30:00Z",
+    expiresAt: "2023-12-22T11:30:00Z",
+    status: "active",
+    premium: true,
+    views: 256,
+    saves: 23
+  },
+  {
+    id: "6",
+    title: "Profitable Nail Salon - Shopping Center",
+    description: "Well-established nail salon in busy shopping center. 6 manicure stations, 5 pedicure chairs. Strong cash flow, loyal clientele. All inventory and equipment included.",
+    vietnameseDescription: "Tiệm nail có lợi nhuận cao trong trung tâm mua sắm sầm uất. 6 bàn làm móng tay, 5 ghế làm móng chân. Dòng tiền mạnh, khách hàng trung thành. Bao gồm tất cả hàng tồn kho và thiết bị.",
+    location: {
+      city: "Denver",
+      state: "CO",
+      zipCode: "80202"
+    },
+    contact: {
+      name: "Tina Pham",
+      phone: "(720) 555-8901",
+      email: "tina@example.com"
+    },
+    price: 110000,
+    monthlyRent: 3000,
+    size: 1600,
+    chairs: 11,
+    established: 2015,
+    reason: "Retirement",
+    images: [
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9",
+      "https://images.unsplash.com/photo-1632345031435-8727f6897d53",
+      "https://images.unsplash.com/photo-1522337660859-02fbefca4702"
+    ],
+    features: ["Shopping Center Location", "Stable Income", "Loyal Clientele", "Room for Expansion"],
+    category: "nail",
+    createdAt: "2023-09-14T13:45:00Z",
+    expiresAt: "2023-12-14T13:45:00Z",
+    status: "active",
+    premium: true,
+    views: 301,
+    saves: 26
+  },
+  {
+    id: "7",
+    title: "Upscale Hair Salon in Mall Location",
+    description: "Premium hair salon in high-traffic mall. 8 styling stations, color bar, retail area. Established clientele, experienced staff willing to stay. Seller will train.",
+    vietnameseDescription: "Tiệm tóc cao cấp trong trung tâm thương mại sầm uất. 8 trạm cắt tóc, quầy nhuộm, khu vực bán lẻ. Khách hàng ổn định, nhân viên có kinh nghiệm sẵn sàng ở lại. Người bán sẽ đào tạo.",
+    location: {
+      city: "Seattle",
+      state: "WA",
+      zipCode: "98101"
+    },
+    contact: {
+      name: "Sarah Johnson",
+      phone: "(206) 555-4567",
+      email: "sarah@example.com"
+    },
+    price: 150000,
+    monthlyRent: 4000,
+    size: 2000,
+    chairs: 8,
+    established: 2013,
+    reason: "Other Business Interests",
+    images: [
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f",
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250"
+    ],
+    features: ["Mall Location", "Staff Will Stay", "Seller Training", "Retail Revenue"],
+    category: "hair",
+    createdAt: "2023-09-12T15:20:00Z",
+    expiresAt: "2023-12-12T15:20:00Z",
+    status: "active",
+    premium: true,
+    views: 325,
+    saves: 31
+  },
+  {
+    id: "8",
+    title: "Nail & Spa with Owner Housing",
+    description: "Successful nail salon with 2-bedroom apartment above. 6 manicure stations, 5 pedicure chairs, waxing room. Great work-life balance opportunity. Strong local reputation.",
+    vietnameseDescription: "Tiệm nail và spa thành công với căn hộ 2 phòng ngủ phía trên. 6 bàn làm móng tay, 5 ghế làm móng chân, phòng wax. Cơ hội cân bằng tốt giữa công việc và cuộc sống. Danh tiếng địa phương mạnh mẽ.",
+    location: {
+      city: "Portland",
+      state: "OR",
+      zipCode: "97205"
+    },
+    contact: {
+      name: "Lily Tran",
+      phone: "(503) 555-6789",
+      email: "lily@example.com"
+    },
+    price: 195000,
+    monthlyRent: 0,
+    size: 2400,
+    chairs: 11,
+    established: 2011,
+    reason: "Family Reasons",
+    images: [
+      "https://images.unsplash.com/photo-1632345031435-8727f6897d53",
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9",
+      "https://images.unsplash.com/photo-1522337660859-02fbefca4702"
+    ],
+    features: ["Owner Housing", "Property Included", "Waxing Services", "Established 10+ Years"],
+    category: "nail",
+    createdAt: "2023-09-08T12:10:00Z",
+    expiresAt: "2023-12-08T12:10:00Z",
+    status: "active",
+    premium: true,
+    views: 398,
+    saves: 45,
+    hasHousing: true
+  },
+  {
+    id: "9",
+    title: "Modern Barbershop - Excellent Reviews",
+    description: "Contemporary barbershop with 4 stations. Known for premium cuts and grooming services. 5-star reviews online. Located in trendy neighborhood with young professionals.",
+    vietnameseDescription: "Tiệm cắt tóc nam hiện đại với 4 trạm. Nổi tiếng với các kiểu cắt cao cấp và dịch vụ chăm sóc. Đánh giá 5 sao trực tuyến. Nằm trong khu phố thời thượng với nhiều chuyên gia trẻ.",
+    location: {
+      city: "Austin",
+      state: "TX",
+      zipCode: "78701"
+    },
+    contact: {
+      name: "James Wilson",
+      phone: "(512) 555-9012",
+      email: "james@example.com"
+    },
+    price: 90000,
+    monthlyRent: 2500,
+    size: 1100,
+    chairs: 4,
+    established: 2019,
+    reason: "New Venture",
+    images: [
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1",
+      "https://images.unsplash.com/photo-1585747860715-2ba37e788b70",
+      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a"
+    ],
+    features: ["Trendy Location", "5-Star Rated", "Growing Revenue", "Premium Brand"],
+    category: "barber",
+    createdAt: "2023-09-19T14:50:00Z",
+    expiresAt: "2023-12-19T14:50:00Z",
+    status: "active",
+    premium: true,
+    views: 267,
+    saves: 24
+  },
+  {
+    id: "10",
+    title: "Full-Service Beauty Salon - Turnkey",
+    description: "Established beauty salon offering hair, nails, skincare, and waxing. 12 stations total. Excellent location in upscale area. Fully staffed and operational. Walk in and take over.",
+    vietnameseDescription: "Tiệm làm đẹp đã thành lập cung cấp dịch vụ tóc, móng, chăm sóc da và wax. Tổng cộng 12 trạm. Vị trí tuyệt vời trong khu vực cao cấp. Đầy đủ nhân viên và đang hoạt động. Bước vào và tiếp quản.",
+    location: {
+      city: "Miami",
+      state: "FL",
+      zipCode: "33131"
+    },
+    contact: {
+      name: "Elena Rodriguez",
+      phone: "(305) 555-1234",
+      email: "elena@example.com"
+    },
+    price: 230000,
+    monthlyRent: 4500,
+    size: 2600,
+    chairs: 12,
+    established: 2010,
+    reason: "Retirement",
+    images: [
+      "https://images.unsplash.com/photo-1470259078422-826894b933aa",
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035",
+      "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6"
+    ],
+    features: ["Full Service", "Staff Will Stay", "Prime Location", "High Revenue"],
+    category: "beauty",
+    createdAt: "2023-09-05T10:30:00Z",
+    expiresAt: "2023-12-05T10:30:00Z",
+    status: "active",
+    premium: true,
+    views: 456,
+    saves: 52
+  },
+  {
+    id: "11",
+    title: "Nail Salon with Loyal Clientele",
+    description: "Well-established nail salon with 5 manicure stations and 4 pedicure chairs. Located in busy strip mall with ample parking. Consistent monthly income and loyal customer base.",
+    vietnameseDescription: "Tiệm nail đã hoạt động lâu năm với 5 bàn làm móng tay và 4 ghế làm móng chân. Nằm trong trung tâm mua sắm sầm uất với nhiều chỗ đậu xe. Thu nhập hàng tháng ổn định và cơ sở khách hàng trung thành.",
+    location: {
+      city: "Charlotte",
+      state: "NC",
+      zipCode: "28202"
+    },
+    contact: {
+      name: "Nancy Tran",
+      phone: "(704) 555-3456",
+      email: "nancy@example.com"
+    },
+    price: 95000,
+    monthlyRent: 2600,
+    size: 1400,
+    chairs: 9,
+    established: 2016,
+    reason: "Moving Out of State",
+    images: [
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9",
+      "https://images.unsplash.com/photo-1610991149688-c1321006bcc1",
+      "https://images.unsplash.com/photo-1522337660859-02fbefca4702"
+    ],
+    features: ["Strip Mall Location", "Ample Parking", "Stable Income", "Loyal Customers"],
+    category: "nail",
+    createdAt: "2023-09-17T11:15:00Z",
+    expiresAt: "2023-12-17T11:15:00Z",
+    status: "active",
+    premium: true,
+    views: 278,
+    saves: 21
+  },
+  {
+    id: "12",
+    title: "Hair Salon in Downtown Location",
+    description: "Stylish hair salon in the heart of downtown. 6 styling stations, 2 shampoo bowls. Modern decor, high-end products. Strong social media presence with over 10k followers.",
+    vietnameseDescription: "Tiệm tóc phong cách ở trung tâm thành phố. 6 trạm cắt tóc, 2 bồn gội đầu. Trang trí hiện đại, sản phẩm cao cấp. Sự hiện diện mạnh mẽ trên mạng xã hội với hơn 10 nghìn người theo dõi.",
+    location: {
+      city: "Nashville",
+      state: "TN",
+      zipCode: "37203"
+    },
+    contact: {
+      name: "Amanda Clark",
+      phone: "(615) 555-7890",
+      email: "amanda@example.com"
+    },
+    price: 120000,
+    monthlyRent: 3200,
+    size: 1700,
+    chairs: 6,
+    established: 2017,
+    reason: "New Business Venture",
+    images: [
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f",
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250"
+    ],
+    features: ["Downtown Location", "Strong Social Media", "Modern Design", "High-End Products"],
+    category: "hair",
+    createdAt: "2023-09-16T09:40:00Z",
+    expiresAt: "2023-12-16T09:40:00Z",
+    status: "active",
+    premium: true,
+    views: 312,
+    saves: 29
+  },
+  {
+    id: "13",
+    title: "Nail & Spa with Waxing Room",
+    description: "Profitable nail salon with dedicated waxing room. 6 manicure stations, 5 pedicure chairs. Located in affluent suburb with high-income clients. Owner will train.",
+    vietnameseDescription: "Tiệm nail có lợi nhuận cao với phòng wax riêng. 6 bàn làm móng tay, 5 ghế làm móng chân. Nằm trong vùng ngoại ô giàu có với khách hàng thu nhập cao. Chủ sẽ đào tạo.",
+    location: {
+      city: "Bellevue",
+      state: "WA",
+      zipCode: "98004"
+    },
+    contact: {
+      name: "Helen Nguyen",
+      phone: "(425) 555-9012",
+      email: "helen@example.com"
+    },
+    price: 140000,
+    monthlyRent: 3800,
+    size: 1900,
+    chairs: 11,
+    established: 2015,
+    reason: "Family Reasons",
+    images: [
+      "https://images.unsplash.com/photo-1632345031435-8727f6897d53",
+      "https://images.unsplash.com/photo-1610991149688-c1321006bcc1",
+      "https://images.unsplash.com/photo-1522337660859-02fbefca4702"
+    ],
+    features: ["Affluent Area", "Waxing Services", "Owner Training", "High-Income Clients"],
+    category: "nail",
+    createdAt: "2023-09-13T16:25:00Z",
+    expiresAt: "2023-12-13T16:25:00Z",
+    status: "active",
+    premium: true,
+    views: 329,
+    saves: 33
+  },
+  {
+    id: "14",
+    title: "Barbershop with Strong Brand",
+    description: "Popular barbershop with strong local brand. 5 stations, all equipment included. Located near university with steady client flow. Great opportunity for barber looking to own.",
+    vietnameseDescription: "Tiệm cắt tóc nam phổ biến với thương hiệu địa phương mạnh mẽ. 5 trạm, bao gồm tất cả thiết bị. Nằm gần trường đại học với dòng khách hàng ổn định. Cơ hội tuyệt vời cho thợ cắt tóc muốn làm chủ.",
+    location: {
+      city: "Columbus",
+      state: "OH",
+      zipCode: "43201"
+    },
+    contact: {
+      name: "Robert Thomas",
+      phone: "(614) 555-2345",
+      email: "robert@example.com"
+    },
+    price: 85000,
+    monthlyRent: 2300,
+    size: 1300,
+    chairs: 5,
+    established: 2018,
+    reason: "Relocating",
+    images: [
+      "https://images.unsplash.com/photo-1585747860715-2ba37e788b70",
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1",
+      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a"
+    ],
+    features: ["Near University", "Established Brand", "All Equipment Included", "Steady Clientele"],
+    category: "barber",
+    createdAt: "2023-09-21T13:35:00Z",
+    expiresAt: "2023-12-21T13:35:00Z",
+    status: "active",
+    premium: true,
+    views: 245,
+    saves: 18
+  },
+  {
+    id: "15",
+    title: "Full-Service Salon with Housing",
+    description: "Established salon with 3-bedroom house included. Hair, nails, and skincare services. 8 stations total. Property ownership means no rent! Great investment opportunity.",
+    vietnameseDescription: "Tiệm làm đẹp đã thành lập với nhà 3 phòng ngủ. Dịch vụ tóc, móng và chăm sóc da. Tổng cộng 8 trạm. Sở hữu bất động sản đồng nghĩa với việc không phải trả tiền thuê! Cơ hội đầu tư tuyệt vời.",
+    location: {
+      city: "Las Vegas",
+      state: "NV",
+      zipCode: "89109"
+    },
+    contact: {
+      name: "David Chen",
+      phone: "(702) 555-4567",
+      email: "david@example.com"
+    },
+    price: 350000,
+    monthlyRent: 0,
+    size: 3200,
+    chairs: 8,
+    established: 2009,
+    reason: "Retirement",
+    images: [
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250",
+      "https://images.unsplash.com/photo-1470259078422-826894b933aa",
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035"
+    ],
+    features: ["Property Included", "Housing Included", "No Rent", "Multiple Services"],
+    category: "beauty",
+    createdAt: "2023-09-07T15:55:00Z",
+    expiresAt: "2023-12-07T15:55:00Z",
+    status: "active",
+    premium: true,
+    views: 487,
+    saves: 59,
+    hasHousing: true
+  },
+  {
+    id: "16",
+    title: "Nail Salon in Shopping Plaza",
+    description: "Profitable nail salon in busy shopping plaza. 7 manicure stations, 6 pedicure chairs. Strong cash flow, all financials available to serious buyers. Seller financing possible.",
+    vietnameseDescription: "Tiệm nail có lợi nhuận cao trong trung tâm mua sắm sầm uất. 7 bàn làm móng tay, 6 ghế làm móng chân. Dòng tiền mạnh, tất cả thông tin tài chính có sẵn cho người mua nghiêm túc. Có thể tài trợ từ người bán.",
+    location: {
+      city: "Phoenix",
+      state: "AZ",
+      zipCode: "85016"
+    },
+    contact: {
+      name: "Lisa Tran",
+      phone: "(602) 555-6789",
+      email: "lisa@example.com"
+    },
+    price: 130000,
+    monthlyRent: 3300,
+    size: 1800,
+    chairs: 13,
+    established: 2014,
+    reason: "Other Business Interests",
+    images: [
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9",
+      "https://images.unsplash.com/photo-1610991149688-c1321006bcc1",
+      "https://images.unsplash.com/photo-1632345031435-8727f6897d53"
+    ],
+    features: ["Shopping Plaza", "Seller Financing", "Strong Cash Flow", "Financials Available"],
+    category: "nail",
+    createdAt: "2023-09-11T10:05:00Z",
+    expiresAt: "2023-12-11T10:05:00Z",
+    status: "active",
+    premium: true,
+    views: 356,
+    saves: 32
+  },
+  {
+    id: "17",
+    title: "Hair Salon with Apartment Above",
+    description: "Hair salon with 1-bedroom apartment upstairs. 5 styling stations, 2 shampoo bowls. Great work-life balance. Live where you work and save on commuting and housing costs.",
+    vietnameseDescription: "Tiệm tóc với căn hộ 1 phòng ngủ ở tầng trên. 5 trạm cắt tóc, 2 bồn gội đầu. Cân bằng tốt giữa công việc và cuộc sống. Sống nơi bạn làm việc và tiết kiệm chi phí đi lại và nhà ở.",
+    location: {
+      city: "Philadelphia",
+      state: "PA",
+      zipCode: "19107"
+    },
+    contact: {
+      name: "Maria Garcia",
+      phone: "(215) 555-8901",
+      email: "maria@example.com"
+    },
+    price: 175000,
+    monthlyRent: 0,
+    size: 2100,
+    chairs: 5,
+    established: 2013,
+    reason: "Relocating",
+    images: [
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f",
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250"
+    ],
+    features: ["Housing Included", "Property Included", "No Rent", "Work-Life Balance"],
+    category: "hair",
+    createdAt: "2023-09-09T14:15:00Z",
+    expiresAt: "2023-12-09T14:15:00Z",
+    status: "active",
+    premium: true,
+    views: 367,
+    saves: 41,
+    hasHousing: true
+  },
+  {
+    id: "18",
+    title: "Modern Nail Spa - New Equipment",
+    description: "Contemporary nail spa with all new equipment purchased in 2022. 6 manicure stations, 6 pedicure chairs. Located in high-end retail center. Growing business with excellent reviews.",
+    vietnameseDescription: "Tiệm nail hiện đại với tất cả thiết bị mới mua vào năm 2022. 6 bàn làm móng tay, 6 ghế làm móng chân. Nằm trong trung tâm bán lẻ cao cấp. Doanh nghiệp đang phát triển với đánh giá xuất sắc.",
+    location: {
+      city: "San Diego",
+      state: "CA",
+      zipCode: "92101"
+    },
+    contact: {
+      name: "Jenny Pham",
+      phone: "(619) 555-1234",
+      email: "jenny@example.com"
+    },
+    price: 145000,
+    monthlyRent: 3700,
+    size: 1700,
+    chairs: 12,
+    established: 2020,
+    reason: "Family Reasons",
+    images: [
+      "https://images.unsplash.com/photo-1610991149688-c1321006bcc1",
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9",
+      "https://images.unsplash.com/photo-1522337660859-02fbefca4702"
+    ],
+    features: ["New Equipment", "High-End Location", "Growing Business", "Excellent Reviews"],
+    category: "nail",
+    createdAt: "2023-09-15T09:25:00Z",
+    expiresAt: "2023-12-15T09:25:00Z",
+    status: "active",
+    premium: true,
+    views: 298,
+    saves: 27
+  },
+  {
+    id: "19",
+    title: "Barbershop with Loyal Following",
+    description: "Established barbershop with loyal clientele. 4 stations, vintage-inspired decor. Located in trendy neighborhood. Perfect for barber with existing clients looking to own.",
+    vietnameseDescription: "Tiệm cắt tóc nam đã thành lập với khách hàng trung thành. 4 trạm, trang trí lấy cảm hứng từ phong cách cổ điển. Nằm trong khu phố thời thượng. Hoàn hảo cho thợ cắt tóc có sẵn khách hàng muốn làm chủ.",
+    location: {
+      city: "Brooklyn",
+      state: "NY",
+      zipCode: "11201"
+    },
+    contact: {
+      name: "Anthony Miller",
+      phone: "(718) 555-3456",
+      email: "anthony@example.com"
+    },
+    price: 95000,
+    monthlyRent: 2700,
+    size: 1100,
+    chairs: 4,
+    established: 2017,
+    reason: "New Venture",
+    images: [
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1",
+      "https://images.unsplash.com/photo-1585747860715-2ba37e788b70",
+      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a"
+    ],
+    features: ["Trendy Location", "Loyal Clientele", "Vintage Style", "Turnkey Operation"],
+    category: "barber",
+    createdAt: "2023-09-18T11:40:00Z",
+    expiresAt: "2023-12-18T11:40:00Z",
+    status: "active",
+    premium: true,
+    views: 276,
+    saves: 25
+  },
+  {
+    id: "20",
+    title: "Full-Service Beauty Salon - Established",
+    description: "Well-established beauty salon offering complete services. 10 stations total. Located in busy downtown area with high foot traffic. Excellent reputation and loyal clientele.",
+    vietnameseDescription: "Tiệm làm đẹp đã hoạt động lâu năm cung cấp đầy đủ dịch vụ. Tổng cộng 10 trạm. Nằm ở khu vực trung tâm thành phố sầm uất với lưu lượng người qua lại cao. Danh tiếng xuất sắc và khách hàng trung thành.",
+    location: {
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60611"
+    },
+    contact: {
+      name: "Patricia Wong",
+      phone: "(312) 555-7890",
+      email: "patricia@example.com"
+    },
+    price: 210000,
+    monthlyRent: 4200,
+    size: 2400,
+    chairs: 10,
+    established: 2008,
+    reason: "Retirement",
+    images: [
+      "https://images.unsplash.com/photo-1470259078422-826894b933aa",
+      "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6",
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035"
+    ],
+    features: ["Downtown Location", "Established 10+ Years", "Full Service", "Loyal Clientele"],
+    category: "beauty",
+    createdAt: "2023-09-06T12:50:00Z",
+    expiresAt: "2023-12-06T12:50:00Z",
+    status: "active",
+    premium: true,
+    views: 423,
+    saves: 47
+  },
+  {
+    id: "505",
+    title: "Luxury Nail Spa with Housing",
+    description: "High-end nail spa with attached 2-bedroom apartment. 8 manicure stations, 7 pedicure chairs, waxing room. Located in affluent area with high-income clients.",
+    vietnameseDescription: "Tiệm nail cao cấp với căn hộ 2 phòng ngủ đính kèm. 8 bàn làm móng tay, 7 ghế làm móng chân, phòng wax. Nằm trong khu vực giàu có với khách hàng thu nhập cao.",
+    location: {
+      city: "Irvine",
+      state: "CA",
+      zipCode: "92618"
+    },
+    contact: {
+      name: "Michelle Tran",
+      phone: "(949) 555-9012",
+      email: "michelle@example.com"
+    },
+    price: 280000,
+    monthlyRent: 0,
+    size: 2800,
+    chairs: 15,
+    established: 2012,
+    reason: "Family Reasons",
+    images: [
+      "https://images.unsplash.com/photo-1632345031435-8727f6897d53",
+      "https://images.unsplash.com/photo-1610991149688-c1321006bcc1",
+      "https://images.unsplash.com/photo-1604654894611-6973b7069ce9"
+    ],
+    features: ["Housing Included", "Affluent Area", "Waxing Services", "High-Income Clients"],
+    category: "nail",
+    createdAt: "2023-09-04T15:30:00Z",
+    expiresAt: "2023-12-04T15:30:00Z",
+    status: "active",
+    premium: true,
+    views: 467,
+    saves: 53,
+    hasHousing: true
   }
-  return null;
-};
-
-// High-quality salon images that work reliably
-const SALON_IMAGES = [
-  "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1595621864030-1d25895f69c5?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1470259078422-826894b933aa?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1632154574960-a6d1a4a5f348?w=800&auto=format&fit=crop&q=80"
 ];
-
-// Get a random image from the collection
-const getRandomSalonImage = () => {
-  return SALON_IMAGES[Math.floor(Math.random() * SALON_IMAGES.length)];
-};
-
-// Premium salon types with weighted probabilities
-const SALON_TYPES = [
-  { type: "Nail Salon", weight: 0.5 },
-  { type: "Hair Studio", weight: 0.2 },
-  { type: "Spa & Waxing", weight: 0.15 },
-  { type: "Barber Shop", weight: 0.1 },
-  { type: "Beauty Lounge", weight: 0.05 }
-];
-
-// Get a random salon type with weighted probability
-const getRandomSalonType = () => {
-  const random = Math.random();
-  let cumulativeWeight = 0;
-  
-  for (const salonType of SALON_TYPES) {
-    cumulativeWeight += salonType.weight;
-    if (random <= cumulativeWeight) {
-      return salonType.type;
-    }
-  }
-  
-  return SALON_TYPES[0].type; // Default to first type if something goes wrong
-};
-
-// High-quality salon names that feel authentic for each type
-const getSalonName = (type: string) => {
-  const nailSalonNames = [
-    "Luxe Nail Bar", "Elite Nails & Spa", "Diamond Nail Studio", 
-    "Crystal Nail Lounge", "Polished Nail Boutique", "Glamour Nails",
-    "Prestige Nail Spa", "Serenity Nails", "Elegance Nail Studio",
-    "Tranquil Nail Retreat", "Allure Nail Lounge", "Radiance Nails",
-    "Pure Nail Artistry", "Oasis Nail Spa", "Bella Nails & Spa"
-  ];
-  
-  const hairSalonNames = [
-    "Mane Attraction", "Chic Hair Studio", "Haute Hair", "Tress Theory",
-    "Salon Envy", "Eclipse Hair Design", "Aura Hair Studio", "Rouge Hair Gallery",
-    "Moda Hair Collective", "Lux Hair Lab", "Crown & Mane", "The Cutting Room",
-    "Strand Studio", "Salon Nouveau", "Revive Hair House"
-  ];
-  
-  const spaNames = [
-    "Bliss Spa & Waxing", "Serene Beauty Spa", "Tranquility Day Spa",
-    "Glow Beauty Retreat", "Pure Relaxation Spa", "Oasis Spa & Wellness",
-    "Zen Beauty Sanctuary", "Radiance Spa & Waxing", "Harmony Day Spa",
-    "Refresh Spa Studio", "Luxe Retreat Spa", "Escape Day Spa",
-    "Serenity Wellness Spa", "Rejuvenate Spa House", "Paradise Spa Lounge"
-  ];
-  
-  const barberNames = [
-    "Classic Cuts Barber Shop", "The Gentleman's Trim", "Sharp Fades",
-    "Royal Razor", "Vintage Barber Co.", "Urban Shave Lounge",
-    "Elite Barber House", "The Dapper Den", "Prestige Barber Shop",
-    "Modern Man Barbers", "Legacy Cuts", "Stag Barber Co.",
-    "Uptown Barber Lounge", "Refined Grooming Co.", "Master Cuts Barber"
-  ];
-  
-  const beautyLoungeNames = [
-    "Glamour Beauty House", "The Beauty Collective", "Luxe Beauty Bar",
-    "Allure Beauty Lounge", "Chic Beauty Studio", "Glow Up Beauty",
-    "Sparkle Beauty Lounge", "Radiant Beauty House", "Blush Beauty Boutique",
-    "Elegance Beauty Bar", "Diva Beauty Lounge", "Glam Squad Studio",
-    "Prestige Beauty House", "The Vanity Lounge", "Bella Beauty Studio"
-  ];
-  
-  let nameList;
-  switch (type) {
-    case "Nail Salon":
-      nameList = nailSalonNames;
-      break;
-    case "Hair Studio":
-      nameList = hairSalonNames;
-      break;
-    case "Spa & Waxing":
-      nameList = spaNames;
-      break;
-    case "Barber Shop":
-      nameList = barberNames;
-      break;
-    case "Beauty Lounge":
-      nameList = beautyLoungeNames;
-      break;
-    default:
-      nameList = nailSalonNames;
-  }
-  
-  return nameList[Math.floor(Math.random() * nameList.length)];
-};
-
-// Premium quality locations focused on areas with significant Vietnamese communities
-const PREMIUM_LOCATIONS = [
-  "Westminster, CA", "Garden Grove, CA", "Houston, TX", "San Jose, CA",
-  "Atlanta, GA", "Orlando, FL", "Seattle, WA", "Philadelphia, PA",
-  "Falls Church, VA", "San Diego, CA", "Boston, MA", "Dallas, TX",
-  "Austin, TX", "Oklahoma City, OK", "Charlotte, NC", "Denver, CO",
-  "New Orleans, LA", "Chicago, IL", "Portland, OR", "Las Vegas, NV"
-];
-
-// Get a random location
-const getRandomLocation = () => {
-  return PREMIUM_LOCATIONS[Math.floor(Math.random() * PREMIUM_LOCATIONS.length)];
-};
-
-// Generate premium salon descriptions that are professional and appealing
-const getSalonDescription = (type: string, isForSale: boolean) => {
-  // Generic premium descriptions
-  const nailSalonDesc = [
-    "Upscale nail salon offering premium manicures, pedicures, and nail art with a focus on cleanliness and customer satisfaction.",
-    "Luxurious nail studio specializing in gel, acrylic, and dip powder services in a relaxing environment with experienced technicians.",
-    "High-end nail salon with modern decor and premium products offering a full range of nail care treatments and personalized service.",
-    "Contemporary nail bar providing luxury nail treatments with top-tier products and meticulous attention to detail and hygiene."
-  ];
-  
-  const hairSalonDesc = [
-    "Sophisticated hair studio offering cutting-edge styles, color treatments, and expert consultations by seasoned stylists.",
-    "Premium hair salon specializing in modern cutting techniques, color corrections, and hair extensions in a chic atmosphere.",
-    "Luxurious hair design studio featuring expert stylists trained in the latest techniques for cuts, color, and premium treatments.",
-    "Upscale hair salon offering precision cuts, creative color, and transformative styling by industry-certified professionals."
-  ];
-  
-  const spaDesc = [
-    "Tranquil day spa offering premium waxing services, skincare treatments, and relaxation therapies in an elegant setting.",
-    "Luxury spa specializing in professional waxing, facials, and body treatments using high-end organic products.",
-    "Premium beauty spa providing exceptional waxing services, skin rejuvenation, and relaxation treatments in a serene environment.",
-    "Upscale spa offering expert waxing, comprehensive skincare, and wellness therapies delivered by licensed estheticians."
-  ];
-  
-  const barberDesc = [
-    "Distinguished barber shop providing classic cuts, premium hot towel shaves, and modern styling in a refined atmosphere.",
-    "Upscale barber lounge offering precision haircuts, beard grooming, and traditional straight razor shaves with attention to detail.",
-    "Premium barber establishment specializing in classic techniques combined with contemporary styles for the modern gentleman.",
-    "Sophisticated barber shop featuring expert precision cuts, specialty fades, and luxury grooming services in an elegant setting."
-  ];
-  
-  const beautyLoungeDesc = [
-    "Full-service beauty lounge offering premium hair styling, makeup application, and nail services in an upscale atmosphere.",
-    "Luxury beauty studio specializing in comprehensive beauty treatments from hair transformations to nail artistry and skincare.",
-    "High-end beauty destination providing expert hair services, nail treatments, and makeup application by industry professionals.",
-    "Premium beauty lounge offering a complete range of beauty services from styling to nail artistry in an elegant setting."
-  ];
-  
-  // For sale extensions
-  const forSaleAddition = [
-    " Established clientele and fully equipped. Current owner relocating and seeking qualified buyer.",
-    " Prime location with loyal customer base. Owner retiring after successful operation and looking to sell to the right entrepreneur.",
-    " Turn-key business opportunity with established reputation and steady revenue. Owner pursuing new ventures.",
-    " Well-established with strong online presence and consistent bookings. Great opportunity for new ownership."
-  ];
-  
-  let descList;
-  switch (type) {
-    case "Nail Salon":
-      descList = nailSalonDesc;
-      break;
-    case "Hair Studio":
-      descList = hairSalonDesc;
-      break;
-    case "Spa & Waxing":
-      descList = spaDesc;
-      break;
-    case "Barber Shop":
-      descList = barberDesc;
-      break;
-    case "Beauty Lounge":
-      descList = beautyLoungeDesc;
-      break;
-    default:
-      descList = nailSalonDesc;
-  }
-  
-  let description = descList[Math.floor(Math.random() * descList.length)];
-  
-  if (isForSale) {
-    description += forSaleAddition[Math.floor(Math.random() * forSaleAddition.length)];
-  }
-  
-  return description;
-};
-
-// Generate realistic asking prices based on location and type
-const getAskingPrice = (location: string, type: string) => {
-  let basePrice = 85000;
-  
-  // Adjust for location
-  if (location.includes("CA")) {
-    basePrice += 35000; // California premium
-  } else if (location.includes("TX") || location.includes("FL")) {
-    basePrice += 15000; // Texas and Florida premium
-  } else if (location.includes("NY")) {
-    basePrice += 50000; // New York premium
-  }
-  
-  // Adjust for salon type
-  if (type === "Hair Studio") {
-    basePrice += 25000;
-  } else if (type === "Beauty Lounge") {
-    basePrice += 30000;
-  } else if (type === "Spa & Waxing") {
-    basePrice += 20000;
-  }
-  
-  // Add some randomness (±15%)
-  const randomFactor = 0.85 + (Math.random() * 0.3);
-  const finalPrice = Math.round((basePrice * randomFactor) / 5000) * 5000;
-  
-  return finalPrice.toString();
-};
-
-// Generate salon features based on type
-const getSalonFeatures = (type: string) => {
-  const commonFeatures = [
-    "High foot traffic", "Ample parking", "Recently renovated", 
-    "Modern equipment", "Loyal clientele", "Strong online presence"
-  ];
-  
-  const nailFeatures = [
-    "Premium pedicure chairs", "High-end nail products", "Dedicated nail art station", 
-    "Gel systems", "Luxury manicure tables", "Private treatment rooms"
-  ];
-  
-  const hairFeatures = [
-    "Premium styling chairs", "Color bar", "High-end product lines",
-    "Advanced hair treatment equipment", "Private consultation room", "Salon management software"
-  ];
-  
-  const spaFeatures = [
-    "Private treatment rooms", "Premium waxing equipment", "High-end skincare products",
-    "Relaxation area", "Steam facilities", "Specialized massage tables"
-  ];
-  
-  const barberFeatures = [
-    "Classic barber chairs", "Premium grooming products", "Traditional hot towel steamers",
-    "Dedicated beard station", "Vintage decor", "Specialty razors"
-  ];
-  
-  const beautyFeatures = [
-    "Makeup station", "Multi-purpose styling areas", "Premium beauty products",
-    "Photography area", "Private VIP section", "Comprehensive service menu"
-  ];
-  
-  let typeFeatures;
-  switch (type) {
-    case "Nail Salon":
-      typeFeatures = nailFeatures;
-      break;
-    case "Hair Studio":
-      typeFeatures = hairFeatures;
-      break;
-    case "Spa & Waxing":
-      typeFeatures = spaFeatures;
-      break;
-    case "Barber Shop":
-      typeFeatures = barberFeatures;
-      break;
-    case "Beauty Lounge":
-      typeFeatures = beautyFeatures;
-      break;
-    default:
-      typeFeatures = nailFeatures;
-  }
-  
-  // Select 3-4 common features and 2-3 type-specific features
-  const shuffledCommon = [...commonFeatures].sort(() => 0.5 - Math.random());
-  const shuffledType = [...typeFeatures].sort(() => 0.5 - Math.random());
-  
-  const selectedCommon = shuffledCommon.slice(0, 3 + Math.floor(Math.random() * 2));
-  const selectedType = shuffledType.slice(0, 2 + Math.floor(Math.random() * 2));
-  
-  return [...selectedCommon, ...selectedType];
-};
-
-// Generate contact info
-const getContactInfo = () => {
-  const firstNames = ["Kim", "Tina", "David", "Michael", "Jenny", "Lisa", "John", "Sarah", "Jennifer", "Anh", "Tran", "Linh", "Thu", "Nancy"];
-  const lastNames = ["Nguyen", "Tran", "Le", "Pham", "Johnson", "Smith", "Hoang", "Williams", "Chen", "Garcia", "Kim", "Park", "Wong"];
-  
-  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  
-  return {
-    owner_name: `${firstName} ${lastName}`,
-    phone: `(${Math.floor(Math.random() * 800) + 200}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`
-  };
-};
-
-// Generate square footage based on salon type
-const getSquareFootage = (type: string) => {
-  let baseSqFt = 0;
-  
-  switch (type) {
-    case "Nail Salon":
-      baseSqFt = 1200;
-      break;
-    case "Hair Studio":
-      baseSqFt = 1600;
-      break;
-    case "Spa & Waxing":
-      baseSqFt = 1800;
-      break;
-    case "Barber Shop":
-      baseSqFt = 1000;
-      break;
-    case "Beauty Lounge":
-      baseSqFt = 2000;
-      break;
-    default:
-      baseSqFt = 1200;
-  }
-  
-  // Add some variation (±20%)
-  const variation = 0.8 + (Math.random() * 0.4);
-  const finalSqFt = Math.round(baseSqFt * variation / 50) * 50;
-  
-  return finalSqFt.toString();
-};
-
-// Generate number of stations based on salon type and square footage
-const getStationCount = (type: string, squareFootage: string) => {
-  const sqFt = parseInt(squareFootage);
-  let stationCount = 0;
-  
-  switch (type) {
-    case "Nail Salon":
-      stationCount = Math.floor(sqFt / 150); // 150 sq ft per station
-      break;
-    case "Hair Studio":
-      stationCount = Math.floor(sqFt / 200); // 200 sq ft per station
-      break;
-    case "Spa & Waxing":
-      stationCount = Math.floor(sqFt / 250); // 250 sq ft per station
-      break;
-    case "Barber Shop":
-      stationCount = Math.floor(sqFt / 120); // 120 sq ft per station
-      break;
-    case "Beauty Lounge":
-      stationCount = Math.floor(sqFt / 180); // 180 sq ft per station
-      break;
-    default:
-      stationCount = Math.floor(sqFt / 150);
-  }
-  
-  // Ensure a minimum of 4 stations
-  return Math.max(4, stationCount).toString();
-};
-
-// Generate reason for selling
-const getReasonForSelling = () => {
-  const reasons = [
-    "Owner relocating",
-    "Retirement",
-    "Family obligations",
-    "Health reasons",
-    "New business venture",
-    "Career change",
-    "Moving out of state",
-    "Partnership dissolution"
-  ];
-  
-  return reasons[Math.floor(Math.random() * reasons.length)];
-};
-
-// Generate Vietnamese description alternative (for some listings)
-const getVietnameseDescription = (salonType: string, forSale: boolean) => {
-  if (Math.random() > 0.3) return undefined; // Only 30% of listings get Vietnamese descriptions
-  
-  const vnNailDesc = [
-    "Tiệm nail sang trọng, rộng rãi và sạch sẽ. Có nhiều máy móc hiện đại và đầy đủ. Khách hàng ổn định, thu nhập cao.",
-    "Tiệm nail rộng đẹp, khu Mỹ trắng, khách sang, lịch sự. Tiệm có nhiều ghế và bàn nail cao cấp, đầy đủ thiết bị.",
-    "Tiệm nail cao cấp trong khu sang. Không gian rộng rãi, trang thiết bị hiện đại và đầy đủ. Khách đông, tip hậu."
-  ];
-  
-  const vnHairDesc = [
-    "Tiệm tóc cao cấp, thiết kế sang trọng với thiết bị hiện đại. Khách hàng ổn định và thu nhập cao.",
-    "Salon tóc rộng đẹp trong khu thượng lưu. Đầy đủ thiết bị và sản phẩm chăm sóc tóc cao cấp. Khách VIP đông.",
-    "Tiệm tóc sang trọng, không gian rộng rãi. Có đội ngũ thợ chuyên nghiệp và thiết bị cao cấp. Thu nhập ổn định."
-  ];
-  
-  const vnSpaDesc = [
-    "Tiệm spa và wax cao cấp, không gian yên tĩnh, sang trọng. Dịch vụ đa dạng, khách hàng thường xuyên.",
-    "Spa rộng và đẹp, nhiều phòng riêng tư. Trang bị đầy đủ thiết bị hiện đại và sản phẩm cao cấp. Thu nhập tốt.",
-    "Tiệm spa sang trọng, khu vực đắt đỏ. Không gian thiết kế thanh lịch, tinh tế. Khách hàng ổn định, doanh thu cao."
-  ];
-  
-  const vnBarberDesc = [
-    "Tiệm barber cao cấp cho nam giới. Thiết kế hiện đại, trang bị đầy đủ. Khách hàng nam ổn định, thu nhập tốt.",
-    "Tiệm cắt tóc nam sang trọng, phong cách vintage. Đầy đủ thiết bị và sản phẩm cao cấp. Khách VIP đông.",
-    "Barber shop hiện đại, không gian rộng rãi. Khách hàng nam thường xuyên, doanh thu ổn định."
-  ];
-  
-  const vnBeautyDesc = [
-    "Tiệm làm đẹp tổng hợp cao cấp, dịch vụ đa dạng từ tóc đến móng. Không gian sang trọng, trang thiết bị hiện đại.",
-    "Beauty lounge rộng đẹp, nhiều dịch vụ làm đẹp. Thiết kế sang trọng với khu vực riêng cho từng dịch vụ. Thu nhập cao.",
-    "Tiệm làm đẹp cao cấp, dịch vụ chuyên nghiệp. Không gian rộng rãi, trang trí hiện đại. Khách hàng VIP ổn định."
-  ];
-  
-  // For sale additions
-  const vnForSaleAddition = [
-    " Cần bán gấp vì chủ về Việt Nam.",
-    " Chủ cần bán vì lý do sức khỏe.",
-    " Chủ về hưu nên muốn bán lại cho người có đam mê.",
-    " Cần sang nhượng vì chủ chuyển tiểu bang khác.",
-    " Chủ bận việc gia đình nên cần sang lại cho người có kinh nghiệm."
-  ];
-  
-  let descList;
-  switch (salonType) {
-    case "Nail Salon":
-      descList = vnNailDesc;
-      break;
-    case "Hair Studio":
-      descList = vnHairDesc;
-      break;
-    case "Spa & Waxing":
-      descList = vnSpaDesc;
-      break;
-    case "Barber Shop":
-      descList = vnBarberDesc;
-      break;
-    case "Beauty Lounge":
-      descList = vnBeautyDesc;
-      break;
-    default:
-      descList = vnNailDesc;
-  }
-  
-  let description = descList[Math.floor(Math.random() * descList.length)];
-  
-  if (forSale) {
-    description += vnForSaleAddition[Math.floor(Math.random() * vnForSaleAddition.length)];
-  }
-  
-  return description;
-};
-
-// Generate premium salon listings
-export const generatePremiumSalons = (count: number = 30): Job[] => {
-  const salons: Job[] = [];
-  
-  for (let i = 0; i < count; i++) {
-    const salonType = getRandomSalonType();
-    const location = getRandomLocation();
-    const forSale = Math.random() > 0.5; // 50% are for sale
-    const squareFootage = getSquareFootage(salonType);
-    const Vietnamese = Math.random() < 0.3; // 30% have Vietnamese content
-    
-    const salon: Job = {
-      id: `premium-salon-${i + 1}`,
-      role: forSale ? "Salon Owner" : "Salon Manager",
-      company: getSalonName(salonType),
-      location: location,
-      posted_at: getRecentDate(),
-      created_at: getRecentDate(),
-      description: getSalonDescription(salonType, forSale),
-      for_sale: forSale,
-      asking_price: forSale ? getAskingPrice(location, salonType) : undefined,
-      number_of_stations: getStationCount(salonType, squareFootage),
-      square_feet: squareFootage,
-      reason_for_selling: forSale ? getReasonForSelling() : undefined,
-      salon_features: getSalonFeatures(salonType),
-      contact_info: getContactInfo(),
-      is_featured: Math.random() > 0.7, // 30% are featured
-      status: "active",
-      image: getRandomSalonImage(),
-      salon_type: salonType,
-      vietnamese_description: Vietnamese ? getVietnameseDescription(salonType, forSale) : undefined,
-      expires_at: getFutureDate(),
-      boosted_until: getBoostedDate(),
-      has_wax_room: salonType === "Spa & Waxing" || Math.random() > 0.7,
-      has_housing: Math.random() > 0.8,
-      specialties: salonType === "Nail Salon" 
-        ? ["Gel", "Acrylic", "Dip Powder", "Nail Art"].slice(0, 2 + Math.floor(Math.random() * 3)) 
-        : undefined
-    };
-    
-    salons.push(salon);
-  }
-  
-  return salons;
-};
-
-// Predefined high-quality salon data that can be directly used
-export const premiumSalons = generatePremiumSalons(30);
-
-// Get a filtered set of salons (e.g., only salons for sale)
-export const getSalonsForSale = (count?: number): Job[] => {
-  const forSale = premiumSalons.filter(salon => salon.for_sale);
-  return count ? forSale.slice(0, count) : forSale;
-};
-
-// Get a filtered set of featured salons
-export const getFeaturedSalons = (count: number = 3): Job[] => {
-  const featured = premiumSalons.filter(salon => salon.is_featured);
-  return featured.slice(0, count);
-};

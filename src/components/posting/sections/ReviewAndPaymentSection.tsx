@@ -88,7 +88,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('Review & Payment', 'Xem lại & Thanh toán')}</h2>
+      <h2 className="text-2xl font-bold">{t({
+        english: 'Review & Payment',
+        vietnamese: 'Xem lại & Thanh toán'
+      })}</h2>
       
       <PricingCards
         pricingOptions={jobPricingOptions}
@@ -100,7 +103,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       
       {selectedPricing !== 'free' && (
         <div className="flex items-center justify-between">
-          <Label htmlFor="auto-renew">{t('Auto-renew subscription', 'Tự động gia hạn đăng ký')}</Label>
+          <Label htmlFor="auto-renew">{t({
+            english: 'Auto-renew subscription',
+            vietnamese: 'Tự động gia hạn đăng ký'
+          })}</Label>
           <Switch 
             id="auto-renew" 
             checked={autoRenew} 
@@ -111,7 +117,10 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       
       {selectedPricing === 'free' && (
         <div className="text-sm text-gray-500 italic">
-          {t('This plan does not renew. First-time post only.', 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.')}
+          {t({
+            english: 'This plan does not renew. First-time post only.',
+            vietnamese: 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.'
+          })}
         </div>
       )}
       

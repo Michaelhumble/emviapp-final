@@ -1,174 +1,145 @@
-
 import React from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Container } from '@/components/ui/container';
 import { motion } from 'framer-motion';
-import Layout from '@/components/layout/Layout';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
-const About: React.FC = () => {
+const About = () => {
   const { t } = useTranslation();
-
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
-  };
-
+  
+  const aboutTitle = t({
+    english: "About EmviApp",
+    vietnamese: "Giới thiệu về EmviApp"
+  });
+  
   return (
-    <Layout>
-      <Container className="py-16 px-6 md:px-8">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          className="max-w-4xl mx-auto"
-        >
-          {/* Page Title */}
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 font-playfair">
-            {t("Our Story", "Câu Chuyện Của Chúng Tôi")}
-          </h1>
-
-          {/* Mission Statement */}
-          <div className="mb-16">
-            <motion.p 
-              className="text-xl md:text-2xl text-center font-light italic mb-8" 
-              variants={fadeIn}
+    <>
+      <Helmet>
+        <title>About EmviApp | Beauty Industry Marketplace</title>
+        <meta name="description" content="Learn about EmviApp, the premier marketplace connecting beauty professionals with salons and opportunities across the United States." />
+      </Helmet>
+      
+      <div className="bg-gradient-to-b from-blue-50 to-white py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-3xl mx-auto text-center"
+          >
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-900">
+              {aboutTitle}
+            </h1>
+            <p className="text-xl text-gray-600 leading-relaxed">
+              {t({
+                english: "Connecting beauty professionals with opportunities across the United States",
+                vietnamese: "Kết nối các chuyên gia làm đẹp với cơ hội trên khắp Hoa Kỳ"
+              })}
+            </p>
+          </motion.div>
+        </div>
+      </div>
+      
+      <div className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="prose prose-lg max-w-none"
             >
-              {t(
-                "Building bridges between talented beauty professionals and the clients who value them.",
-                "Xây dựng cầu nối giữa các chuyên gia làm đẹp tài năng và khách hàng trân trọng họ."
-              )}
-            </motion.p>
-          </div>
-
-          {/* Introduction Section */}
-          <section className="mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 font-playfair">
-              {t("Why We Started EmviApp", "Tại Sao Chúng Tôi Bắt Đầu EmviApp")}
-            </h2>
-            <div className="prose max-w-none prose-lg">
-              <p className="text-gray-700 mb-4">
-                {t(
-                  "EmviApp was born from a simple observation: the beauty industry needed a platform that truly understood its heart and soul. In salons across America, we saw incredible talent flourishing alongside real challenges—language barriers, cultural misunderstandings, and digital gaps that traditional platforms weren't addressing.",
-                  "EmviApp ra đời từ một quan sát đơn giản: ngành công nghiệp làm đẹp cần một nền tảng thực sự hiểu được trái tim và tâm hồn của nó. Tại các tiệm làm đẹp khắp nước Mỹ, chúng tôi nhận thấy những tài năng tuyệt vời đang phát triển cùng với những thách thức thực sự—rào cản ngôn ngữ, hiểu lầm văn hóa, và khoảng cách kỹ thuật số mà các nền tảng truyền thống không giải quyết được."
-                )}
-              </p>
-              <p className="text-gray-700">
-                {t(
-                  "What started as a vision to connect communities has grown into something more: a home where artists are celebrated, where salons can thrive, and where clients can discover exceptional talent with confidence and ease.",
-                  "Điều bắt đầu như một tầm nhìn để kết nối cộng đồng đã phát triển thành một điều gì đó lớn hơn: một ngôi nhà nơi các nghệ sĩ được tôn vinh, nơi các tiệm có thể phát triển, và nơi khách hàng có thể khám phá tài năng đặc biệt với sự tự tin và dễ dàng."
-                )}
-              </p>
-            </div>
-          </section>
-
-          {/* Founder's Vision Section */}
-          <section className="mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 font-playfair">
-              {t("A Personal Connection", "Kết Nối Cá Nhân")}
-            </h2>
-            <div className="prose max-w-none prose-lg">
-              <p className="text-gray-700 mb-4">
-                {t(
-                  "Growing up in a family deeply connected to the beauty industry, I witnessed firsthand both the immense talent and the unique challenges faced by Vietnamese beauty professionals in America. I saw my family members and their colleagues struggle to have their skills recognized despite their exceptional artistry.",
-                  "Lớn lên trong một gia đình gắn bó sâu sắc với ngành làm đẹp, tôi đã chứng kiến trực tiếp cả tài năng to lớn và những thách thức độc đáo mà các chuyên gia làm đẹp Việt Nam phải đối mặt tại Mỹ. Tôi đã thấy các thành viên trong gia đình và đồng nghiệp của họ phải đấu tranh để được công nhận kỹ năng mặc dù họ có tài năng nghệ thuật đặc biệt."
-                )}
-              </p>
-              <p className="text-gray-700">
-                {t(
-                  "EmviApp is more than just technology—it's a bridge between cultures, a celebration of craft, and a promise that talent will always find its rightful recognition. We've built this platform with love and understanding that can only come from lived experience.",
-                  "EmviApp không chỉ là công nghệ—đó là cầu nối giữa các nền văn hóa, sự tôn vinh kỹ năng, và lời hứa rằng tài năng sẽ luôn được công nhận xứng đáng. Chúng tôi đã xây dựng nền tảng này với tình yêu và sự thấu hiểu chỉ có thể đến từ trải nghiệm sống."
-                )}
-              </p>
-            </div>
-          </section>
-
-          {/* Why EmviApp is Different */}
-          <section className="mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 font-playfair">
-              {t("What Makes Us Different", "Điều Gì Làm Nên Sự Khác Biệt")}
-            </h2>
-            <div className="prose max-w-none prose-lg">
-              <p className="text-gray-700">
-                {t(
-                  "Every decision we make, from design to development, starts with a simple question: \"How will this help our community?\" Our platform is crafted by people who understand the beauty industry from lived experience—not just market research.",
-                  "Mỗi quyết định chúng tôi đưa ra, từ thiết kế đến phát triển, bắt đầu với một câu hỏi đơn giản: \"Điều này sẽ giúp cộng đồng của chúng ta như thế nào?\" Nền tảng của chúng tôi được tạo nên bởi những người hiểu ngành làm đẹp từ trải nghiệm sống thực tế—không chỉ từ nghiên cứu thị trường."
-                )}
-              </p>
-            </div>
-            
-            {/* Feature Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="font-bold text-xl mb-3 text-purple-600">
-                  {t("Cultural Understanding", "Hiểu Biết Văn Hóa")}
-                </h3>
-                <p className="text-gray-600">
-                  {t(
-                    "We embrace both English and Vietnamese, recognizing the power of communicating in one's native language.",
-                    "Chúng tôi sử dụng cả tiếng Anh và tiếng Việt, công nhận sức mạnh của việc giao tiếp bằng tiếng mẹ đẻ."
-                  )}
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="font-bold text-xl mb-3 text-purple-600">
-                  {t("Community First", "Cộng Đồng Là Hàng Đầu")}
-                </h3>
-                <p className="text-gray-600">
-                  {t(
-                    "Every feature is built to strengthen connections between artists, salon owners, and clients.",
-                    "Mỗi tính năng được xây dựng để củng cố kết nối giữa nghệ sĩ, chủ salon và khách hàng."
-                  )}
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="font-bold text-xl mb-3 text-purple-600">
-                  {t("Authentic Representation", "Đại Diện Chân Thực")}
-                </h3>
-                <p className="text-gray-600">
-                  {t(
-                    "We showcase real talent and real stories, highlighting the artistry behind every service.",
-                    "Chúng tôi giới thiệu những tài năng thực và câu chuyện thực, làm nổi bật nghệ thuật đằng sau mỗi dịch vụ."
-                  )}
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="font-bold text-xl mb-3 text-purple-600">
-                  {t("Fair and Transparent", "Công Bằng và Minh Bạch")}
-                </h3>
-                <p className="text-gray-600">
-                  {t(
-                    "We've built a platform where both businesses and customers can thrive with clarity and trust.",
-                    "Chúng tôi đã xây dựng một nền tảng nơi cả doanh nghiệp và khách hàng có thể phát triển với sự rõ ràng và tin tưởng."
-                  )}
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Closing Message */}
-          <section className="mb-8">
-            <motion.div 
-              className="bg-gradient-to-r from-purple-50 to-pink-50 p-8 rounded-xl text-center"
-              variants={fadeIn}
-            >
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 font-playfair">
-                {t("Join Our Journey", "Tham Gia Hành Trình Của Chúng Tôi")}
+              <h2>
+                {t({
+                  english: "Our Mission",
+                  vietnamese: "Sứ mệnh của chúng tôi"
+                })}
               </h2>
-              <p className="text-lg text-gray-700 mb-0">
-                {t(
-                  "EmviApp is more than a platform—it's a movement to elevate and celebrate the beauty industry's true essence. We invite you to be part of this story, whether you're an artist, a salon owner, or someone who appreciates beauty in all its forms.",
-                  "EmviApp không chỉ là một nền tảng—đó là một phong trào để nâng cao và tôn vinh bản chất thực sự của ngành làm đẹp. Chúng tôi mời bạn trở thành một phần của câu chuyện này, cho dù bạn là một nghệ sĩ, chủ salon, hay là người đánh giá cao vẻ đẹp dưới mọi hình thức."
-                )}
+              <p>
+                {t({
+                  english: "EmviApp was founded with a simple but powerful mission: to create the most comprehensive and user-friendly marketplace for the beauty industry. We connect talented beauty professionals with salons, spas, and other businesses looking for skilled workers.",
+                  vietnamese: "EmviApp được thành lập với sứ mệnh đơn giản nhưng mạnh mẽ: tạo ra thị trường toàn diện và thân thiện nhất cho ngành công nghiệp làm đẹp. Chúng tôi kết nối các chuyên gia làm đẹp tài năng với các salon, spa và các doanh nghiệp khác đang tìm kiếm nhân viên có kỹ năng."
+                })}
+              </p>
+              
+              <h2>
+                {t({
+                  english: "What We Offer",
+                  vietnamese: "Chúng tôi cung cấp"
+                })}
+              </h2>
+              <ul>
+                <li>
+                  {t({
+                    english: "Job listings for nail technicians, hair stylists, estheticians, and more",
+                    vietnamese: "Danh sách việc làm cho kỹ thuật viên làm móng, thợ làm tóc, chuyên viên thẩm mỹ, và nhiều hơn nữa"
+                  })}
+                </li>
+                <li>
+                  {t({
+                    english: "Salon listings for businesses looking to sell or expand",
+                    vietnamese: "Danh sách salon cho các doanh nghiệp muốn bán hoặc mở rộng"
+                  })}
+                </li>
+                <li>
+                  {t({
+                    english: "Booth rental opportunities for independent professionals",
+                    vietnamese: "Cơ hội thuê quầy cho các chuyên gia độc lập"
+                  })}
+                </li>
+                <li>
+                  {t({
+                    english: "Supply and equipment listings for salon needs",
+                    vietnamese: "Danh sách vật tư và thiết bị cho nhu cầu salon"
+                  })}
+                </li>
+              </ul>
+              
+              <h2>
+                {t({
+                  english: "Our Story",
+                  vietnamese: "Câu chuyện của chúng tôi"
+                })}
+              </h2>
+              <p>
+                {t({
+                  english: "EmviApp was created by industry veterans who understood the challenges of connecting the right talent with the right opportunities in the beauty industry. What started as a small project has grown into a nationwide platform serving thousands of beauty professionals and businesses.",
+                  vietnamese: "EmviApp được tạo ra bởi những người có kinh nghiệm trong ngành hiểu rõ những thách thức trong việc kết nối đúng tài năng với đúng cơ hội trong ngành làm đẹp. Những gì bắt đầu như một dự án nhỏ đã phát triển thành một nền tảng toàn quốc phục vụ hàng nghìn chuyên gia làm đẹp và doanh nghiệp."
+                })}
+              </p>
+              
+              <h2>
+                {t({
+                  english: "Join Our Community",
+                  vietnamese: "Tham gia cộng đồng của chúng tôi"
+                })}
+              </h2>
+              <p>
+                {t({
+                  english: "Whether you're a salon owner looking for talented staff, a beauty professional seeking new opportunities, or someone looking to buy or sell a salon, EmviApp is here to help you succeed.",
+                  vietnamese: "Cho dù bạn là chủ salon đang tìm kiếm nhân viên tài năng, một chuyên gia làm đẹp đang tìm kiếm cơ hội mới, hoặc ai đó muốn mua hoặc bán salon, EmviApp luôn sẵn sàng giúp bạn thành công."
+                })}
               </p>
             </motion.div>
-          </section>
-        </motion.div>
-      </Container>
-    </Layout>
+            
+            <div className="mt-12 text-center">
+              <Link to="/contact">
+                <Button size="lg" className="font-medium">
+                  {t({
+                    english: "Contact Us",
+                    vietnamese: "Liên hệ với chúng tôi"
+                  })}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

@@ -7,13 +7,13 @@ import { getJobTypeColor } from "../utils/badgeStyles";
 interface JobSummaryProps {
   employmentType: string;
   salaryRange?: string;
-  createdAt: string;
+  createdAt: string | Date; // Updated to accept both string and Date
 }
 
 export const JobSummary = ({ employmentType, salaryRange, createdAt }: JobSummaryProps) => {
-  const formatPostedDate = (dateString: string) => {
+  const formatPostedDate = (dateInput: string | Date) => {
     try {
-      const date = new Date(dateString);
+      const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
       return `Posted ${formatDistanceToNow(date, { addSuffix: false })} ago`;
     } catch (error) {
       return "Recently posted";

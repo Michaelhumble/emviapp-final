@@ -32,8 +32,14 @@ export const usePostPayment = () => {
         }
 
         toast.success(
-          t("Your free post has been submitted", "Tin miễn phí của bạn đã được đăng"), {
-          description: t("You can view it in your dashboard now", "Bạn có thể xem nó trong bảng điều khiển của bạn ngay bây giờ")
+          t({
+            english: "Your free post has been submitted",
+            vietnamese: "Tin miễn phí của bạn đã được đăng"
+          }), {
+          description: t({
+            english: "You can view it in your dashboard now",
+            vietnamese: "Bạn có thể xem nó trong bảng điều khiển của bạn ngay bây giờ"
+          })
         });
         
         // Redirect to success page
@@ -79,8 +85,14 @@ export const usePostPayment = () => {
       }
     } catch (error: any) {
       console.error('Payment initiation error:', error);
-      toast.error(t("Failed to initiate payment", "Không thể khởi tạo thanh toán"), {
-        description: error.message || t("Please try again.", "Vui lòng thử lại.")
+      toast.error(t({
+        english: "Failed to initiate payment",
+        vietnamese: "Không thể khởi tạo thanh toán"
+      }), {
+        description: error.message || t({
+          english: "Please try again.",
+          vietnamese: "Vui lòng thử lại."
+        })
       });
       return { success: false };
     } finally {

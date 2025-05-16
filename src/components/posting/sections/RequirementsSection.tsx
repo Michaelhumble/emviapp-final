@@ -42,12 +42,21 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('Job Requirements', 'Yêu cầu công việc')}</h2>
-      <p className="text-muted-foreground">{t('Specify what you\'re looking for in candidates', 'Chỉ rõ bạn đang tìm kiếm ứng viên như thế nào')}</p>
+      <h2 className="text-2xl font-bold">{t({
+        english: 'Job Requirements',
+        vietnamese: 'Yêu cầu công việc'
+      })}</h2>
+      <p className="text-muted-foreground">{t({
+        english: 'Specify what you\'re looking for in candidates',
+        vietnamese: 'Chỉ rõ bạn đang tìm kiếm ứng viên như thế nào'
+      })}</p>
       
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="experience-level">{t('Experience Level', 'Kinh nghiệm')}</Label>
+          <Label htmlFor="experience-level">{t({
+            english: 'Experience Level',
+            vietnamese: 'Kinh nghiệm'
+          })}</Label>
           <RadioGroup 
             value={details.experience_level || 'any'} 
             onValueChange={(value) => onChange({ ...details, experience_level: value })}
@@ -55,24 +64,39 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="any" id="any" />
-              <Label htmlFor="any">{t('Any Experience', 'Bất kỳ kinh nghiệm nào')}</Label>
+              <Label htmlFor="any">{t({
+                english: 'Any Experience',
+                vietnamese: 'Bất kỳ kinh nghiệm nào'
+              })}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="entry" id="entry" />
-              <Label htmlFor="entry">{t('Entry Level', 'Mới vào nghề')}</Label>
+              <Label htmlFor="entry">{t({
+                english: 'Entry Level',
+                vietnamese: 'Mới vào nghề'
+              })}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="experienced" id="experienced" />
-              <Label htmlFor="experienced">{t('Experienced', 'Có kinh nghiệm')}</Label>
+              <Label htmlFor="experienced">{t({
+                english: 'Experienced',
+                vietnamese: 'Có kinh nghiệm'
+              })}</Label>
             </div>
           </RadioGroup>
         </div>
         
         <div className="grid gap-2">
-          <Label>{t('Requirements', 'Yêu cầu')}</Label>
+          <Label>{t({
+            english: 'Requirements',
+            vietnamese: 'Yêu cầu'
+          })}</Label>
           <div className="space-y-3">
             <Input
-              placeholder={t('Add requirement and press Enter', 'Thêm yêu cầu và nhấn Enter')}
+              placeholder={t({
+                english: 'Add requirement and press Enter',
+                vietnamese: 'Thêm yêu cầu và nhấn Enter'
+              })}
               onKeyDown={addRequirement}
             />
             
@@ -98,7 +122,10 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
         </div>
         
         <div className="grid gap-2 mt-4">
-          <Label>{t('Additional Benefits', 'Phúc lợi bổ sung')}</Label>
+          <Label>{t({
+            english: 'Additional Benefits',
+            vietnamese: 'Phúc lợi bổ sung'
+          })}</Label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="flex items-center space-x-2">
               <input 
@@ -108,7 +135,10 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, has_housing: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="has-housing">{t('Housing Available', 'Có nhà ở')}</Label>
+              <Label htmlFor="has-housing">{t({
+                english: 'Housing Available',
+                vietnamese: 'Có nhà ở'
+              })}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <input 
@@ -118,7 +148,10 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, has_wax_room: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="has-wax-room">{t('Wax Room Available', 'Có phòng wax')}</Label>
+              <Label htmlFor="has-wax-room">{t({
+                english: 'Wax Room Available',
+                vietnamese: 'Có phòng wax'
+              })}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <input 
@@ -128,7 +161,10 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, no_supply_deduction: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="no-supply-deduction">{t('No Supply Deduction', 'Không trừ tiền vật tư')}</Label>
+              <Label htmlFor="no-supply-deduction">{t({
+                english: 'No Supply Deduction',
+                vietnamese: 'Không trừ tiền vật tư'
+              })}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <input 
@@ -138,7 +174,10 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
                 onChange={(e) => onChange({ ...details, owner_will_train: e.target.checked })}
                 className="rounded border-gray-300"
               />
-              <Label htmlFor="owner-will-train">{t('Owner Will Train', 'Chủ sẽ đào tạo')}</Label>
+              <Label htmlFor="owner-will-train">{t({
+                english: 'Owner Will Train',
+                vietnamese: 'Chủ sẽ đào tạo'
+              })}</Label>
             </div>
           </div>
         </div>

@@ -38,50 +38,92 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t('Confirm Payment', 'Xác nhận thanh toán')}</DialogTitle>
+          <DialogTitle>{t({
+            english: 'Confirm Payment',
+            vietnamese: 'Xác nhận thanh toán'
+          })}</DialogTitle>
           <DialogDescription>
-            {t('Please review your selection before proceeding.', 'Vui lòng xem lại lựa chọn của bạn trước khi tiếp tục.')}
+            {t({
+              english: 'Please review your selection before proceeding.',
+              vietnamese: 'Vui lòng xem lại lựa chọn của bạn trước khi tiếp tục.'
+            })}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="border rounded-md p-4">
-            <h3 className="font-medium mb-2">{t('Payment Details', 'Chi tiết thanh toán')}</h3>
+            <h3 className="font-medium mb-2">{t({
+              english: 'Payment Details', 
+              vietnamese: 'Chi tiết thanh toán'
+            })}</h3>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>{t('Plan', 'Gói')}: </span>
+                <span>{t({
+                  english: 'Plan', 
+                  vietnamese: 'Gói'
+                })}: </span>
                 <span className="font-medium">
-                  {options.selectedPricingTier === 'standard' ? t('Standard', 'Tiêu chuẩn') :
-                   options.selectedPricingTier === 'gold' ? t('Gold Featured', 'Nổi bật Vàng') :
-                   options.selectedPricingTier === 'premium' ? t('Premium', 'Cao cấp') : 
-                   options.selectedPricingTier === 'diamond' ? t('Diamond Featured', 'Nổi bật Kim cương') : 
-                   t('Free', 'Miễn phí')}
+                  {options.selectedPricingTier === 'standard' ? t({
+                    english: 'Standard', 
+                    vietnamese: 'Tiêu chuẩn'
+                  }) :
+                   options.selectedPricingTier === 'gold' ? t({
+                     english: 'Gold Featured', 
+                     vietnamese: 'Nổi bật Vàng'
+                   }) :
+                   options.selectedPricingTier === 'premium' ? t({
+                     english: 'Premium', 
+                     vietnamese: 'Cao cấp'
+                   }) : 
+                   options.selectedPricingTier === 'diamond' ? t({
+                     english: 'Diamond Featured', 
+                     vietnamese: 'Nổi bật Kim cương'
+                   }) : 
+                   t({
+                     english: 'Free', 
+                     vietnamese: 'Miễn phí'
+                   })}
                 </span>
               </div>
               
               {options.autoRenew && (
                 <div className="flex justify-between text-sm">
-                  <span>{t('Auto-renew', 'Tự động gia hạn')}: </span>
-                  <span className="text-green-600">{t('Enabled (5% discount)', 'Đã bật (giảm 5%)')}</span>
+                  <span>{t({
+                    english: 'Auto-renew', 
+                    vietnamese: 'Tự động gia hạn'
+                  })}: </span>
+                  <span className="text-green-600">{t({
+                    english: 'Enabled (5% discount)', 
+                    vietnamese: 'Đã bật (giảm 5%)'
+                  })}</span>
                 </div>
               )}
               
               {discountPercentage > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span>{t('Discount', 'Giảm giá')}: </span>
+                  <span>{t({
+                    english: 'Discount', 
+                    vietnamese: 'Giảm giá'
+                  })}: </span>
                   <span className="text-green-600">-{discountPercentage}%</span>
                 </div>
               )}
               
               {discountPercentage > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span>{t('Original price', 'Giá gốc')}: </span>
+                  <span>{t({
+                    english: 'Original price', 
+                    vietnamese: 'Giá gốc'
+                  })}: </span>
                   <span className="line-through text-gray-500">{formatCurrency(originalPrice)}</span>
                 </div>
               )}
               
               <div className="flex justify-between font-bold border-t pt-2 mt-2">
-                <span>{t('Total', 'Tổng cộng')}: </span>
+                <span>{t({
+                  english: 'Total', 
+                  vietnamese: 'Tổng cộng'
+                })}: </span>
                 <span>{formatCurrency(amount)}</span>
               </div>
             </div>
@@ -89,10 +131,16 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
           
           <div className="flex justify-end space-x-2 pt-2">
             <Button variant="outline" onClick={onClose}>
-              {t('Cancel', 'Hủy')}
+              {t({
+                english: 'Cancel', 
+                vietnamese: 'Hủy'
+              })}
             </Button>
             <Button onClick={onConfirmPayment}>
-              {t('Confirm & Pay', 'Xác nhận & Thanh toán')}
+              {t({
+                english: 'Confirm & Pay', 
+                vietnamese: 'Xác nhận & Thanh toán'
+              })}
             </Button>
           </div>
         </div>
