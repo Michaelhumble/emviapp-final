@@ -29,7 +29,9 @@ const SubscriptionManagement = () => {
       try {
         // Use a table that actually exists in the database
         const { data, error } = await supabase
-          .rpc('get_user_subscription', { user_id_param: user?.id })
+          .from('user_subscription_data')
+          .select('*')
+          .eq('user_id', user?.id)
           .single();
 
         if (error && error.message !== 'No rows found') {
