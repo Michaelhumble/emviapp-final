@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from '@/hooks/useTranslation';
 
+// Define props interface for our component
 interface JobDetailsSectionProps {
   details: Partial<Job>;
   onChange: (details: Partial<Job>) => void;
