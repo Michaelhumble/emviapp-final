@@ -1,4 +1,6 @@
 
+import { JobPricingOption, JobPricingTier } from './jobPricing';
+
 export interface UserPostingStats {
   jobPostCount: number;
   salonPostCount: number;
@@ -24,22 +26,7 @@ export interface PricingOptions {
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
-export interface JobPricingOption {
-  id: string;
-  name: string;
-  price: number;
-  wasPrice?: number;
-  basePrice?: number;
-  finalPrice?: number;
-  description: string;
-  vietnameseDescription?: string;
-  tag?: string;
-  popular?: boolean;
-  discountPercentage?: number;
-  features: string[];
-  isFirstPost?: boolean;
-  tier?: JobPricingTier;
-  hidden?: boolean; // Add hidden property
-}
+export { JobPricingOption, JobPricingTier };
 
-export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';
+// Export the JobDetailsSubmission type from types/job.ts
+export type { JobDetailsSubmission } from '@/types/job';

@@ -1,293 +1,289 @@
-import React, { useState } from 'react';
-import { useAuth } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
-import Layout from "@/components/layout/Layout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { toast } from "sonner";
-import { Loader2, MapPin, Globe, Calendar, Languages } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { usePostPayment } from '@/hooks/payments/usePostPayment';
 
-const formSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State is required"),
-  jobType: z.string().min(1, "Job type is required"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  compensation: z.string().min(1, "Compensation information is required"),
-  startDate: z.string().optional(),
-  languages: z.string().optional(),
+import React, { useState } from 'react';
+import { Layout } from '@/components/layout/Layout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent,
+  CardFooter 
+} from '@/components/ui/card';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from '@/components/ui/select';
+import { useTranslation } from '@/hooks/useTranslation';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
+import { MapPin, Calendar, Languages, Loader2 } from 'lucide-react';
+import { BetterResultsSection } from '@/components/posting/job';
+
+const postJobSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  description: z.string().min(20, "Please provide a detailed description"),
+  location: z.string().min(2, "Location is required"),
+  salary: z.string().optional(),
+  contactEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
+  phoneNumber: z.string().optional(),
+  jobType: z.enum(["full-time", "part-time", "contract", "temporary"]),
+  requirements: z.string().optional(),
+  jobSummary: z.string().optional()
 });
 
-type FormValues = z.infer<typeof formSchema>;
-
-const jobTypes = [
-  "Full-Time",
-  "Part-Time",
-  "Booth Rent",
-  "Commission",
-  "Contract",
-  "Temporary"
-];
+type PostJobFormValues = z.infer<typeof postJobSchema>;
 
 const PostJob = () => {
-  const { user, userProfile } = useAuth();
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { initiatePayment, isLoading: paymentLoading } = usePostPayment();
+  const { t, isVietnamese } = useTranslation();
+  const { user } = useAuth();
+  const { profile } = useUserProfile();
+  const { initiatePayment, isLoading } = usePostPayment();
+  const [selectedTier, setSelectedTier] = useState('standard');
   
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<PostJobFormValues>({
+    resolver: zodResolver(postJobSchema),
     defaultValues: {
-      title: "",
-      city: "",
-      state: "",
-      jobType: "",
-      description: "",
-      compensation: "",
-      startDate: "",
-      languages: "",
+      title: '',
+      description: '',
+      location: '',
+      salary: '',
+      contactEmail: user?.email || '',
+      phoneNumber: profile?.phone_number || '',
+      jobType: 'full-time',
+      requirements: '',
+      jobSummary: ''
     }
   });
-  
-  if (!user) {
-    navigate('/auth/signin');
-    return null;
-  }
-  
-  const handleSubmit = async (values: FormValues) => {
-    setIsSubmitting(true);
-    
-    if (!user) {
-      navigate('/auth/signin');
-      return;
+
+  const onSubmit = async (data: PostJobFormValues) => {
+    try {
+      const jobDetails = {
+        title: data.title,
+        description: data.description,
+        location: data.location,
+        compensation_details: data.salary,
+        contact_info: {
+          email: data.contactEmail,
+          phone: data.phoneNumber
+        },
+        employment_type: data.jobType,
+        requirements: data.requirements?.split(',').map(req => req.trim()),
+        post_type: 'job',
+        user_id: user?.id
+      };
+
+      const pricingOptions = {
+        selectedPricingTier: selectedTier,
+        isFirstPost: true // Set based on user post history
+      };
+
+      await initiatePayment('job', jobDetails, pricingOptions);
+    } catch (error) {
+      console.error('Error submitting job post:', error);
+      toast.error(t('Failed to submit job post', 'Không thể gửi bài đăng công việc'));
     }
-    
-    // Start payment flow
-    await initiatePayment('job');
   };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Post a New Job</h1>
-          <p className="text-gray-600 mb-2">Reach local artists looking for their next opportunity.</p>
-          
-          {/* Vietnamese translation */}
-          <p className="text-gray-500 text-sm italic mb-8">
-            <span className="block">Đăng tuyển dụng để tìm nhân viên phù hợp cho tiệm của bạn.</span>
-            <span className="block">Post jobs to find the right staff for your salon.</span>
-          </p>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Details</CardTitle>
-              <CardDescription>Fill out the information below to create your job listing</CardDescription>
-            </CardHeader>
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)}>
-                <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Job Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Nail Technician, Hair Stylist" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <MapPin className="absolute left-2 top-3 h-4 w-4 text-gray-400" />
-                              <Input className="pl-8" placeholder="City" {...field} />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>State</FormLabel>
-                          <FormControl>
-                            <Input placeholder="State" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name="jobType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Job Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select job type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {jobTypes.map((type) => (
-                              <SelectItem key={type} value={type}>
-                                {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Job Description</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Describe the role, responsibilities, and what makes your salon special"
-                            className="min-h-[150px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="compensation"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Pay or Booth Rent Information</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="e.g., $25-30/hr, 60% commission, $300/week booth rent" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="startDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Preferred Start Date (Optional)</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Calendar className="absolute left-2 top-3 h-4 w-4 text-gray-400" />
-                              <Input 
-                                className="pl-8"
-                                type="date" 
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="languages"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Languages Preferred (Optional)</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Languages className="absolute left-2 top-3 h-4 w-4 text-gray-400" />
-                              <Input 
-                                className="pl-8"
-                                placeholder="e.g., English, Vietnamese, Spanish" 
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  {/* Future: Salon photo upload 
-                  <div className="border-dashed border-2 border-gray-300 rounded-md p-6 text-center">
-                    <CameraIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <div className="mt-2">
-                      <Button variant="outline" type="button">Upload Salon Photo</Button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">Optional: Add a photo of your salon</p>
-                  </div>
-                  */}
-                </CardContent>
+      <div className="container max-w-3xl px-4 py-12">
+        <Card className="border-0 shadow-md">
+          <CardHeader>
+            <CardTitle>{t('Post a Job', 'Đăng tin tuyển dụng')}</CardTitle>
+            <CardDescription>{t('Fill out the form below to post your job listing', 'Điền vào mẫu dưới đây để đăng tin tuyển dụng của bạn')}</CardDescription>
+          </CardHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <CardContent className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Job Title', 'Chức danh')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder={t('e.g. Nail Technician', 'VD: Thợ làm móng')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <CardFooter className="flex justify-between">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => {
-                      toast.info("Preview functionality coming soon!");
-                    }}
-                  >
-                    Preview Post
-                  </Button>
-                  
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        Posting...
-                      </>
-                    ) : "Submit Job"}
-                  </Button>
-                </CardFooter>
-              </form>
-            </Form>
-          </Card>
-          
-          <div className="mt-6 bg-blue-50 p-6 rounded-lg border border-blue-100">
-            <h3 className="font-medium text-lg mb-2">Why post on EmviApp?</h3>
-            <p className="text-gray-600">Your job will be shown to qualified nail technicians in your area. We've helped hundreds of salon owners find their perfect team members.</p>
-          </div>
-        </div>
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Location', 'Địa điểm')}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input className="pl-10" {...field} placeholder={t('e.g. San Jose, CA', 'VD: San Jose, CA')} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="salary"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Salary', 'Lương')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder={t('e.g. $25-35/hr, 60% commission', 'VD: $25-35/giờ, 60% hoa hồng')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="jobType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Job Type', 'Loại công việc')}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('Select job type', 'Chọn loại công việc')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {/* Would normally use a map with data array */}
+                          <SelectItem value="full-time">{t('Full-time', 'Toàn thời gian')}</SelectItem>
+                          <SelectItem value="part-time">{t('Part-time', 'Bán thời gian')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Job Description', 'Mô tả công việc')}</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          {...field}
+                          placeholder={t('Describe the job responsibilities, qualifications, etc.', 'Mô tả trách nhiệm công việc, trình độ chuyên môn, v.v.')}
+                          className="min-h-[120px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="contactEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Contact Email (optional)', 'Email liên hệ (tùy chọn)')}</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          type="email" 
+                          placeholder={t('Email for applications', 'Email để nhận đơn ứng tuyển')}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Contact Phone Number (optional)', 'Số điện thoại liên hệ (tùy chọn)')}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input 
+                            className="pl-10" 
+                            {...field} 
+                            placeholder={t('Phone number for applications', 'Số điện thoại để ứng tuyển')}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="requirements"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Requirements (comma separated)', 'Yêu cầu (phân cách bằng dấu phẩy)')}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Languages className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input 
+                            className="pl-10" 
+                            {...field} 
+                            placeholder={t('e.g. 2+ years experience, bilingual, licensed', 'VD: 2+ năm kinh nghiệm, song ngữ, có giấy phép')}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <BetterResultsSection />
+              </CardContent>
+              
+              <CardFooter className="flex flex-col space-y-4">
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading}
+                  size="lg"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('Processing...', 'Đang xử lý...')}
+                    </>
+                  ) : (
+                    t('Continue to Payment', 'Tiếp tục thanh toán')
+                  )}
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </Card>
       </div>
     </Layout>
   );
