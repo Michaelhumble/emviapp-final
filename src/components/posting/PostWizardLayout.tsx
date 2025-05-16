@@ -49,14 +49,14 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           {currentStep > 1 ? (
             <Button type="button" variant="outline" onClick={onPrev}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {t('Previous', 'Quay lại')}
+              {t({ english: 'Previous', vietnamese: 'Quay lại' })}
             </Button>
           ) : (
             <div></div>
           )}
           
           <Button type="button" onClick={onNext} className="px-6">
-            {t('Continue', 'Tiếp tục')}
+            {t({ english: 'Continue', vietnamese: 'Tiếp tục' })}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -74,10 +74,10 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('Processing...', 'Đang xử lý...')}
+                {t({ english: 'Processing...', vietnamese: 'Đang xử lý...' })}
               </>
             ) : (
-              t('Submit', 'Gửi bài')
+              t({ english: 'Submit', vietnamese: 'Gửi bài' })
             )}
           </Button>
         </div>

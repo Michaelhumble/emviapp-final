@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +15,7 @@ interface JobListingCardProps {
   showApplyButton?: boolean;
   onApply?: (jobId: string) => void;
   onShare?: () => void;
+  isExpired?: boolean; // Add isExpired prop
 }
 
 export const JobListingCard: React.FC<JobListingCardProps> = ({
@@ -22,13 +24,14 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   showApplyButton = true,
   onApply,
   onShare,
+  isExpired = false, // Default to false
 }) => {
   const { t } = useTranslation();
   const isCompact = variant === 'compact';
 
-  // Format the posted date
-  const postedDate = job.createdAt
-    ? formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })
+  // Format the posted date - handle both createdAt and created_at properties
+  const postedDate = job.created_at
+    ? formatDistanceToNow(new Date(job.created_at), { addSuffix: true })
     : t({ english: 'Recently', vietnamese: 'Gần đây' });
 
   // Handle apply button click
@@ -65,6 +68,11 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         <div className="flex justify-between items-start">
           <CardTitle className={`${isCompact ? 'text-lg' : 'text-xl'} font-semibold`}>
             {job.title}
+            {isExpired && (
+              <Badge variant="destructive" className="ml-2">
+                {t({ english: 'Expired', vietnamese: 'Đã hết hạn' })}
+              </Badge>
+            )}
           </CardTitle>
           {job.type && (
             <Badge variant={getBadgeVariant(job.type as ListingType)}>
@@ -93,10 +101,11 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             </div>
           )}
           
-          {job.salary && (
+          {/* Use salary_range or compensation if no salary field exists */}
+          {(job.salary_range || job.compensation || job.compensation_details) && (
             <div className="flex items-center text-sm text-gray-500">
               <Clock className="h-4 w-4 mr-2" />
-              <span>{job.salary}</span>
+              <span>{job.salary_range || job.compensation || job.compensation_details}</span>
             </div>
           )}
           
@@ -112,6 +121,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           <Button 
             onClick={handleApply}
             className="flex items-center"
+            disabled={isExpired}
           >
             {t({ english: 'Apply Now', vietnamese: 'Ứng tuyển ngay' })}
             <ArrowRight className="ml-2 h-4 w-4" />

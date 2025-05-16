@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Menu, Flame, Home, Briefcase, Store, Scissors, Users, Info, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,7 +60,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
               onClick={() => handleLinkClick("/post-job")}
             >
               <Flame className="h-5 w-5" />
-              {t("Post a Job for Free", "Đăng việc miễn phí")}
+              {t({ english: "Post a Job for Free", vietnamese: "Đăng việc miễn phí" })}
             </Button>
             
             {/* Language section */}
