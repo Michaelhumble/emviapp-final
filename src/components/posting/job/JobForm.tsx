@@ -65,8 +65,14 @@ export const JobForm: React.FC<JobFormProps> = ({
     setFormState(prev => ({ ...prev, compensation }));
   };
   
-  const handleContactInfoChange = (contactInfo: Job['contact_info']) => {
-    setFormState(prev => ({ ...prev, contact_info: contactInfo }));
+  const handleContactInfoChange = (contactInfo: Partial<Job['contact_info']>) => {
+    setFormState(prev => ({
+      ...prev,
+      contact_info: {
+        ...prev.contact_info,
+        ...contactInfo
+      }
+    }));
   };
   
   const handleSubmit = (e: React.FormEvent) => {

@@ -7,8 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface ContactInformationSectionProps {
-  contactInfo: Job['contact_info'];
-  onChange: (contactInfo: Job['contact_info']) => void;
+  contactInfo: Partial<Job['contact_info']>;
+  onChange: (contactInfo: Partial<Job['contact_info']>) => void;
 }
 
 const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInformationSectionProps) => {
