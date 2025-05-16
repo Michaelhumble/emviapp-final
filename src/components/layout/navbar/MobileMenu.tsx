@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, Globe, Home, Search, Briefcase, Store, Scissors, HelpCircle, Info, Phone, Heart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { mainNavigation } from "./config/navigationItems";
 import Logo from "@/components/ui/Logo";
@@ -19,6 +19,28 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { t, toggleLanguage, isVietnamese } = useTranslation();
+  
+  // Map icons to navigation items
+  const getIconComponent = (path: string) => {
+    switch (path) {
+      case '/':
+        return Home;
+      case '/jobs':
+        return Briefcase;
+      case '/salons':
+        return Store;
+      case '/artists':
+        return Scissors;
+      case '/about':
+        return Info;
+      case '/contact':
+        return Phone;
+      case '/help':
+        return HelpCircle;
+      default:
+        return Home;
+    }
+  };
   
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -58,18 +80,21 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
           {/* Menu items */}
           <div className="flex-grow overflow-y-auto py-4 px-2">
             <nav className="space-y-1">
-              {mainNavigation.map((item, index) => (
-                <div className="menu-item-enter" style={{ animationDelay: `${index * 75}ms` }} key={item.path}>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-lg py-6 font-medium"
-                    onClick={() => handleNavigation(item.path)}
-                  >
-                    {item.icon && React.createElement(item.icon, { className: "mr-3 h-5 w-5" })}
-                    {t(item.label)}
-                  </Button>
-                </div>
-              ))}
+              {mainNavigation.map((item, index) => {
+                const IconComponent = getIconComponent(item.path);
+                return (
+                  <div className="menu-item-enter" style={{ animationDelay: `${index * 75}ms` }} key={item.path}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-lg py-6 font-medium"
+                      onClick={() => handleNavigation(item.path)}
+                    >
+                      <IconComponent className="mr-3 h-[22px] w-[22px]" />
+                      {t(item.label)}
+                    </Button>
+                  </div>
+                );
+              })}
             </nav>
             
             <div className="border-t border-gray-100 my-4"></div>
@@ -77,7 +102,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
             {/* Auth section */}
             {user ? (
               <div className="space-y-2 px-2">
-                <div className="menu-card p-4 mb-4">
+                <div className="menu-card p-4 mb-4 bg-gray-50/50 backdrop-blur-sm rounded-lg">
                   <p className="text-sm text-gray-500">
                     {t("Signed in as")}
                   </p>
@@ -91,7 +116,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
                   className="w-full mb-2"
                   onClick={() => handleNavigation("/dashboard")}
                 >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  <LayoutDashboard className="mr-2 h-[22px] w-[22px]" />
                   {t("Dashboard")}
                 </Button>
                 
@@ -100,7 +125,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
                   className="w-full"
                   onClick={handleSignOutClick}
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
+                  <LogOut className="mr-2 h-[22px] w-[22px]" />
                   {t("Sign Out")}
                 </Button>
               </div>
@@ -132,12 +157,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
               className="w-full justify-center"
               onClick={toggleLanguage}
             >
-              <Globe className="mr-2 h-4 w-4" />
+              <Globe className="mr-2 h-[22px] w-[22px]" />
               {isVietnamese ? "Switch to English" : "Chuyển sang Tiếng Việt"}
             </Button>
             
-            <div className="text-center text-sm text-gray-500 pt-2">
-              <p className="opacity-70">Inspired by Sunshine ☀️</p>
+            <div className="text-center text-sm pt-2">
+              <p className="bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent font-medium">Inspired by Sunshine ☀️</p>
             </div>
           </div>
         </div>
@@ -145,8 +170,5 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
     </Sheet>
   );
 };
-
-// Add missing Lucide icon imports
-import { LayoutDashboard, LogOut, Globe } from "lucide-react";
 
 export default MobileMenu;

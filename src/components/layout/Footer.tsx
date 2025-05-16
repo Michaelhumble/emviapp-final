@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from "@/components/ui/Logo";
@@ -44,7 +45,6 @@ const Footer = () => {
           </div>
         </div>
         
-        {/* Added additional legal links at the bottom */}
         <div className="border-t border-gray-200 pt-6 mt-6 text-center">
           {/* Enhanced "Inspired by Sunshine" credit with gradient text */}
           <p className="mb-4">
