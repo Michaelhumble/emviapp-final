@@ -91,7 +91,7 @@ export const JobForm: React.FC<JobFormProps> = ({
           )}
           
           {currentStep === 3 && (
-            <RequirementsSection />
+            <RequirementsSection control={form.control} />
           )}
           
           {currentStep === 4 && (

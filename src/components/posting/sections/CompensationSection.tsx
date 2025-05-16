@@ -1,7 +1,7 @@
 
 import React from 'react';
+import { Control } from 'react-hook-form';
 import { useFormContext } from 'react-hook-form';
-import { Job } from '@/types/job';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
   FormControl,
@@ -12,19 +12,29 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-interface CompensationSectionProps {
-  form: any; // Add form prop
+export interface CompensationSectionProps {
+  control?: Control<any>;
+  form?: any;
 }
 
-const CompensationSection: React.FC<CompensationSectionProps> = ({ form }) => {
+const CompensationSection: React.FC<CompensationSectionProps> = ({ control }) => {
   const { t } = useTranslation();
+  const formContext = useFormContext();
+  
+  // Use either passed control or get it from form context
+  const formControl = control || (formContext && formContext.control);
+
+  if (!formControl) {
+    console.error('CompensationSection: No form control available');
+    return null;
+  }
 
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-semibold">{t('Compensation', 'Lương & Thưởng')}</h2>
       
       <FormField
-        control={form.control}
+        control={formControl}
         name="salary"
         render={({ field }) => (
           <FormItem>

@@ -67,7 +67,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(handleFormSubmit)} className="space-y-8">
             <JobDetailsSection />
-            <RequirementsSection />
+            <RequirementsSection control={methods.control} />
             <CompensationSection control={methods.control} />
             <ContactInformationSection control={methods.control} />
             

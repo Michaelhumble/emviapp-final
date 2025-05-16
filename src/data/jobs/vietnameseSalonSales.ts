@@ -17,7 +17,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: 6,
     station_count: 8,
     sale_price: "$120,000",
-    asking_price: "$120,000", // Converted to string
+    asking_price: "$120,000",
     square_feet: 1500,
     reason_for_selling: "Owner retiring",
     pricingTier: "premium",
@@ -43,7 +43,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: 8,
     station_count: 10,
     sale_price: "$250,000",
-    asking_price: "$250,000", // Converted to string
+    asking_price: "$250,000",
     square_feet: 2000,
     reason_for_selling: "Relocating",
     pricingTier: "diamond",
@@ -68,7 +68,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: 5,
     station_count: 6,
     sale_price: "$95,000",
-    asking_price: "$95,000", // Converted to string
+    asking_price: "$95,000",
     square_feet: 1200,
     reason_for_selling: "Moving out of state",
     pricingTier: "gold",
@@ -93,7 +93,7 @@ export const vietnameseSalonSales: Job[] = [
     chair_count: 4,
     station_count: 6,
     sale_price: "$580,000",
-    asking_price: "$580,000", // Converted to string
+    asking_price: "$580,000",
     square_feet: 2600,
     reason_for_selling: "Partnership dissolution",
     pricingTier: "diamond",

@@ -1,28 +1,44 @@
 
 import React from 'react';
+import { Control } from 'react-hook-form';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
 
-const RequirementsSection = () => {
-  const { control, watch, setValue } = useFormContext();
-  const requirements = watch('requirements') || [];
+interface RequirementsSectionProps {
+  control?: Control<any>;
+}
+
+const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control }) => {
+  const formContext = useFormContext();
+  const { control: formControl, watch, setValue } = formContext || {};
+  const finalControl = control || formControl;
+
+  // If no form context is available, show an error
+  if (!finalControl && !formContext) {
+    console.error('RequirementsSection: No form control available');
+    return null;
+  }
+
+  const requirements = watch ? watch('requirements') || [] : [];
   const [newRequirement, setNewRequirement] = React.useState('');
 
   const addRequirement = () => {
-    if (newRequirement.trim() !== '') {
+    if (newRequirement.trim() !== '' && setValue) {
       setValue('requirements', [...requirements, newRequirement]);
       setNewRequirement('');
     }
   };
 
   const removeRequirement = (index: number) => {
-    setValue(
-      'requirements',
-      requirements.filter((_, i) => i !== index)
-    );
+    if (setValue) {
+      setValue(
+        'requirements',
+        requirements.filter((_, i) => i !== index)
+      );
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -38,7 +54,7 @@ const RequirementsSection = () => {
       
       <div className="space-y-4">
         <FormField
-          control={control}
+          control={finalControl}
           name="requirements"
           render={() => (
             <FormItem>
@@ -67,7 +83,7 @@ const RequirementsSection = () => {
           <div className="mt-4 space-y-2">
             <p className="text-sm font-medium">Added Requirements:</p>
             <ul className="space-y-2">
-              {requirements.map((req, index) => (
+              {requirements.map((req: string, index: number) => (
                 <li 
                   key={index}
                   className="flex items-center justify-between p-2 bg-gray-50 rounded-md border"
