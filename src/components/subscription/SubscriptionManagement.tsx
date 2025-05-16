@@ -27,11 +27,9 @@ const SubscriptionManagement = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        // Using a direct query instead of an RPC function that doesn't exist
+        // Use a table that actually exists in the database
         const { data, error } = await supabase
-          .from('user_subscriptions')
-          .select('*')
-          .eq('user_id', user?.id)
+          .rpc('get_user_subscription', { user_id_param: user?.id })
           .single();
 
         if (error && error.message !== 'No rows found') {
@@ -39,7 +37,7 @@ const SubscriptionManagement = () => {
           toast.error("Failed to load subscription details.");
         }
 
-        setSubscription(data);
+        setSubscription(data as Subscription);
       } finally {
         setLoading(false);
       }
