@@ -13,11 +13,11 @@ const Logo: React.FC<LogoProps> = ({
   size = "medium",
   showText = false
 }) => {
-  // Determine logo size based on prop
+  // Determine logo size based on prop - increased by 20%
   const sizeClasses = {
-    small: "h-8 w-auto",
-    medium: "h-10 w-auto",
-    large: "h-16 w-auto"
+    small: "h-10 w-auto", // Increased from h-8
+    medium: "h-12 w-auto", // Increased from h-10
+    large: "h-20 w-auto"  // Increased from h-16
   };
 
   return (
