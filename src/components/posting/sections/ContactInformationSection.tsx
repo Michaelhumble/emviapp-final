@@ -4,7 +4,7 @@ import { Job } from '@/types/job';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useTranslation, Translation } from '@/hooks/useTranslation';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ContactInformationSectionProps {
   contactInfo: Job['contact_info'];
@@ -52,7 +52,7 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
           })}</Label>
           <Input 
             id="owner-name"
-            value={contactInfo.owner_name || ''}
+            value={contactInfo?.owner_name || ''}
             onChange={(e) => onChange({ ...contactInfo, owner_name: e.target.value })}
             placeholder={t({
               english: 'Your name or business name',
@@ -70,7 +70,7 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
           <Input 
             id="phone"
             type="tel"
-            value={contactInfo.phone || ''}
+            value={contactInfo?.phone || ''}
             onChange={handlePhoneChange}
             placeholder={t({
               english: 'e.g. (555) 123-4567',
@@ -93,7 +93,7 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
           <Input 
             id="email"
             type="email"
-            value={contactInfo.email || ''}
+            value={contactInfo?.email || ''}
             onChange={(e) => onChange({ ...contactInfo, email: e.target.value })}
             placeholder={t({
               english: 'e.g. youremail@example.com',
@@ -110,7 +110,7 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
           })}</Label>
           <Input 
             id="zalo"
-            value={contactInfo.zalo || ''}
+            value={contactInfo?.zalo || ''}
             onChange={(e) => onChange({ ...contactInfo, zalo: e.target.value })}
             placeholder={t({
               english: 'Your Zalo contact',
@@ -126,7 +126,7 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
           })}</Label>
           <Textarea
             id="notes"
-            value={contactInfo.notes || ''}
+            value={contactInfo?.notes || ''}
             onChange={(e) => onChange({ ...contactInfo, notes: e.target.value })}
             placeholder={t({
               english: 'Best time to contact, preferred method, etc.',

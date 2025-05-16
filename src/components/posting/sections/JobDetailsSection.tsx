@@ -16,9 +16,11 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface JobDetailsSectionProps {
   details: Partial<Job>;
   onChange: (details: Partial<Job>) => void;
+  photoUploads?: File[];
+  setPhotoUploads?: React.Dispatch<React.SetStateAction<File[]>>;
 }
 
-const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
+const JobDetailsSection = ({ details, onChange, photoUploads, setPhotoUploads }: JobDetailsSectionProps) => {
   const { t } = useTranslation();
   
   return (

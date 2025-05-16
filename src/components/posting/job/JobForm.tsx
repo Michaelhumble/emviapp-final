@@ -57,16 +57,16 @@ export const JobForm: React.FC<JobFormProps> = ({
     },
   });
   
-  const handleJobDetailsChange = (jobDetails: any) => {
-    setFormState(prev => ({ ...prev, jobDetails }));
+  const handleJobDetailsChange = (details: any) => {
+    setFormState(prev => ({ ...prev, jobDetails: details }));
   };
   
   const handleCompensationChange = (compensation: any) => {
     setFormState(prev => ({ ...prev, compensation }));
   };
   
-  const handleContactInfoChange = (contact_info: Job['contact_info']) => {
-    setFormState(prev => ({ ...prev, contact_info }));
+  const handleContactInfoChange = (contactInfo: Job['contact_info']) => {
+    setFormState(prev => ({ ...prev, contact_info: contactInfo }));
   };
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -87,7 +87,7 @@ export const JobForm: React.FC<JobFormProps> = ({
       <div className="space-y-12">
         {/* Job Details Section */}
         <JobDetailsSection 
-          jobDetails={formState.jobDetails}
+          details={formState.jobDetails}
           onChange={handleJobDetailsChange}
           photoUploads={photoUploads}
           setPhotoUploads={setPhotoUploads}
@@ -95,7 +95,7 @@ export const JobForm: React.FC<JobFormProps> = ({
         
         {/* Compensation Section */}
         <CompensationSection 
-          compensation={formState.compensation}
+          details={formState.compensation}
           onChange={handleCompensationChange}
         />
         
