@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -33,10 +32,7 @@ const Navbar = () => {
     navigate("/post-job");
   };
 
-  const tooltipText = t(
-    "Was $29.99 – Free for a limited time!",
-    "Giá gốc $29.99 – Hiện đang miễn phí!"
-  );
+  const tooltipText = t("Was $29.99 – Free for a limited time!");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
@@ -62,14 +58,14 @@ const Navbar = () => {
                     onClick={onPostJobClick} 
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                   >
-                    {t("Post a Job for Free", "Đăng việc miễn phí")}
+                    {t("Post a Job for Free")}
                   </Button>
                 ) : (
                   <Button 
                     onClick={() => navigate("/sign-in")}
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                   >
-                    {t("Post a Job for Free", "Đăng việc miễn phí")}
+                    {t("Post a Job for Free")}
                   </Button>
                 )}
               </TooltipTrigger>

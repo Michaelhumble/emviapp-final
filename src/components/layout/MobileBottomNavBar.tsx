@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -24,7 +23,7 @@ const MobileBottomNavBar = () => {
   const navTabs = [
     {
       key: "home",
-      label: t("Home", "Trang chủ"),
+      label: t("Home"),
       route: "/",
       icon: (active: boolean) => (
         <Home strokeWidth={active ? 2.3 : 2} className={cn(
@@ -34,7 +33,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "search",
-      label: t("Search", "Tìm kiếm"),
+      label: t("Search"),
       route: "/search",
       icon: (active: boolean) => (
         <Search strokeWidth={active ? 2.3 : 2} className={cn(
@@ -44,7 +43,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "jobs",
-      label: t("Jobs", "Tuyển dụng"),
+      label: t("Jobs"),
       route: "/jobs",
       icon: (active: boolean) => (
         <Briefcase strokeWidth={active ? 2.3 : 2} className={cn(
@@ -54,7 +53,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "salons",
-      label: t("Salons", "Tiệm Nail"),
+      label: t("Salons"),
       route: "/salons",
       icon: (active: boolean) => (
         <Store strokeWidth={active ? 2.3 : 2} className={cn(
@@ -64,7 +63,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "profile",
-      label: t("Profile", "Cá nhân"),
+      label: t("Profile"),
       route: "/profile",
       icon: (active: boolean) => (
         <User strokeWidth={active ? 2.3 : 2} className={cn(
@@ -176,4 +175,3 @@ const MobileBottomNavBar = () => {
 };
 
 export default MobileBottomNavBar;
-

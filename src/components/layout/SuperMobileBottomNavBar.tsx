@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Home, Search, Briefcase, Store, User } from "lucide-react";
@@ -31,28 +30,28 @@ const SuperMobileBottomNavBar = () => {
     { 
       path: "/", 
       icon: <Home strokeWidth={1.75} size={24} />, 
-      label: t("Home", "Trang chủ") 
+      label: t("Home") 
     },
     { 
       path: "/search", 
       icon: <Search strokeWidth={1.75} size={24} />, 
-      label: t("Search", "Tìm kiếm") 
+      label: t("Search") 
     },
     { 
       path: "/jobs", 
       icon: <Briefcase strokeWidth={1.75} size={language === "en" ? 30 : 28} />, 
-      label: t("Jobs", "Tuyển dụng"),
+      label: t("Jobs"),
       isCenter: true
     },
     { 
       path: "/salons", 
       icon: <Store strokeWidth={1.75} size={24} />, 
-      label: t("Salons", "Tiệm Nail") 
+      label: t("Salons") 
     },
     { 
       path: "/contact", 
       icon: <User strokeWidth={1.75} size={24} />, 
-      label: t("Contact", "Liên hệ") 
+      label: t("Contact") 
     }
   ];
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { JobFormValues } from './jobFormSchema';
 import { JobForm } from './JobForm';
@@ -37,6 +38,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [originalPrice, setOriginalPrice] = useState(0);
   const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [formValues, setFormValues] = useState<JobFormValues>(); // Add state to store form values
   
   const handlePricingChange = useCallback((pricingTier: string) => {
     setPricingOptions(prev => ({ ...prev, selectedPricingTier: pricingTier }));
@@ -47,18 +49,21 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
   }, []);
   
   const handleSubmit = async (values: JobFormValues) => {
+    setFormValues(values); // Store form values when submitted
     setIsPaymentModalOpen(true);
   };
   
   const confirmPayment = async () => {
+    if (!formValues) return; // Guard against undefined values
+    
     setIsPaymentModalOpen(false);
     setIsSubmitting(true);
     
     try {
-      await onSubmit(values, photoUploads, pricingOptions);
+      await onSubmit(formValues, photoUploads, pricingOptions);
       
       // Initiate payment after successful form submission
-      const paymentResult = await initiatePayment('job', values, pricingOptions);
+      const paymentResult = await initiatePayment('job', formValues, pricingOptions);
       
       if (paymentResult?.success) {
         toast.success("Job post submitted successfully!");
@@ -74,14 +79,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
     }
   };
   
-  // Example changes:
-  // Change t("English text", "Vietnamese text") to t({ english: "English text", vietnamese: "Vietnamese text" })
-  
   // Update translation usage example
-  const placeholderText = t({
-    english: "Enter job details here...",
-    vietnamese: "Nhập chi tiết công việc tại đây..."
-  });
+  const placeholderText = t("Enter job details here...");
   
   return (
     <div className="space-y-6">

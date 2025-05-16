@@ -1,15 +1,16 @@
 
 import React from 'react';
 import { Job } from '@/types/job';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobDetailsSectionProps {
@@ -22,61 +23,85 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
   
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('Job Details', 'Chi tiết công việc')}</h2>
-      <p className="text-muted-foreground">{t('Basic information about the job position', 'Thông tin cơ bản về vị trí tuyển dụng')}</p>
+      <h2 className="text-2xl font-bold">
+        {t("Job Details")}
+      </h2>
+      <p className="text-muted-foreground">
+        {t("Provide information about the position to attract qualified candidates")}
+      </p>
       
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="title">{t('Job Title', 'Chức danh')}</Label>
+          <Label htmlFor="title">
+            {t("Job Title")}
+          </Label>
           <Input 
             id="title"
             value={details.title || ''}
             onChange={(e) => onChange({ ...details, title: e.target.value })}
-            placeholder={t('e.g. Nail Technician, Hair Stylist', 'VD: Thợ nail, Thợ tóc')}
+            placeholder={t("e.g. Nail Technician")}
             required
           />
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="location">{t('Location', 'Địa điểm')}</Label>
-          <Input 
-            id="location"
-            value={details.location || ''}
-            onChange={(e) => onChange({ ...details, location: e.target.value })}
-            placeholder={t('e.g. Los Angeles, CA', 'VD: Houston, TX')}
-            required
-          />
-        </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="employment-type">{t('Employment Type', 'Loại việc làm')}</Label>
+          <Label htmlFor="employment-type">
+            {t("Employment Type")}
+          </Label>
           <Select 
             value={details.employment_type || 'full-time'}
             onValueChange={(value) => onChange({ ...details, employment_type: value })}
           >
             <SelectTrigger id="employment-type">
-              <SelectValue placeholder={t('Select employment type', 'Chọn loại việc làm')} />
+              <SelectValue placeholder={t("Select employment type")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="full-time">{t('Full-time', 'Toàn thời gian')}</SelectItem>
-              <SelectItem value="part-time">{t('Part-time', 'Bán thời gian')}</SelectItem>
-              <SelectItem value="contractor">{t('Contractor', 'Hợp đồng')}</SelectItem>
-              <SelectItem value="temporary">{t('Temporary', 'Tạm thời')}</SelectItem>
-              <SelectItem value="internship">{t('Internship', 'Thực tập')}</SelectItem>
+              <SelectItem value="full-time">{t("Full-time")}</SelectItem>
+              <SelectItem value="part-time">{t("Part-time")}</SelectItem>
+              <SelectItem value="contract">{t("Contract")}</SelectItem>
+              <SelectItem value="temporary">{t("Temporary")}</SelectItem>
+              <SelectItem value="commission">{t("Commission")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="description">{t('Job Description', 'Mô tả công việc')}</Label>
-          <textarea
+          <Label htmlFor="description">
+            {t("Job Description")}
+          </Label>
+          <Textarea 
             id="description"
-            className="min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             value={details.description || ''}
             onChange={(e) => onChange({ ...details, description: e.target.value })}
-            placeholder={t('Describe the job position, responsibilities, and benefits', 'Mô tả vị trí công việc, trách nhiệm và quyền lợi')}
-            required
+            placeholder={t("Describe the responsibilities and qualifications...")}
+            rows={6}
           />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="location">
+              {t("Location")}
+            </Label>
+            <Input 
+              id="location"
+              value={details.location || ''}
+              onChange={(e) => onChange({ ...details, location: e.target.value })}
+              placeholder={t("City, State")}
+            />
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="zip-code">
+              {t("ZIP/Postal Code")}
+            </Label>
+            <Input 
+              id="zip-code"
+              value={details.zip_code || ''}
+              onChange={(e) => onChange({ ...details, zip_code: e.target.value })}
+              placeholder={t("e.g. 90210")}
+            />
+          </div>
         </div>
       </div>
     </div>
