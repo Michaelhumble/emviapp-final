@@ -1,24 +1,12 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Job } from "@/types/job";
-import { JobCardHeader } from "./card-sections/JobCardHeader";
-import { JobSummary } from "./card-sections/JobSummary";
-import { JobFeatures } from "./card-sections/JobFeatures";
-import { JobSpecialties } from "./card-sections/JobSpecialties";
-import { JobTipInfo } from "./card-sections/JobTipInfo";
-import { JobExpirationInfo } from "./card-sections/JobExpirationInfo";
-import { JobCardActions } from "./card-sections/JobCardActions";
-import { useTranslation } from "@/hooks/useTranslation";
-import { Lock, Building } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
-import { isNailJob, getNailJobImage, NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
-import { isBarberJob, getBarberJobImage } from "@/utils/barberShopImages";
-import { isMassageJob, getMassageJobImage } from "@/utils/massageSalonImages";
-import { isLashBrowJob, getLashBrowJobImage } from "@/utils/lashBrowSalonImages";
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Job } from '@/types/job';
+import JobCardHeader from './card-sections/JobCardHeader';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Clock, MapPin, BadgeDollarSign, Building2, Home } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface JobListingCardProps {
   job: Job;

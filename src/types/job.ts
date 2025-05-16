@@ -37,7 +37,7 @@ export interface Job {
     notes?: string;
   };
   specialties?: string[];
-  pricingTier?: 'free' | 'starter' | 'premium' | 'gold' | 'diamond';
+  pricingTier?: 'free' | 'starter' | 'premium' | 'gold' | 'diamond' | 'expired';
   is_featured?: boolean;
   industry?: string;
   expires_at?: string;
@@ -75,15 +75,14 @@ export interface Job {
   reason_for_selling?: string;
   asking_price?: string | number;
   square_feet?: number;
+  verified?: boolean;
+  featured_text?: string;
   
   // Requirements-related fields
   requirements?: string[];
   experience_level?: string;
   has_wax_room?: boolean;
   preferred_languages?: string[];
-  
-  // Additional verification fields
-  verified?: boolean;
 }
 
 export interface PricingOptions {
@@ -115,5 +114,5 @@ export interface JobApplication {
   updated_at: string;
 }
 
-// Add ListingType enum to fix TypeScript error in OpportunitiesSection
-export type ListingType = 'job' | 'booth' | 'salon' | 'supply' | string;
+// Update ListingType enum to include all valid values
+export type ListingType = 'job' | 'booth' | 'salon' | 'supply' | 'opportunity' | string;

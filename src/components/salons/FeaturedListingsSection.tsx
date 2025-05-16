@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { Job } from '@/types/job';
+import { Salon } from '@/types/salon';
 import ValidatedSalonCard from './ValidatedSalonCard';
 
 interface FeaturedListingsSectionProps {
@@ -55,7 +56,7 @@ const FeaturedListingsSection = ({
                   key={listing.id}
                   salon={{
                     id: listing.id,
-                    title: listing.title,
+                    name: listing.title,
                     location: listing.location,
                     imageUrl: listing.imageUrl || '',
                     description: listing.description,
@@ -63,7 +64,7 @@ const FeaturedListingsSection = ({
                     features: listing.salon_features || [],
                     status: listing.status || 'active',
                   }}
-                  listingType={listing.type || 'salon'}
+                  listingType={'salon'}
                 />
               ))}
             </div>

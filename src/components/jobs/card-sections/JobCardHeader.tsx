@@ -38,12 +38,13 @@ const JobCardHeader = ({ job, showCompany = true }: JobCardHeaderProps) => {
         </div>
       </div>
       
-      {job.pricingTier && job.pricingTier !== 'free' && (
+      {job.pricingTier && job.pricingTier !== 'free' && job.pricingTier !== 'expired' && (
         <Badge 
           className={`
             ${job.pricingTier === 'premium' ? 'bg-purple-500' : ''}
             ${job.pricingTier === 'gold' ? 'bg-amber-500' : ''}
             ${job.pricingTier === 'diamond' ? 'bg-blue-600' : ''}
+            ${job.pricingTier === 'starter' ? 'bg-green-500' : ''}
           `}
         >
           {job.pricingTier.charAt(0).toUpperCase() + job.pricingTier.slice(1)}
