@@ -149,5 +149,58 @@ export const aiPolishSuggestionsVietnamese: Record<IndustryType, string[]> = {
   ]
 };
 
-// Re-export IndustryType from jobFormSchema.ts
-export { IndustryType };
+// Job templates for different industries
+export const jobTemplates = {
+  nails: {
+    title: "Experienced Nail Technician Wanted for Upscale Salon",
+    description: "Join our team of skilled nail technicians in a modern, upscale salon environment. We're seeking experienced professionals who take pride in their work and deliver exceptional customer service. Our salon offers competitive pay, flexible scheduling, and a supportive team atmosphere.",
+    salary_range: "$25-35/hour + tips",
+    jobType: "full-time",
+    experience_level: "experienced"
+  },
+  hair: {
+    title: "Creative Hair Stylist for High-End Salon",
+    description: "We're looking for passionate hair stylists who want to grow their careers in a supportive, education-focused salon. Join our team and work with premium products while building your clientele. We offer ongoing training, competitive compensation, and a collaborative atmosphere.",
+    salary_range: "$30-45/hour + commission",
+    jobType: "full-time",
+    experience_level: "intermediate"
+  },
+  lashes: {
+    title: "Certified Lash Artist for Luxury Beauty Studio",
+    description: "Our growing lash studio is seeking a talented lash artist to join our team. The ideal candidate has experience with classic and volume techniques, excellent attention to detail, and a passion for creating beautiful, customized lash sets for clients.",
+    salary_range: "$25-40/hour + tips",
+    jobType: "full-time",
+    experience_level: "experienced"
+  },
+  massage: {
+    title: "Licensed Massage Therapist for Wellness Spa",
+    description: "Join our tranquil spa as a massage therapist where you'll help clients achieve relaxation and pain relief. We're looking for licensed professionals experienced in Swedish, deep tissue, and hot stone techniques. Our supportive environment focuses on both client and therapist wellbeing.",
+    salary_range: "$30-45/hour + tips",
+    jobType: "part-time",
+    experience_level: "intermediate"
+  },
+  tattoo: {
+    title: "Talented Tattoo Artist for Established Studio",
+    description: "We're expanding our team of creative tattoo artists at our clean, professional studio. The ideal candidate has a strong portfolio, excellent technical skills, and can provide exceptional customer service. We offer a supportive environment where you can grow your client base.",
+    salary_range: "50%+ commission",
+    jobType: "contract",
+    experience_level: "experienced"
+  },
+  brows: {
+    title: "Brow Specialist for Premium Beauty Boutique",
+    description: "Our beauty boutique is looking for a skilled brow artist who can shape, tint, and transform brows with precision. The ideal candidate is experienced in microblading, lamination, and traditional brow services. Join our team and help clients achieve their perfect brow look.",
+    salary_range: "$25-35/hour + commission",
+    jobType: "part-time",
+    experience_level: "intermediate"
+  },
+  skincare: {
+    title: "Licensed Esthetician for Luxury Spa",
+    description: "We're seeking a licensed esthetician with a passion for skincare to join our luxury spa team. The ideal candidate has experience with facials, peels, and advanced skin treatments. You'll work with premium product lines while providing customized skincare solutions to our clientele.",
+    salary_range: "$25-40/hour + commission",
+    jobType: "full-time",
+    experience_level: "experienced"
+  }
+};
+
+// Export IndustryType as a type (not a value)
+export type { IndustryType };
