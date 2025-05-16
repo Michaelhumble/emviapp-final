@@ -118,6 +118,7 @@
   
   .menu-item-enter {
     animation: slide-in 0.3s ease forwards;
+    animation-delay: calc(var(--index, 0) * 0.05s);
   }
 
   /* Horizontal scroll for tables on mobile */
@@ -167,5 +168,19 @@
   
   .animate-subtle-pulse {
     animation: subtle-pulse 3s infinite ease-in-out;
+  }
+
+  /* Menu card style */
+  .menu-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-3 transition-all hover:shadow-md;
+  }
+  
+  /* Menu link effects */
+  .menu-link {
+    @apply flex items-center gap-2 px-3 py-2 rounded-md transition-colors;
+  }
+  
+  .menu-link-active {
+    @apply bg-purple-50 text-purple-700 font-medium;
   }
 }
