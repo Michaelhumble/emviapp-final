@@ -1,20 +1,25 @@
-import React, { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
-import { useUserProfile } from "@/hooks/useUserProfile";
-import { jobFormSchema } from "@/components/posting/job/jobFormSchema";
-import { useAuth } from "@/context/auth";
-import { BetterResultsSection } from "@/components/posting/job";
-import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Calendar, Languages, Loader2 } from "lucide-react";
+import React, { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link, useNavigate } from 'react-router-dom';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/context/auth';
+import { useTranslation } from '@/hooks/useTranslation';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { toast } from 'sonner';
+import { Layout } from '@/components/Layout';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { MapPin, Calendar, Languages, Loader2 } from 'lucide-react';
+import { JobForm } from '@/components/posting/job';
+import BetterResultsSection from '@/components/posting/job/BetterResultsSection';
+import { JobDetailsSubmission } from '@/types/job';
 
 const postJobSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),

@@ -49,4 +49,4 @@ export interface JobPricingTier {
 export { jobPricingOptions } from './jobPricing';
 
 // Export the JobDetailsSubmission type from types/job.ts
-export type { JobDetailsSubmission } from '@/types/job';
+export type { JobDetailsSubmission, Job, PricingOptions as JobPricingOptions } from '@/types/job';
