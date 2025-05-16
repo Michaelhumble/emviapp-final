@@ -97,8 +97,8 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
             </Label>
             <Input 
               id="zip-code"
-              value={details.zip_code || ''}
-              onChange={(e) => onChange({ ...details, zip_code: e.target.value })}
+              value={details.postal_code || ''}
+              onChange={(e) => onChange({ ...details, postal_code: e.target.value })}
               placeholder={t("e.g. 90210")}
             />
           </div>

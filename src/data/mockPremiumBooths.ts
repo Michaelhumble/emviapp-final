@@ -19,8 +19,8 @@ export const createMockPremiumBooths = (): Job[] => {
         phone: "310-555-9876",
         email: "lisa@diamondnails.com"
       },
-      requirements: "Licensed nail technician, professional attitude, reliable",
-      benefits: "Free parking, flexible hours, walk-in clients",
+      requirements: ["Licensed nail technician", "professional attitude", "reliable"],
+      benefits: ["Free parking", "flexible hours", "walk-in clients"],
       is_featured: true,
       isPremium: true
     },
@@ -38,8 +38,8 @@ export const createMockPremiumBooths = (): Job[] => {
         phone: "415-555-3344",
         email: "michael@glamournails.com"
       },
-      requirements: "Valid license, 2+ years experience",
-      benefits: "Product discount, walk-in clients, flexible schedule",
+      requirements: ["Valid license", "2+ years experience"],
+      benefits: ["Product discount", "walk-in clients", "flexible schedule"],
       is_featured: true,
       isPremium: true
     }

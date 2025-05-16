@@ -24,7 +24,7 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
   // Create a compatibility layer for the date property - explicitly cast to string
   const jobCreatedAt = job.created_at ? String(job.created_at) : '';
   // Create a compatibility layer for salary/compensation
-  const jobCompensation = 'salary' in job ? job.salary : 
+  const jobCompensation = 'salary' in job ? job.salary as string : 
                    job.compensation_details || job.compensation_type || '';
   
   return (

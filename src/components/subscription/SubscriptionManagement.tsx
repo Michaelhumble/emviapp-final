@@ -26,9 +26,9 @@ const SubscriptionManagement = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        // We'll use a direct SQL function call instead of an invalid table name
+        // Using the correct RPC function name from the available list
         const { data, error } = await supabase
-          .rpc('get_user_subscriptions') as { data: Subscription | null, error: any };
+          .rpc('get_user_subscription_details') as { data: Subscription | null, error: any };
 
         if (error && error.message !== 'No rows found') {
           console.error("Error fetching subscription:", error);

@@ -1,7 +1,4 @@
 
-// Replace problematic code to fix type errors related to salon_type and company properties
-// This file contains mock data for premium job listings
-
 // Import necessary types
 import { Job } from '@/types/job';
 
@@ -15,10 +12,13 @@ export const createMockPremiumJobs = (): Job[] => {
       location: "Los Angeles, CA",
       employment_type: "full-time",
       description: "Join our luxury nail salon! We're seeking an experienced nail technician with at least 3 years of experience. Must be proficient in gel, acrylic, and nail art.",
-      salary: "$25-35/hr + tips",
+      compensation_details: "$25-35/hr + tips",
       created_at: "2023-08-15T00:00:00.000Z",
-      contact_email: "hiring@luxurynailsspa.com",
-      contact_phone: "310-555-1234",
+      contact_info: {
+        owner_name: "Hiring Manager",
+        email: "hiring@luxurynailsspa.com",
+        phone: "310-555-1234"
+      },
       requirements: ["3+ years experience", "nail art skills", "customer service excellence"],
       benefits: ["Healthcare", "paid time off", "flexible scheduling", "product discounts"],
       isFeatured: true,
@@ -31,10 +31,13 @@ export const createMockPremiumJobs = (): Job[] => {
       location: "San Francisco, CA",
       employment_type: "full-time",
       description: "Seeking an experienced salon manager to oversee daily operations, staff management, and customer service excellence. Must have previous management experience in the beauty industry.",
-      salary: "$50,000-$65,000/year",
+      compensation_details: "$50,000-$65,000/year",
       created_at: "2023-08-10T00:00:00.000Z",
-      contact_email: "careers@elegantnails.com",
-      contact_phone: "415-555-6789",
+      contact_info: {
+        owner_name: "Careers Team",
+        email: "careers@elegantnails.com",
+        phone: "415-555-6789"
+      },
       requirements: ["5+ years nail industry experience", "2+ years management", "bilingual preferred"],
       benefits: ["Competitive salary", "health insurance", "paid vacation", "commission structure"],
       isFeatured: true,
@@ -47,10 +50,13 @@ export const createMockPremiumJobs = (): Job[] => {
       location: "San Diego, CA",
       employment_type: "full-time",
       description: "Brand new upscale salon seeking talented nail technicians for our grand opening. Experience with luxury services and high-end clientele preferred.",
-      salary: "$20-30/hr + tips",
+      compensation_details: "$20-30/hr + tips",
       created_at: "2023-08-05T00:00:00.000Z",
-      contact_email: "jobs@diamondnails.com",
-      contact_phone: "619-555-4321",
+      contact_info: {
+        owner_name: "Hiring Team",
+        email: "jobs@diamondnails.com",
+        phone: "619-555-4321"
+      },
       requirements: ["2+ years experience", "exceptional customer service", "specialized in luxury services"],
       benefits: ["Flexible schedule", "product discounts", "growth opportunities", "training provided"],
       isFeatured: true,
