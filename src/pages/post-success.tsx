@@ -128,18 +128,18 @@ const PostSuccess: React.FC = () => {
             </div>
             
             <h1 className="text-3xl font-bold text-center">
-              {t('Congratulations!')}
+              {t("Congratulations!")}
             </h1>
             
             <p className="text-xl text-center text-gray-700">
               {postData?.post_type === 'job'
-                ? t('Your job listing has been successfully published!')
-                : t('Your salon listing has been successfully published!')}
+                ? t("Your job listing has been successfully published!")
+                : t("Your salon listing has been successfully published!")}
             </p>
             
             {postData?.expires_at && (
               <p className="text-gray-600">
-                {t('Your listing expires on')}: {new Date(postData.expires_at).toLocaleDateString()}
+                {t("Your listing expires on")}: {new Date(postData.expires_at).toLocaleDateString()}
               </p>
             )}
             
@@ -149,14 +149,14 @@ const PostSuccess: React.FC = () => {
                 className="flex-1"
                 onClick={navigateToJobs}
               >
-                {t('View All Listings')}
+                {t("View All Listings")}
               </Button>
               
               <Button 
                 className="flex-1 flex items-center justify-center gap-2"
                 onClick={navigateToDashboard}
               >
-                {t('Go to Dashboard')}
+                {t("Go to Dashboard")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>

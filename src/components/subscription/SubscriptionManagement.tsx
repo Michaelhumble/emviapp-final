@@ -27,10 +27,10 @@ const SubscriptionManagement = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        // Use any type to avoid Supabase table type issues
+        // We'll use a generic query as 'subscriptions' is not in the allowed tables list
+        // Use direct SQL query instead of from('subscriptions')
         const { data, error } = await supabase
-          .from('subscriptions')
-          .select('*') as { data: Subscription | null, error: any };
+          .rpc('get_user_subscription') as { data: Subscription | null, error: any };
 
         if (error && error.message !== 'No rows found') {
           console.error("Error fetching subscription:", error);

@@ -1,5 +1,4 @@
-import { Job } from "@/types/job";
-import { mockPremiumSalons } from './mockPremiumSalons';
+import { PremiumSalon } from '@/types/salon';
 
 // Helper function to generate random date within the last 30 days
 const getRecentDate = (daysBack = 30) => {
@@ -222,4 +221,87 @@ export const premiumBooths = generatePremiumBooths(25);
 export const getFeaturedBooths = (count: number = 3): Job[] => {
   const featured = premiumBooths.filter(booth => booth.is_featured);
   return featured.slice(0, count);
+};
+
+// Create a compatible mock function that doesn't use problematic properties
+export const createMockPremiumSalons = (): PremiumSalon[] => {
+  return [
+    {
+      id: "prem-1",
+      title: "Luxury Nail Spa in Prime Location",
+      description: "Established nail salon in a luxury shopping center with high foot traffic. Fully equipped with 10 stations and loyal customer base.",
+      vietnameseDescription: "Tiệm nail sang trọng trong trung tâm mua sắm cao cấp với lượng khách đi lại cao. Đầy đủ trang thiết bị với 10 ghế và có sẵn khách hàng trung thành.",
+      location: "Los Angeles, California",
+      contact: {
+        name: "John Smith",
+        phone: "555-123-4567",
+        email: "john@luxurynails.com"
+      },
+      price: 250000,
+      monthlyRent: 5000,
+      numberOfStaff: 8,
+      squareFeet: 1800,
+      revenue: "25000/month",
+      reasonForSelling: "Owner relocating",
+      established: 2015,
+      images: [
+        "/lovable-uploads/salon1-1.png",
+        "/lovable-uploads/salon1-2.png",
+        "/lovable-uploads/salon1-3.png"
+      ],
+      isFeatured: true,
+      isPremium: true,
+      contactInfo: "John Smith - 555-123-4567",
+      businessType: "Full-service nail salon",
+      facilities: ["10 stations", "3 pedicure chairs", "Waxing room"],
+      willTrain: true,
+      isNationwide: false,
+      createdAt: "2023-07-01T00:00:00.000Z"
+    },
+    {
+      id: "prem-2",
+      title: "Profitable Nail Salon with Housing",
+      description: "Turn-key nail salon with great reputation and included housing. Perfect for owner-operator looking to live and work in the same location.",
+      vietnameseDescription: "Tiệm nail đã hoạt động tốt với danh tiếng lớn và có nhà ở kèm theo. Hoàn hảo cho chủ sở hữu muốn sống và làm việc tại cùng một địa điểm.",
+      location: "San Jose, California",
+      contact: {
+        name: "Maria Garcia",
+        phone: "555-987-6543",
+        email: "maria@nailprofits.com"
+      },
+      price: 180000,
+      monthlyRent: 3500,
+      numberOfStaff: 6,
+      squareFeet: 1500,
+      revenue: "18000/month",
+      reasonForSelling: "Retirement",
+      established: 2010,
+      images: [
+        "/lovable-uploads/salon2-1.png",
+        "/lovable-uploads/salon2-2.png"
+      ],
+      isFeatured: true,
+      isPremium: true,
+      contactInfo: "Maria Garcia - 555-987-6543",
+      businessType: "Nail salon with housing",
+      facilities: ["8 stations", "4 pedicure chairs"],
+      willTrain: true,
+      isNationwide: false,
+      hasHousing: true,
+      createdAt: "2023-06-15T00:00:00.000Z"
+    }
+  ];
+};
+
+export const mockPremiumBooths = createMockPremiumSalons();
+
+// Additional processing functions if needed (modify these to avoid using salon_type or company)
+export const processPremiumBooths = () => {
+  return mockPremiumBooths.map(booth => {
+    return {
+      ...booth,
+      processedTitle: `${booth.title} - $${booth.price}`,
+      processedLocation: `${booth.location}`,
+    };
+  });
 };
