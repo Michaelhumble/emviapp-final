@@ -12,22 +12,54 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="container max-w-5xl py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">
-          {t({
-            english: 'Create Job Posting',
-            vietnamese: 'Đăng Tin Tuyển Dụng'
-          })}
-        </h1>
-        <LanguageToggle />
+    <div className="container max-w-5xl py-8 px-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
+            {t({
+              english: 'Create Job Posting',
+              vietnamese: 'Đăng Tin Tuyển Dụng'
+            })}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {t({
+              english: 'Reach qualified candidates quickly and easily',
+              vietnamese: 'Tiếp cận ứng viên có trình độ một cách nhanh chóng và dễ dàng'
+            })}
+          </p>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>
+              {t({
+                english: '~5 min to complete',
+                vietnamese: '~5 phút để hoàn thành'
+              })}
+            </span>
+          </div>
+          
+          <LanguageToggle />
+        </div>
       </div>
       
-      <Card className="border shadow-sm">
+      <Card className="border shadow-md rounded-xl bg-gradient-to-b from-white to-gray-50">
         <CardContent className="p-6 sm:p-8">
           {children}
         </CardContent>
       </Card>
+      
+      <div className="mt-6 text-center text-sm text-gray-500">
+        <p>
+          {t({
+            english: 'Need help? Contact our support team at support@emviapp.com',
+            vietnamese: 'Cần trợ giúp? Liên hệ với đội ngũ hỗ trợ tại support@emviapp.com'
+          })}
+        </p>
+      </div>
     </div>
   );
 };

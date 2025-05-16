@@ -1,13 +1,14 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { JobFormValues } from './jobFormSchema';
+import { JobFormValues, IndustryType } from './jobFormSchema';
 import { useTranslation } from '@/hooks/useTranslation';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import CompensationSection from '../sections/CompensationSection';
 import ContactInformationSection from '../sections/ContactInformationSection';
 import { Job } from '@/types/job';
 import { jobPostingTranslations } from '@/translations/jobPostingForm';
+import { JobTemplateSelector } from './JobTemplateSelector';
 
 interface JobFormProps {
   onSubmit: (values: any) => void;
@@ -26,6 +27,7 @@ export const JobForm: React.FC<JobFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const commonTranslations = jobPostingTranslations.common;
+  const [industryType, setIndustryType] = useState<IndustryType | undefined>();
   
   const [formState, setFormState] = useState({
     jobDetails: {
@@ -75,6 +77,26 @@ export const JobForm: React.FC<JobFormProps> = ({
     }));
   };
   
+  const handleTemplateSelection = (selectedIndustry: IndustryType, templateData: Partial<JobFormValues>) => {
+    setIndustryType(selectedIndustry);
+    
+    // Update job details
+    setFormState(prev => ({
+      ...prev,
+      jobDetails: {
+        ...prev.jobDetails,
+        title: templateData.title || prev.jobDetails.title,
+        description: templateData.description || prev.jobDetails.description,
+      },
+      compensation: {
+        ...prev.compensation,
+        employment_type: templateData.jobType || prev.compensation.employment_type,
+        salary_range: templateData.salary_range || prev.compensation.salary_range,
+        experience_level: templateData.experience_level || prev.compensation.experience_level,
+      }
+    }));
+  };
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -89,14 +111,20 @@ export const JobForm: React.FC<JobFormProps> = ({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-10">
-      <div className="space-y-12">
+    <form onSubmit={handleSubmit} className="space-y-10 bg-white rounded-lg">
+      {/* Template Selector */}
+      <div className="mb-10">
+        <JobTemplateSelector onSelectTemplate={handleTemplateSelection} />
+      </div>
+      
+      <div className="space-y-12 mt-8">
         {/* Job Details Section */}
         <JobDetailsSection 
           details={formState.jobDetails}
           onChange={handleJobDetailsChange}
           photoUploads={photoUploads}
           setPhotoUploads={setPhotoUploads}
+          industryType={industryType}
         />
         
         {/* Compensation Section */}
@@ -117,7 +145,7 @@ export const JobForm: React.FC<JobFormProps> = ({
           type="submit"
           size="lg"
           disabled={isSubmitting}
-          className="min-w-[150px]"
+          className="min-w-[150px] h-12 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
         >
           {isSubmitting ? t(commonTranslations.submitting) : t(commonTranslations.continue)}
         </Button>

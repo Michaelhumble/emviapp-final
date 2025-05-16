@@ -69,6 +69,45 @@ const CreateJobPosting: React.FC = () => {
       </Helmet>
       
       <PostWizardLayout>
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex space-x-2">
+              <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-medium">1</div>
+              <div className="h-[2px] w-10 bg-gray-300 self-center"></div>
+              <div className="h-8 w-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-medium">2</div>
+              <div className="h-[2px] w-10 bg-gray-300 self-center"></div>
+              <div className="h-8 w-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-medium">3</div>
+            </div>
+            <div className="hidden md:flex items-center gap-2">
+              <div className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium text-gray-700">{t("Fast Approval")}</span>
+              </div>
+              <div className="h-4 w-[1px] bg-gray-300"></div>
+              <div className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium text-gray-700">{t("Cancel Anytime")}</span>
+              </div>
+              <div className="h-4 w-[1px] bg-gray-300"></div>
+              <div className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium text-gray-700">{t("24/7 Support")}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center md:text-left">
+            <h2 className="text-xl font-semibold text-gray-800">{t("Step 1: Create Your Job Post")}</h2>
+            <p className="text-gray-600">{t("Add details about your job opportunity")}</p>
+          </div>
+        </div>
+        
         <JobForm 
           onSubmit={handleSubmit}
           photoUploads={photoUploads}
