@@ -21,8 +21,8 @@ export const createMockPremiumJobs = (): Job[] => {
       },
       requirements: ["3+ years experience", "nail art skills", "customer service excellence"],
       benefits: ["Healthcare", "paid time off", "flexible scheduling", "product discounts"],
-      isFeatured: true,
-      isPremium: true
+      is_featured: true,
+      featured: true // Using the proper field in the Job type
     },
     {
       id: "prem-job-2",
@@ -40,8 +40,8 @@ export const createMockPremiumJobs = (): Job[] => {
       },
       requirements: ["5+ years nail industry experience", "2+ years management", "bilingual preferred"],
       benefits: ["Competitive salary", "health insurance", "paid vacation", "commission structure"],
-      isFeatured: true,
-      isPremium: true
+      is_featured: true,
+      featured: true // Using the proper field in the Job type
     },
     {
       id: "prem-job-3",
@@ -59,15 +59,15 @@ export const createMockPremiumJobs = (): Job[] => {
       },
       requirements: ["2+ years experience", "exceptional customer service", "specialized in luxury services"],
       benefits: ["Flexible schedule", "product discounts", "growth opportunities", "training provided"],
-      isFeatured: true,
-      isPremium: true
+      is_featured: true,
+      featured: true // Using the proper field in the Job type
     }
   ];
 };
 
 export const mockPremiumJobs = createMockPremiumJobs();
 
-// Additional processing functions if needed (modify these to avoid using salon_type or company)
+// Additional processing functions if needed (modify these to avoid using problematic properties)
 export const processPremiumJobs = () => {
   return mockPremiumJobs.map(job => {
     return {

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,9 +27,12 @@ const SubscriptionManagement = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        // Using the correct RPC function name from the available list
+        // Using a direct query instead of an RPC function that doesn't exist
         const { data, error } = await supabase
-          .rpc('get_user_subscription_details') as { data: Subscription | null, error: any };
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', user?.id)
+          .single();
 
         if (error && error.message !== 'No rows found') {
           console.error("Error fetching subscription:", error);
