@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { getLanguagePreference } from '@/utils/languagePreference';
+import { getLanguagePreference, setLanguagePreference } from '@/utils/languagePreference';
 
 export interface Translation {
   english: string;
@@ -25,6 +25,13 @@ export function useTranslation() {
     };
   }, []);
   
+  // Toggle between English and Vietnamese
+  const toggleLanguage = () => {
+    const newLanguage = language === 'vi' ? 'en' : 'vi';
+    setLanguagePreference(newLanguage);
+    setLanguage(newLanguage);
+  };
+  
   // The t function now accepts either a string or a Translation object
   const t = (key: string | Translation): string => {
     // If it's a simple string, return it as is (for backward compatibility)
@@ -44,5 +51,5 @@ export function useTranslation() {
   // Add a convenience property to check if Vietnamese is active
   const isVietnamese = language === 'vi';
   
-  return { t, isVietnamese };
+  return { t, isVietnamese, toggleLanguage };
 }
