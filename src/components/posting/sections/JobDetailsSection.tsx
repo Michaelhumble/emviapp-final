@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from '@/hooks/useTranslation';
 
-// Define props interface for our component
 interface JobDetailsSectionProps {
   details: Partial<Job>;
   onChange: (details: Partial<Job>) => void;
@@ -79,30 +78,28 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="location">
-              {t("Location")}
-            </Label>
-            <Input 
-              id="location"
-              value={details.location || ''}
-              onChange={(e) => onChange({ ...details, location: e.target.value })}
-              placeholder={t("City, State")}
-            />
-          </div>
+        <div className="grid gap-2">
+          <Label htmlFor="location">
+            {t("Location")}
+          </Label>
+          <Input 
+            id="location"
+            value={details.location || ''}
+            onChange={(e) => onChange({ ...details, location: e.target.value })}
+            placeholder={t("City, State")}
+          />
+        </div>
           
-          <div className="grid gap-2">
-            <Label htmlFor="salary-range">
-              {t("Salary Range")}
-            </Label>
-            <Input 
-              id="salary-range"
-              value={details.salary_range || ''}
-              onChange={(e) => onChange({ ...details, salary_range: e.target.value })}
-              placeholder={t("e.g. $15-20/hour")}
-            />
-          </div>
+        <div className="grid gap-2">
+          <Label htmlFor="salary-range">
+            {t("Salary Range")}
+          </Label>
+          <Input 
+            id="salary-range"
+            value={details.salary_range || ''}
+            onChange={(e) => onChange({ ...details, salary_range: e.target.value })}
+            placeholder={t("e.g. $15-20/hour")}
+          />
         </div>
         
         <div className="grid gap-2">
