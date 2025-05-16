@@ -1,10 +1,10 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
+import { HelmetProvider } from 'react-helmet-async';
 import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
@@ -37,67 +37,69 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <GeneralErrorBoundary>
-      <AuthProvider>
-        <SalonProvider>
-          <SubscriptionProvider>
-            <NotificationProvider>
-              <RouteLogger />
-              <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
-                <Routes>
-                  {/* Add our custom fallback for the checkout route */}
-                  <Route path="/checkout" element={<CheckoutFallback />} />
-                  
-                  {/* Add post success page route */}
-                  <Route path="/post-success" element={<PostSuccess />} />
-                  
-                  {/* Explicitly define the /salons route to use StableSalonPage */}
-                  <Route path="/salons" element={<StableSalonPage />} />
-                  
-                  {/* Add our new job post route */}
-                  <Route path="/post-job" element={<JobPost />} />
-                  
-                  {/* Explicitly add the /jobs route to ensure it uses the correct component */}
-                  <Route path="/jobs" element={<Jobs />} />
-                  
-                  {/* Add the new About page route */}
-                  <Route path="/about" element={<About />} />
-                  
-                  {/* Add the new Contact page route */}
-                  <Route path="/contact" element={<Contact />} />
-                  
-                  {/* Add the new Terms page route */}
-                  <Route path="/terms" element={<Terms />} />
-                  
-                  {/* Add the new Refund page route */}
-                  <Route path="/refund" element={<Refund />} />
-                  
-                  {/* Add the Privacy and Cookies page routes */}
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  
-                  {/* Keep existing routes */}
-                  {routes.map((route, index) => (
-                    (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
-                     route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
-                     route.path !== "/privacy" && route.path !== "/cookies") && (
-                      <Route 
-                        key={index}
-                        path={route.path}
-                        element={route.element}
-                      />
-                    )
-                  ))}
-                  <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
-                  <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
-                </Routes>
-              </Suspense>
-              <Toaster />
-            </NotificationProvider>
-          </SubscriptionProvider>
-        </SalonProvider>
-      </AuthProvider>
-    </GeneralErrorBoundary>
+    <HelmetProvider>
+      <GeneralErrorBoundary>
+        <AuthProvider>
+          <SalonProvider>
+            <SubscriptionProvider>
+              <NotificationProvider>
+                <RouteLogger />
+                <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                  <Routes>
+                    {/* Add our custom fallback for the checkout route */}
+                    <Route path="/checkout" element={<CheckoutFallback />} />
+                    
+                    {/* Add post success page route */}
+                    <Route path="/post-success" element={<PostSuccess />} />
+                    
+                    {/* Explicitly define the /salons route to use StableSalonPage */}
+                    <Route path="/salons" element={<StableSalonPage />} />
+                    
+                    {/* Add our new job post route */}
+                    <Route path="/post-job" element={<JobPost />} />
+                    
+                    {/* Explicitly add the /jobs route to ensure it uses the correct component */}
+                    <Route path="/jobs" element={<Jobs />} />
+                    
+                    {/* Add the new About page route */}
+                    <Route path="/about" element={<About />} />
+                    
+                    {/* Add the new Contact page route */}
+                    <Route path="/contact" element={<Contact />} />
+                    
+                    {/* Add the new Terms page route */}
+                    <Route path="/terms" element={<Terms />} />
+                    
+                    {/* Add the new Refund page route */}
+                    <Route path="/refund" element={<Refund />} />
+                    
+                    {/* Add the Privacy and Cookies page routes */}
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    
+                    {/* Keep existing routes */}
+                    {routes.map((route, index) => (
+                      (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
+                       route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
+                       route.path !== "/privacy" && route.path !== "/cookies") && (
+                        <Route 
+                          key={index}
+                          path={route.path}
+                          element={route.element}
+                        />
+                      )
+                    ))}
+                    <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
+                    <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
+                  </Routes>
+                </Suspense>
+                <Toaster />
+              </NotificationProvider>
+            </SubscriptionProvider>
+          </SalonProvider>
+        </AuthProvider>
+      </GeneralErrorBoundary>
+    </HelmetProvider>
   );
 }
 
