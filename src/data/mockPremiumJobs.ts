@@ -19,8 +19,8 @@ export const createMockPremiumJobs = (): Job[] => {
       created_at: "2023-08-15T00:00:00.000Z",
       contact_email: "hiring@luxurynailsspa.com",
       contact_phone: "310-555-1234",
-      requirements: "3+ years experience, nail art skills, customer service excellence",
-      benefits: "Healthcare, paid time off, flexible scheduling, product discounts",
+      requirements: ["3+ years experience", "nail art skills", "customer service excellence"],
+      benefits: ["Healthcare", "paid time off", "flexible scheduling", "product discounts"],
       isFeatured: true,
       isPremium: true
     },
@@ -35,8 +35,8 @@ export const createMockPremiumJobs = (): Job[] => {
       created_at: "2023-08-10T00:00:00.000Z",
       contact_email: "careers@elegantnails.com",
       contact_phone: "415-555-6789",
-      requirements: "5+ years nail industry experience, 2+ years management, bilingual preferred",
-      benefits: "Competitive salary, health insurance, paid vacation, commission structure",
+      requirements: ["5+ years nail industry experience", "2+ years management", "bilingual preferred"],
+      benefits: ["Competitive salary", "health insurance", "paid vacation", "commission structure"],
       isFeatured: true,
       isPremium: true
     },
@@ -51,8 +51,8 @@ export const createMockPremiumJobs = (): Job[] => {
       created_at: "2023-08-05T00:00:00.000Z",
       contact_email: "jobs@diamondnails.com",
       contact_phone: "619-555-4321",
-      requirements: "2+ years experience, exceptional customer service, specialized in luxury services",
-      benefits: "Flexible schedule, product discounts, growth opportunities, training provided",
+      requirements: ["2+ years experience", "exceptional customer service", "specialized in luxury services"],
+      benefits: ["Flexible schedule", "product discounts", "growth opportunities", "training provided"],
       isFeatured: true,
       isPremium: true
     }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,10 +26,9 @@ const SubscriptionManagement = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        // We'll use a generic query as 'subscriptions' is not in the allowed tables list
-        // Use direct SQL query instead of from('subscriptions')
+        // We'll use a direct SQL function call instead of an invalid table name
         const { data, error } = await supabase
-          .rpc('get_user_subscription') as { data: Subscription | null, error: any };
+          .rpc('get_user_subscriptions') as { data: Subscription | null, error: any };
 
         if (error && error.message !== 'No rows found') {
           console.error("Error fetching subscription:", error);
