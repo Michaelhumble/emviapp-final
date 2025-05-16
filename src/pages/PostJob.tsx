@@ -1,42 +1,20 @@
-
-import React, { useState } from 'react';
-import { Layout } from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage
-} from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
-  CardContent,
-  CardFooter 
-} from '@/components/ui/card';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue 
-} from '@/components/ui/select';
-import { useTranslation } from '@/hooks/useTranslation';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
-import { MapPin, Calendar, Languages, Loader2 } from 'lucide-react';
-import { BetterResultsSection } from '@/components/posting/job';
+import React, { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { jobFormSchema } from "@/components/posting/job/jobFormSchema";
+import { useAuth } from "@/context/auth";
+import { BetterResultsSection } from "@/components/posting/job";
+import Layout from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MapPin, Calendar, Languages, Loader2 } from "lucide-react";
 
 const postJobSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),

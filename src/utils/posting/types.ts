@@ -1,6 +1,4 @@
 
-import { JobPricingOption, JobPricingTier } from './jobPricing';
-
 export interface UserPostingStats {
   jobPostCount: number;
   salonPostCount: number;
@@ -26,7 +24,29 @@ export interface PricingOptions {
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
-export { JobPricingOption, JobPricingTier };
+// Define these interfaces here since they're not properly exported from jobPricing.ts
+export interface JobPricingOption {
+  id: string;
+  name: string;
+  price: number;
+  wasPrice?: number;
+  description: string;
+  vietnameseDescription?: string;
+  features: string[];
+  tier: string;
+  tag?: string;
+  hidden?: boolean;
+}
+
+export interface JobPricingTier {
+  id: string;
+  name: string;
+  price: number;
+  features: string[];
+}
+
+// Re-export from jobPricing.ts
+export { jobPricingOptions } from './jobPricing';
 
 // Export the JobDetailsSubmission type from types/job.ts
 export type { JobDetailsSubmission } from '@/types/job';

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 
-interface UserProfile {
+export interface UserProfile {
   id?: string;
   email?: string;
   name?: string;
@@ -27,14 +27,26 @@ export const useUserProfile = () => {
 
       try {
         setIsLoading(true);
+        // Using 'users' table instead of 'profiles' as it appears to be the correct table based on schema
         const { data, error } = await supabase
-          .from('profiles')
+          .from('users')
           .select('*')
           .eq('id', user.id)
           .single();
 
         if (error) throw error;
-        setProfile(data);
+        
+        // Convert the data to match UserProfile interface
+        const userProfile: UserProfile = {
+          id: data.id,
+          email: data.email,
+          name: data.full_name,
+          phone_number: data.phone,
+          created_at: data.created_at,
+          updated_at: data.updated_at
+        };
+        
+        setProfile(userProfile);
       } catch (err) {
         console.error('Error fetching user profile:', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch profile'));
