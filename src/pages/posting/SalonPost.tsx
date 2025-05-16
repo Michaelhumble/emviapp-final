@@ -8,7 +8,8 @@ import { calculateSalonPostPrice } from '@/utils/posting/salonPricing';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { MobileButton } from '@/components/ui/mobile-button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const SalonPost: React.FC = () => {
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
@@ -17,12 +18,16 @@ const SalonPost: React.FC = () => {
     isFirstPost: true
   });
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Handle form submission
   const handleFormSubmit = (values: SalonFormValues) => {
     // Check if photos were uploaded
     if (photoUploads.length === 0) {
-      toast.error("Please upload at least one photo of your salon");
+      toast.error(t({
+        english: "Please upload at least one photo of your salon",
+        vietnamese: "Vui lòng tải lên ít nhất một hình ảnh về salon của bạn"
+      }));
       return;
     }
 
@@ -46,7 +51,10 @@ const SalonPost: React.FC = () => {
       });
     } else {
       // For free listings, skip payment and go directly to success
-      toast.success("Your salon listing has been posted!");
+      toast.success(t({
+        english: "Your salon listing has been posted!",
+        vietnamese: "Tin đăng salon của bạn đã được đăng!"
+      }));
       navigate('/dashboard');
     }
   };
@@ -76,7 +84,10 @@ const SalonPost: React.FC = () => {
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-3xl font-playfair font-semibold mb-2">List Your Salon For Sale</h1>
       <p className="text-gray-600 mb-8">
-        Create a detailed listing to attract potential buyers for your salon
+        {t({
+          english: "Create a detailed listing to attract potential buyers for your salon",
+          vietnamese: "Tạo tin chi tiết để thu hút người mua tiềm năng cho salon của bạn"
+        })}
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -93,22 +104,31 @@ const SalonPost: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="sticky top-8">
             <Card className="p-6">
-              <h2 className="text-xl font-medium mb-4">Listing Summary</h2>
+              <h2 className="text-xl font-medium mb-4">{t({
+                english: "Listing Summary", 
+                vietnamese: "Tóm tắt tin đăng"
+              })}</h2>
               <SalonPostOptions
                 options={pricingOptions}
                 onOptionsChange={handleOptionsChange}
                 isFirstPost={true}
               />
               
-              <Button 
+              <MobileButton 
                 onClick={() => document.querySelector('form')?.requestSubmit()}
-                className="w-full mt-4"
+                className="w-full mt-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
               >
-                Continue to Payment
-              </Button>
+                {t({
+                  english: "Continue to Payment",
+                  vietnamese: "Tiếp tục đến thanh toán"
+                })}
+              </MobileButton>
               
               <p className="text-xs text-gray-500 mt-4 text-center">
-                By proceeding, you agree to our Terms of Service and listing policies
+                {t({
+                  english: "By proceeding, you agree to our Terms of Service and listing policies",
+                  vietnamese: "Bằng cách tiếp tục, bạn đồng ý với Điều khoản dịch vụ và chính sách đăng tin của chúng tôi"
+                })}
               </p>
             </Card>
           </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { JobFormValues } from './jobFormSchema';
 import { JobForm } from './JobForm';
@@ -9,6 +8,7 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
+import { MobileButton } from '@/components/ui/mobile-button';
 
 interface EnhancedJobFormProps {
   onSubmit: (values: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<void>;
@@ -66,14 +66,26 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
       const paymentResult = await initiatePayment('job', formValues, pricingOptions);
       
       if (paymentResult?.success) {
-        toast.success("Job post submitted successfully!");
+        toast.success(t({
+          english: "Your job listing has been submitted successfully!",
+          vietnamese: "Tin tuyển dụng của bạn đã được gửi thành công!"
+        }));
         navigate('/dashboard');
       } else {
-        toast.error("Failed to submit job post.");
+        toast.error(t({
+          english: "We couldn't process your submission. Please try again.",
+          vietnamese: "Chúng tôi không thể xử lý yêu cầu của bạn. Vui lòng thử lại."
+        }));
       }
     } catch (error: any) {
       console.error("Error during job post submission:", error);
-      toast.error(`Job post submission failed: ${error.message || 'Unknown error'}`);
+      toast.error(`${t({
+        english: "Submission failed",
+        vietnamese: "Gửi không thành công"
+      })}: ${error.message || t({
+        english: 'Unknown error',
+        vietnamese: 'Lỗi không xác định'
+      })}`);
     } finally {
       setIsSubmitting(false);
     }

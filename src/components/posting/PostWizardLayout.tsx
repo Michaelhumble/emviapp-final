@@ -12,8 +12,8 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="container max-w-5xl py-8 px-4">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+    <div className="container max-w-5xl py-12 px-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
             {t({
@@ -23,8 +23,8 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
           </h1>
           <p className="text-gray-600 mt-2">
             {t({
-              english: 'Reach qualified candidates quickly and easily',
-              vietnamese: 'Tiếp cận ứng viên có trình độ một cách nhanh chóng và dễ dàng'
+              english: 'Find your perfect employee in minutes',
+              vietnamese: 'Tìm nhân viên lý tưởng của bạn trong vài phút'
             })}
           </p>
         </div>
@@ -52,11 +52,17 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
         </CardContent>
       </Card>
       
-      <div className="mt-6 text-center text-sm text-gray-500">
-        <p>
+      <div className="mt-8 text-center text-sm text-gray-500">
+        <p className="mb-1">
           {t({
             english: 'Need help? Contact our support team at support@emviapp.com',
             vietnamese: 'Cần trợ giúp? Liên hệ với đội ngũ hỗ trợ tại support@emviapp.com'
+          })}
+        </p>
+        <p className="text-xs text-purple-500">
+          {t({
+            english: 'All job postings are reviewed within 24 hours',
+            vietnamese: 'Tất cả các bài đăng việc làm được xem xét trong vòng 24 giờ'
           })}
         </p>
       </div>

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { MobileButton } from '@/components/ui/mobile-button';
 import { JobFormValues, IndustryType } from './jobFormSchema';
 import { useTranslation } from '@/hooks/useTranslation';
 import JobDetailsSection from '../sections/JobDetailsSection';
@@ -141,14 +141,17 @@ export const JobForm: React.FC<JobFormProps> = ({
       </div>
       
       <div className="flex justify-end pt-8 border-t border-border">
-        <Button
+        <MobileButton
           type="submit"
           size="lg"
           disabled={isSubmitting}
-          className="min-w-[150px] h-12 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
+          className="min-w-[150px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium"
         >
-          {isSubmitting ? t(commonTranslations.submitting) : t(commonTranslations.continue)}
-        </Button>
+          {isSubmitting ? t(commonTranslations.submitting) : t({
+            english: 'Continue to Next Step',
+            vietnamese: 'Tiếp tục đến bước tiếp theo'
+          })}
+        </MobileButton>
       </div>
     </form>
   );
