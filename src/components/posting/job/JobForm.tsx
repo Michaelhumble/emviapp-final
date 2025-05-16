@@ -1,255 +1,329 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { jobFormSchema, JobFormValues } from "./jobFormSchema";
-import { Button } from "@/components/ui/button";
+
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { jobFormSchema, JobFormValues } from './jobFormSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { ArrowRight, ImagePlus } from 'lucide-react';
+import { UserProfile } from '@/context/auth/types';
 
 interface JobFormProps {
   onSubmit: (values: JobFormValues) => void;
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
+  defaultValues?: JobFormValues;
+  industry?: string;
+  userProfile?: UserProfile | null;
 }
 
 export const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
   photoUploads,
   setPhotoUploads,
-  isSubmitting
+  isSubmitting,
+  defaultValues,
+  industry = 'nails',
+  userProfile,
 }) => {
-  // Initialize the form with default values
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      location: "",
-      salary: "",
-      contactEmail: "",
-      phoneNumber: "",
-      jobType: "full-time",
-      requirements: []
+    defaultValues: defaultValues || {
+      title: '',
+      description: '',
+      location: '',
+      salary: '',
+      contactEmail: userProfile?.email || '',
+      phoneNumber: userProfile?.phone_number || '',
+      jobType: 'full-time',
+      requirements: [],
+      jobSummary: '',
     },
   });
 
-  // Handle form submission
-  const handleSubmit = (values: JobFormValues) => {
-    onSubmit(values);
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const newFiles = Array.from(event.target.files);
+      setPhotoUploads([...photoUploads, ...newFiles]);
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    const newUploads = [...photoUploads];
+    newUploads.splice(index, 1);
+    setPhotoUploads(newUploads);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6">
-        {/* Job Title Field */}
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Job Title</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g. Nail Technician, Hair Stylist" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Job Type Field */}
-        <FormField
-          control={form.control}
-          name="jobType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Job Type</FormLabel>
-              <FormControl>
-                <select
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  {...field}
-                >
-                  <option value="full-time">Full-time</option>
-                  <option value="part-time">Part-time</option>
-                  <option value="contract">Contract</option>
-                  <option value="temporary">Temporary</option>
-                </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Location Field */}
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g. Los Angeles, CA" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Phone Number Field */}
-        <FormField
-          control={form.control}
-          name="phoneNumber"
-          render={({ field }) => (
-            <FormItem className="mt-4">
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                <Input
-                  type="tel"
-                  placeholder="(714) 555-1234"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-              <small className="text-xs text-gray-400">
-                This number will be visible only to verified users.
-              </small>
-            </FormItem>
-          )}
-        />
-
-        {/* Contact Email Field */}
-        <FormField
-          control={form.control}
-          name="contactEmail"
-          render={({ field }) => (
-            <FormItem className="mt-4">
-              <FormLabel>Contact Email</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-              <small className="text-xs text-gray-400">
-                Optional. Artists may contact you here if enabled.
-              </small>
-            </FormItem>
-          )}
-        />
-
-        {/* Salary Field */}
-        <FormField
-          control={form.control}
-          name="salary"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Salary Range (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g. $20-25/hr or $50K-60K/year" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Job Summary Textarea */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem className="mt-6">
-              <FormLabel>Job Summary</FormLabel>
-              <FormControl>
-                <Textarea
-                  rows={5}
-                  placeholder="Tell artists what your team is like, what kind of work you need, and why they'll enjoy it"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-              <small className="text-xs text-gray-400">
-                This will be shown publicly on your listing.
-              </small>
-            </FormItem>
-          )}
-        />
-
-        {/* Upload photos section - we'll keep this simple without direct PhotoUploader reference */}
-        <div className="mt-6">
-          <FormLabel className="block mb-2">Upload Photos (Optional)</FormLabel>
-          <div className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center">
-            <p className="text-sm text-gray-500">
-              Drag and drop photos here, or click to select files
-            </p>
-            <p className="text-xs text-gray-400 mt-2">
-              Maximum 5 photos, each under 5MB
-            </p>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files) {
-                  setPhotoUploads(Array.from(e.target.files));
-                }
-              }}
-              id="photo-upload"
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-6 py-8">
+        <div className="space-y-8">
+          {/* Job Title Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800">Job Details</h2>
+            
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="E.g., Nail Technician, Hair Stylist, etc."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="mt-4"
-              onClick={() => document.getElementById('photo-upload')?.click()}
-            >
-              Select Files
-            </Button>
-          </div>
-          
-          {/* Preview selected photos */}
-          {photoUploads.length > 0 && (
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {photoUploads.map((file, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Upload preview ${index + 1}`}
-                    className="h-24 w-24 object-cover rounded-md"
-                  />
-                  <button
-                    type="button"
-                    className="absolute top-1 right-1 bg-white rounded-full p-1"
-                    onClick={() => {
-                      const newUploads = [...photoUploads];
-                      newUploads.splice(index, 1);
-                      setPhotoUploads(newUploads);
-                    }}
+            
+            <FormField
+              control={form.control}
+              name="jobType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Type</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
                   >
-                    ✕
-                  </button>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select job type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="full-time">Full-time</SelectItem>
+                      <SelectItem value="part-time">Part-time</SelectItem>
+                      <SelectItem value="contract">Contract</SelectItem>
+                      <SelectItem value="temporary">Temporary</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Location Section */}
+          <div className="space-y-4 pt-6 border-t border-gray-100">
+            <h2 className="text-xl font-semibold text-gray-800">Job Location</h2>
+            
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salon Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter the salon address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Compensation Section */}
+          <div className="space-y-4 pt-6 border-t border-gray-100">
+            <h2 className="text-xl font-semibold text-gray-800">Compensation</h2>
+            
+            <FormField
+              control={form.control}
+              name="salary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary or Hourly Rate</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="E.g., $20-25/hr, $50K-65K/year, etc."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Job Description Section */}
+          <div className="space-y-4 pt-6 border-t border-gray-100">
+            <h2 className="text-xl font-semibold text-gray-800">Job Description</h2>
+            
+            <FormField
+              control={form.control}
+              name="jobSummary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Summary</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Write a short summary of the position"
+                      className="min-h-[80px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Detailed Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe the role, responsibilities, and ideal candidate"
+                      className="min-h-[150px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Contact Information Section */}
+          <div className="space-y-4 p-6 bg-blue-50 rounded-lg border border-blue-100 mt-8">
+            <h2 className="text-xl font-semibold text-gray-800">Contact Information</h2>
+            <p className="text-sm text-gray-600">This is how applicants will reach you.</p>
+            
+            <FormField
+              control={form.control}
+              name="contactEmail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter contact email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number (optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter phone number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Photo Upload Section */}
+          <div className="space-y-4 p-6 bg-gray-50 rounded-lg border border-gray-100">
+            <h2 className="text-xl font-semibold text-gray-800">Upload Photos</h2>
+            <p className="text-sm text-gray-600">
+              Add photos of your salon to attract the best candidates.
+            </p>
+            
+            <div className="mt-2">
+              <Label htmlFor="photos" className="block text-sm font-medium text-gray-700">
+                Photo Upload (Max 5)
+              </Label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="space-y-1 text-center">
+                  <ImagePlus className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-600">
+                    <label
+                      htmlFor="file-upload"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                    >
+                      <span>Upload files</span>
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        className="sr-only"
+                        accept="image/*"
+                        multiple
+                        onChange={handlePhotoChange}
+                        disabled={photoUploads.length >= 5}
+                      />
+                    </label>
+                    <p className="pl-1">or drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                 </div>
-              ))}
+              </div>
             </div>
-          )}
+
+            {photoUploads.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-sm font-medium text-gray-700">Uploaded Photos</h3>
+                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                  {photoUploads.map((file, index) => (
+                    <div key={index} className="relative group">
+                      <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg bg-gray-100">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Upload ${index + 1}`}
+                          className="object-cover"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <span className="sr-only">Remove</span>
+                        <svg
+                          className="h-4 w-4 text-red-500"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="pt-4 border-t flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Posting..." : "Post Job"}
+        <div className="pt-8 border-t border-gray-200">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full"
+          >
+            {isSubmitting ? 'Submitting...' : 'Continue to Review'}
+            {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
           </Button>
         </div>
       </form>
     </Form>
   );
 };
-
-export default JobForm;

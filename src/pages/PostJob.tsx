@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { EnhancedJobForm } from '@/components/posting/job/EnhancedJobForm';
-import JobPostOptions from '@/components/posting/job/JobPostOptions';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { useAuth } from "@/context/auth";
+import { useNavigate } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2, MapPin, Globe, Calendar, Languages } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePostPayment } from '@/hooks/payments/usePostPayment';
 
 const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),

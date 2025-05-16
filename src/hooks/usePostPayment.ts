@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission, PricingOptions } from '@/utils/posting/types';
+import { JobDetailsSubmission, PricingOptions } from '@/types/job';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
