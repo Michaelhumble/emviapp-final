@@ -1,186 +1,274 @@
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-} from "@/components/ui/sheet";
-import { AlignJustify, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/context/auth";
-import { useTranslation } from "@/hooks/useTranslation";
-import LanguageToggle from "@/components/layout/LanguageToggle";
-import EmviLogo from "@/components/branding/EmviLogo";
-import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { mainNavigation } from "./config/navigationItems";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger, 
+  SheetClose 
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import EmviLogo from '@/components/branding/EmviLogo';
+import LanguageToggle from '@/components/layout/LanguageToggle';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { toast } from 'sonner';
+import { 
+  Menu, 
+  X, 
+  Home, 
+  Search, 
+  Briefcase, 
+  Store, 
+  Users,
+  Info, 
+  Phone, 
+  HelpCircle,
+  LogIn,
+  UserPlus,
+  Settings,
+  LogOut,
+  CreditCard,
+  MessageSquare,
+  LayoutDashboard,
+  Globe,
+  User,
+  Scissors
+} from 'lucide-react';
+import { mainNavigation } from './config/navigationItems';
 
-const MobileMenu = ({ user, handleSignOut }: { user: any; handleSignOut: any }) => {
+interface MobileMenuProps {
+  user: any;
+  handleSignOut: () => void;
+}
+
+const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const { t } = useTranslation();
+  
+  const getInitials = () => {
+    if (!user?.user_metadata?.full_name) return 'U';
+    const names = user.user_metadata.full_name.split(' ');
+    if (names.length > 1) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return names[0][0].toUpperCase();
+  };
+  
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setOpen(false);
+  };
+  
+  const handleSignOutClick = () => {
+    handleSignOut();
+    setOpen(false);
+    toast.success("You've been signed out successfully");
+  };
+  
+  const getIcon = (path: string) => {
+    switch (path) {
+      case '/': return <Home className="h-5 w-5" />;
+      case '/search': return <Search className="h-5 w-5" />;
+      case '/post-job': return <Briefcase className="h-5 w-5" />;
+      case '/jobs': return <Briefcase className="h-5 w-5" />;
+      case '/salons': return <Store className="h-5 w-5" />;
+      case '/artists': return <Scissors className="h-5 w-5" />;
+      case '/freelancers': return <Users className="h-5 w-5" />;
+      case '/about': return <Info className="h-5 w-5" />;
+      case '/contact': return <Phone className="h-5 w-5" />;
+      case '/help': return <HelpCircle className="h-5 w-5" />;
+      default: return <Home className="h-5 w-5" />;
+    }
+  };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" className="md:hidden h-8 w-8 p-0">
-          <AlignJustify className="h-5 w-5" />
-          <span className="sr-only">Open mobile menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-[85%] sm:w-80 mobile-glass-drawer overflow-y-auto">
-        <div className="flex justify-between items-center">
-          <EmviLogo size="small" />
-          <SheetClose asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Button>
-          </SheetClose>
-        </div>
-        
-        <div className="mt-8 flex flex-col gap-6">
-          {/* User Section */}
-          {user && (
-            <div className="flex items-center gap-3 mb-4 px-2">
-              <Avatar className="h-11 w-11 border-2 border-purple-100">
-                <AvatarImage src={user?.image} />
-                <AvatarFallback className="bg-purple-100 text-purple-500">
-                  {user?.name?.charAt(0) || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium">{user?.name || "User"}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+    <div className="md:hidden">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Menu">
+            <Menu className="h-6 w-6" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent 
+          side="right" 
+          className="mobile-glass-drawer overflow-y-auto flex flex-col p-0 border-none w-[90%] max-w-[400px]"
+        >
+          <div className="flex flex-col min-h-full">
+            {/* Header with Logo and Close */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+                <X className="h-5 w-5" />
+                <span className="sr-only">Close</span>
+              </SheetClose>
+              
+              <div className="mx-auto py-2">
+                <EmviLogo size="medium" />
               </div>
             </div>
-          )}
-
-          {/* Primary Links */}
-          <div className="space-y-1.5">
-            <SheetClose asChild>
-              <Link to="/" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>Home</span>
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link to="/post-job" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("Post a Job")}</span>
-                <Badge variant="outline" className="ml-2 bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                  Free
-                </Badge>
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link to="/jobs" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("Jobs")}</span>
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link to="/salons" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("Salons")}</span>
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link to="/artists" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("Artists")}</span>
-              </Link>
-            </SheetClose>
-          </div>
-
-          {/* Secondary Links */}
-          <div className="space-y-1.5">
-            <SheetClose asChild>
-              <Link to="/pricing" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("Pricing")}</span>
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link to="/about" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("About")}</span>
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link to="/contact" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("Contact")}</span>
-              </Link>
-            </SheetClose>
-
-            <SheetClose asChild>
-              <Link to="/help" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                <span>{t("Help")}</span>
-              </Link>
-            </SheetClose>
-          </div>
-
-          {/* User Account Links */}
-          {user ? (
-            <div className="mt-2 space-y-1.5 border-t border-gray-100 pt-4">
-              <SheetClose asChild>
-                <Link to="/dashboard" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                  <span>{t("Dashboard")}</span>
-                </Link>
-              </SheetClose>
-              
-              <SheetClose asChild>
-                <Link to="/profile" className={cn(navigationMenuTriggerStyle(), "w-full justify-start menu-item-enter")}>
-                  <span>{t("Profile")}</span>
-                </Link>
-              </SheetClose>
-              
-              <SheetClose asChild>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                  onClick={handleSignOut}
+            
+            {/* User Section */}
+            {user ? (
+              <div className="menu-card mt-6 mx-4 p-4">
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-10 w-10 border border-gray-200">
+                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-purple-100 text-purple-700">
+                      {getInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <div>
+                    <h3 className="font-medium">
+                      {user.user_metadata?.full_name || 'Welcome back!'}
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 mt-6 mx-4">
+                <Button
+                  onClick={() => handleNavigate('/sign-in')}
+                  variant="outline" 
+                  className="w-full justify-start menu-item-enter" 
+                  style={{ "--index": 0 } as React.CSSProperties}
                 >
-                  {t("Sign Out")}
+                  <LogIn className="mr-2 h-4 w-4" />
+                  {t("Sign In")}
                 </Button>
-              </SheetClose>
-            </div>
-          ) : (
-            <div className="mt-2 space-y-3 border-t border-gray-100 pt-4">
-              <SheetClose asChild>
-                <Link to="/sign-in">
-                  <Button variant="outline" className="w-full">
-                    {t("Sign In")}
-                  </Button>
-                </Link>
-              </SheetClose>
-              
-              <SheetClose asChild>
-                <Link to="/sign-up">
-                  <Button className="w-full">
-                    {t("Sign Up")}
-                  </Button>
-                </Link>
-              </SheetClose>
-            </div>
-          )}
+                <Button
+                  onClick={() => handleNavigate('/sign-up')}
+                  className="w-full justify-start menu-item-enter" 
+                  style={{ "--index": 1 } as React.CSSProperties}
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  {t("Sign Up")}
+                </Button>
+              </div>
+            )}
 
-          {/* Language Toggle */}
-          <div className="mt-auto border-t border-gray-100 pt-4">
-            <p className="text-xs text-muted-foreground mb-2">{t("Language")}</p>
-            <LanguageToggle />
+            {/* Main Navigation */}
+            <nav className="mt-6 flex-1 px-4">
+              <div className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-2 px-2">
+                {t("Navigation")}
+              </div>
+              <div className="space-y-1">
+                {mainNavigation.map((item, index) => (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
+                    style={{ "--index": index + 2 } as React.CSSProperties}
+                    onClick={() => handleNavigate(item.path)}
+                  >
+                    {getIcon(item.path)}
+                    <span className="ml-2">{t(item.label)}</span>
+                  </Button>
+                ))}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
+                  style={{ "--index": mainNavigation.length + 2 } as React.CSSProperties}
+                  onClick={() => handleNavigate('/post-job')}
+                >
+                  <Briefcase className="h-5 w-5" />
+                  <span className="ml-2">{t("Post a Job")}</span>
+                </Button>
+              </div>
+
+              {/* User Account Section */}
+              {user && (
+                <div className="mt-6">
+                  <div className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-2 px-2">
+                    {t("Account")}
+                  </div>
+                  <div className="space-y-1">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
+                      style={{ "--index": mainNavigation.length + 3 } as React.CSSProperties}
+                      onClick={() => handleNavigate('/dashboard')}
+                    >
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      {t("Dashboard")}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
+                      style={{ "--index": mainNavigation.length + 4 } as React.CSSProperties}
+                      onClick={() => handleNavigate('/profile')}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      {t("Profile")}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
+                      style={{ "--index": mainNavigation.length + 5 } as React.CSSProperties}
+                      onClick={() => {
+                        toast.info("Messages feature coming soon!");
+                        setOpen(false);
+                      }}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      {t("Messages")}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
+                      style={{ "--index": mainNavigation.length + 6 } as React.CSSProperties}
+                      onClick={() => {
+                        toast.info("Credits feature coming soon!");
+                        setOpen(false);
+                      }}
+                    >
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      {t("Credits")}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-700 hover:bg-purple-50 hover:text-purple-700 menu-item-enter"
+                      style={{ "--index": mainNavigation.length + 7 } as React.CSSProperties}
+                      onClick={() => handleNavigate('/settings')}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      {t("Settings")}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-700 hover:bg-rose-50 hover:text-rose-700 menu-item-enter"
+                      style={{ "--index": mainNavigation.length + 8 } as React.CSSProperties}
+                      onClick={handleSignOutClick}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      {t("Sign Out")}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </nav>
+
+            {/* Language Toggle & Footer */}
+            <div className="mt-auto px-4 pb-6">
+              <div className="flex justify-center mb-4">
+                <div className="flex items-center justify-center px-4 py-2 rounded-full bg-gray-100 border border-gray-200">
+                  <Globe className="w-4 h-4 mr-2 text-gray-600" />
+                  <LanguageToggle minimal={true} />
+                </div>
+              </div>
+              
+              <div className="text-center text-xs text-gray-500 mt-6">
+                <p>Inspired by Sunshine ☀️</p>
+              </div>
+            </div>
           </div>
-        </div>
-        
-        {/* Credit Line */}
-        <div className="mt-8 pt-4 text-center text-xs text-muted-foreground">
-          <p>Inspired by Sunshine ☀️</p>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 };
 
