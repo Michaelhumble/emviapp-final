@@ -66,7 +66,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
           {/* Header with logo and close button */}
           <div className="flex justify-between items-center p-4 border-b">
             <div className="flex-grow flex justify-center">
-              <Logo size="medium" showText={true} />
+              <Logo size="large" showText={true} />
             </div>
             <Button 
               variant="ghost" 

@@ -37,10 +37,10 @@ const Navbar = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-      <div className="container flex items-center justify-between mx-auto h-16 px-4">
-        {/* Logo */}
+      <div className="container flex items-center justify-between mx-auto h-20 px-4">
+        {/* Logo - increased height to accommodate larger logo */}
         <Link to="/" className="flex items-center">
-          <Logo size="small" showText={true} />
+          <Logo size="large" showText={true} />
         </Link>
 
         {/* Main navigation - centered (hidden on mobile) */}

@@ -8,8 +8,10 @@ interface EmviLogoProps {
   showText?: boolean;
 }
 
+// Updated to always use the large size to match the footer
 const EmviLogo: React.FC<EmviLogoProps> = (props) => {
-  return <Logo {...props} />;
+  // Override any size prop to always use 'large'
+  return <Logo {...props} size="large" />;
 };
 
 export default EmviLogo;
