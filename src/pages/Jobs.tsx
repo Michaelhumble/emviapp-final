@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import JobsPage from './jobs';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
+import { Routes, Route } from 'react-router-dom';
+import CreateJobPosting from './jobs/CreateJobPosting';
 
 const Jobs = () => {
   useEffect(() => {
@@ -20,7 +22,10 @@ const Jobs = () => {
           content="Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
         />
       </Helmet>
-      <JobsPage />
+      <Routes>
+        <Route path="/" element={<JobsPage />} />
+        <Route path="/create" element={<CreateJobPosting />} />
+      </Routes>
     </Layout>
   );
 };

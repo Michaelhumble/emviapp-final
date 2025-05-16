@@ -8,8 +8,9 @@ export const jobFormSchema = z.object({
   location: z.string().min(2, "Location is required"),
   salary: z.string().optional(),
   contactEmail: z.string().email("Please enter a valid email"),
-  jobType: z.enum(["full-time", "part-time", "contract", "temporary"]),
-  requirements: z.array(z.string()).optional()
+  jobType: z.enum(["full-time", "part-time", "contract", "temporary", "commission", "booth-rental", "freelance"]),
+  requirements: z.array(z.string()).optional(),
+  experience_level: z.enum(["entry", "intermediate", "experienced"]).optional()
 });
 
 // Export the type for use in components
