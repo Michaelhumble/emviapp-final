@@ -72,7 +72,7 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
                   <span>{t('Plan', 'Gói')}: </span>
                 </div>
                 <span className="font-medium">
-                  {getPlanDisplayName(options.selectedPricingTier)}
+                  {getPlanDisplayName(options.selectedPricingTier || 'free')}
                 </span>
               </div>
               
