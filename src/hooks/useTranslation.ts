@@ -17,6 +17,11 @@ export const useTranslation = () => {
   // Add isVietnamese helper
   const isVietnamese = context.language === 'vietnamese';
   
+  // Add toggleLanguage function
+  const toggleLanguage = () => {
+    context.setLanguage(isVietnamese ? 'english' : 'vietnamese');
+  };
+  
   // Update the t function to accept both string and object formats
   const t = (textOrObj: string | Translation): string => {
     if (typeof textOrObj === 'string') {
@@ -33,10 +38,17 @@ export const useTranslation = () => {
     return String(textOrObj);
   };
   
+  // Legacy support function that creates Translation object from separate strings
+  const legacyT = (english: string, vietnamese: string): string => {
+    return t({ english, vietnamese });
+  };
+  
   return {
     language: context.language,
     setLanguage: context.setLanguage,
     t,
-    isVietnamese
+    legacyT,
+    isVietnamese,
+    toggleLanguage
   };
 };

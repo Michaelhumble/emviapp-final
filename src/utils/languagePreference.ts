@@ -40,6 +40,16 @@ export const setLanguagePreference = (language: Language): void => {
 };
 
 /**
+ * Toggle language between English and Vietnamese
+ */
+export const toggleLanguagePreference = (): Language => {
+  const currentLanguage = getLanguagePreference();
+  const newLanguage: Language = currentLanguage === 'en' ? 'vi' : 'en';
+  setLanguagePreference(newLanguage);
+  return newLanguage;
+};
+
+/**
  * Register a language change listener
  * Returns a function to remove the listener
  */

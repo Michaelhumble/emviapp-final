@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Menu, Flame, Home, Briefcase, Store, Scissors, Users, Info, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ const iconMap: Record<string, React.FC<{ className?: string }>> = {
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
-  const { t, toggleLanguage, isVietnamese } = useTranslation();
+  const { t, toggleLanguage } = useTranslation();
   const navigate = useNavigate();
   
   const handleLinkClick = (path: string) => {
@@ -72,7 +71,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                 onClick={handleLanguageToggle}
               >
                 <Globe className="h-5 w-5" />
-                <span>{isVietnamese ? "English" : "Tiếng Việt"}</span>
+                <span>{t({ english: "English", vietnamese: "Tiếng Việt" })}</span>
               </Button>
             </div>
             

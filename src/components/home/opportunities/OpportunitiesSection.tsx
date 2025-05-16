@@ -30,7 +30,7 @@ const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ jobs }) => 
         <CardFooter className="flex justify-between items-center">
           <span className="text-sm text-gray-500">{listing.company}</span>
           <Button size="sm" variant="outline">
-            {t('Learn More', 'Tìm hiểu thêm')} <ArrowRight className="ml-2 h-4 w-4" />
+            {t({ english: 'Learn More', vietnamese: 'Tìm hiểu thêm' })} <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </CardFooter>
       </Card>
@@ -40,12 +40,12 @@ const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ jobs }) => 
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold text-center mb-8">{t('Latest Opportunities', 'Cơ hội mới nhất')}</h2>
+        <h2 className="text-2xl font-bold text-center mb-8">{t({ english: 'Latest Opportunities', vietnamese: 'Cơ hội mới nhất' })}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {jobs.map(renderListingCard)}
         </div>
         <div className="text-center mt-8">
-          <Button size="lg">{t('View All Opportunities', 'Xem tất cả cơ hội')}</Button>
+          <Button size="lg">{t({ english: 'View All Opportunities', vietnamese: 'Xem tất cả cơ hội' })}</Button>
         </div>
       </div>
     </section>

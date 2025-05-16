@@ -33,10 +33,10 @@ const Navbar = () => {
     navigate("/post-job");
   };
 
-  const tooltipText = t(
-    "Was $29.99 – Free for a limited time!",
-    "Giá gốc $29.99 – Hiện đang miễn phí!"
-  );
+  const tooltipText = t({
+    english: "Was $29.99 – Free for a limited time!",
+    vietnamese: "Giá gốc $29.99 – Hiện đang miễn phí!"
+  });
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
@@ -62,14 +62,14 @@ const Navbar = () => {
                     onClick={onPostJobClick} 
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                   >
-                    {t("Post a Job for Free", "Đăng việc miễn phí")}
+                    {t({ english: "Post a Job for Free", vietnamese: "Đăng việc miễn phí" })}
                   </Button>
                 ) : (
                   <Button 
                     onClick={() => navigate("/sign-in")}
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                   >
-                    {t("Post a Job for Free", "Đăng việc miễn phí")}
+                    {t({ english: "Post a Job for Free", vietnamese: "Đăng việc miễn phí" })}
                   </Button>
                 )}
               </TooltipTrigger>

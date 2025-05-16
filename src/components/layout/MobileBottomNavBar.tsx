@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -24,7 +23,7 @@ const MobileBottomNavBar = () => {
   const navTabs = [
     {
       key: "home",
-      label: t("Home", "Trang chủ"),
+      label: t({ english: "Home", vietnamese: "Trang chủ" }),
       route: "/",
       icon: (active: boolean) => (
         <Home strokeWidth={active ? 2.3 : 2} className={cn(
@@ -34,7 +33,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "search",
-      label: t("Search", "Tìm kiếm"),
+      label: t({ english: "Search", vietnamese: "Tìm kiếm" }),
       route: "/search",
       icon: (active: boolean) => (
         <Search strokeWidth={active ? 2.3 : 2} className={cn(
@@ -44,7 +43,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "jobs",
-      label: t("Jobs", "Tuyển dụng"),
+      label: t({ english: "Jobs", vietnamese: "Tuyển dụng" }),
       route: "/jobs",
       icon: (active: boolean) => (
         <Briefcase strokeWidth={active ? 2.3 : 2} className={cn(
@@ -54,7 +53,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "salons",
-      label: t("Salons", "Tiệm Nail"),
+      label: t({ english: "Salons", vietnamese: "Tiệm Nail" }),
       route: "/salons",
       icon: (active: boolean) => (
         <Store strokeWidth={active ? 2.3 : 2} className={cn(
@@ -64,7 +63,7 @@ const MobileBottomNavBar = () => {
     },
     {
       key: "profile",
-      label: t("Profile", "Cá nhân"),
+      label: t({ english: "Profile", vietnamese: "Cá nhân" }),
       route: "/profile",
       icon: (active: boolean) => (
         <User strokeWidth={active ? 2.3 : 2} className={cn(
@@ -176,4 +175,3 @@ const MobileBottomNavBar = () => {
 };
 
 export default MobileBottomNavBar;
-
