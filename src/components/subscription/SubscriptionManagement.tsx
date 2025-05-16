@@ -29,7 +29,7 @@ const SubscriptionManagement = () => {
       try {
         // Use a table that actually exists in the database
         const { data, error } = await supabase
-          .from('user_subscription_data')
+          .from('user_subscriptions')
           .select('*')
           .eq('user_id', user?.id)
           .single();
