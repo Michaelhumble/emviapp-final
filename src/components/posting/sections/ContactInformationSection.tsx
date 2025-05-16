@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from '@/hooks/useTranslation';
+import { jobPostingTranslations } from '@/translations/jobPostingForm';
 
 interface ContactInformationSectionProps {
   contactInfo: Partial<Job['contact_info']>;
@@ -12,7 +13,9 @@ interface ContactInformationSectionProps {
 }
 
 const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInformationSectionProps) => {
-  const { t, isVietnamese } = useTranslation();
+  const { t } = useTranslation();
+  const translations = jobPostingTranslations.contactInfo;
+  const validationMessages = jobPostingTranslations.validation;
 
   // Basic phone number validation
   const validatePhoneNumber = (phone: string) => {
@@ -35,103 +38,64 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t({
-        english: 'Contact Information',
-        vietnamese: 'Thông tin liên lạc'
-      })}</h2>
-      <p className="text-muted-foreground">{t({
-        english: 'Provide contact details for interested candidates',
-        vietnamese: 'Cung cấp thông tin liên lạc cho ứng viên quan tâm'
-      })}</p>
+      <h2 className="text-2xl font-bold">{t(translations.sectionTitle)}</h2>
+      <p className="text-muted-foreground">{t(translations.sectionDescription)}</p>
       
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="owner-name">{t({
-            english: 'Contact Name',
-            vietnamese: 'Tên liên lạc'
-          })}</Label>
+          <Label htmlFor="owner-name">{t(translations.contactName)}</Label>
           <Input 
             id="owner-name"
             value={contactInfo?.owner_name || ''}
             onChange={(e) => onChange({ ...contactInfo, owner_name: e.target.value })}
-            placeholder={t({
-              english: 'Your name or business name',
-              vietnamese: 'Tên của bạn hoặc tên doanh nghiệp'
-            })}
+            placeholder={t(translations.contactNamePlaceholder)}
             required
           />
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="phone">{t({
-            english: 'Contact Phone Number',
-            vietnamese: 'Số điện thoại liên lạc'
-          })}</Label>
+          <Label htmlFor="phone">{t(translations.contactPhone)}</Label>
           <Input 
             id="phone"
             type="tel"
             value={contactInfo?.phone || ''}
             onChange={handlePhoneChange}
-            placeholder={t({
-              english: 'e.g. (555) 123-4567',
-              vietnamese: 'VD: (555) 123-4567'
-            })}
+            placeholder={t(translations.contactPhonePlaceholder)}
           />
           <p className="text-xs text-muted-foreground">
-            {t({
-              english: 'Optional, for faster contact. Format: +1 (555) 123-4567 or 555-123-4567',
-              vietnamese: 'Không bắt buộc, để liên hệ nhanh hơn. Định dạng: +1 (555) 123-4567 hoặc 555-123-4567'
-            })}
+            {t(translations.phoneHelperText)}
           </p>
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="email">{t({
-            english: 'Email Address',
-            vietnamese: 'Địa chỉ email'
-          })}</Label>
+          <Label htmlFor="email">{t(translations.email)}</Label>
           <Input 
             id="email"
             type="email"
             value={contactInfo?.email || ''}
             onChange={(e) => onChange({ ...contactInfo, email: e.target.value })}
-            placeholder={t({
-              english: 'e.g. youremail@example.com',
-              vietnamese: 'VD: email@example.com'
-            })}
+            placeholder={t(translations.emailPlaceholder)}
             required
           />
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="zalo">{t({
-            english: 'Zalo (Optional)',
-            vietnamese: 'Zalo (Không bắt buộc)'
-          })}</Label>
+          <Label htmlFor="zalo">{t(translations.zalo)}</Label>
           <Input 
             id="zalo"
             value={contactInfo?.zalo || ''}
             onChange={(e) => onChange({ ...contactInfo, zalo: e.target.value })}
-            placeholder={t({
-              english: 'Your Zalo contact',
-              vietnamese: 'Liên hệ Zalo của bạn'
-            })}
+            placeholder={t(translations.zaloPlaceholder)}
           />
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="notes">{t({
-            english: 'Additional Contact Notes',
-            vietnamese: 'Ghi chú liên lạc bổ sung'
-          })}</Label>
+          <Label htmlFor="notes">{t(translations.additionalNotes)}</Label>
           <Textarea
             id="notes"
             value={contactInfo?.notes || ''}
             onChange={(e) => onChange({ ...contactInfo, notes: e.target.value })}
-            placeholder={t({
-              english: 'Best time to contact, preferred method, etc.',
-              vietnamese: 'Thời gian liên hệ tốt nhất, phương thức ưa thích, v.v.'
-            })}
+            placeholder={t(translations.additionalNotesPlaceholder)}
             className="min-h-[80px]"
           />
         </div>

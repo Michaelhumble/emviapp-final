@@ -8,12 +8,14 @@ import { JobForm } from "@/components/posting/job/JobForm";
 import { JobFormValues } from "@/components/posting/job/jobFormSchema";
 import PostWizardLayout from "@/components/posting/PostWizardLayout";
 import { useJobPosting } from "@/hooks/jobs/useJobPosting";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const CreateJobPosting: React.FC = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const { handleJobPost } = useJobPosting();
+  const { t, isVietnamese } = useTranslation();
   
   const handleSubmit = async (values: JobFormValues) => {
     setIsSubmitting(true);
@@ -35,7 +37,9 @@ const CreateJobPosting: React.FC = () => {
       
       if (success) {
         // Show success message
-        toast.success("Job posting created successfully!");
+        toast.success(isVietnamese 
+          ? "Đăng tin tuyển dụng thành công!" 
+          : "Job posting created successfully!");
         
         // Navigate to next step (pricing or preview)
         navigate("/jobs/pricing");
@@ -44,7 +48,9 @@ const CreateJobPosting: React.FC = () => {
       }
     } catch (error) {
       console.error('Error creating job posting:', error);
-      toast.error("There was an error creating your job posting. Please try again.");
+      toast.error(isVietnamese
+        ? "Đã xảy ra lỗi khi tạo bài đăng việc làm. Vui lòng thử lại."
+        : "There was an error creating your job posting. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -53,10 +59,12 @@ const CreateJobPosting: React.FC = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Create Job Posting | EmviApp</title>
+        <title>{isVietnamese ? "Đăng Tin Tuyển Dụng | EmviApp" : "Create Job Posting | EmviApp"}</title>
         <meta 
           name="description" 
-          content="Create a beautiful job posting to attract the best talent in the beauty industry." 
+          content={isVietnamese 
+            ? "Tạo bài đăng tuyển dụng đẹp để thu hút những nhân tài tốt nhất trong ngành làm đẹp."
+            : "Create a beautiful job posting to attract the best talent in the beauty industry."} 
         />
       </Helmet>
       

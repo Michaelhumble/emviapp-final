@@ -1,14 +1,13 @@
 
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
+import { JobFormValues } from './jobFormSchema';
 import { useTranslation } from '@/hooks/useTranslation';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import CompensationSection from '../sections/CompensationSection';
 import ContactInformationSection from '../sections/ContactInformationSection';
 import { Job } from '@/types/job';
+import { jobPostingTranslations } from '@/translations/jobPostingForm';
 
 interface JobFormProps {
   onSubmit: (values: any) => void;
@@ -26,6 +25,7 @@ export const JobForm: React.FC<JobFormProps> = ({
   initialValues
 }) => {
   const { t } = useTranslation();
+  const commonTranslations = jobPostingTranslations.common;
   
   const [formState, setFormState] = useState({
     jobDetails: {
@@ -119,7 +119,7 @@ export const JobForm: React.FC<JobFormProps> = ({
           disabled={isSubmitting}
           className="min-w-[150px]"
         >
-          {isSubmitting ? t('Submitting...') : t('Continue')}
+          {isSubmitting ? t(commonTranslations.submitting) : t(commonTranslations.continue)}
         </Button>
       </div>
     </form>

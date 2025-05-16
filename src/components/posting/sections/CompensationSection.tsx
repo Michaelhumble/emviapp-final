@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from '@/hooks/useTranslation';
+import { jobPostingTranslations } from '@/translations/jobPostingForm';
 
 interface CompensationSectionProps {
   details: {
@@ -26,48 +27,49 @@ interface CompensationSectionProps {
 
 const CompensationSection = ({ details, onChange }: CompensationSectionProps) => {
   const { t } = useTranslation();
+  const translations = jobPostingTranslations.compensation;
   
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t("Compensation")}</h2>
-      <p className="text-muted-foreground">{t("Specify the compensation details for this position")}</p>
+      <h2 className="text-2xl font-bold">{t(translations.sectionTitle)}</h2>
+      <p className="text-muted-foreground">{t(translations.sectionDescription)}</p>
       
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="compensation-type">{t("Compensation Type")}</Label>
+          <Label htmlFor="compensation-type">{t(translations.compensationType)}</Label>
           <Select 
             value={details.compensation_type}
             onValueChange={(value) => onChange({ ...details, compensation_type: value })}
           >
             <SelectTrigger id="compensation-type">
-              <SelectValue placeholder={t("Select compensation type")} />
+              <SelectValue placeholder={t(translations.selectCompensationType)} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="hourly">{t("Hourly")}</SelectItem>
-              <SelectItem value="salary">{t("Salary")}</SelectItem>
-              <SelectItem value="commission">{t("Commission Only")}</SelectItem>
-              <SelectItem value="commission_plus">{t("Commission + Base")}</SelectItem>
+              <SelectItem value="hourly">{t(translations.compensationTypes.hourly)}</SelectItem>
+              <SelectItem value="salary">{t(translations.compensationTypes.salary)}</SelectItem>
+              <SelectItem value="commission">{t(translations.compensationTypes.commission)}</SelectItem>
+              <SelectItem value="commission_plus">{t(translations.compensationTypes.commissionPlus)}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="salary-range">{t("Salary Range")}</Label>
+          <Label htmlFor="salary-range">{t(translations.salaryRange)}</Label>
           <Input 
             id="salary-range"
             value={details.salary_range}
             onChange={(e) => onChange({ ...details, salary_range: e.target.value })}
-            placeholder={t("e.g. $15-20/hour or $40K-50K/year")}
+            placeholder={t(translations.salaryRangePlaceholder)}
           />
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="tip-range">{t("Expected Tips")}</Label>
+          <Label htmlFor="tip-range">{t(translations.expectedTips)}</Label>
           <Input 
             id="tip-range"
             value={details.tip_range}
             onChange={(e) => onChange({ ...details, tip_range: e.target.value })}
-            placeholder={t("e.g. $100-200/day")}
+            placeholder={t(translations.expectedTipsPlaceholder)}
           />
         </div>
       </div>
