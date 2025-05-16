@@ -79,8 +79,8 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
           />
           <p className="text-xs text-muted-foreground">
             {t({
-              english: 'Optional. Format: +1 (555) 123-4567 or 555-123-4567',
-              vietnamese: 'Không bắt buộc. Định dạng: +1 (555) 123-4567 hoặc 555-123-4567'
+              english: 'Optional, for faster contact. Format: +1 (555) 123-4567 or 555-123-4567',
+              vietnamese: 'Không bắt buộc, để liên hệ nhanh hơn. Định dạng: +1 (555) 123-4567 hoặc 555-123-4567'
             })}
           </p>
         </div>
