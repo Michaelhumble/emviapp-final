@@ -2,7 +2,17 @@
 import { BadgePercent } from "lucide-react";
 import { CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/hooks/useTranslation";
-import { toTranslatableText } from "../SalonTranslationHelper";
+
+interface TranslationText {
+  english: string;
+  vietnamese: string;
+}
+
+// Helper function to convert string to translation object
+const toTranslatableText = (text: string): TranslationText => ({
+  english: text,
+  vietnamese: text
+});
 
 const ReferralHeader = () => {
   const { t } = useTranslation();

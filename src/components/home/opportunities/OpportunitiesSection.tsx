@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Job } from '@/types/job';
 import { ListingType } from '@/types/job';
@@ -13,8 +14,9 @@ interface OpportunitiesSectionProps {
 const OpportunitiesSection: React.FC<OpportunitiesSectionProps> = ({ jobs }) => {
   const { t } = useTranslation();
 
-  const renderListingCard = (listing: any) => {
-    const listingType: ListingType = listing.type || 'opportunity';
+  const renderListingCard = (listing: Job) => {
+    // Ensure type is properly cast to a valid ListingType value
+    const listingType: ListingType = (listing.type as ListingType) || 'job';
 
     return (
       <Card key={listing.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">

@@ -17,12 +17,12 @@ export interface ContactInformationSectionProps {
   form?: any;
 }
 
-const ContactInformationSection: React.FC<ContactInformationSectionProps> = ({ control }) => {
+const ContactInformationSection: React.FC<ContactInformationSectionProps> = ({ control, form }) => {
   const { t } = useTranslation();
   const formContext = useFormContext();
   
   // Use either passed control or get it from form context
-  const formControl = control || (formContext && formContext.control);
+  const formControl = control || form?.control || (formContext && formContext.control);
 
   if (!formControl) {
     console.error('ContactInformationSection: No form control available');

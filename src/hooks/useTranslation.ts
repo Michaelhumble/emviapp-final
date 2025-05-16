@@ -17,8 +17,26 @@ export const useTranslation = () => {
   // Add isVietnamese helper
   const isVietnamese = context.language === 'vietnamese';
   
+  // Update the t function to accept both string and object formats
+  const t = (textOrObj: string | Translation): string => {
+    if (typeof textOrObj === 'string') {
+      // For backwards compatibility with direct string usage
+      return textOrObj;
+    }
+    
+    // If an object with english/vietnamese props is provided
+    if (textOrObj && typeof textOrObj === 'object' && 'english' in textOrObj && 'vietnamese' in textOrObj) {
+      return context.language === 'vietnamese' ? textOrObj.vietnamese : textOrObj.english;
+    }
+    
+    // Fallback for invalid input
+    return String(textOrObj);
+  };
+  
   return {
-    ...context,
+    language: context.language,
+    setLanguage: context.setLanguage,
+    t,
     isVietnamese
   };
 };

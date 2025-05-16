@@ -74,7 +74,7 @@ export interface Job {
   trust_indicators?: string[];
   monthly_rent?: string;
   reason_for_selling?: string;
-  asking_price?: string;
+  asking_price?: string | number;
   square_feet?: number;
   verified?: boolean;
   featured_text?: string;

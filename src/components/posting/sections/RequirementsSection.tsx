@@ -6,39 +6,42 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface RequirementsSectionProps {
   control?: Control<any>;
+  form?: any;
 }
 
-const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control }) => {
+const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control, form }) => {
+  const { t } = useTranslation();
   const formContext = useFormContext();
-  const { control: formControl, watch, setValue } = formContext || {};
-  const finalControl = control || formControl;
+  
+  const finalControl = control || form?.control || (formContext && formContext.control);
+  const formWatch = form?.watch || (formContext && formContext.watch);
+  const formSetValue = form?.setValue || (formContext && formContext.setValue);
 
   // If no form context is available, show an error
-  if (!finalControl && !formContext) {
+  if (!finalControl || !formWatch || !formSetValue) {
     console.error('RequirementsSection: No form control available');
     return null;
   }
 
-  const requirements = watch ? watch('requirements') || [] : [];
+  const requirements = formWatch('requirements') || [];
   const [newRequirement, setNewRequirement] = React.useState('');
 
   const addRequirement = () => {
-    if (newRequirement.trim() !== '' && setValue) {
-      setValue('requirements', [...requirements, newRequirement]);
+    if (newRequirement.trim() !== '') {
+      formSetValue('requirements', [...requirements, newRequirement]);
       setNewRequirement('');
     }
   };
 
   const removeRequirement = (index: number) => {
-    if (setValue) {
-      setValue(
-        'requirements',
-        requirements.filter((_, i) => i !== index)
-      );
-    }
+    formSetValue(
+      'requirements',
+      requirements.filter((_, i) => i !== index)
+    );
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -50,7 +53,7 @@ const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control }) =>
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold">Requirements & Qualifications</h2>
+      <h2 className="text-xl font-semibold">{t('Requirements & Qualifications', 'Yêu cầu & Tiêu chuẩn')}</h2>
       
       <div className="space-y-4">
         <FormField
@@ -58,10 +61,10 @@ const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control }) =>
           name="requirements"
           render={() => (
             <FormItem>
-              <FormLabel>Requirements</FormLabel>
+              <FormLabel>{t('Requirements', 'Yêu cầu')}</FormLabel>
               <div className="flex space-x-2">
                 <Input
-                  placeholder="e.g. 2+ years experience"
+                  placeholder={t('e.g. 2+ years experience', 'VD: 2+ năm kinh nghiệm')}
                   value={newRequirement}
                   onChange={(e) => setNewRequirement(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -81,7 +84,7 @@ const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control }) =>
 
         {requirements.length > 0 && (
           <div className="mt-4 space-y-2">
-            <p className="text-sm font-medium">Added Requirements:</p>
+            <p className="text-sm font-medium">{t('Added Requirements:', 'Yêu cầu đã thêm:')}</p>
             <ul className="space-y-2">
               {requirements.map((req: string, index: number) => (
                 <li 

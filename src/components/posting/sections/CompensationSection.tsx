@@ -17,12 +17,12 @@ export interface CompensationSectionProps {
   form?: any;
 }
 
-const CompensationSection: React.FC<CompensationSectionProps> = ({ control }) => {
+const CompensationSection: React.FC<CompensationSectionProps> = ({ control, form }) => {
   const { t } = useTranslation();
   const formContext = useFormContext();
   
   // Use either passed control or get it from form context
-  const formControl = control || (formContext && formContext.control);
+  const formControl = control || form?.control || (formContext && formContext.control);
 
   if (!formControl) {
     console.error('CompensationSection: No form control available');

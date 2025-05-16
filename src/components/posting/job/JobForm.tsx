@@ -87,15 +87,15 @@ export const JobForm: React.FC<JobFormProps> = ({
           )}
           
           {currentStep === 2 && (
-            <CompensationSection control={form.control} />
+            <CompensationSection form={form} />
           )}
           
           {currentStep === 3 && (
-            <RequirementsSection control={form.control} />
+            <RequirementsSection form={form} />
           )}
           
           {currentStep === 4 && (
-            <ContactInformationSection control={form.control} />
+            <ContactInformationSection form={form} />
           )}
           
           <div className="flex justify-between p-6">
@@ -105,7 +105,7 @@ export const JobForm: React.FC<JobFormProps> = ({
                 variant="outline" 
                 onClick={prevStep}
               >
-                {t("Previous", "Quay lại")}
+                {t('Previous', 'Quay lại')}
               </Button>
             )}
             
@@ -116,14 +116,14 @@ export const JobForm: React.FC<JobFormProps> = ({
                 type="button" 
                 onClick={nextStep}
               >
-                {t("Next", "Tiếp theo")}
+                {t('Next', 'Tiếp theo')}
               </Button>
             ) : (
               <Button 
                 type="submit" 
                 disabled={isSubmitting}
               >
-                {isSubmitting ? t("Submitting...", "Đang gửi...") : t("Submit Job Listing", "Đăng tin tuyển dụng")}
+                {isSubmitting ? t('Submitting...', 'Đang gửi...') : t('Submit Job Listing', 'Đăng tin tuyển dụng')}
               </Button>
             )}
           </div>

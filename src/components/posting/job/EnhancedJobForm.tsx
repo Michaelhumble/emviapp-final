@@ -10,6 +10,7 @@ import RequirementsSection from '../sections/RequirementsSection';
 import CompensationSection from '../sections/CompensationSection';
 import ContactInformationSection from '../sections/ContactInformationSection';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Define a schema that matches JobDetailsSubmission
 const formSchema = z.object({
@@ -39,6 +40,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   initialData = {},
   isSubmitting = false
 }) => {
+  const { t } = useTranslation();
   const methods = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,13 +69,13 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(handleFormSubmit)} className="space-y-8">
             <JobDetailsSection />
-            <RequirementsSection control={methods.control} />
-            <CompensationSection control={methods.control} />
-            <ContactInformationSection control={methods.control} />
+            <RequirementsSection form={methods} />
+            <CompensationSection form={methods} />
+            <ContactInformationSection form={methods} />
             
             <div className="p-6 flex justify-end">
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : 'Post Job'}
+                {isSubmitting ? t('Submitting...', 'Đang gửi...') : t('Post Job', 'Đăng tin')}
               </Button>
             </div>
           </form>
