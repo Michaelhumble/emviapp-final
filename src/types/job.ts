@@ -37,13 +37,14 @@ export interface Job {
     notes?: string;
   };
   specialties?: string[];
-  pricingTier?: 'free' | 'starter' | 'premium' | 'gold' | 'diamond' | 'expired';
+  pricingTier?: 'free' | 'starter' | 'premium' | 'gold' | 'diamond' | 'expired' | 'standard' | 'featured';
   is_featured?: boolean;
   industry?: string;
   expires_at?: string;
   owner_id?: string;
   vietnamese_description?: string;
   is_vietnamese_listing?: boolean;
+  posted_at?: string;
   
   // Salon specific fields
   salon_features?: string[];
@@ -115,4 +116,4 @@ export interface JobApplication {
 }
 
 // Update ListingType enum to include all valid values
-export type ListingType = 'job' | 'booth' | 'salon' | 'supply' | 'opportunity' | string;
+export type ListingType = 'job' | 'booth' | 'salon' | 'opportunity' | 'supply' | string;

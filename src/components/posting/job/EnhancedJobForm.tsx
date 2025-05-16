@@ -58,7 +58,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 
   const handleFormSubmit = (values: FormValues) => {
     // Convert FormValues to JobDetailsSubmission - they have the same shape
-    onSubmit(values as unknown as JobDetailsSubmission);
+    onSubmit(values as JobDetailsSubmission);
   };
 
   return (
@@ -68,8 +68,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
           <form onSubmit={methods.handleSubmit(handleFormSubmit)} className="space-y-8">
             <JobDetailsSection />
             <RequirementsSection />
-            <CompensationSection form={methods.control} />
-            <ContactInformationSection form={methods.control} />
+            <CompensationSection control={methods.control} />
+            <ContactInformationSection control={methods.control} />
             
             <div className="p-6 flex justify-end">
               <Button type="submit" disabled={isSubmitting}>

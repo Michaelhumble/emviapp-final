@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { JobDetailsSubmission } from '@/types/job';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';  // Add Button import
+import { Button } from '@/components/ui/button';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import CompensationSection from '../sections/CompensationSection';
 import RequirementsSection from '../sections/RequirementsSection';
@@ -83,19 +83,19 @@ export const JobForm: React.FC<JobFormProps> = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           {currentStep === 1 && (
-            <JobDetailsSection form={form} />
+            <JobDetailsSection />
           )}
           
           {currentStep === 2 && (
-            <CompensationSection form={form} />
+            <CompensationSection control={form.control} />
           )}
           
           {currentStep === 3 && (
-            <RequirementsSection form={form} />
+            <RequirementsSection />
           )}
           
           {currentStep === 4 && (
-            <ContactInformationSection form={form} />
+            <ContactInformationSection control={form.control} />
           )}
           
           <div className="flex justify-between p-6">

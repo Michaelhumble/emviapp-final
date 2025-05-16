@@ -1,12 +1,66 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
 import { Job } from '@/types/job';
-import JobCardHeader from './card-sections/JobCardHeader';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
+import { useAuth } from '@/context/auth';
+import { Button } from '@/components/ui/button';
+import { LockIcon } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Clock, MapPin, BadgeDollarSign, Building2, Home } from 'lucide-react';
+import JobCardHeader from './card-sections/JobCardHeader';
+import { JobExpirationInfo } from './card-sections/JobExpirationInfo';
+import { JobFeatures } from './card-sections/JobFeatures';
+import { JobSpecialties } from './card-sections/JobSpecialties';
+import { JobTipInfo } from './card-sections/JobTipInfo';
+import { JobSummary } from './card-sections/JobSummary';
+import { JobCardActions } from './card-sections/JobCardActions';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { formatDistanceToNow } from 'date-fns';
+
+// Helper functions for job types
+const isNail = (job: Job) => job.title?.toLowerCase().includes('nail') || 
+                           job.specialties?.some(spec => spec.toLowerCase().includes('nail'));
+
+const isLashBrow = (job: Job) => job.title?.toLowerCase().includes('lash') || 
+                               job.title?.toLowerCase().includes('brow') ||
+                               job.specialties?.some(spec => spec.toLowerCase().includes('lash') || spec.toLowerCase().includes('brow'));
+
+const isMassage = (job: Job) => job.title?.toLowerCase().includes('massage') || 
+                              job.specialties?.some(spec => spec.toLowerCase().includes('massage'));
+
+const isBarber = (job: Job) => job.title?.toLowerCase().includes('barber') || 
+                             job.specialties?.some(spec => spec.toLowerCase().includes('barber'));
+
+// Image helper functions
+const NAIL_SALON_IMAGES = [
+  '/lovable-uploads/nail-salon-1.jpg',
+  '/lovable-uploads/nail-salon-2.jpg',
+  '/lovable-uploads/nail-salon-3.jpg',
+];
+
+const getRandomNailImage = () => {
+  return NAIL_SALON_IMAGES[Math.floor(Math.random() * NAIL_SALON_IMAGES.length)];
+};
+
+const getLashBrowJobImage = () => '/lovable-uploads/lash-brow-salon.jpg';
+const getMassageJobImage = () => '/lovable-uploads/massage-salon.jpg';
+const getBarberJobImage = () => '/lovable-uploads/barber-salon.jpg';
+
+const determineSalonCategory = (job: Job) => {
+  if (isNail(job)) return 'nail';
+  if (isLashBrow(job)) return 'lash-brow';
+  if (isMassage(job)) return 'massage';
+  if (isBarber(job)) return 'barber';
+  return 'general';
+};
+
+const getDefaultSalonImage = (job: Job) => {
+  if (isNail(job)) return getRandomNailImage();
+  if (isLashBrow(job)) return getLashBrowJobImage();
+  if (isMassage(job)) return getMassageJobImage();
+  if (isBarber(job)) return getBarberJobImage();
+  return '/lovable-uploads/default-salon.jpg';
+};
 
 interface JobListingCardProps {
   job: Job;
@@ -17,198 +71,157 @@ interface JobListingCardProps {
   isRenewing: boolean;
 }
 
-const JobListingCard = ({
-  job,
-  isExpired,
+const JobListingCard: React.FC<JobListingCardProps> = ({ 
+  job, 
+  isExpired, 
   currentUserId,
   onViewDetails,
   onRenew,
   isRenewing
-}: JobListingCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const { isSignedIn } = useAuth();
-  const { t, isVietnamese } = useTranslation();
+}) => {
+  const { t, language } = useTranslation();
+  const isVietnamese = language === 'vietnamese';
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
-
-  // IMPORTANT: Determine appropriate job image with enhanced logic
-  // First check if this job already has an assigned image
-  let jobImage = job.imageUrl || job.image || '';
+  const { isSignedIn } = useAuth();
   
-  // If no existing image, determine the most appropriate one based on job type
-  if (!jobImage || !jobImage.includes('lovable-uploads')) {
-    // First check if this is a nail job (PRIORITIZE nail detection per user's request)
-    const isNail = isNailJob(job.title || '', job.description || '');
-    
-    // Then check if this is a lash/brow job
-    const isLashBrow = !isNail && isLashBrowJob(job.title || '', job.description || '');
-    
-    // Then check if this is a massage job
-    const isMassage = !isNail && !isLashBrow && isMassageJob(job.title || '', job.description || '');
-    
-    // Then check if this is a barber job
-    const isBarber = !isNail && !isLashBrow && !isMassage && isBarberJob(job.title || '', job.description || '');
-    
-    // Get the appropriate image for this job
-    if (isNail) {
-      // For nail jobs, select from our high-quality nail salon images
-      const nailJobImages = [
-        NAIL_SALON_IMAGES.artGallery,
-        NAIL_SALON_IMAGES.executiveNails,
-        NAIL_SALON_IMAGES.minimalist
-      ];
-      const randomIndex = Math.floor(Math.random() * nailJobImages.length);
-      jobImage = nailJobImages[randomIndex];
-    } else if (isLashBrow) {
-      jobImage = getLashBrowJobImage();
-    } else if (isMassage) {
-      jobImage = getMassageJobImage(true); // Force randomization for variety
-    } else if (isBarber) {
-      jobImage = getBarberJobImage();
-    } else {
-      // Fallback to generic category detection
-      const category = determineSalonCategory(job.description || '', job.title || job.company || '');
-      jobImage = getDefaultSalonImage(category);
-    }
-  }
-      
-  // Store the image URL in the job object for detail view consistency
-  if (jobImage && !job.imageUrl) {
-    job.imageUrl = jobImage;
-  }
-
-  const getContactMessage = () => {
-    return isVietnamese 
-      ? "🔒 Đăng ký để xem chi tiết liên hệ"
-      : "🔒 Sign up to view contact details";
-  };
-
   const handleViewDetails = () => {
-    if (isOwner || isSignedIn) {
+    if (isSignedIn || !isExpired) {
       onViewDetails();
     } else {
-      navigate(`/sign-in?redirect=${encodeURIComponent(`/opportunities/${job.id}`)}`);
+      navigate('/login', { state: { from: window.location.pathname, message: "Sign in to view expired listings" } });
     }
   };
-
-  const getCtaButton = () => {
-    if (isOwner) {
-      return (
-        <Button 
-          variant="default"
-          className="w-full" 
-          onClick={onViewDetails}
-        >
-          {isVietnamese ? "Xem Chi Tiết" : "View Full Details"}
-        </Button>
-      );
+  
+  const handleApply = () => {
+    if (isSignedIn) {
+      onViewDetails();
+    } else {
+      navigate('/login', { state: { from: window.location.pathname } });
+    }
+  };
+  
+  const handleRenew = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRenew();
+  };
+  
+  const getPrimaryAction = () => {
+    if (isExpired) {
+      if (isOwner) {
+        return (
+          <Button 
+            onClick={handleRenew}
+            disabled={isRenewing}
+            className="w-full"
+          >
+            {isRenewing ? "Renewing..." : "Renew Listing"}
+          </Button>
+        );
+      } else {
+        return (
+          <Button 
+            onClick={handleViewDetails}
+            variant="secondary"
+            className="w-full"
+          >
+            View Expired Listing
+          </Button>
+        );
+      }
     }
     
-    if (isSignedIn) {
+    if (!isSignedIn) {
       return (
-        <Button 
-          variant="default"
-          className="w-full" 
-          onClick={onViewDetails}
-        >
-          {isVietnamese ? "Xem Chi Tiết" : "View Full Details"}
+        <Button onClick={handleApply} className="w-full">
+          Sign In to View
         </Button>
       );
     }
     
     return (
-      <Button 
-        variant="default"
-        className="w-full" 
-        onClick={handleViewDetails}
-      >
-        <Lock className="h-4 w-4 mr-1" /> 
-        {isVietnamese ? "Đăng Ký Để Xem" : "Sign Up To View"}
+      <Button onClick={handleViewDetails} className="w-full">
+        View Details
       </Button>
     );
   };
 
   return (
     <Card 
-      className={`overflow-hidden transition-all duration-200 ${
-        isHovered ? 'shadow-lg transform translate-y-[-2px]' : 'shadow-md'
-      } h-full flex flex-col ${isExpired ? 'bg-gray-50/80' : ''}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`overflow-hidden transition-all duration-200 h-full flex flex-col ${
+        isExpired ? 'opacity-80 bg-gray-50' : 'hover:shadow-md'
+      }`}
     >
-      {/* Image section - Use appropriate industry images */}
-      <div className="aspect-video w-full overflow-hidden">
+      <div className="aspect-video relative overflow-hidden bg-gray-100">
         <ImageWithFallback
-          src={job.imageUrl || jobImage}
-          alt={job.title || job.company || "Job Listing"}
+          src={job.imageUrl || job.image || getDefaultSalonImage(job)}
+          alt={job.title}
           className="w-full h-full object-cover"
-          priority={true}
-          fallbackImage={jobImage} // Add fallback for reliability
-          category={job.salon_type || job.type} // Help the component choose an appropriate image
+          businessName={job.title}
+          category={job.salon_type}
         />
+        
+        {job.pricingTier && job.pricingTier !== 'free' && (
+          <div className="absolute top-2 right-2">
+            <div className={`
+              px-2 py-1 rounded text-xs text-white font-medium
+              ${job.pricingTier === 'premium' ? 'bg-purple-500' : ''}
+              ${job.pricingTier === 'gold' ? 'bg-amber-500' : ''}
+              ${job.pricingTier === 'diamond' ? 'bg-blue-600' : ''}
+              ${job.pricingTier === 'starter' ? 'bg-green-500' : ''}
+            `}>
+              {job.pricingTier.charAt(0).toUpperCase() + job.pricingTier.slice(1)}
+            </div>
+          </div>
+        )}
       </div>
       
-      {/* Keep existing CardContent section */}
-      <CardContent className="p-6 flex flex-col h-full">
+      <CardContent className="flex-grow flex flex-col p-4">
         <JobCardHeader job={job} />
         
         <JobSummary 
-          employmentType={job.employment_type}
-          salaryRange={job.salary_range}
+          employmentType={job.employment_type || 'Full-time'}
+          salaryRange={job.salary_range || job.compensation || job.price}
           createdAt={job.created_at}
+          jobSummary={isVietnamese ? job.vietnamese_description : job.description}
+          phoneNumber={isSignedIn ? job.contact_info?.phone : undefined}
+          contactEmail={isSignedIn ? job.contact_info?.email : undefined}
         />
         
         <JobFeatures 
-          weeklyPay={job.weekly_pay} 
-          ownerWillTrain={job.owner_will_train}
-          hasHousing={job.has_housing}
-          noSupplyDeduction={job.no_supply_deduction}
+          weeklyPay={Boolean(job.weekly_pay)} 
+          ownerWillTrain={Boolean(job.owner_will_train)} 
+          hasHousing={Boolean(job.has_housing)}
+          noSupplyDeduction={Boolean(job.no_supply_deduction)} 
         />
         
-        <JobSpecialties specialties={job.specialties} />
-        
-        {job.vietnamese_description ? (
-          <div className="mb-4 flex-grow">
-            <p className="text-gray-600 line-clamp-2 mb-1">
-              {isVietnamese ? job.vietnamese_description : job.description}
-            </p>
-            <p className="text-xs text-gray-400">
-              {!isVietnamese && job.vietnamese_description ? "(Vietnamese description available)" : ""}
-            </p>
-          </div>
-        ) : (
-          <p className="text-gray-600 line-clamp-3 mb-4 flex-grow">
-            {job.description}
-          </p>
+        <JobSpecialties 
+          specialties={job.specialties} 
+        />
+
+        {/* Only show for Vietnamese language or when we have a tip range */}
+        {isVietnamese && job.tip_range && (
+          <JobTipInfo 
+            tipRange={job.tip_range}
+          />
         )}
         
-        <JobTipInfo tipRange={job.tip_range} />
-        
-        {!isExpired && !isSignedIn && !isOwner && (
-          <div className="text-sm text-gray-500 italic mb-4">
-            {getContactMessage()}
-          </div>
-        )}
-        
-        <JobExpirationInfo 
+        <JobExpirationInfo
           isExpired={isExpired}
           createdAt={job.created_at}
-          contactInfo={isSignedIn && !isExpired ? job.contact_info : undefined}
+          contactInfo={job.contact_info}
+          pricingTier={job.pricingTier}
         />
-        
-        {isExpired ? (
-          <JobCardActions 
+                
+        <div className="mt-auto pt-4">
+          <JobCardActions
             isExpired={isExpired}
             isOwner={isOwner}
-            onViewDetails={onViewDetails}
-            onRenew={onRenew}
+            onViewDetails={handleViewDetails}
+            onRenew={handleRenew}
             isRenewing={isRenewing}
           />
-        ) : (
-          <div className="mt-4">
-            {getCtaButton()}
-          </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

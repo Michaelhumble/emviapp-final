@@ -1,90 +1,66 @@
 
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission } from '@/types/job';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const JobDetailsSection = () => {
-  const { t } = useTranslation();
-  const { control } = useFormContext<Partial<JobDetailsSubmission>>();
+  const { control } = useFormContext();
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-semibold">{t("Job Details", "Chi tiết công việc")}</h2>
+      <h2 className="text-xl font-semibold">Job Details</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          control={control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("Job Title", "Tiêu đề công việc")}</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t("e.g. Experienced Nail Technician", "VD: Thợ nails lành nghề")} 
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("Location", "Vị trí")}</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder={t("e.g. Chicago, IL", "VD: Chicago, IL")} 
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <FormField
+        control={control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Job Title</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g. Nail Technician" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      <FormField
+        control={control}
+        name="location"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Location</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g. Los Angeles, CA" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       
       <FormField
         control={control}
         name="jobType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("Job Type", "Loại công việc")}</FormLabel>
+            <FormLabel>Job Type</FormLabel>
             <Select 
-              onValueChange={field.onChange}
+              onValueChange={field.onChange} 
               defaultValue={field.value}
-              value={field.value}
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("Select job type", "Chọn loại công việc")} />
+                  <SelectValue placeholder="Select job type" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="full-time">{t("Full-time", "Toàn thời gian")}</SelectItem>
-                <SelectItem value="part-time">{t("Part-time", "Bán thời gian")}</SelectItem>
-                <SelectItem value="contract">{t("Contract", "Hợp đồng")}</SelectItem>
-                <SelectItem value="temporary">{t("Temporary", "Tạm thời")}</SelectItem>
+                <SelectItem value="full-time">Full-time</SelectItem>
+                <SelectItem value="part-time">Part-time</SelectItem>
+                <SelectItem value="contract">Contract</SelectItem>
+                <SelectItem value="temporary">Temporary</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -97,12 +73,9 @@ const JobDetailsSection = () => {
         name="jobSummary"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("Job Summary", "Tóm tắt công việc")}</FormLabel>
+            <FormLabel>Job Summary</FormLabel>
             <FormControl>
-              <Input 
-                placeholder={t("Brief summary of the position", "Tóm tắt ngắn gọn về vị trí")} 
-                {...field} 
-              />
+              <Input placeholder="Brief summary of the position" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -114,11 +87,11 @@ const JobDetailsSection = () => {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("Job Description", "Mô tả công việc")}</FormLabel>
+            <FormLabel>Job Description</FormLabel>
             <FormControl>
               <Textarea 
-                placeholder={t("Detailed job description and responsibilities", "Mô tả chi tiết công việc và trách nhiệm")} 
-                className="min-h-[150px]" 
+                placeholder="Detailed job description, responsibilities, etc." 
+                className="min-h-[120px]"
                 {...field} 
               />
             </FormControl>

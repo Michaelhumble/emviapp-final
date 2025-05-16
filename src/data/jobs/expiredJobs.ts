@@ -14,7 +14,7 @@ export const expiredJobs: Job[] = [
     status: "expired",
     type: "job",
     salary_range: "$25-35/hr",
-    pricingTier: "premium", // Updated to use valid pricing tier
+    pricingTier: "expired", // Updated to use valid pricing tier
   },
   {
     id: "expired-job-2",
@@ -27,7 +27,7 @@ export const expiredJobs: Job[] = [
     status: "expired",
     type: "job",
     salary_range: "$18-22/hr",
-    pricingTier: "standard", // Updated to use valid pricing tier
+    pricingTier: "expired", // Updated to use valid pricing tier
   },
   {
     id: "expired-job-3",
@@ -40,7 +40,7 @@ export const expiredJobs: Job[] = [
     status: "expired",
     type: "job",
     salary_range: "$30-40/hr + tips",
-    pricingTier: "gold", // Updated to use valid pricing tier
+    pricingTier: "expired", // Updated to use valid pricing tier
   },
   {
     id: "expired-job-4",
@@ -53,7 +53,7 @@ export const expiredJobs: Job[] = [
     status: "expired",
     type: "job",
     salary_range: "$25-45/hr based on experience",
-    pricingTier: "premium", // Updated to use valid pricing tier
+    pricingTier: "expired", // Updated to use valid pricing tier
   },
   {
     id: "expired-job-5",
@@ -66,6 +66,6 @@ export const expiredJobs: Job[] = [
     status: "expired",
     type: "job",
     salary_range: "$20-25/hr + tips",
-    pricingTier: "free", // Updated to use valid pricing tier
+    pricingTier: "expired", // Updated to use valid pricing tier
   }
 ];
