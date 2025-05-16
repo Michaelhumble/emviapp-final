@@ -27,10 +27,10 @@ const SubscriptionManagement = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        // Use type annotation to avoid deep type instantiation
+        // Use any type to avoid Supabase table type issues
         const { data, error } = await supabase
           .from('subscriptions')
-          .select('*') as {data: Subscription | null, error: any};
+          .select('*') as { data: Subscription | null, error: any };
 
         if (error && error.message !== 'No rows found') {
           console.error("Error fetching subscription:", error);

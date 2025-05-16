@@ -17,9 +17,7 @@ const CheckoutFallback = () => {
           {t("Invalid Checkout Path")}
         </AlertTitle>
         <AlertDescription>
-          {t(
-            "You're not supposed to access this page directly. Please return to the payment flow."
-          )}
+          {t("You're not supposed to access this page directly. Please return to the payment flow.")}
         </AlertDescription>
       </Alert>
       

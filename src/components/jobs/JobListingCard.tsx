@@ -22,7 +22,7 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
   currentUserId, // Added to match props being passed
 }) => {
   // Create a compatibility layer for the date property
-  const jobCreatedAt = job.created_at || '';
+  const jobCreatedAt = job.created_at ? String(job.created_at) : '';
   // Create a compatibility layer for salary/compensation
   const jobCompensation = 'salary' in job ? job.salary : 
                    job.compensation_details || job.compensation_type || '';
