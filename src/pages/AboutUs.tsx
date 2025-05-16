@@ -1,202 +1,199 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Clock, BookOpen, Sparkles, Compass } from 'lucide-react';
-import EmviLogo from '@/components/branding/EmviLogo';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Lightbulb, Award, Users, Heart, Gem, BarChart } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
 import LanguageToggleButton from '@/components/home/missing-piece/LanguageToggleButton';
 
-const AboutUs = () => {
-  const { t, isVietnamese, toggleLanguage } = useTranslation();
+const AboutUs: React.FC = () => {
+  const [isVietnamese, setIsVietnamese] = useState(false);
   
-  // Translations
-  const translations = {
-    hero: {
-      title: {
-        english: "Our Story. Our Journey. Our Purpose.",
-        vietnamese: "Câu Chuyện. Hành Trình. Sứ Mệnh."
-      },
-      subtitle: {
-        english: "Discover the heart behind EmviApp—a platform built by beauty professionals, for beauty professionals and customers.",
-        vietnamese: "Khám phá trái tim đằng sau EmviApp—nền tảng được xây dựng bởi các chuyên gia làm đẹp, dành cho các chuyên gia và khách hàng."
-      }
-    },
-    timeline: {
-      heading: {
-        english: "Our Journey",
-        vietnamese: "Cuộc Hành Trình"
-      },
-      steps: [
-        {
-          year: "2014",
-          title: {
-            english: "The Idea",
-            vietnamese: "Ý Tưởng"
-          },
-          description: {
-            english: "A spark of inspiration from 25 years in beauty.",
-            vietnamese: "Tia sáng cảm hứng từ 25 năm trong ngành làm đẹp."
-          },
-          icon: <Lightbulb className="w-6 h-6 text-purple-500" />,
-          position: "right"
-        },
-        {
-          year: "2015",
-          title: {
-            english: "First Attempt",
-            vietnamese: "Nỗ Lực Đầu Tiên"
-          },
-          description: {
-            english: "Our first app was born; we spent years and all our resources, but still fell short.",
-            vietnamese: "Ứng dụng đầu tiên của chúng tôi ra đời; chúng tôi đã dành nhiều năm và tất cả nguồn lực, nhưng vẫn chưa thành công."
-          },
-          icon: <Clock className="w-6 h-6 text-purple-500" />,
-          position: "left"
-        },
-        {
-          year: "2015–2023",
-          title: {
-            english: "Lessons & Perseverance",
-            vietnamese: "Bài Học & Kiên Trì"
-          },
-          description: {
-            english: "Eight years of hard work, setbacks, but never giving up.",
-            vietnamese: "Tám năm làm việc chăm chỉ, thất bại, nhưng không bao giờ bỏ cuộc."
-          },
-          icon: <BookOpen className="w-6 h-6 text-purple-500" />,
-          position: "right"
-        },
-        {
-          year: "2024",
-          title: {
-            english: "Rebirth",
-            vietnamese: "Tái Sinh"
-          },
-          description: {
-            english: "With new vision and the help of Sunshine, EmviApp is reborn.",
-            vietnamese: "Với tầm nhìn mới và sự giúp đỡ của Sunshine, EmviApp được tái sinh."
-          },
-          icon: <Sparkles className="w-6 h-6 text-purple-500" />,
-          position: "left"
-        },
-        {
-          year: t({
-            english: "Now",
-            vietnamese: "Hiện Tại"
-          }),
-          title: {
-            english: "Our Journey Continues",
-            vietnamese: "Hành Trình Tiếp Tục"
-          },
-          description: {
-            english: "We build bridges between artists, salons, and clients—so no one is ever lost again.",
-            vietnamese: "Chúng tôi xây dựng cầu nối giữa nghệ sĩ, salon và khách hàng—để không ai bị lạc lối nữa."
-          },
-          icon: <Compass className="w-6 h-6 text-purple-500" />,
-          position: "right"
-        }
-      ]
-    }
+  const toggleLanguage = () => {
+    setIsVietnamese(!isVietnamese);
   };
-
+  
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+    transition: { duration: 0.6 }
+  };
+  
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-16">
-      {/* Language Switcher - Floating */}
-      <div className="fixed top-24 right-4 z-10">
-        <LanguageToggleButton 
-          isVietnamese={isVietnamese} 
-          toggleLanguage={toggleLanguage} 
-        />
-      </div>
-      
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       {/* Hero Section */}
-      <motion.section 
-        className="text-center mb-20"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex justify-center mb-8">
-          <EmviLogo size="large" />
+      <section className="py-16 md:py-24 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-50 to-pink-50 opacity-50"></div>
+        <div className="container mx-auto relative z-10">
+          <motion.div 
+            className="flex flex-col items-center text-center"
+            initial="hidden"
+            animate="visible"
+            variants={fadeIn}
+          >
+            <Logo size="large" />
+            
+            <motion.h1 
+              className="mt-8 text-4xl md:text-5xl lg:text-6xl font-playfair font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+            >
+              {isVietnamese ? 'Câu Chuyện Của Chúng Tôi' : 'Our Story'}
+            </motion.h1>
+            
+            <motion.p 
+              className="mt-4 text-lg md:text-xl text-gray-700 max-w-2xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+              {isVietnamese 
+                ? 'Kết nối cộng đồng làm đẹp, xây dựng tương lai tươi sáng hơn cho các chuyên gia làm đẹp Việt Nam và quốc tế.'
+                : 'Connecting the beauty community, building a brighter future for Vietnamese and international beauty professionals.'}
+            </motion.p>
+            
+            <motion.div 
+              className="mt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+              <LanguageToggleButton 
+                isVietnamese={isVietnamese} 
+                toggleLanguage={toggleLanguage} 
+              />
+            </motion.div>
+          </motion.div>
         </div>
-        
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-6">
-          {t(translations.hero.title)}
-        </h1>
-        
-        <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-          {t(translations.hero.subtitle)}
-        </p>
-      </motion.section>
+      </section>
       
       {/* Timeline Section */}
-      <section className="mb-20 relative">
-        <h2 className="text-2xl md:text-3xl font-playfair text-center mb-12">
-          {t(translations.timeline.heading)}
-        </h2>
-        
-        {/* Timeline line */}
-        <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-1 md:transform md:-translate-x-1/2 bg-gradient-to-b from-purple-300 via-purple-500 to-pink-500"></div>
-        
-        {/* Timeline items */}
-        <div className="space-y-12 relative">
-          {translations.timeline.steps.map((step, index) => (
-            <TimelineItem 
-              key={index}
-              year={step.year}
-              title={t(step.title)}
-              description={t(step.description)}
-              icon={step.icon}
-              position={step.position}
-            />
-          ))}
+      <section className="py-16 px-4">
+        <div className="container mx-auto">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-playfair font-bold text-center mb-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            {isVietnamese ? 'Cuộc Hành Trình Của EmviApp' : 'The EmviApp Journey'}
+          </motion.h2>
+          
+          <div className="relative">
+            {/* Timeline Center Line */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 h-full border-l-2 border-purple-200"></div>
+            
+            {/* Timeline Items */}
+            <div className="space-y-24">
+              <TimelineItem 
+                year="2014" 
+                position="left"
+                icon={<Lightbulb className="h-6 w-6 text-amber-500" />}
+                title={isVietnamese ? "Khởi Nguồn Ý Tưởng" : "The Seed of an Idea"}
+                content={isVietnamese 
+                  ? "Phát hiện khoảng trống thị trường kết nối người thợ làm đẹp Việt Nam với cơ hội việc làm tại Mỹ." 
+                  : "Identifying a market gap connecting Vietnamese beauty professionals with opportunities in the US."}
+              />
+              
+              <TimelineItem 
+                year="2018" 
+                position="right"
+                icon={<Users className="h-6 w-6 text-blue-500" />}
+                title={isVietnamese ? "Nghiên Cứu Thị Trường" : "Market Research"}
+                content={isVietnamese 
+                  ? "Phỏng vấn hơn 200 chủ tiệm và thợ làm đẹp để hiểu nhu cầu thực tế của ngành." 
+                  : "Interviewing over 200 salon owners and beauty professionals to understand the industry's real needs."}
+              />
+              
+              <TimelineItem 
+                year="2021" 
+                position="left"
+                icon={<Award className="h-6 w-6 text-green-500" />}
+                title={isVietnamese ? "Phiên Bản Đầu Tiên" : "First Prototype"}
+                content={isVietnamese 
+                  ? "Phát triển phiên bản thử nghiệm đầu tiên của ứng dụng kết nối việc làm." 
+                  : "Developing the first test version of our job connection platform."}
+              />
+              
+              <TimelineItem 
+                year="2022" 
+                position="right"
+                icon={<Heart className="h-6 w-6 text-pink-500" />}
+                title={isVietnamese ? "Hỗ Trợ Cộng Đồng" : "Community Support"}
+                content={isVietnamese 
+                  ? "Tạo các nhóm hỗ trợ trực tuyến cho người Việt trong ngành làm đẹp tại Mỹ." 
+                  : "Creating online support groups for Vietnamese beauty professionals in the US."}
+              />
+              
+              <TimelineItem 
+                year="2023" 
+                position="left"
+                icon={<Gem className="h-6 w-6 text-purple-500" />}
+                title={isVietnamese ? "Ra Mắt EmviApp" : "EmviApp Launch"}
+                content={isVietnamese 
+                  ? "Chính thức ra mắt EmviApp với đầy đủ tính năng kết nối, hỗ trợ song ngữ." 
+                  : "Officially launching EmviApp with full connection features and bilingual support."}
+              />
+              
+              <TimelineItem 
+                year="2024" 
+                position="right"
+                icon={<BarChart className="h-6 w-6 text-cyan-500" />}
+                title={isVietnamese ? "Mở Rộng và Phát Triển" : "Growth and Expansion"}
+                content={isVietnamese 
+                  ? "Đạt mốc hàng ngàn người dùng hoạt động, mở rộng đến nhiều thành phố tại Mỹ." 
+                  : "Reaching thousands of active users, expanding to multiple cities across the US."}
+              />
+            </div>
+          </div>
         </div>
       </section>
     </div>
   );
 };
 
-// Timeline Item Component
 interface TimelineItemProps {
   year: string;
-  title: string;
-  description: string;
+  position: "left" | "right";
   icon: React.ReactNode;
-  position: 'left' | 'right';
+  title: string;
+  content: string;
 }
 
-const TimelineItem = ({ year, title, description, icon, position }: TimelineItemProps) => {
-  const isRight = position === 'right';
+const TimelineItem: React.FC<TimelineItemProps> = ({ 
+  year, 
+  position, 
+  icon, 
+  title, 
+  content 
+}) => {
+  const isLeft = position === "left";
   
   return (
     <motion.div 
-      className={`flex items-start ${isRight ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col`}
-      initial={{ opacity: 0, x: isRight ? 50 : -50 }}
+      className={`flex items-center ${isLeft ? 'flex-row-reverse' : 'flex-row'}`}
+      initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
       whileInView={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
     >
-      {/* Content */}
-      <div className={`md:w-1/2 w-full ${isRight ? 'md:pr-12 md:text-right' : 'md:pl-12'} mb-6 md:mb-0`}>
-        <div className="bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-          <span className="text-sm font-medium text-purple-600 block mb-2">{year}</span>
-          <h3 className="text-xl font-playfair font-semibold mb-2">{title}</h3>
-          <p className="text-gray-700">{description}</p>
+      <div className={`w-1/2 ${isLeft ? 'pr-8 text-right' : 'pl-8'}`}>
+        <div className="bg-white backdrop-blur-sm rounded-xl shadow-xl p-6 border border-purple-100 hover:border-purple-200 transition-all hover:shadow-purple-100/30">
+          <div className="flex items-center gap-3 mb-3">
+            {icon}
+            <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+          </div>
+          <p className="text-gray-600">{content}</p>
         </div>
       </div>
       
-      {/* Icon - Mobile: Hidden, Desktop: Shown in center */}
-      <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center justify-center w-12 h-12 rounded-full bg-white shadow-md border border-gray-200">
-        {icon}
+      <div className="z-10 flex-shrink-0">
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white w-16 h-16 rounded-full flex items-center justify-center font-bold shadow-lg border-4 border-white">
+          {year}
+        </div>
       </div>
       
-      {/* Icon - Mobile: Shown to left, Desktop: Hidden */}
-      <div className="flex md:hidden absolute left-0 transform -translate-x-1/2 items-center justify-center w-8 h-8 rounded-full bg-white shadow-md border border-gray-200">
-        {icon}
-      </div>
-      
-      {/* Empty div for spacing on other side */}
-      <div className="md:w-1/2 hidden md:block"></div>
+      <div className="w-1/2"></div>
     </motion.div>
   );
 };
