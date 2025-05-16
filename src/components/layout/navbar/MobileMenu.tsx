@@ -59,13 +59,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
           <div className="flex-grow overflow-y-auto py-4 px-2">
             <nav className="space-y-1">
               {mainNavigation.map((item, index) => (
-                <div className="menu-item-enter" style={{ '--index': index }} key={item.path}>
+                <div className="menu-item-enter" style={{ animationDelay: `${index * 75}ms` }} key={item.path}>
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-lg py-6 font-medium"
                     onClick={() => handleNavigation(item.path)}
                   >
-                    {item.icon && <item.icon className="mr-3 h-5 w-5" />}
+                    {item.icon && React.createElement(item.icon, { className: "mr-3 h-5 w-5" })}
                     {t(item.label)}
                   </Button>
                 </div>

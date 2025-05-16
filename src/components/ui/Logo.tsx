@@ -24,7 +24,7 @@ const Logo: React.FC<LogoProps> = ({
     <div className={cn("flex items-center", className)}>
       <div className={cn("relative", sizeClasses[size])}>
         <img
-          src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/emviapp-logo.png"
+          src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo//emvi-logo-transparent.png"
           alt="EmviApp Logo"
           className="h-full w-auto object-contain"
         />
