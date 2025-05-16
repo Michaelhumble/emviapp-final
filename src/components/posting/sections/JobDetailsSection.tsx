@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Job } from '@/types/job';
 import {
   Select,
@@ -20,6 +20,12 @@ interface JobDetailsSectionProps {
 
 const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
   const { t } = useTranslation();
+  
+  // Debug log to inspect the Job interface properties
+  useEffect(() => {
+    console.log("Job details object:", details);
+    console.log("Job interface properties:", Object.keys(details));
+  }, [details]);
   
   return (
     <div className="space-y-6">
@@ -88,18 +94,6 @@ const JobDetailsSection = ({ details, onChange }: JobDetailsSectionProps) => {
               value={details.location || ''}
               onChange={(e) => onChange({ ...details, location: e.target.value })}
               placeholder={t("City, State")}
-            />
-          </div>
-          
-          <div className="grid gap-2">
-            <Label htmlFor="zip-code">
-              {t("ZIP/Postal Code")}
-            </Label>
-            <Input 
-              id="zip-code"
-              value={details.zip_code || ''}
-              onChange={(e) => onChange({ ...details, zip_code: e.target.value })}
-              placeholder={t("e.g. 90210")}
             />
           </div>
         </div>
