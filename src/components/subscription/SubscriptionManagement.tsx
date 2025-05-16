@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,9 +6,19 @@ import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "@/hooks/useTranslation";
 
+// Define a simple subscription type to avoid deep type instantiation
+interface Subscription {
+  id?: string;
+  user_id?: string;
+  status?: string;
+  plan_name?: string;
+  current_period_end?: string;
+  stripe_subscription_id?: string;
+}
+
 const SubscriptionManagement = () => {
   const { user } = useAuth();
-  const [subscription, setSubscription] = useState(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -16,11 +27,10 @@ const SubscriptionManagement = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
+        // Use type annotation to avoid deep type instantiation
         const { data, error } = await supabase
           .from('subscriptions')
-          .select('*')
-          .eq('user_id', user?.id)
-          .single();
+          .select('*') as {data: Subscription | null, error: any};
 
         if (error && error.message !== 'No rows found') {
           console.error("Error fetching subscription:", error);
@@ -58,7 +68,7 @@ const SubscriptionManagement = () => {
         toast.error("Failed to cancel subscription. Please try again.");
       } else if (data?.success) {
         toast.success("Subscription cancelled successfully.");
-        setSubscription(prev => ({ ...prev, status: 'cancelled' }));
+        setSubscription(prev => prev ? ({ ...prev, status: 'cancelled' }) : null);
       } else {
         toast.error(data?.message || "Failed to cancel subscription.");
       }
@@ -83,7 +93,7 @@ const SubscriptionManagement = () => {
         <div className="bg-white shadow rounded-lg p-4">
           <p>Status: {subscription.status}</p>
           <p>Plan: {subscription.plan_name}</p>
-          <p>Current Period End: {new Date(subscription.current_period_end).toLocaleDateString()}</p>
+          <p>Current Period End: {new Date(subscription.current_period_end || '').toLocaleDateString()}</p>
 
           {subscription.status === 'active' ? (
             <button

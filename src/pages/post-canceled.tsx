@@ -21,12 +21,11 @@ const PostCanceled: React.FC = () => {
             </div>
             
             <h1 className="text-3xl font-bold text-center">
-              {t('Payment Cancelled', 'Thanh toán đã bị hủy')}
+              {t('Payment Cancelled')}
             </h1>
             
             <p className="text-lg text-center text-gray-700 max-w-md">
-              {t('Your payment process was cancelled, but your post has been saved. You can complete the payment anytime from your dashboard.', 
-                'Quá trình thanh toán đã bị hủy, nhưng bài đăng của bạn đã được lưu. Bạn có thể hoàn tất thanh toán bất kỳ lúc nào từ bảng điều khiển.')}
+              {t('Your payment process was cancelled, but your post has been saved. You can complete the payment anytime from your dashboard.')}
             </p>
             
             <div className="w-full flex flex-col sm:flex-row gap-4 pt-6">
@@ -36,13 +35,13 @@ const PostCanceled: React.FC = () => {
                 onClick={() => navigate('/post-job')}
               >
                 <ArrowLeft className="h-4 w-4" />
-                {t('Back to Post Creation', 'Quay lại tạo bài đăng')}
+                {t('Back to Post Creation')}
               </Button>
               
               <Button 
                 onClick={() => navigate('/dashboard')}
               >
-                {t('Go to Dashboard', 'Đi đến bảng điều khiển')}
+                {t('Go to Dashboard')}
               </Button>
             </div>
           </div>

@@ -1,6 +1,5 @@
-
 import { Job } from "@/types/job";
-import { premiumSalons } from "./mockPremiumSalons";
+import { mockPremiumSalons } from './mockPremiumSalons';
 
 // Helper function to generate random date within the last 30 days
 const getRecentDate = (daysBack = 30) => {
@@ -181,7 +180,7 @@ export const generatePremiumBooths = (count: number = 25): Job[] => {
   const booths: Job[] = [];
   
   // Use some premium salons as the source for booths
-  const boothSalons = [...premiumSalons].sort(() => 0.5 - Math.random()).slice(0, count);
+  const boothSalons = [...mockPremiumSalons].sort(() => 0.5 - Math.random()).slice(0, count);
   
   for (let i = 0; i < count; i++) {
     // Use either an existing salon or create a new one

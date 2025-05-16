@@ -14,12 +14,11 @@ const CheckoutFallback = () => {
       <Alert variant="destructive" className="max-w-md w-full mb-6">
         <AlertCircle className="h-5 w-5" />
         <AlertTitle>
-          {t("Invalid Checkout Path", "Đường Dẫn Thanh Toán Không Hợp Lệ")}
+          {t("Invalid Checkout Path")}
         </AlertTitle>
         <AlertDescription>
           {t(
-            "You're not supposed to access this page directly. Please return to the payment flow.",
-            "Bạn không nên truy cập trực tiếp vào trang này. Vui lòng quay lại quy trình thanh toán."
+            "You're not supposed to access this page directly. Please return to the payment flow."
           )}
         </AlertDescription>
       </Alert>
@@ -31,7 +30,7 @@ const CheckoutFallback = () => {
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          {t("Go Back", "Quay Lại")}
+          {t("Go Back")}
         </Button>
         
         <Button 
@@ -39,7 +38,7 @@ const CheckoutFallback = () => {
           className="flex items-center gap-2"
         >
           <Home className="h-4 w-4" />
-          {t("Return to Home", "Về Trang Chủ")}
+          {t("Return to Home")}
         </Button>
       </div>
       
