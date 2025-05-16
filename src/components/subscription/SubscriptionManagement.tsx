@@ -29,7 +29,7 @@ const SubscriptionManagement = () => {
       try {
         // Using a direct query instead of an RPC function that doesn't exist
         const { data, error } = await supabase
-          .from('subscriptions')
+          .from('user_subscriptions')
           .select('*')
           .eq('user_id', user?.id)
           .single();
