@@ -4,7 +4,7 @@ import { Job } from '@/types/job';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation, Translation } from '@/hooks/useTranslation';
 
 interface ContactInformationSectionProps {
   contactInfo: Job['contact_info'];
@@ -13,6 +13,25 @@ interface ContactInformationSectionProps {
 
 const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInformationSectionProps) => {
   const { t, isVietnamese } = useTranslation();
+
+  // Basic phone number validation
+  const validatePhoneNumber = (phone: string) => {
+    // Allow empty for optional field
+    if (!phone) return true;
+    
+    // Basic validation for digits, spaces, parentheses, dashes, and plus sign
+    const validPhonePattern = /^[0-9\s()\-+]+$/;
+    return validPhonePattern.test(phone);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const phoneValue = e.target.value;
+    
+    // Only update if valid or empty
+    if (validatePhoneNumber(phoneValue)) {
+      onChange({ ...contactInfo, phone: phoneValue });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -45,20 +64,25 @@ const ContactInformationSection = ({ contactInfo = {}, onChange }: ContactInform
         
         <div className="grid gap-2">
           <Label htmlFor="phone">{t({
-            english: 'Phone Number',
-            vietnamese: 'Số điện thoại'
+            english: 'Contact Phone Number',
+            vietnamese: 'Số điện thoại liên lạc'
           })}</Label>
           <Input 
             id="phone"
             type="tel"
             value={contactInfo.phone || ''}
-            onChange={(e) => onChange({ ...contactInfo, phone: e.target.value })}
+            onChange={handlePhoneChange}
             placeholder={t({
               english: 'e.g. (555) 123-4567',
               vietnamese: 'VD: (555) 123-4567'
             })}
-            required
           />
+          <p className="text-xs text-muted-foreground">
+            {t({
+              english: 'Optional. Format: +1 (555) 123-4567 or 555-123-4567',
+              vietnamese: 'Không bắt buộc. Định dạng: +1 (555) 123-4567 hoặc 555-123-4567'
+            })}
+          </p>
         </div>
         
         <div className="grid gap-2">
