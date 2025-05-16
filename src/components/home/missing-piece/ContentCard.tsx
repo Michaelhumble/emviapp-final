@@ -1,7 +1,6 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
 import EnglishContent from "./EnglishContent";
 import VietnameseContent from "./VietnameseContent";
 

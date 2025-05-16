@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MessageSquare } from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation, Translation } from "@/hooks/useTranslation";
 import { useCanReview } from "@/hooks/reviews/useCanReview";
 import { useReviews } from "@/hooks/reviews/useReviews";
 import ReviewForm from "@/components/reviews/ReviewForm";

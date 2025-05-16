@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import SectionTitle from "./SectionTitle";
 import ContentCard from "./ContentCard";
@@ -8,7 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 const MissingPieceSection = () => {
   // Replace incorrect lang usage with isVietnamese
-  const { isVietnamese, toggleLanguage, t } = useTranslation();
+  const { isVietnamese, toggleLanguage } = useTranslation();
   
   // Define animation variants
   const containerVariants = {
