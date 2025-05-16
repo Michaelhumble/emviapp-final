@@ -33,6 +33,8 @@ export interface Job {
     phone?: string;
     email?: string;
     owner_name?: string;
+    zalo?: string;
+    notes?: string;
   };
   specialties?: string[];
   pricingTier?: 'free' | 'starter' | 'premium' | 'gold' | 'diamond';
@@ -72,6 +74,16 @@ export interface Job {
   monthly_rent?: string;
   reason_for_selling?: string;
   asking_price?: string | number;
+  square_feet?: number;
+  
+  // Requirements-related fields
+  requirements?: string[];
+  experience_level?: string;
+  has_wax_room?: boolean;
+  preferred_languages?: string[];
+  
+  // Additional verification fields
+  verified?: boolean;
 }
 
 export interface PricingOptions {

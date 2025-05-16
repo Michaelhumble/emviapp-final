@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -6,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { JobDetailsSubmission } from '@/types/job';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Form } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';  // Add Button import
 import JobDetailsSection from '../sections/JobDetailsSection';
 import CompensationSection from '../sections/CompensationSection';
 import RequirementsSection from '../sections/RequirementsSection';

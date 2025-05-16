@@ -1,102 +1,90 @@
 
 import React from 'react';
-import { Star, MapPin, DollarSign } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Job } from "@/types/job";
-import { Badge } from "@/components/ui/badge";
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
+import { Job } from '@/types/job';
+import ValidatedSalonCard from './ValidatedSalonCard';
 
 interface FeaturedListingsSectionProps {
   featuredListings: Job[];
-  onViewDetails: (salon: Job) => void;
+  title?: string;
+  subtitle?: string;
+  className?: string;
+  limit?: number;
+  filter?: (listing: Job) => boolean;
+  emptyMessage?: string;
+  seeAllLink?: string;
+  seeAllText?: string;
 }
 
-const FeaturedListingsSection: React.FC<FeaturedListingsSectionProps> = ({
+const FeaturedListingsSection = ({
   featuredListings,
-  onViewDetails
-}) => {
-  // Format price to currency
-  const formatPrice = (price: string | undefined) => {
-    if (!price) return "$0";
-    
-    const numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, ""));
-    
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(numericPrice);
-  };
-
-  if (!featuredListings || featuredListings.length === 0) {
-    return null;
-  }
-
+  title = "Featured Salon Listings",
+  subtitle,
+  className = "",
+  limit = 3,
+  filter = () => true,
+  emptyMessage = "No featured listings available at this time.",
+  seeAllLink = "/salons",
+  seeAllText = "Browse all salon listings"
+}: FeaturedListingsSectionProps) => {
+  // Apply filter and limit
+  const filteredListings = featuredListings.filter(filter).slice(0, limit);
+  
   return (
-    <div className="mb-12">
-      <div className="flex items-center gap-2 mb-6">
-        <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-        <h2 className="font-playfair text-2xl font-bold">Featured Listings</h2>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {featuredListings.slice(0, 3).map((listing) => (
-          <div 
-            key={listing.id} 
-            className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-purple-100"
+    <section className={`py-16 ${className}`}>
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <div 
-              className="h-52 bg-cover bg-center relative" 
-              style={{ 
-                backgroundImage: `url(${listing.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80'})` 
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-                <Badge className="absolute top-3 right-3 bg-purple-600 text-white border-none font-medium px-2.5">
-                  <Star className="h-3.5 w-3.5 mr-1 fill-white" /> Featured
-                </Badge>
-              </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
+            {subtitle && <p className="text-lg text-gray-600">{subtitle}</p>}
+          </motion.div>
+        </div>
+
+        {filteredListings.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredListings.map((listing) => (
+                <ValidatedSalonCard
+                  key={listing.id}
+                  salon={{
+                    id: listing.id,
+                    title: listing.title,
+                    location: listing.location,
+                    imageUrl: listing.imageUrl || '',
+                    description: listing.description,
+                    price: typeof listing.asking_price === 'string' ? listing.asking_price : listing.asking_price?.toString() || '',
+                    features: listing.salon_features || [],
+                    status: listing.status || 'active',
+                  }}
+                  listingType={listing.type || 'salon'}
+                />
+              ))}
             </div>
             
-            <div className="p-5">
-              <h3 className="font-playfair text-lg font-semibold mb-1 group-hover:text-purple-700 transition-colors">
-                {listing.company || listing.title || "Premium Salon"}
-              </h3>
-              
-              <div className="flex items-center text-gray-500 text-sm mb-2">
-                <MapPin className="h-3.5 w-3.5 mr-1" />
-                <span className="truncate">{listing.location}</span>
-              </div>
-              
-              <div className="flex items-center text-gray-800 font-medium mb-3">
-                <DollarSign className="h-4 w-4 mr-0.5 text-green-600" /> 
-                <span>{formatPrice(listing.asking_price)}</span>
-              </div>
-              
-              {/* Feature Tags */}
-              <div className="mb-4 flex flex-wrap gap-1.5">
-                {listing.salon_features && listing.salon_features.slice(0, 2).map((feature, idx) => (
-                  <span key={idx} className="inline-block bg-purple-50 text-purple-700 text-xs px-2 py-0.5 rounded-full">
-                    {feature}
-                  </span>
-                ))}
-                {listing.has_housing && (
-                  <span className="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">
-                    Housing Available
-                  </span>
-                )}
-              </div>
-              
-              <Button 
-                onClick={() => onViewDetails(listing)}
-                className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white"
+            <div className="mt-12 text-center">
+              <Link 
+                to={seeAllLink} 
+                className="inline-flex items-center text-primary hover:text-primary/80 font-medium"
               >
-                View Details
-              </Button>
+                {seeAllText}
+                <ChevronRight size={16} className="ml-1" />
+              </Link>
             </div>
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500">{emptyMessage}</p>
           </div>
-        ))}
+        )}
       </div>
-    </div>
+    </section>
   );
 };
 
