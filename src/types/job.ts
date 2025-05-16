@@ -58,6 +58,20 @@ export interface Job {
   has_housing?: boolean;
   weekly_pay?: boolean;
   owner_will_train?: boolean;
+  
+  // Additional fields that were missing but referenced in components
+  user_id?: string;
+  benefits?: string[];
+  features?: string[];
+  is_urgent?: boolean;
+  isPinned?: boolean;
+  salon_type?: string;
+  no_supply_deduction?: boolean;
+  tip_range?: string;
+  trust_indicators?: string[];
+  monthly_rent?: string;
+  reason_for_selling?: string;
+  asking_price?: string | number;
 }
 
 export interface PricingOptions {
@@ -88,3 +102,6 @@ export interface JobApplication {
   created_at: string;
   updated_at: string;
 }
+
+// Add ListingType enum to fix TypeScript error in OpportunitiesSection
+export type ListingType = 'job' | 'booth' | 'salon' | 'supply' | string;

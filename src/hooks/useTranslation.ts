@@ -66,11 +66,15 @@ export const useTranslation = (options?: TranslationOptions) => {
     setLanguage(lang);
   };
 
+  // Add isVietnamese getter for convenience
+  const isVietnamese = language === 'vi';
+
   return {
     t,
     translateObj,
     language,
     toggleLanguage,
-    setLanguage: setTranslationLanguage
+    setLanguage: setTranslationLanguage,
+    isVietnamese
   };
 };

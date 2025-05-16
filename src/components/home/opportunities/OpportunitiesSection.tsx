@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Job } from '@/types/job';
+import { Job, ListingType } from '@/types/job';
 import OpportunityCard from './OpportunityCard';
 import AuthAction from '@/components/common/AuthAction';
 import { Button } from '@/components/ui/button';
@@ -65,7 +65,7 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
                 <ValidatedLink
                   to={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
                   listingId={listing.id}
-                  listingType={listing.type}
+                  listingType={listing.type as ListingType}
                   fallbackRoute={listing.type === 'salon' ? '/salons' : '/jobs'}
                 >
                   <OpportunityCard 
