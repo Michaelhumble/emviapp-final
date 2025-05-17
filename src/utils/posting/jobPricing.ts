@@ -113,3 +113,49 @@ export const calculateJobPostPrice = (options: any) => {
   // Calculate with duration discounts
   return calculateFinalPrice(pricingOption.price, durationMonths);
 };
+
+// Add the missing exported functions that were in the error messages
+
+// Function to get job post pricing summary
+export const getJobPostPricingSummary = (selectedTier: string, duration: number, isFirstPost: boolean = false) => {
+  const options = {
+    selectedPricingTier: selectedTier,
+    durationMonths: duration,
+    isFirstPost: isFirstPost
+  };
+  
+  return calculateJobPostPrice(options);
+};
+
+// Function to calculate price with duration
+export const calculatePriceWithDuration = (basePrice: number, duration: number) => {
+  return calculateFinalPrice(basePrice, duration);
+};
+
+// Function to validate pricing options
+export const validatePricingOptions = (options: any) => {
+  const { selectedPricingTier } = options;
+  
+  if (!selectedPricingTier) {
+    return false;
+  }
+  
+  return jobPricingOptions.some(option => option.id === selectedPricingTier);
+};
+
+// Function to get Stripe price ID
+export const getStripePriceId = (tier: string, duration: number) => {
+  // This would normally map to actual Stripe price IDs
+  return `price_${tier}_${duration}months`;
+};
+
+// Function to get amount in cents for Stripe
+export const getAmountInCents = (amount: number) => {
+  return Math.round(amount * 100);
+};
+
+// Function to check if a plan is a subscription
+export const isSubscriptionPlan = (tier: string) => {
+  // Define which tiers are subscription-based
+  return ['premium', 'gold', 'diamond'].includes(tier);
+};

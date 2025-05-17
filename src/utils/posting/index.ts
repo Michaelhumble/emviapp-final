@@ -2,11 +2,12 @@
 export * from './types';
 export { 
   jobPricingOptions,
+  calculateFinalPrice,
+  calculateJobPostPrice,
   getJobPostPricingSummary,
   calculatePriceWithDuration,
   validatePricingOptions,
   getStripePriceId,
-  calculateFinalPrice,
   getAmountInCents,
   isSubscriptionPlan
 } from './jobPricing';
