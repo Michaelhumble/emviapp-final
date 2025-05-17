@@ -42,7 +42,7 @@ export const JobForm: React.FC<JobFormProps> = ({
       no_supply_deduction: false,
       owner_will_train: false,
       industry: initialValues?.industry || '',
-      experience_level: initialValues?.experience_level || 'experienced',
+      experience_level: initialValues?.experience_level || 'experienced' as 'entry' | 'intermediate' | 'experienced' | 'senior',
     },
     compensation: {
       employment_type: initialValues?.jobType || 'full-time',
@@ -50,7 +50,7 @@ export const JobForm: React.FC<JobFormProps> = ({
       compensation_details: initialValues?.salary_range || '',
       salary_range: initialValues?.salary_range || '',
       tip_range: '',
-      experience_level: initialValues?.experience_level || 'experienced',
+      experience_level: initialValues?.experience_level || 'experienced' as 'entry' | 'intermediate' | 'experienced' | 'senior',
     },
     contact_info: {
       owner_name: '',
@@ -89,7 +89,7 @@ export const JobForm: React.FC<JobFormProps> = ({
   
   const handleTemplateSelection = (templateData: Partial<JobFormValues>) => {
     if (templateData.industry) {
-      setIndustryType(templateData.industry);
+      setIndustryType(templateData.industry as IndustryType);
     }
     
     // Update job details

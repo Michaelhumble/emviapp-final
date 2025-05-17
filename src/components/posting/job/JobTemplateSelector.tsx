@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import TemplateCarousel from './TemplateCarousel';
-import { IndustryType, JobTemplate, jobTemplatesByIndustry } from './jobTemplates';
+import { IndustryType, JobTemplate } from './jobTemplates';
 import { JobFormValues } from './jobFormSchema';
 
 interface JobTemplateSelectorProps {
@@ -34,8 +34,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
       requirements: template.requirements,
       salary_range: template.salary_range,
       employment_type: template.employment_type,
-      experience_level: template.experience_level
-      // Remove schedule as it doesn't exist in JobFormValues
+      experience_level: template.experience_level as 'entry' | 'intermediate' | 'experienced' | 'senior'
     };
     
     onSelectTemplate(formValues);

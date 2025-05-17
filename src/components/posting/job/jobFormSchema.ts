@@ -12,4 +12,4 @@ export interface JobFormValues {
   industry?: IndustryType;
 }
 
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare';
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'brows' | 'skincare' | 'tattoo';

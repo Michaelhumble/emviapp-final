@@ -1,181 +1,172 @@
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'brows';
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'brows' | 'skincare' | 'tattoo';
 
-export interface JobTemplate {
+export type JobTemplate = {
   id: string;
-  industry: IndustryType;
   title: string;
+  industry: IndustryType;
   location: string;
   description: string[];
   requirements: string[];
   salary_range: string;
-  schedule: string;
   employment_type: string;
-  experience_level: string;
-}
+  experience_level: 'entry' | 'intermediate' | 'experienced' | 'senior';
+  popularity: string;
+  summary: string;
+};
 
-// Job templates by industry
-export const jobTemplatesByIndustry: Record<IndustryType, JobTemplate[]> = {
+export type JobTemplatesByIndustry = {
+  [key in IndustryType]: JobTemplate[];
+};
+
+export const jobTemplatesByIndustry: JobTemplatesByIndustry = {
   nails: [
     {
-      id: 'nail-template-1',
+      id: 'nail-tech-1',
+      title: 'Experienced Nail Technician',
       industry: 'nails',
-      title: 'Nail Technician',
-      location: 'Houston, TX',
+      location: 'Any location',
       description: [
-        'We are looking for a skilled and creative Nail Technician to join our salon. You will be responsible for providing high-quality nail services to our clients.',
-        'Responsibilities include manicures, pedicures, nail art, and ensuring a clean and sanitary work environment.'
+        'We are looking for an experienced nail technician to join our busy salon. The ideal candidate will have at least 2 years of experience and be skilled in manicures, pedicures, and nail enhancements.',
+        'You will be working in a friendly, professional environment with a steady clientele. We offer competitive pay, flexible scheduling, and opportunities for growth.',
+        'Our salon provides all supplies and equipment. We are looking for someone who is reliable, detail-oriented, and passionate about nail artistry.'
       ],
-      requirements: ['Valid nail technician license', 'Minimum 2 years of experience', 'Excellent customer service skills'],
-      salary_range: '$800 - $1200 per week',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
+      requirements: ['Valid nail technician license', '2+ years experience', 'Skilled in manicures, pedicures, and nail enhancements'],
+      salary_range: '$800-1200/week',
+      employment_type: 'full-time',
+      experience_level: 'experienced',
+      popularity: 'most-hired',
+      summary: 'Join our busy salon as an experienced nail tech with competitive pay and steady clientele.'
     },
     {
-      id: 'nail-template-2',
+      id: 'nail-tech-2',
+      title: 'Nail Technician - High Commission',
       industry: 'nails',
-      title: 'Experienced Nail Technician',
-      location: 'Los Angeles, CA',
+      location: 'Any location',
       description: [
-        'Upscale nail salon seeking an experienced nail technician. Must be proficient in all aspects of nail care including gel, acrylic, and nail art.',
-        'We offer a competitive salary and a friendly, professional work environment.'
+        'Join our team of talented nail technicians! We are seeking licensed professionals who excel in acrylic, gel, dip powder, and nail art. Our upscale salon offers a luxurious experience for clients and a supportive environment for our team.',
+        'We provide ongoing training and education to keep you at the forefront of nail trends and techniques. Our commission structure is designed to reward your skills and client retention.',
+        'Benefits include flexible scheduling, paid vacation after one year, and product discounts.'
       ],
-      requirements: ['Valid California nail technician license', '3+ years experience', 'Proficiency in gel and acrylic nails'],
-      salary_range: '$1000 - $1500 per week',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
+      requirements: ['Valid nail technician license', 'Experience with acrylic, gel, and dip powder', 'Excellent customer service skills'],
+      salary_range: '60-70% Commission',
+      employment_type: 'full-time',
+      experience_level: 'intermediate',
+      popularity: 'fastest-applicants',
+      summary: 'High commission opportunity for nail techs skilled in acrylics, gel, and nail art.'
     }
   ],
   hair: [
     {
-      id: 'hair-template-1',
+      id: 'hair-stylist-1',
+      title: 'Professional Hair Stylist',
       industry: 'hair',
-      title: 'Hair Stylist',
-      location: 'New York, NY',
+      location: 'Any location',
       description: [
-        'Busy hair salon in downtown New York is hiring a talented Hair Stylist. You will provide a range of hair services including cutting, coloring, and styling.',
-        'We are looking for someone with a passion for hair and a commitment to customer satisfaction.'
+        'We are seeking a talented and passionate hair stylist to join our team. The ideal candidate will have experience in cutting, coloring, and styling for a diverse clientele.',
+        'Our salon offers a modern, upscale environment with a focus on continuing education and professional development. We have a strong client base and provide marketing support to help you build your book of business.',
+        'We offer competitive commission rates, flexible scheduling, and a collaborative team atmosphere.'
       ],
-      requirements: ['Cosmetology license', 'Experience with various hair types', 'Strong communication skills'],
-      salary_range: '$50,000 - $70,000 per year',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
-    },
-    {
-      id: 'hair-template-2',
-      industry: 'hair',
-      title: 'Creative Hair Colorist',
-      location: 'Chicago, IL',
-      description: [
-        'We are seeking a creative and experienced Hair Colorist to join our team. You will specialize in hair coloring techniques and provide consultations to clients.',
-        'Must have a strong understanding of color theory and the latest trends.'
-      ],
-      requirements: ['Cosmetology license', 'Extensive knowledge of hair coloring', 'Portfolio of previous work'],
-      salary_range: '$60,000 - $80,000 per year',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
+      requirements: ['Valid cosmetology license', 'Experience in cutting, coloring, and styling', 'Portfolio of work'],
+      salary_range: '$50,000-70,000/year',
+      employment_type: 'full-time',
+      experience_level: 'experienced',
+      popularity: 'trusted',
+      summary: 'Join our upscale salon as a hair stylist with opportunities for growth and development.'
     }
   ],
   lashes: [
     {
-      id: 'lash-template-1',
+      id: 'lash-tech-1',
+      title: 'Lash Extension Specialist',
       industry: 'lashes',
-      title: 'Eyelash Technician',
-      location: 'Miami, FL',
+      location: 'Any location',
       description: [
-        'Lash salon is seeking a skilled Eyelash Technician to provide eyelash extensions and related services.',
-        'Responsibilities include client consultation, lash application, and maintaining a clean work environment.'
+        'We are looking for a certified lash technician to join our growing team. The ideal candidate will be skilled in classic and volume lash extensions and committed to providing exceptional service.',
+        'Our boutique studio offers a relaxing environment for clients and a supportive atmosphere for our technicians. We provide all supplies and equipment needed for your success.',
+        'This position offers competitive pay, flexible scheduling, and opportunities for advanced training and certification.'
       ],
-      requirements: ['Eyelash extension certification', 'Excellent attention to detail', 'Customer service experience'],
-      salary_range: '$600 - $1000 per week',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
-    },
-    {
-      id: 'lash-template-2',
-      industry: 'lashes',
-      title: 'Experienced Lash Artist',
-      location: 'San Francisco, CA',
-      description: [
-        'High-end lash studio looking for an experienced Lash Artist. Must be proficient in classic, volume, and hybrid lash extensions.',
-        'We offer a luxury work environment and opportunities for growth.'
-      ],
-      requirements: ['Valid esthetician or cosmetology license', '2+ years of lash extension experience', 'Proficiency in multiple lash techniques'],
-      salary_range: '$800 - $1200 per week',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
+      requirements: ['Lash extension certification', 'Experience with classic and volume techniques', 'Attention to detail'],
+      salary_range: '$25-35/hour + tips',
+      employment_type: 'full-time',
+      experience_level: 'intermediate',
+      popularity: 'fastest-applicants',
+      summary: 'Certified lash technician needed for boutique studio with competitive pay.'
     }
   ],
   massage: [
     {
-      id: 'massage-template-1',
+      id: 'massage-therapist-1',
+      title: 'Licensed Massage Therapist',
       industry: 'massage',
-      title: 'Massage Therapist',
-      location: 'Denver, CO',
+      location: 'Any location',
       description: [
-        'Spa is hiring a licensed Massage Therapist to provide therapeutic massage services to clients.',
-        'Responsibilities include performing various massage techniques, consulting with clients, and maintaining treatment rooms.'
+        'We are seeking a licensed massage therapist to join our wellness center. The ideal candidate will be skilled in various massage modalities including Swedish, deep tissue, and sports massage.',
+        'Our center provides a tranquil environment focused on client wellness and relaxation. We have a established clientele and provide marketing support to help you maintain a full schedule.',
+        'We offer competitive pay, flexible scheduling, and a collaborative team environment.'
       ],
-      requirements: ['Massage therapy license', 'Knowledge of different massage modalities', 'Excellent communication skills'],
-      salary_range: '$45,000 - $65,000 per year',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
-    },
-    {
-      id: 'massage-template-2',
-      industry: 'massage',
-      title: 'Experienced Massage Therapist',
-      location: 'Seattle, WA',
-      description: [
-        'Well-established massage clinic seeking an experienced Massage Therapist. Must be proficient in deep tissue, Swedish, and sports massage.',
-        'We offer a supportive work environment and competitive pay.'
-      ],
-      requirements: ['Valid massage therapy license', '3+ years of experience', 'Proficiency in multiple massage techniques'],
-      salary_range: '$50,000 - $70,000 per year',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
+      requirements: ['Valid massage therapy license', 'Experience in multiple massage modalities', 'Professional demeanor'],
+      salary_range: '$50-70/hour + tips',
+      employment_type: 'part-time',
+      experience_level: 'experienced',
+      popularity: 'trusted',
+      summary: 'Join our wellness center as a licensed massage therapist with competitive hourly pay.'
     }
   ],
   brows: [
     {
-      id: 'brow-template-1',
+      id: 'brow-artist-1',
+      title: 'Eyebrow Specialist / Microblading Artist',
       industry: 'brows',
-      title: 'Eyebrow Technician',
-      location: 'Atlanta, GA',
+      location: 'Any location',
       description: [
-        'Brow studio is seeking an Eyebrow Technician to provide eyebrow shaping, threading, and microblading services.',
-        'Responsibilities include client consultation, brow design, and maintaining a clean and sanitary work environment.'
+        'We are looking for a talented eyebrow specialist with microblading experience to join our beauty studio. The ideal candidate will be skilled in brow shaping, tinting, lamination, and microblading techniques.',
+        'Our studio focuses on natural, enhancing brow services that help clients look and feel their best. We provide all necessary equipment and products for your success.',
+        'This position offers competitive commission rates, flexible scheduling, and opportunities for continued education in the latest brow techniques.'
       ],
-      requirements: ['Certification in eyebrow threading or microblading', 'Excellent attention to detail', 'Customer service experience'],
-      salary_range: '$500 - $900 per week',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
-    },
+      requirements: ['Microblading certification', 'Experience with brow shaping and tinting', 'Portfolio of work'],
+      salary_range: '50-60% Commission',
+      employment_type: 'full-time',
+      experience_level: 'experienced',
+      popularity: 'most-hired',
+      summary: 'Skilled microblading artist needed for busy beauty studio with high commission.'
+    }
+  ],
+  skincare: [
     {
-      id: 'brow-template-2',
-      industry: 'brows',
-      title: 'Microblading Artist',
-      location: 'Austin, TX',
+      id: 'esthetician-1',
+      title: 'Licensed Esthetician',
+      industry: 'skincare',
+      location: 'Any location',
       description: [
-        'Premier brow and lash studio looking for a skilled Microblading Artist. Must be proficient in microblading and other semi-permanent makeup techniques.',
-        'We offer a high-end work environment and opportunities for advancement.'
+        'We are seeking a licensed esthetician to join our spa team. The ideal candidate will be experienced in facials, chemical peels, waxing, and other skincare treatments.',
+        'Our spa offers a luxurious environment for clients and a supportive atmosphere for our team. We use high-quality skincare products and provide ongoing training in the latest techniques.',
+        'This position offers competitive pay, benefits package for full-time employees, and opportunities for growth within our company.'
       ],
-      requirements: ['Microblading certification', '2+ years of experience', 'Portfolio of previous work'],
-      salary_range: '$800 - $1400 per week',
-      schedule: 'Full-time',
-      employment_type: 'employee',
-      experience_level: 'experienced'
+      requirements: ['Valid esthetician license', 'Experience with various skincare treatments', 'Knowledge of skincare products'],
+      salary_range: '$40,000-55,000/year',
+      employment_type: 'full-time',
+      experience_level: 'intermediate',
+      popularity: 'trusted',
+      summary: 'Join our luxury spa as a licensed esthetician performing facials and skincare treatments.'
+    }
+  ],
+  tattoo: [
+    {
+      id: 'tattoo-artist-1',
+      title: 'Professional Tattoo Artist',
+      industry: 'tattoo',
+      location: 'Any location',
+      description: [
+        'We are looking for a talented tattoo artist to join our established studio. The ideal candidate will have a strong portfolio demonstrating technical skill and artistic ability across various tattoo styles.',
+        'Our studio has a loyal client base and provides a clean, professional environment. We offer private workstations and maintain the highest standards of safety and hygiene.',
+        'This position offers competitive commission rates, flexible scheduling, and the opportunity to build your clientele with our marketing support.'
+      ],
+      requirements: ['Professional tattoo experience', 'Strong portfolio', 'Knowledge of safety and sterilization procedures'],
+      salary_range: '50-70% Commission',
+      employment_type: 'full-time',
+      experience_level: 'experienced',
+      popularity: 'fastest-applicants',
+      summary: 'Talented tattoo artist needed for established studio with private workstations.'
     }
   ]
 };
-
-// Export all templates as a flat array
-export const jobTemplates = Object.values(jobTemplatesByIndustry).flat();
