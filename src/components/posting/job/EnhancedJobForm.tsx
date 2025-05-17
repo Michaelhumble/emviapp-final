@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { JobForm } from './JobForm';
 import { ReviewAndPaymentSection } from '../sections/ReviewAndPaymentSection';
 import { Card, CardContent } from '@/components/ui/card';
@@ -36,7 +37,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, initialValu
       const jobFormValues: JobFormValues = {
         title: formData.title || '',
         description: formData.description || '',
+        vietnameseDescription: formData.vietnameseDescription || '',
         location: formData.location || '',
+        compensation_details: formData.compensation_details || '',
         salary_range: formData.salary_range || '',
         jobType: formData.employment_type || 'full-time',
         experience_level: formData.experience_level || 'experienced',
@@ -61,27 +64,47 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, initialValu
   };
   
   return (
-    <Card className="border-0 shadow-none">
+    <Card className="border shadow-lg rounded-xl overflow-hidden bg-gradient-to-b from-white to-gray-50">
       <CardContent className="p-0">
-        {currentStep === 'form' ? (
-          <JobForm 
-            onSubmit={handleFormSubmit} 
-            photoUploads={photoUploads} 
-            setPhotoUploads={setPhotoUploads}
-            isSubmitting={isSubmitting}
-            initialValues={initialValues}
-          />
-        ) : (
-          <ReviewAndPaymentSection 
-            formData={formData} 
-            photoUploads={photoUploads}
-            onBack={handleBack}
-            onSubmit={handleFinalSubmit}
-            isSubmitting={isSubmitting}
-            pricingOptions={pricingOptions}
-            setPricingOptions={setPricingOptions}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          {currentStep === 'form' ? (
+            <motion.div
+              key="form-step"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="p-6"
+            >
+              <JobForm 
+                onSubmit={handleFormSubmit} 
+                photoUploads={photoUploads} 
+                setPhotoUploads={setPhotoUploads}
+                isSubmitting={isSubmitting}
+                initialValues={initialValues}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="review-step"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+              className="p-6"
+            >
+              <ReviewAndPaymentSection 
+                formData={formData} 
+                photoUploads={photoUploads}
+                onBack={handleBack}
+                onSubmit={handleFinalSubmit}
+                isSubmitting={isSubmitting}
+                pricingOptions={pricingOptions}
+                setPricingOptions={setPricingOptions}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </CardContent>
     </Card>
   );

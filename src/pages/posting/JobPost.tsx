@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
 import { useNavigate } from 'react-router-dom';
@@ -9,11 +10,18 @@ import { toast } from 'sonner';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
+import WalletConfetti from '@/components/customer/WalletConfetti';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubmit = async (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => {
     setIsSubmitting(true);
@@ -26,8 +34,11 @@ const JobPost = () => {
       sessionStorage.setItem('jobPostData', JSON.stringify(formData));
       sessionStorage.setItem('jobPricingOptions', JSON.stringify(pricingOptions));
       
-      // Don't immediately redirect to success page
-      // We'll let the payment flow handle the redirect
+      // Simulate success and show confetti
+      setTimeout(() => {
+        setShowConfetti(true);
+      }, 500);
+      
       return true;
     } catch (error) {
       console.error('Error submitting job post:', error);
@@ -59,9 +70,30 @@ const JobPost = () => {
         />
       </Helmet>
       
-      <PostWizardLayout>
-        <EnhancedJobForm onSubmit={handleSubmit} />
-      </PostWizardLayout>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <PostWizardLayout>
+          <EnhancedJobForm onSubmit={handleSubmit} />
+          {showConfetti && (
+            <WalletConfetti 
+              trigger={showConfetti} 
+              onDone={() => {
+                // Redirect after confetti animation
+                setTimeout(() => {
+                  navigate('/dashboard');
+                  toast.success(t({
+                    english: 'Job posted successfully!',
+                    vietnamese: 'Đăng tin tuyển dụng thành công!'
+                  }));
+                }, 1500);
+              }} 
+            />
+          )}
+        </PostWizardLayout>
+      </motion.div>
     </Layout>
   );
 };

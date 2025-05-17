@@ -2,6 +2,7 @@
 export interface JobFormValues {
   title: string;
   description?: string;
+  vietnameseDescription?: string;
   location: string;
   compensation_details?: string;
   salary_range?: string;
@@ -9,7 +10,7 @@ export interface JobFormValues {
   experience_level: 'entry' | 'intermediate' | 'experienced' | 'senior';
   contactEmail: string;
   requirements?: string[];
-  vietnameseDescription?: string;
+  specialties?: string[];
 }
 
 export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare';

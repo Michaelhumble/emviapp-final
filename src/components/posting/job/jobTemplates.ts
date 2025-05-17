@@ -1,170 +1,95 @@
 
-import { JobFormValues } from "./jobFormSchema";
+import { IndustryType, JobFormValues } from './jobFormSchema';
 
-// Use export type for re-exporting types with isolatedModules
-export type { IndustryType } from "./jobFormSchema";
+// Define templates structure with all required fields
+interface JobTemplate extends Partial<JobFormValues> {
+  location: string;
+  shortDescription?: string;
+}
 
-// Export the AI polish suggestions
-export const aiPolishSuggestions: Record<string, string[]> = {
-  nails: [
-    "Expert nail technicians with 3+ years of experience needed for high-end salon",
-    "Seeking skilled nail artist for busy salon, competitive commission offered",
-    "Join our award-winning team! Nail technician position available",
-    "Experienced nail technician needed for full-time position in luxury spa",
-    "Now hiring: Professional nail tech with gel and acrylic experience"
-  ],
-  hair: [
-    "Hair stylist wanted for upscale salon, must have color and cutting expertise",
-    "Experienced hair professional needed for growing salon, flexible hours",
-    "Join our dynamic team as a senior hair stylist, commission + benefits",
-    "Hair colorist position available at top-rated salon, portfolio required",
-    "Seeking talented hair stylist with loyal client base, booth rental available"
-  ],
-  lashes: [
-    "Certified lash technician needed for boutique beauty studio",
-    "Experienced lash artist wanted for full-time position, training provided",
-    "Join our team of lash extension specialists, competitive pay",
-    "Seeking skilled lash tech with 2+ years experience, flexible schedule",
-    "Now hiring: Lash artist for upscale salon, commission negotiable"
-  ],
-  massage: [
-    "Licensed massage therapist wanted for spa center, full-time hours",
-    "Experienced massage therapist needed for wellness clinic, flexible schedule",
-    "Join our team as a massage professional, competitive compensation",
-    "Seeking massage therapist with deep tissue expertise, part-time available",
-    "Now hiring: Massage therapist for luxury hotel spa, benefits included"
-  ],
-  tattoo: [
-    "Professional tattoo artist needed for established studio",
-    "Experienced tattoo artist wanted, must have portfolio",
-    "Join our creative team of tattoo professionals, booth rental available",
-    "Seeking talented tattoo artist with client following, competitive split",
-    "Now hiring: Tattoo artist for busy studio, apprentice position also available"
-  ],
-  brows: [
-    "Microblading artist needed for beauty studio, certification required",
-    "Experienced brow specialist wanted for upscale salon",
-    "Join our team of brow experts, PMU experience a plus",
-    "Seeking skilled brow artist with threading and tinting experience",
-    "Now hiring: Brow specialist for growing beauty bar, competitive pay"
-  ],
-  skincare: [
-    "Licensed esthetician wanted for medical spa, dermaplane experience required",
-    "Experienced skincare specialist needed for dermatology clinic",
-    "Join our team as a skincare professional, product knowledge important",
-    "Seeking skilled esthetician with facial and peel expertise",
-    "Now hiring: Skincare expert for luxury spa, competitive pay + benefits"
-  ]
-};
-
-// Export the Vietnamese version of AI polish suggestions
-export const aiPolishSuggestionsVietnamese: Record<string, string[]> = {
-  nails: [
-    "Cần thợ nail có kinh nghiệm 3+ năm làm việc tại tiệm cao cấp",
-    "Tìm thợ nail chuyên nghiệp cho tiệm đông khách, hoa hồng cạnh tranh",
-    "Gia nhập đội ngũ từng đoạt giải thưởng! Có vị trí cho thợ nail",
-    "Cần thợ nail có kinh nghiệm cho vị trí toàn thời gian tại spa cao cấp",
-    "Đang tuyển: Thợ nail chuyên nghiệp có kinh nghiệm về gel và bột"
-  ],
-  hair: [
-    "Cần thợ tóc cho tiệm cao cấp, phải có chuyên môn về màu và cắt",
-    "Cần chuyên gia tóc có kinh nghiệm cho tiệm đang phát triển, giờ làm việc linh hoạt",
-    "Gia nhập đội ngũ năng động của chúng tôi với tư cách là thợ tóc cao cấp, hoa hồng + phúc lợi",
-    "Có vị trí cho thợ nhuộm tóc tại tiệm được xếp hạng hàng đầu, yêu cầu có portfolio",
-    "Tìm kiếm thợ tóc tài năng có khách hàng trung thành, có bàn cho thuê"
-  ],
-  lashes: [
-    "Cần thợ mi đã được chứng nhận cho studio làm đẹp boutique",
-    "Cần thợ mi có kinh nghiệm cho vị trí toàn thời gian, có đào tạo",
-    "Tham gia đội ngũ chuyên gia nối mi của chúng tôi, lương cạnh tranh",
-    "Tìm thợ mi có kỹ năng với 2+ năm kinh nghiệm, lịch linh hoạt",
-    "Đang tuyển: Thợ mi cho tiệm cao cấp, hoa hồng thương lượng"
-  ],
-  massage: [
-    "Cần nhân viên massage có giấy phép cho trung tâm spa, giờ làm việc toàn thời gian",
-    "Cần nhân viên massage có kinh nghiệm cho phòng khám sức khỏe, lịch linh hoạt",
-    "Tham gia đội ngũ chuyên gia massage của chúng tôi, thù lao cạnh tranh",
-    "Tìm kiếm nhân viên massage có chuyên môn về mô sâu, có thể làm việc bán thời gian",
-    "Đang tuyển: Nhân viên massage cho spa khách sạn cao cấp, có phúc lợi"
-  ],
-  tattoo: [
-    "Cần nghệ sĩ xăm chuyên nghiệp cho studio đã thành lập",
-    "Cần nghệ sĩ xăm có kinh nghiệm, phải có portfolio",
-    "Tham gia đội ngũ sáng tạo của các chuyên gia xăm, có bàn cho thuê",
-    "Tìm nghệ sĩ xăm tài năng có khách hàng theo dõi, chia hoa hồng cạnh tranh",
-    "Đang tuyển: Nghệ sĩ xăm cho studio bận rộn, cũng có vị trí cho người học việc"
-  ],
-  brows: [
-    "Cần nghệ sĩ microblading cho studio làm đẹp, yêu cầu có chứng chỉ",
-    "Cần chuyên gia về lông mày có kinh nghiệm cho tiệm cao cấp",
-    "Tham gia đội ngũ chuyên gia về lông mày, kinh nghiệm PMU là một lợi thế",
-    "Tìm nghệ sĩ lông mày có kỹ năng với kinh nghiệm về threading và nhuộm",
-    "Đang tuyển: Chuyên gia lông mày cho beauty bar đang phát triển, lương cạnh tranh"
-  ],
-  skincare: [
-    "Cần chuyên viên thẩm mỹ có giấy phép cho spa y tế, yêu cầu kinh nghiệm dermaplane",
-    "Cần chuyên gia chăm sóc da có kinh nghiệm cho phòng khám da liễu",
-    "Tham gia đội ngũ chúng tôi với tư cách là chuyên gia chăm sóc da, kiến thức sản phẩm quan trọng",
-    "Tìm kiếm chuyên viên thẩm mỹ có kỹ năng với chuyên môn về facial và peel",
-    "Đang tuyển: Chuyên gia chăm sóc da cho spa cao cấp, lương cạnh tranh + phúc lợi"
-  ]
-};
-
-// Export example job templates
-export const jobTemplates: Record<string, {
-  title: string;
-  description: string;
-  salary_range: string;
-  jobType: string;
-  experience_level: string;
-}> = {
+// Define job templates for each industry
+export const jobTemplates: Record<IndustryType, JobTemplate> = {
   nails: {
-    title: "Nail Technician / Thợ Nail - Full Time",
-    description: "We are seeking experienced nail technicians to join our busy salon. Must be proficient in acrylic, gel, dip powder, and nail art. Great earning potential with commission and tips. Clean and friendly work environment.",
-    salary_range: "$600-$1200/week",
+    title: "Experienced Nail Technician - $1,200+ Weekly",
+    description: "We are seeking an experienced and talented nail technician to join our busy salon in the heart of Beverly Hills. The ideal candidate has at least 2 years of experience in acrylic, gel, dip powder, and nail art. You'll work with a diverse clientele in a clean, upscale environment with state-of-the-art equipment. We provide ongoing training and opportunities for advancement.",
+    vietnameseDescription: "Chúng tôi đang tìm kiếm một kỹ thuật viên làm móng có kinh nghiệm và tài năng để tham gia vào tiệm salon nhộn nhịp của chúng tôi ở trung tâm Beverly Hills. Ứng viên lý tưởng có ít nhất 2 năm kinh nghiệm về acrylic, gel, bột nhúng và nghệ thuật làm móng. Bạn sẽ làm việc với nhiều khách hàng đa dạng trong một môi trường sạch sẽ, cao cấp với thiết bị hiện đại. Chúng tôi cung cấp đào tạo liên tục và cơ hội thăng tiến.",
+    location: "Beverly Hills, CA",
+    salary_range: "$1,200 - $2,000 weekly",
     jobType: "full-time",
-    experience_level: "intermediate"
+    experience_level: "experienced",
+    requirements: ["2+ years experience", "Acrylic & Gel skills", "Strong customer service", "English communication"],
+    shortDescription: "Join our upscale salon with guaranteed clientele and extensive benefits"
   },
+  
   hair: {
-    title: "Hair Stylist / Thợ Tóc - Booth Rental Available",
-    description: "Established salon looking for licensed hair stylists. Strong skills in cutting, coloring, and styling required. Booth rental or commission options available. Bring your clients or build your clientele with us.",
-    salary_range: "$800-$1500/week",
+    title: "Hair Stylist / Colorist - $25/hr + Tips",
+    description: "Join our modern, high-energy salon as a full-time Hair Stylist/Colorist. We're looking for creative professionals who are passionate about the latest hair trends and techniques. You'll have the freedom to build your clientele while we provide marketing support, continued education, and a collaborative team environment. Experience with balayage, color correction, and cutting-edge styling techniques is a plus.",
+    vietnameseDescription: "Tham gia vào salon hiện đại, năng động của chúng tôi với vị trí Stylist/Chuyên gia màu tóc toàn thời gian. Chúng tôi đang tìm kiếm các chuyên gia sáng tạo đam mê với các xu hướng và kỹ thuật làm tóc mới nhất. Bạn sẽ có tự do xây dựng khách hàng của mình trong khi chúng tôi cung cấp hỗ trợ tiếp thị, đào tạo liên tục và môi trường làm việc nhóm hợp tác. Kinh nghiệm với balayage, sửa màu, và các kỹ thuật tạo kiểu tiên tiến là một lợi thế.",
+    location: "Los Angeles, CA",
+    salary_range: "$25/hr + Commission + Tips",
     jobType: "full-time",
-    experience_level: "experienced"
+    experience_level: "intermediate",
+    requirements: ["Cosmetology license", "2+ years salon experience", "Cutting & coloring expertise", "Portfolio of work"],
+    shortDescription: "Modern salon seeking creative stylists with cutting and color expertise"
   },
+  
   lashes: {
-    title: "Eyelash Technician / Thợ Mi - Part Time",
-    description: "Growing beauty studio seeks certified lash artists for classic and volume extensions. Clean, upscale environment with steady clientele. Flexible scheduling and competitive pay structure.",
-    salary_range: "$500-$900/week",
-    jobType: "part-time",
-    experience_level: "intermediate"
+    title: "Certified Lash Technician - $75K Annual Potential",
+    description: "Become part of our luxury lash studio team! We're seeking a certified and experienced lash technician who specializes in classic, hybrid, and volume lash extensions. You'll work with premium products in a spa-like setting with a steady stream of high-end clients. We offer flexible scheduling, retail commission, and performance bonuses. Certification in lash extensions required.",
+    vietnameseDescription: "Trở thành một phần của đội ngũ studio nối mi cao cấp của chúng tôi! Chúng tôi đang tìm kiếm một kỹ thuật viên nối mi có chứng chỉ và kinh nghiệm, chuyên về nối mi classic, hybrid và volume. Bạn sẽ làm việc với các sản phẩm cao cấp trong môi trường giống như spa với nguồn khách hàng cao cấp ổn định. Chúng tôi cung cấp lịch làm việc linh hoạt, hoa hồng bán lẻ và thưởng hiệu suất. Yêu cầu chứng chỉ nối mi.",
+    location: "San Francisco, CA",
+    salary_range: "$65K-$75K Annually",
+    jobType: "full-time",
+    experience_level: "experienced",
+    requirements: ["Lash certification", "1+ year experience", "Knowledge of sanitation practices", "Customer service skills"],
+    shortDescription: "Luxury lash studio with high-end clientele and premium product line"
   },
+  
   massage: {
-    title: "Massage Therapist / Thợ Massage - Full or Part Time",
-    description: "Licensed massage therapists needed for established spa. Experience in deep tissue, Swedish, and hot stone preferred. Clients provided plus opportunity to build your own book. Relaxing work environment.",
-    salary_range: "$700-$1300/week",
-    jobType: "full-time",
-    experience_level: "experienced"
-  },
-  tattoo: {
-    title: "Tattoo Artist - Commission or Booth Rental",
-    description: "Professional tattoo studio looking for experienced artists to join our team. Must have strong portfolio and client service skills. Good location with walk-ins and appointments. Equipment provided.",
-    salary_range: "$1000-$2000/week",
-    jobType: "full-time",
-    experience_level: "experienced"
-  },
-  brows: {
-    title: "Eyebrow Specialist / Thợ Chân Mày - Flexible Hours",
-    description: "Seeking skilled brow artists with experience in microblading, threading, and tinting. PMU certification a plus. Growing clientele in upscale location. Commission-based with guaranteed minimum.",
-    salary_range: "$600-$1100/week",
+    title: "Licensed Massage Therapist - $40/hr + Tips",
+    description: "Our growing wellness center is seeking a licensed massage therapist to provide therapeutic massages to our diverse clientele. We specialize in deep tissue, Swedish, hot stone, and sports massage techniques. You'll have your own dedicated treatment room with all necessary equipment provided. We offer flexible scheduling, competitive pay, and a supportive team environment.",
+    vietnameseDescription: "Trung tâm wellness đang phát triển của chúng tôi đang tìm kiếm một nhà trị liệu massage có giấy phép để cung cấp các liệu pháp massage trị liệu cho khách hàng đa dạng của chúng tôi. Chúng tôi chuyên về các kỹ thuật massage deep tissue, Swedish, đá nóng và thể thao. Bạn sẽ có phòng điều trị riêng với tất cả các thiết bị cần thiết được cung cấp. Chúng tôi cung cấp lịch làm việc linh hoạt, lương cạnh tranh và môi trường làm việc hỗ trợ.",
+    location: "Seattle, WA",
+    salary_range: "$40-$60/hr + Tips",
     jobType: "part-time",
-    experience_level: "intermediate"
+    experience_level: "intermediate",
+    requirements: ["Massage therapy license", "Insurance coverage", "Multiple massage modalities", "Professional demeanor"],
+    shortDescription: "Upscale wellness center with dedicated treatment rooms and flexible schedule"
   },
-  skincare: {
-    title: "Esthetician / Thợ Facial - Full Time Position",
-    description: "Medical spa seeking licensed estheticians with experience in facials, chemical peels, and other skin treatments. Knowledge of medical-grade skincare products required. Full benefits package available.",
-    salary_range: "$700-$1200/week",
+  
+  tattoo: {
+    title: "Experienced Tattoo Artist - $100K+ Annually",
+    description: "Join our award-winning tattoo studio! We're looking for an experienced tattoo artist with a strong portfolio and client base. Our studio offers private work areas, top-quality equipment, and a collaborative environment with other talented artists. We've been featured in multiple tattoo magazines and have a reputation for cleanliness, professionalism, and artistic excellence.",
+    vietnameseDescription: "Tham gia vào studio xăm đoạt giải thưởng của chúng tôi! Chúng tôi đang tìm kiếm một nghệ sĩ xăm có kinh nghiệm với danh mục đầu tư mạnh mẽ và cơ sở khách hàng. Studio của chúng tôi cung cấp khu vực làm việc riêng tư, thiết bị chất lượng cao và môi trường hợp tác với các nghệ sĩ tài năng khác. Chúng tôi đã được giới thiệu trong nhiều tạp chí xăm và có tiếng tăm về sự sạch sẽ, chuyên nghiệp và xuất sắc nghệ thuật.",
+    location: "Portland, OR",
+    salary_range: "$100K-$150K Annually",
     jobType: "full-time",
-    experience_level: "experienced"
+    experience_level: "senior",
+    requirements: ["5+ years experience", "Strong portfolio", "Client base", "Modern tattoo techniques"],
+    shortDescription: "Award-winning studio seeking artist with established portfolio and clientele"
+  },
+  
+  brows: {
+    title: "Microblading & Brow Artist - $80K Potential",
+    description: "Premier beauty studio seeking a skilled microblading and brow specialist. You'll perform microblading, powder brows, combination brows, and traditional brow services. We provide all tools and products, plus ongoing training on the latest techniques. Our clientele is established and growing, with appointments typically booked weeks in advance.",
+    vietnameseDescription: "Studio làm đẹp hàng đầu đang tìm kiếm một chuyên gia microblading và lông mày có kỹ năng. Bạn sẽ thực hiện các dịch vụ microblading, powder brows, kết hợp và dịch vụ lông mày truyền thống. Chúng tôi cung cấp tất cả các công cụ và sản phẩm, cộng với đào tạo liên tục về các kỹ thuật mới nhất. Khách hàng của chúng tôi đã được thiết lập và đang phát triển, với các cuộc hẹn thường được đặt trước nhiều tuần.",
+    location: "Miami, FL",
+    salary_range: "$70K-$80K Annually",
+    jobType: "full-time",
+    experience_level: "experienced",
+    requirements: ["Microblading certification", "2+ years experience", "Brow shaping expertise", "Color theory knowledge"],
+    shortDescription: "Luxury brow studio with booked appointments and premium clientele"
+  },
+  
+  skincare: {
+    title: "Licensed Esthetician - $60K + Benefits",
+    description: "Our medical spa is seeking a licensed esthetician to join our team of skin care professionals. You'll perform facials, chemical peels, microdermabrasion, and other advanced skin treatments. We work with medical-grade products and state-of-the-art technology. Experience with laser treatments, microneedling, and dermal fillers is preferred but not required as training will be provided.",
+    vietnameseDescription: "Spa y tế của chúng tôi đang tìm kiếm một chuyên gia thẩm mỹ có giấy phép để tham gia vào đội ngũ chuyên gia chăm sóc da của chúng tôi. Bạn sẽ thực hiện các liệu pháp facial, peel hóa học, microdermabrasion và các điều trị da nâng cao khác. Chúng tôi làm việc với các sản phẩm cấp y tế và công nghệ tiên tiến. Ưu tiên kinh nghiệm với điều trị laser, lăn kim và filler da nhưng không bắt buộc vì sẽ được đào tạo.",
+    location: "Chicago, IL",
+    salary_range: "$60K-$70K + Benefits",
+    jobType: "full-time",
+    experience_level: "intermediate",
+    requirements: ["Esthetician license", "1+ year experience", "Knowledge of skin conditions", "Professional appearance"],
+    shortDescription: "Medical spa with advanced treatments and ongoing professional training"
   }
 };
