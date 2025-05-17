@@ -4,197 +4,214 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowLeft, TrendingUp, Calendar } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { format, addDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import ThankYouModal from '@/components/posting/ThankYouModal';
+import { formatDistanceToNow } from 'date-fns';
+import PostSuccessAnimation from '@/components/posting/PostSuccessAnimation';
+
+interface PaymentLogDetails {
+  id: string;
+  listing_id: string;
+  user_id: string;
+  payment_date: string;
+  expires_at: string;
+  created_at: string;
+  plan_type: string;
+  payment_status: string;
+  stripe_payment_id: string;
+  auto_renew_enabled: boolean;
+  pricing_tier?: string; // Make pricing_tier optional
+  jobs?: any;
+}
 
 const PostSuccess: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [isLoading, setIsLoading] = useState(true);
-  const [postData, setPostData] = useState<any>(null);
-  const [showThankYouModal, setShowThankYouModal] = useState(false);
-  
-  // Get session ID or payment log ID from URL
-  const sessionId = searchParams.get('session_id');
   const paymentLogId = searchParams.get('payment_log_id');
-  const isFree = searchParams.get('free') === 'true';
+  const isFreePost = searchParams.get('free') === 'true';
   
+  const [paymentDetails, setPaymentDetails] = useState<PaymentLogDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    // Helper function to verify checkout
-    const verifyCheckout = async (sessionId: string) => {
-      try {
-        const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
-          body: { sessionId }
-        });
-        
-        if (error) throw error;
-        return data;
-      } catch (err) {
-        console.error('Error verifying checkout:', err);
-        return null;
+    const fetchPaymentDetails = async () => {
+      if (!paymentLogId) {
+        setIsLoading(false);
+        return;
       }
-    };
-    
-    // Helper function to get payment log details
-    const getPaymentLogDetails = async (logId: string) => {
+
       try {
         const { data, error } = await supabase
           .from('payment_logs')
           .select('*, jobs(*)')
-          .eq('id', logId)
+          .eq('id', paymentLogId)
           .single();
-          
+
         if (error) throw error;
-        return data;
-      } catch (err) {
-        console.error('Error fetching payment log:', err);
-        return null;
-      }
-    };
-    
-    const verifyPayment = async () => {
-      setIsLoading(true);
-      
-      try {
-        // If it's a free post, we've already processed it
-        if (isFree && paymentLogId) {
-          const paymentData = await getPaymentLogDetails(paymentLogId);
-          if (paymentData) {
-            setPostData({
-              post_id: paymentData.listing_id,
-              post_type: paymentData.plan_type,
-              pricing_tier: paymentData.pricing_tier,
-              expires_at: paymentData.expires_at,
-              job_details: paymentData.jobs
-            });
-          }
-        } 
-        // If we have a session ID, verify it with Stripe
-        else if (sessionId) {
-          const checkoutData = await verifyCheckout(sessionId);
-          if (checkoutData?.success) {
-            setPostData(checkoutData);
-            
-            // Show success celebration if not explicitly hidden
-            if (!searchParams.get('nomodal')) {
-              setShowThankYouModal(true);
-            }
-          } else {
-            // Payment failed or couldn't be verified
-            navigate('/post-canceled');
-          }
-        }
-        // If we have a payment log ID but no session ID, get details directly
-        else if (paymentLogId) {
-          const paymentData = await getPaymentLogDetails(paymentLogId);
-          if (paymentData && paymentData.payment_status === 'success') {
-            setPostData({
-              post_id: paymentData.listing_id,
-              post_type: paymentData.plan_type,
-              pricing_tier: paymentData.pricing_tier,
-              expires_at: paymentData.expires_at
-            });
-          } else {
-            // Payment not found or not successful
-            navigate('/post-canceled');
-          }
-        }
+
+        setPaymentDetails(data as PaymentLogDetails);
       } catch (error) {
-        console.error('Error in payment verification:', error);
+        console.error('Error fetching payment details:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    
-    verifyPayment();
-  }, [sessionId, paymentLogId, navigate, isFree, searchParams]);
 
-  // Format expiration date if available
-  const formattedExpiryDate = postData?.expires_at 
-    ? format(new Date(postData.expires_at), 'MMMM d, yyyy') 
-    : format(addDays(new Date(), 30), 'MMMM d, yyyy');
-  
+    fetchPaymentDetails();
+  }, [paymentLogId]);
+
+  // Determine pricing tier display name
+  const getPricingTierDisplayName = () => {
+    if (!paymentDetails) return '';
+    
+    // If pricing_tier exists directly on the payment log, use that
+    const tier = paymentDetails.pricing_tier || 'standard';
+    
+    switch (tier.toLowerCase()) {
+      case 'diamond':
+        return t({
+          english: 'Diamond',
+          vietnamese: 'Kim Cương'
+        });
+      case 'premium':
+        return t({
+          english: 'Premium',
+          vietnamese: 'Cao Cấp'
+        });
+      case 'gold':
+        return t({
+          english: 'Gold',
+          vietnamese: 'Vàng'
+        });
+      case 'standard':
+        return t({
+          english: 'Standard',
+          vietnamese: 'Tiêu Chuẩn'
+        });
+      case 'free':
+        return t({
+          english: 'Free',
+          vietnamese: 'Miễn Phí'
+        });
+      default:
+        return t({
+          english: 'Standard',
+          vietnamese: 'Tiêu Chuẩn'
+        });
+    }
+  };
+
+  // Function to handle redirecting to the jobs page
+  const handleViewJobs = () => {
+    navigate('/jobs');
+  };
+
+  // Function to handle redirecting to the dashboard
+  const handleGoToDashboard = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <Layout>
       <div className="container max-w-4xl py-12">
         <Card className="p-8">
           <div className="flex flex-col items-center justify-center space-y-6">
-            <div className="rounded-full bg-green-100 p-3">
-              <CheckCircle className="h-12 w-12 text-green-600" />
-            </div>
+            <PostSuccessAnimation />
             
             <h1 className="text-3xl font-bold text-center">
-              {t({
-                english: 'Your Job Post is Live!',
-                vietnamese: 'Tin Đăng Của Bạn Đã Được Đăng!'
+              {isFreePost ? t({
+                english: 'Your Free Post is Live!',
+                vietnamese: 'Tin Đăng Miễn Phí Của Bạn Đã Trực Tuyến!'
+              }) : t({
+                english: 'Payment Successful!',
+                vietnamese: 'Thanh Toán Thành Công!'
               })}
             </h1>
             
             <p className="text-lg text-center text-gray-700 max-w-md">
               {t({
-                english: 'Your job posting has been successfully published. It will be visible to potential candidates right away.',
-                vietnamese: 'Tin tuyển dụng của bạn đã được xuất bản thành công. Nó sẽ hiển thị với các ứng viên tiềm năng ngay lập tức.'
+                english: 'Your job post has been published and is now live for candidates to see.',
+                vietnamese: 'Tin tuyển dụng của bạn đã được xuất bản và hiện đã sẵn sàng cho ứng viên xem.'
               })}
             </p>
             
-            <div className="text-center text-sm text-gray-600 flex items-center justify-center gap-2">
-              <Calendar className="h-4 w-4 text-purple-500" />
-              <span>
-                {t({
-                  english: `Your post will be active until ${formattedExpiryDate}`,
-                  vietnamese: `Tin đăng của bạn sẽ hoạt động đến ${formattedExpiryDate}`
-                })}
-              </span>
-            </div>
+            {paymentDetails && (
+              <div className="w-full bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-lg my-4">
+                <h3 className="font-semibold mb-2">
+                  {t({
+                    english: 'Post Details',
+                    vietnamese: 'Chi Tiết Tin Đăng'
+                  })}
+                </h3>
+                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                  <div>
+                    <dt className="text-gray-500">
+                      {t({
+                        english: 'Plan',
+                        vietnamese: 'Gói'
+                      })}
+                    </dt>
+                    <dd className="font-medium">{getPricingTierDisplayName()}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">
+                      {t({
+                        english: 'Expires',
+                        vietnamese: 'Hết Hạn'
+                      })}
+                    </dt>
+                    <dd className="font-medium">
+                      {new Date(paymentDetails.expires_at).toLocaleDateString()} 
+                      <span className="text-xs ml-1 text-gray-500">
+                        ({formatDistanceToNow(new Date(paymentDetails.expires_at), { addSuffix: true })})
+                      </span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">
+                      {t({
+                        english: 'Auto-Renew',
+                        vietnamese: 'Tự Động Gia Hạn'
+                      })}
+                    </dt>
+                    <dd className="font-medium">
+                      {paymentDetails.auto_renew_enabled ? 
+                        t({english: 'Enabled', vietnamese: 'Đã Bật'}) : 
+                        t({english: 'Disabled', vietnamese: 'Đã Tắt'})}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            )}
             
             <div className="w-full flex flex-col sm:flex-row gap-4 pt-6">
               <Button 
                 variant="outline"
-                className="flex items-center justify-center gap-2"
-                onClick={() => navigate('/jobs')}
+                className="flex-1"
+                onClick={handleViewJobs}
               >
-                <ArrowLeft className="h-4 w-4" />
                 {t({
-                  english: 'View All Jobs',
-                  vietnamese: 'Xem Tất Cả Công Việc'
+                  english: 'View Job Listings',
+                  vietnamese: 'Xem Danh Sách Việc Làm'
                 })}
               </Button>
               
               <Button 
-                onClick={() => navigate('/dashboard')}
+                className="flex-1 flex items-center justify-center gap-2"
+                onClick={handleGoToDashboard}
               >
                 {t({
                   english: 'Go to Dashboard',
                   vietnamese: 'Đi đến Bảng Điều Khiển'
                 })}
-              </Button>
-              
-              <Button 
-                variant="secondary"
-                className="flex items-center justify-center gap-2"
-                onClick={() => setShowThankYouModal(true)}
-              >
-                <TrendingUp className="h-4 w-4" />
-                {t({
-                  english: 'Boost My Post',
-                  vietnamese: 'Đẩy Tin Của Tôi'
-                })}
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </Card>
       </div>
-      
-      <ThankYouModal 
-        open={showThankYouModal}
-        onOpenChange={setShowThankYouModal}
-        postType="job"
-        onBoostClick={() => navigate('/post-job?boost=true')}
-      />
     </Layout>
   );
 };

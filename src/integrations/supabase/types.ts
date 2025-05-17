@@ -722,6 +722,7 @@ export type Database = {
           description: string | null
           expires_at: string | null
           id: string
+          pricing_tier: string | null
           requirements: string | null
           salon_id: string | null
           status: string | null
@@ -735,6 +736,7 @@ export type Database = {
           description?: string | null
           expires_at?: string | null
           id?: string
+          pricing_tier?: string | null
           requirements?: string | null
           salon_id?: string | null
           status?: string | null
@@ -748,6 +750,7 @@ export type Database = {
           description?: string | null
           expires_at?: string | null
           id?: string
+          pricing_tier?: string | null
           requirements?: string | null
           salon_id?: string | null
           status?: string | null
