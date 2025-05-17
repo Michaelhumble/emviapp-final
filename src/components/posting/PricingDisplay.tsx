@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { format, addMonths } from 'date-fns';
-import { CalendarIcon, CheckCircle2, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { jobPricingOptions } from '@/utils/posting/jobPricing';
 
 interface PricingDisplayProps {
   basePrice: number;
@@ -22,73 +22,73 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   finalPrice,
   discountPercentage
 }) => {
-  const futureDate = addMonths(new Date(), duration);
-  const formattedDate = format(futureDate, 'MMM d, yyyy');
-  const isFreePlan = pricingId === 'free';
+  // Get the selected pricing tier details
+  const selectedPricing = jobPricingOptions.find(option => option.id === pricingId);
+  if (!selectedPricing) return null;
+  
+  // Calculate end date
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + duration * 30);
+  
+  // Format date
+  const formattedEndDate = endDate.toLocaleDateString('en-US', { 
+    year: 'numeric',
+    month: 'long', 
+    day: 'numeric'
+  });
+  
+  // For free plan or $0 plans, don't show this component
+  if (finalPrice <= 0) return null;
   
   return (
-    <div className="rounded-lg border bg-card p-4 mt-6">
-      <h3 className="font-semibold text-md mb-4">Listing Summary</h3>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="border rounded-lg p-4 bg-gray-50"
+    >
+      <h3 className="font-medium text-gray-700 mb-2">Pricing Summary</h3>
       
-      <div className="space-y-3 text-sm">
-        {isFreePlan ? (
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
-              <span>Free listing</span>
-            </div>
-            <span>30 days</span>
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span>Base price ({selectedPricing.name})</span>
+          <span>${basePrice.toFixed(2)}/month</span>
+        </div>
+        
+        <div className="flex justify-between">
+          <span>Duration</span>
+          <span>{duration} month{duration > 1 ? 's' : ''}</span>
+        </div>
+        
+        {discountPercentage > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Duration discount</span>
+            <span>-{discountPercentage}%</span>
           </div>
-        ) : (
-          <>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
-                <span>Listing duration</span>
-              </div>
-              <span>{duration} {duration === 1 ? 'month' : 'months'}</span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <CalendarIcon className="h-4 w-4 mr-2 text-slate-500" />
-                <span>Expires on</span>
-              </div>
-              <span>{formattedDate}</span>
-            </div>
-            
-            {autoRenew && (
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <RefreshCw className="h-4 w-4 mr-2 text-blue-500" />
-                  <span>Auto-renew</span>
-                </div>
-                <span>Enabled</span>
-              </div>
-            )}
-            
-            <div className="border-t pt-2 mt-2">
-              <div className="flex justify-between items-center">
-                <span>Standard price</span>
-                <span>${originalPrice.toFixed(2)}</span>
-              </div>
-              
-              {discountPercentage > 0 && (
-                <div className="flex justify-between items-center text-green-600">
-                  <span>Discount ({discountPercentage}%)</span>
-                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
-                </div>
-              )}
-              
-              <div className="flex justify-between items-center font-semibold mt-1">
-                <span>Total</span>
+        )}
+        
+        <div className="border-t pt-2 mt-2">
+          <div className="flex justify-between font-medium">
+            <span>Subtotal</span>
+            {discountPercentage > 0 ? (
+              <div>
+                <span className="line-through text-gray-500 mr-2">${originalPrice.toFixed(2)}</span>
                 <span>${finalPrice.toFixed(2)}</span>
               </div>
-            </div>
-          </>
-        )}
+            ) : (
+              <span>${finalPrice.toFixed(2)}</span>
+            )}
+          </div>
+        </div>
+        
+        <div className="text-gray-500 text-xs mt-4">
+          {autoRenew ? (
+            <p>Your subscription will automatically renew every {duration} month{duration > 1 ? 's' : ''}. You can cancel anytime.</p>
+          ) : (
+            <p>Your listing will expire on {formattedEndDate} unless manually renewed.</p>
+          )}
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

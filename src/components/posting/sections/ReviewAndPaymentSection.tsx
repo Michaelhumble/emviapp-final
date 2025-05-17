@@ -10,6 +10,8 @@ import { format, addDays } from 'date-fns';
 import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
 import PricingDisplay from '@/components/posting/PricingDisplay';
+import { Award } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 export interface ReviewAndPaymentSectionProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
@@ -39,6 +41,18 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths || 1);
   const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew || false);
   const [isFreePlan, setIsFreePlan] = useState(false);
+  const [showUpsellModal, setShowUpsellModal] = useState(false);
+  const [previousPlan, setPreviousPlan] = useState('');
+  
+  useEffect(() => {
+    // Automatically set premium as default if not already selected
+    if (!pricingOptions.selectedPricingTier && selectedPricing === 'standard') {
+      setTimeout(() => {
+        setSelectedPricing('premium');
+        onPricingChange('premium');
+      }, 500);
+    }
+  }, []);
   
   useEffect(() => {
     if (selectedPricing === 'free') {
@@ -59,8 +73,21 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
   }, [selectedPricing, autoRenew, selectedDuration, onUpdatePricing]);
   
   const handlePricingChange = (pricingId: string) => {
+    // Store previous plan for potential upsell opportunity
+    setPreviousPlan(selectedPricing);
+    
     setSelectedPricing(pricingId);
     onPricingChange(pricingId);
+    
+    // When switching to a paid plan from a lower tier, show upsell modal
+    if (
+      (pricingId === 'premium' && (previousPlan === 'free' || previousPlan === 'standard')) ||
+      (pricingId === 'gold' && previousPlan !== 'gold')
+    ) {
+      setTimeout(() => {
+        setShowUpsellModal(true);
+      }, 800);
+    }
     
     // When switching to free plan, disable auto-renew
     if (pricingId === 'free') {
@@ -102,11 +129,16 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       />
       
       {selectedPricing !== 'free' && (
-        <div className="flex items-center justify-between">
-          <Label htmlFor="auto-renew">{t({
-            english: 'Auto-renew subscription',
-            vietnamese: 'Tự động gia hạn đăng ký'
-          })}</Label>
+        <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+          <Label htmlFor="auto-renew" className="flex items-center gap-2">
+            {t({
+              english: 'Auto-renew subscription',
+              vietnamese: 'Tự động gia hạn đăng ký'
+            })}
+            <span className="text-xs text-purple-600 font-medium">
+              {autoRenew ? 'Your listing will never expire' : 'Recommended to ensure continuous visibility'}
+            </span>
+          </Label>
           <Switch 
             id="auto-renew" 
             checked={autoRenew} 
@@ -116,7 +148,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
       )}
       
       {selectedPricing === 'free' && (
-        <div className="text-sm text-gray-500 italic">
+        <div className="text-sm text-gray-500 italic p-4 border border-gray-200 rounded-lg bg-gray-50">
           {t({
             english: 'This plan does not renew. First-time post only.',
             vietnamese: 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.'
@@ -145,6 +177,40 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         finalPrice={finalPrice}
         discountPercentage={discountPercentage}
       />
+      
+      {/* Upsell Modal */}
+      <Dialog open={showUpsellModal} onOpenChange={setShowUpsellModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogTitle className="flex items-center gap-2 text-center">
+            <Award className="h-5 w-5 text-yellow-500" />
+            Want a free upgrade?
+          </DialogTitle>
+          <DialogDescription className="text-center">
+            Share your listing on Facebook and get boosted for 7 days!
+          </DialogDescription>
+          
+          <div className="flex flex-col gap-4 py-4">
+            <p className="text-sm text-center text-gray-600">
+              Get your job in front of more qualified candidates by sharing it on social media.
+            </p>
+            
+            <div className="flex justify-center gap-3">
+              <button 
+                onClick={() => setShowUpsellModal(false)} 
+                className="px-4 py-2 rounded-md bg-blue-600 text-white flex items-center gap-2"
+              >
+                Share & Get Boosted
+              </button>
+              <button 
+                onClick={() => setShowUpsellModal(false)}
+                className="px-4 py-2 rounded-md border border-gray-300"
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

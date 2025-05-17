@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CalendarClock, CheckCircle, RefreshCw, Shield } from 'lucide-react';
+import { Loader2, Lock, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Card, CardContent } from '@/components/ui/card';
-import { format, addMonths } from 'date-fns';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface PaymentSummaryProps {
   basePrice: number;
@@ -14,8 +14,8 @@ interface PaymentSummaryProps {
   finalPrice: number;
   discountPercentage: number;
   onProceedToPayment: () => void;
-  isFreePlan?: boolean;
-  isSubmitting?: boolean;
+  isFreePlan: boolean;
+  isSubmitting: boolean;
 }
 
 const PaymentSummary: React.FC<PaymentSummaryProps> = ({
@@ -26,163 +26,109 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   finalPrice,
   discountPercentage,
   onProceedToPayment,
-  isFreePlan = false,
-  isSubmitting = false
+  isFreePlan,
+  isSubmitting,
 }) => {
   const { t } = useTranslation();
-  const expiryDate = addMonths(new Date(), duration);
+  
+  // Shine animation for button
+  const shine = {
+    opacity: [0, 1, 0.5, 0],
+    x: ['0%', '100%'],
+    transition: { repeat: Infinity, duration: 2, ease: "easeInOut" }
+  };
   
   return (
-    <Card className="border border-gray-200">
-      <CardContent className="p-4 space-y-4">
-        <h3 className="font-semibold text-lg">
-          {isFreePlan 
-            ? t({
-                english: "Free Listing Summary",
-                vietnamese: "Tóm tắt đăng tin miễn phí"
-              })
-            : t({
-                english: "Payment Summary",
-                vietnamese: "Tóm tắt thanh toán"
-              })
-          }
-        </h3>
-        
-        {isFreePlan ? (
-          <div className="space-y-3">
-            <div className="flex items-start">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2" />
-              <div>
-                <p className="font-medium">{t({
-                  english: "Free listing valid for 30 days",
-                  vietnamese: "Đăng tin miễn phí có hiệu lực trong 30 ngày"
-                })}</p>
-                <p className="text-sm text-gray-600">{t({
-                  english: "Expires",
-                  vietnamese: "Hết hạn"
-                })}: {format(addMonths(new Date(), 1), 'MMMM d, yyyy')}</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start">
-              <Shield className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
-              <div>
-                <p className="font-medium">{t({
-                  english: "Limited visibility",
-                  vietnamese: "Hiển thị hạn chế"
-                })}</p>
-                <p className="text-sm text-gray-600">{t({
-                  english: "Standard placement in listings",
-                  vietnamese: "Vị trí tiêu chuẩn trong danh sách"
-                })}</p>
-              </div>
+    <div className="mt-6 space-y-6">
+      {discountPercentage > 0 && (
+        <div className="bg-green-50 p-4 rounded-md text-green-800 border border-green-200">
+          <p className="font-medium">
+            {t({
+              english: `${discountPercentage}% discount applied for ${duration} month${duration > 1 ? 's' : ''}!`,
+              vietnamese: `Giảm giá ${discountPercentage}% cho ${duration} tháng!`
+            })}
+          </p>
+          <div className="flex items-baseline justify-between mt-2">
+            <div>
+              <span className="text-gray-500 line-through">${originalPrice.toFixed(2)}</span>
+              <span className="ml-2 text-lg font-bold">${finalPrice.toFixed(2)}</span>
             </div>
           </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-start">
-              <CalendarClock className="h-5 w-5 text-purple-500 mt-0.5 mr-2" /> 
-              <div>
-                <p className="font-medium">
-                  {duration === 1 
-                    ? t({
-                        english: "1 month listing",
-                        vietnamese: "1 tháng đăng tin"
-                      })
-                    : t({
-                        english: `${duration} months listing`,
-                        vietnamese: `${duration} tháng đăng tin`
-                      })
-                  }
-                </p>
-                <p className="text-sm text-gray-600">
-                  {t({
-                    english: "Expires on",
-                    vietnamese: "Hết hạn vào"
-                  })}: {format(expiryDate, 'MMMM d, yyyy')}
-                </p>
-              </div>
-            </div>
-            
-            {autoRenew && (
-              <div className="flex items-start">
-                <RefreshCw className="h-5 w-5 text-blue-500 mt-0.5 mr-2" />
-                <div>
-                  <p className="font-medium">{t({
-                    english: "Auto-renewal enabled",
-                    vietnamese: "Tự động gia hạn được bật"
-                  })}</p>
-                  <p className="text-sm text-gray-600">
+        </div>
+      )}
+      
+      <div className="sticky bottom-4 bg-white bg-opacity-95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-100 z-10">
+        <motion.div
+          className="w-full flex flex-col gap-2"
+          whileHover={{ scale: 1.015 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <Button
+            onClick={onProceedToPayment}
+            disabled={isSubmitting}
+            size="lg"
+            className={cn(
+              "relative w-full py-6 overflow-hidden text-lg font-medium",
+              isFreePlan
+                ? "bg-gray-600 hover:bg-gray-700"
+                : "bg-gradient-to-r from-purple-600 to-violet-500 hover:from-purple-700 hover:to-violet-600"
+            )}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                {t({
+                  english: 'Processing...',
+                  vietnamese: 'Đang xử lý...'
+                })}
+              </>
+            ) : (
+              <>
+                <motion.div className="flex items-center justify-center gap-2">
+                  <Sparkles className="h-5 w-5 text-yellow-200" />
+                  <span>
                     {t({
-                      english: "Your subscription will automatically renew on", 
-                      vietnamese: "Đăng ký của bạn sẽ tự động gia hạn vào"
-                    })}: {format(expiryDate, 'MMMM d, yyyy')}
-                  </p>
-                </div>
-              </div>
+                      english: isFreePlan ? 'Continue with Free Plan' : '🚀 Post My Job & Reach Top Candidates Now',
+                      vietnamese: isFreePlan ? 'Tiếp tục với gói miễn phí' : '🚀 Đăng tin ngay & Tiếp cận ứng viên hàng đầu'
+                    })}
+                  </span>
+                </motion.div>
+                
+                {/* Shine effect */}
+                {!isFreePlan && (
+                  <motion.div
+                    className="absolute inset-0 w-1/4 h-full bg-white opacity-20 transform -skew-x-12"
+                    animate={shine}
+                  />
+                )}
+              </>
+            )}
+          </Button>
+          
+          <div className="text-xs text-center text-gray-500">
+            {!isFreePlan && (
+              <p className="mb-1">
+                {t({
+                  english: 'Cancel anytime — No risk, just results',
+                  vietnamese: 'Hủy bất cứ lúc nào — Không rủi ro, chỉ có kết quả'
+                })}
+              </p>
             )}
             
-            <div className="border-t border-gray-200 pt-3 space-y-1">
-              <div className="flex justify-between">
-                <span className="text-gray-600">{t({
-                  english: "Original price",
-                  vietnamese: "Giá gốc"
-                })}:</span>
-                <span className="text-gray-600">${originalPrice.toFixed(2)}</span>
-              </div>
-              
-              {discountPercentage > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>{t({
-                    english: "Discount",
-                    vietnamese: "Giảm giá"
-                  })} ({discountPercentage}%):</span>
-                  <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
-                </div>
-              )}
-              
-              <div className="flex justify-between font-semibold text-lg">
-                <span>{t({
-                  english: "Total",
-                  vietnamese: "Tổng cộng"
-                })}:</span>
-                <span>${finalPrice.toFixed(2)}</span>
-              </div>
+            {!isFreePlan && (
+              <p className="text-purple-600 font-medium">
+                ✨ Featured for {duration * 30} days {autoRenew ? '• Auto-renew enabled' : '• Auto-renew anytime'}
+              </p>
+            )}
+            
+            <div className="flex items-center justify-center mt-2 text-gray-400">
+              <Lock className="h-3 w-3 mr-1" />
+              <span>100% Secure Payment • 24/7 Live Support</span>
             </div>
           </div>
-        )}
-        
-        <Button 
-          onClick={onProceedToPayment} 
-          className="w-full"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <span>{isFreePlan ? t({
-              english: "Submitting...",
-              vietnamese: "Đang gửi..."
-            }) : t({
-              english: "Processing...",
-              vietnamese: "Đang xử lý..."
-            })}</span>
-          ) : (
-            <>
-              {isFreePlan 
-                ? t({
-                    english: "Complete Free Listing",
-                    vietnamese: "Hoàn tất đăng tin miễn phí"
-                  })
-                : t({
-                    english: "Proceed to Payment",
-                    vietnamese: "Tiến hành thanh toán"
-                  })
-              }
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </>
-          )}
-        </Button>
-      </CardContent>
-    </Card>
+        </motion.div>
+      </div>
+    </div>
   );
 };
 

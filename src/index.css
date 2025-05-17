@@ -233,5 +233,53 @@
   .menu-item-stagger:nth-child(5) { animation-delay: 0.3s; }
   .menu-item-stagger:nth-child(6) { animation-delay: 0.35s; }
   .menu-item-stagger:nth-child(7) { animation-delay: 0.4s; }
+  
+  /* FOMO & Conversion Animations */
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+  
+  .sparkle-effect {
+    animation: sparkle 1.5s infinite ease-in-out;
+  }
+  
+  @keyframes shine-effect {
+    from {
+      left: -100%;
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    to {
+      left: 100%;
+      opacity: 0;
+    }
+  }
+  
+  .shine {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    opacity: 0;
+    transform: rotate(30deg);
+    background: rgba(255, 255, 255, 0.13);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.13) 0%,
+      rgba(255, 255, 255, 0.13) 77%,
+      rgba(255, 255, 255, 0.5) 92%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    animation: shine-effect 3s infinite;
+  }
 }
-
