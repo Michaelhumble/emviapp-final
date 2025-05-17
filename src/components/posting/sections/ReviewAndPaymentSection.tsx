@@ -1,216 +1,185 @@
-
-import React, { useState, useEffect } from 'react';
-import PricingCards from '@/components/posting/PricingCards';
-import { jobPricingOptions, calculateFinalPrice } from '@/utils/posting/jobPricing';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import PaymentSummary from '@/components/posting/PaymentSummary';
+import React from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { format, addDays } from 'date-fns';
-import { Job } from '@/types/job';
-import { PricingOptions } from '@/utils/posting/types';
-import PricingDisplay from '@/components/posting/PricingDisplay';
-import { Award } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { jobPostingTranslations } from '@/translations/jobPostingForm';
+import { JobPricingOption } from '@/utils/posting/types';
+import PricingCard from '@/components/pricing/PricingCard';
 
-export interface ReviewAndPaymentSectionProps {
-  postType: 'job' | 'salon' | 'booth' | 'supply';
-  pricingOptions: PricingOptions;
-  onPricingChange: (pricingTier: string) => void;
-  onUpdatePricing: (options: Partial<PricingOptions>) => void;
-  onNextStep: () => void;
-  onPrevStep: () => void;
-  jobData?: Partial<Job>;
-  isFirstPost?: boolean;
-  isSubmitting?: boolean;
+interface PricingCardProps {
+  pricing: JobPricingOption;
+  isSelected: boolean;
+  onSelect: () => void;
+  durationMonths: number;
+}
+
+interface ReviewAndPaymentSectionProps {
+  formData: any;
+  pricingOptions: any;
+  isSubmitting: boolean;
+  onPricingChange: (pricingId: string) => void;
+  onDurationChange: (months: number) => void;
+  onSubmit: () => void;
 }
 
 const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
-  postType,
+  formData,
   pricingOptions,
+  isSubmitting,
   onPricingChange,
-  onUpdatePricing,
-  onNextStep,
-  onPrevStep,
-  jobData,
-  isFirstPost,
-  isSubmitting = false
+  onDurationChange,
+  onSubmit,
 }) => {
   const { t } = useTranslation();
-  const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
-  const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths || 1);
-  const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew || false);
-  const [isFreePlan, setIsFreePlan] = useState(false);
-  const [showUpsellModal, setShowUpsellModal] = useState(false);
-  const [previousPlan, setPreviousPlan] = useState('');
+  const translations = jobPostingTranslations.review;
+  const [agreesToTerms, setAgreesToTerms] = React.useState(false);
+  const [termsError, setTermsError] = React.useState(false);
   
-  useEffect(() => {
-    // Automatically set premium as default if not already selected
-    if (!pricingOptions.selectedPricingTier && selectedPricing === 'standard') {
-      setTimeout(() => {
-        setSelectedPricing('premium');
-        onPricingChange('premium');
-      }, 500);
-    }
-  }, []);
+  // Find selected pricing option
+  const selectedPricing = pricingOptions.selectedPricingTier || 'standard';
+  const selectedDuration = pricingOptions.durationMonths || 1;
   
-  useEffect(() => {
-    if (selectedPricing === 'free') {
-      setIsFreePlan(true);
-      // Automatically turn off auto-renew for the free plan
-      setAutoRenew(false);
-    } else {
-      setIsFreePlan(false);
+  const handleSubmit = () => {
+    if (!agreesToTerms) {
+      setTermsError(true);
+      return;
     }
-  }, [selectedPricing]);
-
-  useEffect(() => {
-    onUpdatePricing({ 
-      selectedPricingTier: selectedPricing,
-      autoRenew: autoRenew,
-      durationMonths: selectedDuration
-    });
-  }, [selectedPricing, autoRenew, selectedDuration, onUpdatePricing]);
-  
-  const handlePricingChange = (pricingId: string) => {
-    // Store previous plan for potential upsell opportunity
-    setPreviousPlan(selectedPricing);
-    
-    setSelectedPricing(pricingId);
-    onPricingChange(pricingId);
-    
-    // When switching to a paid plan from a lower tier, show upsell modal
-    if (
-      (pricingId === 'premium' && (previousPlan === 'free' || previousPlan === 'standard')) ||
-      (pricingId === 'gold' && previousPlan !== 'gold')
-    ) {
-      setTimeout(() => {
-        setShowUpsellModal(true);
-      }, 800);
-    }
-    
-    // When switching to free plan, disable auto-renew
-    if (pricingId === 'free') {
-      setAutoRenew(false);
-    }
+    setTermsError(false);
+    onSubmit();
   };
   
-  const handleDurationChange = (duration: number) => {
-    setSelectedDuration(duration);
-  };
-  
-  const handleAutoRenewChange = (checked: boolean) => {
-    setAutoRenew(checked);
-    onUpdatePricing({ autoRenew: checked });
-  };
-
-  const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
-  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
-  
-  // Call calculateFinalPrice with only the required parameters, and receive an object as the return value
-  const pricingResult = calculateFinalPrice(basePrice, selectedDuration);
-  
-  // Destructure the values from the pricingResult object
-  const { originalPrice, finalPrice, discountPercentage } = pricingResult;
-
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t({
-        english: 'Review & Payment',
-        vietnamese: 'Xem lại & Thanh toán'
-      })}</h2>
-      
-      <PricingCards
-        pricingOptions={jobPricingOptions}
-        selectedPricing={selectedPricing}
-        onChange={handlePricingChange}
-        selectedDuration={selectedDuration}
-        onDurationChange={handleDurationChange}
-      />
-      
-      {selectedPricing !== 'free' && (
-        <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <Label htmlFor="auto-renew" className="flex items-center gap-2">
-            {t({
-              english: 'Auto-renew subscription',
-              vietnamese: 'Tự động gia hạn đăng ký'
-            })}
-            <span className="text-xs text-purple-600 font-medium">
-              {autoRenew ? 'Your listing will never expire' : 'Recommended to ensure continuous visibility'}
-            </span>
-          </Label>
-          <Switch 
-            id="auto-renew" 
-            checked={autoRenew} 
-            onCheckedChange={handleAutoRenewChange} 
-          />
+  // Simplified pricing display component
+  const PricingDisplay = ({ price, originalPrice, finalPrice, discountPercentage }: { 
+    price: number, 
+    originalPrice?: number, 
+    finalPrice?: number, 
+    discountPercentage?: number 
+  }) => {
+    if (originalPrice && finalPrice && discountPercentage) {
+      return (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold text-gray-900">${finalPrice}</span>
+            <span className="text-sm line-through text-gray-500">${originalPrice}</span>
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-100">
+              Save {discountPercentage}%
+            </Badge>
+          </div>
         </div>
-      )}
-      
-      {selectedPricing === 'free' && (
-        <div className="text-sm text-gray-500 italic p-4 border border-gray-200 rounded-lg bg-gray-50">
-          {t({
-            english: 'This plan does not renew. First-time post only.',
-            vietnamese: 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.'
-          })}
-        </div>
-      )}
-      
-      <PaymentSummary
-        basePrice={basePrice}
-        duration={selectedDuration}
-        autoRenew={autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-        onProceedToPayment={onNextStep}
-        isFreePlan={isFreePlan}
-        isSubmitting={isSubmitting}
-      />
-      
-      <PricingDisplay 
-        basePrice={basePrice}
-        duration={selectedDuration}
-        pricingId={selectedPricing}
-        autoRenew={autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-      />
-      
-      {/* Upsell Modal */}
-      <Dialog open={showUpsellModal} onOpenChange={setShowUpsellModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogTitle className="flex items-center gap-2 text-center">
-            <Award className="h-5 w-5 text-yellow-500" />
-            Want a free upgrade?
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            Share your listing on Facebook and get boosted for 7 days!
-          </DialogDescription>
-          
-          <div className="flex flex-col gap-4 py-4">
-            <p className="text-sm text-center text-gray-600">
-              Get your job in front of more qualified candidates by sharing it on social media.
-            </p>
+      );
+    }
+    
+    return (
+      <div className="text-2xl font-bold text-gray-900">
+        ${price}
+      </div>
+    );
+  };
+  
+  const PricingOptions = () => {
+    const jobPricingOptions = formData.pricingOptions;
+    
+    return (
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Duration</h3>
+              <Select
+                value={String(selectedDuration)} 
+                onValueChange={(value) => onDurationChange(parseInt(value))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 Month</SelectItem>
+                  <SelectItem value="3">3 Months (10% off)</SelectItem>
+                  <SelectItem value="6">6 Months (20% off)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             
-            <div className="flex justify-center gap-3">
-              <button 
-                onClick={() => setShowUpsellModal(false)} 
-                className="px-4 py-2 rounded-md bg-blue-600 text-white flex items-center gap-2"
-              >
-                Share & Get Boosted
-              </button>
-              <button 
-                onClick={() => setShowUpsellModal(false)}
-                className="px-4 py-2 rounded-md border border-gray-300"
-              >
-                Maybe Later
-              </button>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">Price</h3>
+              {/* Replace with correct price calculation */}
+              <PricingDisplay 
+                price={jobPricingOptions?.price || 49} 
+              />
+              <p className="text-sm text-gray-600 mt-1">
+                For {selectedDuration} month{selectedDuration > 1 ? 's' : ''}
+              </p>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CardContent>
+      </Card>
+    );
+  };
+  
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">{t(translations.sectionTitle)}</h2>
+      <p className="text-muted-foreground">{t(translations.sectionDescription)}</p>
+      
+      {/* Job details summary card */}
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <h3 className="text-lg font-medium mb-4">{t(translations.jobDetails)}</h3>
+          <div className="space-y-2">
+            <p><strong>{t(translations.jobDetails)}:</strong> {formData.title}</p>
+            <p><strong>{t(translations.compensation)}:</strong> {formData.salary_range}</p>
+            <p><strong>{t(translations.contactInfo)}:</strong> {formData.contactEmail}</p>
+          </div>
+          <Button variant="link" className="mt-4">{t(translations.edit)}</Button>
+        </CardContent>
+      </Card>
+      
+      {/* Pricing section */}
+      <h3 className="text-lg font-medium mt-8 mb-4">{t(translations.pricing)}</h3>
+      
+      <div className="grid gap-6">
+        {/* Pricing options */}
+        <PricingOptions />
+        
+        {/* Terms and conditions */}
+        <div className="flex items-start space-x-2">
+          <Checkbox 
+            id="terms" 
+            checked={agreesToTerms}
+            onCheckedChange={(checked) => {
+              setAgreesToTerms(checked as boolean);
+              if (checked) setTermsError(false);
+            }}
+          />
+          <div className="space-y-1 leading-none">
+            <Label
+              htmlFor="terms"
+              className={`text-sm font-normal ${termsError ? 'text-red-500' : ''}`}
+            >
+              {t(translations.termsLabel)}
+            </Label>
+            {termsError && (
+              <p className="text-red-500 text-xs">{t(translations.termsError)}</p>
+            )}
+          </div>
+        </div>
+        
+        {/* Submit button */}
+        <Button 
+          onClick={handleSubmit} 
+          disabled={isSubmitting}
+          className="w-full md:w-auto md:min-w-[200px]"
+        >
+          {isSubmitting ? 
+            t(translations.processingPayment) : 
+            t(translations.submitButton)
+          }
+        </Button>
+      </div>
     </div>
   );
 };

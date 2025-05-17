@@ -1,371 +1,212 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { jobTemplatesByIndustry } from './jobTemplates';
-import { IndustryType, JobTemplate } from './jobFormSchema';
-import { Check, Clock, Sparkles, TrendingUp, Users, DollarSign, Star } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import PremiumFeatureGate from '@/components/upgrade/PremiumFeatureGate';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { IndustryType, JobTemplate } from "./jobFormSchema";
+import { useTranslation } from "@/hooks/useTranslation";
+import { jobTemplatesByIndustry, getPopularityBadgeColor, getPopularityLabel } from "./jobTemplates";
 
 interface TemplateCarouselProps {
-  selectedIndustry: IndustryType | '';
+  selectedIndustry: IndustryType;
   onSelectTemplate: (template: JobTemplate) => void;
 }
 
-export const TemplateCarousel: React.FC<TemplateCarouselProps> = ({
+const TemplateCarousel: React.FC<TemplateCarouselProps> = ({
   selectedIndustry,
-  onSelectTemplate
+  onSelectTemplate,
 }) => {
   const { t, isVietnamese } = useTranslation();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [previewTemplate, setPreviewTemplate] = useState<JobTemplate | null>(null);
+  const [currentTemplateIndex, setCurrentTemplateIndex] = useState(0);
   
-  if (!selectedIndustry) return null;
+  // Get templates for the selected industry, fallback to empty array
+  const templates = jobTemplatesByIndustry[selectedIndustry] || [];
+  const currentTemplate = templates[currentTemplateIndex];
   
-  const templates = jobTemplatesByIndustry[selectedIndustry as IndustryType] || [];
-  
-  if (templates.length === 0) return null;
-  
-  const handlePreview = (template: JobTemplate) => {
-    setPreviewTemplate(template);
+  // Navigate through templates
+  const goToPrevTemplate = () => {
+    setCurrentTemplateIndex((prev) => 
+      prev === 0 ? templates.length - 1 : prev - 1
+    );
   };
   
-  const handleUseTemplate = (template: JobTemplate) => {
-    setPreviewTemplate(null);
-    onSelectTemplate(template);
+  const goToNextTemplate = () => {
+    setCurrentTemplateIndex((prev) => 
+      prev === templates.length - 1 ? 0 : prev + 1
+    );
   };
-  
+
+  // If no templates available
+  if (!templates.length) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        {t({
+          english: "No templates available for this industry yet.",
+          vietnamese: "Chưa có mẫu có sẵn cho ngành này."
+        })}
+      </div>
+    );
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="w-full"
-    >
-      <div className="relative">
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
+    <div className="relative">
+      {/* Navigation buttons */}
+      <div className="absolute inset-y-0 left-0 flex items-center">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={goToPrevTemplate}
+          className="h-8 w-8 rounded-full bg-white/90 shadow-md hover:bg-white"
         >
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {templates.map((template, index) => (
-              <CarouselItem key={template.id} className="pl-2 md:pl-4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.3 }}
-                >
-                  <TemplateCard 
-                    template={template} 
-                    onSelect={() => onSelectTemplate(template)} 
-                    onPreview={() => handlePreview(template)}
-                  />
-                </motion.div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <div className="hidden md:block">
-            <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2" />
-            <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2" />
-          </div>
-        </Carousel>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
       </div>
       
-      {previewTemplate && (
-        <Dialog open={!!previewTemplate} onOpenChange={(open) => !open && setPreviewTemplate(null)}>
-          <DialogContent className="max-w-3xl max-h-[80vh] overflow-auto">
-            <TemplatePreview 
-              template={previewTemplate} 
-              onUse={() => handleUseTemplate(previewTemplate)} 
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-    </motion.div>
-  );
-};
-
-interface TemplateCardProps {
-  template: JobTemplate;
-  onSelect: () => void;
-  onPreview: () => void;
-}
-
-const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, onPreview }) => {
-  const { t, isVietnamese } = useTranslation();
-  const [isHovered, setIsHovered] = useState(false);
-  
-  const getPerkIcon = (popularity: string) => {
-    switch (popularity) {
-      case 'most-hired':
-        return <Check className="h-4 w-4 mr-1 text-green-500" />;
-      case 'fastest-applicants':
-        return <TrendingUp className="h-4 w-4 mr-1 text-blue-500" />;
-      case 'trusted':
-        return <Star className="h-4 w-4 mr-1 text-yellow-500" />;
-      default:
-        return <Clock className="h-4 w-4 mr-1 text-purple-500" />;
-    }
-  };
-  
-  const getPopularityLabel = (popularity: string) => {
-    switch (popularity) {
-      case 'most-hired':
-        return t({
-          english: "#1 Most hired template",
-          vietnamese: "Mẫu được thuê nhiều nhất"
-        });
-      case 'fastest-applicants':
-        return t({
-          english: "Fastest to get applicants",
-          vietnamese: "Nhanh chóng nhận được ứng viên"
-        });
-      case 'trusted':
-        return t({
-          english: "Trusted by top salons",
-          vietnamese: "Được tin dùng bởi các tiệm hàng đầu"
-        });
-      default:
-        return t({
-          english: "Trending template",
-          vietnamese: "Mẫu đang thịnh hành"
-        });
-    }
-  };
-  
-  const getPopularityBadgeColor = (popularity: string) => {
-    switch (popularity) {
-      case 'most-hired':
-        return "bg-gradient-to-r from-green-500 to-emerald-600";
-      case 'fastest-applicants':
-        return "bg-gradient-to-r from-blue-500 to-indigo-600";
-      case 'trusted':
-        return "bg-gradient-to-r from-amber-500 to-orange-600";
-      default:
-        return "bg-gradient-to-r from-purple-500 to-pink-600";
-    }
-  };
-  
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden h-full flex flex-col"
-    >
-      <div className="relative">
-        <Badge className={cn(
-          "absolute top-2 right-2 z-10", 
-          getPopularityBadgeColor(template.popularity)
-        )}>
-          {getPerkIcon(template.popularity)}
-          <span className="text-xs">
-            {getPopularityLabel(template.popularity)}
-          </span>
-        </Badge>
-        
-        <div className="p-4 flex flex-col flex-grow">
-          <div className="mb-3 space-y-2">
-            <h3 className="font-semibold text-lg line-clamp-2">
-              {isVietnamese && template.vietnameseTitle ? template.vietnameseTitle : template.title}
-            </h3>
-            
-            <div className="flex items-center text-sm text-gray-600">
-              <DollarSign className="h-4 w-4 mr-1 text-green-600" /> 
-              <span className="font-medium text-green-700">{template.salary_range}</span>
-            </div>
-            
-            <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-              {isVietnamese && template.vietnameseSummary ? template.vietnameseSummary : template.summary}
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap gap-1 mt-2">
-            {template.specialties.slice(0, 3).map((specialty, index) => (
-              <Badge key={index} variant="outline" className="text-xs bg-gray-50">
-                {specialty}
-              </Badge>
-            ))}
-            {template.specialties.length > 3 && (
-              <Badge variant="outline" className="text-xs bg-gray-50">
-                +{template.specialties.length - 3}
-              </Badge>
-            )}
-          </div>
-          
-          <div className="mt-3 pt-3 border-t border-gray-100 flex flex-col space-y-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full text-xs"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onPreview();
-              }}
-            >
-              {t({
-                english: "Preview Template",
-                vietnamese: "Xem trước mẫu"
-              })}
-            </Button>
-            
-            <Button
-              type="button"
-              onClick={onSelect}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium"
-              size="sm"
-            >
-              {t({
-                english: "Use This Template",
-                vietnamese: "Sử dụng mẫu này"
-              })}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-interface TemplatePreviewProps {
-  template: JobTemplate;
-  onUse: () => void;
-}
-
-const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template, onUse }) => {
-  const { t, isVietnamese } = useTranslation();
-  const [showVietnamese, setShowVietnamese] = useState(isVietnamese);
-  
-  const title = showVietnamese && template.vietnameseTitle ? template.vietnameseTitle : template.title;
-  const description = showVietnamese && template.vietnameseDescription ? template.vietnameseDescription : template.description;
-  const requirements = showVietnamese && template.vietnameseRequirements ? template.vietnameseRequirements : template.requirements;
-  const benefits = showVietnamese && template.vietnameseBenefits ? template.vietnameseBenefits : template.benefits;
-  
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold">{t({
-          english: "Template Preview",
-          vietnamese: "Xem Trước Mẫu"
-        })}</h3>
-        
-        <div className="flex items-center space-x-2">
-          <Button
-            size="sm"
-            variant={!showVietnamese ? "default" : "outline"}
-            onClick={() => setShowVietnamese(false)}
-          >
-            English
-          </Button>
-          <Button
-            size="sm"
-            variant={showVietnamese ? "default" : "outline"}
-            onClick={() => setShowVietnamese(true)}
-          >
-            Tiếng Việt
-          </Button>
-        </div>
+      <div className="absolute inset-y-0 right-0 flex items-center">
+        <Button
+          variant="outline" 
+          size="icon"
+          onClick={goToNextTemplate}
+          className="h-8 w-8 rounded-full bg-white/90 shadow-md hover:bg-white"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
       
-      <div className="bg-white rounded-lg border p-6 space-y-6">
-        <div className="space-y-2">
-          <Badge 
-            className={cn(
-              getPopularityBadgeColor(template.popularity),
-              "mb-2"
-            )}
-          >
-            {template.popularity === 'most-hired' && <Users className="h-3 w-3 mr-1" />}
-            {template.popularity === 'fastest-applicants' && <TrendingUp className="h-3 w-3 mr-1" />}
-            {template.popularity === 'trusted' && <Star className="h-3 w-3 mr-1" />}
-            {template.popularity === 'trending' && <Sparkles className="h-3 w-3 mr-1" />}
-            <span className="text-xs">
-              {getPopularityLabel(template.popularity)}
-            </span>
-          </Badge>
-          
-          <h1 className="text-2xl font-bold">{title}</h1>
-          
-          <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-sm text-gray-700">
-            <div className="flex items-center">
-              <DollarSign className="h-4 w-4 mr-1 text-green-600" />
-              <span className="font-medium text-green-700">{template.salary_range}</span>
-            </div>
-          </div>
-        </div>
-        
-        <ScrollArea className="h-[280px] pr-4">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900">{t({
-                english: "Job Description",
-                vietnamese: "Mô Tả Công Việc"
-              })}</h3>
-              {description.map((paragraph, idx) => (
-                <p key={idx} className="text-gray-600">{paragraph}</p>
-              ))}
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="font-semibold text-gray-900">{t({
-                english: "Requirements",
-                vietnamese: "Yêu Cầu"
-              })}</h3>
-              <ul className="list-disc list-inside space-y-1">
-                {requirements.map((req, idx) => (
-                  <li key={idx} className="text-gray-600">{req}</li>
+      {/* Template card */}
+      <motion.div
+        key={currentTemplate.id}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{ duration: 0.3 }}
+        className="px-10"
+      >
+        <Card className="p-6 border border-gray-200 shadow-md">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Preview section */}
+            <div className="flex-1 md:max-w-[50%]">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h4 className="font-medium text-lg text-gray-900 mb-1">
+                    {isVietnamese && currentTemplate.vietnameseTitle
+                      ? currentTemplate.vietnameseTitle 
+                      : currentTemplate.title
+                    }
+                  </h4>
+                  <div className="text-sm text-gray-500 font-light">
+                    {currentTemplate.location}
+                  </div>
+                </div>
+                
+                {currentTemplate.popularity && (
+                  <Badge 
+                    className={`${getPopularityBadgeColor(currentTemplate.popularity)} border px-2 py-0.5 text-xs`}
+                  >
+                    {getPopularityLabel(currentTemplate.popularity)[isVietnamese ? "vietnamese" : "english"]}
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="text-sm text-gray-700 mb-4 space-y-2">
+                {(isVietnamese && currentTemplate.vietnameseDescription 
+                  ? currentTemplate.vietnameseDescription 
+                  : currentTemplate.description
+                ).map((paragraph, idx) => (
+                  <p key={idx}>{paragraph}</p>
                 ))}
-              </ul>
-            </div>
-            
-            {benefits && benefits.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="font-semibold text-gray-900">{t({
-                  english: "Benefits",
-                  vietnamese: "Phúc Lợi"
-                })}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {benefits.map((benefit, idx) => (
-                    <Badge key={idx} variant="secondary" className="bg-purple-50 text-purple-700 border-purple-100">
-                      <Check className="h-3 w-3 mr-1" /> {benefit}
-                    </Badge>
+              </div>
+              
+              <div className="mb-4">
+                <h5 className="font-medium text-sm text-gray-900 mb-1">
+                  {t({
+                    english: "Requirements",
+                    vietnamese: "Yêu Cầu"
+                  })}
+                </h5>
+                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                  {(isVietnamese && currentTemplate.vietnameseRequirements
+                    ? currentTemplate.vietnameseRequirements
+                    : currentTemplate.requirements
+                  ).map((req, idx) => (
+                    <li key={idx}>{req}</li>
                   ))}
+                </ul>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <div>
+                  <span className="text-gray-600 mr-2">
+                    {t({
+                      english: "Experience:",
+                      vietnamese: "Kinh nghiệm:"
+                    })}
+                  </span>
+                  <span className="text-gray-900">
+                    {t({
+                      english: currentTemplate.experience_level === "entry" 
+                        ? "Entry Level" 
+                        : currentTemplate.experience_level === "intermediate" 
+                          ? "Intermediate" 
+                          : currentTemplate.experience_level === "experienced" 
+                            ? "Experienced" 
+                            : "Senior Level",
+                      vietnamese: currentTemplate.experience_level === "entry" 
+                        ? "Mới Vào Nghề" 
+                        : currentTemplate.experience_level === "intermediate" 
+                          ? "Trung Cấp" 
+                          : currentTemplate.experience_level === "experienced" 
+                            ? "Có Kinh Nghiệm" 
+                            : "Cao Cấp"
+                    })}
+                  </span>
+                </div>
+                <div className="font-medium text-green-700">
+                  {currentTemplate.salary_range}
                 </div>
               </div>
-            )}
+            </div>
+            
+            {/* Action section */}
+            <div className="flex flex-col justify-center items-center md:min-w-[220px] space-y-4 bg-gray-50 rounded-lg p-4">
+              <div className="text-center">
+                <p className="font-medium text-gray-900 mb-1">
+                  {t({
+                    english: "Ready to post this job?",
+                    vietnamese: "Sẵn sàng đăng tin này?"
+                  })}
+                </p>
+                <p className="text-sm text-gray-600 mb-4">
+                  {t({
+                    english: "Use this template and customize as needed",
+                    vietnamese: "Sử dụng mẫu này và tùy chỉnh khi cần"
+                  })}
+                </p>
+                
+                <Button 
+                  onClick={() => onSelectTemplate(currentTemplate)}
+                  className="w-full mb-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  {t({
+                    english: "Use This Template",
+                    vietnamese: "Dùng Mẫu Này"
+                  })}
+                </Button>
+                
+                <div className="text-center text-xs text-gray-500">
+                  {t({
+                    english: `Template ${currentTemplateIndex + 1} of ${templates.length}`,
+                    vietnamese: `Mẫu ${currentTemplateIndex + 1} trên ${templates.length}`
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
-        </ScrollArea>
-        
-        <div className="pt-4 border-t border-gray-200">
-          <Button 
-            onClick={onUse}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-          >
-            <Sparkles className="h-4 w-4 mr-2" />
-            {t({
-              english: "Use This Template",
-              vietnamese: "Sử Dụng Mẫu Này"
-            })}
-          </Button>
-          <p className="text-xs text-center mt-2 text-gray-500">
-            {t({
-              english: "This will pre-fill your job form with all details. You can edit afterwards.",
-              vietnamese: "Điều này sẽ điền sẵn biểu mẫu công việc của bạn với tất cả chi tiết. Bạn có thể chỉnh sửa sau."
-            })}
-          </p>
-        </div>
-      </div>
+        </Card>
+      </motion.div>
     </div>
   );
 };

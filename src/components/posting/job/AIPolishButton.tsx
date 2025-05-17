@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { useTranslation } from '@/hooks/useTranslation';
 import PremiumFeatureGate from '@/components/upgrade/PremiumFeatureGate';
+import { UpgradeFeature } from '@/hooks/useUpgradePrompt';
 
 interface AIPolishButtonProps {
   onPolish?: (polishedText: string) => void;
@@ -29,7 +30,7 @@ const AIPolishButton: React.FC<AIPolishButtonProps> = ({ onPolish }) => {
   };
   
   return (
-    <PremiumFeatureGate feature="ai_polish">
+    <PremiumFeatureGate feature={"ai_polish" as UpgradeFeature}>
       <Button 
         size="sm" 
         variant="outline" 

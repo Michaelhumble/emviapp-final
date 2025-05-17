@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import TemplateCarousel from './TemplateCarousel';
-import { IndustryType, JobTemplate } from './jobTemplates';
+import { IndustryType, JobTemplate } from './jobFormSchema';
 import { JobFormValues } from './jobFormSchema';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -90,7 +90,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
       </div>
       
       <TemplateCarousel 
-        selectedIndustry={selectedIndustry as IndustryType}
+        selectedIndustry={selectedIndustry}
         onSelectTemplate={handleSelectTemplate}
       />
     </motion.div>

@@ -12,4 +12,20 @@ export interface JobFormValues {
   industry?: IndustryType;
 }
 
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'brows' | 'skincare' | 'tattoo';
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'brows' | 'skincare' | 'tattoo' | '';
+
+export interface JobTemplate {
+  id: string;
+  title: string;
+  industry: IndustryType;
+  location: string;
+  description: string[];
+  requirements: string[];
+  experience_level: 'entry' | 'intermediate' | 'experienced' | 'senior';
+  employment_type: 'full-time' | 'part-time' | 'contract' | 'temporary' | 'commission';
+  salary_range: string;
+  popularity?: 'high' | 'medium' | 'low';
+  vietnameseTitle?: string;
+  vietnameseDescription?: string[];
+  vietnameseRequirements?: string[];
+}
