@@ -1,121 +1,200 @@
 
 import React from 'react';
-import { Job } from '@/types/job';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobPostingTranslations } from '@/translations/jobPostingForm';
 
-interface CompensationSectionProps {
+interface CompensationDetailsProps {
   details: {
     employment_type: string;
     compensation_type: string;
-    compensation_details: string;
-    salary_range: string;
-    tip_range: string;
+    compensation_details?: string;
+    salary_range?: string;
+    tip_range?: string;
     experience_level: string;
   };
-  onChange: (compensation: any) => void;
+  onChange: (details: any) => void;
 }
 
-const CompensationSection = ({ details, onChange }: CompensationSectionProps) => {
+const CompensationSection: React.FC<CompensationDetailsProps> = ({ details, onChange }) => {
   const { t } = useTranslation();
-  const translations = jobPostingTranslations.compensation;
+  const compensationTranslations = jobPostingTranslations.compensation;
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    onChange({
+      ...details,
+      [name]: value
+    });
+  };
+  
+  const handleEmploymentTypeChange = (value: string) => {
+    onChange({
+      ...details,
+      employment_type: value
+    });
+  };
+  
+  const handleCompensationTypeChange = (value: string) => {
+    onChange({
+      ...details,
+      compensation_type: value
+    });
+  };
+  
+  const handleExperienceLevelChange = (value: string) => {
+    onChange({
+      ...details,
+      experience_level: value
+    });
+  };
   
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t(translations.sectionTitle)}</h2>
-      <p className="text-muted-foreground">{t(translations.sectionDescription)}</p>
+      <h2 className="text-xl font-semibold">{t(compensationTranslations.title)}</h2>
       
-      <div className="grid gap-6">
-        <div className="grid gap-2">
-          <Label htmlFor="compensation-type">{t(translations.compensationType)}</Label>
-          <Select 
-            value={details.compensation_type}
-            onValueChange={(value) => onChange({ ...details, compensation_type: value })}
-          >
-            <SelectTrigger id="compensation-type" className="h-12 bg-white border-gray-200 focus:border-purple-300 focus:ring-purple-200 transition-shadow">
-              <SelectValue placeholder={t(translations.selectCompensationType)} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="hourly">{t(translations.compensationTypes.hourly)}</SelectItem>
-              <SelectItem value="salary">{t(translations.compensationTypes.salary)}</SelectItem>
-              <SelectItem value="commission">{t(translations.compensationTypes.commission)}</SelectItem>
-              <SelectItem value="commission_plus">{t(translations.compensationTypes.commissionPlus)}</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            {t("Select the primary way the position is compensated")}
-          </p>
-        </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="salary-range">{t(translations.salaryRange)}</Label>
-          <Input 
-            id="salary-range"
-            value={details.salary_range}
-            onChange={(e) => onChange({ ...details, salary_range: e.target.value })}
-            placeholder={t(translations.salaryRangePlaceholder)}
-            className="h-12 bg-white border-gray-200 focus:border-purple-300 focus:ring-purple-200 transition-shadow"
-          />
-          <div className="flex items-start gap-2 mt-1">
-            <div className="bg-amber-50 p-3 rounded-md border border-amber-100 text-xs text-amber-800">
-              {t("Tip: Jobs with clear salary details get 2.5x more applicants and higher quality candidates")}
-            </div>
+      {/* Employment Type */}
+      <div className="space-y-3">
+        <Label className="text-base">{t(compensationTranslations.employmentType)}</Label>
+        <RadioGroup 
+          value={details.employment_type} 
+          onValueChange={handleEmploymentTypeChange}
+          className="flex flex-wrap gap-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="full-time" id="full-time" />
+            <Label htmlFor="full-time" className="cursor-pointer">
+              {t(compensationTranslations.fullTime)}
+            </Label>
           </div>
-        </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="tip-range">{t(translations.expectedTips)}</Label>
-          <Input 
-            id="tip-range"
-            value={details.tip_range}
-            onChange={(e) => onChange({ ...details, tip_range: e.target.value })}
-            placeholder={t(translations.expectedTipsPlaceholder)}
-            className="h-12 bg-white border-gray-200 focus:border-purple-300 focus:ring-purple-200 transition-shadow"
-          />
-          <p className="text-xs text-muted-foreground">
-            {t("Provides a complete picture of earning potential, especially important for commission positions")}
-          </p>
-        </div>
-        
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="bg-purple-100 p-2 rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <h3 className="font-medium text-gray-800">{t("Why share compensation details?")}</h3>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="part-time" id="part-time" />
+            <Label htmlFor="part-time" className="cursor-pointer">
+              {t(compensationTranslations.partTime)}
+            </Label>
           </div>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li className="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>{t("Attracts qualified candidates who match your compensation range")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>{t("Reduces time spent interviewing candidates with mismatched expectations")}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>{t("93% of applicants say compensation is the #1 factor when considering jobs")}</span>
-            </li>
-          </ul>
-        </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="contract" id="contract" />
+            <Label htmlFor="contract" className="cursor-pointer">
+              {t(compensationTranslations.contract)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="temporary" id="temporary" />
+            <Label htmlFor="temporary" className="cursor-pointer">
+              {t(compensationTranslations.temporary)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="commission" id="commission" />
+            <Label htmlFor="commission" className="cursor-pointer">
+              {t(compensationTranslations.commission)}
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+      
+      {/* Compensation Type */}
+      <div className="space-y-3">
+        <Label className="text-base">{t(compensationTranslations.compensationType)}</Label>
+        <RadioGroup 
+          value={details.compensation_type} 
+          onValueChange={handleCompensationTypeChange}
+          className="flex flex-wrap gap-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="hourly" id="hourly" />
+            <Label htmlFor="hourly" className="cursor-pointer">
+              {t(compensationTranslations.hourly)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="salary" id="salary" />
+            <Label htmlFor="salary" className="cursor-pointer">
+              {t(compensationTranslations.salary)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="commission_only" id="commission_only" />
+            <Label htmlFor="commission_only" className="cursor-pointer">
+              {t(compensationTranslations.commissionOnly)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="hybrid" id="hybrid" />
+            <Label htmlFor="hybrid" className="cursor-pointer">
+              {t(compensationTranslations.hybrid)}
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+      
+      {/* Salary Range */}
+      <div>
+        <Label htmlFor="salary_range" className="text-base">
+          {t(compensationTranslations.salaryRange)} <span className="text-red-500">*</span>
+        </Label>
+        <Input
+          id="salary_range"
+          name="salary_range"
+          placeholder={t(compensationTranslations.salaryRangePlaceholder)}
+          value={details.salary_range || ''}
+          onChange={handleInputChange}
+          className="mt-1.5"
+          required
+        />
+      </div>
+      
+      {/* Tip Range */}
+      <div>
+        <Label htmlFor="tip_range" className="text-base">
+          {t(compensationTranslations.tipRange)}
+        </Label>
+        <Input
+          id="tip_range"
+          name="tip_range"
+          placeholder={t(compensationTranslations.tipRangePlaceholder)}
+          value={details.tip_range || ''}
+          onChange={handleInputChange}
+          className="mt-1.5"
+        />
+      </div>
+      
+      {/* Experience Level */}
+      <div className="space-y-3">
+        <Label className="text-base">{t(compensationTranslations.experienceLevel)}</Label>
+        <RadioGroup 
+          value={details.experience_level} 
+          onValueChange={handleExperienceLevelChange}
+          className="flex flex-wrap gap-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="entry" id="entry" />
+            <Label htmlFor="entry" className="cursor-pointer">
+              {t(compensationTranslations.entry)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="intermediate" id="intermediate" />
+            <Label htmlFor="intermediate" className="cursor-pointer">
+              {t(compensationTranslations.intermediate)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="experienced" id="experienced" />
+            <Label htmlFor="experienced" className="cursor-pointer">
+              {t(compensationTranslations.experienced)}
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="senior" id="senior" />
+            <Label htmlFor="senior" className="cursor-pointer">
+              {t(compensationTranslations.senior)}
+            </Label>
+          </div>
+        </RadioGroup>
       </div>
     </div>
   );

@@ -147,10 +147,7 @@ export const JobForm: React.FC<JobFormProps> = ({
           disabled={isSubmitting}
           className="min-w-[150px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium"
         >
-          {isSubmitting ? t(commonTranslations.submitting) : t({
-            english: 'Continue to Next Step',
-            vietnamese: 'Tiếp tục đến bước tiếp theo'
-          })}
+          {isSubmitting ? t(commonTranslations.submitting) : t(commonTranslations.continue)}
         </MobileButton>
       </div>
     </form>

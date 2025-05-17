@@ -18,7 +18,7 @@ const SalonVisibilityUpgrade = () => {
       </p>
       
       {!hasActiveSubscription && (
-        <PremiumFeatureGate feature="salon-visibility">
+        <PremiumFeatureGate feature="boost-visibility">
           <Button 
             variant="outline" 
             className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"

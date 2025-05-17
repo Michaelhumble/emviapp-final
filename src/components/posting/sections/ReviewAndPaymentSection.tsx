@@ -1,218 +1,215 @@
 
-import React, { useState, useEffect } from 'react';
-import PricingCards from '@/components/posting/PricingCards';
-import { jobPricingOptions, calculateFinalPrice } from '@/utils/posting/jobPricing';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import PaymentSummary from '@/components/posting/PaymentSummary';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { MobileButton } from '@/components/ui/mobile-button';
+import { ChevronLeft, CreditCard, CheckCircle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { format, addDays } from 'date-fns';
-import { Job } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
-import PricingDisplay from '@/components/posting/PricingDisplay';
-import { Award } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { jobPostingTranslations } from '@/translations/jobPostingForm';
+import PricingCard from '../pricing/PricingCard';
 
-export interface ReviewAndPaymentSectionProps {
-  postType: 'job' | 'salon' | 'booth' | 'supply';
+interface ReviewAndPaymentSectionProps {
+  formData: any;
+  photoUploads: File[];
+  onBack: () => void;
+  onSubmit: (pricingOptions: PricingOptions) => void;
+  isSubmitting: boolean;
   pricingOptions: PricingOptions;
-  onPricingChange: (pricingTier: string) => void;
-  onUpdatePricing: (options: Partial<PricingOptions>) => void;
-  onNextStep: () => void;
-  onPrevStep: () => void;
-  jobData?: Partial<Job>;
-  isFirstPost?: boolean;
-  isSubmitting?: boolean;
+  setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
 }
 
-const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
-  postType,
+export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+  formData,
+  photoUploads,
+  onBack,
+  onSubmit,
+  isSubmitting,
   pricingOptions,
-  onPricingChange,
-  onUpdatePricing,
-  onNextStep,
-  onPrevStep,
-  jobData,
-  isFirstPost,
-  isSubmitting = false
+  setPricingOptions
 }) => {
   const { t } = useTranslation();
-  const [selectedPricing, setSelectedPricing] = useState(pricingOptions.selectedPricingTier || 'standard');
-  const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths || 1);
-  const [autoRenew, setAutoRenew] = useState(pricingOptions.autoRenew || false);
-  const [isFreePlan, setIsFreePlan] = useState(false);
-  const [showUpsellModal, setShowUpsellModal] = useState(false);
-  const [previousPlan, setPreviousPlan] = useState('');
+  const reviewTranslations = jobPostingTranslations.review;
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   
-  useEffect(() => {
-    // Automatically set premium as default if not already selected
-    if (!pricingOptions.selectedPricingTier && selectedPricing === 'standard') {
+  const handleSubmit = async () => {
+    setProcessingPayment(true);
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      setProcessingPayment(false);
+      setShowPaymentSuccess(true);
+      
+      // Submit after showing success message briefly
       setTimeout(() => {
-        setSelectedPricing('premium');
-        onPricingChange('premium');
-      }, 500);
-    }
-  }, []);
-  
-  useEffect(() => {
-    if (selectedPricing === 'free') {
-      setIsFreePlan(true);
-      // Automatically turn off auto-renew for the free plan
-      setAutoRenew(false);
-    } else {
-      setIsFreePlan(false);
-    }
-  }, [selectedPricing]);
-
-  useEffect(() => {
-    onUpdatePricing({ 
-      selectedPricingTier: selectedPricing,
-      autoRenew: autoRenew,
-      durationMonths: selectedDuration
-    });
-  }, [selectedPricing, autoRenew, selectedDuration, onUpdatePricing]);
-  
-  const handlePricingChange = (pricingId: string) => {
-    // Store previous plan for potential upsell opportunity
-    setPreviousPlan(selectedPricing);
-    
-    setSelectedPricing(pricingId);
-    onPricingChange(pricingId);
-    
-    // When switching to a paid plan from a lower tier, show upsell modal
-    if (
-      (pricingId === 'premium' && (previousPlan === 'free' || previousPlan === 'standard')) ||
-      (pricingId === 'gold' && previousPlan !== 'gold')
-    ) {
-      setTimeout(() => {
-        setShowUpsellModal(true);
-      }, 800);
-    }
-    
-    // When switching to free plan, disable auto-renew
-    if (pricingId === 'free') {
-      setAutoRenew(false);
-    }
+        onSubmit(pricingOptions);
+      }, 1000);
+    }, 1500);
   };
   
-  const handleDurationChange = (duration: number) => {
-    setSelectedDuration(duration);
+  const updatePricingOptions = (option: string, value: any) => {
+    setPricingOptions(prev => ({
+      ...prev,
+      [option]: value
+    }));
   };
   
-  const handleAutoRenewChange = (checked: boolean) => {
-    setAutoRenew(checked);
-    onUpdatePricing({ autoRenew: checked });
-  };
-
-  const selectedPricingOption = jobPricingOptions.find(option => option.id === selectedPricing);
-  const basePrice = selectedPricingOption ? selectedPricingOption.price : 0;
+  // To be completed in future tasks
+  const renderJobSummary = () => (
+    <div className="space-y-3 bg-white rounded-lg border p-4">
+      <h3 className="font-medium">{formData.title}</h3>
+      <p className="text-sm text-gray-600 line-clamp-3">{formData.description}</p>
+      
+      <div className="flex flex-wrap gap-2 text-xs">
+        <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded">{formData.employment_type}</span>
+        <span className="px-2 py-1 bg-green-50 text-green-700 rounded">{formData.salary_range}</span>
+        <span className="px-2 py-1 bg-purple-50 text-purple-700 rounded">{formData.experience_level}</span>
+      </div>
+      
+      <div className="text-sm">
+        <strong>Location:</strong> {formData.location}
+      </div>
+    </div>
+  );
   
-  // Call calculateFinalPrice with only the required parameters, and receive an object as the return value
-  const pricingResult = calculateFinalPrice(basePrice, selectedDuration);
+  // To be completed in future tasks
+  const renderContactSummary = () => (
+    <div className="bg-white rounded-lg border p-4">
+      {formData.contact_info?.email && (
+        <div className="mb-2">
+          <strong>Email:</strong> {formData.contact_info.email}
+        </div>
+      )}
+      {formData.contact_info?.phone && (
+        <div className="mb-2">
+          <strong>Phone:</strong> {formData.contact_info.phone}
+        </div>
+      )}
+      {formData.contact_info?.owner_name && (
+        <div className="mb-2">
+          <strong>Contact:</strong> {formData.contact_info.owner_name}
+        </div>
+      )}
+    </div>
+  );
   
-  // Destructure the values from the pricingResult object
-  const { originalPrice, finalPrice, discountPercentage } = pricingResult;
-
+  // Return to simple view for stability check
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t({
-        english: 'Review & Payment',
-        vietnamese: 'Xem lại & Thanh toán'
-      })}</h2>
+    <div className="space-y-8">
+      <h2 className="text-2xl font-semibold">{t(reviewTranslations.title)}</h2>
       
-      <PricingCards
-        pricingOptions={jobPricingOptions}
-        selectedPricing={selectedPricing}
-        onChange={handlePricingChange}
-        selectedDuration={selectedDuration}
-        onDurationChange={handleDurationChange}
-      />
-      
-      {selectedPricing !== 'free' && (
-        <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <Label htmlFor="auto-renew" className="flex items-center gap-2">
-            {t({
-              english: 'Auto-renew subscription',
-              vietnamese: 'Tự động gia hạn đăng ký'
-            })}
-            <span className="text-xs text-purple-600 font-medium">
-              {autoRenew ? 'Your listing will never expire' : 'Recommended to ensure continuous visibility'}
-            </span>
-          </Label>
-          <Switch 
-            id="auto-renew" 
-            checked={autoRenew} 
-            onCheckedChange={handleAutoRenewChange} 
-          />
-        </div>
-      )}
-      
-      {selectedPricing === 'free' && (
-        <div className="text-sm text-gray-500 italic p-4 border border-gray-200 rounded-lg bg-gray-50">
+      <Alert variant="default" className="bg-blue-50 border-blue-200 text-blue-800">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
           {t({
-            english: 'This plan does not renew. First-time post only.',
-            vietnamese: 'Gói này không tự động gia hạn. Chỉ áp dụng cho đăng tin lần đầu.'
+            english: "Review your job listing details before finalizing your post.",
+            vietnamese: "Xem lại chi tiết tin đăng việc làm trước khi hoàn tất bài đăng của bạn."
           })}
+        </AlertDescription>
+      </Alert>
+      
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium mb-3">{t(reviewTranslations.jobSummary)}</h3>
+          {renderJobSummary()}
         </div>
-      )}
-      
-      <PaymentSummary
-        basePrice={basePrice}
-        duration={selectedDuration}
-        autoRenew={autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-        onProceedToPayment={onNextStep}
-        isFreePlan={isFreePlan}
-        isSubmitting={isSubmitting}
-      />
-      
-      <PricingDisplay 
-        basePrice={basePrice}
-        duration={selectedDuration}
-        pricingId={selectedPricing}
-        autoRenew={autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-      />
-      
-      {/* Upsell Modal */}
-      <Dialog open={showUpsellModal} onOpenChange={setShowUpsellModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogTitle className="flex items-center gap-2 text-center">
-            <Award className="h-5 w-5 text-yellow-500" />
-            Want a free upgrade?
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            Share your listing on Facebook and get boosted for 7 days!
-          </DialogDescription>
-          
-          <div className="flex flex-col gap-4 py-4">
-            <p className="text-sm text-center text-gray-600">
-              Get your job in front of more qualified candidates by sharing it on social media.
-            </p>
-            
-            <div className="flex justify-center gap-3">
-              <button 
-                onClick={() => setShowUpsellModal(false)} 
-                className="px-4 py-2 rounded-md bg-blue-600 text-white flex items-center gap-2"
-              >
-                Share & Get Boosted
-              </button>
-              <button 
-                onClick={() => setShowUpsellModal(false)}
-                className="px-4 py-2 rounded-md border border-gray-300"
-              >
-                Maybe Later
-              </button>
-            </div>
+        
+        <div>
+          <h3 className="text-lg font-medium mb-3">{t(reviewTranslations.contactSummary)}</h3>
+          {renderContactSummary()}
+        </div>
+        
+        <div>
+          <h3 className="text-lg font-medium mb-3">{t(reviewTranslations.pricingSummary)}</h3>
+          <div className="grid md:grid-cols-3 gap-4">
+            <PricingCard
+              isSelected={pricingOptions.selectedPricingTier === 'standard'}
+              onSelect={() => updatePricingOptions('selectedPricingTier', 'standard')}
+              tier="standard"
+              pricingInfo={{
+                id: 'standard',
+                name: 'Standard',
+                price: 9.99,
+                description: 'Basic visibility for your job post',
+                features: ['7-day listing', 'Standard search placement'],
+                tier: 'standard'
+              }}
+            />
+            <PricingCard
+              isSelected={pricingOptions.selectedPricingTier === 'premium'}
+              onSelect={() => updatePricingOptions('selectedPricingTier', 'premium')}
+              tier="premium"
+              pricingInfo={{
+                id: 'premium',
+                name: 'Premium',
+                price: 19.99,
+                description: 'Enhanced visibility and features',
+                features: ['14-day listing', 'Featured in search results', 'Priority email alerts to artists'],
+                popular: true,
+                tier: 'premium'
+              }}
+            />
+            <PricingCard
+              isSelected={pricingOptions.selectedPricingTier === 'gold'}
+              onSelect={() => updatePricingOptions('selectedPricingTier', 'gold')}
+              tier="gold" 
+              pricingInfo={{
+                id: 'gold',
+                name: 'Gold',
+                price: 39.99,
+                description: 'Maximum visibility and premium placement',
+                features: ['30-day listing', 'Top search placement', 'Featured across the site', 'SMS alerts to matching artists'],
+                tier: 'gold'
+              }}
+            />
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
+      
+      <div className="flex flex-col sm:flex-row justify-between pt-6 border-t border-gray-200">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          disabled={isSubmitting || processingPayment || showPaymentSuccess}
+          className="mb-3 sm:mb-0"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          {t(jobPostingTranslations.jobForm.back)}
+        </Button>
+        
+        <MobileButton
+          type="button"
+          onClick={handleSubmit}
+          disabled={isSubmitting || processingPayment || showPaymentSuccess}
+          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+        >
+          {processingPayment ? (
+            <>
+              <CreditCard className="h-4 w-4 mr-2 animate-pulse" />
+              {t({
+                english: "Processing...",
+                vietnamese: "Đang xử lý..."
+              })}
+            </>
+          ) : showPaymentSuccess ? (
+            <>
+              <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+              {t({
+                english: "Success!",
+                vietnamese: "Thành công!"
+              })}
+            </>
+          ) : (
+            <>
+              <CreditCard className="h-4 w-4 mr-2" />
+              {t(reviewTranslations.confirmAndPay)}
+            </>
+          )}
+        </MobileButton>
+      </div>
     </div>
   );
 };
-
-export default ReviewAndPaymentSection;
