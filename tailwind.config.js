@@ -23,6 +23,7 @@ module.exports = {
         sans: ['Inter', ...fontFamily.sans],
         inter: ['Inter', ...fontFamily.sans],
         playfair: ['Playfair Display', 'serif'],
+        serif: ['Playfair Display', 'EB Garamond', 'serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
