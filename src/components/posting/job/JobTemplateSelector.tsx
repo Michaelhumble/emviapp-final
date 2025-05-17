@@ -1,15 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import TemplateCarousel from './TemplateCarousel';
-import { IndustryType, JobTemplate } from './jobFormSchema';
-import { JobFormValues } from './jobFormSchema';
+import { IndustryType, JobTemplate, JobFormValues } from './jobFormSchema';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, TrendingUp } from 'lucide-react';
 
 interface JobTemplateSelectorProps {
-  selectedIndustry: IndustryType | '';
+  selectedIndustry: IndustryType;
   onSelectTemplate: (templateData: Partial<JobFormValues>) => void;
 }
 
@@ -39,7 +38,8 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
       requirements: template.requirements,
       salary_range: template.salary_range,
       jobType: template.employment_type,
-      experience_level: template.experience_level as 'entry' | 'intermediate' | 'experienced' | 'senior'
+      experience_level: template.experience_level,
+      vietnameseDescription: template.vietnameseDescription ? template.vietnameseDescription.join('\n\n') : undefined
     };
     
     onSelectTemplate(formValues);

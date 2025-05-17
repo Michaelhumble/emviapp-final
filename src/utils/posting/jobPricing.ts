@@ -1,5 +1,5 @@
 
-import { JobPricingOption, JobPricingTier } from './types';
+import { JobPricingOption, JobPricingTier, PricingOptions } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [
   {
@@ -95,4 +95,46 @@ export const calculateFinalPrice = (basePrice: number, durationMonths: number): 
 // Check if a pricing tier is eligible for subscription
 export const isSubscriptionPlan = (pricingTier: string): boolean => {
   return pricingTier !== 'free';
+};
+
+// Add missing functions that are imported in index.ts
+export const calculateJobPostPrice = (options: PricingOptions): number => {
+  const { selectedPricingTier, durationMonths = 1 } = options;
+  
+  const selectedOption = jobPricingOptions.find(option => option.id === selectedPricingTier);
+  if (!selectedOption) return 0;
+  
+  return calculateFinalPrice(selectedOption.price, durationMonths);
+};
+
+export const getJobPostPricingSummary = (options: PricingOptions): { basePrice: number; finalPrice: number; savings: number } => {
+  const { selectedPricingTier, durationMonths = 1 } = options;
+  
+  const selectedOption = jobPricingOptions.find(option => option.id === selectedPricingTier);
+  if (!selectedOption) {
+    return { basePrice: 0, finalPrice: 0, savings: 0 };
+  }
+  
+  const basePrice = selectedOption.price * durationMonths;
+  const finalPrice = calculateFinalPrice(selectedOption.price, durationMonths);
+  const savings = basePrice - finalPrice;
+  
+  return { basePrice, finalPrice, savings };
+};
+
+export const calculatePriceWithDuration = (basePrice: number, durationMonths: number): number => {
+  return calculateFinalPrice(basePrice, durationMonths);
+};
+
+export const validatePricingOptions = (options: PricingOptions): boolean => {
+  return !!options.selectedPricingTier;
+};
+
+export const getStripePriceId = (pricingTier: string, durationMonths: number): string => {
+  // This would normally map to real Stripe price IDs
+  return `price_${pricingTier}_${durationMonths}months`;
+};
+
+export const getAmountInCents = (amount: number): number => {
+  return amount * 100;
 };

@@ -1,53 +1,41 @@
-
-import React from 'react';
-import SmartUpgradePrompt, { UpgradeFeature } from './SmartUpgradePrompt';
-import { useUpgradePrompt } from '@/hooks/useUpgradePrompt';
+import React, { ReactNode } from 'react';
+import { useUpgradePrompt, UpgradeFeature } from '@/hooks/useUpgradePrompt';
 
 interface PremiumFeatureGateProps {
+  children: ReactNode;
   feature: UpgradeFeature;
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  fallback?: ReactNode;
 }
 
-const PremiumFeatureGate: React.FC<PremiumFeatureGateProps> = ({
+// Simple component to gate premium features
+const PremiumFeatureGate: React.FC<PremiumFeatureGateProps> = ({ 
+  children, 
   feature,
-  children,
   fallback
 }) => {
-  const { isPromptOpen, setIsPromptOpen, checkAndTriggerUpgrade } = useUpgradePrompt(feature);
-
-  const handleAction = (e: React.MouseEvent) => {
-    if (!checkAndTriggerUpgrade()) {
-      e.preventDefault();
-      e.stopPropagation();
+  const { promptUpgrade, hasAccess } = useUpgradePrompt();
+  
+  const handleClick = () => {
+    if (!hasAccess(feature)) {
+      promptUpgrade(feature);
     }
   };
-
-  // Clone children and add the handler to the onClick
-  const childrenWithProps = React.Children.map(children, child => {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, { 
-        // Explicitly type the props to avoid TypeScript errors
-        ...child.props,
-        onClick: (e: React.MouseEvent) => {
-          // Call the original onClick if it exists
-          if (child.props.onClick) child.props.onClick(e);
-          handleAction(e);
-        }
-      } as React.HTMLAttributes<HTMLElement>);
-    }
-    return child;
-  });
-
+  
+  // If the user has access to this feature, render the children
+  if (hasAccess(feature)) {
+    return <>{children}</>;
+  }
+  
+  // If there's a fallback, render it
+  if (fallback) {
+    return <div onClick={handleClick}>{fallback}</div>;
+  }
+  
+  // Otherwise just wrap the children in a div that prompts an upgrade when clicked
   return (
-    <>
-      {childrenWithProps}
-      <SmartUpgradePrompt 
-        feature={feature} 
-        open={isPromptOpen} 
-        onOpenChange={setIsPromptOpen} 
-      />
-    </>
+    <div onClick={handleClick} className="cursor-pointer">
+      {children}
+    </div>
   );
 };
 

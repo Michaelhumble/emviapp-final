@@ -2,35 +2,43 @@
 import { useState } from 'react';
 
 export type UpgradeFeature = 
-  | 'ai_polish' 
-  | 'premium_templates' 
-  | 'advanced_analytics' 
-  | 'featured_listing' 
-  | 'priority_support';
+  | 'ai_polish'
+  | 'unlimited_jobs'
+  | 'featured_listing'
+  | 'enhanced_visibility'
+  | 'premium_placement'
+  | 'priority_support'
+  | 'applicant_management'
+  | 'messaging'
+  | 'analytics_dashboard';
 
-export const useUpgradePrompt = (feature: UpgradeFeature) => {
-  const [isPromptOpen, setIsPromptOpen] = useState(false);
+export const useUpgradePrompt = () => {
+  const [isPromptVisible, setIsPromptVisible] = useState(false);
+  const [targetFeature, setTargetFeature] = useState<UpgradeFeature | null>(null);
   
-  // Check if user has access to this feature
-  // This would normally check against user subscription data
-  const checkFeatureAccess = (feature: UpgradeFeature): boolean => {
-    return true; // For demo purposes, return true to avoid blocking features
+  // This would normally check subscription status from API
+  // For now, just returning a stub implementation
+  const hasAccess = (feature: UpgradeFeature): boolean => {
+    // For demo, let's say we have access to some features
+    const freeFeatures = ['ai_polish'];
+    return freeFeatures.includes(feature);
   };
   
-  const checkAndTriggerUpgrade = (): boolean => {
-    const hasAccess = checkFeatureAccess(feature);
-    
-    if (!hasAccess) {
-      setIsPromptOpen(true);
-      return false;
-    }
-    
-    return true;
+  const promptUpgrade = (feature: UpgradeFeature) => {
+    setTargetFeature(feature);
+    setIsPromptVisible(true);
+    console.log(`Upgrade prompt shown for feature: ${feature}`);
+  };
+  
+  const closePrompt = () => {
+    setIsPromptVisible(false);
   };
   
   return {
-    isPromptOpen,
-    setIsPromptOpen,
-    checkAndTriggerUpgrade
+    isPromptVisible,
+    targetFeature,
+    promptUpgrade,
+    closePrompt,
+    hasAccess,
   };
 };
