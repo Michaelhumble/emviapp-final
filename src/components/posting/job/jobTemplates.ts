@@ -1,5 +1,8 @@
 
-import { IndustryType } from '../../../components/posting/job/jobFormSchema';
+import { IndustryType } from './jobFormSchema';
+
+// Export IndustryType from jobFormSchema for proper access
+export { IndustryType } from './jobFormSchema';
 
 // Polish suggestions for each industry type in English
 export const aiPolishSuggestions: Record<IndustryType, string[]> = {
@@ -91,4 +94,63 @@ export const aiPolishSuggestionsVietnamese: Record<IndustryType, string[]> = {
     "Nhấn mạnh cơ hội đào tạo và hỗ trợ chứng nhận",
     "Đề cập đến tỷ lệ giữ chân khách hàng và tính nhất quán trong đặt lịch"
   ]
+};
+
+// Add job templates to be exported
+export const jobTemplates: Record<IndustryType, {
+  title: string;
+  description: string;
+  salary_range: string;
+  jobType: string;
+  experience_level: string;
+}> = {
+  nail: {
+    title: "Experienced Nail Technician - Competitive Pay & Flexible Hours",
+    description: "We are looking for skilled nail technicians to join our growing team. Our modern salon offers a friendly atmosphere, steady client flow, and opportunities for growth. We value creativity and attention to detail.",
+    salary_range: "$800-1200/week + tips",
+    jobType: "full-time",
+    experience_level: "experienced"
+  },
+  hair: {
+    title: "Hair Stylist with Following - High Commission",
+    description: "Join our upscale salon as a creative hair stylist. We offer excellent commission, flexible scheduling, and continuous education opportunities. Bring your clients and grow your career with us.",
+    salary_range: "60% Commission + Retail Bonus",
+    jobType: "full-time",
+    experience_level: "experienced"
+  },
+  lashes: {
+    title: "Certified Lash Technician - Modern Studio Environment",
+    description: "Looking for a dedicated lash artist to join our specialized studio. We provide all high-quality supplies, booking management, and marketing support to keep your schedule full.",
+    salary_range: "$25-35/hr + tips",
+    jobType: "part-time",
+    experience_level: "intermediate"
+  },
+  massage: {
+    title: "Licensed Massage Therapist - Upscale Spa Setting",
+    description: "Join our wellness center as a massage therapist in a peaceful, client-focused environment. We provide linens, high-quality oils, booking management, and a tranquil workspace.",
+    salary_range: "$30-50/hr + gratuity",
+    jobType: "part-time",
+    experience_level: "intermediate"
+  },
+  tattoo: {
+    title: "Tattoo Artist - Guest Spot Available",
+    description: "Well-established tattoo studio seeking artists for guest spots with potential for permanent position. We offer a clean, modern environment with existing client base and social media promotion.",
+    salary_range: "70/30 Split",
+    jobType: "contract",
+    experience_level: "experienced"
+  },
+  brows: {
+    title: "Microblading Artist - High End Clientele",
+    description: "Seeking experienced microblading and brow specialist for our luxury beauty studio. Must be certified with portfolio of consistent, natural-looking results. Join our team of professionals.",
+    salary_range: "$50-65/hr or commission",
+    jobType: "part-time",
+    experience_level: "experienced"
+  },
+  skincare: {
+    title: "Esthetician - Medical Spa Setting",
+    description: "Join our medical spa team as a licensed esthetician. Experience with chemical peels, microdermabrasion, and advanced skin treatments preferred. Training provided for specialized treatments.",
+    salary_range: "$18-25/hr + commission on products",
+    jobType: "full-time",
+    experience_level: "intermediate"
+  }
 };
