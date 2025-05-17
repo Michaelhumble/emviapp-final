@@ -3,6 +3,7 @@ import React from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
 import LanguageToggle from '@/components/layout/LanguageToggle';
+import MobilePostMenu from './MobilePostMenu';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,11 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
 
   return (
     <div className="container max-w-5xl py-12 px-4">
+      {/* Mobile menu - only visible on mobile */}
+      <div className="absolute top-4 left-4 z-10">
+        <MobilePostMenu />
+      </div>
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
@@ -42,7 +48,10 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
             </span>
           </div>
           
-          <LanguageToggle />
+          {/* Desktop language toggle */}
+          <div className="hidden md:block">
+            <LanguageToggle />
+          </div>
         </div>
       </div>
       

@@ -34,8 +34,30 @@ export function useTranslation() {
   
   // The t function now accepts either a string or a Translation object
   const t = (key: string | Translation): string => {
-    // If it's a simple string, return it as is (for backward compatibility)
+    // If it's a simple string, try to map it to common UI elements
     if (typeof key === 'string') {
+      // Map common UI elements
+      const commonTranslations: Record<string, Translation> = {
+        "Home": { english: "Home", vietnamese: "Trang chủ" },
+        "Jobs": { english: "Jobs", vietnamese: "Việc làm" },
+        "Salons": { english: "Salons", vietnamese: "Tiệm Nail" },
+        "Artists": { english: "Artists", vietnamese: "Nghệ sĩ" },
+        "About": { english: "About", vietnamese: "Giới thiệu" },
+        "Contact": { english: "Contact", vietnamese: "Liên hệ" },
+        "Post a Job": { english: "Post a Job", vietnamese: "Đăng tin tuyển dụng" },
+        "Select language": { english: "Select language", vietnamese: "Chọn ngôn ngữ" },
+        "Inspired by Sunshine ☀️": { english: "Inspired by Sunshine ☀️", vietnamese: "Lấy cảm hứng từ Sunshine ☀️" },
+        "Sign In": { english: "Sign In", vietnamese: "Đăng nhập" },
+        "Sign Out": { english: "Sign Out", vietnamese: "Đăng xuất" },
+        "Dashboard": { english: "Dashboard", vietnamese: "Bảng điều khiển" },
+        "Profile": { english: "Profile", vietnamese: "Hồ sơ" }
+      };
+      
+      if (commonTranslations[key]) {
+        return language === 'vi' ? commonTranslations[key].vietnamese : commonTranslations[key].english;
+      }
+      
+      // If no mapping found, return the key itself
       return key;
     }
     

@@ -61,6 +61,7 @@ module.exports = {
         'emvi-dark': '#1A1F2C',
         'emvi-offwhite': '#eee',
         'emvi-accent': '#9b87f5',
+        'emvi-brown': '#9A7B69',
       },
       borderRadius: {
         lg: 'var(--radius)',

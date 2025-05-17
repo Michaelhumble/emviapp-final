@@ -13,12 +13,11 @@ const Logo: React.FC<LogoProps> = ({
   size = "medium",
   showText = false
 }) => {
-  // Use the same large size everywhere to match the footer
-  // Footer uses "large" size, so we'll make all sizes match that
+  // Define the sizes for the logo
   const sizeClasses = {
-    small: "h-20 w-auto", // Now matches large
-    medium: "h-20 w-auto", // Now matches large
-    large: "h-20 w-auto"  // Already the right size
+    small: "h-12 w-auto",
+    medium: "h-16 w-auto",
+    large: "h-20 w-auto"
   };
 
   return (
@@ -34,7 +33,8 @@ const Logo: React.FC<LogoProps> = ({
       {showText && (
         <div className={cn(
           "font-bold tracking-tight ml-2",
-          "text-3xl" // Always use the large text size for consistency
+          size === "small" ? "text-xl" : 
+          size === "medium" ? "text-2xl" : "text-3xl"
         )}>
           <span className="text-[#FF7743]">Emvi</span>
           <span className="text-[#3D3D3D]">.App</span>
