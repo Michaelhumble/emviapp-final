@@ -13,6 +13,9 @@ export type TranslationInput = string | {
   vietnamese: string;
 };
 
+// Export the Translation type (aliasing TranslationInput)
+export type Translation = TranslationInput;
+
 // Translation dictionaries
 const translations: Record<string, TranslationDictionary> = {
   en: {
