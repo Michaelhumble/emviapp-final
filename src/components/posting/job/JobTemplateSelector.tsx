@@ -1,100 +1,126 @@
 
-import React, { useState, useEffect } from 'react';
-import TemplateCarousel from './TemplateCarousel';
-import { IndustryType, JobTemplate, JobFormValues } from './jobFormSchema';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Badge } from '@/components/ui/badge';
-import { Sparkles, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from '@/components/ui/select';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
+import { Sparkles, ChevronDown, Clock } from 'lucide-react';
+import { JobFormValues, IndustryType } from './jobFormSchema';
+import { jobTemplates } from './jobTemplates';
 
 interface JobTemplateSelectorProps {
-  selectedIndustry: IndustryType;
-  onSelectTemplate: (templateData: Partial<JobFormValues>) => void;
+  onSelectTemplate: (industryType: IndustryType, templateData: Partial<JobFormValues>) => void;
 }
 
-const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ 
-  selectedIndustry,
+export const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
   onSelectTemplate
 }) => {
   const { t } = useTranslation();
-  const [isVisible, setIsVisible] = useState(false);
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | ''>('');
   
-  useEffect(() => {
-    // Show template selector only when an industry is selected
-    if (selectedIndustry) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
-  }, [selectedIndustry]);
-  
-  const handleSelectTemplate = (template: JobTemplate) => {
-    // Convert template format to job form values format
-    const formValues: Partial<JobFormValues> = {
-      title: template.title,
-      industry: template.industry,
-      location: template.location,
-      description: template.description.join('\n\n'),
-      requirements: template.requirements,
-      salary_range: template.salary_range,
-      jobType: template.employment_type,
-      experience_level: template.experience_level,
-      vietnameseDescription: template.vietnameseDescription ? template.vietnameseDescription.join('\n\n') : undefined
-    };
+  const handleSelectTemplate = (industryType: IndustryType) => {
+    if (!industryType) return;
     
-    onSelectTemplate(formValues);
+    setSelectedIndustry(industryType);
+    const template = jobTemplates[industryType];
+    
+    if (template) {
+      onSelectTemplate(industryType, {
+        title: template.title,
+        description: template.description,
+        salary_range: template.salary_range,
+        jobType: template.jobType as JobFormValues['jobType'],
+        experience_level: template.experience_level as JobFormValues['experience_level']
+      });
+    }
   };
   
-  if (!isVisible) {
-    return null;
-  }
-  
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="mt-4 mb-8"
-    >
-      <div className="text-center mb-6 relative">
-        <div className="absolute top-0 right-0 -mt-1">
-          <Badge className="bg-gradient-to-r from-amber-400 to-amber-500 text-white">
-            <Sparkles className="h-3 w-3 mr-1" /> 
-            {t({
-              english: "NEW",
-              vietnamese: "MỚI"
-            })}
-          </Badge>
+    <div className="relative">
+      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="flex items-center mb-2">
+              <Sparkles className="h-5 w-5 text-purple-500 mr-2" />
+              <h3 className="font-semibold text-lg text-gray-800">
+                {t("Quick-start with industry templates")}
+              </h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              {t("Start with a professional template tailored for your industry")}
+            </p>
+          </div>
+          
+          <div className="flex items-center">
+            <div className="w-full md:w-56">
+              <Select 
+                value={selectedIndustry} 
+                onValueChange={(value) => handleSelectTemplate(value as IndustryType)}
+              >
+                <SelectTrigger className="bg-white h-12 text-base">
+                  <SelectValue placeholder={t("Select your industry")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nails">{t("Nails")}</SelectItem>
+                  <SelectItem value="hair">{t("Hair")}</SelectItem>
+                  <SelectItem value="lashes">{t("Lashes")}</SelectItem>
+                  <SelectItem value="massage">{t("Massage")}</SelectItem>
+                  <SelectItem value="tattoo">{t("Tattoo")}</SelectItem>
+                  <SelectItem value="brows">{t("Brows")}</SelectItem>
+                  <SelectItem value="skincare">{t("Skincare")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="ml-2 text-xs text-purple-600 flex items-center">
+                    <Clock size={12} className="mr-1" />
+                    {t("Save time")}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-xs">{t("Our templates are crafted from successful job posts that received the most applicants")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
         
-        <motion.div 
-          initial={{ scale: 0.95 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-        >
-          <h3 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2">
-            <TrendingUp className="h-5 w-5 text-purple-600" />
-            {t({
-              english: "Post a job in 60 seconds. No writing needed!",
-              vietnamese: "Đăng tin tuyển dụng trong 60 giây. Không cần viết!"
-            })}
-          </h3>
-        </motion.div>
-        
-        <p className="text-gray-600 mt-2 text-sm">
-          {t({
-            english: "These templates are proven to get 3x more applicants",
-            vietnamese: "Những mẫu này đã được chứng minh nhận được nhiều hơn 3 lần ứng viên"
-          })}
-        </p>
+        {selectedIndustry && (
+          <div className="mt-4 pt-4 border-t border-purple-100">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-medium text-gray-700">
+                {t("Example")} ({selectedIndustry}):
+              </h4>
+              <span className="text-xs text-purple-600">
+                {t("High-performing title")}
+              </span>
+            </div>
+            <p className="text-gray-900 font-medium">
+              {jobTemplates[selectedIndustry]?.title}
+            </p>
+          </div>
+        )}
       </div>
       
-      <TemplateCarousel 
-        selectedIndustry={selectedIndustry}
-        onSelectTemplate={handleSelectTemplate}
-      />
-    </motion.div>
+      <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
+        <div className="bg-white p-1 rounded-full shadow-sm">
+          <ChevronDown className="h-5 w-5 text-purple-400" />
+        </div>
+      </div>
+    </div>
   );
 };
-
-export default JobTemplateSelector;

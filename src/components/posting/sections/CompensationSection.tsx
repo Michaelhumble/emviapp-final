@@ -36,19 +36,19 @@ const CompensationSection = ({ details, onChange }: CompensationSectionProps) =>
       
       <div className="grid gap-6">
         <div className="grid gap-2">
-          <Label htmlFor="compensation-type">{t(translations.compensationTypeLabel)}</Label>
+          <Label htmlFor="compensation-type">{t(translations.compensationType)}</Label>
           <Select 
             value={details.compensation_type}
             onValueChange={(value) => onChange({ ...details, compensation_type: value })}
           >
             <SelectTrigger id="compensation-type" className="h-12 bg-white border-gray-200 focus:border-purple-300 focus:ring-purple-200 transition-shadow">
-              <SelectValue placeholder={t(translations.selectCompensationTypeLabel)} />
+              <SelectValue placeholder={t(translations.selectCompensationType)} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="hourly">{t(translations.compensationTypesOptions.hourly)}</SelectItem>
-              <SelectItem value="salary">{t(translations.compensationTypesOptions.salary)}</SelectItem>
-              <SelectItem value="commission">{t(translations.compensationTypesOptions.commission)}</SelectItem>
-              <SelectItem value="commission_plus">{t(translations.compensationTypesOptions.commissionPlus)}</SelectItem>
+              <SelectItem value="hourly">{t(translations.compensationTypes.hourly)}</SelectItem>
+              <SelectItem value="salary">{t(translations.compensationTypes.salary)}</SelectItem>
+              <SelectItem value="commission">{t(translations.compensationTypes.commission)}</SelectItem>
+              <SelectItem value="commission_plus">{t(translations.compensationTypes.commissionPlus)}</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">
@@ -57,12 +57,12 @@ const CompensationSection = ({ details, onChange }: CompensationSectionProps) =>
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="salary-range">{t(translations.salaryRangeLabel)}</Label>
+          <Label htmlFor="salary-range">{t(translations.salaryRange)}</Label>
           <Input 
             id="salary-range"
             value={details.salary_range}
             onChange={(e) => onChange({ ...details, salary_range: e.target.value })}
-            placeholder={t(translations.salaryRangeLabel)}
+            placeholder={t(translations.salaryRangePlaceholder)}
             className="h-12 bg-white border-gray-200 focus:border-purple-300 focus:ring-purple-200 transition-shadow"
           />
           <div className="flex items-start gap-2 mt-1">
@@ -73,12 +73,12 @@ const CompensationSection = ({ details, onChange }: CompensationSectionProps) =>
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="tip-range">{t(translations.tipRangeLabel)}</Label>
+          <Label htmlFor="tip-range">{t(translations.expectedTips)}</Label>
           <Input 
             id="tip-range"
             value={details.tip_range}
             onChange={(e) => onChange({ ...details, tip_range: e.target.value })}
-            placeholder={t(translations.tipRangePlaceholder)}
+            placeholder={t(translations.expectedTipsPlaceholder)}
             className="h-12 bg-white border-gray-200 focus:border-purple-300 focus:ring-purple-200 transition-shadow"
           />
           <p className="text-xs text-muted-foreground">

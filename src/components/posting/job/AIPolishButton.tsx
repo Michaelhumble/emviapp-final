@@ -1,53 +1,92 @@
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger 
+} from '@/components/ui/popover';
+import { Wand2, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import PremiumFeatureGate from '@/components/upgrade/PremiumFeatureGate';
-import { UpgradeFeature } from '@/hooks/useUpgradePrompt';
+import { aiPolishSuggestions, aiPolishSuggestionsVietnamese, IndustryType } from './jobTemplates';
 
 interface AIPolishButtonProps {
-  onPolish?: (polishedText: string) => void;
+  industryType?: IndustryType;
+  onSelectSuggestion: (suggestion: string) => void;
 }
 
-const AIPolishButton: React.FC<AIPolishButtonProps> = ({ onPolish }) => {
-  const { t } = useTranslation();
-  const [isPolishing, setIsPolishing] = useState(false);
+const AIPolishButton: React.FC<AIPolishButtonProps> = ({ 
+  industryType, 
+  onSelectSuggestion 
+}) => {
+  const { t, isVietnamese } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handlePolish = async () => {
-    setIsPolishing(true);
+  const handleSelectSuggestion = (suggestion: string) => {
+    setIsLoading(true);
     
-    // Simulate AI polishing (in a real implementation, this would call an API)
+    // Simulate API call delay
     setTimeout(() => {
-      setIsPolishing(false);
-      
-      // If onPolish callback is provided, call it with the "polished" text
-      if (onPolish) {
-        const polishedText = "We're seeking an experienced professional to join our team. You'll be working in a modern, friendly environment with competitive compensation and opportunities for growth. We value skills, dedication, and a positive attitude.";
-        onPolish(polishedText);
-      }
-    }, 1500);
+      onSelectSuggestion(suggestion);
+      setIsLoading(false);
+    }, 500);
   };
   
+  const getSuggestions = () => {
+    if (!industryType) return [];
+    
+    return isVietnamese 
+      ? aiPolishSuggestionsVietnamese[industryType] 
+      : aiPolishSuggestions[industryType];
+  };
+  
+  const suggestions = getSuggestions();
+  
+  if (!industryType) {
+    return null;
+  }
+  
   return (
-    <PremiumFeatureGate feature={"ai_polish" as UpgradeFeature}>
-      <Button 
-        size="sm" 
-        variant="outline" 
-        onClick={handlePolish} 
-        disabled={isPolishing}
-        className="text-xs h-8 px-2.5"
-      >
-        <Sparkles className="h-3.5 w-3.5 mr-1" />
-        {isPolishing ? t({
-          english: "Polishing...",
-          vietnamese: "Đang làm bóng..."
-        }) : t({
-          english: "Polish with AI",
-          vietnamese: "Làm bóng với AI"
-        })}
-      </Button>
-    </PremiumFeatureGate>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 text-xs bg-white hover:bg-purple-50 hover:text-purple-700 border-purple-100"
+        >
+          <Wand2 className="h-3 w-3" />
+          {t("Polish with AI")}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-0" align="end">
+        <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
+          <h4 className="font-medium text-sm text-gray-800">
+            {t("AI Content Enhancement")}
+          </h4>
+          <p className="text-xs text-gray-600">
+            {t("Select a suggestion to enhance your job description")}
+          </p>
+        </div>
+        
+        <div className="max-h-[300px] overflow-y-auto py-2">
+          {suggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              className="w-full text-left px-4 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+              onClick={() => handleSelectSuggestion(suggestion)}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Wand2 className="h-3 w-3 text-purple-500" />
+              )}
+              {suggestion}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 

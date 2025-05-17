@@ -1,140 +1,161 @@
 
-import { JobPricingOption, JobPricingTier, PricingOptions } from './types';
+import { JobPricingOption } from './types';
 
+// Job pricing options
 export const jobPricingOptions: JobPricingOption[] = [
   {
-    id: 'diamond',
-    name: 'Diamond',
-    price: 199,
-    wasPrice: 249,
-    description: 'Maximum visibility & priority placement. Featured at the top of all job listings.',
-    vietnameseDescription: 'Khả năng hiển thị tối đa & vị trí ưu tiên. Nổi bật ở đầu tất cả các danh sách việc làm.',
-    tag: 'MOST HIRED',
-    popular: false,
+    id: 'free',
+    name: 'Free',
+    price: 0,
+    description: 'Basic listing for first-time users',
+    vietnameseDescription: 'Niêm yết cơ bản cho người dùng lần đầu',
+    tag: 'Basic',
     features: [
-      'Featured at top of all job listings',
-      'Premium badge & highlighted listing',
-      'Email sent to all qualified candidates',
-      'Promoted across social channels',
-      'Unlimited applicants for 30 days',
-      'Urgent hiring badge',
-      'Priority support',
-      'Applicant management tools'
+      'One-time free job post',
+      'Standard visibility',
+      'Basic applicant matching',
+      'Valid for 7 days',
+      'Limited search results'
     ],
-    tier: 'diamond'
-  },
-  {
-    id: 'gold',
-    name: 'Gold',
-    price: 99,
-    wasPrice: 129,
-    description: 'Enhanced visibility with premium placement & specialized targeting.',
-    vietnameseDescription: 'Khả năng hiển thị nâng cao với vị trí cao cấp & nhắm mục tiêu chuyên biệt.',
-    tag: 'POPULAR',
-    popular: true,
-    features: [
-      'Featured in premium job section',
-      'Gold badge visible on listing',
-      'Highlighted in search results',
-      'Promoted to targeted candidates',
-      'Unlimited applicants for 30 days',
-      'Urgent hiring badge',
-      'Priority support'
-    ],
-    tier: 'gold'
+    isFirstPost: true,
+    tier: 'free'
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: 59,
-    description: 'Boost your job visibility with premium placement & highlight features.',
-    vietnameseDescription: 'Tăng cường khả năng hiển thị công việc của bạn với vị trí cao cấp & tính năng nổi bật.',
-    tag: 'RECOMMENDED',
-    popular: false,
+    price: 19.99,
+    wasPrice: 29.99,
+    description: 'Enhanced visibility for quality candidates',
+    vietnameseDescription: 'Hiển thị nổi bật để thu hút ứng viên chất lượng',
+    popular: true,
+    tag: 'Best Value',
     features: [
-      'Improved search placement',
-      'Premium badge on listing',
-      'Highlighted in job feed',
-      'Unlimited applicants for 30 days',
-      'Email support'
+      'Featured position in search',
+      'Priority matching algorithm',
+      'Unlimited candidate responses',
+      'Email alerts for new matches',
+      'Full access to candidate profiles'
     ],
     tier: 'premium'
   },
   {
-    id: 'standard',
-    name: 'Standard',
-    price: 29,
-    description: 'Basic job listing with standard placement in search results.',
-    vietnameseDescription: 'Danh sách công việc cơ bản với vị trí tiêu chuẩn trong kết quả tìm kiếm.',
-    popular: false,
+    id: 'gold',
+    name: 'Gold',
+    price: 39.99,
+    description: 'Maximum exposure to top talent',
+    vietnameseDescription: 'Tiếp cận tối đa tới nhân tài hàng đầu',
+    tag: 'Limited Spots',
     features: [
-      'Standard search placement',
-      'Basic job listing',
-      'Unlimited applicants for 30 days'
+      'Top placement guarantee',
+      'Premium badge on listing',
+      'Featured in email campaigns',
+      'SMS notifications',
+      'Dedicated support agent'
     ],
-    tier: 'standard'
+    tier: 'gold'
+  },
+  {
+    id: 'diamond',
+    name: 'Diamond',
+    price: 99.99,
+    description: 'VIP service - by invitation only',
+    vietnameseDescription: 'Dịch vụ VIP - chỉ dành cho khách mời',
+    tag: 'VIP',
+    features: [
+      'Exclusive listing positioning',
+      'Talent sourcing team',
+      'Personalized candidate matching',
+      'Background screening included',
+      'Interview scheduling service'
+    ],
+    tier: 'diamond'
   }
 ];
 
-// Calculate discount based on duration
-export const calculateFinalPrice = (basePrice: number, durationMonths: number): number => {
-  if (durationMonths === 1) {
-    return basePrice;
-  } else if (durationMonths === 3) {
-    // 10% discount for 3 months
-    return Math.round(basePrice * 3 * 0.9);
-  } else if (durationMonths === 6) {
-    // 20% discount for 6 months
-    return Math.round(basePrice * 6 * 0.8);
+// Calculate pricing based on duration
+export const calculateFinalPrice = (basePrice: number, duration: number) => {
+  let discountPercentage = 0;
+  
+  // Apply discount based on subscription length
+  if (duration === 3) {
+    discountPercentage = 5;
+  } else if (duration === 6) {
+    discountPercentage = 10;
+  } else if (duration === 12) {
+    discountPercentage = 20;
   }
   
-  // Default case (shouldn't happen)
-  return basePrice * durationMonths;
+  const originalPrice = basePrice * duration;
+  const finalPrice = originalPrice * (1 - discountPercentage / 100);
+  
+  return {
+    originalPrice,
+    finalPrice,
+    discountPercentage
+  };
 };
 
-// Check if a pricing tier is eligible for subscription
-export const isSubscriptionPlan = (pricingTier: string): boolean => {
-  return pricingTier !== 'free';
-};
-
-// Add missing functions that are imported in index.ts
-export const calculateJobPostPrice = (options: PricingOptions): number => {
-  const { selectedPricingTier, durationMonths = 1 } = options;
+// Calculate job post price
+export const calculateJobPostPrice = (options: any) => {
+  const { selectedPricingTier, durationMonths = 1, isFirstPost = false } = options;
   
-  const selectedOption = jobPricingOptions.find(option => option.id === selectedPricingTier);
-  if (!selectedOption) return 0;
-  
-  return calculateFinalPrice(selectedOption.price, durationMonths);
-};
-
-export const getJobPostPricingSummary = (options: PricingOptions): { basePrice: number; finalPrice: number; savings: number } => {
-  const { selectedPricingTier, durationMonths = 1 } = options;
-  
-  const selectedOption = jobPricingOptions.find(option => option.id === selectedPricingTier);
-  if (!selectedOption) {
-    return { basePrice: 0, finalPrice: 0, savings: 0 };
+  // Find the base pricing option
+  const pricingOption = jobPricingOptions.find(option => option.id === selectedPricingTier);
+  if (!pricingOption) {
+    return { originalPrice: 0, finalPrice: 0, discountPercentage: 0 };
   }
   
-  const basePrice = selectedOption.price * durationMonths;
-  const finalPrice = calculateFinalPrice(selectedOption.price, durationMonths);
-  const savings = basePrice - finalPrice;
+  // Apply first post free if applicable
+  if (isFirstPost && selectedPricingTier === 'free') {
+    return { originalPrice: 0, finalPrice: 0, discountPercentage: 0 };
+  }
   
-  return { basePrice, finalPrice, savings };
+  // Calculate with duration discounts
+  return calculateFinalPrice(pricingOption.price, durationMonths);
 };
 
-export const calculatePriceWithDuration = (basePrice: number, durationMonths: number): number => {
-  return calculateFinalPrice(basePrice, durationMonths);
+// Add the missing exported functions that were in the error messages
+
+// Function to get job post pricing summary
+export const getJobPostPricingSummary = (selectedTier: string, duration: number, isFirstPost: boolean = false) => {
+  const options = {
+    selectedPricingTier: selectedTier,
+    durationMonths: duration,
+    isFirstPost: isFirstPost
+  };
+  
+  return calculateJobPostPrice(options);
 };
 
-export const validatePricingOptions = (options: PricingOptions): boolean => {
-  return !!options.selectedPricingTier;
+// Function to calculate price with duration
+export const calculatePriceWithDuration = (basePrice: number, duration: number) => {
+  return calculateFinalPrice(basePrice, duration);
 };
 
-export const getStripePriceId = (pricingTier: string, durationMonths: number): string => {
-  // This would normally map to real Stripe price IDs
-  return `price_${pricingTier}_${durationMonths}months`;
+// Function to validate pricing options
+export const validatePricingOptions = (options: any) => {
+  const { selectedPricingTier } = options;
+  
+  if (!selectedPricingTier) {
+    return false;
+  }
+  
+  return jobPricingOptions.some(option => option.id === selectedPricingTier);
 };
 
-export const getAmountInCents = (amount: number): number => {
-  return amount * 100;
+// Function to get Stripe price ID
+export const getStripePriceId = (tier: string, duration: number) => {
+  // This would normally map to actual Stripe price IDs
+  return `price_${tier}_${duration}months`;
+};
+
+// Function to get amount in cents for Stripe
+export const getAmountInCents = (amount: number) => {
+  return Math.round(amount * 100);
+};
+
+// Function to check if a plan is a subscription
+export const isSubscriptionPlan = (tier: string) => {
+  // Define which tiers are subscription-based
+  return ['premium', 'gold', 'diamond'].includes(tier);
 };

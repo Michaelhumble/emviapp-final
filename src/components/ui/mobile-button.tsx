@@ -1,22 +1,29 @@
 
-import React from 'react';
-import { Button, ButtonProps } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { Button, ButtonProps } from "@/components/ui/button";
 
-export const MobileButton = React.forwardRef<
-  HTMLButtonElement,
-  ButtonProps
->(({ className, ...props }, ref) => {
+interface MobileButtonProps extends ButtonProps {
+  mobileFullWidth?: boolean;
+}
+
+const MobileButton = ({ 
+  className, 
+  mobileFullWidth = true,
+  children,
+  ...props 
+}: MobileButtonProps) => {
   return (
     <Button
-      ref={ref}
       className={cn(
-        "w-full sm:w-auto rounded-md", // Full width on mobile, auto on desktop
+        "h-11 min-h-[44px] rounded-lg transition-all shadow-md hover:shadow-lg",  // Added rounded-lg, shadow, and transition
+        mobileFullWidth && "w-full sm:w-auto",
         className
       )}
       {...props}
-    />
+    >
+      {children}
+    </Button>
   );
-});
+};
 
-MobileButton.displayName = 'MobileButton';
+export { MobileButton };

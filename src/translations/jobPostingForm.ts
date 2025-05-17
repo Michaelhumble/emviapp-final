@@ -1,228 +1,118 @@
-// This is a partial implementation - we just need to add the missing translation keys for the components
+
+import { Translation } from "@/hooks/useTranslation";
+
+// Job Form translations organized by sections
 export const jobPostingTranslations = {
-  // Add necessary translations for JobForm error messages
-  jobForm: {
-    submitting: {
-      english: "Submitting...",
-      vietnamese: "Đang nộp..."
-    },
-    next: {
-      english: "Next",
-      vietnamese: "Tiếp"
-    },
-    back: {
-      english: "Back",
-      vietnamese: "Quay lại"
-    },
-    requiredField: {
-      english: "Required field",
-      vietnamese: "Trường bắt buộc"
-    },
-    advancedOptions: {
-      english: "Advanced Options",
-      vietnamese: "Tùy chọn nâng cao"
-    },
-    continue: {
-      english: "Continue",
-      vietnamese: "Tiếp tục"
-    }
+  // Common form actions
+  common: {
+    continue: { english: 'Continue', vietnamese: 'Tiếp tục' },
+    submitting: { english: 'Submitting...', vietnamese: 'Đang gửi...' },
+    submit: { english: 'Submit', vietnamese: 'Gửi' },
+    cancel: { english: 'Cancel', vietnamese: 'Hủy' },
+    required: { english: 'Required', vietnamese: 'Bắt buộc' },
+    optional: { english: 'Optional', vietnamese: 'Không bắt buộc' },
   },
-  // Add translations for JobDetailsSection
+  
+  // Job Details Section
   jobDetails: {
-    sectionTitle: {
-      english: "Job Details",
-      vietnamese: "Chi tiết công việc"
+    sectionTitle: { english: 'Job Details', vietnamese: 'Chi Tiết Công Việc' },
+    sectionDescription: { 
+      english: 'Provide information about the position to attract qualified candidates', 
+      vietnamese: 'Cung cấp thông tin về vị trí để thu hút ứng viên có đủ năng lực' 
     },
-    sectionDescription: {
-      english: "Tell us about the position you're looking to fill",
-      vietnamese: "Cho chúng tôi biết về vị trí bạn đang tìm kiếm"
+    jobTitle: { english: 'Job Title', vietnamese: 'Chức Danh Công Việc' },
+    jobTitlePlaceholder: { english: 'e.g. Nail Technician', vietnamese: 'VD: Thợ Nail' },
+    employmentType: { english: 'Employment Type', vietnamese: 'Loại Công Việc' },
+    employmentTypes: {
+      fullTime: { english: 'Full-time', vietnamese: 'Toàn thời gian' },
+      partTime: { english: 'Part-time', vietnamese: 'Bán thời gian' },
+      contract: { english: 'Contract', vietnamese: 'Hợp đồng' },
+      temporary: { english: 'Temporary', vietnamese: 'Tạm thời' },
+      commission: { english: 'Commission', vietnamese: 'Hoa hồng' }
     },
-    jobTitle: {
-      english: "Job Title",
-      vietnamese: "Chức danh công việc"
+    selectEmploymentType: { english: 'Select employment type', vietnamese: 'Chọn loại công việc' },
+    jobDescription: { english: 'Job Description', vietnamese: 'Mô Tả Công Việc' },
+    jobDescriptionPlaceholder: { 
+      english: 'Describe the responsibilities and qualifications...', 
+      vietnamese: 'Mô tả trách nhiệm và trình độ chuyên môn...' 
     },
-    jobTitlePlaceholder: {
-      english: "e.g. Nail Technician, Salon Manager, etc",
-      vietnamese: "VD: Thợ Nail, Quản lý Salon, v.v"
+    location: { english: 'Location', vietnamese: 'Địa Điểm' },
+    locationPlaceholder: { english: 'City, State', vietnamese: 'Thành phố, Tiểu bang' },
+    salaryRange: { english: 'Salary Range', vietnamese: 'Phạm Vi Lương' },
+    salaryRangePlaceholder: { english: 'e.g. $15-20/hour', vietnamese: 'VD: $15-20/giờ' },
+    experienceLevel: { english: 'Experience Level', vietnamese: 'Mức Kinh Nghiệm' },
+    experienceLevels: {
+      entry: { english: 'Entry Level', vietnamese: 'Mới vào nghề' },
+      intermediate: { english: 'Intermediate', vietnamese: 'Trung cấp' },
+      experienced: { english: 'Experienced', vietnamese: 'Có kinh nghiệm' },
+      senior: { english: 'Senior', vietnamese: 'Cao cấp' }
     },
-    industryLabel: {
-      english: "Industry",
-      vietnamese: "Ngành"
+    selectExperienceLevel: { english: 'Select experience level', vietnamese: 'Chọn mức kinh nghiệm' },
+  },
+  
+  // Compensation Section
+  compensation: {
+    sectionTitle: { english: 'Compensation', vietnamese: 'Chế Độ Đãi Ngộ' },
+    sectionDescription: { 
+      english: 'Specify the compensation details for this position', 
+      vietnamese: 'Chỉ rõ chi tiết đãi ngộ cho vị trí này' 
     },
-    industryTitle: {
-      english: "Industry",
-      vietnamese: "Ngành"
+    compensationType: { english: 'Compensation Type', vietnamese: 'Loại Lương' },
+    compensationTypes: {
+      hourly: { english: 'Hourly', vietnamese: 'Theo giờ' },
+      salary: { english: 'Salary', vietnamese: 'Lương tháng' },
+      commission: { english: 'Commission Only', vietnamese: 'Chỉ hoa hồng' },
+      commissionPlus: { english: 'Commission + Base', vietnamese: 'Hoa hồng + Lương cơ bản' }
     },
-    selectIndustry: {
-      english: "Select an industry",
-      vietnamese: "Chọn một ngành"
+    selectCompensationType: { english: 'Select compensation type', vietnamese: 'Chọn loại lương' },
+    salaryRange: { english: 'Salary Range', vietnamese: 'Phạm Vi Lương' },
+    salaryRangePlaceholder: { 
+      english: 'e.g. $15-20/hour or $40K-50K/year', 
+      vietnamese: 'VD: $15-20/giờ hoặc $40K-50K/năm' 
     },
-    nailIndustry: {
-      english: "Nail Salon",
-      vietnamese: "Tiệm Nail"
+    expectedTips: { english: 'Expected Tips', vietnamese: 'Tips Dự Kiến' },
+    expectedTipsPlaceholder: { english: 'e.g. $100-200/day', vietnamese: 'VD: $100-200/ngày' }
+  },
+  
+  // Contact Information Section
+  contactInfo: {
+    sectionTitle: { english: 'Contact Information', vietnamese: 'Thông Tin Liên Hệ' },
+    sectionDescription: { 
+      english: 'Provide contact details for interested candidates', 
+      vietnamese: 'Cung cấp thông tin liên lạc cho ứng viên quan tâm' 
     },
-    hairIndustry: {
-      english: "Hair Salon",
-      vietnamese: "Tiệm Tóc"
+    contactName: { english: 'Contact Name', vietnamese: 'Tên Liên Hệ' },
+    contactNamePlaceholder: { 
+      english: 'Your name or business name', 
+      vietnamese: 'Tên của bạn hoặc tên doanh nghiệp' 
     },
-    lashIndustry: {
-      english: "Lash Salon",
-      vietnamese: "Tiệm Mi"
+    contactPhone: { english: 'Contact Phone Number', vietnamese: 'Số Điện Thoại Liên Hệ' },
+    contactPhonePlaceholder: { english: 'e.g. (555) 123-4567', vietnamese: 'VD: (555) 123-4567' },
+    phoneHelperText: { 
+      english: 'Optional, for faster contact. Format: +1 (555) 123-4567 or 555-123-4567', 
+      vietnamese: 'Không bắt buộc, để liên hệ nhanh hơn. Định dạng: +1 (555) 123-4567 hoặc 555-123-4567' 
     },
-    massageIndustry: {
-      english: "Massage & Spa",
-      vietnamese: "Massage & Spa"
-    },
-    browsIndustry: {
-      english: "Eyebrows",
-      vietnamese: "Lông Mày"
-    },
-    skincareIndustry: {
-      english: "Skincare",
-      vietnamese: "Chăm sóc da"
-    },
-    tattooIndustry: {
-      english: "Tattoo",
-      vietnamese: "Hình xăm"
-    },
-    descriptionLabel: {
-      english: "Job Description",
-      vietnamese: "Mô tả công việc"
-    },
-    descriptionPlaceholder: {
-      english: "Describe the role, responsibilities, and ideal candidate...",
-      vietnamese: "Mô tả vai trò, trách nhiệm và ứng viên lý tưởng..."
-    },
-    descriptionHelp: {
-      english: "Be specific about expectations, certifications, and experience required.",
-      vietnamese: "Hãy cụ thể về kỳ vọng, chứng chỉ và kinh nghiệm được yêu cầu."
-    },
-    locationLabel: {
-      english: "Location",
-      vietnamese: "Địa điểm"
-    },
-    locationPlaceholder: {
-      english: "e.g. Chicago, IL or Remote",
-      vietnamese: "VD: Chicago, IL hoặc Từ xa"
-    },
-    locationHelp: {
-      english: "Include city and state, or specify if remote work is available.",
-      vietnamese: "Bao gồm thành phố và tiểu bang, hoặc chỉ rõ nếu có thể làm việc từ xa."
-    },
-    requirementsLabel: {
-      english: "Requirements",
-      vietnamese: "Yêu cầu"
-    },
-    requirementsPlaceholder: {
-      english: "List required skills, licenses, or qualifications (comma separated)",
-      vietnamese: "Liệt kê các kỹ năng, giấy phép hoặc bằng cấp cần thiết (phân tách bằng dấu phẩy)"
-    },
-    requirementsHelp: {
-      english: "Add must-have requirements to find more qualified candidates.",
-      vietnamese: "Thêm các yêu cầu bắt buộc để tìm ứng viên có trình độ cao hơn."
-    },
-    experienceLabel: {
-      english: "Experience Level",
-      vietnamese: "Cấp độ kinh nghiệm"
-    },
-    selectExperience: {
-      english: "Select experience level",
-      vietnamese: "Chọn cấp độ kinh nghiệm"
-    },
-    entryLevel: {
-      english: "Entry Level",
-      vietnamese: "Mới vào nghề"
-    },
-    intermediateLevel: {
-      english: "Intermediate",
-      vietnamese: "Trung cấp"
-    },
-    experiencedLevel: {
-      english: "Experienced",
-      vietnamese: "Có kinh nghiệm"
-    },
-    seniorLevel: {
-      english: "Senior/Expert",
-      vietnamese: "Cao cấp/Chuyên gia"
+    email: { english: 'Email Address', vietnamese: 'Địa Chỉ Email' },
+    emailPlaceholder: { english: 'e.g. youremail@example.com', vietnamese: 'VD: email@example.com' },
+    zalo: { english: 'Zalo (Optional)', vietnamese: 'Zalo (Không bắt buộc)' },
+    zaloPlaceholder: { english: 'Your Zalo contact', vietnamese: 'Liên hệ Zalo của bạn' },
+    additionalNotes: { english: 'Additional Contact Notes', vietnamese: 'Ghi Chú Liên Hệ Bổ Sung' },
+    additionalNotesPlaceholder: { 
+      english: 'Best time to contact, preferred method, etc.', 
+      vietnamese: 'Thời gian liên hệ tốt nhất, phương thức ưa thích, v.v.' 
     }
   },
-  // Add missing translations for ContactInformationSection
-  contactInformation: {
-    sectionTitle: {
-      english: "Contact Information",
-      vietnamese: "Thông tin liên lạc"
+  
+  // Validation Messages
+  validation: {
+    phoneInvalid: { 
+      english: 'Phone number format is invalid', 
+      vietnamese: 'Định dạng số điện thoại không hợp lệ' 
     },
-    sectionDescription: {
-      english: "How should candidates contact you about this position?",
-      vietnamese: "Ứng viên nên liên hệ với bạn như thế nào về vị trí này?"
-    },
-    ownerNameLabel: {
-      english: "Contact Name",
-      vietnamese: "Tên liên hệ"
-    },
-    ownerNamePlaceholder: {
-      english: "e.g. Jane Smith",
-      vietnamese: "VD: Nguyễn Văn A"
-    },
-    phoneLabel: {
-      english: "Contact Phone",
-      vietnamese: "Số điện thoại liên hệ"
-    },
-    phonePlaceholder: {
-      english: "e.g. (555) 123-4567",
-      vietnamese: "VD: 0912345678"
-    },
-    emailLabel: {
-      english: "Email",
-      vietnamese: "Email"
-    },
-    emailPlaceholder: {
-      english: "e.g. hiring@salon.com",
-      vietnamese: "VD: tuyendung@salon.com"
-    },
-    zaloLabel: {
-      english: "Zalo ID",
-      vietnamese: "Zalo ID"
-    },
-    zaloPlaceholder: {
-      english: "Optional Zalo ID for Vietnamese applicants",
-      vietnamese: "Zalo ID cho ứng viên Việt Nam (tùy chọn)"
-    },
-    contactName: {
-      english: "Contact Name",
-      vietnamese: "Tên liên hệ"
-    },
-    contactNamePlaceholder: {
-      english: "e.g. Jane Smith",
-      vietnamese: "VD: Nguyễn Văn A"
-    },
-    contactPhone: {
-      english: "Contact Phone",
-      vietnamese: "Số điện thoại liên hệ"
-    },
-    contactPhonePlaceholder: {
-      english: "e.g. (555) 123-4567",
-      vietnamese: "VD: 0912345678"
-    },
-    phoneHelperText: {
-      english: "This number will be displayed on your job listing",
-      vietnamese: "Số này sẽ được hiển thị trên tin tuyển dụng của bạn"
-    },
-    email: {
-      english: "Email",
-      vietnamese: "Email"
-    },
-    zalo: {
-      english: "Zalo ID",
-      vietnamese: "Zalo ID"
-    },
-    additionalNotes: {
-      english: "Additional Notes",
-      vietnamese: "Ghi chú bổ sung"
-    },
-    additionalNotesPlaceholder: {
-      english: "Add any special instructions for applicants...",
-      vietnamese: "Thêm hướng dẫn đặc biệt cho ứng viên..."
-    }
+    emailRequired: { english: 'Email is required', vietnamese: 'Email là bắt buộc' },
+    emailInvalid: { english: 'Please enter a valid email', vietnamese: 'Vui lòng nhập email hợp lệ' },
+    titleRequired: { english: 'Job title is required', vietnamese: 'Tiêu đề công việc là bắt buộc' },
+    locationRequired: { english: 'Location is required', vietnamese: 'Địa điểm là bắt buộc' },
+    nameRequired: { english: 'Contact name is required', vietnamese: 'Tên liên hệ là bắt buộc' }
   }
 };
