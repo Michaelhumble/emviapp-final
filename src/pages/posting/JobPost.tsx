@@ -3,9 +3,16 @@ import React from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent } from '@/components/ui/card';
 import Layout from '@/components/layout/Layout';
+import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 
 const JobPost = () => {
   const { t } = useTranslation();
+
+  // Placeholder function for form submission
+  const handleSubmitJob = async (values: any, photoUploads: File[], pricingOptions: any) => {
+    console.log('Submitting job:', { values, photoUploads, pricingOptions });
+    // Actual submission logic will be implemented later
+  };
 
   return (
     <Layout>
@@ -43,8 +50,7 @@ const JobPost = () => {
         
         <Card className="border shadow-md rounded-xl bg-gradient-to-b from-white to-gray-50">
           <CardContent className="p-6 sm:p-8">
-            {/* Form content will go here */}
-            <p>Job posting form will be placed here</p>
+            <EnhancedJobForm onSubmit={handleSubmitJob} />
           </CardContent>
         </Card>
         
