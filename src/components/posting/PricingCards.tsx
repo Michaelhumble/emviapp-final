@@ -36,20 +36,30 @@ const PricingCard: React.FC<PricingCardProps> = ({
   popular,
   features,
   isFirstPost,
-  tier
+  tier,
+  selectedPricing,
+  onChange
 }) => {
   const isFree = price === 0;
   const isPremium = tier === 'premium';
+  const isSelected = id && selectedPricing === id;
+  
+  const handleSelect = () => {
+    if (id && onChange) {
+      onChange(id);
+    }
+  };
   
   return (
     <motion.div
       className={cn(
-        "relative rounded-lg border shadow-md overflow-hidden transition-shadow hover:shadow-lg",
-        popular ? "border-purple-500" : "border-gray-200",
+        "relative rounded-lg border shadow-md overflow-hidden transition-shadow hover:shadow-lg cursor-pointer",
+        isSelected ? "border-purple-500 ring-2 ring-purple-200" : "border-gray-200",
         isFree ? "bg-green-50" : "bg-white"
       )}
       whileHover={{ scale: 1.03 }}
       transition={{ duration: 0.2 }}
+      onClick={handleSelect}
     >
       {tag && (
         <div className="absolute top-0 right-0 bg-purple-600 text-white text-xs font-bold py-1 px-3 rounded-bl-lg z-10">

@@ -55,16 +55,25 @@ const AIPolishButton: React.FC<AIPolishButtonProps> = ({
           className="flex items-center gap-1 text-xs bg-white hover:bg-purple-50 hover:text-purple-700 border-purple-100"
         >
           <Wand2 className="h-3 w-3" />
-          {t("Polish with AI")}
+          {t({
+            english: "Polish with AI",
+            vietnamese: "Cải thiện với AI"
+          })}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
           <h4 className="font-medium text-sm text-gray-800">
-            {t("AI Content Enhancement")}
+            {t({
+              english: "AI Content Enhancement",
+              vietnamese: "Nâng cao nội dung bằng AI"
+            })}
           </h4>
           <p className="text-xs text-gray-600">
-            {t("Select a suggestion to enhance your job description")}
+            {t({
+              english: "Select a suggestion to enhance your job description",
+              vietnamese: "Chọn một gợi ý để cải thiện mô tả công việc của bạn"
+            })}
           </p>
         </div>
         

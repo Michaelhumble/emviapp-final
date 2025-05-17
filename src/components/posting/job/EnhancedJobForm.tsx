@@ -35,15 +35,23 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
       setIsSubmitting(true);
       setPricingOptions(options);
       
-      onSubmit(jobFormData, photoUploads, options)
-        .then((success) => {
-          if (!success) {
+      const result = onSubmit(jobFormData, photoUploads, options);
+      
+      // Handle both synchronous boolean return and Promise<boolean> return
+      if (result instanceof Promise) {
+        result
+          .then((success) => {
+            if (!success) {
+              setIsSubmitting(false);
+            }
+          })
+          .catch(() => {
             setIsSubmitting(false);
-          }
-        })
-        .catch(() => {
-          setIsSubmitting(false);
-        });
+          });
+      } else if (!result) {
+        // If it's a synchronous false result
+        setIsSubmitting(false);
+      }
     }
   };
   
