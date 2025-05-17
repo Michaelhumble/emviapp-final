@@ -115,5 +115,126 @@ export const jobPostingTranslations = {
       english: "Senior Level",
       vietnamese: "Cao cấp"
     }
+  },
+  // Add missing properties
+  compensation: {
+    sectionTitle: {
+      english: "Compensation",
+      vietnamese: "Lương thưởng"
+    },
+    sectionDescription: {
+      english: "Provide details about pay and benefits",
+      vietnamese: "Cung cấp chi tiết về lương và phúc lợi"
+    },
+    compensationType: {
+      english: "Compensation Type",
+      vietnamese: "Hình thức trả lương"
+    },
+    selectCompensationType: {
+      english: "Select compensation type",
+      vietnamese: "Chọn hình thức trả lương"
+    },
+    compensationTypes: {
+      hourly: {
+        english: "Hourly",
+        vietnamese: "Theo giờ"
+      },
+      salary: {
+        english: "Salary",
+        vietnamese: "Lương cố định"
+      },
+      commission: {
+        english: "Commission Only",
+        vietnamese: "Chỉ hoa hồng"
+      },
+      commissionPlus: {
+        english: "Commission + Base",
+        vietnamese: "Hoa hồng + Lương cơ bản"
+      }
+    },
+    salaryRange: {
+      english: "Salary Range",
+      vietnamese: "Mức lương"
+    },
+    salaryRangePlaceholder: {
+      english: "e.g. $800-1200/week or 60-70% commission",
+      vietnamese: "Ví dụ: $800-1200/tuần hoặc 60-70% hoa hồng"
+    },
+    expectedTips: {
+      english: "Expected Tips",
+      vietnamese: "Tiền tip dự kiến"
+    },
+    expectedTipsPlaceholder: {
+      english: "e.g. $100-200/day",
+      vietnamese: "Ví dụ: $100-200/ngày"
+    }
+  },
+  contactInfo: {
+    sectionTitle: {
+      english: "Contact Information",
+      vietnamese: "Thông tin liên hệ"
+    },
+    sectionDescription: {
+      english: "How applicants can reach you",
+      vietnamese: "Cách ứng viên có thể liên hệ với bạn"
+    },
+    contactName: {
+      english: "Contact Name",
+      vietnamese: "Tên liên hệ"
+    },
+    contactNamePlaceholder: {
+      english: "e.g. John Doe",
+      vietnamese: "Ví dụ: Nguyễn Văn A"
+    },
+    contactPhone: {
+      english: "Phone Number",
+      vietnamese: "Số điện thoại"
+    },
+    contactPhonePlaceholder: {
+      english: "e.g. (123) 456-7890",
+      vietnamese: "Ví dụ: (123) 456-7890"
+    },
+    phoneHelperText: {
+      english: "This will be visible to verified job seekers only",
+      vietnamese: "Chỉ hiển thị cho người tìm việc đã xác minh"
+    },
+    email: {
+      english: "Email Address",
+      vietnamese: "Địa chỉ email"
+    },
+    emailPlaceholder: {
+      english: "e.g. job@yoursalon.com",
+      vietnamese: "Ví dụ: job@yoursalon.com"
+    },
+    zalo: {
+      english: "Zalo ID",
+      vietnamese: "ID Zalo"
+    },
+    zaloPlaceholder: {
+      english: "Your Zalo ID or phone number",
+      vietnamese: "ID Zalo hoặc số điện thoại của bạn"
+    },
+    additionalNotes: {
+      english: "Additional Notes",
+      vietnamese: "Ghi chú bổ sung"
+    },
+    additionalNotesPlaceholder: {
+      english: "Any special instructions for applicants",
+      vietnamese: "Hướng dẫn đặc biệt cho ứng viên"
+    }
+  },
+  validation: {
+    required: {
+      english: "This field is required",
+      vietnamese: "Trường này là bắt buộc"
+    },
+    validEmail: {
+      english: "Please enter a valid email address",
+      vietnamese: "Vui lòng nhập địa chỉ email hợp lệ"
+    },
+    validPhone: {
+      english: "Please enter a valid phone number",
+      vietnamese: "Vui lòng nhập số điện thoại hợp lệ"
+    }
   }
 };

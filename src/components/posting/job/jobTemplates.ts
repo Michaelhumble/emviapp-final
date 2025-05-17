@@ -1,407 +1,181 @@
-import { IndustryType } from './jobFormSchema';
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'brows';
 
-export type JobTemplate = {
+export interface JobTemplate {
   id: string;
   industry: IndustryType;
   title: string;
-  summary: string;
+  location: string;
   description: string[];
   requirements: string[];
-  benefits: string[];
-  location: string;
   salary_range: string;
   schedule: string;
   employment_type: string;
-  popularity: 'most-hired' | 'fastest-applicants' | 'trusted' | 'trending';
-};
+  experience_level: string;
+}
 
-// Export a dictionary of job templates by industry
+// Job templates by industry
 export const jobTemplatesByIndustry: Record<IndustryType, JobTemplate[]> = {
   nails: [
     {
-      id: "nails-1",
-      industry: "nails",
-      title: "Nail Technician Needed - High Tips in Upscale Area",
-      summary: "Join our luxury nail salon with high-paying clients and great tips. We provide a comfortable work environment and flexible schedule.",
+      id: 'nail-template-1',
+      industry: 'nails',
+      title: 'Nail Technician',
+      location: 'Houston, TX',
       description: [
-        "Our upscale nail salon is looking for experienced nail technicians to join our team.",
-        "We have a large client base of high-tipping customers and offer a comfortable, friendly work environment.",
-        "Earn competitive commission plus excellent tips in our well-established location."
+        'We are looking for a skilled and creative Nail Technician to join our salon. You will be responsible for providing high-quality nail services to our clients.',
+        'Responsibilities include manicures, pedicures, nail art, and ensuring a clean and sanitary work environment.'
       ],
-      requirements: [
-        "At least 1 year experience as a nail technician",
-        "Valid cosmetology or nail technician license",
-        "Expertise in manicures, pedicures, and gel applications",
-        "Excellent customer service skills"
-      ],
-      benefits: [
-        "High-tipping client base",
-        "Flexible scheduling options",
-        "Weekly pay available",
-        "Clean and modern work environment"
-      ],
-      location: "Atlanta, GA",
-      salary_range: "$20-30/hr + tips",
-      schedule: "Full-time",
-      employment_type: "W-2 or 1099 available",
-      popularity: "most-hired"
+      requirements: ['Valid nail technician license', 'Minimum 2 years of experience', 'Excellent customer service skills'],
+      salary_range: '$800 - $1200 per week',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
     },
     {
-      id: "nails-2",
-      industry: "nails",
-      title: "Tuyển Thợ Nail Bao Lương - Khu Mỹ Trắng",
-      summary: "Tiệm sang trọng trong khu mỹ trắng cần thợ bột, thợ bao lương từ $1,200-$1,500/tuần tùy theo kinh nghiệm.",
+      id: 'nail-template-2',
+      industry: 'nails',
+      title: 'Experienced Nail Technician',
+      location: 'Los Angeles, CA',
       description: [
-        "Cần tuyển thợ nail có kinh nghiệm làm bột và chân tay nước.",
-        "Tiệm nằm trong khu mỹ trắng, khách tip hậu, chỗ làm thoải mái.",
-        "Bao lương tùy theo kinh nghiệm, có thể giúp chỗ ở."
+        'Upscale nail salon seeking an experienced nail technician. Must be proficient in all aspects of nail care including gel, acrylic, and nail art.',
+        'We offer a competitive salary and a friendly, professional work environment.'
       ],
-      requirements: [
-        "Có kinh nghiệm làm bột và chân tay nước",
-        "Có bằng nail hoặc cosmetology hợp lệ",
-        "Thái độ làm việc chuyên nghiệp",
-        "Có thể giao tiếp cơ bản với khách"
-      ],
-      benefits: [
-        "Khách tip hậu",
-        "Bao lương $1,200-$1,500/tuần",
-        "Giúp chỗ ở nếu cần",
-        "Môi trường làm việc thân thiện"
-      ],
-      location: "Houston, TX",
-      salary_range: "$1,200-$1,500/tuần",
-      schedule: "Full-time",
-      employment_type: "W-2 or 1099 available",
-      popularity: "fastest-applicants"
-    },
-    {
-      id: "nails-3",
-      industry: "nails",
-      title: "Experienced Nail Tech - Weekly Pay + Housing Available",
-      summary: "Looking for reliable nail technicians with experience in acrylics, gel, and dipping powder. Housing can be arranged.",
-      description: [
-        "Well-established nail salon seeking talented nail technicians to join our friendly team.",
-        "We offer weekly pay, housing assistance if needed, and a positive work environment.",
-        "Our salon is in a busy shopping center with excellent walk-in traffic and regular clients."
-      ],
-      requirements: [
-        "Experience with acrylic, gel, and dipping powder",
-        "Valid nail technician license",
-        "Reliable and professional attitude",
-        "Willing to learn new techniques and provide excellent service"
-      ],
-      benefits: [
-        "Weekly pay guaranteed",
-        "Housing assistance available",
-        "Busy location with regular clients",
-        "Opportunity for growth"
-      ],
-      location: "Denver, CO",
-      salary_range: "$3,500-5,000/month potential",
-      schedule: "Full-time or Part-time",
-      employment_type: "Booth rental or commission",
-      popularity: "trusted"
+      requirements: ['Valid California nail technician license', '3+ years experience', 'Proficiency in gel and acrylic nails'],
+      salary_range: '$1000 - $1500 per week',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
     }
   ],
   hair: [
     {
-      id: "hair-1",
-      industry: "hair",
-      title: "Senior Hair Stylist - High End Salon",
-      summary: "Looking for a talented hair stylist with a strong existing clientele to join our upscale salon. Great commission structure.",
+      id: 'hair-template-1',
+      industry: 'hair',
+      title: 'Hair Stylist',
+      location: 'New York, NY',
       description: [
-        "Our high-end hair salon is seeking an experienced hair stylist to join our team.",
-        "We offer a sophisticated salon environment with state-of-the-art equipment and premium products.",
-        "Strong existing clientele preferred, with opportunities to build your book from our regular foot traffic."
+        'Busy hair salon in downtown New York is hiring a talented Hair Stylist. You will provide a range of hair services including cutting, coloring, and styling.',
+        'We are looking for someone with a passion for hair and a commitment to customer satisfaction.'
       ],
-      requirements: [
-        "Minimum 3 years professional experience",
-        "Valid cosmetology license",
-        "Experience with color, cutting, and styling techniques",
-        "Strong portfolio of work"
-      ],
-      benefits: [
-        "Competitive commission structure",
-        "Flexible scheduling",
-        "Continued education opportunities",
-        "Health insurance options for full-time stylists"
-      ],
-      location: "Miami, FL",
-      salary_range: "$50,000-75,000/year potential",
-      schedule: "Full-time",
-      employment_type: "Commission-based",
-      popularity: "most-hired"
+      requirements: ['Cosmetology license', 'Experience with various hair types', 'Strong communication skills'],
+      salary_range: '$50,000 - $70,000 per year',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
     },
     {
-      id: "hair-2",
-      industry: "hair",
-      title: "Barber/Stylist - Busy Urban Shop",
-      summary: "Fast-paced barbershop seeking skilled barber with excellent fading skills. Great walk-in clientele and tips.",
+      id: 'hair-template-2',
+      industry: 'hair',
+      title: 'Creative Hair Colorist',
+      location: 'Chicago, IL',
       description: [
-        "Join our popular barbershop with steady walk-in traffic and loyal clients.",
-        "We focus on men's cuts, fades, beard trims, and traditional hot towel shaves.",
-        "Fun team environment with music, great energy, and excellent earning potential."
+        'We are seeking a creative and experienced Hair Colorist to join our team. You will specialize in hair coloring techniques and provide consultations to clients.',
+        'Must have a strong understanding of color theory and the latest trends.'
       ],
-      requirements: [
-        "Expert fading skills and men's cutting techniques",
-        "Valid barber license",
-        "Customer-oriented with good communication",
-        "Reliable and punctual"
-      ],
-      benefits: [
-        "High-volume walk-in clientele",
-        "Weekly pay + tips",
-        "Fun, energetic work environment",
-        "Flexibility for full-time or part-time"
-      ],
-      location: "Chicago, IL",
-      salary_range: "$40,000-60,000/year potential",
-      schedule: "Flexible shifts available",
-      employment_type: "Commission or booth rental",
-      popularity: "fastest-applicants"
+      requirements: ['Cosmetology license', 'Extensive knowledge of hair coloring', 'Portfolio of previous work'],
+      salary_range: '$60,000 - $80,000 per year',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
     }
   ],
   lashes: [
     {
-      id: "lashes-1",
-      industry: "lashes",
-      title: "Lash Artist - Premium Beauty Studio",
-      summary: "Upscale beauty studio seeking certified lash technician. Experience with volume lashes required. High-paying clientele.",
+      id: 'lash-template-1',
+      industry: 'lashes',
+      title: 'Eyelash Technician',
+      location: 'Miami, FL',
       description: [
-        "Our premium lash studio is looking for a talented and detail-oriented lash artist.",
-        "We specialize in classic, hybrid, and volume lash extensions for a discerning clientele.",
-        "Beautiful, modern studio with private lash rooms and all supplies provided."
+        'Lash salon is seeking a skilled Eyelash Technician to provide eyelash extensions and related services.',
+        'Responsibilities include client consultation, lash application, and maintaining a clean work environment.'
       ],
-      requirements: [
-        "Certification in lash extensions",
-        "Experience with classic, hybrid, and volume techniques",
-        "Portfolio demonstrating your work",
-        "Excellent attention to detail"
+      requirements: ['Eyelash extension certification', 'Excellent attention to detail', 'Customer service experience'],
+      salary_range: '$600 - $1000 per week',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
+    },
+    {
+      id: 'lash-template-2',
+      industry: 'lashes',
+      title: 'Experienced Lash Artist',
+      location: 'San Francisco, CA',
+      description: [
+        'High-end lash studio looking for an experienced Lash Artist. Must be proficient in classic, volume, and hybrid lash extensions.',
+        'We offer a luxury work environment and opportunities for growth.'
       ],
-      benefits: [
-        "Competitive pay structure",
-        "Flexible scheduling",
-        "All supplies provided",
-        "Continuing education opportunities"
-      ],
-      location: "Los Angeles, CA",
-      salary_range: "$50,000-70,000/year potential",
-      schedule: "Full-time or Part-time",
-      employment_type: "W-2 or 1099 available",
-      popularity: "trending"
+      requirements: ['Valid esthetician or cosmetology license', '2+ years of lash extension experience', 'Proficiency in multiple lash techniques'],
+      salary_range: '$800 - $1200 per week',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
     }
   ],
   massage: [
     {
-      id: "massage-1",
-      industry: "massage",
-      title: "Licensed Massage Therapist - Luxury Spa",
-      summary: "Upscale day spa seeking licensed massage therapist skilled in various modalities. Great tips and benefits.",
+      id: 'massage-template-1',
+      industry: 'massage',
+      title: 'Massage Therapist',
+      location: 'Denver, CO',
       description: [
-        "Join our team of skilled therapists at our luxury day spa and wellness center.",
-        "We provide a tranquil environment focused on client relaxation and therapeutic treatment.",
-        "Steady bookings with loyal clientele who appreciate and reward quality service."
+        'Spa is hiring a licensed Massage Therapist to provide therapeutic massage services to clients.',
+        'Responsibilities include performing various massage techniques, consulting with clients, and maintaining treatment rooms.'
       ],
-      requirements: [
-        "Valid massage therapy license",
-        "Experience in Swedish, deep tissue, and hot stone massage",
-        "Professional demeanor and excellent communication skills",
-        "Ability to maintain a busy schedule"
-      ],
-      benefits: [
-        "Competitive base pay plus generous tips",
-        "Health insurance for full-time employees",
-        "Continuing education allowance",
-        "Employee wellness program"
-      ],
-      location: "Scottsdale, AZ",
-      salary_range: "$60,000-80,000/year potential",
-      schedule: "Full-time",
-      employment_type: "W-2 with benefits",
-      popularity: "most-hired"
-    }
-  ],
-  tattoo: [
+      requirements: ['Massage therapy license', 'Knowledge of different massage modalities', 'Excellent communication skills'],
+      salary_range: '$45,000 - $65,000 per year',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
+    },
     {
-      id: "tattoo-1",
-      industry: "tattoo",
-      title: "Experienced Tattoo Artist - Established Studio",
-      summary: "Well-known tattoo studio looking for talented artists to join our team. Strong portfolio required.",
+      id: 'massage-template-2',
+      industry: 'massage',
+      title: 'Experienced Massage Therapist',
+      location: 'Seattle, WA',
       description: [
-        "Our reputable tattoo studio is seeking a skilled tattoo artist with a diverse style range.",
-        "We have a loyal client base and excellent visibility in a prime downtown location.",
-        "Clean, professional environment with private stations and top-quality equipment."
+        'Well-established massage clinic seeking an experienced Massage Therapist. Must be proficient in deep tissue, Swedish, and sports massage.',
+        'We offer a supportive work environment and competitive pay.'
       ],
-      requirements: [
-        "Minimum 3 years professional tattooing experience",
-        "Strong portfolio showing range and technical ability",
-        "Blood-borne pathogen certification",
-        "Excellent customer service skills"
-      ],
-      benefits: [
-        "Competitive commission structure",
-        "Flexibility to build your own client base",
-        "Marketing support through our social media channels",
-        "Professional, supportive team environment"
-      ],
-      location: "Portland, OR",
-      salary_range: "70/30 commission split",
-      schedule: "Flexible schedule",
-      employment_type: "Independent contractor",
-      popularity: "trusted"
+      requirements: ['Valid massage therapy license', '3+ years of experience', 'Proficiency in multiple massage techniques'],
+      salary_range: '$50,000 - $70,000 per year',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
     }
   ],
   brows: [
     {
-      id: "brows-1",
-      industry: "brows",
-      title: "Brow Artist and Microblading Specialist",
-      summary: "High-end brow studio seeking experienced microblading artist with a strong portfolio. Full client schedule available.",
+      id: 'brow-template-1',
+      industry: 'brows',
+      title: 'Eyebrow Technician',
+      location: 'Atlanta, GA',
       description: [
-        "Join our specialized brow studio as a microblading and brow artist.",
-        "We focus exclusively on brow services including microblading, powder brows, and brow lamination.",
-        "Strong existing client base with bookings available immediately upon starting."
+        'Brow studio is seeking an Eyebrow Technician to provide eyebrow shaping, threading, and microblading services.',
+        'Responsibilities include client consultation, brow design, and maintaining a clean and sanitary work environment.'
       ],
-      requirements: [
-        "Microblading certification and license",
-        "Portfolio of healed microblading work",
-        "Experience with powder brows and lamination a plus",
-        "Detail-oriented with excellent hand-eye coordination"
-      ],
-      benefits: [
-        "High-paying services ($200+ per session)",
-        "Booking system and receptionist provided",
-        "Marketing and client acquisition support",
-        "Modern, clean workspace with all supplies"
-      ],
-      location: "Nashville, TN",
-      salary_range: "$70,000-100,000/year potential",
-      schedule: "Flexible days",
-      employment_type: "Commission-based",
-      popularity: "fastest-applicants"
-    }
-  ],
-  skincare: [
+      requirements: ['Certification in eyebrow threading or microblading', 'Excellent attention to detail', 'Customer service experience'],
+      salary_range: '$500 - $900 per week',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
+    },
     {
-      id: "skincare-1",
-      industry: "skincare",
-      title: "Licensed Esthetician - Medical Spa",
-      summary: "Busy medical spa seeking licensed esthetician experienced in medical-grade treatments and products.",
+      id: 'brow-template-2',
+      industry: 'brows',
+      title: 'Microblading Artist',
+      location: 'Austin, TX',
       description: [
-        "Our growing medical spa is looking for a professional esthetician to perform advanced skincare treatments.",
-        "Services include chemical peels, microdermabrasion, dermaplaning, and customized facials.",
-        "Work alongside our medical director and nurse injectors in a clinical yet luxurious setting."
+        'Premier brow and lash studio looking for a skilled Microblading Artist. Must be proficient in microblading and other semi-permanent makeup techniques.',
+        'We offer a high-end work environment and opportunities for advancement.'
       ],
-      requirements: [
-        "Current esthetician license",
-        "Experience with medical-grade skincare treatments",
-        "Knowledge of product ingredients and skin physiology",
-        "Excellent bedside manner and consultation skills"
-      ],
-      benefits: [
-        "Competitive base salary plus commission",
-        "Health benefits for full-time employees",
-        "Paid continuing education",
-        "Employee discounts on services and products"
-      ],
-      location: "Dallas, TX",
-      salary_range: "$50,000-65,000/year",
-      schedule: "Full-time",
-      employment_type: "W-2 with benefits",
-      popularity: "trending"
+      requirements: ['Microblading certification', '2+ years of experience', 'Portfolio of previous work'],
+      salary_range: '$800 - $1400 per week',
+      schedule: 'Full-time',
+      employment_type: 'employee',
+      experience_level: 'experienced'
     }
   ]
 };
 
-export const aiPolishSuggestions: Record<IndustryType, string[]> = {
-  nails: [
-    "Enhance your job description with details about your salon's reputation and client base",
-    "Add specific skills needed (acrylics, gel, dipping powder, etc.)",
-    "Mention exact compensation structure and potential earnings with tips",
-    "Describe your salon's atmosphere and team culture"
-  ],
-  hair: [
-    "Specify the types of services your salon specializes in",
-    "Mention the product lines you use (Aveda, Redken, Olaplex, etc.)",
-    "Describe your salon's clientele and typical service prices",
-    "Add details about continuing education opportunities"
-  ],
-  lashes: [
-    "Specify the lash techniques your studio offers (classic, volume, hybrid)",
-    "Mention the products and supplies you provide",
-    "Include details about your booking system and client retention",
-    "Describe your studio setup and work environment"
-  ],
-  massage: [
-    "List the specific massage modalities you're looking for",
-    "Mention your spa's client demographics and typical service duration",
-    "Include details about room setup and supplies provided",
-    "Describe your booking system and typical therapist schedule"
-  ],
-  tattoo: [
-    "Specify what tattoo styles your studio specializes in",
-    "Describe your studio's atmosphere and client base",
-    "Mention details about equipment provided versus artist-supplied",
-    "Include information about studio exposure and marketing support"
-  ],
-  brows: [
-    "Detail the specific brow services you offer",
-    "Mention your studio's specialization and client demographics",
-    "Include information about supplies provided versus artist-supplied",
-    "Describe booking procedures and client acquisition methods"
-  ],
-  skincare: [
-    "List the specific treatments and services you offer",
-    "Mention the skincare lines and products you use",
-    "Describe your spa's approach to skincare and typical clientele",
-    "Include details about treatment rooms and equipment"
-  ]
-};
-
-export const aiPolishSuggestionsVietnamese: Record<IndustryType, string[]> = {
-  nails: [
-    "Thêm chi tiết về mức lương, hoa hồng và tiền tip trung bình",
-    "Nêu rõ các kỹ năng cần thiết (bột, gel, dip, etc.)",
-    "Mô tả môi trường làm việc và đồng nghiệp",
-    "Giải thích về chỗ ở và hỗ trợ di chuyển nếu có"
-  ],
-  hair: [
-    "Mô tả chi tiết về kiểu khách hàng của salon",
-    "Nêu rõ các dịch vụ salon chuyên về",
-    "Thêm thông tin về mức lương và hoa hồng",
-    "Giải thích v�� lịch làm việc và giờ linh hoạt"
-  ],
-  lashes: [
-    "Giải thích chi tiết về kỹ thuật nối mi bạn cần",
-    "Mô tả không gian làm việc và dụng cụ được cung cấp",
-    "Thêm thông tin về lương và hoa hồng",
-    "Nêu rõ yêu cầu về giấy phép và chứng chỉ"
-  ],
-  massage: [
-    "Liệt kê các kỹ thuật massage cần thiết",
-    "Mô tả về khách hàng và môi trường spa",
-    "Nêu rõ thông tin về lương và tiền boa",
-    "Giải thích về lịch làm việc và số giờ"
-  ],
-  tattoo: [
-    "Mô tả phong cách xăm của studio",
-    "Giải thích về không gian làm việc và thiết bị",
-    "Nêu rõ cơ cấu chia hoa hồng",
-    "Thêm thông tin về khách hàng tiềm năng"
-  ],
-  brows: [
-    "Giải thích chi tiết về các dịch vụ chân mày bạn cung cấp",
-    "Nêu rõ yêu cầu về chứng chỉ điêu khắc",
-    "Mô tả về không gian làm việc và vật liệu",
-    "Thêm thông tin về mức thu nhập tiềm năng"
-  ],
-  skincare: [
-    "Liệt kê các liệu trình và dịch vụ chăm sóc da",
-    "Mô tả sản phẩm và thương hiệu sử dụng",
-    "Giải thích về môi trường spa và khách hàng",
-    "Nêu rõ yêu cầu về bằng cấp và kinh nghiệm"
-  ]
-};
-
-export { IndustryType };
-export { jobTemplatesByIndustry };
+// Export all templates as a flat array
+export const jobTemplates = Object.values(jobTemplatesByIndustry).flat();

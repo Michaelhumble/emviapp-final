@@ -33,9 +33,9 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
       description: template.description.join('\n\n'),
       requirements: template.requirements,
       salary_range: template.salary_range,
-      schedule: template.schedule,
-      employment_type: template.employment_type
-      // Remove benefits as it doesn't exist in JobFormValues
+      employment_type: template.employment_type,
+      experience_level: template.experience_level
+      // Remove schedule as it doesn't exist in JobFormValues
     };
     
     onSelectTemplate(formValues);
