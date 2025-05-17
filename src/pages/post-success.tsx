@@ -1,123 +1,123 @@
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { CheckCircle, ArrowLeft, TrendingUp, Calendar } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-
-interface PostSuccessData {
-  id?: string;
-  post_id?: string;
-  expires_at?: string;
-  post_type?: string;
-  payment_log_id?: string;
-  pricing_tier?: string;
-}
+import { format, addDays } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import ThankYouModal from '@/components/posting/ThankYouModal';
 
 const PostSuccess: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [postData, setPostData] = useState<PostSuccessData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [postData, setPostData] = useState<any>(null);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
   
+  // Get session ID or payment log ID from URL
   const sessionId = searchParams.get('session_id');
   const paymentLogId = searchParams.get('payment_log_id');
-  const isFreePost = searchParams.get('free') === 'true';
+  const isFree = searchParams.get('free') === 'true';
   
   useEffect(() => {
-    // If we have payment info in the URL, fetch the details
-    const fetchPostDetails = async () => {
-      setLoading(true);
+    // Helper function to verify checkout
+    const verifyCheckout = async (sessionId: string) => {
       try {
-        if (paymentLogId) {
-          // For free posts that have payment_log_id in the URL
-          const { data, error } = await supabase
-            .from('payment_logs')
-            .select('*')
-            .eq('id', paymentLogId)
-            .single();
-            
-          if (error) throw error;
-          
-          if (data) {
-            // Cast to avoid type errors
-            const typedData = data as any;
-            setPostData({
-              post_id: typedData.listing_id,
-              expires_at: typedData.expires_at,
-              post_type: typedData.plan_type,
-              pricing_tier: 'free',
-              payment_log_id: typedData.id
-            });
-          }
-        } else if (sessionId) {
-          // For Stripe payments that redirect back with session_id
-          const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
-            body: { sessionId }
-          });
-          
-          if (error) throw error;
-          
-          if (data) {
-            setPostData({
-              post_id: data.post_id,
-              expires_at: data.expires_at,
-              post_type: data.post_type,
-              pricing_tier: data.pricing_tier,
-              payment_log_id: data.payment_log_id
-            });
-          }
-        } else if (isFreePost) {
-          // For free posts without specific IDs
-          setPostData({
-            post_type: searchParams.get('post_type') || 'job',
-            pricing_tier: 'free',
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-          });
-        } else {
-          // No identifiers, probably direct navigation
-          console.warn('No session_id, payment_log_id or free flag found in URL');
-        }
+        const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
+          body: { sessionId }
+        });
+        
+        if (error) throw error;
+        return data;
       } catch (err) {
-        console.error('Error fetching post details:', err);
-      } finally {
-        setLoading(false);
+        console.error('Error verifying checkout:', err);
+        return null;
       }
     };
     
-    fetchPostDetails();
-  }, [paymentLogId, sessionId, isFreePost, searchParams]);
+    // Helper function to get payment log details
+    const getPaymentLogDetails = async (logId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from('payment_logs')
+          .select('*, jobs(*)')
+          .eq('id', logId)
+          .single();
+          
+        if (error) throw error;
+        return data;
+      } catch (err) {
+        console.error('Error fetching payment log:', err);
+        return null;
+      }
+    };
+    
+    const verifyPayment = async () => {
+      setIsLoading(true);
+      
+      try {
+        // If it's a free post, we've already processed it
+        if (isFree && paymentLogId) {
+          const paymentData = await getPaymentLogDetails(paymentLogId);
+          if (paymentData) {
+            setPostData({
+              post_id: paymentData.listing_id,
+              post_type: paymentData.plan_type,
+              pricing_tier: paymentData.pricing_tier,
+              expires_at: paymentData.expires_at,
+              job_details: paymentData.jobs
+            });
+          }
+        } 
+        // If we have a session ID, verify it with Stripe
+        else if (sessionId) {
+          const checkoutData = await verifyCheckout(sessionId);
+          if (checkoutData?.success) {
+            setPostData(checkoutData);
+            
+            // Show success celebration if not explicitly hidden
+            if (!searchParams.get('nomodal')) {
+              setShowThankYouModal(true);
+            }
+          } else {
+            // Payment failed or couldn't be verified
+            navigate('/post-canceled');
+          }
+        }
+        // If we have a payment log ID but no session ID, get details directly
+        else if (paymentLogId) {
+          const paymentData = await getPaymentLogDetails(paymentLogId);
+          if (paymentData && paymentData.payment_status === 'success') {
+            setPostData({
+              post_id: paymentData.listing_id,
+              post_type: paymentData.plan_type,
+              pricing_tier: paymentData.pricing_tier,
+              expires_at: paymentData.expires_at
+            });
+          } else {
+            // Payment not found or not successful
+            navigate('/post-canceled');
+          }
+        }
+      } catch (error) {
+        console.error('Error in payment verification:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    verifyPayment();
+  }, [sessionId, paymentLogId, navigate, isFree, searchParams]);
+
+  // Format expiration date if available
+  const formattedExpiryDate = postData?.expires_at 
+    ? format(new Date(postData.expires_at), 'MMMM d, yyyy') 
+    : format(addDays(new Date(), 30), 'MMMM d, yyyy');
   
-  const navigateToDashboard = () => {
-    navigate('/dashboard');
-  };
-  
-  const navigateToJobs = () => {
-    navigate('/jobs');
-  };
-  
-  if (loading) {
-    return (
-      <Layout>
-        <div className="container max-w-4xl py-12">
-          <Card className="p-8">
-            <div className="flex flex-col items-center justify-center space-y-4">
-              <div className="animate-pulse h-8 w-64 bg-gray-200 rounded"></div>
-              <div className="animate-pulse h-4 w-48 bg-gray-200 rounded"></div>
-              <div className="animate-pulse h-10 w-32 bg-gray-200 rounded mt-4"></div>
-            </div>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-  
-  // Post success view
   return (
     <Layout>
       <div className="container max-w-4xl py-12">
@@ -128,41 +128,73 @@ const PostSuccess: React.FC = () => {
             </div>
             
             <h1 className="text-3xl font-bold text-center">
-              {t("Congratulations!")}
+              {t({
+                english: 'Your Job Post is Live!',
+                vietnamese: 'Tin Đăng Của Bạn Đã Được Đăng!'
+              })}
             </h1>
             
-            <p className="text-xl text-center text-gray-700">
-              {postData?.post_type === 'job'
-                ? t("Your job listing has been successfully published!")
-                : t("Your salon listing has been successfully published!")}
+            <p className="text-lg text-center text-gray-700 max-w-md">
+              {t({
+                english: 'Your job posting has been successfully published. It will be visible to potential candidates right away.',
+                vietnamese: 'Tin tuyển dụng của bạn đã được xuất bản thành công. Nó sẽ hiển thị với các ứng viên tiềm năng ngay lập tức.'
+              })}
             </p>
             
-            {postData?.expires_at && (
-              <p className="text-gray-600">
-                {t("Your listing expires on")}: {new Date(postData.expires_at).toLocaleDateString()}
-              </p>
-            )}
+            <div className="text-center text-sm text-gray-600 flex items-center justify-center gap-2">
+              <Calendar className="h-4 w-4 text-purple-500" />
+              <span>
+                {t({
+                  english: `Your post will be active until ${formattedExpiryDate}`,
+                  vietnamese: `Tin đăng của bạn sẽ hoạt động đến ${formattedExpiryDate}`
+                })}
+              </span>
+            </div>
             
-            <div className="w-full flex flex-col md:flex-row gap-4 pt-6">
+            <div className="w-full flex flex-col sm:flex-row gap-4 pt-6">
               <Button 
                 variant="outline"
-                className="flex-1"
-                onClick={navigateToJobs}
+                className="flex items-center justify-center gap-2"
+                onClick={() => navigate('/jobs')}
               >
-                {t("View All Listings")}
+                <ArrowLeft className="h-4 w-4" />
+                {t({
+                  english: 'View All Jobs',
+                  vietnamese: 'Xem Tất Cả Công Việc'
+                })}
               </Button>
               
               <Button 
-                className="flex-1 flex items-center justify-center gap-2"
-                onClick={navigateToDashboard}
+                onClick={() => navigate('/dashboard')}
               >
-                {t("Go to Dashboard")}
-                <ArrowRight className="h-4 w-4" />
+                {t({
+                  english: 'Go to Dashboard',
+                  vietnamese: 'Đi đến Bảng Điều Khiển'
+                })}
+              </Button>
+              
+              <Button 
+                variant="secondary"
+                className="flex items-center justify-center gap-2"
+                onClick={() => setShowThankYouModal(true)}
+              >
+                <TrendingUp className="h-4 w-4" />
+                {t({
+                  english: 'Boost My Post',
+                  vietnamese: 'Đẩy Tin Của Tôi'
+                })}
               </Button>
             </div>
           </div>
         </Card>
       </div>
+      
+      <ThankYouModal 
+        open={showThankYouModal}
+        onOpenChange={setShowThankYouModal}
+        postType="job"
+        onBoostClick={() => navigate('/post-job?boost=true')}
+      />
     </Layout>
   );
 };

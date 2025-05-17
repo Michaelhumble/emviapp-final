@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -24,6 +25,7 @@ import Privacy from "@/pages/Privacy";
 import Cookies from "@/pages/Cookies";
 import CheckoutFallback from "@/pages/CheckoutFallback";
 import PostSuccess from "@/pages/post-success";
+import PostCanceled from "@/pages/post-canceled";
 
 function App() {
   const location = useLocation();
@@ -49,8 +51,9 @@ function App() {
                     {/* Add our custom fallback for the checkout route */}
                     <Route path="/checkout" element={<CheckoutFallback />} />
                     
-                    {/* Add post success page route */}
+                    {/* Add post success and canceled page routes */}
                     <Route path="/post-success" element={<PostSuccess />} />
+                    <Route path="/post-canceled" element={<PostCanceled />} />
                     
                     {/* Explicitly define the /salons route to use StableSalonPage */}
                     <Route path="/salons" element={<StableSalonPage />} />
