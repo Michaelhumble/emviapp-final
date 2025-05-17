@@ -8,8 +8,7 @@ import { ArrowRight } from "lucide-react";
 import SectionHeader from "@/components/home/sections/SectionHeader";
 
 const BilingualWhySomeSalons = () => {
-  const { t, language } = useTranslation();
-  const isVietnamese = language === "vi";
+  const { t, isVietnamese } = useTranslation();
   
   return (
     <section className="py-16 md:py-24 bg-white relative overflow-hidden">
@@ -82,10 +81,10 @@ const BilingualWhySomeSalons = () => {
               asChild
             >
               <Link to="/pricing">
-                {isVietnamese 
-                  ? "Tìm Hiểu Thêm Về Tăng Trưởng Khách Hàng" 
-                  : "Learn More About Client Growth"
-                }
+                {t({
+                  english: "Learn More About Client Growth",
+                  vietnamese: "Tìm Hiểu Thêm Về Tăng Trưởng Khách Hàng"
+                })}
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>

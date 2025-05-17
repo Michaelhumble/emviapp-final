@@ -7,8 +7,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ArrowRight } from "lucide-react";
 
 const BilingualExperienceSection: React.FC = () => {
-  const { t, toggleLanguage, language } = useTranslation();
-  const isVietnamese = language === "vi";
+  const { t, toggleLanguage, isVietnamese } = useTranslation();
 
   return (
     <section className="py-16 md:py-24 overflow-hidden relative">

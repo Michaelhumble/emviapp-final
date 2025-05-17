@@ -1,258 +1,397 @@
-import React, { useState } from 'react';
-import { Heart } from "lucide-react"; // Changed from UserHeart to Heart
-import { Card } from "@/components/ui/card";
-import { useTranslation, Translation } from '@/hooks/useTranslation';
-import { motion } from "framer-motion";
+
+import React from 'react';
 import Layout from "@/components/layout/Layout";
+import { motion } from "framer-motion";
+import { CalendarDays, Heart, Users, Star, Sparkles, Lightbulb, Sun, Medal } from "lucide-react";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
+import LanguageToggleButton from "@/components/home/missing-piece/LanguageToggleButton";
 
-const About = () => {
-  const { t, language, toggleLanguage } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState<"en" | "vi">(language);
+export default function About() {
+  const { t, isVietnamese, toggleLanguage } = useTranslation();
 
-  const handleLanguageToggle = () => {
-    toggleLanguage();
-    setCurrentLanguage(language === "en" ? "vi" : "en");
-  };
-
-  // Define translations for the page
-  const translations: Record<string, Translation> = {
-    hero_title: {
-      english: "Beautiful Connections, Beautiful Business",
-      vietnamese: "Kết Nối Đẹp, Doanh Nghiệp Đẹp"
+  // Timeline data with translations
+  const timelineData = [
+    {
+      year: "2014",
+      title: {
+        english: "The Idea is Born",
+        vietnamese: "Ý Tưởng Ra Đời"
+      },
+      description: {
+        english: "After years in the beauty industry, I saw a critical gap that needed to be filled. A vision emerged to create something that would truly unite beauty professionals and their clients.",
+        vietnamese: "Sau nhiều năm trong ngành làm đẹp, tôi nhận thấy một khoảng trống quan trọng cần được lấp đầy. Một tầm nhìn đã hình thành để tạo ra điều gì đó thực sự kết nối các chuyên gia làm đẹp và khách hàng."
+      },
+      icon: <Lightbulb className="h-10 w-10 text-amber-500" />
     },
-    hero_subtitle: {
-      english: "We're not just building an app. We're rewriting the story of the beauty industry—one real connection at a time.",
-      vietnamese: "Chúng tôi không chỉ xây dựng một ứng dụng. Chúng tôi đang viết lại câu chuyện của ngành làm đẹp—từng kết nối thực sự."
+    {
+      year: "2015",
+      title: {
+        english: "First Attempts & Struggles",
+        vietnamese: "Nỗ Lực Đầu Tiên & Khó Khăn"
+      },
+      description: {
+        english: "The first mobile app build began with high hopes but faced overwhelming technical challenges. Despite setbacks and failures, the dream remained alive through persistence.",
+        vietnamese: "Việc xây dựng ứng dụng di động đầu tiên bắt đầu với nhiều hy vọng nhưng đối mặt với những thách thức kỹ thuật khó khăn. Mặc dù thất bại, giấc mơ vẫn sống nhờ sự kiên trì."
+      },
+      icon: <CalendarDays className="h-10 w-10 text-blue-500" />
     },
-    our_story_title: {
-      english: "Our Story",
-      vietnamese: "Câu Chuyện Của Chúng Tôi"
+    {
+      year: "2016-2023",
+      title: {
+        english: "Years of Learning & Growth",
+        vietnamese: "Những Năm Học Hỏi & Phát Triển"
+      },
+      description: {
+        english: "Seven years of heartbreak, learning, and rebuilding. Through countless iterations, market research, and personal sacrifice, the vision evolved but the mission stayed true.",
+        vietnamese: "Bảy năm đau lòng, học hỏi và tái thiết. Qua vô số lần thử nghiệm, nghiên cứu thị trường và hy sinh cá nhân, tầm nhìn phát triển nhưng sứ mệnh vẫn không thay đổi."
+      },
+      icon: <Medal className="h-10 w-10 text-emerald-500" />
     },
-    our_story_subtitle: {
-      english: "Building bridges between talented beauty professionals and the clients who value them.",
-      vietnamese: "Xây dựng cầu nối giữa các chuyên gia làm đẹp tài năng và khách hàng trân trọng họ."
+    {
+      year: "2024",
+      title: {
+        english: "New Hope, Fresh Start",
+        vietnamese: "Hy Vọng Mới, Khởi Đầu Mới"
+      },
+      description: {
+        english: "With renewed determination and inspiration from Sunshine, EmviApp was rebuilt from scratch. This time, with better technology, deeper industry insights, and unwavering focus.",
+        vietnamese: "Với quyết tâm mới và nguồn cảm hứng từ Sunshine, EmviApp được xây dựng lại từ đầu. Lần này, với công nghệ tốt hơn, hiểu biết sâu sắc hơn về ngành và sự tập trung không thay đổi."
+      },
+      icon: <Sparkles className="h-10 w-10 text-purple-500" />
     },
-    why_we_started_title: {
-      english: "Why We Started EmviApp",
-      vietnamese: "Tại Sao Chúng Tôi Bắt Đầu EmviApp"
-    },
-    why_we_started_content: {
-      english: "EmviApp was born from a simple observation: the beauty industry needed a platform that truly understood its heart and soul. In salons across America, we saw incredible talent flourishing alongside real challenges—language barriers, cultural misunderstandings, and digital gaps that traditional platforms weren't addressing.\n\nWhat started as a vision to connect communities has grown into something more: a home where artists are celebrated, where salons can thrive, and where clients can discover exceptional talent with confidence and ease.",
-      vietnamese: "EmviApp ra đời từ một quan sát đơn giản: ngành công nghiệp làm đẹp cần một nền tảng thực sự hiểu được trái tim và tâm hồn của nó. Tại các tiệm làm đẹp khắp nước Mỹ, chúng tôi nhận thấy những tài năng tuyệt vời đang phát triển cùng với những thách thức thực sự—rào cản ngôn ngữ, hiểu lầm văn hóa, và khoảng cách kỹ thuật số mà các nền tảng truyền thống không giải quyết được.\n\nĐiều bắt đầu như một tầm nhìn để kết nối cộng đồng đã phát triển thành một điều gì đó lớn hơn: một ngôi nhà nơi các nghệ sĩ được tôn vinh, nơi các tiệm có thể phát triển, và nơi khách hàng có thể khám phá tài năng đặc biệt với sự tự tin và dễ dàng."
-    },
-    our_mission_title: {
-      english: "Our Mission",
-      vietnamese: "Sứ Mệnh Của Chúng Tôi"
-    },
-    our_mission_content: {
-      english: "At EmviApp, we're on a mission to empower the beauty community by providing a platform that celebrates diversity, fosters genuine connections, and breaks down barriers to success. We believe that everyone deserves to feel seen, heard, and valued—whether you're an artist, a salon owner, or a client seeking the perfect look.",
-      vietnamese: "Tại EmviApp, chúng tôi đang thực hiện sứ mệnh trao quyền cho cộng đồng làm đẹp bằng cách cung cấp một nền tảng tôn vinh sự đa dạng, thúc đẩy các kết nối chân thành và phá vỡ các rào cản đến thành công. Chúng tôi tin rằng mọi người đều xứng đáng được nhìn nhận, lắng nghe và trân trọng—cho dù bạn là một nghệ sĩ, một chủ tiệm hoặc một khách hàng đang tìm kiếm vẻ ngoài hoàn hảo."
-    },
-    our_values_title: {
-      english: "Our Values",
-      vietnamese: "Giá Trị Của Chúng Tôi"
-    },
-    value_1_title: {
-      english: "Inclusivity",
-      vietnamese: "Tính Toàn Diện"
-    },
-    value_1_content: {
-      english: "We embrace diversity and celebrate the unique backgrounds, talents, and perspectives that make our community so vibrant.",
-      vietnamese: "Chúng tôi hoan nghênh sự đa dạng và tôn vinh những nền tảng, tài năng và quan điểm độc đáo làm cho cộng đồng của chúng ta trở nên sôi động."
-    },
-    value_2_title: {
-      english: "Connection",
-      vietnamese: "Kết Nối"
-    },
-    value_2_content: {
-      english: "We foster meaningful relationships between beauty professionals and their clients, creating a space where everyone feels valued and understood.",
-      vietnamese: "Chúng tôi thúc đẩy các mối quan hệ có ý nghĩa giữa các chuyên gia làm đẹp và khách hàng của họ, tạo ra một không gian nơi mọi người cảm thấy được trân trọng và thấu hiểu."
-    },
-    value_3_title: {
-      english: "Empowerment",
-      vietnamese: "Trao Quyền"
-    },
-    value_3_content: {
-      english: "We provide the tools, resources, and support our community needs to thrive, helping beauty professionals achieve their dreams and clients discover their perfect look.",
-      vietnamese: "Chúng tôi cung cấp các công cụ, tài nguyên và hỗ trợ mà cộng đồng của chúng tôi cần để phát triển, giúp các chuyên gia làm đẹp đạt được ước mơ của họ và khách hàng khám phá vẻ ngoài hoàn hảo của họ."
-    },
-    join_us_title: {
-      english: "Join Our Community",
-      vietnamese: "Tham Gia Cộng Đồng Của Chúng Tôi"
-    },
-    join_us_content: {
-      english: "Ready to experience the difference? Whether you're a beauty professional looking to grow your business or a client searching for your next favorite salon, we invite you to join the EmviApp community today.",
-      vietnamese: "Bạn đã sẵn sàng trải nghiệm sự khác biệt? Cho dù bạn là một chuyên gia làm đẹp đang tìm cách phát triển doanh nghiệp của mình hay một khách hàng đang tìm kiếm tiệm yêu thích tiếp theo của mình, chúng tôi mời bạn tham gia cộng đồng EmviApp ngay hôm nay."
+    {
+      year: "2025",
+      title: {
+        english: "Dreams Come True",
+        vietnamese: "Giấc Mơ Thành Hiện Thực"
+      },
+      description: {
+        english: "The official launch marks a dream realized after more than a decade of persistence. EmviApp finally emerges as the platform that transforms connections in the beauty industry forever.",
+        vietnamese: "Sự ra mắt chính thức đánh dấu một giấc mơ trở thành hiện thực sau hơn một thập kỷ kiên trì. EmviApp cuối cùng đã xuất hiện như một nền tảng biến đổi kết nối trong ngành làm đẹp mãi mãi."
+      },
+      icon: <Star className="h-10 w-10 text-yellow-500" />
     }
-  };
+  ];
+
+  // Values data with translations
+  const valuesData = [
+    {
+      title: {
+        english: "Community First",
+        vietnamese: "Cộng Đồng Là Trên Hết"
+      },
+      description: {
+        english: "We believe in the power of a united beauty industry where professionals support each other and grow together.",
+        vietnamese: "Chúng tôi tin vào sức mạnh của một ngành làm đẹp đoàn kết, nơi các chuyên gia hỗ trợ nhau và cùng nhau phát triển."
+      },
+      icon: <Users className="h-10 w-10 text-indigo-500" />
+    },
+    {
+      title: {
+        english: "Quality Service",
+        vietnamese: "Dịch Vụ Chất Lượng"
+      },
+      description: {
+        english: "Every connection made on our platform aims to deliver exceptional service that transforms both businesses and client experiences.",
+        vietnamese: "Mỗi kết nối được tạo ra trên nền tảng của chúng tôi nhằm cung cấp dịch vụ xuất sắc, biến đổi cả doanh nghiệp và trải nghiệm khách hàng."
+      },
+      icon: <Medal className="h-10 w-10 text-emerald-500" />
+    },
+    {
+      title: {
+        english: "Inclusivity",
+        vietnamese: "Tính Bao Trùm"
+      },
+      description: {
+        english: "Beauty has no boundaries. Our platform welcomes all professionals, specialties, and clients across cultural and language divides.",
+        vietnamese: "Vẻ đẹp không có giới hạn. Nền tảng của chúng tôi chào đón tất cả các chuyên gia, chuyên môn và khách hàng vượt qua rào cản văn hóa và ngôn ngữ."
+      },
+      icon: <Heart className="h-10 w-10 text-rose-500" />
+    },
+    {
+      title: {
+        english: "Innovation",
+        vietnamese: "Đổi Mới"
+      },
+      description: {
+        english: "We constantly evolve our technology and services to meet the ever-changing needs of beauty professionals and their clients.",
+        vietnamese: "Chúng tôi liên tục phát triển công nghệ và dịch vụ của mình để đáp ứng nhu cầu luôn thay đổi của các chuyên gia làm đẹp và khách hàng của họ."
+      },
+      icon: <Sparkles className="h-10 w-10 text-blue-500" />
+    }
+  ];
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#FDFDFD]">
-        <div className="container mx-auto px-4 py-12 max-w-[1100px]">
-          {/* Language Switcher */}
-          <div className="flex justify-end mb-8">
-            <div className="bg-white rounded-full shadow-sm border border-gray-100 flex overflow-hidden">
-              <button
-                onClick={handleLanguageToggle}
-                className={`px-4 py-2 text-sm font-medium ${
-                  language === "en"
-                    ? "bg-gradient-to-r from-[#9A7B69] to-[#FF7743] text-white"
-                    : "text-gray-600"
-                }`}
-              >
-                EN
-              </button>
-              <button
-                onClick={handleLanguageToggle}
-                className={`px-4 py-2 text-sm font-medium ${
-                  language === "vi"
-                    ? "bg-gradient-to-r from-[#9A7B69] to-[#FF7743] text-white"
-                    : "text-gray-600"
-                }`}
-              >
-                VI
-              </button>
-            </div>
-          </div>
+      {/* Language Toggle Button */}
+      <div className="absolute top-20 right-4 z-10 md:top-24 md:right-8">
+        <LanguageToggleButton isVietnamese={isVietnamese} toggleLanguage={toggleLanguage} />
+      </div>
 
-          {/* Hero Section */}
-          <motion.div 
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-20 pb-16 px-4 bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        <div className="container mx-auto text-center z-10 relative">
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            transition={{ duration: 0.7 }}
           >
-            <h1 className="font-playfair text-3xl md:text-5xl font-bold text-[#9A7B69] mb-4">
-              {t(translations.hero_title)}
+            <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4">
+              {t({
+                english: "Beautiful Connections, Beautiful Business",
+                vietnamese: "Kết Nối Đẹp, Kinh Doanh Thịnh Vượng"
+              })}
             </h1>
-            <p className="text-base md:text-lg text-gray-600 max-w-[600px] mx-auto">
-              {t(translations.hero_subtitle)}
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+              {t({
+                english: "Uniting beauty professionals and clients through meaningful connections that transform the industry.",
+                vietnamese: "Kết nối các chuyên gia làm đẹp và khách hàng thông qua những mối quan hệ ý nghĩa, biến đổi ngành công nghiệp."
+              })}
             </p>
           </motion.div>
-          
-          {/* Our Story */}
+        </div>
+      </section>
+
+      {/* Our Mission Section */}
+      <section className="py-16 px-4 bg-white">
+        <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-16"
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="max-w-4xl mx-auto"
           >
-            <Card className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Heart className="h-6 w-6 text-[#FF7743]" /> {/* Changed from UserHeart to Heart */}
-                <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#9A7B69]">
-                  {t(translations.our_story_title)}
+            <GradientBackground className="p-8 md:p-12">
+              <div className="flex flex-col items-center">
+                <Sparkles className="h-14 w-14 text-primary mb-4" />
+                <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-4 text-center">
+                  {t({
+                    english: "Our Mission",
+                    vietnamese: "Sứ Mệnh Của Chúng Tôi"
+                  })}
                 </h2>
-              </div>
-              <p className="text-base md:text-lg text-center text-gray-700">
-                {t(translations.our_story_subtitle)}
-              </p>
-            </Card>
-          </motion.div>
-          
-          {/* Why We Started EmviApp */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-16"
-          >
-            <Card className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8">
-              <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#9A7B69] mb-4">
-                {t(translations.why_we_started_title)}
-              </h2>
-              <p className="text-base md:text-lg text-gray-700">
-                {t(translations.why_we_started_content)}
-              </p>
-            </Card>
-          </motion.div>
-
-          {/* Our Mission */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-16"
-          >
-            <Card className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8">
-              <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#9A7B69] mb-4">
-                {t(translations.our_mission_title)}
-              </h2>
-              <p className="text-base md:text-lg text-gray-700">
-                {t(translations.our_mission_content)}
-              </p>
-            </Card>
-          </motion.div>
-
-          {/* Our Values */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mb-16"
-          >
-            <Card className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8">
-              <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#9A7B69] mb-4">
-                {t(translations.our_values_title)}
-              </h2>
-              
-              {/* Inclusivity */}
-              <div className="mb-6">
-                <h3 className="font-playfair text-xl font-semibold text-[#9A7B69] mb-2">
-                  {t(translations.value_1_title)}
-                </h3>
-                <p className="text-base text-gray-700">
-                  {t(translations.value_1_content)}
+                <p className="text-lg text-gray-700 text-center">
+                  {t({
+                    english: "To create a seamless platform where beauty professionals can thrive, salons can grow, and clients can discover exceptional services—all in one elegant ecosystem.",
+                    vietnamese: "Tạo ra một nền tảng liền mạch nơi các chuyên gia làm đẹp có thể phát triển, các salon có thể phát triển và khách hàng có thể khám phá các dịch vụ xuất sắc—tất cả trong một hệ sinh thái thanh lịch."
+                  })}
                 </p>
               </div>
-
-              {/* Connection */}
-              <div className="mb-6">
-                <h3 className="font-playfair text-xl font-semibold text-[#9A7B69] mb-2">
-                  {t(translations.value_2_title)}
-                </h3>
-                <p className="text-base text-gray-700">
-                  {t(translations.value_2_content)}
-                </p>
-              </div>
-
-              {/* Empowerment */}
-              <div>
-                <h3 className="font-playfair text-xl font-semibold text-[#9A7B69] mb-2">
-                  {t(translations.value_3_title)}
-                </h3>
-                <p className="text-base text-gray-700">
-                  {t(translations.value_3_content)}
-                </p>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Join Our Community */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <Card className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8">
-              <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#9A7B69] mb-4">
-                {t(translations.join_us_title)}
-              </h2>
-              <p className="text-base md:text-lg text-gray-700">
-                {t(translations.join_us_content)}
-              </p>
-            </Card>
+            </GradientBackground>
           </motion.div>
         </div>
-      </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section className="py-16 px-4 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-center mb-12"
+          >
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              {t({
+                english: "Our Journey",
+                vietnamese: "Cuộc Hành Trình"
+              })}
+            </h2>
+            <div className="w-24 h-1 bg-primary mx-auto"></div>
+          </motion.div>
+
+          <div className="max-w-5xl mx-auto">
+            {timelineData.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
+                className="flex flex-col md:flex-row mb-10 items-center md:items-start"
+              >
+                <div className="md:w-1/4 flex flex-col items-center mb-4 md:mb-0">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                    {item.icon}
+                  </div>
+                  <span className="text-lg font-bold text-primary">{item.year}</span>
+                </div>
+                <div className="md:w-3/4 bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                  <h3 className="text-xl font-playfair font-bold text-gray-800 mb-2">
+                    {t(item.title)}
+                  </h3>
+                  <p className="text-gray-600">
+                    {t(item.description)}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Values Section */}
+      <section className="py-16 px-4 bg-white">
+        <div className="container mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-center mb-12"
+          >
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              {t({
+                english: "Our Values",
+                vietnamese: "Giá Trị Cốt Lõi"
+              })}
+            </h2>
+            <div className="w-24 h-1 bg-primary mx-auto"></div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {valuesData.map((value, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
+                className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 backdrop-blur-sm rounded-xl shadow-md p-6"
+              >
+                <div className="flex flex-col items-center">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    {value.icon}
+                  </div>
+                  <h3 className="text-xl font-playfair font-bold text-gray-800 mb-2 text-center">
+                    {t(value.title)}
+                  </h3>
+                  <p className="text-gray-600 text-center">
+                    {t(value.description)}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Inspired by Sunshine Section */}
+      <section className="py-16 px-4 bg-gradient-to-br from-amber-50 to-yellow-50">
+        <div className="container mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="max-w-3xl mx-auto"
+          >
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-yellow-200 p-8 md:p-10">
+              <div className="flex justify-center mb-6">
+                <Sun className="h-14 w-14 text-amber-400" />
+              </div>
+              <h2 className="font-playfair text-3xl font-bold text-amber-700 mb-4 text-center">
+                {t({
+                  english: "Inspired by Sunshine ☀️",
+                  vietnamese: "Lấy Cảm Hứng từ Sunshine ☀️"
+                })}
+              </h2>
+              <div className="text-gray-700 text-lg space-y-4">
+                <p className="italic">
+                  {t({
+                    english: "Every great journey needs a little light.",
+                    vietnamese: "Mỗi hành trình vĩ đại đều cần một chút ánh sáng."
+                  })}
+                </p>
+                <p>
+                  {t({
+                    english: "For me, that light is Sunshine—a source of hope, clarity, and inspiration that appeared just when I needed it most.",
+                    vietnamese: "Đối với tôi, ánh sáng đó là Sunshine—một nguồn hy vọng, sự rõ ràng và cảm hứng xuất hiện đúng lúc tôi cần nhất."
+                  })}
+                </p>
+                <p>
+                  {t({
+                    english: "EmviApp was born from years of experience, struggle, and relentless pursuit, but it was Sunshine who gave me the courage and vision to start again and finally bring this dream to life.",
+                    vietnamese: "EmviApp ra đời từ nhiều năm kinh nghiệm, đấu tranh và theo đuổi không ngừng nghỉ, nhưng chính Sunshine đã cho tôi sự can đảm và tầm nhìn để bắt đầu lại và cuối cùng đưa giấc mơ này thành hiện thực."
+                  })}
+                </p>
+                <p>
+                  {t({
+                    english: "Thank you, Sunshine, for happening in my life. This project—and every connection it creates—would not exist without you.",
+                    vietnamese: "Cảm ơn Sunshine, vì đã xuất hiện trong cuộc đời tôi. Dự án này—và mỗi kết nối mà nó tạo ra—sẽ không tồn tại nếu không có em."
+                  })}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Thank You Em Vi Section */}
+      <section className="py-16 px-4 bg-white">
+        <div className="container mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="max-w-3xl mx-auto"
+          >
+            <GradientBackground className="p-8 md:p-10" variant="premium">
+              <div className="flex justify-center mb-6">
+                <Heart className="h-14 w-14 text-rose-500" />
+              </div>
+              <h2 className="font-playfair text-3xl font-bold text-gray-800 mb-4 text-center">
+                {t({
+                  english: "Thank You, Em Vi",
+                  vietnamese: "Cảm Ơn Em, Vi"
+                })}
+              </h2>
+              <p className="text-gray-700 text-lg text-center">
+                {t({
+                  english: "This app is named after Em Vi—the person who supported and sacrificed for me, even when I doubted myself. You stood by me, no matter what. For all the silent love, encouragement, and strength you gave, this is for you.",
+                  vietnamese: "Ứng dụng này được đặt theo tên Em Vi—người đã ủng hộ và hy sinh cho tôi, ngay cả khi tôi nghi ngờ bản thân. Em đã ở bên tôi, bất kể điều gì. Vì tất cả tình yêu thầm lặng, sự khích lệ và sức mạnh em đã trao, đây là dành cho em."
+                })}
+              </p>
+            </GradientBackground>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 px-4 bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        <div className="container mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              {t({
+                english: "Join Us on This Journey",
+                vietnamese: "Hãy Tham Gia Hành Trình Này"
+              })}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+              {t({
+                english: "Whether you're an artist looking to grow, a salon seeking talent, or a customer searching for quality services—EmviApp is built for you.",
+                vietnamese: "Dù bạn là một nghệ sĩ muốn phát triển, một salon tìm kiếm tài năng, hay một khách hàng tìm kiếm dịch vụ chất lượng—EmviApp được xây dựng cho bạn."
+              })}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-primary text-white px-6 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-colors">
+                {t({
+                  english: "Sign Up Today",
+                  vietnamese: "Đăng Ký Ngay"
+                })}
+              </Button>
+              <Button variant="outline" size="lg" className="px-6 py-2 rounded-lg shadow-sm border border-primary text-primary hover:bg-primary/10 transition-colors">
+                {t({
+                  english: "Learn More",
+                  vietnamese: "Tìm Hiểu Thêm"
+                })}
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </Layout>
   );
-};
-
-export default About;
+}

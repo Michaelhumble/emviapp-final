@@ -1,89 +1,55 @@
 
 import { useState, useEffect } from 'react';
-import { getLanguagePreference, setLanguagePreference, addLanguageChangeListener } from '@/utils/languagePreference';
+import { getLanguagePreference, setLanguagePreference } from '@/utils/languagePreference';
 
-// Type for the translation dictionary
-type TranslationDictionary = {
-  [key: string]: string;
-};
-
-// Type for translation input
-export type TranslationInput = string | {
+export interface Translation {
   english: string;
   vietnamese: string;
-};
+}
 
-// Export the Translation type (aliasing TranslationInput)
-export type Translation = TranslationInput;
-
-// Translation dictionaries
-const translations: Record<string, TranslationDictionary> = {
-  en: {
-    "join_now": "Join Now",
-    "learn_more": "Learn More",
-    "contact_us": "Contact Us",
-    "sign_up": "Sign Up",
-    "login": "Login",
-    "search": "Search",
-    "about_us": "About Us",
-    "home": "Home",
-    // Add more translations as needed
-  },
-  vi: {
-    "join_now": "Tham Gia Ngay",
-    "learn_more": "Tìm Hiểu Thêm",
-    "contact_us": "Liên Hệ",
-    "sign_up": "Đăng Ký",
-    "login": "Đăng Nhập",
-    "search": "Tìm Kiếm",
-    "about_us": "Về Chúng Tôi",
-    "home": "Trang Chủ",
-    // Add more translations as needed
-  }
-};
-
-export const useTranslation = () => {
-  const [language, setLanguage] = useState<"en" | "vi">(
-    getLanguagePreference() as "en" | "vi"
-  );
-
+export function useTranslation() {
+  const [language, setLanguage] = useState<string>(getLanguagePreference());
+  
+  // Listen for language changes
   useEffect(() => {
-    const removeListener = addLanguageChangeListener((newLang) => {
-      setLanguage(newLang as "en" | "vi");
-    });
+    const handleLanguageChange = (event: CustomEvent) => {
+      if (event.detail && event.detail.language) {
+        setLanguage(event.detail.language);
+      }
+    };
     
-    return removeListener;
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+    };
   }, []);
-
-  // Translation function that handles both string keys and direct translations
-  const t = (input: TranslationInput, fallback?: string): string => {
-    // Handle object-based translations
-    if (typeof input === 'object' && 'english' in input && 'vietnamese' in input) {
-      return language === 'vi' ? input.vietnamese : input.english;
+  
+  // Toggle between English and Vietnamese
+  const toggleLanguage = () => {
+    const newLanguage = language === 'vi' ? 'en' : 'vi';
+    setLanguagePreference(newLanguage);
+    setLanguage(newLanguage);
+  };
+  
+  // The t function now accepts either a string or a Translation object
+  const t = (key: string | Translation): string => {
+    // If it's a simple string, return it as is (for backward compatibility)
+    if (typeof key === 'string') {
+      return key;
     }
     
-    // Handle string key lookups from dictionary
-    if (typeof input === 'string') {
-      const dict = translations[language] || translations.en;
-      return dict[input] || fallback || input;
+    // If it's a Translation object, return the appropriate translation based on the language
+    if (key && typeof key === 'object' && 'english' in key && 'vietnamese' in key) {
+      return language === 'vi' ? key.vietnamese : key.english;
     }
     
-    // Fallback
-    return fallback || '';
+    // Fallback - shouldn't happen if types are correct
+    return typeof key === 'string' ? key : '';
   };
-
-  return {
-    t,
-    language,
-    isVietnamese: language === 'vi',
-    setLanguage: (lang: "en" | "vi") => {
-      setLanguage(lang);
-      setLanguagePreference(lang);
-    },
-    toggleLanguage: () => {
-      const newLang = language === 'en' ? 'vi' : 'en';
-      setLanguage(newLang);
-      setLanguagePreference(newLang);
-    }
-  };
-};
+  
+  // Add a convenience property to check if Vietnamese is active
+  const isVietnamese = language === 'vi';
+  
+  return { t, isVietnamese, toggleLanguage };
+}

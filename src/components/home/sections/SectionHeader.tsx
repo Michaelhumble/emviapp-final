@@ -14,8 +14,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   vietnameseTitle, 
   description 
 }) => {
-  const { language } = useTranslation();
-  const isVietnamese = language === "vi";
+  const { isVietnamese } = useTranslation();
   
   return (
     <motion.div
