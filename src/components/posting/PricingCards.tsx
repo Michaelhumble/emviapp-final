@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Sparkles, Check, Flame } from 'lucide-react'; 
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import { JobPricingOption } from '@/utils/posting/types';
 
 export interface PricingCardProps {
   id?: string;
