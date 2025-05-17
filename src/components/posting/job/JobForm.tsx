@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MobileButton } from '@/components/ui/mobile-button';
 import { JobFormValues, IndustryType } from './jobFormSchema';
@@ -8,7 +7,7 @@ import CompensationSection from '../sections/CompensationSection';
 import ContactInformationSection from '../sections/ContactInformationSection';
 import { Job } from '@/types/job';
 import { jobPostingTranslations } from '@/translations/jobPostingForm';
-import { JobTemplateSelector } from './JobTemplateSelector';
+import JobTemplateSelector from './JobTemplateSelector';
 
 interface JobFormProps {
   onSubmit: (values: any) => void;

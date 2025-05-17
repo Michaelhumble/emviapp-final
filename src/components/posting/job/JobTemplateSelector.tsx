@@ -31,8 +31,8 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
       industry: template.industry,
       location: template.location,
       description: template.description.join('\n\n'),
-      requirements: template.requirements.join('\n\n'),
-      benefits: template.benefits.join('\n\n'),
+      requirements: template.requirements,
+      benefits: template.benefits,
       salary_range: template.salary_range,
       schedule: template.schedule,
       employment_type: template.employment_type
@@ -41,13 +41,13 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
     onSelectTemplate(formValues);
   };
   
-  if (!isVisible || !selectedIndustry) {
+  if (!isVisible) {
     return null;
   }
   
   return (
     <TemplateCarousel 
-      selectedIndustry={selectedIndustry}
+      selectedIndustry={selectedIndustry as IndustryType}
       onSelectTemplate={handleSelectTemplate}
     />
   );

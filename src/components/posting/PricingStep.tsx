@@ -38,7 +38,7 @@ export const PricingStep: React.FC<PricingStepProps> = ({
     onSubmit(options);
   };
   
-  const finalPrice = calculateFinalPrice(selectedPricing, selectedDuration);
+  const finalPrice = calculateFinalPrice(Number(selectedPricing), selectedDuration);
   
   return (
     <div>
@@ -65,7 +65,7 @@ export const PricingStep: React.FC<PricingStepProps> = ({
               name={option.name}
               price={option.price}
               description={option.description}
-              vietnameseDescription={option.vietnamese_description}
+              vietnameseDescription={option.vietnameseDescription}
               tag={option.tag}
               popular={option.popular}
               features={option.features}

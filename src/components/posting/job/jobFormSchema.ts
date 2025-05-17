@@ -9,6 +9,7 @@ export interface JobFormValues {
   experience_level: 'entry' | 'intermediate' | 'experienced' | 'senior';
   contactEmail: string;
   requirements?: string[];
+  industry?: IndustryType;
 }
 
 export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare';

@@ -1,39 +1,21 @@
-
-import React, { useState } from 'react';
-import { Job } from '@/types/job';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useTranslation } from '@/hooks/useTranslation';
-import { jobPostingTranslations } from '@/translations/jobPostingForm';
-import AIPolishButton from '@/components/posting/job/AIPolishButton';
-import { IndustryType } from '@/components/posting/job/jobFormSchema';
+import React from 'react';
+import { IndustryType } from '../job/jobFormSchema';
 
 interface JobDetailsSectionProps {
-  details: Partial<Job>;
-  onChange: (details: Partial<Job>) => void;
-  photoUploads?: File[];
-  setPhotoUploads?: React.Dispatch<React.SetStateAction<File[]>>;
+  details: any;
+  onChange: (details: any) => void;
+  photoUploads: File[];
+  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
   industryType?: IndustryType;
 }
 
-const JobDetailsSection = ({ 
-  details, 
-  onChange, 
-  photoUploads, 
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
+  details,
+  onChange,
+  photoUploads,
   setPhotoUploads,
-  industryType 
-}: JobDetailsSectionProps) => {
-  const { t } = useTranslation();
-  const translations = jobPostingTranslations.jobDetails;
-  
+  industryType
+}) => {
   const handleAIPolishSuggestion = (suggestion: string) => {
     // Append the suggestion to the current description
     const currentDesc = details.description || '';
