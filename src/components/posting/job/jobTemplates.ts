@@ -1,4 +1,3 @@
-
 import { IndustryType } from './jobFormSchema';
 
 export type JobTemplate = {
@@ -370,7 +369,7 @@ export const aiPolishSuggestionsVietnamese: Record<IndustryType, string[]> = {
     "Mô tả chi tiết về kiểu khách hàng của salon",
     "Nêu rõ các dịch vụ salon chuyên về",
     "Thêm thông tin về mức lương và hoa hồng",
-    "Giải thích về lịch làm việc và giờ linh hoạt"
+    "Giải thích v�� lịch làm việc và giờ linh hoạt"
   ],
   lashes: [
     "Giải thích chi tiết về kỹ thuật nối mi bạn cần",
@@ -403,3 +402,6 @@ export const aiPolishSuggestionsVietnamese: Record<IndustryType, string[]> = {
     "Nêu rõ yêu cầu về bằng cấp và kinh nghiệm"
   ]
 };
+
+export { IndustryType };
+export { jobTemplatesByIndustry };

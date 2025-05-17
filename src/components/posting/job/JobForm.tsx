@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MobileButton } from '@/components/ui/mobile-button';
 import { JobFormValues, IndustryType } from './jobFormSchema';
@@ -26,7 +27,7 @@ export const JobForm: React.FC<JobFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const commonTranslations = jobPostingTranslations.common;
-  const [industryType, setIndustryType] = useState<IndustryType | undefined>();
+  const [industryType, setIndustryType] = useState<IndustryType | ''>('');
   
   const [formState, setFormState] = useState({
     jobDetails: {
@@ -40,6 +41,8 @@ export const JobForm: React.FC<JobFormProps> = ({
       has_wax_room: false,
       no_supply_deduction: false,
       owner_will_train: false,
+      industry: initialValues?.industry || '',
+      experience_level: initialValues?.experience_level || 'experienced',
     },
     compensation: {
       employment_type: initialValues?.jobType || 'full-time',
@@ -59,7 +62,15 @@ export const JobForm: React.FC<JobFormProps> = ({
   });
   
   const handleJobDetailsChange = (details: any) => {
-    setFormState(prev => ({ ...prev, jobDetails: details }));
+    setFormState(prev => ({
+      ...prev, 
+      jobDetails: details
+    }));
+    
+    // Update the industry type if it has been selected
+    if (details.industry && details.industry !== industryType) {
+      setIndustryType(details.industry);
+    }
   };
   
   const handleCompensationChange = (compensation: any) => {
@@ -76,8 +87,10 @@ export const JobForm: React.FC<JobFormProps> = ({
     }));
   };
   
-  const handleTemplateSelection = (selectedIndustry: IndustryType, templateData: Partial<JobFormValues>) => {
-    setIndustryType(selectedIndustry);
+  const handleTemplateSelection = (templateData: Partial<JobFormValues>) => {
+    if (templateData.industry) {
+      setIndustryType(templateData.industry);
+    }
     
     // Update job details
     setFormState(prev => ({
@@ -86,6 +99,8 @@ export const JobForm: React.FC<JobFormProps> = ({
         ...prev.jobDetails,
         title: templateData.title || prev.jobDetails.title,
         description: templateData.description || prev.jobDetails.description,
+        industry: templateData.industry || prev.jobDetails.industry,
+        requirements: templateData.requirements || prev.jobDetails.requirements,
       },
       compensation: {
         ...prev.compensation,
@@ -113,7 +128,10 @@ export const JobForm: React.FC<JobFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-10 bg-white rounded-lg">
       {/* Template Selector */}
       <div className="mb-10">
-        <JobTemplateSelector onSelectTemplate={handleTemplateSelection} />
+        <JobTemplateSelector 
+          selectedIndustry={industryType} 
+          onSelectTemplate={handleTemplateSelection} 
+        />
       </div>
       
       <div className="space-y-12 mt-8">
@@ -123,7 +141,7 @@ export const JobForm: React.FC<JobFormProps> = ({
           onChange={handleJobDetailsChange}
           photoUploads={photoUploads}
           setPhotoUploads={setPhotoUploads}
-          industryType={industryType}
+          industryType={industryType || undefined}
         />
         
         {/* Compensation Section */}
