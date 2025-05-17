@@ -1,52 +1,41 @@
 
-/**
- * Language preference utility
- * Provides functions to manage language preferences throughout the application
- */
+// Language preference utilities
 
 type Language = 'en' | 'vi';
+type LanguageChangeListener = (language: Language) => void;
 
-// Define listeners array for language change events
-const listeners: Array<(lang: Language) => void> = [];
+const LANGUAGE_KEY = 'emviapp-language';
+const listeners: LanguageChangeListener[] = [];
 
-/**
- * Get the current language preference from localStorage or default to English
- */
+// Default to English if no preference is set
 export const getLanguagePreference = (): Language => {
-  const savedPreference = localStorage.getItem('emvi_language_preference');
-  return (savedPreference as Language) || 'en';
+  const savedLang = localStorage.getItem(LANGUAGE_KEY);
+  
+  if (savedLang && (savedLang === 'en' || savedLang === 'vi')) {
+    return savedLang;
+  }
+  
+  // Try to detect browser language
+  const browserLang = navigator.language.substring(0, 2).toLowerCase();
+  if (browserLang === 'vi') {
+    return 'vi';
+  }
+  
+  return 'en';
 };
 
-/**
- * Check if a language preference has been set
- */
-export const hasLanguagePreference = (): boolean => {
-  return localStorage.getItem('emvi_language_preference') !== null;
-};
-
-/**
- * Set language preference and notify all listeners
- */
 export const setLanguagePreference = (language: Language): void => {
-  localStorage.setItem('emvi_language_preference', language);
+  localStorage.setItem(LANGUAGE_KEY, language);
+  document.documentElement.lang = language;
   
-  // Notify all listeners about the language change
-  listeners.forEach(listener => listener(language));
-  
-  // Also dispatch a custom event for components that might not have direct access to listeners
-  window.dispatchEvent(new CustomEvent('languageChanged', { 
-    detail: { language } 
-  }));
+  // Notify all listeners
+  notifyListeners(language);
 };
 
-/**
- * Register a language change listener
- * Returns a function to remove the listener
- */
-export const addLanguageChangeListener = (callback: (lang: Language) => void): (() => void) => {
+export const addLanguageChangeListener = (callback: LanguageChangeListener): (() => void) => {
   listeners.push(callback);
   
-  // Return a function to remove this listener
+  // Return a function to remove the listener
   return () => {
     const index = listeners.indexOf(callback);
     if (index > -1) {
@@ -55,17 +44,12 @@ export const addLanguageChangeListener = (callback: (lang: Language) => void): (
   };
 };
 
-/**
- * Get a translation for a key
- * @param translations Object with language keys and values
- * @param key The translation key to look up
- * @param fallback Optional fallback if translation is not found
- */
-export const getTranslation = (
-  translations: Record<string, Record<string, string>>, 
-  key: string,
-  fallback?: string
-): string => {
-  const lang = getLanguagePreference();
-  return translations[lang]?.[key] || translations['en']?.[key] || fallback || key;
+// Private function to notify all listeners
+const notifyListeners = (language: Language): void => {
+  listeners.forEach(listener => listener(language));
 };
+
+// Initialize on load
+if (typeof document !== 'undefined') {
+  document.documentElement.lang = getLanguagePreference();
+}
