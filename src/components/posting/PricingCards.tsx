@@ -1,21 +1,27 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Sparkles, Check, Flame } from 'lucide-react'; // Changed Fire to Flame
+import { Sparkles, Check, Flame } from 'lucide-react'; 
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
 
-interface PricingCardProps {
-  id: string;
-  name: string;
-  price: number;
+export interface PricingCardProps {
+  id?: string;
+  name?: string;
+  price?: number;
   wasPrice?: number;
-  description: string;
-  vietnameseDescription: string;
+  description?: string;
+  vietnameseDescription?: string;
   tag?: string;
   popular?: boolean;
-  features: string[];
+  features?: string[];
   isFirstPost?: boolean;
-  tier: string;
+  tier?: string;
+  pricingOptions?: JobPricingOption[];
+  selectedPricing?: string;
+  onChange?: (pricingId: string) => void;
+  selectedDuration?: number;
+  onDurationChange?: (duration: number) => void;
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
@@ -65,7 +71,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         <div className="mb-4">
           <div className="flex items-baseline">
             <span className="text-3xl font-bold">
-              ${price.toFixed(2)}
+              ${price?.toFixed(2)}
             </span>
             {wasPrice && (
               <span className="ml-2 text-gray-500 line-through">
@@ -78,7 +84,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         </div>
         
         <ul className="space-y-2">
-          {features.map((feature, index) => (
+          {features?.map((feature, index) => (
             <li key={index} className="flex items-center text-sm text-gray-700">
               <Check className="h-4 w-4 mr-2 text-green-500" />
               {feature}
