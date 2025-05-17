@@ -9,6 +9,8 @@ const listeners: LanguageChangeListener[] = [];
 
 // Default to English if no preference is set
 export const getLanguagePreference = (): Language => {
+  if (typeof localStorage === 'undefined') return 'en';
+  
   const savedLang = localStorage.getItem(LANGUAGE_KEY);
   
   if (savedLang && (savedLang === 'en' || savedLang === 'vi')) {
@@ -16,20 +18,33 @@ export const getLanguagePreference = (): Language => {
   }
   
   // Try to detect browser language
-  const browserLang = navigator.language.substring(0, 2).toLowerCase();
-  if (browserLang === 'vi') {
-    return 'vi';
+  if (typeof navigator !== 'undefined') {
+    const browserLang = navigator.language.substring(0, 2).toLowerCase();
+    if (browserLang === 'vi') {
+      return 'vi';
+    }
   }
   
   return 'en';
 };
 
 export const setLanguagePreference = (language: Language): void => {
+  if (typeof localStorage === 'undefined') return;
+  
   localStorage.setItem(LANGUAGE_KEY, language);
-  document.documentElement.lang = language;
+  
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = language;
+  }
   
   // Notify all listeners
   notifyListeners(language);
+};
+
+// Check if a language preference has been explicitly set
+export const hasLanguagePreference = (): boolean => {
+  if (typeof localStorage === 'undefined') return false;
+  return localStorage.getItem(LANGUAGE_KEY) !== null;
 };
 
 export const addLanguageChangeListener = (callback: LanguageChangeListener): (() => void) => {

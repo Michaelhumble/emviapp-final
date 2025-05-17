@@ -1,10 +1,16 @@
 
 import { useState, useEffect } from 'react';
-import { getLanguagePreference, addLanguageChangeListener } from '@/utils/languagePreference';
+import { getLanguagePreference, setLanguagePreference, addLanguageChangeListener } from '@/utils/languagePreference';
 
 // Type for the translation dictionary
 type TranslationDictionary = {
   [key: string]: string;
+};
+
+// Type for translation input
+export type TranslationInput = string | {
+  english: string;
+  vietnamese: string;
 };
 
 // Translation dictionaries
@@ -46,17 +52,35 @@ export const useTranslation = () => {
     return removeListener;
   }, []);
 
-  // Translation function
-  const t = (key: string, fallback?: string): string => {
-    const dict = translations[language] || translations.en;
-    return dict[key] || fallback || key;
+  // Translation function that handles both string keys and direct translations
+  const t = (input: TranslationInput, fallback?: string): string => {
+    // Handle object-based translations
+    if (typeof input === 'object' && 'english' in input && 'vietnamese' in input) {
+      return language === 'vi' ? input.vietnamese : input.english;
+    }
+    
+    // Handle string key lookups from dictionary
+    if (typeof input === 'string') {
+      const dict = translations[language] || translations.en;
+      return dict[input] || fallback || input;
+    }
+    
+    // Fallback
+    return fallback || '';
   };
 
   return {
     t,
     language,
+    isVietnamese: language === 'vi',
     setLanguage: (lang: "en" | "vi") => {
       setLanguage(lang);
+      setLanguagePreference(lang);
+    },
+    toggleLanguage: () => {
+      const newLang = language === 'en' ? 'vi' : 'en';
+      setLanguage(newLang);
+      setLanguagePreference(newLang);
     }
   };
 };
