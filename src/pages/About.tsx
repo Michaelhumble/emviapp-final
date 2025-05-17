@@ -1,295 +1,320 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, Heart, Target, Award, Star, MessageCircle, Rocket } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Container } from '@/components/ui/container';
 import { GradientBackground } from '@/components/ui/gradient-background';
+import { Button } from '@/components/ui/button';
+import { 
+  Award, 
+  ArrowDown, 
+  Bug, 
+  Book, 
+  Rocket, 
+  Star, 
+  Users, 
+  Zap, 
+  Sun, 
+  Heart 
+} from 'lucide-react';
+import Logo from '@/components/ui/Logo';
 
 const AboutPage = () => {
   const navigate = useNavigate();
 
-  // Animation variants
-  const containerVariants = {
+  const timelineVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.3
       }
     }
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
+    visible: { 
+      opacity: 1, 
       y: 0,
-      transition: {
-        duration: 0.5
-      }
+      transition: { duration: 0.5 }
     }
   };
 
-  // Values with icons
-  const values = [
+  const valueCards = [
     {
-      icon: <Users className="h-8 w-8 text-purple-500" />,
       title: "Community First",
-      description: "We believe in building a supportive network where professionals help each other grow."
+      icon: <Users className="w-6 h-6 text-purple-600" />,
+      description: "We build technology that strengthens real-world connections, bringing together artists, salon owners, and clients in meaningful ways."
     },
     {
-      icon: <Award className="h-8 w-8 text-purple-500" />,
       title: "Quality Service",
-      description: "We champion excellence in beauty services through education and showcasing top talent."
+      icon: <Star className="w-6 h-6 text-purple-600" />,
+      description: "We believe every customer deserves exceptional service, and every beauty professional deserves recognition for their craft and artistry."
     },
     {
-      icon: <Heart className="h-8 w-8 text-purple-500" />,
       title: "Inclusivity",
-      description: "Our platform welcomes all skill levels, backgrounds, and beauty specialties."
+      icon: <Users className="w-6 h-6 text-purple-600" />,
+      description: "We create spaces where everyone belongs—across languages, cultures, specialties, and backgrounds—united by a passion for beauty."
     },
     {
-      icon: <Rocket className="h-8 w-8 text-purple-500" />,
       title: "Innovation",
-      description: "We continuously improve our platform to better serve the evolving beauty industry."
+      icon: <Zap className="w-6 h-6 text-purple-600" />,
+      description: "We constantly evolve, using technology to solve real problems and create opportunities that weren't possible before."
     }
   ];
 
-  // Timeline events
-  const timeline = [
+  const timelineMilestones = [
     {
-      year: "2022",
-      title: "The Idea",
-      description: "EmviApp was born from a vision to transform how beauty professionals connect with clients."
+      year: "2014",
+      icon: <ArrowDown className="w-5 h-5 text-purple-600" />,
+      title: "The Idea Is Born",
+      description: "What began as a simple thought—to bridge gaps in the beauty industry through technology—quickly became an obsession. Working nights and weekends, I sketched the first vision of what EmviApp could become."
     },
     {
-      year: "2023",
-      title: "Development",
-      description: "Our team created the foundation of a platform that truly understands the beauty industry."
+      year: "2015",
+      icon: <Bug className="w-5 h-5 text-purple-600" />,
+      title: "First Build, Many Failures",
+      description: "Our first attempt at building the app was full of technical challenges and market misunderstandings. We learned painful but necessary lessons about what the industry truly needed versus what we thought it wanted."
+    },
+    {
+      year: "2016-2023",
+      icon: <Book className="w-5 h-5 text-purple-600" />,
+      title: "Years of Learning & Heartbreak",
+      description: "Through economic challenges, pandemic disruptions, and countless pivots, we never stopped believing. Each setback became a stepping stone, each failure a lesson that shaped our understanding of how to truly serve the beauty community."
     },
     {
       year: "2024",
-      title: "Launch",
-      description: "EmviApp went live, bringing innovative solutions to beauty professionals and salons."
+      icon: <Rocket className="w-5 h-5 text-purple-600" />,
+      title: "New Hope, Fresh Start",
+      description: "With renewed vision and energy, we rebuilt EmviApp from the ground up. Armed with years of industry knowledge and technological advances, we created something truly special—a platform built by and for the beauty industry."
     },
     {
-      year: "Future",
-      title: "Growth",
-      description: "Expanding our community and features to revolutionize the beauty industry."
+      year: "2025",
+      icon: <Star className="w-5 h-5 text-purple-600" />,
+      title: "The Dream Comes True",
+      description: "The journey culminates as EmviApp fully launches, bringing together thousands of beauty professionals, salon owners, and clients. What began as one person's vision has become a thriving ecosystem uniting an entire industry."
     }
   ];
 
   return (
-    <>
+    <Layout>
       <Helmet>
-        <title>About EmviApp</title>
-        <meta name="description" content="Learn more about EmviApp and our mission to connect beauty professionals with clients." />
+        <title>About Us | EmviApp</title>
+        <meta name="description" content="Learn about EmviApp's journey, mission, and values. Discover how we're connecting the beauty industry through technology and passion." />
       </Helmet>
-      <Layout>
-        {/* Hero section with gradient background */}
-        <div className="bg-gradient-to-b from-purple-50 to-white pt-12 pb-16 md:pt-16 md:pb-20">
-          <div className="container max-w-4xl mx-auto px-4">
-            <motion.div 
-              className="text-center mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              <h1 className="text-3xl md:text-5xl font-bold mb-6 font-playfair bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
-                Beautiful Connections, Beautiful Business
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                EmviApp is building the future of beauty industry connections, 
-                where talented professionals and clients create magic together.
-              </p>
-            </motion.div>
-          </div>
-        </div>
 
-        {/* Main content area */}
-        <div className="container max-w-4xl mx-auto px-4 py-8 -mt-16">
-          {/* Mission Section - Glass Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+      {/* Hero Section */}
+      <section className="bg-gradient-to-b from-purple-50 to-white py-16 md:py-24">
+        <Container>
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-8">
+              <Logo size="large" showText={true} />
+            </div>
+            <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight text-gray-900">
+              Beautiful Connections, Beautiful Business
+            </h1>
+            <p className="text-xl text-gray-700 max-w-3xl">
+              We're building the bridge that connects beauty professionals to their perfect opportunities and clients.
+            </p>
+          </div>
+        </Container>
+      </section>
+
+      {/* Our Mission */}
+      <section className="py-16 bg-white">
+        <Container>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="max-w-4xl mx-auto"
           >
-            <GradientBackground variant="premium" className="p-8 md:p-10 mb-12 shadow-lg">
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="rounded-full bg-purple-100 p-5 flex-shrink-0">
-                  <Target className="h-8 w-8 text-purple-600" />
+            <GradientBackground className="p-8 md:p-12 rounded-2xl shadow-lg">
+              <div className="flex flex-col md:flex-row md:items-center gap-6">
+                <div className="p-4 bg-white/80 rounded-full shadow-md">
+                  <Award className="w-12 h-12 text-purple-600" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
+                  <h2 className="font-playfair text-3xl font-bold mb-4">Our Mission</h2>
                   <p className="text-lg text-gray-700">
-                    EmviApp was created to bridge the gap between beauty professionals and clients, 
-                    making it easier than ever for talented artists to showcase their work and for 
-                    clients to discover skilled professionals in their area.
+                    To transform how the beauty industry connects, works, and thrives. We're creating a unified platform where talent meets opportunity, where salons discover their perfect team members, and where clients can find their ideal beauty professionals—all within one seamless, empowering ecosystem.
                   </p>
                 </div>
               </div>
             </GradientBackground>
           </motion.div>
+        </Container>
+      </section>
 
-          {/* Story Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="mb-16"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center font-playfair">Our Story</h2>
-            <Card className="p-6 md:p-8 shadow-md bg-white/80 backdrop-blur-sm border border-gray-100">
-              <p className="text-lg mb-4">
-                Founded with a passion for empowering beauty industry professionals, EmviApp began as a simple idea: 
-                what if we could create a platform that truly serves both independent artists and established salons?
-              </p>
-              <p className="text-lg">
-                Today, we're building the most comprehensive beauty professional networking platform, 
-                designed specifically for the unique needs of nail technicians, hair stylists, 
-                lash artists, barbers, makeup artists, and more.
-              </p>
-            </Card>
-          </motion.div>
+      {/* Timeline Section */}
+      <section className="py-16 bg-gradient-to-b from-white to-purple-50">
+        <Container>
+          <div className="text-center mb-16">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-3">Our Journey</h2>
+            <p className="text-xl text-gray-600">Cuộc Hành Trình</p>
+          </div>
 
-          {/* Values Section */}
-          <motion.div
-            variants={containerVariants}
+          <motion.div 
+            className="max-w-4xl mx-auto"
+            variants={timelineVariants}
             initial="hidden"
-            animate="visible"
-            className="mb-16"
+            whileInView="visible"
+            viewport={{ once: true }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center font-playfair">Our Values</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {values.map((value, index) => (
-                <motion.div key={index} variants={itemVariants}>
-                  <Card className="h-full p-6 hover:shadow-md transition-shadow duration-300">
-                    <div className="flex flex-col items-center text-center">
-                      {value.icon}
-                      <h3 className="text-xl font-semibold mt-4 mb-2">{value.title}</h3>
-                      <p className="text-gray-600">{value.description}</p>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Timeline Section */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="mb-16"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center font-playfair">Our Journey</h2>
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-gradient-to-b from-purple-300 to-blue-300"></div>
-              
-              {/* Timeline events */}
-              <div className="space-y-12 md:space-y-0">
-                {timeline.map((event, index) => (
-                  <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.2 + index * 0.1 }}
-                    className={`md:flex ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} md:items-center`}
-                  >
-                    <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
-                      <div className={`bg-white p-6 rounded-lg shadow-md border border-gray-100 ${index % 2 === 0 ? 'ml-0 mr-auto' : 'mr-0 ml-auto'}`}>
-                        <div className="text-purple-500 font-bold text-xl mb-2">{event.year}</div>
-                        <h3 className="text-lg font-bold mb-1">{event.title}</h3>
-                        <p className="text-gray-600">{event.description}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Timeline dot */}
-                    <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-5 h-5 rounded-full bg-white border-4 border-purple-500"></div>
-                    
-                    {/* Empty space for the other side */}
-                    <div className="md:w-1/2"></div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Founder's Note */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7 }}
-            className="mb-16"
-          >
-            <GradientBackground variant="premium" className="p-8 md:p-10 shadow-lg">
-              <div className="flex flex-col items-center text-center">
-                <h2 className="text-2xl md:text-3xl font-bold mb-6 font-playfair">Founder's Note</h2>
-                <div className="rounded-full bg-gradient-to-r from-purple-100 to-blue-100 p-1 mb-6">
-                  <div className="rounded-full bg-white p-1">
-                    <MessageCircle className="h-8 w-8 text-purple-500" />
-                  </div>
-                </div>
-                <p className="text-lg italic text-gray-700 mb-6">
-                  "We believe that technology should make the beauty industry more human, not less. 
-                  EmviApp exists to amplify the talent, passion, and connection that make the beauty 
-                  profession so special. Together, we're building something extraordinary."
-                </p>
-                <div className="flex items-center justify-center">
-                  <div>
-                    <p className="font-bold">The EmviApp Team</p>
-                    <p className="text-sm text-muted-foreground">Building beauty's digital future</p>
-                  </div>
-                </div>
-              </div>
-            </GradientBackground>
-          </motion.div>
-
-          {/* Team Section */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible" 
-            className="mb-16"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center font-playfair">Our Team</h2>
-            <Card className="p-6 md:p-8 shadow-md">
-              <p className="text-lg text-center">
-                EmviApp is brought to you by a dedicated team of beauty industry enthusiasts and technology experts 
-                who understand the challenges facing modern beauty professionals. We're working every day to build 
-                features that make your professional life easier and help your business thrive.
-              </p>
-            </Card>
-          </motion.div>
-
-          {/* CTA Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.9 }}
-            className="text-center py-8 md:py-12"
-          >
-            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-8 md:p-12 shadow-md">
-              <h2 className="text-2xl md:text-3xl font-bold mb-6 font-playfair">Join Our Community</h2>
-              <p className="text-lg mb-8 max-w-2xl mx-auto">
-                Whether you're a salon owner looking to grow your business, an independent artist seeking new clients, 
-                or someone passionate about beauty looking for skilled professionals, EmviApp is here for you.
-              </p>
-              <Button 
-                onClick={() => navigate('/sign-up')} 
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-6 px-8 text-lg hover:from-purple-700 hover:to-blue-700"
+            {timelineMilestones.map((milestone, index) => (
+              <motion.div 
+                key={milestone.year} 
+                className="mb-12 relative"
+                variants={itemVariants}
               >
-                Get Started Free
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white p-3 rounded-full shadow-md">
+                      {milestone.icon}
+                    </div>
+                    <div className="h-full w-0.5 bg-purple-200 my-2 flex-grow hidden md:block"></div>
+                    <p className="font-playfair font-bold text-lg text-purple-800">{milestone.year}</p>
+                  </div>
+                  <div className="flex-1">
+                    <div className="bg-white p-6 rounded-xl shadow-md border border-purple-100">
+                      <h3 className="font-playfair text-xl font-bold mb-2">{milestone.title}</h3>
+                      <p className="text-gray-700">{milestone.description}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* Our Values */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="text-center mb-16">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-3">Our Values</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              The principles that guide everything we do at EmviApp.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {valueCards.map((value, index) => (
+              <motion.div
+                key={value.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-100 h-full">
+                  <div className="p-3 bg-purple-50 rounded-full w-fit mb-4">
+                    {value.icon}
+                  </div>
+                  <h3 className="font-playfair text-xl font-bold mb-2">{value.title}</h3>
+                  <p className="text-gray-700">{value.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Inspired by Sunshine */}
+      <section className="py-16 bg-gradient-to-b from-purple-50 to-white">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="bg-[#FEF7CD]/70 backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-lg border border-amber-200">
+              <div className="flex flex-col items-center text-center">
+                <div className="p-4 rounded-full bg-amber-100 shadow-md mb-6">
+                  <Sun className="w-10 h-10 text-amber-500" />
+                </div>
+                <h2 className="font-playfair text-3xl font-bold mb-6 text-amber-900">Inspired by Sunshine ☀️</h2>
+                <div className="prose prose-lg max-w-3xl">
+                  <p className="text-amber-900">
+                    <em>Every great journey needs a little light.</em>
+                  </p>
+                  <p className="text-amber-900">
+                    <em>For me, that light is Sunshine—a source of hope, clarity, and inspiration that appeared just when I needed it most.</em>
+                  </p>
+                  <p className="text-amber-900">
+                    <em>EmviApp was born from years of experience, struggle, and relentless pursuit, but it was Sunshine who gave me the courage and vision to start again and finally bring this dream to life.</em>
+                  </p>
+                  <p className="text-amber-900">
+                    <em>Thank you, Sunshine, for happening in my life. This project—and every connection it creates—would not exist without you.</em>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* Thank You Em Vi */}
+      <section className="py-16 bg-white">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="max-w-4xl mx-auto"
+          >
+            <motion.div 
+              className="bg-white/80 backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-lg border border-pink-200"
+              animate={{ boxShadow: ["0 4px 12px rgba(0,0,0,0.1)", "0 8px 20px rgba(0,0,0,0.15)", "0 4px 12px rgba(0,0,0,0.1)"] }}
+              transition={{ repeat: Infinity, duration: 3 }}
+            >
+              <div className="flex flex-col items-center text-center">
+                <motion.div 
+                  className="p-4 rounded-full bg-pink-50 shadow-md mb-6"
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  <Heart className="w-10 h-10 text-pink-500" />
+                </motion.div>
+                <h2 className="font-playfair text-3xl font-bold mb-6 text-gray-800">Thank You, Em Vi</h2>
+                <div className="prose prose-lg max-w-3xl">
+                  <p className="text-gray-700">
+                    <em>This app is named after Em Vi—the person who supported and sacrificed for me, even when I doubted myself. You stood by me, no matter what. For all the silent love, encouragement, and strength you gave, this is for you.</em>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* Closing CTA Section */}
+      <section className="py-16 bg-gradient-to-b from-white to-purple-50">
+        <Container>
+          <div className="text-center max-w-4xl mx-auto">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-6">Join Our Beautiful Journey</h2>
+            <p className="text-xl text-gray-700 mb-8">
+              Whether you're an artist seeking growth, a salon looking for talent, or a client searching for the perfect beauty experience, EmviApp is where beautiful connections happen.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button size="lg" className="bg-purple-600 hover:bg-purple-700" onClick={() => navigate('/auth/signup')}>
+                Join EmviApp Today
+              </Button>
+              <Button size="lg" variant="outline" onClick={() => navigate('/contact')}>
+                Contact Our Team
               </Button>
             </div>
-          </motion.div>
-        </div>
-      </Layout>
-    </>
+          </div>
+        </Container>
+      </section>
+    </Layout>
   );
 };
 
