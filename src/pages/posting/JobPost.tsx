@@ -1,75 +1,198 @@
 
-import React from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Card, CardContent } from '@/components/ui/card';
-import Layout from '@/components/layout/Layout';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import React, { useState } from 'react';
+import { JobForm } from '@/components/posting/job/JobForm';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { PricingOptions } from '@/utils/posting/types';
+import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
 
-const JobPost = () => {
-  const { t } = useTranslation();
+const JobPost: React.FC = () => {
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'standard',
+    isFirstPost: true,
+    isHotListing: false,
+    autoRenew: true,
+    durationMonths: 1
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState<'form' | 'payment'>('form');
+  const [formValues, setFormValues] = useState<JobFormValues | null>(null);
+  const navigate = useNavigate();
+  const { initiatePayment, isLoading } = usePostPayment();
+  
+  // Handle form submission
+  const handleFormSubmit = async (values: JobFormValues) => {
+    setFormValues(values);
+    setCurrentStep('payment');
+  };
 
-  // Placeholder function for form submission
-  const handleSubmitJob = async (values: any, photoUploads: File[], pricingOptions: any) => {
-    console.log('Submitting job:', { values, photoUploads, pricingOptions });
-    // Actual submission logic will be implemented later
+  // Handle final submission with pricing
+  const handleCreateCheckoutSession = async () => {
+    if (!formValues) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Check if photos were uploaded (optional)
+      if (photoUploads.length === 0) {
+        console.log("No photos uploaded");
+      }
+      
+      // Calculate price
+      const priceResult = calculateJobPostPrice(pricingOptions);
+      console.log("Job post price:", priceResult);
+      
+      // Destructure finalPrice from the returned price object
+      const { finalPrice } = priceResult;
+      
+      // If finalPrice is greater than 0, proceed to payment
+      if (finalPrice > 0) {
+        // Navigate to payment page with salon data
+        const result = await initiatePayment('job', formValues, pricingOptions);
+        
+        // Add safeguards for the returned result
+        if (result?.success) {
+          // Handle successful payment initiation
+          if (result && 'redirect' in result && result.redirect) {
+            // If there's a redirect URL in the response, follow it
+            const redirectUrl = typeof result.redirect === 'string' ? result.redirect : '/payment';
+            window.location.href = redirectUrl;
+          } else if (result && 'data' in result) {
+            // Handle case where there's data but no redirect
+            toast.success("Job post submitted successfully!");
+            navigate('/dashboard');
+          }
+        } else {
+          // Handle payment initiation failure
+          toast.error("Failed to process payment. Please try again.");
+        }
+      } else {
+        // For free listings, skip payment and go directly to success
+        toast.success("Your job listing has been posted!");
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error("Error submitting job post:", error);
+      toast.error("Failed to submit job post. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Handle changes to pricing options
+  const handleUpdatePricing = (options: Partial<PricingOptions>) => {
+    setPricingOptions(prev => ({ ...prev, ...options }));
+  };
+  
+  // Handle pricing tier selection
+  const handlePricingTierChange = (tier: string) => {
+    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
+  };
+  
+  // Go back to form step
+  const handleBackToForm = () => {
+    setCurrentStep('form');
   };
 
   return (
-    <Layout>
-      <div className="container max-w-5xl py-12 px-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
-              {t({
-                english: 'Create Job Posting',
-                vietnamese: 'Đăng Tin Tuyển Dụng'
-              })}
-            </h1>
-            <p className="text-gray-600 mt-2">
-              {t({
-                english: 'Find your perfect employee in minutes',
-                vietnamese: 'Tìm nhân viên lý tưởng của bạn trong vài phút'
-              })}
-            </p>
+    <div className="container max-w-6xl mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-2">Post a Job</h1>
+      <p className="text-gray-600 mb-8">
+        Create a detailed job listing to attract qualified candidates
+      </p>
+
+      {currentStep === 'form' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <JobForm 
+              onSubmit={handleFormSubmit}
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              isSubmitting={isSubmitting}
+            />
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>
-                {t({
-                  english: '~5 min to complete',
-                  vietnamese: '~5 phút để hoàn thành'
-                })}
-              </span>
+
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <Card className="p-6">
+                <h2 className="text-xl font-medium mb-4">Job Post Options</h2>
+                <JobPostOptions
+                  pricingOptions={pricingOptions}
+                  setPricingOptions={handleUpdatePricing}
+                />
+                
+                <Button 
+                  onClick={() => document.querySelector('form')?.requestSubmit()}
+                  className="w-full mt-4"
+                  disabled={isLoading || isSubmitting}
+                >
+                  {isLoading || isSubmitting ? "Processing..." : "Continue to Pricing"}
+                </Button>
+                
+                <p className="text-xs text-gray-500 mt-4 text-center">
+                  By proceeding, you agree to our Terms of Service
+                </p>
+              </Card>
             </div>
           </div>
         </div>
-        
-        <Card className="border shadow-md rounded-xl bg-gradient-to-b from-white to-gray-50">
-          <CardContent className="p-6 sm:p-8">
-            <EnhancedJobForm onSubmit={handleSubmitJob} />
-          </CardContent>
-        </Card>
-        
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p className="mb-1">
-            {t({
-              english: 'Need help? Contact our support team at support@emviapp.com',
-              vietnamese: 'Cần trợ giúp? Liên hệ với đội ngũ hỗ trợ tại support@emviapp.com'
-            })}
-          </p>
-          <p className="text-xs text-purple-500">
-            {t({
-              english: 'All job postings are reviewed within 24 hours',
-              vietnamese: 'Tất cả các bài đăng việc làm được xem xét trong vòng 24 giờ'
-            })}
-          </p>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Card className="p-6">
+              <ReviewAndPaymentSection
+                postType="job"
+                pricingOptions={pricingOptions}
+                onPricingChange={handlePricingTierChange}
+                onUpdatePricing={handleUpdatePricing}
+                onNextStep={handleCreateCheckoutSession}
+                onPrevStep={handleBackToForm}
+                jobData={formValues}
+                isFirstPost={pricingOptions.isFirstPost}
+                isSubmitting={isSubmitting}
+              />
+            </Card>
+          </div>
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <Card className="p-6">
+                <h2 className="text-xl font-medium mb-4">Job Post Summary</h2>
+                {formValues && (
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Job Title</h3>
+                      <p>{formValues.title}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Job Type</h3>
+                      <p className="capitalize">{formValues.jobType.replace('-', ' ')}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-sm text-gray-500">Location</h3>
+                      <p>{formValues.location}</p>
+                    </div>
+                  </div>
+                )}
+                <Button 
+                  onClick={handleBackToForm}
+                  variant="outline" 
+                  className="w-full mb-2"
+                >
+                  Edit Job Details
+                </Button>
+              </Card>
+            </div>
+          </div>
         </div>
-      </div>
-    </Layout>
+      )}
+    </div>
   );
 };
 

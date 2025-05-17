@@ -1,30 +1,14 @@
 
-import { z } from 'zod';
-
-// Define the base schema for a job posting
-export const jobFormSchema = z.object({
-  title: z.string().min(3).max(100),
-  description: z.string().min(10),
-  location: z.string().min(3),
-  jobType: z.enum(['full-time', 'part-time', 'contract', 'freelance', 'internship']),
-  salary_range: z.string().optional(),
-  contactEmail: z.string().email(),
-  experience_level: z.enum(['entry-level', 'intermediate', 'experienced', 'senior']).optional(),
-  requirements: z.array(z.string()).optional(),
-});
-
-// Export the TypeScript type for the form values
-export type JobFormValues = z.infer<typeof jobFormSchema>;
-
-// Define the industry types for job templates
-export type IndustryType = 'nail' | 'hair' | 'spa' | 'beauty' | 'makeup' | 'other';
-
-// Define the job template data structure
-export interface JobTemplate {
-  id: string;
-  icon: string;
+export interface JobFormValues {
   title: string;
-  description: string;
-  industry: IndustryType;
-  template: Partial<JobFormValues>;
+  description?: string;
+  location: string;
+  compensation_details?: string;
+  salary_range?: string;
+  jobType: 'full-time' | 'part-time' | 'contract' | 'temporary' | 'commission';
+  experience_level: 'entry' | 'intermediate' | 'experienced' | 'senior';
+  contactEmail: string;
+  requirements?: string[];
 }
+
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare';
