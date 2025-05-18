@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import Logo from "@/components/ui/Logo";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MobilePostMenuProps {
   className?: string;
@@ -17,6 +18,7 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { t, toggleLanguage, isVietnamese } = useTranslation();
+  const isMobile = useIsMobile();
   
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
@@ -31,6 +33,10 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
     navigate(path);
     setOpen(false);
   };
+
+  if (!isMobile) {
+    return null;
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -49,7 +55,7 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
       
       <SheetContent 
         side="left" 
-        className="w-[75%] border-r border-[#9A7B69]/20 bg-white/90 backdrop-blur-md shadow-lg p-0"
+        className="w-[75%] border-r border-[#9A7B69]/20 bg-white/90 backdrop-blur-md shadow-lg p-0 z-[100]"
       >
         <div className="flex flex-col h-full">
           {/* Logo and close button */}

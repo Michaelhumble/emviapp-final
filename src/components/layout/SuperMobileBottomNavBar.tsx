@@ -5,13 +5,14 @@ import { Home, Search, Briefcase, Store, User } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getLanguagePreference } from "@/utils/languagePreference";
 import { useState, useEffect } from "react";
-import Logo from "@/components/ui/Logo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const SuperMobileBottomNavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [language, setLanguage] = useState(getLanguagePreference());
+  const isMobile = useIsMobile();
 
   // Update language when it changes
   useEffect(() => {
@@ -58,7 +59,6 @@ const SuperMobileBottomNavBar = () => {
   ];
 
   // Only show on mobile screens
-  const isMobile = window.innerWidth < 768;
   if (!isMobile) return null;
 
   return (

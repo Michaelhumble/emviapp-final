@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import { Progress } from '@/components/ui/progress';
+import { useIsMobile } from '@/hooks/use-mobile';
+import MobilePostMenu from '@/components/posting/MobilePostMenu';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -17,10 +19,16 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
   totalSteps = 3 
 }) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Mobile navigation menu for posting flow */}
+      <div className="fixed top-4 right-4 z-50">
+        <MobilePostMenu />
+      </div>
+      
       <div className="container max-w-6xl py-8 px-4">
         {/* Progress tracking */}
         <div className="mb-4">
@@ -45,7 +53,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           transition={{ duration: 0.6 }}
         >
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
               {t({
                 english: 'Create Job Posting',
                 vietnamese: 'Đăng Tin Tuyển Dụng'

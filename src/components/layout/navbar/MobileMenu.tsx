@@ -4,10 +4,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, X, LayoutDashboard, LogOut, Globe, Home, Search, Briefcase, Store, Scissors, HelpCircle, Info, Phone, Heart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { mainNavigation } from "./config/navigationItems";
+import { motion } from "framer-motion";
 import Logo from "@/components/ui/Logo";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Define interface for the component props
 interface MobileMenuProps {
@@ -19,6 +20,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { t, toggleLanguage, isVietnamese } = useTranslation();
+  const isMobile = useIsMobile();
   
   // Map icons to navigation items
   const getIconComponent = (path: string) => {
@@ -41,6 +43,16 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
         return Home;
     }
   };
+
+  // Navigation items
+  const navItems = [
+    { label: "Home", path: "/" },
+    { label: "Jobs", path: "/jobs" },
+    { label: "Salons", path: "/salons" },
+    { label: "Artists", path: "/artists" },
+    { label: "About", path: "/about" },
+    { label: "Contact", path: "/contact" },
+  ];
   
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -53,6 +65,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
     toast.success(t("You've been signed out"));
   };
 
+  // If not mobile, don't render the mobile menu button
+  if (!isMobile) {
+    return null;
+  }
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -61,7 +78,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[80%] p-0 mobile-glass-drawer">
+      <SheetContent side="right" className="w-[80%] p-0 mobile-glass-drawer z-[100]">
         <div className="flex flex-col h-full p-0">
           {/* Header with logo and close button */}
           <div className="flex justify-between items-center p-4 border-b">
@@ -80,10 +97,16 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
           {/* Menu items */}
           <div className="flex-grow overflow-y-auto py-4 px-2">
             <nav className="space-y-1">
-              {mainNavigation.map((item, index) => {
+              {navItems.map((item, index) => {
                 const IconComponent = getIconComponent(item.path);
                 return (
-                  <div className="menu-item-enter" style={{ animationDelay: `${index * 75}ms` }} key={item.path}>
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + index * 0.05 }}
+                    className="menu-item-enter"
+                  >
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-lg py-6 font-medium"
@@ -92,9 +115,23 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
                       <IconComponent className="mr-3 h-[22px] w-[22px]" />
                       {t(item.label)}
                     </Button>
-                  </div>
+                  </motion.div>
                 );
               })}
+              
+              {/* Post a Job button - highlighted */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Button
+                  className="w-full mt-4 text-xl py-6 font-bold bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600"
+                  onClick={() => handleNavigation("/post-job")}
+                >
+                  {t("Post a Job")}
+                </Button>
+              </motion.div>
             </nav>
             
             <div className="border-t border-gray-100 my-4"></div>

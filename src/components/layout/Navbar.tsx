@@ -16,12 +16,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   
   const handleSignOut = async () => {
     await signOut();
@@ -50,31 +52,33 @@ const Navbar = () => {
 
         {/* Auth buttons or user menu with language toggle and Post Job button */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Post Job Button - visible on all screen sizes */}
-          <TooltipProvider>
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                {user ? (
-                  <Button 
-                    onClick={onPostJobClick} 
-                    className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
-                  >
-                    {t("Post a Job for Free")}
-                  </Button>
-                ) : (
-                  <Button 
-                    onClick={() => navigate("/sign-in")}
-                    className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
-                  >
-                    {t("Post a Job for Free")}
-                  </Button>
-                )}
-              </TooltipTrigger>
-              <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
-                <p>{tooltipText}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {/* Post Job Button - only visible on desktop */}
+          <div className="hidden md:block">
+            <TooltipProvider>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  {user ? (
+                    <Button 
+                      onClick={onPostJobClick} 
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => navigate("/sign-in")}
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
+                    </Button>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                  <p>{tooltipText}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           
           {/* Language toggle always visible on desktop */}
           <div className="hidden md:block">
@@ -90,7 +94,7 @@ const Navbar = () => {
             )}
           </div>
           
-          {/* Enhanced premium mobile menu */}
+          {/* Enhanced mobile menu */}
           <MobileMenu 
             user={user}
             handleSignOut={handleSignOut}
@@ -102,4 +106,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
