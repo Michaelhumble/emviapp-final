@@ -9,12 +9,14 @@ import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { useJobPosting } from '@/hooks/jobs/useJobPosting';
+import { FormProvider, useForm } from 'react-hook-form';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const { handleJobPost } = useJobPosting();
   const { initiatePayment, isLoading } = usePostPayment();
+  const formMethods = useForm();
 
   const handleStepChange = (step: number) => {
     setCurrentStep(step);
@@ -75,20 +77,22 @@ const JobPost = () => {
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={3}>
-      <Helmet>
-        <title>Post a Job | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Find qualified candidates for your salon position quickly with EmviApp job listings."
+    <FormProvider {...formMethods}>
+      <PostWizardLayout currentStep={currentStep} totalSteps={3}>
+        <Helmet>
+          <title>Post a Job | EmviApp</title>
+          <meta 
+            name="description" 
+            content="Find qualified candidates for your salon position quickly with EmviApp job listings."
+          />
+        </Helmet>
+        
+        <EnhancedJobForm 
+          onSubmit={handleSubmit}
+          onStepChange={handleStepChange}
         />
-      </Helmet>
-      
-      <EnhancedJobForm 
-        onSubmit={handleSubmit}
-        onStepChange={handleStepChange}
-      />
-    </PostWizardLayout>
+      </PostWizardLayout>
+    </FormProvider>
   );
 };
 

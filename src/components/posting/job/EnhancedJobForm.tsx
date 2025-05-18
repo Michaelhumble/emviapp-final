@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { JobFormValues } from './jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
 import JobTemplateSelector from './JobTemplateSelector';
+import { FormProvider, useForm } from 'react-hook-form';
 
 interface EnhancedJobFormProps {
   onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
@@ -29,6 +30,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     durationMonths: 1,
     isFirstPost: true
   });
+  
+  // Create a form method for the entire wizard
+  const formMethods = useForm();
   
   useEffect(() => {
     if (onStepChange) {
@@ -110,62 +114,64 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   };
   
   return (
-    <Card className="border shadow-md rounded-xl overflow-hidden bg-white">
-      <CardContent className="p-0">
-        <AnimatePresence mode="wait">
-          {currentStep === 'template' ? (
-            <motion.div
-              key="template-step"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="p-6"
-            >
-              <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-            </motion.div>
-          ) : currentStep === 'form' ? (
-            <motion.div
-              key="form-step"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="p-6"
-            >
-              <JobForm 
-                onSubmit={handleFormSubmit} 
-                photoUploads={photoUploads} 
-                setPhotoUploads={setPhotoUploads}
-                isSubmitting={isSubmitting}
-                initialValues={selectedTemplate || initialValues}
-                onBack={handleBack}
-                showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') ? true : false}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="review-step"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3 }}
-              className="p-6"
-            >
-              <ReviewAndPaymentSection 
-                formData={formData} 
-                photoUploads={photoUploads}
-                onBack={handleBack}
-                onSubmit={handleFinalSubmit}
-                isSubmitting={isSubmitting}
-                pricingOptions={pricingOptions}
-                setPricingOptions={setPricingOptions}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </CardContent>
-    </Card>
+    <FormProvider {...formMethods}>
+      <Card className="border shadow-md rounded-xl overflow-hidden bg-white">
+        <CardContent className="p-0">
+          <AnimatePresence mode="wait">
+            {currentStep === 'template' ? (
+              <motion.div
+                key="template-step"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="p-6"
+              >
+                <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+              </motion.div>
+            ) : currentStep === 'form' ? (
+              <motion.div
+                key="form-step"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="p-6"
+              >
+                <JobForm 
+                  onSubmit={handleFormSubmit} 
+                  photoUploads={photoUploads} 
+                  setPhotoUploads={setPhotoUploads}
+                  isSubmitting={isSubmitting}
+                  initialValues={selectedTemplate || initialValues}
+                  onBack={handleBack}
+                  showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') ? true : false}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="review-step"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+                className="p-6"
+              >
+                <ReviewAndPaymentSection 
+                  formData={formData} 
+                  photoUploads={photoUploads}
+                  onBack={handleBack}
+                  onSubmit={handleFinalSubmit}
+                  isSubmitting={isSubmitting}
+                  pricingOptions={pricingOptions}
+                  setPricingOptions={setPricingOptions}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    </FormProvider>
   );
 };
 

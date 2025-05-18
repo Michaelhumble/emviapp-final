@@ -1,362 +1,512 @@
 
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { JobFormValues } from './jobFormSchema';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
-import { IndustryType } from '@/utils/posting/types';
-import { beautySpecialties, commonRequirements, getAllSpecialties } from '@/data/specialties';
+import { useForm, FormProvider } from "react-hook-form";
 import MultiSelect, { Option } from '@/components/ui/multi-select';
-import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getAllSpecialties, commonRequirements } from '@/data/specialties';
+import { JobFormValues } from './jobFormSchema';
+import { useTranslation } from '@/hooks/useTranslation';
+import { ArrowLeft } from 'lucide-react';
+import { CreatableMultiSelect } from '@/components/ui/creatable-multi-select';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
   initialValues?: JobFormValues;
-  isSubmitting?: boolean;
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  isSubmitting?: boolean;
   onBack?: () => void;
   showVietnameseByDefault?: boolean;
 }
 
-// Helper function to convert string array to Option array
-const mapToOptions = (items: string[]): Option[] => {
-  return items.map(item => ({ label: item, value: item }));
-};
-
-// Helper function to convert Option array to string array
-const mapFromOptions = (options: Option[]): string[] => {
-  return options.map(option => option.value);
-};
-
 const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
   initialValues,
-  isSubmitting = false,
   photoUploads,
   setPhotoUploads,
+  isSubmitting = false,
   onBack,
-  showVietnameseByDefault = false,
+  showVietnameseByDefault = false
 }) => {
-  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null);
+  const { t } = useTranslation();
+  const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
+  
+  // Define allowed job types and experience levels
+  const allowedJobTypes = ["full-time", "part-time", "contract", "temporary", "commission"] as const;
+  const allowedExperienceLevels = ["entry", "intermediate", "experienced", "senior"] as const;
+  
+  // Form state
+  const [title, setTitle] = useState(initialValues?.title || '');
+  const [description, setDescription] = useState(initialValues?.description || '');
+  const [vietnameseDescription, setVietnameseDescription] = useState(initialValues?.vietnameseDescription || '');
+  const [location, setLocation] = useState(initialValues?.location || '');
+  const [contactEmail, setContactEmail] = useState(initialValues?.contactEmail || '');
+  const [contactName, setContactName] = useState(initialValues?.contactName || '');
+  const [contactPhone, setContactPhone] = useState(initialValues?.contactPhone || '');
   const [jobType, setJobType] = useState<"full-time" | "part-time" | "contract" | "temporary" | "commission">(
-    initialValues?.jobType || 'full-time'
+    initialValues?.jobType || "full-time"
   );
   const [experienceLevel, setExperienceLevel] = useState<"entry" | "intermediate" | "experienced" | "senior">(
-    initialValues?.experience_level || 'experienced'
+    initialValues?.experience_level || "experienced"
   );
-  const [includeVietnamese, setIncludeVietnamese] = useState(showVietnameseByDefault);
+  const [compensationDetails, setCompensationDetails] = useState(initialValues?.compensation_details || '');
+  const [salaryRange, setSalaryRange] = useState(initialValues?.salary_range || '');
   
-  // Convert string arrays to Option arrays for the MultiSelect component
+  // Convert string arrays to Option arrays for the multi-select components
+  const allSpecialtiesOptions: Option[] = getAllSpecialties().map(s => ({ value: s, label: s }));
+  const commonRequirementsOptions: Option[] = commonRequirements.map(r => ({ value: r, label: r }));
+  
+  // State for selected specialties and requirements with proper Option[] type
   const [selectedSpecialties, setSelectedSpecialties] = useState<Option[]>(
-    initialValues?.specialties ? mapToOptions(initialValues.specialties) : []
+    (initialValues?.specialties || []).map(s => ({ value: s, label: s }))
   );
+  
   const [selectedRequirements, setSelectedRequirements] = useState<Option[]>(
-    initialValues?.requirements ? mapToOptions(initialValues.requirements) : []
+    (initialValues?.requirements || []).map(r => ({ value: r, label: r }))
   );
   
-  // Available specialties based on selected industry
-  const [availableSpecialties, setAvailableSpecialties] = useState<Option[]>([]);
+  // Create form methods to provide via FormProvider
+  const formMethods = useForm();
   
-  // All common requirements as options
-  const requirementOptions = mapToOptions(commonRequirements);
-
-  // Form setup with default values
-  const form = useForm<JobFormValues>({
-    defaultValues: {
-      title: initialValues?.title || '',
-      description: initialValues?.description || '',
-      vietnameseDescription: initialValues?.vietnameseDescription || '',
-      location: initialValues?.location || '',
-      jobType: initialValues?.jobType || 'full-time',
-      experience_level: initialValues?.experience_level || 'experienced',
-      compensation_details: initialValues?.compensation_details || '',
-      salary_range: initialValues?.salary_range || '',
-      contactName: initialValues?.contactName || '',
-      contactEmail: initialValues?.contactEmail || '',
-      contactPhone: initialValues?.contactPhone || '',
-      specialties: initialValues?.specialties || [],
-      requirements: initialValues?.requirements || [],
-    }
-  });
-
-  // Update specialties when industry changes
-  useEffect(() => {
-    if (selectedIndustry && beautySpecialties[selectedIndustry]) {
-      setAvailableSpecialties(mapToOptions(beautySpecialties[selectedIndustry]));
-    } else {
-      // If no industry is selected, show all specialties
-      setAvailableSpecialties(mapToOptions(getAllSpecialties()));
-    }
-  }, [selectedIndustry]);
-
-  // For handling form submission
-  const handleFormSubmit = (data: JobFormValues) => {
-    // Convert Option arrays back to string arrays
-    const formData: JobFormValues = {
-      ...data,
-      jobType,
-      experience_level: experienceLevel,
-      specialties: mapFromOptions(selectedSpecialties),
-      requirements: mapFromOptions(selectedRequirements),
-    };
-    onSubmit(formData);
-  };
-
-  // Handler for job type selection with type validation
+  // Handle job type change with type safety
   const handleJobTypeChange = (value: string) => {
-    const allowedJobTypes = ["full-time", "part-time", "contract", "temporary", "commission"] as const;
     if (allowedJobTypes.includes(value as any)) {
       setJobType(value as typeof allowedJobTypes[number]);
     }
   };
-
-  // Handler for experience level selection with type validation
+  
+  // Handle experience level change with type safety
   const handleExperienceLevelChange = (value: string) => {
-    const allowedExperienceLevels = ["entry", "intermediate", "experienced", "senior"] as const;
     if (allowedExperienceLevels.includes(value as any)) {
       setExperienceLevel(value as typeof allowedExperienceLevels[number]);
     }
   };
-
+  
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const formData: JobFormValues = {
+      title,
+      description,
+      vietnameseDescription: showVietnamese ? vietnameseDescription : '',
+      location,
+      jobType,
+      experience_level: experienceLevel,
+      compensation_details: compensationDetails,
+      salary_range: salaryRange,
+      contactEmail,
+      contactName,
+      contactPhone,
+      specialties: selectedSpecialties.map(option => option.value),
+      requirements: selectedRequirements.map(option => option.value),
+    };
+    
+    onSubmit(formData);
+  };
+  
   return (
-    <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-      <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Job Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Job Title */}
-          <div className="space-y-2">
-            <FormLabel htmlFor="title">Job Title</FormLabel>
-            <Input
-              id="title"
-              placeholder="e.g. Experienced Nail Technician Needed"
-              {...form.register('title', { required: true })}
-            />
+    <FormProvider {...formMethods}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {onBack && (
+          <div className="mb-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onBack}
+              className="flex items-center text-gray-500 hover:text-gray-800"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              {t({
+                english: 'Back to Templates',
+                vietnamese: 'Quay lại Mẫu'
+              })}
+            </Button>
           </div>
-
-          {/* Description Tabs (English/Vietnamese) */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <FormLabel>Job Description</FormLabel>
-              <div className="flex items-center">
-                <Checkbox 
-                  id="include-vietnamese"
-                  checked={includeVietnamese}
-                  onCheckedChange={(checked) => setIncludeVietnamese(checked === true)}
+        )}
+        
+        <div className="space-y-5">
+          {/* Job Basic Info */}
+          <div>
+            <h3 className="text-lg font-medium mb-4">
+              {t({
+                english: 'Basic Information',
+                vietnamese: 'Thông tin cơ bản'
+              })}
+            </h3>
+            
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="title">
+                  {t({
+                    english: 'Job Title',
+                    vietnamese: 'Chức danh công việc'
+                  })}*
+                </Label>
+                <Input 
+                  id="title" 
+                  placeholder="e.g. Nail Technician, Hair Stylist"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
                 />
-                <label htmlFor="include-vietnamese" className="ml-2 text-sm text-gray-600">
-                  Include Vietnamese Translation
-                </label>
+              </div>
+              
+              <div>
+                <Label htmlFor="location">
+                  {t({
+                    english: 'Location',
+                    vietnamese: 'Địa điểm'
+                  })}*
+                </Label>
+                <Input 
+                  id="location" 
+                  placeholder="e.g. San Jose, CA"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="jobType">
+                    {t({
+                      english: 'Job Type',
+                      vietnamese: 'Loại công việc'
+                    })}
+                  </Label>
+                  <Select value={jobType} onValueChange={handleJobTypeChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t({
+                        english: 'Select job type',
+                        vietnamese: 'Chọn loại công việc'
+                      })} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="full-time">
+                        {t({
+                          english: 'Full-Time',
+                          vietnamese: 'Toàn thời gian'
+                        })}
+                      </SelectItem>
+                      <SelectItem value="part-time">
+                        {t({
+                          english: 'Part-Time',
+                          vietnamese: 'Bán thời gian'
+                        })}
+                      </SelectItem>
+                      <SelectItem value="contract">
+                        {t({
+                          english: 'Contract',
+                          vietnamese: 'Hợp đồng'
+                        })}
+                      </SelectItem>
+                      <SelectItem value="temporary">
+                        {t({
+                          english: 'Temporary',
+                          vietnamese: 'Tạm thời'
+                        })}
+                      </SelectItem>
+                      <SelectItem value="commission">
+                        {t({
+                          english: 'Commission',
+                          vietnamese: 'Hoa hồng'
+                        })}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="experience">
+                    {t({
+                      english: 'Experience Level',
+                      vietnamese: 'Cấp độ kinh nghiệm'
+                    })}
+                  </Label>
+                  <Select value={experienceLevel} onValueChange={handleExperienceLevelChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t({
+                        english: 'Select experience level',
+                        vietnamese: 'Chọn cấp độ kinh nghiệm'
+                      })} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="entry">
+                        {t({
+                          english: 'Entry Level',
+                          vietnamese: 'Mới vào nghề'
+                        })}
+                      </SelectItem>
+                      <SelectItem value="intermediate">
+                        {t({
+                          english: 'Intermediate',
+                          vietnamese: 'Trung cấp'
+                        })}
+                      </SelectItem>
+                      <SelectItem value="experienced">
+                        {t({
+                          english: 'Experienced',
+                          vietnamese: 'Có kinh nghiệm'
+                        })}
+                      </SelectItem>
+                      <SelectItem value="senior">
+                        {t({
+                          english: 'Senior',
+                          vietnamese: 'Cao cấp'
+                        })}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* Job Description */}
+          <div>
+            <h3 className="text-lg font-medium mb-4">
+              {t({
+                english: 'Job Description',
+                vietnamese: 'Mô tả công việc'
+              })}
+            </h3>
             
-            <Tabs defaultValue="english" className="w-full">
-              <TabsList className="mb-2">
-                <TabsTrigger value="english">English</TabsTrigger>
-                {includeVietnamese && <TabsTrigger value="vietnamese">Vietnamese</TabsTrigger>}
-              </TabsList>
-              
-              <TabsContent value="english">
-                <Textarea
-                  placeholder="Describe the job, responsibilities, and ideal candidate..."
-                  className="min-h-32"
-                  {...form.register('description')}
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="description">
+                  {t({
+                    english: 'Description (English)',
+                    vietnamese: 'Mô tả (Tiếng Anh)'
+                  })}*
+                </Label>
+                <Textarea 
+                  id="description" 
+                  rows={5}
+                  placeholder="Describe the job position, requirements, benefits, etc."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
                 />
-              </TabsContent>
+              </div>
               
-              {includeVietnamese && (
-                <TabsContent value="vietnamese">
-                  <Textarea
-                    placeholder="Vietnamese translation of job description..."
-                    className="min-h-32"
-                    {...form.register('vietnameseDescription')}
+              <div className="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="showVietnamese" 
+                  checked={showVietnamese}
+                  onChange={() => setShowVietnamese(!showVietnamese)}
+                  className="mr-2 h-4 w-4 rounded border-gray-300"
+                />
+                <Label htmlFor="showVietnamese" className="text-sm cursor-pointer">
+                  {t({
+                    english: 'Add Vietnamese description',
+                    vietnamese: 'Thêm mô tả tiếng Việt'
+                  })}
+                </Label>
+              </div>
+              
+              {showVietnamese && (
+                <div>
+                  <Label htmlFor="vietnameseDescription">
+                    {t({
+                      english: 'Description (Vietnamese)',
+                      vietnamese: 'Mô tả (Tiếng Việt)'
+                    })}
+                  </Label>
+                  <Textarea 
+                    id="vietnameseDescription" 
+                    rows={5}
+                    placeholder="Mô tả vị trí công việc, yêu cầu, lợi ích, v.v."
+                    value={vietnameseDescription}
+                    onChange={(e) => setVietnameseDescription(e.target.value)}
                   />
-                </TabsContent>
+                </div>
               )}
-            </Tabs>
-          </div>
-
-          {/* Location */}
-          <div className="space-y-2">
-            <FormLabel htmlFor="location">Location</FormLabel>
-            <Input
-              id="location"
-              placeholder="e.g. Los Angeles, CA"
-              {...form.register('location', { required: true })}
-            />
-          </div>
-
-          {/* Job Type */}
-          <div className="space-y-2">
-            <FormLabel htmlFor="jobType">Job Type</FormLabel>
-            <Select value={jobType} onValueChange={handleJobTypeChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select job type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="full-time">Full-time</SelectItem>
-                  <SelectItem value="part-time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="temporary">Temporary</SelectItem>
-                  <SelectItem value="commission">Commission</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Experience Level */}
-          <div className="space-y-2">
-            <FormLabel htmlFor="experienceLevel">Experience Level</FormLabel>
-            <Select value={experienceLevel} onValueChange={handleExperienceLevelChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select experience level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="entry">Entry Level</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="experienced">Experienced</SelectItem>
-                  <SelectItem value="senior">Senior</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Industry Selector */}
-          <div className="space-y-2">
-            <FormLabel htmlFor="industry">Industry (for specialized requirements)</FormLabel>
-            <Select 
-              value={selectedIndustry || ''} 
-              onValueChange={(value) => setSelectedIndustry(value as IndustryType || null)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select an industry (optional)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="nails">Nail Salon</SelectItem>
-                <SelectItem value="hair">Hair Salon</SelectItem>
-                <SelectItem value="lashes">Lash & Brow</SelectItem>
-                <SelectItem value="massage">Massage & Spa</SelectItem>
-                <SelectItem value="barber">Barber Shop</SelectItem>
-                <SelectItem value="makeup">Makeup Artist</SelectItem>
-                <SelectItem value="tattoo">Tattoo Artist</SelectItem>
-                <SelectItem value="skincare">Skincare Specialist</SelectItem>
-                <SelectItem value="brows">Eyebrow Specialist</SelectItem>
-              </SelectContent>
-            </Select>
+            </div>
           </div>
           
-          {/* Specialties */}
-          <div className="space-y-2">
-            <FormLabel>Specialties Required</FormLabel>
-            <MultiSelect
-              options={availableSpecialties}
-              selected={selectedSpecialties.map(o => o.value)}
-              onChange={(values) => {
-                const selectedOptions = availableSpecialties.filter(o => values.includes(o.value));
-                setSelectedSpecialties(selectedOptions);
-              }}
-              placeholder="Select specialties"
-            />
-          </div>
-          
-          {/* Requirements */}
-          <div className="space-y-2">
-            <FormLabel>Job Requirements</FormLabel>
-            <MultiSelect
-              options={requirementOptions}
-              selected={selectedRequirements.map(o => o.value)}
-              onChange={(values) => {
-                const selectedOptions = requirementOptions.filter(o => values.includes(o.value));
-                setSelectedRequirements(selectedOptions);
-              }}
-              placeholder="Select requirements"
-            />
-          </div>
-
           {/* Compensation */}
-          <div className="space-y-2">
-            <FormLabel htmlFor="salary_range">Salary/Rate Range (Optional)</FormLabel>
-            <Input
-              id="salary_range"
-              placeholder="e.g. $20-25/hr or $50k-60k/year"
-              {...form.register('salary_range')}
-            />
+          <div>
+            <h3 className="text-lg font-medium mb-4">
+              {t({
+                english: 'Compensation',
+                vietnamese: 'Thù lao'
+              })}
+            </h3>
+            
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="compensation_details">
+                  {t({
+                    english: 'Compensation Details',
+                    vietnamese: 'Chi tiết thù lao'
+                  })}
+                </Label>
+                <Input 
+                  id="compensation_details" 
+                  placeholder="e.g. Hourly rate + commission, $25-35/hr + tips"
+                  value={compensationDetails}
+                  onChange={(e) => setCompensationDetails(e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="salary_range">
+                  {t({
+                    english: 'Salary Range',
+                    vietnamese: 'Phạm vi lương'
+                  })}
+                </Label>
+                <Input 
+                  id="salary_range" 
+                  placeholder="e.g. $50,000 - $70,000/year"
+                  value={salaryRange}
+                  onChange={(e) => setSalaryRange(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
-
-          <div className="space-y-2">
-            <FormLabel htmlFor="compensation_details">Compensation Details (Optional)</FormLabel>
-            <Textarea
-              id="compensation_details"
-              placeholder="Additional details about compensation, benefits, commission structure, etc."
-              {...form.register('compensation_details')}
-            />
+          
+          {/* Skills & Requirements */}
+          <div>
+            <h3 className="text-lg font-medium mb-4">
+              {t({
+                english: 'Skills & Requirements',
+                vietnamese: 'Kỹ năng & Yêu cầu'
+              })}
+            </h3>
+            
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="specialties" className="mb-1 block">
+                  {t({
+                    english: 'Specialties',
+                    vietnamese: 'Chuyên môn'
+                  })}
+                </Label>
+                <MultiSelect
+                  options={allSpecialtiesOptions}
+                  selected={selectedSpecialties.map(o => o.value)}
+                  onChange={(values) => {
+                    setSelectedSpecialties(
+                      values.map(value => ({ value, label: value }))
+                    );
+                  }}
+                  placeholder={t({
+                    english: "Select specialties...",
+                    vietnamese: "Chọn chuyên môn..."
+                  })}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="requirements" className="mb-1 block">
+                  {t({
+                    english: 'Requirements',
+                    vietnamese: 'Yêu cầu'
+                  })}
+                </Label>
+                <CreatableMultiSelect
+                  value={selectedRequirements.map(o => o.value)}
+                  onChange={(values) => {
+                    setSelectedRequirements(
+                      values.map(value => ({ value, label: value }))
+                    );
+                  }}
+                  options={commonRequirements}
+                />
+              </div>
+            </div>
           </div>
-
+          
           {/* Contact Information */}
-          <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-medium">Contact Information</h3>
+          <div>
+            <h3 className="text-lg font-medium mb-4">
+              {t({
+                english: 'Contact Information',
+                vietnamese: 'Thông tin liên hệ'
+              })}
+            </h3>
             
-            <div className="space-y-2">
-              <FormLabel htmlFor="contactName">Contact Name (Optional)</FormLabel>
-              <Input
-                id="contactName"
-                placeholder="Name of the contact person"
-                {...form.register('contactName')}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <FormLabel htmlFor="contactEmail">Contact Email</FormLabel>
-              <Input
-                id="contactEmail"
-                placeholder="Email address for applications"
-                type="email"
-                {...form.register('contactEmail', { required: true })}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <FormLabel htmlFor="contactPhone">Contact Phone (Optional)</FormLabel>
-              <Input
-                id="contactPhone"
-                placeholder="Phone number"
-                type="tel"
-                {...form.register('contactPhone')}
-              />
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="contactEmail">
+                  {t({
+                    english: 'Email',
+                    vietnamese: 'Email'
+                  })}*
+                </Label>
+                <Input 
+                  id="contactEmail" 
+                  type="email"
+                  placeholder="contact@example.com"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="contactName">
+                    {t({
+                      english: 'Contact Name',
+                      vietnamese: 'Tên người liên hệ'
+                    })}
+                  </Label>
+                  <Input 
+                    id="contactName" 
+                    placeholder="John Smith"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="contactPhone">
+                    {t({
+                      english: 'Phone Number',
+                      vietnamese: 'Số điện thoại'
+                    })}
+                  </Label>
+                  <Input 
+                    id="contactPhone" 
+                    placeholder="(123) 456-7890"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </CardContent>
+        </div>
         
-        <CardFooter className="flex justify-between">
-          {onBack && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onBack}
-            >
-              Back
-            </Button>
-          )}
-          <Button 
-            type="submit" 
-            disabled={isSubmitting} 
-            className={cn(onBack ? "ml-auto" : "")}
+        <div className="pt-4 flex justify-end">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-6 py-2 transition-all bg-purple-600 hover:bg-purple-700 text-white"
           >
-            {isSubmitting ? 'Saving...' : 'Continue'}
+            {isSubmitting ? 
+              t({
+                english: 'Processing...',
+                vietnamese: 'Đang xử lý...'
+              }) : 
+              t({
+                english: 'Continue to Review',
+                vietnamese: 'Tiếp tục xem lại'
+              })
+            }
           </Button>
-        </CardFooter>
-      </Card>
-    </form>
+        </div>
+      </form>
+    </FormProvider>
   );
 };
 
