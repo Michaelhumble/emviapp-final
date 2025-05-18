@@ -1,20 +1,23 @@
 
-// Utility functions for generating promotional text and pricing
+import { PostType } from './types';
 
-// Base price based on post type and whether it's a first post
-export const getBasePrice = (postType: 'job' | 'salon', isFirstPost: boolean): number => {
+// Helper function to get base price based on post type and first post status
+export const getBasePrice = (postType: PostType, isFirstPost: boolean): number => {
+  if (isFirstPost) {
+    return 0; // Free for first post
+  }
+  
   switch (postType) {
-    case 'job':
-      return isFirstPost ? 9.99 : 19.99;
-    case 'salon':
-      return isFirstPost ? 19.99 : 29.99;
-    default:
-      return 9.99;
+    case 'job': return 9.99;
+    case 'salon': return 19.99;
+    case 'booth': return 14.99;
+    case 'supply': return 7.99;
+    default: return 9.99;
   }
 };
 
-// Get price for nationwide visibility
-export const getNationwidePrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): number => {
+// Helper function to get nationwide price based on post type
+export const getNationwidePrice = (postType: PostType): number => {
   switch (postType) {
     case 'job': return 5;
     case 'salon': return 10;
@@ -24,8 +27,8 @@ export const getNationwidePrice = (postType: 'job' | 'salon' | 'booth' | 'supply
   }
 };
 
-// Get price for fast sale package
-export const getFastSalePackagePrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): number => {
+// Helper function to get fast sale package price based on post type
+export const getFastSalePackagePrice = (postType: PostType): number => {
   switch (postType) {
     case 'job': return 15;
     case 'salon': return 20;
@@ -35,63 +38,62 @@ export const getFastSalePackagePrice = (postType: 'job' | 'salon' | 'booth' | 's
   }
 };
 
-// Get price for showing at top
-export const getShowAtTopPrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): number => {
+// Helper function to get show at top price based on post type
+export const getShowAtTopPrice = (postType: PostType): number => {
   switch (postType) {
     case 'job': return 10;
     case 'salon': return 15;
-    case 'booth': return 15;
-    case 'supply': return 10;
+    case 'booth': return 10;
+    case 'supply': return 7;
     default: return 10;
   }
 };
 
-// Get price for bundling with job post
-export const getJobPostBundlePrice = (postType: 'salon' | 'booth' | 'supply'): number => {
-  switch (postType) {
-    case 'salon': return 15;
-    case 'booth': return 10;
-    case 'supply': return 8;
-    default: return 15;
-  }
+// Helper function to get job post bundle price based on post type
+export const getJobPostBundlePrice = (postType: PostType): number => {
+  return 15;
 };
 
-// Get price with discount applied
-export const getPriceWithDiscount = (price: number, hasReferrals: boolean): number => {
-  if (hasReferrals) {
-    return price * 0.8; // 20% discount
+// Helper function to get price with discount
+export const getPriceWithDiscount = (price: number, hasReferral: boolean): number => {
+  if (hasReferral) {
+    return price * 0.8; // 20% discount for referrals
   }
   return price;
 };
 
-// Generate promotional text for different post types and options
-export const generatePromotionalText = (postType: string): string => {
+// Generate promotional text for a specific post type
+export const generatePromotionalText = (postType: PostType): string => {
   switch (postType) {
     case 'job':
-      return 'Post your job opportunity and reach qualified candidates today!';
+      return 'Reach qualified candidates faster with our premium job listing options';
     case 'salon':
-      return 'Showcase your salon and attract new customers with a premium listing!';
+      return 'Showcase your salon to potential buyers with enhanced visibility options';
     case 'booth':
-      return 'Find the perfect booth renter with a targeted booth listing!';
+      return 'Get your booth rental seen by more stylists with our promotional packages';
     case 'supply':
-      return 'Sell your supplies to professionals in the beauty industry!';
+      return 'Connect with more buyers for your supplies with enhanced visibility';
     default:
-      return 'Post your listing and reach your target audience today!';
+      return 'Boost your listing visibility with our premium options';
   }
 };
 
-// Add the missing function for first post promotional text
-export const getFirstPostPromotionalText = (postType: string): string => {
+// Helper function to get promotional pricing text
+export const getPromotionalPricingText = (postType: PostType, isFirstPost: boolean): string => {
+  if (isFirstPost) {
+    return 'First listing free! Upgrade for more visibility.';
+  }
+  
   switch (postType) {
     case 'job':
-      return 'First job post: Save 50% with our special introductory offer!';
+      return 'Standard job listing: $9.99/month. Premium options available.';
     case 'salon':
-      return 'First salon listing: Enjoy special pricing for new users!';
+      return 'Standard salon listing: $19.99/month. Feature your salon for faster sale.';
     case 'booth':
-      return 'First booth listing: Special introductory price!';
+      return 'Standard booth rental listing: $14.99/month. Attract quality stylists faster.';
     case 'supply':
-      return 'First supply listing: Special discount for new sellers!';
+      return 'Standard supply listing: $7.99/month. Reach more potential buyers.';
     default:
-      return 'First post special: Save on your first listing!';
+      return 'Standard listing starts at $9.99/month. Premium options available.';
   }
 };

@@ -1,6 +1,6 @@
 
 export interface PricingOptions {
-  selectedPricingTier: 'standard' | 'premium' | 'gold' | 'diamond' | 'free';
+  selectedPricingTier: JobPricingTier;
   durationMonths: number;
   isFirstPost?: boolean;
   autoRenew?: boolean;

@@ -1,177 +1,147 @@
 
-import React from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { PricingOptions } from '@/utils/posting/types';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import React, { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { Switch } from '@/components/ui/switch';
-import { Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { getNationwidePrice } from '@/components/posting/smart-ad-options/pricing';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobPostOptionsProps {
-  pricingOptions: PricingOptions;
-  setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
+  options: PricingOptions;
+  onOptionsChange: (options: PricingOptions) => void;
+  isFirstPost?: boolean;
 }
 
-const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPricingOptions }) => {
-  const { t, isVietnamese } = useTranslation();
-  
-  const handlePricingChange = (tier: string) => {
-    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
-    
-    // Turn off auto-renew for free tier
-    if (tier === 'free') {
-      setPricingOptions(prev => ({ ...prev, autoRenew: false }));
-    }
+const JobPostOptions: React.FC<JobPostOptionsProps> = ({
+  options,
+  onOptionsChange,
+  isFirstPost = false
+}) => {
+  const { t } = useTranslation();
+  const [localOptions, setLocalOptions] = useState<PricingOptions>({
+    ...options,
+    isFirstPost
+  });
+
+  const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
+    const updatedOptions: PricingOptions = {
+      ...localOptions,
+      [option]: value
+    };
+    setLocalOptions(updatedOptions);
+    onOptionsChange(updatedOptions);
   };
-  
-  const handleDurationChange = (months: number) => {
-    setPricingOptions(prev => ({ ...prev, durationMonths: months }));
+
+  const handleTierChange = (tier: JobPricingTier) => {
+    const updatedOptions: PricingOptions = {
+      ...localOptions,
+      selectedPricingTier: tier
+    };
+    setLocalOptions(updatedOptions);
+    onOptionsChange(updatedOptions);
   };
-  
+
   return (
-    <Card className="mt-8 border-purple-200">
-      <CardHeader>
-        <CardTitle>{t({
-          english: "Choose Your Posting Plan",
-          vietnamese: "Chọn Gói Đăng Tin"
-        })}</CardTitle>
-        <CardDescription>{t({
-          english: "Select the right plan for reaching quality candidates",
-          vietnamese: "Lựa chọn gói phù hợp để tiếp cận ứng viên chất lượng"
-        })}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <RadioGroup 
-          value={pricingOptions.selectedPricingTier}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
-        >
-          {jobPricingOptions.map(option => (
-            <Label
-              key={option.id}
-              className={cn(
-                "cursor-pointer rounded-lg border-2 p-4 hover:bg-gray-50 transition-colors relative",
-                pricingOptions.selectedPricingTier === option.id 
-                  ? "border-purple-500 bg-purple-50" 
-                  : "border-gray-200"
-              )}
-              htmlFor={`plan-${option.id}`}
-            >
-              <div className="flex justify-between">
-                <div>
-                  <RadioGroupItem 
-                    value={option.id} 
-                    id={`plan-${option.id}`} 
-                    className="sr-only"
-                    onClick={() => handlePricingChange(option.id)} 
-                  />
-                  <div className="font-bold text-lg">{option.name}</div>
-                  <div className="text-gray-500 text-sm">
-                    {isVietnamese ? option.vietnameseDescription : option.description}
-                  </div>
-                </div>
-                <div className="font-bold text-lg">
-                  {option.price === 0 
-                    ? t({
-                        english: "Free",
-                        vietnamese: "Miễn phí"
-                      })
-                    : new Intl.NumberFormat('en-US', { 
-                        style: 'currency', 
-                        currency: 'USD',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2
-                      }).format(option.price)
-                  }
-                </div>
-              </div>
-              <div className="mt-3 space-y-1">
-                {option.features.slice(0, 3).map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-purple-500" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-              {pricingOptions.selectedPricingTier === option.id && (
-                <div className="absolute -top-2 -right-2 rounded-full bg-purple-500 text-white p-1">
-                  <Check className="h-4 w-4" />
-                </div>
-              )}
-            </Label>
-          ))}
-        </RadioGroup>
-        
-        <div className="mt-6">
-          <h3 className="font-medium mb-3">{t({
-            english: "Duration",
-            vietnamese: "Thời hạn"
-          })}</h3>
-          <RadioGroup 
-            value={pricingOptions.durationMonths.toString()}
-            className="grid grid-cols-2 md:grid-cols-4 gap-3"
-          >
-            {[1, 3, 6, 12].map(months => {
-              const discountLabel = months > 1 
-                ? months === 3 ? '-10%' 
-                : months === 6 ? '-15%' 
-                : '-20%' 
-                : null;
-              
-              return (
-                <Label
-                  key={months}
-                  className={cn(
-                    "cursor-pointer rounded-lg border-2 p-3 hover:bg-gray-50 transition-colors text-center relative",
-                    pricingOptions.durationMonths === months 
-                      ? "border-purple-500 bg-purple-50" 
-                      : "border-gray-200"
-                  )}
-                  htmlFor={`duration-${months}`}
-                >
-                  <RadioGroupItem 
-                    value={months.toString()} 
-                    id={`duration-${months}`} 
-                    className="sr-only"
-                    onClick={() => handleDurationChange(months)} 
-                  />
-                  <div className="font-medium">
-                    {months} {t({
-                      english: months === 1 ? "Month" : "Months",
-                      vietnamese: "Tháng"
-                    })}
-                  </div>
-                  
-                  {discountLabel && (
-                    <div className="absolute -top-2 -right-2 text-xs bg-green-500 text-white px-1.5 py-0.5 rounded-full">
-                      {discountLabel}
-                    </div>
-                  )}
-                </Label>
-              );
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium font-playfair">{t({
+        english: 'Enhance Your Listing',
+        vietnamese: 'Nâng cao tin đăng của bạn'
+      })}</h3>
+      <p className="text-sm text-gray-500">
+        {t({
+          english: 'Select additional options to increase visibility and attract more candidates',
+          vietnamese: 'Chọn các tùy chọn bổ sung để tăng khả năng hiển thị và thu hút nhiều ứng viên hơn'
+        })}
+      </p>
+
+      <RadioGroup
+        value={localOptions.selectedPricingTier}
+        onValueChange={(value) => handleTierChange(value as JobPricingTier)}
+        className="space-y-2"
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="standard" id="standard" />
+          <Label htmlFor="standard" className="text-sm font-medium">
+            {t({
+              english: 'Standard',
+              vietnamese: 'Tiêu chuẩn'
             })}
-          </RadioGroup>
+            <span className="ml-2 text-sm font-normal text-gray-500">$9.99/month</span>
+          </Label>
         </div>
-        
-        {pricingOptions.selectedPricingTier !== 'free' && (
-          <div className="mt-6 flex items-center space-x-2">
-            <Switch
-              id="auto-renew"
-              checked={pricingOptions.autoRenew}
-              onCheckedChange={(checked) => 
-                setPricingOptions(prev => ({ ...prev, autoRenew: checked }))
-              }
-            />
-            <Label htmlFor="auto-renew">{t({
-              english: "Auto-renew my posting when it expires (5% discount)",
-              vietnamese: "Tự động gia hạn khi hết hạn (giảm 5%)"
-            })}</Label>
+
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="premium" id="premium" />
+          <Label htmlFor="premium" className="text-sm font-medium">
+            {t({
+              english: 'Premium',
+              vietnamese: 'Cao cấp'
+            })}
+            <span className="ml-2 text-sm font-normal text-gray-500">$19.99/month</span>
+          </Label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="gold" id="gold" />
+          <Label htmlFor="gold" className="text-sm font-medium">
+            {t({
+              english: 'Gold',
+              vietnamese: 'Vàng'
+            })}
+            <span className="ml-2 text-sm font-normal text-gray-500">$39.99/month</span>
+          </Label>
+        </div>
+      </RadioGroup>
+
+      <div className="space-y-3 pt-2">
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="isNationwide"
+            checked={localOptions.isNationwide || false}
+            onCheckedChange={(checked) => handleOptionChange('isNationwide', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="isNationwide" className="text-sm font-medium">
+              {t({
+                english: 'Nationwide Visibility',
+                vietnamese: 'Hiển thị toàn quốc'
+              })}
+              <span className="ml-2 text-sm font-normal text-gray-500">{getNationwidePrice('job')}</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t({
+                english: 'Show your job to candidates across the country',
+                vietnamese: 'Hiển thị công việc của bạn cho ứng viên trên toàn quốc'
+              })}
+            </p>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="autoRenew"
+            checked={localOptions.autoRenew || false}
+            onCheckedChange={(checked) => handleOptionChange('autoRenew', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="autoRenew" className="text-sm font-medium">
+              {t({
+                english: 'Auto-renew Monthly',
+                vietnamese: 'Tự động gia hạn hàng tháng'
+              })}
+              <span className="ml-2 text-sm font-normal text-green-600">-5%</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t({
+                english: 'Get 5% discount when you enable auto-renewal',
+                vietnamese: 'Nhận giảm giá 5% khi bạn bật tự động gia hạn'
+              })}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

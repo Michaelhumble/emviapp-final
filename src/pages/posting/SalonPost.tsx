@@ -15,6 +15,7 @@ const SalonPost: React.FC = () => {
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     selectedPricingTier: 'standard',
+    durationMonths: 1,
     isFirstPost: true
   });
   const navigate = useNavigate();
