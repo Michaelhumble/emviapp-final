@@ -10,9 +10,11 @@ interface ContactInfoSectionProps {
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Contact Information</h2>
-      <p className="text-sm text-muted-foreground">How candidates can reach you about this position</p>
+    <div className="space-y-6">
+      <div className="border-b pb-2">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Contact Information</h2>
+        <p className="text-sm text-muted-foreground">How candidates can reach you about this position</p>
+      </div>
       
       <div className="grid gap-6 md:grid-cols-2">
         <FormField
@@ -20,11 +22,12 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
           name="contactName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contact Name</FormLabel>
+              <FormLabel className="text-gray-900">Contact Name</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Who candidates should ask for" 
-                  {...field} 
+                  {...field}
+                  className="rounded-xl h-11 border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
                 />
               </FormControl>
               <FormMessage />
@@ -37,12 +40,13 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
           name="contactPhone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number</FormLabel>
+              <FormLabel className="text-gray-900">Phone Number</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="(555) 123-4567" 
                   type="tel"
-                  {...field} 
+                  {...field}
+                  className="rounded-xl h-11 border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
                 />
               </FormControl>
               <FormMessage />
@@ -55,13 +59,14 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
           name="contactEmail"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel>Email Address *</FormLabel>
+              <FormLabel className="text-gray-900">Email Address *</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="your-email@example.com" 
                   type="email"
                   required
-                  {...field} 
+                  {...field}
+                  className="rounded-xl h-11 border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
                 />
               </FormControl>
               <FormMessage />

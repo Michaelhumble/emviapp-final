@@ -1,46 +1,7 @@
 
-export interface UserPostingStats {
-  jobPostCount: number;
-  salonPostCount: number;
-  boothPostCount: number;
-  supplyPostCount: number;
-  totalPostCount?: number;
-  hasReferrals?: boolean;
-}
-
 export interface PricingOptions {
-  selectedPricingTier: string;
+  selectedPricingTier: 'standard' | 'premium' | 'gold' | 'diamond' | 'free';
+  durationMonths: number;
   isFirstPost?: boolean;
-  isRenewal?: boolean;
-  durationMonths?: number;
-  isNationwide?: boolean;
-  fastSalePackage?: boolean;
-  showAtTop?: boolean;
-  bundleWithJobPost?: boolean;
-  hasReferrals?: boolean;
   autoRenew?: boolean;
-  isHotListing?: boolean;
 }
-
-export type PostType = 'job' | 'salon' | 'booth' | 'supply';
-
-export interface JobPricingOption {
-  id: string;
-  name: string;
-  price: number;
-  wasPrice?: number;
-  basePrice?: number;
-  finalPrice?: number;
-  description: string;
-  vietnameseDescription?: string;
-  tag?: string;
-  popular?: boolean;
-  discountPercentage?: number;
-  features: string[];
-  isFirstPost?: boolean;
-  tier?: JobPricingTier;
-}
-
-export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';
-
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
