@@ -5,27 +5,31 @@ import { JobPricingOption } from './types';
 export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Free',
+    name: 'Free Trial',
     price: 0,
-    description: 'Basic listing for first-time users',
-    vietnameseDescription: 'Niêm yết cơ bản cho người dùng lần đầu',
-    tag: 'Basic',
+    wasPrice: 9.99,
+    description: 'Try our platform risk-free for 30 days',
+    vietnameseDescription: 'Dùng thử nền tảng miễn phí trong 30 ngày',
+    tag: 'Limited Time',
     features: [
       'One-time free job post',
       'Standard visibility',
       'Basic applicant matching',
-      'Valid for 7 days',
-      'Limited search results'
+      'Valid for 30 days',
+      'Auto-converts to paid after trial'
     ],
     isFirstPost: true,
     tier: 'free',
-    primaryBenefit: 'Try our platform risk-free',
-    upsellText: 'Limited visibility'
+    primaryBenefit: 'Limited Time: Try for Free',
+    upsellText: 'Credit card required',
+    color: 'bg-gray-50',
+    limitedSpots: '50% gone'
   },
   {
-    id: 'standard',
-    name: 'Standard',
+    id: 'basic',
+    name: 'Basic',
     price: 9.99,
+    wasPrice: 19.99,
     description: 'Regular visibility in search results',
     vietnameseDescription: 'Hiển thị thông thường trong kết quả tìm kiếm',
     features: [
@@ -36,19 +40,21 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Unlimited candidate responses'
     ],
     tier: 'standard',
-    primaryBenefit: 'Reach more qualified candidates',
-    upsellText: '2x more visibility'
+    primaryBenefit: 'For early adopters!',
+    upsellText: 'Special Launch Pricing – Ends Soon!',
+    color: 'bg-slate-50',
+    limitedSpots: '75% gone'
   },
   {
-    id: 'premium',
-    name: 'Premium',
-    price: 19.99,
+    id: 'plus',
+    name: 'Plus',
+    price: 14.99,
     wasPrice: 29.99,
     description: 'Enhanced visibility for quality candidates',
     vietnameseDescription: 'Hiển thị nổi bật để thu hút ứng viên chất lượng',
     popular: true,
     recommended: true,
-    tag: 'Best Value',
+    tag: 'Most Popular',
     features: [
       'Featured position in search',
       'Priority matching algorithm',
@@ -57,16 +63,19 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Full access to candidate profiles'
     ],
     tier: 'premium',
-    primaryBenefit: 'Get featured in top search results',
-    upsellText: '5x more applications'
+    primaryBenefit: 'Most Popular – Smart Choice',
+    upsellText: 'Growing Salon\'s Top Pick',
+    color: 'bg-gradient-to-br from-purple-500/5 to-indigo-500/5',
+    limitedSpots: '60% gone'
   },
   {
-    id: 'gold',
-    name: 'Gold',
-    price: 39.99,
+    id: 'pro',
+    name: 'Pro',
+    price: 24.99,
+    wasPrice: 49.99,
     description: 'Maximum exposure to top talent',
     vietnameseDescription: 'Tiếp cận tối đa tới nhân tài hàng đầu',
-    tag: 'Limited Spots',
+    tag: 'Power Seller',
     features: [
       'Top placement guarantee',
       'Premium badge on listing',
@@ -75,27 +84,33 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Dedicated support agent'
     ],
     tier: 'gold',
-    primaryBenefit: 'Guaranteed top placement',
-    upsellText: '10x more visibility'
+    primaryBenefit: 'Maximum Visibility & Fastest Hires',
+    upsellText: 'Power Seller Choice',
+    color: 'bg-gradient-to-br from-amber-500/5 to-yellow-500/5',
+    limitedSpots: '85% gone'
   },
   {
     id: 'diamond',
     name: 'Diamond',
-    price: 99.99,
-    description: 'VIP service - by invitation only',
-    vietnameseDescription: 'Dịch vụ VIP - chỉ dành cho khách mời',
-    tag: 'VIP',
+    price: 999.99,
+    wasPrice: 1299.99,
+    description: 'Ultimate Status - Only 3 Total Spots',
+    vietnameseDescription: 'Trạng thái Cao cấp - Chỉ còn 3 vị trí',
+    tag: 'Ultimate',
     features: [
-      'Exclusive listing positioning',
+      'Exclusive top positioning',
       'Talent sourcing team',
       'Personalized candidate matching',
       'Background screening included',
-      'Interview scheduling service'
+      'VIP concierge service'
     ],
     tier: 'diamond',
-    primaryBenefit: 'Talent sourcing team works for you',
-    upsellText: 'VIP treatment',
-    hidden: true
+    primaryBenefit: 'The world sees your ad first',
+    upsellText: 'Waitlist or Bid Required',
+    color: 'bg-gradient-to-br from-cyan-500/5 to-blue-500/5',
+    hidden: true,
+    annual: true,
+    limitedSpots: '2 spots left'
   }
 ];
 
@@ -105,11 +120,11 @@ export const calculateFinalPrice = (basePrice: number, duration: number) => {
   
   // Apply discount based on subscription length
   if (duration === 3) {
-    discountPercentage = 5;
+    discountPercentage = 10; // 10% for 3 months
   } else if (duration === 6) {
-    discountPercentage = 10;
+    discountPercentage = 20; // 20% for 6 months
   } else if (duration === 12) {
-    discountPercentage = 20;
+    discountPercentage = 35; // 35% for 12 months
   }
   
   const originalPrice = basePrice * duration;
@@ -140,8 +155,6 @@ export const calculateJobPostPrice = (options: any) => {
   // Calculate with duration discounts
   return calculateFinalPrice(pricingOption.price, durationMonths);
 };
-
-// Add the missing exported functions that were in the error messages
 
 // Function to get job post pricing summary
 export const getJobPostPricingSummary = (selectedTier: string, duration: number, isFirstPost: boolean = false) => {
@@ -184,5 +197,5 @@ export const getAmountInCents = (amount: number) => {
 // Function to check if a plan is a subscription
 export const isSubscriptionPlan = (tier: string) => {
   // Define which tiers are subscription-based
-  return ['premium', 'gold', 'diamond'].includes(tier);
+  return ['basic', 'plus', 'pro', 'diamond'].includes(tier);
 };

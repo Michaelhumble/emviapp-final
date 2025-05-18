@@ -33,12 +33,14 @@ export interface JobPricingOption {
   popular?: boolean;
   isFirstPost?: boolean;
   tier: JobPricingTier;
-  // New properties
+  // Properties for FOMO and UI
   primaryBenefit?: string;
   upsellText?: string;
   color?: string;
   recommended?: boolean;
   hidden?: boolean;
+  annual?: boolean;
+  limitedSpots?: string;
 }
 
 export interface UserPostingStats {

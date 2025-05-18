@@ -80,27 +80,14 @@ const JobPost = () => {
         specialties: safeSpecialties,
         requirements: safeRequirements,
         post_type: 'job',
-        image: imageUrl, // Add the image URL
-        templateType: formData.templateType // Include the template type
+        image: imageUrl, 
+        templateType: formData.templateType
       };
       
-      // For free tier, process directly without payment
-      if (pricingOptions.selectedPricingTier === 'free') {
-        const success = await handleJobPost(jobDetails);
-        
-        if (success) {
-          toast.success("Your job post has been created successfully!");
-          navigate('/jobs');
-          return true;
-        } else {
-          toast.error("Failed to create job post");
-          return false;
-        }
-      } else {
-        // For paid tiers, initiate payment
-        const result = await initiatePayment('job', jobDetails, pricingOptions);
-        return result?.success || false;
-      }
+      // Even for free tier, process through payment flow to collect credit card
+      // This ensures all plans require a valid credit card
+      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      return result?.success || false;
     } catch (error) {
       console.error('Error submitting job post:', error);
       toast.error("Error creating job post");

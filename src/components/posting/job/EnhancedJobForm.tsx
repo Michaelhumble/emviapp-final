@@ -26,10 +26,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     selectedPricingTier: 'premium',
-    isNationwide: false,
     durationMonths: 1,
-    autoRenew: false,
-    isFirstPost: true
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
   });
 
   // Update the handleJobFormSubmit to match the new JobForm onSubmit signature
