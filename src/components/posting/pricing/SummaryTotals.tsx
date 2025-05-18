@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Clock } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface SummaryTotalsProps {
   originalPrice: number;
@@ -50,6 +51,8 @@ export function SummaryTotals({
     setShowAutoRenewDialog(false);
   };
 
+  const isFreeplan = finalPrice === 0;
+
   return (
     <div className="space-y-3 border-t pt-4">
       <h3 className="text-lg font-medium">Summary</h3>
@@ -62,7 +65,7 @@ export function SummaryTotals({
         
         {discountPercentage > 0 && (
           <div className="flex justify-between text-green-600">
-            <span>Duration Discount ({discountPercentage}%)</span>
+            <span>Duration Discount ({discountPercentage}% OFF)</span>
             <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
           </div>
         )}
@@ -84,7 +87,7 @@ export function SummaryTotals({
               <span className="ml-2 text-sm font-medium">Auto-renew subscription</span>
             </label>
             <span className="text-xs text-green-600 font-medium">
-              {autoRenew ? "Locked in price!" : ""}
+              {autoRenew ? "Can turn off anytime" : ""}
             </span>
           </div>
         )}
@@ -94,6 +97,28 @@ export function SummaryTotals({
             ? <span>Your subscription will automatically renew every {durationMonths} month{durationMonths > 1 ? 's' : ''} at ${(finalPrice / durationMonths).toFixed(2)}/month.</span>
             : <span>Your post will expire after {durationMonths} month{durationMonths > 1 ? 's' : ''}. <span className="text-amber-600 font-medium">You'll lose your current pricing!</span></span>
           }
+        </div>
+
+        {/* Free plan messaging */}
+        {isFreeplan && (
+          <div className="mt-3 text-xs bg-yellow-50 p-3 rounded-md text-amber-800">
+            <p className="font-medium">Credit card required for free trial. Cancel anytime, no risk.</p>
+            <p className="mt-1">After your 30-day free trial, plan will automatically convert to paid unless canceled.</p>
+          </div>
+        )}
+
+        {/* Trust badges */}
+        <div className="mt-4 pt-3 border-t flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-gray-500" />
+            <span className="text-xs text-gray-600">100% Secure Payment via Stripe</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="text-[10px] py-0 h-4">
+              <Clock className="h-3 w-3 mr-1" />
+              Limited Time Offer
+            </Badge>
+          </div>
         </div>
       </div>
 

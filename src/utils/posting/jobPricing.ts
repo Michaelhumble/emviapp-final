@@ -23,7 +23,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     primaryBenefit: 'Limited Time: Try for Free',
     upsellText: 'Credit card required',
     color: 'bg-gray-50',
-    limitedSpots: '50% gone'
+    limitedSpots: '50% OFF'
   },
   {
     id: 'basic',
@@ -43,7 +43,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     primaryBenefit: 'For early adopters!',
     upsellText: 'Special Launch Pricing – Ends Soon!',
     color: 'bg-slate-50',
-    limitedSpots: '75% gone'
+    limitedSpots: '50% OFF'
   },
   {
     id: 'plus',
@@ -66,7 +66,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     primaryBenefit: 'Most Popular – Smart Choice',
     upsellText: 'Growing Salon\'s Top Pick',
     color: 'bg-gradient-to-br from-purple-500/5 to-indigo-500/5',
-    limitedSpots: '60% gone'
+    limitedSpots: '50% OFF'
   },
   {
     id: 'pro',
@@ -87,15 +87,15 @@ export const jobPricingOptions: JobPricingOption[] = [
     primaryBenefit: 'Maximum Visibility & Fastest Hires',
     upsellText: 'Power Seller Choice',
     color: 'bg-gradient-to-br from-amber-500/5 to-yellow-500/5',
-    limitedSpots: '85% gone'
+    limitedSpots: '50% OFF'
   },
   {
     id: 'diamond',
     name: 'Diamond',
     price: 999.99,
     wasPrice: 1299.99,
-    description: 'Ultimate Status - Only 3 Total Spots',
-    vietnameseDescription: 'Trạng thái Cao cấp - Chỉ còn 3 vị trí',
+    description: 'Ultimate Status - Apply for Waitlist',
+    vietnameseDescription: 'Trạng thái Cao cấp - Đăng ký vào danh sách chờ',
     tag: 'Ultimate',
     features: [
       'Exclusive top positioning',
@@ -108,9 +108,9 @@ export const jobPricingOptions: JobPricingOption[] = [
     primaryBenefit: 'The world sees your ad first',
     upsellText: 'Waitlist or Bid Required',
     color: 'bg-gradient-to-br from-cyan-500/5 to-blue-500/5',
-    hidden: true,
+    hidden: false, // Changed to false to show it
     annual: true,
-    limitedSpots: '2 spots left'
+    limitedSpots: '25% OFF'
   }
 ];
 

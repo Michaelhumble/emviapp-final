@@ -32,7 +32,7 @@ export function DurationSelector({
 
   // Helper function to determine badge content based on duration
   const getBadgeContent = (months: number) => {
-    if (months === 6) return "Top Choice";
+    if (months === 6) return "Most Popular";
     if (months === 12) return "Best Value!";
     return null;
   };

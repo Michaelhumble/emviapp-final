@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,7 +17,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   onChange,
   files = [],
   photoUploads = [],
-  maxFiles = 1,
+  maxFiles = 5, // Updated to 5 photos by default
   className,
   accept,
 }) => {

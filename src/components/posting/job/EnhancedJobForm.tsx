@@ -75,6 +75,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             setPhotoUploads={setPhotoUploads}
             initialValues={jobFormData || undefined}
             isCustomTemplate={isCustomTemplate}
+            maxPhotos={5} // Set maximum photos to 5
           />
         </CardContent>
       </TabsContent>

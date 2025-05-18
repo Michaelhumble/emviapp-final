@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Lock, Sparkles, Loader2 } from 'lucide-react';
+import { Lock, Sparkles, Loader2, ShieldCheck } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -44,7 +44,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
         <div className="bg-[#fefbf6] p-4 rounded-[18px] border border-[#f3efe0] text-gray-800">
           <p className="font-medium">
             {t({
-              english: `${discountPercentage}% discount applied for ${duration} month${duration > 1 ? 's' : ''}`,
+              english: `${discountPercentage}% OFF for ${duration} month${duration > 1 ? 's' : ''}`,
               vietnamese: `Giảm giá ${discountPercentage}% cho ${duration} tháng`
             })}
           </p>
@@ -88,8 +88,12 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
                   {!isFreePlan && <Sparkles className="h-4 w-4 text-[#f3efe0]" />}
                   <span>
                     {t({
-                      english: isFreePlan ? 'Continue with Free Plan' : 'Post My Job & Reach Top Candidates',
-                      vietnamese: isFreePlan ? 'Tiếp tục với gói miễn phí' : 'Đăng tin ngay & Tiếp cận ứng viên hàng đầu'
+                      english: isFreePlan 
+                        ? 'Continue with Free Trial' 
+                        : `Continue & Pay ${finalPrice > 0 ? `$${finalPrice.toFixed(2)}` : ''}`,
+                      vietnamese: isFreePlan 
+                        ? 'Tiếp tục với gói miễn phí' 
+                        : `Đăng tin ngay & Thanh toán ${finalPrice > 0 ? `$${finalPrice.toFixed(2)}` : ''}`
                     })}
                   </span>
                 </motion.div>
@@ -123,7 +127,12 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             
             <div className="flex items-center justify-center mt-2 text-gray-400">
               <Lock className="h-3 w-3 mr-1" />
-              <span>100% Secure Payment • Premium Support</span>
+              <span>100% Secure Payment • No Hidden Fees • Cancel Anytime</span>
+            </div>
+            
+            <div className="flex items-center justify-center mt-2">
+              <ShieldCheck className="h-3 w-3 mr-1 text-indigo-500" />
+              <span className="text-indigo-600 font-medium">Stripe Secure</span>
             </div>
           </div>
         </motion.div>
