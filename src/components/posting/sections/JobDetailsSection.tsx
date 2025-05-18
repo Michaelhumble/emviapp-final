@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { jobPostingTranslations } from '@/translations/jobPostingForm';
@@ -38,6 +38,7 @@ const JobDetailsSection: React.FC<JobDetailsProps> = ({
   const validationTranslations = jobPostingTranslations.validation;
   
   const [newRequirement, setNewRequirement] = useState('');
+  const [newSpecialty, setNewSpecialty] = useState('');
   
   const handleAddRequirement = () => {
     if (newRequirement.trim() === '') return;
@@ -54,6 +55,24 @@ const JobDetailsSection: React.FC<JobDetailsProps> = ({
     onChange({
       ...details,
       requirements: updatedRequirements
+    });
+  };
+  
+  const handleAddSpecialty = () => {
+    if (newSpecialty.trim() === '') return;
+    onChange({
+      ...details,
+      specialties: [...(details.specialties || []), newSpecialty.trim()]
+    });
+    setNewSpecialty('');
+  };
+  
+  const handleRemoveSpecialty = (index: number) => {
+    const updatedSpecialties = [...(details.specialties || [])];
+    updatedSpecialties.splice(index, 1);
+    onChange({
+      ...details,
+      specialties: updatedSpecialties
     });
   };
   
@@ -158,6 +177,12 @@ const JobDetailsSection: React.FC<JobDetailsProps> = ({
             value={newRequirement}
             onChange={(e) => setNewRequirement(e.target.value)}
             className="flex-1 rounded-r-none"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddRequirement();
+              }
+            }}
           />
           <Button 
             type="button" 
@@ -177,6 +202,50 @@ const JobDetailsSection: React.FC<JobDetailsProps> = ({
                 <X 
                   className="h-4 w-4 ml-1 cursor-pointer hover:text-red-500" 
                   onClick={() => handleRemoveRequirement(index)}
+                />
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Specialties */}
+      <div>
+        <Label className="text-base">
+          {t("Specialties")}
+        </Label>
+        
+        <div className="flex mt-1.5">
+          <Input
+            placeholder={t("Add a specialty (e.g. Gel, Acrylic, Color)")}
+            value={newSpecialty}
+            onChange={(e) => setNewSpecialty(e.target.value)}
+            className="flex-1 rounded-r-none"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddSpecialty();
+              }
+            }}
+          />
+          <Button 
+            type="button" 
+            onClick={handleAddSpecialty}
+            className="rounded-l-none bg-purple-600"
+          >
+            <Sparkles className="h-4 w-4 mr-1" />
+            {t("Add Specialty")}
+          </Button>
+        </div>
+        
+        {details.specialties && details.specialties.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {details.specialties.map((specialty, index) => (
+              <Badge key={index} variant="secondary" className="pl-3 pr-2 py-1.5 text-sm bg-purple-50 text-purple-700">
+                {specialty}
+                <X 
+                  className="h-4 w-4 ml-1 cursor-pointer hover:text-red-500" 
+                  onClick={() => handleRemoveSpecialty(index)}
                 />
               </Badge>
             ))}

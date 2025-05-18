@@ -3,17 +3,41 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/layout/LanguageToggle';
+import { Progress } from '@/components/ui/progress';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
+  currentStep?: number;
+  totalSteps?: number;
 }
 
-const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
+const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ 
+  children, 
+  currentStep = 1, 
+  totalSteps = 2 
+}) => {
   const { t } = useTranslation();
+  const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="container max-w-5xl py-12 px-4">
+      <div className="container max-w-6xl py-8 px-4">
+        {/* Progress tracking */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2 text-sm">
+            <span className="text-gray-500">
+              {t({
+                english: `Step ${currentStep} of ${totalSteps}`,
+                vietnamese: `Bước ${currentStep} / ${totalSteps}`
+              })}
+            </span>
+            <span className="text-gray-500 font-medium">
+              {progressPercentage}%
+            </span>
+          </div>
+          <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />
+        </div>
+        
         <motion.div 
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10"
           initial={{ opacity: 0, y: -20 }}
@@ -55,9 +79,16 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
           </div>
         </motion.div>
         
-        {children}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="overflow-hidden"
+        >
+          {children}
+        </motion.div>
         
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-12 text-center text-sm text-gray-500">
           <motion.p 
             className="mb-1"
             initial={{ opacity: 0 }}
@@ -79,6 +110,15 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children }) => {
               english: 'All job postings are reviewed within 24 hours',
               vietnamese: 'Tất cả các bài đăng việc làm được xem xét trong vòng 24 giờ'
             })}
+          </motion.p>
+          
+          <motion.p 
+            className="mt-4 text-xs font-light"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0, duration: 0.5 }}
+          >
+            Inspired by Sunshine ☀️
           </motion.p>
         </div>
       </div>

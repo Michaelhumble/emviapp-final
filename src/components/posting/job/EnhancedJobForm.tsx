@@ -1,18 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { JobForm } from './JobForm';
 import { ReviewAndPaymentSection } from '../sections/ReviewAndPaymentSection';
 import { Card, CardContent } from '@/components/ui/card';
 import { JobFormValues } from './jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface EnhancedJobFormProps {
   onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   initialValues?: JobFormValues;
+  onStepChange?: (step: number) => void;
 }
 
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, initialValues }) => {
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
+  onSubmit, 
+  initialValues,
+  onStepChange 
+}) => {
   const [currentStep, setCurrentStep] = useState<'form' | 'review'>('form');
   const [formData, setFormData] = useState<any>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
@@ -22,6 +28,17 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, initialValu
     durationMonths: 1,
     isFirstPost: true
   });
+
+  const cardAnimation = useScrollAnimation({
+    animation: 'fade-in',
+    threshold: 0.1,
+  });
+  
+  useEffect(() => {
+    if (onStepChange) {
+      onStepChange(currentStep === 'form' ? 1 : 2);
+    }
+  }, [currentStep, onStepChange]);
   
   const handleFormSubmit = (data: any) => {
     setFormData(data);
@@ -45,6 +62,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, initialValu
         experience_level: formData.experience_level || 'experienced',
         contactEmail: formData.contact_info?.email || '',
         requirements: formData.requirements || [],
+        specialties: formData.specialties || [],
       };
       
       const success = await onSubmit(jobFormValues, photoUploads, finalOptions);
@@ -64,7 +82,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, initialValu
   };
   
   return (
-    <Card className="border shadow-lg rounded-xl overflow-hidden bg-gradient-to-b from-white to-gray-50">
+    <Card 
+      className="border shadow-lg rounded-xl overflow-hidden bg-gradient-to-b from-white to-gray-50"
+      {...cardAnimation}
+    >
       <CardContent className="p-0">
         <AnimatePresence mode="wait">
           {currentStep === 'form' ? (

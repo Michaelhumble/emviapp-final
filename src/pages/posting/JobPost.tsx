@@ -17,6 +17,7 @@ const JobPost = () => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
   
   // Scroll to top on component mount
   useEffect(() => {
@@ -52,6 +53,10 @@ const JobPost = () => {
     }
   };
 
+  const handleFormStepChange = (step: number) => {
+    setCurrentStep(step);
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -75,8 +80,11 @@ const JobPost = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <PostWizardLayout>
-          <EnhancedJobForm onSubmit={handleSubmit} />
+        <PostWizardLayout currentStep={currentStep} totalSteps={2}>
+          <EnhancedJobForm 
+            onSubmit={handleSubmit} 
+            onStepChange={handleFormStepChange}
+          />
           {showConfetti && (
             <WalletConfetti 
               trigger={showConfetti} 

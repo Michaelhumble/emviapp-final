@@ -1,95 +1,307 @@
 
-import { IndustryType, JobFormValues } from './jobFormSchema';
+import { JobFormValues, IndustryType } from './jobFormSchema';
 
-// Define templates structure with all required fields
-interface JobTemplate extends Partial<JobFormValues> {
-  location: string;
-  shortDescription?: string;
-}
+// Define the industry type properly
+export type { IndustryType };
 
-// Define job templates for each industry
-export const jobTemplates: Record<IndustryType, JobTemplate> = {
+// Template suggestions for AI polish (disabled as per requirements)
+export const aiPolishSuggestions: Record<IndustryType, string[]> = {
+  nails: [
+    "Highlight exceptional nail art skills",
+    "Emphasize clean, hygienic work environment",
+    "Mention ability to work with different nail types"
+  ],
+  hair: [
+    "Showcase color technique expertise",
+    "Emphasize cutting-edge styling knowledge",
+    "Highlight client consultation skills"
+  ],
+  lashes: [
+    "Emphasize precision and attention to detail",
+    "Highlight knowledge of different lash techniques",
+    "Mention client safety and comfort focus"
+  ],
+  massage: [
+    "Focus on therapeutic techniques",
+    "Emphasize client relaxation experience",
+    "Mention specialized modalities"
+  ],
+  tattoo: [
+    "Highlight artistic capabilities",
+    "Emphasize cleanliness and safety protocols",
+    "Showcase versatility in styles"
+  ],
+  brows: [
+    "Emphasize precision and symmetry skills",
+    "Highlight knowledge of different brow techniques",
+    "Mention attention to facial features"
+  ],
+  skincare: [
+    "Focus on skincare knowledge",
+    "Emphasize personalized treatment capabilities",
+    "Highlight product expertise"
+  ]
+};
+
+export const aiPolishSuggestionsVietnamese: Record<IndustryType, string[]> = {
+  nails: [
+    "Nhấn mạnh kỹ năng làm móng nghệ thuật xuất sắc",
+    "Nhấn mạnh môi trường làm việc sạch sẽ, vệ sinh",
+    "Đề cập đến khả năng làm việc với các loại móng khác nhau"
+  ],
+  hair: [
+    "Thể hiện chuyên môn kỹ thuật màu sắc",
+    "Nhấn mạnh kiến thức phong cách hiện đại",
+    "Nhấn mạnh kỹ năng tư vấn khách hàng"
+  ],
+  lashes: [
+    "Nhấn mạnh sự chính xác và chú ý đến chi tiết",
+    "Nêu bật kiến thức về các kỹ thuật mi khác nhau",
+    "Đề cập đến sự an toàn và thoải mái của khách hàng"
+  ],
+  massage: [
+    "Tập trung vào các kỹ thuật trị liệu",
+    "Nhấn mạnh trải nghiệm thư giãn của khách hàng",
+    "Đề cập đến các phương pháp chuyên biệt"
+  ],
+  tattoo: [
+    "Nhấn mạnh khả năng nghệ thuật",
+    "Nhấn mạnh quy trình vệ sinh và an toàn",
+    "Thể hiện sự linh hoạt trong các phong cách"
+  ],
+  brows: [
+    "Nhấn mạnh kỹ năng chính xác và đối xứng",
+    "Nêu bật kiến thức về các kỹ thuật lông mày khác nhau",
+    "Đề cập đến sự chú ý đến đặc điểm khuôn mặt"
+  ],
+  skincare: [
+    "Tập trung vào kiến thức chăm sóc da",
+    "Nhấn mạnh khả năng điều trị cá nhân hóa",
+    "Nêu bật chuyên môn về sản phẩm"
+  ]
+};
+
+// Job templates for each industry
+export const jobTemplates: Record<IndustryType | 'custom', JobFormValues> = {
   nails: {
-    title: "Experienced Nail Technician - $1,200+ Weekly",
-    description: "We are seeking an experienced and talented nail technician to join our busy salon in the heart of Beverly Hills. The ideal candidate has at least 2 years of experience in acrylic, gel, dip powder, and nail art. You'll work with a diverse clientele in a clean, upscale environment with state-of-the-art equipment. We provide ongoing training and opportunities for advancement.",
-    vietnameseDescription: "Chúng tôi đang tìm kiếm một kỹ thuật viên làm móng có kinh nghiệm và tài năng để tham gia vào tiệm salon nhộn nhịp của chúng tôi ở trung tâm Beverly Hills. Ứng viên lý tưởng có ít nhất 2 năm kinh nghiệm về acrylic, gel, bột nhúng và nghệ thuật làm móng. Bạn sẽ làm việc với nhiều khách hàng đa dạng trong một môi trường sạch sẽ, cao cấp với thiết bị hiện đại. Chúng tôi cung cấp đào tạo liên tục và cơ hội thăng tiến.",
-    location: "Beverly Hills, CA",
-    salary_range: "$1,200 - $2,000 weekly",
+    title: "Nail Technician Superstar",
+    description: "Join our award-winning salon as a Nail Technician! We're looking for talented, friendly professionals who can deliver exceptional manicures, pedicures, and nail art. Our clients love getting pampered in our modern, clean environment, and we need someone who can maintain our high standards while bringing their own creative flair.",
+    vietnameseDescription: "Tham gia cùng salon đạt giải thưởng của chúng tôi với vị trí Kỹ thuật viên Nail! Chúng tôi đang tìm kiếm các chuyên gia tài năng, thân thiện có thể cung cấp dịch vụ làm móng tay, móng chân và nghệ thuật móng xuất sắc. Khách hàng của chúng tôi thích được chăm sóc trong môi trường hiện đại, sạch sẽ của chúng tôi, và chúng tôi cần người có thể duy trì tiêu chuẩn cao của chúng tôi đồng thời mang đến phong cách sáng tạo riêng của họ.",
+    location: "San Jose, CA",
+    compensation_details: "$30-45/hr plus tips",
+    salary_range: "$60,000-90,000/year",
     jobType: "full-time",
-    experience_level: "experienced",
-    requirements: ["2+ years experience", "Acrylic & Gel skills", "Strong customer service", "English communication"],
-    shortDescription: "Join our upscale salon with guaranteed clientele and extensive benefits"
+    experience_level: "experienced", 
+    contactEmail: "manager@emviapp.com",
+    requirements: [
+      "2+ years experience in nail services",
+      "Manicure and pedicure expertise",
+      "Gel application proficiency",
+      "Excellent customer service skills",
+      "Weekend availability"
+    ],
+    specialties: ["Nail Art", "Gel Extensions", "Acrylic"]
   },
-  
   hair: {
-    title: "Hair Stylist / Colorist - $25/hr + Tips",
-    description: "Join our modern, high-energy salon as a full-time Hair Stylist/Colorist. We're looking for creative professionals who are passionate about the latest hair trends and techniques. You'll have the freedom to build your clientele while we provide marketing support, continued education, and a collaborative team environment. Experience with balayage, color correction, and cutting-edge styling techniques is a plus.",
-    vietnameseDescription: "Tham gia vào salon hiện đại, năng động của chúng tôi với vị trí Stylist/Chuyên gia màu tóc toàn thời gian. Chúng tôi đang tìm kiếm các chuyên gia sáng tạo đam mê với các xu hướng và kỹ thuật làm tóc mới nhất. Bạn sẽ có tự do xây dựng khách hàng của mình trong khi chúng tôi cung cấp hỗ trợ tiếp thị, đào tạo liên tục và môi trường làm việc nhóm hợp tác. Kinh nghiệm với balayage, sửa màu, và các kỹ thuật tạo kiểu tiên tiến là một lợi thế.",
-    location: "Los Angeles, CA",
-    salary_range: "$25/hr + Commission + Tips",
+    title: "Creative Hair Stylist",
+    description: "Looking for a talented Hair Stylist to join our vibrant team! We need someone passionate about creating beautiful styles, with excellent cutting, coloring, and styling skills. Our ideal candidate has a friendly personality, keeps up with the latest trends, and makes clients feel amazing about their hair.",
+    vietnameseDescription: "Đang tìm kiếm một Stylist Tóc tài năng để tham gia vào đội ngũ năng động của chúng tôi! Chúng tôi cần người đam mê tạo ra những kiểu tóc đẹp, có kỹ năng cắt, nhuộm và tạo kiểu tuyệt vời. Ứng viên lý tưởng của chúng tôi có tính cách thân thiện, cập nhật các xu hướng mới nhất và làm cho khách hàng cảm thấy tuyệt vời về mái tóc của họ.",
+    location: "Orange County, CA",
+    compensation_details: "$25-40/hr + commissions",
+    salary_range: "$55,000-80,000/year",
     jobType: "full-time",
     experience_level: "intermediate",
-    requirements: ["Cosmetology license", "2+ years salon experience", "Cutting & coloring expertise", "Portfolio of work"],
-    shortDescription: "Modern salon seeking creative stylists with cutting and color expertise"
+    contactEmail: "careers@emviapp.com",
+    requirements: [
+      "Cosmetology license required",
+      "2+ years salon experience",
+      "Strong cutting and coloring skills",
+      "Knowledge of current hair trends",
+      "Portfolio of work preferred"
+    ],
+    specialties: ["Balayage", "Color Correction", "Bridal Styling"]
   },
-  
   lashes: {
-    title: "Certified Lash Technician - $75K Annual Potential",
-    description: "Become part of our luxury lash studio team! We're seeking a certified and experienced lash technician who specializes in classic, hybrid, and volume lash extensions. You'll work with premium products in a spa-like setting with a steady stream of high-end clients. We offer flexible scheduling, retail commission, and performance bonuses. Certification in lash extensions required.",
-    vietnameseDescription: "Trở thành một phần của đội ngũ studio nối mi cao cấp của chúng tôi! Chúng tôi đang tìm kiếm một kỹ thuật viên nối mi có chứng chỉ và kinh nghiệm, chuyên về nối mi classic, hybrid và volume. Bạn sẽ làm việc với các sản phẩm cao cấp trong môi trường giống như spa với nguồn khách hàng cao cấp ổn định. Chúng tôi cung cấp lịch làm việc linh hoạt, hoa hồng bán lẻ và thưởng hiệu suất. Yêu cầu chứng chỉ nối mi.",
-    location: "San Francisco, CA",
-    salary_range: "$65K-$75K Annually",
-    jobType: "full-time",
-    experience_level: "experienced",
-    requirements: ["Lash certification", "1+ year experience", "Knowledge of sanitation practices", "Customer service skills"],
-    shortDescription: "Luxury lash studio with high-end clientele and premium product line"
-  },
-  
-  massage: {
-    title: "Licensed Massage Therapist - $40/hr + Tips",
-    description: "Our growing wellness center is seeking a licensed massage therapist to provide therapeutic massages to our diverse clientele. We specialize in deep tissue, Swedish, hot stone, and sports massage techniques. You'll have your own dedicated treatment room with all necessary equipment provided. We offer flexible scheduling, competitive pay, and a supportive team environment.",
-    vietnameseDescription: "Trung tâm wellness đang phát triển của chúng tôi đang tìm kiếm một nhà trị liệu massage có giấy phép để cung cấp các liệu pháp massage trị liệu cho khách hàng đa dạng của chúng tôi. Chúng tôi chuyên về các kỹ thuật massage deep tissue, Swedish, đá nóng và thể thao. Bạn sẽ có phòng điều trị riêng với tất cả các thiết bị cần thiết được cung cấp. Chúng tôi cung cấp lịch làm việc linh hoạt, lương cạnh tranh và môi trường làm việc hỗ trợ.",
-    location: "Seattle, WA",
-    salary_range: "$40-$60/hr + Tips",
+    title: "Expert Lash Artist",
+    description: "Join our luxury beauty studio as a Lash Artist! We're looking for a detail-oriented professional with experience in classic and volume lash extensions. Our clients expect perfection, and we need someone with steady hands, patience, and an eye for enhancing natural beauty.",
+    vietnameseDescription: "Tham gia studio làm đẹp cao cấp của chúng tôi với vị trí Nghệ sĩ Mi! Chúng tôi đang tìm kiếm một chuyên gia chú ý đến chi tiết với kinh nghiệm về nối mi classic và volume. Khách hàng của chúng tôi mong đợi sự hoàn hảo, và chúng tôi cần người có bàn tay vững vàng, kiên nhẫn và có con mắt nâng cao vẻ đẹp tự nhiên.",
+    location: "Westminster, CA",
+    compensation_details: "$25-35/hr plus tips",
+    salary_range: "$50,000-70,000/year",
     jobType: "part-time",
-    experience_level: "intermediate",
-    requirements: ["Massage therapy license", "Insurance coverage", "Multiple massage modalities", "Professional demeanor"],
-    shortDescription: "Upscale wellness center with dedicated treatment rooms and flexible schedule"
+    experience_level: "experienced",
+    contactEmail: "hiring@emviapp.com",
+    requirements: [
+      "Lash certification required",
+      "1+ year experience with lash extensions",
+      "Knowledge of different lash techniques",
+      "Attention to detail and steady hands",
+      "Excellent time management"
+    ],
+    specialties: ["Classic Lashes", "Volume Lashes", "Hybrid Sets"]
   },
-  
-  tattoo: {
-    title: "Experienced Tattoo Artist - $100K+ Annually",
-    description: "Join our award-winning tattoo studio! We're looking for an experienced tattoo artist with a strong portfolio and client base. Our studio offers private work areas, top-quality equipment, and a collaborative environment with other talented artists. We've been featured in multiple tattoo magazines and have a reputation for cleanliness, professionalism, and artistic excellence.",
-    vietnameseDescription: "Tham gia vào studio xăm đoạt giải thưởng của chúng tôi! Chúng tôi đang tìm kiếm một nghệ sĩ xăm có kinh nghiệm với danh mục đầu tư mạnh mẽ và cơ sở khách hàng. Studio của chúng tôi cung cấp khu vực làm việc riêng tư, thiết bị chất lượng cao và môi trường hợp tác với các nghệ sĩ tài năng khác. Chúng tôi đã được giới thiệu trong nhiều tạp chí xăm và có tiếng tăm về sự sạch sẽ, chuyên nghiệp và xuất sắc nghệ thuật.",
-    location: "Portland, OR",
-    salary_range: "$100K-$150K Annually",
-    jobType: "full-time",
-    experience_level: "senior",
-    requirements: ["5+ years experience", "Strong portfolio", "Client base", "Modern tattoo techniques"],
-    shortDescription: "Award-winning studio seeking artist with established portfolio and clientele"
-  },
-  
-  brows: {
-    title: "Microblading & Brow Artist - $80K Potential",
-    description: "Premier beauty studio seeking a skilled microblading and brow specialist. You'll perform microblading, powder brows, combination brows, and traditional brow services. We provide all tools and products, plus ongoing training on the latest techniques. Our clientele is established and growing, with appointments typically booked weeks in advance.",
-    vietnameseDescription: "Studio làm đẹp hàng đầu đang tìm kiếm một chuyên gia microblading và lông mày có kỹ năng. Bạn sẽ thực hiện các dịch vụ microblading, powder brows, kết hợp và dịch vụ lông mày truyền thống. Chúng tôi cung cấp tất cả các công cụ và sản phẩm, cộng với đào tạo liên tục về các kỹ thuật mới nhất. Khách hàng của chúng tôi đã được thiết lập và đang phát triển, với các cuộc hẹn thường được đặt trước nhiều tuần.",
-    location: "Miami, FL",
-    salary_range: "$70K-$80K Annually",
+  massage: {
+    title: "Licensed Massage Therapist",
+    description: "We're seeking a skilled Massage Therapist to provide relaxing and therapeutic treatments to our valued clients. The ideal candidate has excellent knowledge of various massage techniques, a healing touch, and the ability to customize treatments based on client needs.",
+    vietnameseDescription: "Chúng tôi đang tìm kiếm một Chuyên viên Massage có kỹ năng để cung cấp các liệu pháp thư giãn và trị liệu cho khách hàng quý giá của chúng tôi. Ứng viên lý tưởng có kiến thức xuất sắc về các kỹ thuật massage khác nhau, bàn tay chữa lành và khả năng tùy chỉnh liệu pháp dựa trên nhu cầu của khách hàng.",
+    location: "Garden Grove, CA",
+    compensation_details: "$25-40/hr plus tips",
+    salary_range: "$55,000-75,000/year",
     jobType: "full-time",
     experience_level: "experienced",
-    requirements: ["Microblading certification", "2+ years experience", "Brow shaping expertise", "Color theory knowledge"],
-    shortDescription: "Luxury brow studio with booked appointments and premium clientele"
+    contactEmail: "spa@emviapp.com",
+    requirements: [
+      "State massage therapy license",
+      "500+ hours of certified training",
+      "2+ years of professional experience",
+      "Knowledge of multiple modalities",
+      "Excellent client communication"
+    ],
+    specialties: ["Deep Tissue", "Swedish", "Hot Stone", "Sports Massage"]
   },
-  
-  skincare: {
-    title: "Licensed Esthetician - $60K + Benefits",
-    description: "Our medical spa is seeking a licensed esthetician to join our team of skin care professionals. You'll perform facials, chemical peels, microdermabrasion, and other advanced skin treatments. We work with medical-grade products and state-of-the-art technology. Experience with laser treatments, microneedling, and dermal fillers is preferred but not required as training will be provided.",
-    vietnameseDescription: "Spa y tế của chúng tôi đang tìm kiếm một chuyên gia thẩm mỹ có giấy phép để tham gia vào đội ngũ chuyên gia chăm sóc da của chúng tôi. Bạn sẽ thực hiện các liệu pháp facial, peel hóa học, microdermabrasion và các điều trị da nâng cao khác. Chúng tôi làm việc với các sản phẩm cấp y tế và công nghệ tiên tiến. Ưu tiên kinh nghiệm với điều trị laser, lăn kim và filler da nhưng không bắt buộc vì sẽ được đào tạo.",
-    location: "Chicago, IL",
-    salary_range: "$60K-$70K + Benefits",
+  tattoo: {
+    title: "Talented Tattoo Artist",
+    description: "Creative tattoo studio seeking an experienced artist to join our team. We're looking for someone with a strong portfolio, excellent linework and shading skills, and the ability to create custom designs that exceed client expectations. Must be professional, hygienic, and passionate about the art of tattooing.",
+    vietnameseDescription: "Studio xăm sáng tạo đang tìm kiếm một nghệ sĩ có kinh nghiệm để tham gia vào đội ngũ của chúng tôi. Chúng tôi đang tìm kiếm người có danh mục đầu tư mạnh mẽ, kỹ năng vẽ đường nét và tô bóng xuất sắc và khả năng tạo ra các thiết kế tùy chỉnh vượt quá mong đợi của khách hàng. Phải chuyên nghiệp, vệ sinh và đam mê nghệ thuật xăm.",
+    location: "Los Angeles, CA",
+    compensation_details: "Commission-based (50-70%)",
+    salary_range: "$60,000-120,000/year",
+    jobType: "full-time",
+    experience_level: "experienced",
+    contactEmail: "art@emviapp.com",
+    requirements: [
+      "3+ years professional tattooing experience",
+      "Strong portfolio demonstrating versatility",
+      "Knowledge of proper sterilization techniques",
+      "Excellent customer service",
+      "California tattoo license"
+    ],
+    specialties: ["Traditional", "Realism", "Watercolor", "Fine Line"]
+  },
+  brows: {
+    title: "Brow Artist & Specialist",
+    description: "High-end beauty studio looking for a talented Brow Artist to shape, tint, and transform our clients' eyebrows. We need someone skilled in multiple techniques with a keen eye for facial symmetry who can create personalized brow shapes to enhance each client's unique features.",
+    vietnameseDescription: "Studio làm đẹp cao cấp đang tìm kiếm một Nghệ sĩ Lông mày tài năng để định hình, nhuộm và biến đổi lông mày của khách hàng. Chúng tôi cần người có kỹ năng trong nhiều kỹ thuật với con mắt nhạy bén về sự đối xứng của khuôn mặt, người có thể tạo ra hình dạng lông mày được cá nhân hóa để nâng cao các đặc điểm độc đáo của từng khách hàng.",
+    location: "Irvine, CA",
+    compensation_details: "$20-30/hr plus tips",
+    salary_range: "$45,000-65,000/year",
     jobType: "full-time",
     experience_level: "intermediate",
-    requirements: ["Esthetician license", "1+ year experience", "Knowledge of skin conditions", "Professional appearance"],
-    shortDescription: "Medical spa with advanced treatments and ongoing professional training"
+    contactEmail: "beautystudio@emviapp.com",
+    requirements: [
+      "Certification in microblading preferred",
+      "Experience with brow lamination",
+      "Knowledge of brow shaping techniques",
+      "Color theory understanding",
+      "Excellent attention to detail"
+    ],
+    specialties: ["Microblading", "Brow Lamination", "Henna Brows", "Tinting"]
+  },
+  skincare: {
+    title: "Licensed Esthetician",
+    description: "Join our spa team as a Licensed Esthetician! We're seeking someone passionate about skincare who can provide facials, chemical peels, and skin treatments while educating clients about home care routines. The ideal candidate has excellent product knowledge and a gentle, effective approach to skin health.",
+    vietnameseDescription: "Tham gia đội ngũ spa của chúng tôi với tư cách là Chuyên viên Thẩm mỹ có Giấy phép! Chúng tôi đang tìm kiếm người đam mê chăm sóc da, người có thể cung cấp các liệu pháp facial, peel hóa học và điều trị da đồng thời giáo dục khách hàng về các quy trình chăm sóc tại nhà. Ứng viên lý tưởng có kiến thức xuất sắc về sản phẩm và cách tiếp cận nhẹ nhàng, hiệu quả đối với sức khỏe làn da.",
+    location: "Huntington Beach, CA",
+    compensation_details: "$20-30/hr plus tips",
+    salary_range: "$45,000-65,000/year",
+    jobType: "part-time",
+    experience_level: "entry",
+    contactEmail: "spa@emviapp.com",
+    requirements: [
+      "Current esthetician license",
+      "Knowledge of skincare products and ingredients",
+      "Experience with various facial techniques",
+      "Understanding of different skin types",
+      "Excellent sanitation practices"
+    ],
+    specialties: ["Anti-aging Treatments", "Acne Treatments", "Chemical Peels"]
+  },
+  custom: {
+    title: "",
+    description: "",
+    location: "",
+    compensation_details: "",
+    jobType: "full-time",
+    experience_level: "experienced",
+    contactEmail: "",
+    requirements: [],
+    specialties: []
   }
 };
+
+// Template card data with emojis and slogans
+export interface TemplateCardData {
+  id: IndustryType | 'custom';
+  emoji: string;
+  title: string;
+  subtitle: string;
+  slogan: string;
+  bgColor: string;
+}
+
+export const templateCards: TemplateCardData[] = [
+  {
+    id: 'nails',
+    emoji: '💅',
+    title: 'Nail Tech Superstar',
+    subtitle: 'Magic hands, happy clients',
+    slogan: 'Find your salon soulmate!',
+    bgColor: 'bg-gradient-to-br from-pink-50 to-pink-100'
+  },
+  {
+    id: 'hair',
+    emoji: '💇',
+    title: 'Hair Stylist',
+    subtitle: 'Cut, color, create magic',
+    slogan: 'Grow your glam squad!',
+    bgColor: 'bg-gradient-to-br from-indigo-50 to-indigo-100'
+  },
+  {
+    id: 'lashes',
+    emoji: '👁️',
+    title: 'Lash Artist',
+    subtitle: 'Eyes that mesmerize',
+    slogan: 'Batting a thousand!',
+    bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100'
+  },
+  {
+    id: 'massage',
+    emoji: '🧖',
+    title: 'Massage Therapist',
+    subtitle: 'Healing touch, relaxed clients',
+    slogan: 'The perfect hands for your team!',
+    bgColor: 'bg-gradient-to-br from-green-50 to-green-100'
+  },
+  {
+    id: 'tattoo',
+    emoji: '🎨',
+    title: 'Tattoo Artist',
+    subtitle: 'Permanent art, lasting impressions',
+    slogan: 'Ink your success story!',
+    bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100'
+  },
+  {
+    id: 'brows',
+    emoji: '✨',
+    title: 'Brow Specialist',
+    subtitle: 'Frame faces, boost confidence',
+    slogan: 'Raise your brow game!',
+    bgColor: 'bg-gradient-to-br from-amber-50 to-amber-100'
+  },
+  {
+    id: 'skincare',
+    emoji: '🧴',
+    title: 'Esthetician',
+    subtitle: 'Glowing skin, radiant results',
+    slogan: 'Your clients will thank you!',
+    bgColor: 'bg-gradient-to-br from-teal-50 to-teal-100'
+  },
+  {
+    id: 'custom',
+    emoji: '✏️',
+    title: 'Create My Own',
+    subtitle: 'Start from scratch',
+    slogan: 'Feeling creative? Let\'s go!',
+    bgColor: 'bg-gradient-to-br from-gray-50 to-gray-100'
+  }
+];
