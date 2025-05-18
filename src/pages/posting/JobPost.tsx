@@ -24,6 +24,13 @@ const JobPost = () => {
   const { handleJobPost } = useJobPosting();
   const { initiatePayment, isLoading } = usePostPayment();
   const formMethods = useForm();
+  const [userPricingOptions, setUserPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'premium', // Default to premium tier
+    durationMonths: 1,             // Default to 1 month
+    autoRenew: true,               // Default to auto-renew enabled
+    isFirstPost: true,             // Default to first post (for free tier)
+    isNationwide: false            // Default to local listing
+  });
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
@@ -43,6 +50,9 @@ const JobPost = () => {
       return false;
     }
 
+    // Save the user's pricing options for persistent state
+    setUserPricingOptions(pricingOptions);
+    
     // Ensure requirements and specialties are arrays
     const safeRequirements = Array.isArray(formData.requirements) ? formData.requirements : [];
     const safeSpecialties = Array.isArray(formData.specialties) ? formData.specialties : [];
@@ -106,7 +116,7 @@ const JobPost = () => {
         return true;
       }
       
-      // Even for free tier, process through payment flow to collect credit card
+      // Process payment through Stripe or direct posting for free tier
       const result = await initiatePayment('job', jobDetails, pricingOptions);
       return result?.success || false;
     } catch (error) {

@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission, PricingOptions } from '@/types/job';
+import { JobDetailsSubmission } from '@/types/job';
+import { PricingOptions } from '@/utils/posting/types';
 import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
@@ -13,14 +14,19 @@ export const usePostPayment = () => {
   const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
     setIsLoading(true);
     try {
-      console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
+      console.log("Initiating payment for:", postType, "with pricing:", pricingOptions);
 
       // Calculate price based on selected options
       const priceData = pricingOptions ? calculateJobPostPrice(pricingOptions) : { finalPrice: 0 };
       console.log("Calculated price:", priceData);
 
+      // Ensure pricing options are valid
+      if (!pricingOptions || !pricingOptions.selectedPricingTier) {
+        throw new Error("Invalid pricing options");
+      }
+
       // Handle free listings directly without going to Stripe
-      if (pricingOptions?.selectedPricingTier === 'free') {
+      if (pricingOptions.selectedPricingTier === 'free') {
         console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
@@ -53,15 +59,11 @@ export const usePostPayment = () => {
       } 
       
       // For paid listings, create a Stripe checkout session
-      // Get the correct Stripe price ID based on tier and duration
-      const selectedPricingTier = pricingOptions?.selectedPricingTier;
-      const durationMonths = pricingOptions?.durationMonths || 1;
-      
       // Log payment parameters for debugging
       console.log("Payment parameters:", {
-        tier: selectedPricingTier,
-        duration: durationMonths,
-        autoRenew: pricingOptions?.autoRenew,
+        tier: pricingOptions.selectedPricingTier,
+        duration: pricingOptions.durationMonths,
+        autoRenew: pricingOptions.autoRenew,
         finalPrice: priceData.finalPrice
       });
       

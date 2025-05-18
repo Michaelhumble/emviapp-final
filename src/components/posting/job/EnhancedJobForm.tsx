@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JobFormValues } from './jobFormSchema';
-import { PricingOptions } from '@/types/job';
+import { PricingOptions } from '@/utils/posting/types';
 import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
 import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
@@ -36,11 +36,16 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   });
 
   // Update the handleJobFormSubmit to match the JobForm onSubmit signature
-  const handleJobFormSubmit = (data: JobFormValues) => {
+  const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
     // Validate required fields
     if (!data.title || !data.description || !data.location || !data.contactEmail) {
       toast.error("Please complete all required fields before continuing");
       return;
+    }
+
+    // If uploads are provided, update photoUploads state
+    if (uploads && uploads.length > 0) {
+      setPhotoUploads(uploads);
     }
 
     setJobFormData(data);
