@@ -1,429 +1,495 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { specialties as specialtyOptions } from '@/data/specialties';
-import { Check, Info } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/components/ui/use-toast';
+import { X, ArrowLeft } from 'lucide-react';
 import PhotoUploader from '@/components/posting/PhotoUploader';
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/components/ui/use-toast';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
+import { IndustryType } from '@/utils/posting/types';
+import { beautySpecialties, commonRequirements } from '@/data/specialties';
+import { specialtyOptions, requirementOptions } from '@/utils/posting/options';
 
-export interface JobFormProps {
+interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
+  photoUploads: File[];
+  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
   isSubmitting?: boolean;
-  photoUploads?: File[];
-  setPhotoUploads?: React.Dispatch<React.SetStateAction<File[]>>;
   initialValues?: JobFormValues;
   onBack?: () => void;
   showVietnameseByDefault?: boolean;
   isCustomTemplate?: boolean;
-  maxPhotos?: number;  // Add maxPhotos property
+  maxPhotos?: number;
 }
 
-const JobForm: React.FC<JobFormProps> = ({
+const JobForm: React.FC<JobFormProps> = ({ 
   onSubmit,
-  isSubmitting = false,
-  photoUploads = [],
+  photoUploads,
   setPhotoUploads,
+  isSubmitting = false,
   initialValues,
   onBack,
   showVietnameseByDefault = false,
   isCustomTemplate = false,
-  maxPhotos = 5, // Default to 5 photos
+  maxPhotos = 5
 }) => {
   const { toast } = useToast();
-  const { t, isVietnamese, setVietnamese } = useTranslation();
   const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null);
+  
+  const defaultValues: JobFormValues = initialValues || {
+    title: '',
+    description: '',
+    vietnameseDescription: '',
+    location: '',
+    jobType: 'full-time',
+    compensation_details: '',
+    salary_range: '',
+    experience_level: 'entry', // Updated to match valid enum value
+    contactEmail: '',
+    contactName: '',
+    contactPhone: '',
+    requirements: [],
+    specialties: [],
+    templateType: isCustomTemplate ? 'custom' : 'standard'
+  };
 
-  const form = useForm<JobFormValues>({
+  const methods = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: initialValues || {
-      title: '',
-      description: '',
-      vietnameseDescription: '',
-      location: '',
-      jobType: 'full-time',
-      compensation_details: '',
-      salary_range: '',
-      experience_level: 'entry-level',
-      contactEmail: '',
-      contactName: '',
-      contactPhone: '',
-      specialties: [],
-      requirements: [],
-      templateType: 'custom'
-    },
+    defaultValues,
     mode: 'onChange'
   });
 
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    watch,
-    formState: { errors }
-  } = form;
+  const { 
+    register, 
+    handleSubmit, 
+    control, 
+    watch, 
+    setValue, 
+    formState: { errors, isValid }
+  } = methods;
 
+  // Update the selected industry based on initial values or specialties
   useEffect(() => {
-    if (initialValues) {
-      Object.keys(initialValues).forEach((key) => {
-        setValue(key as keyof JobFormValues, initialValues[key as keyof JobFormValues]);
-      });
+    if (initialValues?.specialties?.length) {
+      // Try to determine industry from specialties
+      for (const [industry, specs] of Object.entries(beautySpecialties)) {
+        if (initialValues.specialties.some(specialty => 
+          (specs as string[]).includes(specialty)
+        )) {
+          setSelectedIndustry(industry as IndustryType);
+          break;
+        }
+      }
     }
-  }, [initialValues, setValue]);
+  }, [initialValues]);
 
-  const handlePhotoChange = useCallback((files: File[]) => {
-    setPhotoUploads?.(files);
-  }, [setPhotoUploads]);
-
+  // Handle form submission
   const onFormSubmit = (data: JobFormValues) => {
-    if (!data.title || !data.description || !data.location || !data.contactEmail) {
+    if (!isValid) {
       toast({
-        title: "Error",
-        description: "Please complete all required fields before submitting.",
-        variant: "destructive",
+        title: "Form has errors",
+        description: "Please fix the issues before submitting.",
+        variant: "destructive"
       });
       return;
     }
+    
     onSubmit(data);
   };
 
-  const toggleVietnamese = () => {
-    setShowVietnamese(!showVietnamese);
-    setVietnamese(!isVietnamese);
+  // Watch for changes in job type and specialties
+  const jobType = watch('jobType');
+  const selectedSpecialties = watch('specialties') || [];
+
+  // Handle industry selection
+  const handleIndustrySelect = (industry: IndustryType) => {
+    setSelectedIndustry(industry);
+    
+    // Clear previous specialties when changing industry
+    setValue('specialties', []);
+    
+    // Auto-select some common requirements
+    if (!watch('requirements')?.length) {
+      setValue('requirements', [
+        'Clean and organized',
+        'Reliable transportation',
+        'Client-friendly attitude'
+      ]);
+    }
   };
 
-  const specialties = watch("specialties");
+  // Toggle Vietnamese section
+  const handleToggleVietnamese = () => {
+    setShowVietnamese(!showVietnamese);
+  };
+
+  // Handle requirements checkbox toggle
+  const handleRequirementToggle = (requirement: string) => {
+    const current = watch('requirements') || [];
+    const updated = current.includes(requirement)
+      ? current.filter(r => r !== requirement)
+      : [...current, requirement];
+    
+    setValue('requirements', updated);
+  };
+
+  // Handle specialty checkbox toggle
+  const handleSpecialtyToggle = (specialty: string) => {
+    const current = selectedSpecialties;
+    const updated = current.includes(specialty)
+      ? current.filter(s => s !== specialty)
+      : [...current, specialty];
+    
+    setValue('specialties', updated);
+  };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
-      {/* Back Button */}
-      {onBack && (
-        <Button variant="ghost" onClick={onBack} type="button">
-          &larr; Back to Templates
-        </Button>
-      )}
-
-      {/* Job Details Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">{t('Job Details')}</h2>
-
-        {/* Title */}
-        <div>
-          <Label htmlFor="title" className="block text-sm font-medium text-gray-700">{t('Job Title')} *</Label>
-          <Controller
-            name="title"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="title"
-                placeholder={t('e.g., Nail Technician')}
-                {...field}
-              />
-            )}
-          />
-          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
-        </div>
-
-        {/* Description */}
-        <div>
-          <Label htmlFor="description" className="block text-sm font-medium text-gray-700">{t('Job Description')} *</Label>
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <Textarea
-                id="description"
-                placeholder={t('Describe the job role and responsibilities')}
-                rows={4}
-                {...field}
-              />
-            )}
-          />
-          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
-        </div>
-
-        {/* Vietnamese Toggle */}
-        <div>
-          <Label htmlFor="vietnamese" className="inline-flex items-center cursor-pointer">
-            <Switch id="vietnamese" checked={showVietnamese} onCheckedChange={toggleVietnamese} />
-            <span className="ml-2 text-sm font-medium text-gray-700">{t('Vietnamese')}</span>
-          </Label>
-        </div>
-
-        {/* Vietnamese Description */}
-        {showVietnamese && (
-          <div>
-            <Label htmlFor="vietnameseDescription" className="block text-sm font-medium text-gray-700">{t('Vietnamese Job Description')}</Label>
-            <Controller
-              name="vietnameseDescription"
-              control={control}
-              render={({ field }) => (
-                <Textarea
-                  id="vietnameseDescription"
-                  placeholder={t('Describe the job role and responsibilities in Vietnamese')}
-                  rows={4}
-                  {...field}
-                />
-              )}
-            />
-            {errors.vietnameseDescription && <p className="text-red-500 text-xs mt-1">{errors.vietnameseDescription.message}</p>}
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
+        {/* Back button */}
+        {onBack && (
+          <div className="mb-4">
+            <Button 
+              variant="ghost" 
+              type="button" 
+              onClick={onBack}
+              className="flex items-center text-sm font-medium"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Templates
+            </Button>
           </div>
         )}
 
-        {/* Location */}
-        <div>
-          <Label htmlFor="location" className="block text-sm font-medium text-gray-700">{t('Location')} *</Label>
-          <Controller
-            name="location"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="location"
-                placeholder={t('Enter the job location')}
-                {...field}
-              />
-            )}
-          />
-          {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location.message}</p>}
-        </div>
-
-        {/* Job Type */}
-        <div>
-          <Label htmlFor="jobType" className="block text-sm font-medium text-gray-700">{t('Job Type')}</Label>
-          <Controller
-            name="jobType"
-            control={control}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger id="jobType">
-                  <SelectValue placeholder={t('Select a job type')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="full-time">{t('Full-time')}</SelectItem>
-                    <SelectItem value="part-time">{t('Part-time')}</SelectItem>
-                    <SelectItem value="contract">{t('Contract')}</SelectItem>
-                    <SelectItem value="temporary">{t('Temporary')}</SelectItem>
-                    <SelectItem value="internship">{t('Internship')}</SelectItem>
-                    <SelectItem value="volunteer">{t('Volunteer')}</SelectItem>
-                    <SelectItem value="other">{t('Other')}</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.jobType && <p className="text-red-500 text-xs mt-1">{errors.jobType.message}</p>}
-        </div>
-
-        {/* Compensation Details */}
-        <div>
-          <Label htmlFor="compensation_details" className="block text-sm font-medium text-gray-700">{t('Compensation Details')}</Label>
-          <Controller
-            name="compensation_details"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="compensation_details"
-                placeholder={t('e.g., Competitive hourly rate plus tips')}
-                {...field}
-              />
-            )}
-          />
-          {errors.compensation_details && <p className="text-red-500 text-xs mt-1">{errors.compensation_details.message}</p>}
-        </div>
-
-        {/* Salary Range */}
-        <div>
-          <Label htmlFor="salary_range" className="block text-sm font-medium text-gray-700">{t('Salary Range')}</Label>
-          <Controller
-            name="salary_range"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="salary_range"
-                placeholder={t('e.g., $15 - $25 per hour')}
-                {...field}
-              />
-            )}
-          />
-          {errors.salary_range && <p className="text-red-500 text-xs mt-1">{errors.salary_range.message}</p>}
-        </div>
-
-        {/* Experience Level */}
-        <div>
-          <Label htmlFor="experience_level" className="block text-sm font-medium text-gray-700">{t('Experience Level')}</Label>
-          <Controller
-            name="experience_level"
-            control={control}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger id="experience_level">
-                  <SelectValue placeholder={t('Select experience level')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="entry-level">{t('Entry Level')}</SelectItem>
-                    <SelectItem value="associate">{t('Associate')}</SelectItem>
-                    <SelectItem value="mid-level">{t('Mid-Level')}</SelectItem>
-                    <SelectItem value="senior-level">{t('Senior Level')}</SelectItem>
-                    <SelectItem value="director">{t('Director')}</SelectItem>
-                    <SelectItem value="executive">{t('Executive')}</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.experience_level && <p className="text-red-500 text-xs mt-1">{errors.experience_level.message}</p>}
-        </div>
-      </div>
-
-      {/* Contact Information Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">{t('Contact Information')}</h2>
-
-        {/* Contact Email */}
-        <div>
-          <Label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">{t('Contact Email')} *</Label>
-          <Controller
-            name="contactEmail"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="contactEmail"
-                type="email"
-                placeholder={t('Enter contact email')}
-                {...field}
-              />
-            )}
-          />
-          {errors.contactEmail && <p className="text-red-500 text-xs mt-1">{errors.contactEmail.message}</p>}
-        </div>
-
-        {/* Contact Name */}
-        <div>
-          <Label htmlFor="contactName" className="block text-sm font-medium text-gray-700">{t('Contact Name')}</Label>
-          <Controller
-            name="contactName"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="contactName"
-                placeholder={t('Enter contact name')}
-                {...field}
-              />
-            )}
-          />
-          {errors.contactName && <p className="text-red-500 text-xs mt-1">{errors.contactName.message}</p>}
-        </div>
-
-        {/* Contact Phone */}
-        <div>
-          <Label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700">{t('Contact Phone')}</Label>
-          <Controller
-            name="contactPhone"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="contactPhone"
-                placeholder={t('Enter contact phone')}
-                {...field}
-              />
-            )}
-          />
-          {errors.contactPhone && <p className="text-red-500 text-xs mt-1">{errors.contactPhone.message}</p>}
-        </div>
-      </div>
-
-      {/* Specialties Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">{t('Specialties')}</h2>
-        <p className="text-gray-500 text-sm">{t('Select all that apply')}</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {specialtyOptions.map((specialty) => (
-            <div key={specialty.value} className="flex items-center space-x-2">
-              <Controller
-                name="specialties"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    id={`specialty-${specialty.value}`}
-                    checked={Array.isArray(field.value) ? field.value.includes(specialty.value) : false}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        field.onChange([...(Array.isArray(field.value) ? field.value : []), specialty.value]);
-                      } else {
-                        field.onChange((Array.isArray(field.value) ? field.value : []).filter((v: string) => v !== specialty.value));
-                      }
-                    }}
-                  />
-                )}
-              />
-              <Label htmlFor={`specialty-${specialty.value}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed">
-                {specialty.label}
-              </Label>
-            </div>
-          ))}
-        </div>
-        {errors.specialties && <p className="text-red-500 text-xs mt-1">{errors.specialties.message}</p>}
-      </div>
-
-      {/* Requirements Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">{t('Requirements')}</h2>
-        <p className="text-gray-500 text-sm">{t('List any specific requirements for the job')}</p>
-        <Controller
-          name="requirements"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              id="requirements"
-              placeholder={t('e.g., Valid cosmetology license, 2+ years of experience')}
-              rows={3}
-              {...field}
+        {/* Basic Information */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Basic Job Information</h2>
+          
+          <div>
+            <Label htmlFor="title">Job Title <span className="text-red-500">*</span></Label>
+            <Input
+              id="title"
+              placeholder="e.g., Nail Technician, Hair Stylist, Salon Manager"
+              {...register('title')}
+              className="mt-1"
             />
-          )}
-        />
-        {errors.requirements && <p className="text-red-500 text-xs mt-1">{errors.requirements.message}</p>}
-      </div>
-      
-      {/* Photo Upload Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Job Photos (Optional)</h2>
-        <p className="text-gray-500 text-sm">
-          Add photos to make your job post stand out. Upload salon images, workstation photos, or examples of work.
-        </p>
-        <PhotoUploader
-          onChange={handlePhotoChange}
-          files={photoUploads}
-          maxFiles={maxPhotos} // Pass maxPhotos to PhotoUploader as maxFiles
-        />
-      </div>
+            {errors.title && (
+              <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+            )}
+          </div>
 
-      {/* Submit Button */}
-      <div>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? t('Submitting...') : t('Submit')}
-        </Button>
-      </div>
-    </form>
+          <div>
+            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+            <Input
+              id="location"
+              placeholder="e.g., Los Angeles, CA"
+              {...register('location')}
+              className="mt-1"
+            />
+            {errors.location && (
+              <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+            )}
+          </div>
+          
+          <div>
+            <Label>Job Type <span className="text-red-500">*</span></Label>
+            <Controller
+              name="jobType"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-wrap gap-4 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="full-time" id="full-time" />
+                    <Label htmlFor="full-time">Full-time</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="part-time" id="part-time" />
+                    <Label htmlFor="part-time">Part-time</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="contract" id="contract" />
+                    <Label htmlFor="contract">Contract</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="temporary" id="temporary" />
+                    <Label htmlFor="temporary">Temporary</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="commission" id="commission" />
+                    <Label htmlFor="commission">Commission</Label>
+                  </div>
+                </RadioGroup>
+              )}
+            />
+          </div>
+          
+          <div>
+            <Label>Experience Level <span className="text-red-500">*</span></Label>
+            <Controller
+              name="experience_level"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-wrap gap-4 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="entry" id="entry" />
+                    <Label htmlFor="entry">Entry Level</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="intermediate" id="intermediate" />
+                    <Label htmlFor="intermediate">Intermediate</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="experienced" id="experienced" />
+                    <Label htmlFor="experienced">Experienced</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="senior" id="senior" />
+                    <Label htmlFor="senior">Senior</Label>
+                  </div>
+                </RadioGroup>
+              )}
+            />
+          </div>
+        </div>
+        
+        <Separator />
+
+        {/* Compensation */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Compensation</h2>
+          
+          <div>
+            <Label htmlFor="salary_range">Salary Range</Label>
+            <Input
+              id="salary_range"
+              placeholder="e.g., $35,000-$50,000/year or $20-30/hour + tips"
+              {...register('salary_range')}
+              className="mt-1"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="compensation_details">Additional Compensation Details</Label>
+            <Textarea
+              id="compensation_details"
+              placeholder="Include any additional information about commission, benefits, tips, etc."
+              {...register('compensation_details')}
+              className="mt-1"
+              rows={3}
+            />
+          </div>
+        </div>
+        
+        <Separator />
+        
+        {/* Job Description */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Job Description</h2>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handleToggleVietnamese}
+              className="text-sm"
+            >
+              {showVietnamese ? 'Hide Vietnamese' : 'Add Vietnamese'}
+            </Button>
+          </div>
+          
+          <div>
+            <Label htmlFor="description">Description (English) <span className="text-red-500">*</span></Label>
+            <Textarea
+              id="description"
+              placeholder="Describe the job responsibilities, requirements, and other details."
+              {...register('description')}
+              className="mt-1"
+              rows={5}
+            />
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+            )}
+          </div>
+          
+          {showVietnamese && (
+            <div>
+              <Label htmlFor="vietnameseDescription">Description (Vietnamese)</Label>
+              <Textarea
+                id="vietnameseDescription"
+                placeholder="Mô tả trách nhiệm công việc, yêu cầu và các chi tiết khác."
+                {...register('vietnameseDescription')}
+                className="mt-1"
+                rows={5}
+              />
+            </div>
+          )}
+        </div>
+        
+        <Separator />
+        
+        {/* Job Requirements and Specialties */}
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Industry & Specialties</h2>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mb-6">
+              {Object.keys(beautySpecialties).map(industry => (
+                <div key={industry} className="relative">
+                  <Button
+                    type="button"
+                    variant={selectedIndustry === industry ? "default" : "outline"}
+                    className={`w-full h-full min-h-[60px] p-2 flex flex-col items-center justify-center text-xs sm:text-sm ${
+                      selectedIndustry === industry ? 'border-primary border-2' : ''
+                    }`}
+                    onClick={() => handleIndustrySelect(industry as IndustryType)}
+                  >
+                    <span className="text-center">{industry.charAt(0).toUpperCase() + industry.slice(1)}</span>
+                  </Button>
+                </div>
+              ))}
+            </div>
+            
+            {selectedIndustry && (
+              <div className="mt-4">
+                <Label className="font-medium mb-2 block">Specialties (Select all that apply)</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  {beautySpecialties[selectedIndustry].map((specialty: string) => (
+                    <div key={specialty} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`specialty-${specialty}`}
+                        checked={selectedSpecialties.includes(specialty)}
+                        onCheckedChange={() => handleSpecialtyToggle(specialty)}
+                      />
+                      <Label htmlFor={`specialty-${specialty}`} className="cursor-pointer text-sm">
+                        {specialty}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div>
+            <Label className="font-medium mb-2 block">Job Requirements</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              {commonRequirements.map(requirement => (
+                <div key={requirement} className="flex items-center space-x-2">
+                  <Controller
+                    name="requirements"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id={`req-${requirement}`}
+                        checked={(field.value || []).includes(requirement)}
+                        onCheckedChange={() => handleRequirementToggle(requirement)}
+                      />
+                    )}
+                  />
+                  <Label htmlFor={`req-${requirement}`} className="cursor-pointer text-sm">
+                    {requirement}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <Separator />
+        
+        {/* Contact Information */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Contact Information</h2>
+          
+          <div>
+            <Label htmlFor="contactEmail">Contact Email <span className="text-red-500">*</span></Label>
+            <Input
+              id="contactEmail"
+              type="email"
+              placeholder="e.g., hiring@salon.com"
+              {...register('contactEmail')}
+              className="mt-1"
+            />
+            {errors.contactEmail && (
+              <p className="text-red-500 text-sm mt-1">{errors.contactEmail.message}</p>
+            )}
+          </div>
+          
+          <div>
+            <Label htmlFor="contactName">Contact Name</Label>
+            <Input
+              id="contactName"
+              placeholder="e.g., John Smith"
+              {...register('contactName')}
+              className="mt-1"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="contactPhone">Contact Phone</Label>
+            <Input
+              id="contactPhone"
+              placeholder="e.g., (555) 123-4567"
+              {...register('contactPhone')}
+              className="mt-1"
+            />
+          </div>
+        </div>
+        
+        <Separator />
+        
+        {/* Photo Upload */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Add Photos (Optional)</h2>
+          <p className="text-gray-500 text-sm">
+            Upload up to {maxPhotos} photos of your salon, workspace, or team.
+          </p>
+          
+          <PhotoUploader
+            files={photoUploads}
+            onChange={setPhotoUploads}
+            maxFiles={maxPhotos}
+            accept="image/*"
+          />
+        </div>
+        
+        <div className="flex justify-between pt-6">
+          {onBack ? (
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onBack}
+              className="flex items-center"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          ) : (
+            <div></div>
+          )}
+          
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Continue'}
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
   );
 };
 

@@ -12,13 +12,15 @@ interface EnhancedJobFormProps {
   onStepChange?: (step: number) => void;
   initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
+  maxPhotos?: number; // Add maxPhotos prop
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
   onSubmit, 
   onStepChange, 
   initialTemplate,
-  isCustomTemplate = false
+  isCustomTemplate = false,
+  maxPhotos = 5 // Default to 5 photos
 }) => {
   const [activeTab, setActiveTab] = useState('job-details');
   const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
@@ -75,7 +77,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             setPhotoUploads={setPhotoUploads}
             initialValues={jobFormData || undefined}
             isCustomTemplate={isCustomTemplate}
-            maxPhotos={5} // Set maximum photos to 5
+            maxPhotos={maxPhotos} // Pass maxPhotos prop
           />
         </CardContent>
       </TabsContent>

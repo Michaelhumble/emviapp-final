@@ -118,6 +118,7 @@ const JobPost = () => {
             onStepChange={handleStepChange}
             initialTemplate={selectedTemplate || undefined}
             isCustomTemplate={selectedTemplateType === 'custom'}
+            maxPhotos={5} // Set maximum photos to 5
           />
         )}
       </PostWizardLayout>
