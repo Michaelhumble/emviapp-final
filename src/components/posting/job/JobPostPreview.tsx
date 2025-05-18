@@ -37,26 +37,12 @@ export const JobPostPreview: React.FC<JobPostPreviewProps> = ({
   const safeRequirements = Array.isArray(jobData.requirements) ? jobData.requirements : [];
   const safeSpecialties = Array.isArray(jobData.specialties) ? jobData.specialties : [];
   
-  // Preview thumbnail for uploaded image
-  const previewImage = photoUploads.length > 0 ? URL.createObjectURL(photoUploads[0]) : null;
-  
   return (
     <Card className="w-full border-2 border-purple-100">
       <CardContent className="p-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Image preview */}
-          {previewImage && (
-            <div className="w-full md:w-1/3 mb-4 md:mb-0">
-              <img 
-                src={previewImage} 
-                alt="Job preview" 
-                className="w-full h-48 object-cover rounded-md"
-              />
-            </div>
-          )}
-          
-          {/* Job details */}
-          <div className={`w-full ${previewImage ? 'md:w-2/3' : 'md:w-full'}`}>
+        <div className="flex flex-col gap-6">
+          {/* Job Title & Basic Info */}
+          <div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">
               {jobData.title}
             </h3>
@@ -74,44 +60,71 @@ export const JobPostPreview: React.FC<JobPostPreviewProps> = ({
                 {jobData.location}
               </span>
             </div>
-            
-            <div className="mb-4">
-              <h4 className="text-sm font-medium mb-1">Description:</h4>
+          </div>
+          
+          {/* Photo Gallery Preview */}
+          {photoUploads.length > 0 && (
+            <div className="w-full">
+              <h4 className="text-sm font-medium mb-2">Job Photos:</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                {photoUploads.map((photo, index) => (
+                  <div key={index} className="aspect-square rounded-md overflow-hidden border border-gray-200">
+                    <img 
+                      src={URL.createObjectURL(photo)} 
+                      alt={`Job photo ${index + 1}`} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Job Description */}
+          <div>
+            <h4 className="text-sm font-medium mb-1">Description:</h4>
+            <p className="text-gray-700 text-sm whitespace-pre-wrap">
+              {jobData.description}
+            </p>
+          </div>
+          
+          {/* Vietnamese Description (if available) */}
+          {jobData.vietnameseDescription && (
+            <div>
+              <h4 className="text-sm font-medium mb-1">Vietnamese Description:</h4>
               <p className="text-gray-700 text-sm whitespace-pre-wrap">
-                {jobData.description}
+                {jobData.vietnameseDescription}
               </p>
             </div>
-            
-            {jobData.vietnameseDescription && (
-              <div className="mb-4">
-                <h4 className="text-sm font-medium mb-1">Vietnamese Description:</h4>
-                <p className="text-gray-700 text-sm whitespace-pre-wrap">
-                  {jobData.vietnameseDescription}
-                </p>
-              </div>
-            )}
-            
-            {safeRequirements.length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-sm font-medium mb-1">Requirements:</h4>
-                <ul className="list-disc list-inside text-sm text-gray-700">
-                  {safeRequirements.map((req, index) => (
-                    <li key={index}>{req}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {/* Use the JobSpecialties component */}
-            <JobSpecialties specialties={safeSpecialties} />
-            
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <h4 className="text-sm font-medium mb-2">Contact Information:</h4>
-              <div className="text-sm text-gray-700">
-                <p>{jobData.contactName}</p>
-                <p>{jobData.contactEmail}</p>
-                {jobData.contactPhone && <p>{jobData.contactPhone}</p>}
-              </div>
+          )}
+          
+          {/* Requirements (if available) */}
+          {safeRequirements.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium mb-1">Requirements:</h4>
+              <ul className="list-disc list-inside text-sm text-gray-700">
+                {safeRequirements.map((req, index) => (
+                  <li key={index}>{req}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* Specialties */}
+          {safeSpecialties.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium mb-1">Specialties:</h4>
+              <JobSpecialties specialties={safeSpecialties} />
+            </div>
+          )}
+          
+          {/* Contact Information */}
+          <div className="pt-4 border-t border-gray-200">
+            <h4 className="text-sm font-medium mb-2">Contact Information:</h4>
+            <div className="text-sm text-gray-700">
+              {jobData.contactName && <p><strong>Name:</strong> {jobData.contactName}</p>}
+              <p><strong>Email:</strong> {jobData.contactEmail}</p>
+              {jobData.contactPhone && <p><strong>Phone:</strong> {jobData.contactPhone}</p>}
             </div>
           </div>
         </div>

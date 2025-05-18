@@ -51,6 +51,9 @@ const JobPost = () => {
       console.log('Form submitted with price tier:', pricingOptions.selectedPricingTier);
       console.log('Duration months:', pricingOptions.durationMonths);
       console.log('Auto-renew:', pricingOptions.autoRenew);
+      console.log('Nationwide:', pricingOptions.isNationwide);
+      console.log('First post:', pricingOptions.isFirstPost);
+      console.log('Photos count:', photoUploads.length);
       
       // Handle photo upload if any
       let imageUrls: string[] = [];

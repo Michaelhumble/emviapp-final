@@ -44,7 +44,9 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       // Only allow up to maxFiles
-      const newFiles = Array.from(e.dataTransfer.files).slice(0, maxFiles);
+      const newFiles = Array.from(e.dataTransfer.files)
+        .filter(file => file.type.startsWith('image/'))
+        .slice(0, maxFiles);
       onChange(newFiles);
     }
   };
@@ -52,7 +54,9 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       // Only allow up to maxFiles
-      const newFiles = Array.from(e.target.files).slice(0, maxFiles);
+      const newFiles = Array.from(e.target.files)
+        .filter(file => file.type.startsWith('image/'))
+        .slice(0, maxFiles);
       onChange(newFiles);
     }
   };
@@ -69,15 +73,15 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
     return (
       <div className="mt-4 space-y-2">
-        <h3 className="text-sm font-medium">Selected Photos:</h3>
-        <div className="flex flex-wrap gap-2">
+        <h3 className="text-sm font-medium">Selected Photos: ({currentFiles.length}/{maxFiles})</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
           {currentFiles.map((file, index) => (
             <div key={index} className="relative">
-              <div className="w-20 h-20 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center">
+              <div className="aspect-square border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center">
                 {file.type.startsWith('image/') ? (
                   <img
                     src={URL.createObjectURL(file)}
-                    alt={`Preview ${index}`}
+                    alt={`Preview ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -102,48 +106,57 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     );
   };
 
+  const remainingSlots = maxFiles - currentFiles.length;
+
   return (
     <Card className={cn("w-full", className)}>
       <CardContent className="p-4">
-        <div
-          className={cn(
-            "border-2 border-dashed rounded-lg p-6 text-center",
-            dragActive ? "border-primary bg-primary/5" : "border-gray-200",
-            currentFiles.length > 0 ? "border-primary/50" : ""
-          )}
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-        >
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Upload className="h-10 w-10 text-muted-foreground" />
-            <p className="text-sm font-medium">
-              Drag & drop photos here or click to browse
-            </p>
-            <p className="text-xs text-gray-500">
-              Supports JPG, PNG, GIF (max {maxFiles} {maxFiles === 1 ? 'file' : 'files'})
-            </p>
-            <div className="mt-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => document.getElementById('file-upload')?.click()}
-              >
-                Select Photo
-              </Button>
-              <input
-                id="file-upload"
-                type="file"
-                className="hidden"
-                accept={accept || "image/*"}
-                multiple={maxFiles > 1}
-                onChange={handleFileChange}
-              />
+        {remainingSlots > 0 ? (
+          <div
+            className={cn(
+              "border-2 border-dashed rounded-lg p-6 text-center",
+              dragActive ? "border-primary bg-primary/5" : "border-gray-200",
+              currentFiles.length > 0 ? "border-primary/50" : ""
+            )}
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+          >
+            <div className="flex flex-col items-center justify-center gap-2">
+              <Upload className="h-10 w-10 text-muted-foreground" />
+              <p className="text-sm font-medium">
+                Drag & drop photos here or click to browse
+              </p>
+              <p className="text-xs text-gray-500">
+                Add up to {remainingSlots} more {remainingSlots === 1 ? 'photo' : 'photos'} (JPG, PNG only)
+              </p>
+              <div className="mt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById('file-upload')?.click()}
+                >
+                  Select Photos
+                </Button>
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  accept={accept || "image/*"}
+                  multiple={remainingSlots > 1}
+                  onChange={handleFileChange}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm font-medium text-gray-700">Maximum {maxFiles} photos reached</p>
+            <p className="text-xs text-gray-500 mt-1">Remove some photos to add more</p>
+          </div>
+        )}
         
         {renderPreview()}
       </CardContent>
