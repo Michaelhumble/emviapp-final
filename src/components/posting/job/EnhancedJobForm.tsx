@@ -44,6 +44,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     
     setIsSubmitting(true);
     try {
+      // Pass the pricing options to the onSubmit handler
       const success = await onSubmit(jobFormData, photoUploads, pricingOptions);
       if (!success) {
         setIsSubmitting(false);

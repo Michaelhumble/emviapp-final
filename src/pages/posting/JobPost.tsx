@@ -49,6 +49,8 @@ const JobPost = () => {
 
     try {
       console.log('Form submitted with price tier:', pricingOptions.selectedPricingTier);
+      console.log('Duration months:', pricingOptions.durationMonths);
+      console.log('Auto-renew:', pricingOptions.autoRenew);
       
       // Handle photo upload if any
       let imageUrl = '';
