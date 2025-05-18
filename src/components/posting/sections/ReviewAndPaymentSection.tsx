@@ -1,25 +1,19 @@
+
 import React, { useState, useEffect } from 'react';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import { calculateJobPostPrice, jobPricingOptions } from '@/utils/posting/jobPricing';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
-import PricingDisplay from '@/components/posting/PricingDisplay';
-import PaymentSummary from '@/components/posting/PaymentSummary';
-import { SummaryTotals } from '@/components/posting/pricing/SummaryTotals';
-import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
-import { useStripe } from '@/hooks/useStripe';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Loader2, ChevronLeft, Lock, ShieldCheck, Clock, CreditCard, AlertCircle } from 'lucide-react';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { SummaryTotals } from '../pricing/SummaryTotals';
+import { jobPricingOptions, calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { PricingOptions } from '@/utils/posting/types';
+import { useTranslation } from '@/hooks/useTranslation';
+import PricingDisplay from '../PricingDisplay';
+import PaymentSummary from '../PaymentSummary';
+import { DurationSelector } from '../pricing/DurationSelector';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Badge } from "@/components/ui/badge";
+import { toast } from 'sonner';
 
 interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
@@ -40,366 +34,310 @@ export function ReviewAndPaymentSection({
   pricingOptions,
   setPricingOptions
 }: ReviewAndPaymentSectionProps) {
-  const [showFreePostDialog, setShowFreePostDialog] = useState(false);
-  const [showDiamondDialog, setShowDiamondDialog] = useState(false);
-  const { isLoading } = useStripe();
+  const { t } = useTranslation();
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [countdown, setCountdown] = useState(900); // 15-minute countdown (in seconds)
 
-  // Set default values if not already set
+  // Find the selected pricing tier
+  const selectedPricing = jobPricingOptions.find(
+    option => option.id === pricingOptions.selectedPricingTier
+  );
+
+  // Check if it's the diamond plan
+  const isDiamondPlan = selectedPricing?.id === 'diamond';
+  
+  // Calculate prices based on the current options
+  const { originalPrice, finalPrice, discountPercentage } = calculateJobPostPrice(pricingOptions);
+  const isFreePlan = finalPrice === 0 || pricingOptions.selectedPricingTier === 'free';
+  
+  // Convert file objects to object URLs for preview
   useEffect(() => {
-    if (!pricingOptions.selectedPricingTier) {
-      setPricingOptions(prev => ({
-        ...prev, 
-        selectedPricingTier: 'premium',
-        durationMonths: 1,
-        autoRenew: true
-      }));
-    }
-  }, [pricingOptions, setPricingOptions]);
-
-  const handlePricingTierChange = (tier: string) => {
-    // For Diamond tier, show special dialog
-    if (tier === 'diamond') {
-      setShowDiamondDialog(true);
-      return;
-    }
-
-    // Otherwise update pricing tier normally
-    setPricingOptions(prev => ({
-      ...prev,
-      selectedPricingTier: tier as any
-    }));
+    const urls = photoUploads.map(file => URL.createObjectURL(file));
+    setPhotoUrls(urls);
+    return () => {
+      urls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [photoUploads]);
+  
+  // Set up countdown timer for FOMO effect
+  useEffect(() => {
+    if (countdown <= 0) return;
     
-    // For free tier, show reminder dialog
-    if (tier === 'free') {
-      setShowFreePostDialog(true);
-    }
+    const timer = setInterval(() => {
+      setCountdown(prev => prev - 1);
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [countdown]);
+  
+  // Format the countdown time
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
-
+  
+  // Handle duration change
   const handleDurationChange = (months: number) => {
-    setPricingOptions(prev => ({
-      ...prev,
-      durationMonths: months
-    }));
+    setPricingOptions(prev => ({ ...prev, durationMonths: months }));
   };
-
+  
+  // Handle auto-renew toggle
   const handleAutoRenewChange = (autoRenew: boolean) => {
-    setPricingOptions(prev => ({
-      ...prev,
-      autoRenew
-    }));
+    setPricingOptions(prev => ({ ...prev, autoRenew }));
   };
 
-  const handleSubmitPayment = () => {
-    // If this is a free post, show the dialog
-    if (pricingOptions.selectedPricingTier === 'free') {
-      setShowFreePostDialog(true);
-    } else {
-      onSubmit();
-    }
+  const handleRequestDiamondInvitation = () => {
+    toast.info("Request submitted", {
+      description: "Our team will contact you shortly about the Diamond plan.",
+      duration: 5000
+    });
   };
-
-  const confirmFreePost = () => {
-    setShowFreePostDialog(false);
-    onSubmit();
-  };
-
-  const cancelFreePost = () => {
-    setShowFreePostDialog(false);
-  };
-
-  const closeDiamondDialog = () => {
-    setShowDiamondDialog(false);
-  };
-
-  // Calculate the pricing
-  const pricing = calculateJobPostPrice(pricingOptions);
-  const isFreePlan = pricingOptions.selectedPricingTier === 'free';
-  const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
-  const pricingTier = jobPricingOptions.find(tier => tier.id === pricingOptions.selectedPricingTier);
-  const basePrice = pricingTier?.price || 0;
-
-  // Safety check - form data validation
-  if (!formData) {
-    return <div>No form data available. Please go back and complete the form.</div>;
-  }
 
   return (
     <div className="space-y-6">
-      <Button
-        variant="ghost"
-        onClick={onBack}
-        className="mb-4 pl-0 hover:bg-transparent hover:text-purple-700"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Form
-      </Button>
+      <CardHeader className="px-0 md:px-2">
+        <div className="flex items-center space-x-2 mb-2">
+          <Button variant="ghost" size="sm" onClick={onBack}>
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Back
+          </Button>
+          
+          {discountPercentage > 0 && (
+            <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300">
+              <Clock className="h-3 w-3 mr-1" />
+              <span>Special Offer: {discountPercentage}% OFF • <b>{formatTime(countdown)}</b></span>
+            </Badge>
+          )}
+        </div>
+        <CardTitle>Review & Post Your Job</CardTitle>
+        <CardDescription>
+          Review your job listing and complete payment to publish.
+        </CardDescription>
+      </CardHeader>
       
-      <h2 className="text-2xl font-bold">Review & Payment</h2>
-      <p className="text-gray-600">Review your post details and select your pricing plan</p>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Job Summary</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Title */}
-          <div>
-            <h3 className="font-medium">Title</h3>
-            <p className="text-gray-700">{formData.title}</p>
-          </div>
-          
-          {/* Description */}
-          {formData.description && (
-            <div>
-              <h3 className="font-medium">Description</h3>
-              <p className="text-gray-700 whitespace-pre-wrap">{formData.description}</p>
-            </div>
-          )}
-          
-          {/* Vietnamese Description */}
-          {formData.vietnameseDescription && (
-            <div>
-              <h3 className="font-medium">Vietnamese Description</h3>
-              <p className="text-gray-700 whitespace-pre-wrap">{formData.vietnameseDescription}</p>
-            </div>
-          )}
-          
-          {/* Location */}
-          <div>
-            <h3 className="font-medium">Location</h3>
-            <p className="text-gray-700">{formData.location}</p>
-          </div>
-          
-          {/* Employment Type */}
-          {formData.jobType && (
-            <div>
-              <h3 className="font-medium">Employment Type</h3>
-              <p className="text-gray-700">{formData.jobType}</p>
-            </div>
-          )}
-          
-          {/* Requirements */}
-          {Array.isArray(formData.requirements) && formData.requirements.length > 0 && (
-            <div>
-              <h3 className="font-medium">Requirements</h3>
-              <ul className="list-disc pl-5 text-gray-700">
-                {formData.requirements.map((req, index) => (
-                  <li key={index}>{req}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {/* Specialties */}
-          {Array.isArray(formData.specialties) && formData.specialties.length > 0 && (
-            <div>
-              <h3 className="font-medium">Specialties</h3>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {formData.specialties.map((specialty, index) => (
-                  <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
-                    {specialty}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Compensation */}
-          {formData.salary_range && (
-            <div>
-              <h3 className="font-medium">Salary Range</h3>
-              <p className="text-gray-700">{formData.salary_range}</p>
-            </div>
-          )}
-          
-          {/* Contact Information */}
-          <div>
-            <h3 className="font-medium">Contact Information</h3>
-            <p className="text-gray-700">{formData.contactName}</p>
-            <p className="text-gray-700">{formData.contactEmail}</p>
-            {formData.contactPhone && <p className="text-gray-700">{formData.contactPhone}</p>}
-          </div>
-          
-          {/* Photos */}
-          {photoUploads.length > 0 && (
-            <div>
-              <h3 className="font-medium">Photos</h3>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {photoUploads.map((photo, index) => (
-                  <div key={index} className="relative h-20 w-20 rounded-md overflow-hidden border">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt={`Upload ${index + 1}`}
-                      className="h-full w-full object-cover"
-                    />
+      <CardContent className="px-0 md:px-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left column: Job Summary */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Job Summary Card */}
+            <Card className="overflow-hidden">
+              <CardHeader className="bg-gray-50">
+                <CardTitle className="text-lg">Job Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {formData && (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-medium">{formData.title}</h3>
+                      <p className="text-gray-500 text-sm">{formData.location}</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-1">Description</h4>
+                      <p className="text-sm whitespace-pre-line">{formData.description}</p>
+                    </div>
+                    
+                    {formData.vietnameseDescription && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-1">Vietnamese Description</h4>
+                        <p className="text-sm whitespace-pre-line">{formData.vietnameseDescription}</p>
+                      </div>
+                    )}
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <h4 className="font-medium">Job Type</h4>
+                        <p>{formData.jobType}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Experience</h4>
+                        <p>{formData.experience_level}</p>
+                      </div>
+                    </div>
+                    
+                    {formData.requirements && formData.requirements.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-1">Requirements</h4>
+                        <ul className="list-disc pl-5 text-sm">
+                          {formData.requirements.map((item, index) => (
+                            <li key={index}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Choose Your Plan</CardTitle>
-          <CardDescription>
-            Select the best plan to reach qualified candidates
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Pricing Tier Selection */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">Pricing Tier</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {jobPricingOptions
-                .filter(option => !option.hidden)
-                .map((option) => (
-                  <div
-                    key={option.id}
-                    onClick={() => handlePricingTierChange(option.id)}
-                    className={`
-                      border rounded-xl p-4 cursor-pointer transition-all relative
-                      ${pricingOptions.selectedPricingTier === option.id
-                        ? 'border-purple-500 ring-2 ring-purple-200'
-                        : 'border-gray-200 hover:border-gray-300'
-                      }
-                      ${option.popular ? 'bg-purple-50' : 'bg-white'}
-                    `}
-                  >
-                    {option.popular && (
-                      <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-2 py-0.5 rounded-full text-xs font-medium">
-                        Most Popular
-                      </span>
-                    )}
-                    {option.tag && (
-                      <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-500 text-white px-2 py-0.5 rounded-full text-xs font-medium">
-                        {option.tag}
-                      </span>
-                    )}
-                    {option.limitedSpots && (
-                      <span className="absolute -top-3 right-2 bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-medium">
-                        {option.limitedSpots}
-                      </span>
-                    )}
-                    <div className="font-medium text-lg mb-1">{option.name}</div>
-                    <div className="flex items-baseline mb-2">
-                      <span className="text-2xl font-bold">${option.price.toFixed(2)}</span>
-                      <span className="text-gray-500 ml-1">/month</span>
-                      {option.wasPrice && option.wasPrice > option.price && (
-                        <span className="line-through text-gray-400 ml-2 text-sm">
-                          ${option.wasPrice.toFixed(2)}
-                        </span>
+                )}
+              </CardContent>
+            </Card>
+            
+            {/* Photos Preview */}
+            {photoUrls.length > 0 && (
+              <Card>
+                <CardHeader className="bg-gray-50">
+                  <CardTitle className="text-lg">Photos ({photoUrls.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {photoUrls.map((url, index) => (
+                      <div 
+                        key={index} 
+                        className="aspect-square rounded-md overflow-hidden border bg-gray-100"
+                      >
+                        <img 
+                          src={url} 
+                          alt={`Job photo ${index + 1}`} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Duration Selector */}
+            <Card>
+              <CardContent className="p-4">
+                <DurationSelector
+                  durationMonths={pricingOptions.durationMonths}
+                  onDurationChange={handleDurationChange}
+                  isDiamondPlan={isDiamondPlan}
+                />
+              </CardContent>
+            </Card>
+            
+            {/* Pricing Summary */}
+            <Card>
+              <CardHeader className="bg-gray-50">
+                <CardTitle className="text-lg">Payment Details</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {selectedPricing && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">{selectedPricing.name} Plan</h3>
+                        <p className="text-sm text-gray-500">{selectedPricing.description}</p>
+                      </div>
+                      {selectedPricing.tag && (
+                        <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">
+                          {selectedPricing.tag}
+                        </Badge>
                       )}
                     </div>
-                    <p className="text-gray-600 text-sm mb-3">{option.description}</p>
-                    <ul className="space-y-1 mt-auto">
-                      {option.features?.slice(0, 3).map((feature, idx) => (
-                        <li key={idx} className="text-xs text-gray-600 flex items-center">
-                          <span className="text-green-500 mr-1">✓</span> {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    {option.primaryBenefit && (
-                      <p className="mt-2 text-xs text-purple-700 font-medium">{option.primaryBenefit}</p>
-                    )}
+                    
+                    {/* Price Display */}
+                    <PricingDisplay
+                      basePrice={selectedPricing.price}
+                      duration={pricingOptions.durationMonths}
+                      pricingId={selectedPricing.id}
+                      autoRenew={pricingOptions.autoRenew || false}
+                      originalPrice={originalPrice}
+                      finalPrice={finalPrice}
+                      discountPercentage={discountPercentage}
+                    />
+                    
+                    {/* Total and Auto-Renew Settings */}
+                    <SummaryTotals
+                      originalPrice={originalPrice}
+                      finalPrice={finalPrice}
+                      discountPercentage={discountPercentage}
+                      durationMonths={pricingOptions.durationMonths}
+                      autoRenew={pricingOptions.autoRenew || false}
+                      onAutoRenewChange={handleAutoRenewChange}
+                    />
                   </div>
-                ))}
-            </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
           
-          {/* Duration Selection */}
-          <DurationSelector
-            durationMonths={pricingOptions.durationMonths}
-            onDurationChange={handleDurationChange}
-            selectedPricingTier={pricingOptions.selectedPricingTier}
-            isDiamondPlan={isDiamondPlan}
-          />
-          
-          {/* Summary Totals */}
-          <SummaryTotals
-            originalPrice={pricing.originalPrice}
-            finalPrice={pricing.finalPrice}
-            discountPercentage={pricing.discountPercentage}
-            durationMonths={pricingOptions.durationMonths}
-            autoRenew={pricingOptions.autoRenew || false}
-            onAutoRenewChange={!isDiamondPlan ? handleAutoRenewChange : undefined}
-          />
-          
-          <PricingDisplay
-            basePrice={basePrice}
-            duration={pricingOptions.durationMonths}
-            pricingId={pricingOptions.selectedPricingTier}
-            autoRenew={pricingOptions.autoRenew || false}
-            originalPrice={pricing.originalPrice}
-            finalPrice={pricing.finalPrice}
-            discountPercentage={pricing.discountPercentage}
-          />
-        </CardContent>
-        <CardFooter>
-          <PaymentSummary
-            basePrice={basePrice}
-            duration={pricingOptions.durationMonths}
-            autoRenew={pricingOptions.autoRenew || false}
-            originalPrice={pricing.originalPrice}
-            finalPrice={pricing.finalPrice}
-            discountPercentage={pricing.discountPercentage}
-            onProceedToPayment={handleSubmitPayment}
-            isFreePlan={isFreePlan}
-            isSubmitting={isSubmitting || isLoading}
-          />
-        </CardFooter>
-      </Card>
-      
-      {/* Free Plan Reminder Dialog */}
-      <AlertDialog open={showFreePostDialog} onOpenChange={setShowFreePostDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-blue-500" />
-              One-Time Free Offer
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              <p className="mb-2">This is a one-time free trial offer for new users. Your job post will be active for {pricingOptions.durationMonths} {pricingOptions.durationMonths > 1 ? 'months' : 'month'}.</p>
-              <p className="font-medium">Credit card details are required to verify your account and prevent abuse of our platform.</p>
-              <p className="mt-2 text-amber-600">After your free trial ends, your listing will expire unless you upgrade to a paid plan.</p>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelFreePost}>Go Back</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmFreePost} className="bg-purple-600 hover:bg-purple-700">
-              Continue with Free Trial
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      
-      {/* Diamond Plan Dialog */}
-      <AlertDialog open={showDiamondDialog} onOpenChange={setShowDiamondDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <span className="text-xl">💎</span>
-              Diamond Plan - Exclusive Access
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              <p className="mb-2">Our Diamond Plan is reserved for elite businesses with the highest visibility needs.</p>
-              <p className="font-medium text-purple-700">Only 3 total spots available - contact our team to apply.</p>
-              <p className="mt-2">Benefits include:</p>
-              <ul className="list-disc pl-5 space-y-1 mt-1">
-                <li>Guaranteed #1 positioning</li>
-                <li>Custom design and branding</li>
-                <li>Dedicated account manager</li>
-                <li>VIP candidate matching</li>
-              </ul>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={closeDiamondDialog} className="bg-purple-600 hover:bg-purple-700 w-full">
-              Contact Sales Team
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          {/* Right column: Payment Summary */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-4">
+              <Card className="bg-gray-50 border-gray-200">
+                <CardHeader>
+                  <CardTitle>Post Summary</CardTitle>
+                  <CardDescription>
+                    Your job will go live immediately after payment
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Job Title & Photos Count */}
+                    <div>
+                      <h3 className="font-medium truncate">{formData?.title || "Your Job Post"}</h3>
+                      <p className="text-sm text-gray-500">
+                        {formData?.jobType || "Job"} • {photoUrls.length} photo{photoUrls.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    
+                    {/* Credit Card Required Notice - Always show */}
+                    {isFreePlan && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-800">
+                        <div className="flex items-start gap-2">
+                          <CreditCard className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="font-medium text-sm">Credit card required for free trial</p>
+                            <p className="text-xs mt-0.5">
+                              Your card will only be charged after your 30-day free trial if you don't cancel.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Payment Summary & Action Button */}
+                    {isDiamondPlan ? (
+                      <div className="mt-6">
+                        <Button 
+                          onClick={handleRequestDiamondInvitation} 
+                          className="w-full py-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            "Request Diamond Plan Invitation"
+                          )}
+                        </Button>
+                        
+                        <p className="text-xs text-center mt-2 text-gray-500">
+                          Our team will contact you to discuss premium placement options
+                        </p>
+                      </div>
+                    ) : (
+                      <PaymentSummary
+                        basePrice={selectedPricing?.price || 0}
+                        duration={pricingOptions.durationMonths}
+                        autoRenew={pricingOptions.autoRenew || false}
+                        originalPrice={originalPrice}
+                        finalPrice={finalPrice}
+                        discountPercentage={discountPercentage}
+                        onProceedToPayment={onSubmit}
+                        isFreePlan={isFreePlan}
+                        isSubmitting={isSubmitting}
+                      />
+                    )}
+                    
+                    {/* FOMO and Offer Countdown */}
+                    {discountPercentage > 0 && !isDiamondPlan && (
+                      <div className="text-center">
+                        <p className="text-xs text-gray-500">This offer expires in</p>
+                        <p className="text-sm font-bold text-amber-600">{formatTime(countdown)}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </CardContent>
     </div>
   );
 }

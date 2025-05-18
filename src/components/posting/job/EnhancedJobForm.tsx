@@ -12,7 +12,7 @@ interface EnhancedJobFormProps {
   onStepChange?: (step: number) => void;
   initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
-  maxPhotos?: number; // Add maxPhotos prop
+  maxPhotos?: number;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
@@ -27,14 +27,14 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'premium',
-    durationMonths: 1,
-    autoRenew: true,
-    isFirstPost: true,
-    isNationwide: false
+    selectedPricingTier: 'premium', // Default to premium tier
+    durationMonths: 1,             // Default to 1 month
+    autoRenew: true,               // Default to auto-renew enabled
+    isFirstPost: true,             // Default to first post (for free tier)
+    isNationwide: false            // Default to local listing
   });
 
-  // Update the handleJobFormSubmit to match the new JobForm onSubmit signature
+  // Update the handleJobFormSubmit to match the JobForm onSubmit signature
   const handleJobFormSubmit = (data: JobFormValues) => {
     setJobFormData(data);
     setActiveTab('review-payment');
@@ -46,11 +46,15 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     
     setIsSubmitting(true);
     try {
-      // Pass the pricing options to the onSubmit handler
+      // Pass all data to the onSubmit handler
       const success = await onSubmit(jobFormData, photoUploads, pricingOptions);
+      
       if (!success) {
         setIsSubmitting(false);
+        // If success is false, we don't navigate away so user can try again
       }
+      // On success, the parent component will handle navigation
+      
     } catch (error) {
       console.error('Error submitting job post:', error);
       setIsSubmitting(false);

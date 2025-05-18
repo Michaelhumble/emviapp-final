@@ -53,13 +53,16 @@ const JobPost = () => {
       console.log('Auto-renew:', pricingOptions.autoRenew);
       
       // Handle photo upload if any
-      let imageUrl = '';
+      let imageUrls: string[] = [];
       if (photoUploads.length > 0) {
         try {
-          imageUrl = await uploadImage(photoUploads[0]);
-          console.log('Image uploaded successfully:', imageUrl);
+          // Upload each photo and collect URLs
+          const uploadPromises = photoUploads.map(photo => uploadImage(photo));
+          imageUrls = await Promise.all(uploadPromises);
+          console.log('Images uploaded successfully:', imageUrls);
         } catch (uploadError) {
-          console.error('Error uploading photo:', uploadError);
+          console.error('Error uploading photos:', uploadError);
+          toast.error("There was an issue uploading your photos");
           // Continue with job post even if image upload fails
         }
       }
@@ -68,26 +71,39 @@ const JobPost = () => {
       const jobDetails = {
         title: formData.title,
         description: formData.description,
-        vietnamese_description: formData.vietnameseDescription,
+        vietnamese_description: formData.vietnameseDescription || '',
         location: formData.location,
         employment_type: formData.jobType,
-        compensation_details: formData.compensation_details,
-        salary_range: formData.salary_range,
+        compensation_details: formData.compensation_details || '',
+        salary_range: formData.salary_range || '',
         experience_level: formData.experience_level,
         contact_info: {
           email: formData.contactEmail,
-          owner_name: formData.contactName,
-          phone: formData.contactPhone
+          owner_name: formData.contactName || '',
+          phone: formData.contactPhone || ''
         },
         specialties: safeSpecialties,
         requirements: safeRequirements,
         post_type: 'job',
-        image: imageUrl, 
-        templateType: formData.templateType
+        images: imageUrls,
+        templateType: formData.templateType || selectedTemplateType
       };
       
+      // Diamond plan handling - direct to waitlist instead of payment
+      if (pricingOptions.selectedPricingTier === 'diamond') {
+        toast.success("Diamond plan request submitted", {
+          description: "Our team will contact you shortly to discuss premium options."
+        });
+        
+        // Submit the request to a different endpoint or track in database
+        // For now, we'll just simulate success
+        setTimeout(() => {
+          navigate('/post-success?tier=diamond&waitlist=true');
+        }, 1500);
+        return true;
+      }
+      
       // Even for free tier, process through payment flow to collect credit card
-      // This ensures all plans require a valid credit card
       const result = await initiatePayment('job', jobDetails, pricingOptions);
       return result?.success || false;
     } catch (error) {
