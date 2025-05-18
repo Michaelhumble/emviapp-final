@@ -90,11 +90,13 @@ const Navbar = () => {
             )}
           </div>
           
-          {/* Enhanced premium mobile menu */}
-          <MobileMenu 
-            user={user}
-            handleSignOut={handleSignOut}
-          />
+          {/* Enhanced mobile menu - ALWAYS visible on mobile */}
+          <div className="flex md:hidden">
+            <MobileMenu 
+              user={user}
+              handleSignOut={handleSignOut}
+            />
+          </div>
         </div>
       </div>
     </header>
@@ -102,4 +104,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
