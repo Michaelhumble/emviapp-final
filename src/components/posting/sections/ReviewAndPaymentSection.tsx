@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,6 +29,12 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   pricingOptions,
   setPricingOptions,
 }) => {
+  // Ensure formData.requirements and formData.specialties are arrays
+  if (formData) {
+    formData.requirements = Array.isArray(formData.requirements) ? formData.requirements : [];
+    formData.specialties = Array.isArray(formData.specialties) ? formData.specialties : [];
+  }
+
   // Fixed type: Use JobPricingTier instead of string
   const [selectedPricingTier, setSelectedPricingTier] = useState<JobPricingTier>(
     pricingOptions.selectedPricingTier || 'premium'
@@ -144,4 +149,3 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     </div>
   );
 };
-

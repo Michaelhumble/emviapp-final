@@ -41,19 +41,33 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   }, [currentStep, onStepChange]);
   
   const handleTemplateSelect = (template: JobFormValues) => {
-    setSelectedTemplate(template);
+    // Ensure requirements and specialties are arrays
+    const templateWithDefaults = {
+      ...template,
+      requirements: Array.isArray(template.requirements) ? template.requirements : [],
+      specialties: Array.isArray(template.specialties) ? template.specialties : []
+    };
+    
+    setSelectedTemplate(templateWithDefaults);
     // Always go to the form step after template selection
     setCurrentStep('form');
     window.scrollTo(0, 0);
   };
   
   const handleFormSubmit = (data: JobFormValues) => {
+    // Ensure requirements and specialties are arrays
+    const dataWithDefaults = {
+      ...data,
+      requirements: Array.isArray(data.requirements) ? data.requirements : [],
+      specialties: Array.isArray(data.specialties) ? data.specialties : []
+    };
+    
     // Ensure all required fields are present
-    if (!validateRequiredFields(data)) {
+    if (!validateRequiredFields(dataWithDefaults)) {
       return;
     }
     
-    setFormData(data);
+    setFormData(dataWithDefaults);
     setCurrentStep('review');
     window.scrollTo(0, 0);
   };
@@ -76,7 +90,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     setIsSubmitting(true);
     
     try {
-      // Convert form data to JobFormValues format
+      // Ensure requirements and specialties are arrays
       const jobFormValues: JobFormValues = {
         title: formData.title || '',
         description: formData.description || '',
@@ -87,8 +101,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         jobType: formData.jobType || 'full-time',
         experience_level: formData.experience_level || 'experienced',
         contactEmail: formData.contactEmail || '',
-        requirements: formData.requirements || [],
-        specialties: formData.specialties || [],
+        requirements: Array.isArray(formData.requirements) ? formData.requirements : [],
+        specialties: Array.isArray(formData.specialties) ? formData.specialties : [],
         contactName: formData.contactName || '',
         contactPhone: formData.contactPhone || '',
       };

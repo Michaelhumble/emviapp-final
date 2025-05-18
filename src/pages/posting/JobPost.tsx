@@ -30,6 +30,10 @@ const JobPost = () => {
       return false;
     }
 
+    // Ensure requirements and specialties are arrays
+    const safeRequirements = Array.isArray(formData.requirements) ? formData.requirements : [];
+    const safeSpecialties = Array.isArray(formData.specialties) ? formData.specialties : [];
+
     try {
       console.log('Form submitted with price tier:', pricingOptions.selectedPricingTier);
       
@@ -60,8 +64,8 @@ const JobPost = () => {
           owner_name: formData.contactName,
           phone: formData.contactPhone
         },
-        specialties: formData.specialties,
-        requirements: formData.requirements,
+        specialties: safeSpecialties,
+        requirements: safeRequirements,
         post_type: 'job',
         image: imageUrl, // Add the image URL
       };

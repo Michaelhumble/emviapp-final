@@ -40,10 +40,16 @@ export function MultiSelect({
   className,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
+  
+  // Add defensive check for selected
+  const safeSelected = Array.isArray(selected) ? selected : [];
 
   const handleUnselect = (item: string) => {
-    onChange(selected.filter((i) => i !== item));
+    onChange(safeSelected.filter((i) => i !== item));
   };
+
+  // Add defensive check for options
+  const safeOptions = Array.isArray(options) ? options : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -52,13 +58,13 @@ export function MultiSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-full justify-between ${selected.length > 0 ? "h-auto" : "h-10"}`}
+          className={`w-full justify-between ${safeSelected.length > 0 ? "h-auto" : "h-10"}`}
           onClick={() => setOpen(!open)}
         >
           <div className="flex flex-wrap gap-1">
-            {selected.length === 0 && placeholder}
-            {selected.map((item) => {
-              const option = options.find((o) => o.value === item);
+            {safeSelected.length === 0 && placeholder}
+            {safeSelected.map((item) => {
+              const option = safeOptions.find((o) => o.value === item);
               return (
                 <Badge
                   key={item}
@@ -86,16 +92,16 @@ export function MultiSelect({
           <CommandInput placeholder="Search..." />
           <CommandEmpty>{emptyMessage}</CommandEmpty>
           <CommandGroup className="max-h-64 overflow-auto">
-            {options.map((option) => {
-              const isSelected = selected.includes(option.value);
+            {safeOptions.map((option) => {
+              const isSelected = safeSelected.includes(option.value);
               return (
                 <CommandItem
                   key={option.value}
                   onSelect={() => {
                     onChange(
                       isSelected
-                        ? selected.filter((item) => item !== option.value)
-                        : [...selected, option.value]
+                        ? safeSelected.filter((item) => item !== option.value)
+                        : [...safeSelected, option.value]
                     );
                     setOpen(true);
                   }}
@@ -107,7 +113,7 @@ export function MultiSelect({
                     )}
                   />
                   {option.label}
-                </CommandItem>
+                </Command>
               );
             })}
           </CommandGroup>
