@@ -10,6 +10,7 @@ import PricingTierSelector from '@/components/posting/pricing/PricingTierSelecto
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
@@ -30,6 +31,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   pricingOptions,
   setPricingOptions,
 }) => {
+  const isMobile = useIsMobile();
   // Fixed type: Use JobPricingTier instead of string
   const [selectedPricingTier, setSelectedPricingTier] = useState<JobPricingTier>(
     pricingOptions.selectedPricingTier as JobPricingTier || 'premium'
@@ -68,7 +70,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 className="text-2xl font-playfair font-medium">Review & Payment</h2>
         <Button 
           type="button" 
@@ -121,7 +123,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
         </Card>
       </div>
       
-      <div className="mt-8 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+      <div className={`mt-8 flex ${isMobile ? 'flex-col' : 'flex-row'} space-y-4 md:space-y-0 md:space-x-4`}>
         <Button 
           type="button" 
           variant="outline" 
@@ -141,6 +143,9 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           {isSubmitting ? 'Processing...' : `Pay & Post Job - $${calculatePrice()}`}
         </Button>
       </div>
+      
+      {/* Mobile helper padding at the bottom */}
+      {isMobile && <div className="h-12"></div>}
     </div>
   );
 };

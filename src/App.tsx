@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -26,6 +25,7 @@ import Cookies from "@/pages/Cookies";
 import CheckoutFallback from "@/pages/CheckoutFallback";
 import PostSuccess from "@/pages/post-success";
 import PostCanceled from "@/pages/post-canceled";
+import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
 
 function App() {
   const location = useLocation();
@@ -59,7 +59,12 @@ function App() {
                     <Route path="/salons" element={<StableSalonPage />} />
                     
                     {/* Add our new job post route */}
-                    <Route path="/post-job" element={<JobPost />} />
+                    <Route path="/post-job" element={
+                      <Layout>
+                        <JobPost />
+                        <MobileBottomNavBar />
+                      </Layout>
+                    } />
                     
                     {/* Explicitly add the /jobs route to ensure it uses the correct component */}
                     <Route path="/jobs" element={<Jobs />} />

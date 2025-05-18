@@ -7,24 +7,25 @@ export function useIsMobile(): boolean {
   useEffect(() => {
     // Check if window is available (client-side)
     if (typeof window === 'undefined') return;
+
+    // Initialize with current window width
+    checkIsMobile();
     
-    // Initial check
-    setIsMobile(window.innerWidth < 768);
+    // Add resize event listener
+    function handleResize() {
+      checkIsMobile();
+    }
     
-    // Create the media query list
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    function checkIsMobile() {
+      // 768px is the standard md breakpoint in Tailwind
+      setIsMobile(window.innerWidth < 768);
+    }
     
-    // Define the handler
-    const handleResize = (e: MediaQueryListEvent) => {
-      setIsMobile(e.matches);
-    };
-    
-    // Add the listener
-    mediaQuery.addEventListener('change', handleResize);
+    window.addEventListener('resize', handleResize);
     
     // Clean up
     return () => {
-      mediaQuery.removeEventListener('change', handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
   

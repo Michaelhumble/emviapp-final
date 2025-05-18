@@ -29,4 +29,51 @@
   z-index: 1000;
 }
 
+/* Add responsive padding for bottom nav bar */
+.pb-safe-area {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* Add glow effect for mobile nav */
+.nav-bottom-glow {
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Shadow for mobile navbar */
+.shadow-mobile-navbar {
+  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Add these tap highlight styles for mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile animation styles */
+.tap-scale {
+  transform: scale(1);
+  transition: transform 0.2s;
+}
+.tap-scale:active {
+  transform: scale(0.96);
+}
+
+/* Mobile page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.page-transition-exit {
+  opacity: 1;
+}
+.page-transition-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
 /* Other existing CSS... */

@@ -11,6 +11,7 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { FormProvider, useForm } from 'react-hook-form';
 import { uploadImage } from '@/utils/uploadImage';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const JobPost = () => {
   const navigate = useNavigate();
@@ -18,9 +19,14 @@ const JobPost = () => {
   const { handleJobPost } = useJobPosting();
   const { initiatePayment, isLoading } = usePostPayment();
   const formMethods = useForm();
+  const isMobile = useIsMobile();
 
   const handleStepChange = (step: number) => {
     setCurrentStep(step);
+    // Scroll to top on mobile when changing steps
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleSubmit = async (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => {
