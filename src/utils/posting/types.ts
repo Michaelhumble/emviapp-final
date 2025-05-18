@@ -42,3 +42,5 @@ export interface JobPricingOption {
 }
 
 export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';
+
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';

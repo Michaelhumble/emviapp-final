@@ -1,5 +1,13 @@
 
-export * from './types';
+export type { 
+  UserPostingStats,
+  PricingOptions,
+  PostType,
+  JobPricingOption,
+  JobPricingTier,
+  IndustryType
+} from './types';
+
 export { 
   jobPricingOptions,
   calculateFinalPrice,
