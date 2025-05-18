@@ -1,248 +1,386 @@
-import { JobFormValues } from "@/components/posting/job/jobFormSchema";
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 
 export type JobTemplateType = 
-  | "nails" 
-  | "hair" 
-  | "lashes" 
-  | "barber" 
-  | "skincare" 
-  | "spa" 
-  | "receptionist" 
-  | "manager" 
-  | "massage" 
-  | "tattoo" 
-  | "makeup" 
-  | "booth" 
-  | "beauty" 
+  | "nails"
+  | "hair"
+  | "lashes"
+  | "barber"
+  | "skincare"
+  | "spa"
+  | "receptionist"
+  | "manager"
+  | "massage"
+  | "tattoo"
+  | "makeup"
+  | "booth"
+  | "beauty"
   | "custom";
 
-/**
- * Returns a job posting template based on the selected industry type
- */
 export const getJobTemplate = (templateType: JobTemplateType): JobFormValues => {
   switch (templateType) {
-    case "nails":
+    case 'nails':
       return {
         title: "Nail Technician",
-        description: "We are seeking a skilled Nail Technician to join our team. The ideal candidate will have experience in manicures, pedicures, and nail art. Must be licensed and able to provide excellent customer service.",
-        vietnameseDescription: "Chúng tôi đang tìm kiếm một Kỹ thuật viên Nail có kỹ năng để tham gia vào nhóm của chúng tôi. Ứng viên lý tưởng sẽ có kinh nghiệm về manicure, pedicure và nail art. Phải có giấy phép và có thể cung cấp dịch vụ khách hàng xuất sắc.",
+        description: "We are seeking a skilled Nail Technician to join our team! The ideal candidate has experience with manicures, pedicures, and nail art. You should be detail-oriented, have excellent customer service skills, and maintain high standards of cleanliness and safety.",
+        vietnameseDescription: "Chúng tôi đang tìm kiếm một Kỹ thuật viên Nail có tay nghề để tham gia vào đội ngũ của chúng tôi! Ứng viên lý tưởng có kinh nghiệm với dịch vụ làm móng tay, móng chân và nghệ thuật vẽ móng. Bạn nên chú ý đến chi tiết, có kỹ năng dịch vụ khách hàng xuất sắc và duy trì tiêu chuẩn cao về vệ sinh và an toàn.",
         location: "",
-        compensation_details: "Competitive pay + tips",
-        salary_range: "$25-35/hour depending on experience and clientele",
+        compensation_details: "Competitive pay with commission, flexible schedule, and opportunity for growth.",
+        salary_range: "$600-1000/week",
         jobType: "full-time",
-        experience_level: "intermediate",
+        experience_level: "entry",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["License required", "Experience with acrylics, gel, and dipping powder", "Customer service skills"],
-        specialties: ["Acrylic", "Gel", "Nail Art", "Pedicure"],
+        requirements: [
+          "Valid nail technician license",
+          "1+ years experience (preferred)",
+          "Knowledge of nail art techniques",
+          "Excellent customer service skills"
+        ],
+        specialties: [
+          "Manicures",
+          "Pedicures",
+          "Gel nails",
+          "Acrylic nails",
+          "Nail art"
+        ],
         templateType: "nails"
       };
-    case "hair":
+    case 'hair':
       return {
         title: "Hair Stylist",
-        description: "Join our salon as a Hair Stylist! We're looking for talented stylists with cutting, coloring, and styling experience. Must be able to build and maintain a client base.",
+        description: "Join our talented team of stylists! We are looking for a passionate Hair Stylist with a creative eye and technical expertise. The ideal candidate will excel at cutting, coloring, and styling for a diverse clientele.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Commission-based with product bonuses",
-        salary_range: "50-60% commission",
+        compensation_details: "Competitive commission structure, paid education, and flexible scheduling.",
+        salary_range: "$700-1200/week",
         jobType: "full-time",
-        experience_level: "experienced",
+        experience_level: "intermediate",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Cosmetology license required", "Minimum 2 years experience", "Portfolio recommended"],
-        specialties: ["Haircuts", "Color", "Balayage", "Blowouts"],
+        requirements: [
+          "Valid cosmetology license",
+          "2+ years experience in hair cutting and coloring",
+          "Strong customer service skills",
+          "Portfolio of work"
+        ],
+        specialties: [
+          "Hair cutting",
+          "Hair coloring",
+          "Balayage",
+          "Blowouts",
+          "Styling"
+        ],
         templateType: "hair"
       };
-    case "lashes":
-      return {
-        title: "Lash Technician",
-        description: "We are looking for a skilled Lash Technician to provide eyelash extensions and lash services. Certification and experience required.",
-        vietnameseDescription: "",
-        location: "",
-        compensation_details: "Hourly or commission-based",
-        salary_range: "$20-30/hour or 50% commission",
-        jobType: "full-time",
-        experience_level: "intermediate",
-        contactEmail: "",
-        contactName: "",
-        contactPhone: "",
-        requirements: ["Lash certification", "1+ year experience", "Knowledge of lash styles"],
-        specialties: ["Eyelash Extensions", "Lash Lifts", "Lash Tinting"],
-        templateType: "lashes"
-      };
-    case "barber":
+    case 'barber':
       return {
         title: "Barber",
-        description: "Skilled barber needed for busy shop. Must excel in men's cuts, fades, beard trims, and traditional hot towel shaves. Good communication skills essential.",
+        description: "Are you passionate about men's grooming? We're seeking a skilled Barber to join our growing team. The ideal candidate has exceptional technique with classic and modern cuts, beard trimming, and straight razor shaves.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Competitive booth rental or commission options available",
-        salary_range: "60% commission or $150-200/week booth rental",
+        compensation_details: "Base pay + commission, health benefits for full-time employees.",
+        salary_range: "$650-1100/week",
         jobType: "full-time",
-        experience_level: "experienced",
+        experience_level: "intermediate",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Barber license", "2+ years experience", "Own basic tools"],
-        specialties: ["Fades", "Beard Grooming", "Hot Towel Shaves", "Men's Styling"],
+        requirements: [
+          "Valid barber license",
+          "1+ years experience",
+          "Proficient in modern and classic cutting techniques",
+          "Excellent client communication skills"
+        ],
+        specialties: [
+          "Men's haircuts",
+          "Beard trims",
+          "Hot towel shaves",
+          "Fades",
+          "Line-ups"
+        ],
         templateType: "barber"
       };
-    case "skincare":
+    case 'skincare':
       return {
         title: "Esthetician",
-        description: "Experienced Esthetician needed for upscale spa. Provide facials, skin treatments, and skincare consultations. Strong product knowledge and attention to detail required.",
+        description: "We are seeking a licensed Esthetician to provide exceptional skincare services to our clients. The ideal candidate will be knowledgeable about various skin conditions and treatments, passionate about helping clients achieve their skincare goals, and committed to providing a relaxing experience.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Hourly + commission on services and products",
-        salary_range: "$18-25/hour plus commission",
+        compensation_details: "Competitive commission structure plus retail commissions, paid continuing education, and flexible scheduling.",
+        salary_range: "$700-1100/week",
         jobType: "full-time",
         experience_level: "intermediate",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Esthetician license", "Experience with various skin types", "Product knowledge"],
-        specialties: ["Facials", "Chemical Peels", "Microdermabrasion", "Skin Analysis"],
+        requirements: [
+          "Valid esthetician license",
+          "1+ years experience preferred",
+          "Knowledge of skincare products and ingredients",
+          "Excellent customer service skills"
+        ],
+        specialties: [
+          "Facials",
+          "Chemical peels",
+          "Microdermabrasion",
+          "Waxing",
+          "Product recommendations"
+        ],
         templateType: "skincare"
       };
-    case "spa":
+    case 'lashes':
       return {
-        title: "Spa Technician",
-        description: "Join our spa team as a Spa Technician! We're looking for professionals skilled in body treatments, wraps, and therapeutic services. Certification required.",
+        title: "Lash Technician",
+        description: "We're looking for a skilled Lash Technician who can create beautiful, natural-looking eyelash extensions. The ideal candidate has a steady hand, attention to detail, and the ability to customize lash styles to suit each client.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Hourly + tips",
-        salary_range: "$17-23/hour + tips",
-        jobType: "part-time",
-        experience_level: "entry",
+        compensation_details: "Competitive pay with commission structure.",
+        salary_range: "$650-1000/week",
+        jobType: "full-time",
+        experience_level: "intermediate",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Certification in massage or related field", "Customer service skills"],
-        specialties: ["Body Wraps", "Massage", "Facials"],
+        requirements: [
+          "Lash certification",
+          "6+ months experience",
+          "Portfolio of work",
+          "Knowledge of lash types and adhesives"
+        ],
+        specialties: [
+          "Classic lashes",
+          "Volume lashes",
+          "Hybrid sets",
+          "Lash lifts",
+          "Lash tinting"
+        ],
+        templateType: "lashes"
+      };
+    case 'spa':
+      return {
+        title: "Spa Therapist",
+        description: "Join our luxurious spa as a Spa Therapist providing exceptional body treatments and massage services. The ideal candidate will have a nurturing personality, excellent technique, and the ability to create a relaxing atmosphere for clients.",
+        vietnameseDescription: "",
+        location: "",
+        compensation_details: "Base pay + gratuities, employee discounts on products and services.",
+        salary_range: "$700-1100/week",
+        jobType: "full-time",
+        experience_level: "experienced",
+        contactEmail: "",
+        contactName: "",
+        contactPhone: "",
+        requirements: [
+          "Massage therapy license or equivalent certification",
+          "2+ years experience in spa setting",
+          "Knowledge of various massage modalities",
+          "Excellent client communication"
+        ],
+        specialties: [
+          "Swedish massage",
+          "Deep tissue massage",
+          "Hot stone therapy",
+          "Body wraps",
+          "Body scrubs"
+        ],
         templateType: "spa"
       };
-    case "receptionist":
+    case 'receptionist':
       return {
         title: "Salon Receptionist",
-        description: "We are seeking a Salon Receptionist to manage scheduling, client check-ins, and salon operations. Must have excellent communication and organizational skills.",
+        description: "We are looking for a friendly, organized Salon Receptionist to be the face of our salon. The ideal candidate will have excellent communication skills, ability to multi-task, and a passion for customer service in the beauty industry.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Hourly wage",
-        salary_range: "$15-18/hour",
+        compensation_details: "Competitive hourly rate, employee discounts on services and products.",
+        salary_range: "$14-18/hour",
         jobType: "full-time",
-        experience_level: "entry",
+        experience_level: "entry",  // Changed from "any" to "entry"
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["High school diploma", "Customer service experience", "Basic computer skills"],
-        specialties: ["Scheduling", "Customer Service", "Cash Handling"],
+        requirements: [
+          "High school diploma or equivalent",
+          "Customer service experience preferred",
+          "Proficient with computers and appointment software",
+          "Excellent phone etiquette"
+        ],
+        specialties: [
+          "Appointment scheduling",
+          "Client relations",
+          "Retail sales",
+          "Inventory management"
+        ],
         templateType: "receptionist"
       };
-    case "manager":
+    case 'manager':
       return {
         title: "Salon Manager",
-        description: "Experienced Salon Manager needed to oversee salon operations and team leadership. Must have strong management and customer service skills.",
+        description: "Experienced Salon Manager needed to oversee daily operations, staff management, and business growth. The ideal candidate will have leadership experience in the beauty industry and a track record of improving salon performance.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Salary + bonuses",
-        salary_range: "$40,000 - $60,000/year",
+        compensation_details: "Competitive salary plus performance bonuses, health benefits, paid vacation.",
+        salary_range: "$45,000-60,000/year",
         jobType: "full-time",
-        experience_level: "experienced",
+        experience_level: "senior",  // Changed from "any" to "senior"
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Management experience", "Customer service skills", "Knowledge of salon operations"],
-        specialties: ["Team Leadership", "Customer Service", "Inventory Management"],
+        requirements: [
+          "3+ years of salon management experience",
+          "Strong leadership and team building skills",
+          "Business and financial management experience",
+          "Customer service excellence"
+        ],
+        specialties: [
+          "Staff management",
+          "Business operations",
+          "Marketing",
+          "Client retention",
+          "Budget management"
+        ],
         templateType: "manager"
       };
-    case "massage":
+    case 'massage':
       return {
         title: "Massage Therapist",
-        description: "Licensed Massage Therapist needed for spa and wellness center. Provide massage and bodywork services. Must have excellent communication skills.",
+        description: "Licensed Massage Therapist wanted for a busy wellness center. The ideal candidate has a healing touch, strong knowledge of anatomy, and the ability to customize treatments for client needs.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Commission-based",
-        salary_range: "50-60% commission",
-        jobType: "full-time",
-        experience_level: "intermediate",
-        contactEmail: "",
-        contactName: "",
-        contactPhone: "",
-        requirements: ["Massage license", "Customer service skills"],
-        specialties: ["Swedish Massage", "Deep Tissue Massage", "Hot Stone Massage"],
-        templateType: "massage"
-      };
-    case "tattoo":
-      return {
-        title: "Tattoo Artist",
-        description: "Skilled Tattoo Artist needed for busy studio. Must have strong portfolio and tattooing expertise.",
-        vietnameseDescription: "",
-        location: "",
-        compensation_details: "Commission-based",
-        salary_range: "50-70% commission",
-        jobType: "full-time",
+        compensation_details: "Competitive compensation package with base pay plus tips, flexible scheduling.",
+        salary_range: "$45-75/hour",
+        jobType: "part-time",
         experience_level: "experienced",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Tattoo license", "Strong portfolio"],
-        specialties: ["Tattooing", "Custom Designs"],
-        templateType: "tattoo"
+        requirements: [
+          "Valid massage therapy license",
+          "500+ hours of certified training",
+          "1+ years professional experience",
+          "Knowledge of multiple massage modalities"
+        ],
+        specialties: [
+          "Swedish massage",
+          "Deep tissue",
+          "Sports massage",
+          "Reflexology",
+          "Prenatal massage"
+        ],
+        templateType: "massage"
       };
-    case "makeup":
+    case 'tattoo':
       return {
-        title: "Makeup Artist",
-        description: "We are seeking a skilled Makeup Artist to provide makeup application for various occasions. Must have experience with different makeup styles.",
+        title: "Tattoo Artist",
+        description: "We are seeking a talented and experienced Tattoo Artist to join our studio. The ideal candidate should have a strong portfolio showcasing their artistic skills and expertise in various tattooing styles.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Hourly or commission-based",
-        salary_range: "$18-25/hour or 40-50% commission",
+        compensation_details: "Competitive commission-based pay, flexible hours, and a supportive work environment.",
+        salary_range: "$500 - $1500/week (depending on experience and clientele)",
+        jobType: "contract",
+        experience_level: "experienced",
+        contactEmail: "",
+        contactName: "",
+        contactPhone: "",
+        requirements: [
+          "Valid tattoo license",
+          "Minimum of 2 years of professional tattooing experience",
+          "Strong portfolio demonstrating a variety of styles",
+          "Excellent knowledge of sanitation and safety procedures"
+        ],
+        specialties: [
+          "Black and grey",
+          "Color realism",
+          "Traditional",
+          "Neo-traditional",
+          "Geometric"
+        ],
+        templateType: "tattoo"
+      };
+    case 'makeup':
+      return {
+        title: "Makeup Artist",
+        description: "We are looking for a skilled and creative Makeup Artist to provide exceptional makeup services to our clients. The ideal candidate should have a passion for beauty, a keen eye for detail, and the ability to create a variety of looks for different occasions.",
+        vietnameseDescription: "",
+        location: "",
+        compensation_details: "Hourly wage plus commission, opportunities for tips, and flexible scheduling.",
+        salary_range: "$18 - $30/hour (depending on experience and tips)",
         jobType: "part-time",
         experience_level: "intermediate",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Makeup artistry experience", "Knowledge of different makeup styles"],
-        specialties: ["Bridal Makeup", "Special Effects Makeup", "Editorial Makeup"],
+        requirements: [
+          "Proven experience as a makeup artist",
+          "Knowledge of makeup techniques and color theory",
+          "Excellent customer service skills",
+          "Ability to work under pressure and meet deadlines"
+        ],
+        specialties: [
+          "Bridal makeup",
+          "Special effects makeup",
+          "Editorial makeup",
+          "Everyday makeup",
+          "Airbrush makeup"
+        ],
         templateType: "makeup"
       };
-    case "booth":
+    case 'booth':
       return {
         title: "Booth Rental Available",
-        description: "Booth rental space available for independent beauty professionals. Great location and amenities.",
+        description: "We have booth rental opportunities available for experienced beauty professionals. Our salon offers a supportive and professional environment with great amenities and a prime location.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Weekly or monthly rental fee",
-        salary_range: "$150-250/week",
+        compensation_details: "Competitive rental rates, flexible terms, and access to salon amenities.",
+        salary_range: "Rental rates vary",
         jobType: "contract",
-        experience_level: "any",
+        experience_level: "experienced",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: ["Cosmetology license"],
-        specialties: [],
+        requirements: [
+          "Valid cosmetology license",
+          "Proven clientele",
+          "Professional liability insurance",
+          "Commitment to maintaining a clean and organized workspace"
+        ],
+        specialties: [
+          "Hair styling",
+          "Nail services",
+          "Esthetics",
+          "Massage therapy",
+          "Other beauty services"
+        ],
         templateType: "booth"
       };
-    case "beauty":
+    case 'beauty':
       return {
         title: "Other Beauty Professional",
-        description: "Seeking beauty professionals for specialized services such as microblading, threading, or waxing.",
+        description: "We are always looking for talented beauty professionals to join our team. If you have a unique skill or service to offer, we encourage you to apply.",
         vietnameseDescription: "",
         location: "",
-        compensation_details: "Varies",
-        salary_range: "Varies",
+        compensation_details: "Compensation varies depending on the role and experience.",
+        salary_range: "Negotiable",
         jobType: "contract",
-        experience_level: "any",
+        experience_level: "intermediate",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
-        requirements: [],
-        specialties: [],
+        requirements: [
+          "Valid license or certification (if applicable)",
+          "Proven experience in your field",
+          "Excellent customer service skills",
+          "Passion for the beauty industry"
+        ],
+        specialties: [
+          "Microblading",
+          "Eyelash extensions",
+          "Waxing",
+          "Threading",
+          "Other specialized beauty services"
+        ],
         templateType: "beauty"
       };
-    case "custom":
     default:
       return {
         title: "",
