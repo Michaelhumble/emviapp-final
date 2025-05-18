@@ -7,18 +7,20 @@ import { cn } from '@/lib/utils';
 
 interface PhotoUploaderProps {
   onChange: (files: File[]) => void;
-  files?: File[];  // Add this prop to match JobForm.tsx usage
+  files?: File[];
   photoUploads?: File[];
   maxFiles?: number;
   className?: string;
+  accept?: string;  // Add the accept prop for file type filtering
 }
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   onChange,
-  files = [],        // Add this prop with default value
-  photoUploads = [], // Keep existing prop for backward compatibility
+  files = [],
+  photoUploads = [],
   maxFiles = 1,
   className,
+  accept,
 }) => {
   const [dragActive, setDragActive] = useState(false);
   
@@ -135,7 +137,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                 id="file-upload"
                 type="file"
                 className="hidden"
-                accept="image/*"
+                accept={accept || "image/*"}
                 multiple={maxFiles > 1}
                 onChange={handleFileChange}
               />
