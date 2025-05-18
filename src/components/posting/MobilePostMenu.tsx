@@ -54,15 +54,12 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
       </SheetTrigger>
       
       <SheetContent 
-        side="left" 
-        className="w-[75%] border-r border-[#9A7B69]/20 bg-white/90 backdrop-blur-md shadow-lg p-0 z-[100]"
+        side="right" 
+        className="w-[75%] border-l border-[#9A7B69]/20 bg-white/90 backdrop-blur-md shadow-lg p-0 z-[100]"
       >
         <div className="flex flex-col h-full">
           {/* Logo and close button */}
           <div className="flex justify-between items-center p-4 border-b border-gray-100">
-            <div className="w-full flex justify-center">
-              <Logo size="medium" showText={true} />
-            </div>
             <Button 
               variant="ghost" 
               className="rounded-full p-2 hover:bg-gray-100" 
@@ -71,6 +68,9 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
               <X className="h-5 w-5" />
               <span className="sr-only">Close</span>
             </Button>
+            <div className="w-full flex justify-center">
+              <Logo size="medium" showText={true} />
+            </div>
           </div>
           
           {/* Menu items */}
@@ -81,7 +81,7 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
                 return (
                   <motion.div
                     key={item.path}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
                   >
@@ -99,7 +99,7 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
               
               {/* Post a Job button - highlighted */}
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
               >
