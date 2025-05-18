@@ -32,9 +32,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     isFirstPost: true
   });
 
-  const handleJobFormSubmit = (data: JobFormValues, photos: File[]) => {
+  // Update the handleJobFormSubmit to match the new JobForm onSubmit signature
+  const handleJobFormSubmit = (data: JobFormValues) => {
     setJobFormData(data);
-    setPhotoUploads(photos);
     setActiveTab('review-payment');
     onStepChange?.(3);
   };
