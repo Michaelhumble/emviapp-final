@@ -60,9 +60,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         location: formData.location || '',
         compensation_details: formData.compensation_details || '',
         salary_range: formData.salary_range || '',
-        jobType: formData.employment_type || 'full-time',
+        jobType: formData.jobType || 'full-time',
         experience_level: formData.experience_level || 'experienced',
-        contactEmail: formData.contact_info?.email || '',
+        contactEmail: formData.contactEmail || '',
         requirements: formData.requirements || [],
         specialties: formData.specialties || [],
       };
@@ -88,7 +88,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   };
   
   return (
-    <Card className="border shadow-lg rounded-xl overflow-hidden bg-gradient-to-b from-white to-gray-50">
+    <Card className="border shadow-md rounded-xl overflow-hidden bg-white">
       <CardContent className="p-0">
         <AnimatePresence mode="wait">
           {currentStep === 'template' ? (
@@ -118,6 +118,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
                 isSubmitting={isSubmitting}
                 initialValues={selectedTemplate || initialValues}
                 onBack={handleBack}
+                showVietnameseByDefault={selectedTemplate?.vietnameseDescription ? true : false}
               />
             </motion.div>
           ) : (

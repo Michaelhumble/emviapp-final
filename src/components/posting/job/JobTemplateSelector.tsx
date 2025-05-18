@@ -1,19 +1,12 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCheck, Sparkles } from 'lucide-react';
+import { CheckCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent
-} from '@/components/ui/hover-card';
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobFormValues, IndustryType } from './jobFormSchema';
+import { JobFormValues } from './jobFormSchema';
 import { templateCards, jobTemplates } from './jobTemplates';
 import confetti from 'canvas-confetti';
-import { GradientBackground } from '@/components/ui/gradient-background';
 
 interface JobTemplateSelectorProps {
   onTemplateSelect: (template: JobFormValues) => void;
@@ -26,7 +19,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
   const handleTemplateSelect = (templateId: string) => {
     setSelectedCardId(templateId);
 
-    // Trigger confetti effect
+    // Trigger elegant confetti effect
     const confettiCanvas = document.createElement('canvas');
     confettiCanvas.classList.add('fixed', 'inset-0', 'z-50', 'pointer-events-none');
     document.body.appendChild(confettiCanvas);
@@ -37,17 +30,19 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
     });
     
     myConfetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
+      particleCount: 80,
+      spread: 60,
+      origin: { y: 0.6 },
+      colors: ['#9b87f5', '#D6BCFA', '#8B5CF6', '#C4B5FD'],
+      scalar: 0.9
     }).then(() => {
       setTimeout(() => {
         document.body.removeChild(confettiCanvas);
         
         // Pass the selected template to parent component after animation
-        const selectedTemplate = templateId as IndustryType | 'custom';
-        onTemplateSelect(jobTemplates[selectedTemplate]);
-      }, 1000);
+        const templateType = templateId as keyof typeof jobTemplates;
+        onTemplateSelect(jobTemplates[templateType]);
+      }, 800);
     });
   };
 
@@ -60,49 +55,31 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
         <p className="text-gray-600 max-w-2xl mx-auto">
           Posting a job here is fun, fast, and made for you. Choose a template below and we'll do the hard work!
         </p>
-        
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <Button variant="link" size="sm" className="mt-2 text-xs text-purple-600 font-medium">
-              Why use our templates?
-            </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-80 p-4">
-            <div className="flex space-x-2">
-              <Sparkles className="h-5 w-5 text-purple-500 mt-0.5 shrink-0" />
-              <div>
-                <h4 className="font-medium mb-1">Handcrafted for Success</h4>
-                <p className="text-sm text-muted-foreground">
-                  Our templates are designed by beauty industry insiders to attract top talent.
-                  They include all the right keywords and requirements to get noticed!
-                </p>
-              </div>
-            </div>
-          </HoverCardContent>
-        </HoverCard>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-4 sm:overflow-visible overflow-x-auto">
         <AnimatePresence>
           {templateCards.map((card) => (
             <motion.div
               key={card.id}
               layout
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
               whileHover={{ 
-                scale: 1.03, 
-                boxShadow: "0 10px 25px rgba(0,0,0,0.08)" 
+                scale: 1.03,
+                boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
+                y: -3
               }}
               className="relative"
             >
               <Card 
-                className={`cursor-pointer h-full border-0 overflow-hidden relative shadow-md hover:shadow-lg transition-all duration-300`} 
+                className={`cursor-pointer h-full border overflow-hidden relative rounded-xl shadow-sm transition-all duration-300
+                  ${selectedCardId === card.id ? 'ring-2 ring-purple-400 ring-offset-2' : 'hover:shadow-md'}`}
                 onClick={() => handleTemplateSelect(card.id)}
               >
-                <GradientBackground variant={card.id === "premium" ? "premium" : "default"} className="h-full">
+                <div className="bg-gradient-to-br from-white to-gray-50 h-full">
                   {selectedCardId === card.id && (
                     <motion.div 
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -115,36 +92,35 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
                   
                   <div className="p-6 flex flex-col h-full relative z-0">
                     <motion.div 
-                      className="text-4xl md:text-5xl mb-4"
-                      whileHover={{ scale: 1.2, rotate: 5 }}
+                      className="text-4xl mb-4"
+                      whileHover={{ scale: 1.2 }}
                       transition={{ type: "spring", stiffness: 400, damping: 10 }}
                     >
                       {card.emoji}
                     </motion.div>
 
-                    <h3 className="text-xl font-bold text-gray-800 mb-1">{card.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-1">{card.title}</h3>
                     <p className="text-gray-600 text-sm mb-3">{card.subtitle}</p>
                     
                     <div className="mt-auto">
-                      <p className="text-xs text-purple-700 font-medium mb-2">{card.slogan}</p>
-                      
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        className="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full inline-flex items-center"
-                      >
-                        <Sparkles className="h-3 w-3 mr-1 text-purple-600" />
-                        1-Click Template
-                      </motion.div>
+                      <p className="text-xs text-purple-700 font-medium">{card.slogan}</p>
                     </div>
                   </div>
-                </GradientBackground>
+                </div>
               </Card>
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
       
-      <div className="text-center mt-6 text-sm text-gray-500">
+      {/* Mobile horizontal scroll indicator */}
+      <div className="sm:hidden flex justify-center mt-2 mb-4 space-x-1">
+        {Array(Math.ceil(templateCards.length / 2)).fill(0).map((_, i) => (
+          <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
+        ))}
+      </div>
+      
+      <div className="text-center mt-3 text-sm text-gray-500">
         Inspired by Sunshine ☀️
       </div>
     </div>
