@@ -113,7 +113,7 @@ export function MultiSelect({
                     )}
                   />
                   {option.label}
-                </Command>
+                </CommandItem>
               );
             })}
           </CommandGroup>
