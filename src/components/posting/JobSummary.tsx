@@ -16,6 +16,10 @@ interface JobSummaryProps {
     contactPhone?: string;
     salary_range?: string;
     compensation_type?: string;
+    jobType?: string;
+    experience_level?: string;
+    specialties?: string[];
+    requirements?: string[];
   };
   pricingTier: JobPricingTier;
   durationMonths: number;
@@ -28,6 +32,18 @@ const JobSummary: React.FC<JobSummaryProps> = ({
 }) => {
   const { t } = useTranslation();
   const selectedTier = jobPricingOptions.find(option => option.tier === pricingTier);
+  
+  // Format job type for display
+  const formatJobType = (type: string = 'full-time') => {
+    return type.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join('-');
+  };
+  
+  // Format experience level for display
+  const formatExperienceLevel = (level: string = 'experienced') => {
+    return level.charAt(0).toUpperCase() + level.slice(1);
+  };
   
   return (
     <Card className="mb-6 border-[#e8e1d5] bg-[#fdfbf8] shadow-sm">
@@ -42,16 +58,16 @@ const JobSummary: React.FC<JobSummaryProps> = ({
       <CardContent className="space-y-4">
         <div>
           <h3 className="font-medium text-gray-900">{jobData.title}</h3>
-          <p className="text-sm text-gray-700 mt-1 line-clamp-2">{jobData.description}</p>
+          <p className="text-sm text-gray-700 mt-1">{jobData.description}</p>
           
           {jobData.vietnamese_description && (
             <div className="mt-2 text-sm text-gray-600 border-l-2 border-[#e0d5c0] pl-3 italic">
-              <p className="line-clamp-2">{jobData.vietnamese_description}</p>
+              <p>{jobData.vietnamese_description}</p>
             </div>
           )}
         </div>
         
-        <div className="grid grid-cols-2 gap-4 pt-3 border-t border-[#e8e1d5]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#e8e1d5]">
           <div>
             <p className="text-xs text-gray-500">
               {t({
@@ -77,6 +93,65 @@ const JobSummary: React.FC<JobSummaryProps> = ({
             </div>
           )}
         </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#e8e1d5]">
+          <div>
+            <p className="text-xs text-gray-500">
+              {t({
+                english: 'Job Type',
+                vietnamese: 'Loại công việc'
+              })}
+            </p>
+            <p className="text-sm font-medium">{formatJobType(jobData.jobType)}</p>
+          </div>
+          
+          <div>
+            <p className="text-xs text-gray-500">
+              {t({
+                english: 'Experience Level',
+                vietnamese: 'Mức kinh nghiệm'
+              })}
+            </p>
+            <p className="text-sm font-medium">{formatExperienceLevel(jobData.experience_level)}</p>
+          </div>
+        </div>
+        
+        {jobData.specialties && jobData.specialties.length > 0 && (
+          <div className="pt-3 border-t border-[#e8e1d5]">
+            <p className="text-xs text-gray-500 mb-1">
+              {t({
+                english: 'Specialties',
+                vietnamese: 'Chuyên môn'
+              })}
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {jobData.specialties.map((specialty, index) => (
+                <span 
+                  key={index} 
+                  className="text-xs bg-[#f8f5f0] px-2 py-1 rounded-full text-gray-700"
+                >
+                  {specialty}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {jobData.requirements && jobData.requirements.length > 0 && (
+          <div className="pt-3 border-t border-[#e8e1d5]">
+            <p className="text-xs text-gray-500 mb-1">
+              {t({
+                english: 'Requirements',
+                vietnamese: 'Yêu cầu'
+              })}
+            </p>
+            <ul className="text-sm text-gray-700 list-disc pl-5">
+              {jobData.requirements.map((requirement, index) => (
+                <li key={index}>{requirement}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         
         <div className="pt-3 border-t border-[#e8e1d5]">
           <h4 className="text-sm font-medium text-gray-900">

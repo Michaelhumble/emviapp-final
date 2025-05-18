@@ -20,7 +20,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onStepChange 
 }) => {
   const [currentStep, setCurrentStep] = useState<'template' | 'form' | 'review'>('template');
-  const [formData, setFormData] = useState<any>(null);
+  const [formData, setFormData] = useState<JobFormValues | null>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
@@ -38,17 +38,37 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   
   const handleTemplateSelect = (template: JobFormValues) => {
     setSelectedTemplate(template);
+    // Always go to the form step after template selection
     setCurrentStep('form');
     window.scrollTo(0, 0);
   };
   
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: JobFormValues) => {
+    // Ensure all required fields are present
+    if (!validateRequiredFields(data)) {
+      return;
+    }
+    
     setFormData(data);
     setCurrentStep('review');
     window.scrollTo(0, 0);
   };
   
+  const validateRequiredFields = (data: JobFormValues): boolean => {
+    // Check for required fields
+    if (!data.title || !data.description || !data.location || !data.contactEmail) {
+      return false;
+    }
+    return true;
+  };
+  
   const handleFinalSubmit = async (finalOptions: PricingOptions) => {
+    // Double check that we have form data before allowing payment
+    if (!formData || !validateRequiredFields(formData)) {
+      setCurrentStep('form');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
