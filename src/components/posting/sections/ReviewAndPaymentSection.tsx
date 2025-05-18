@@ -7,7 +7,7 @@ import { JobFormValues } from '../job/jobFormSchema';
 import { Separator } from '@/components/ui/separator';
 import { ChevronLeft, AlertCircle, CreditCard } from 'lucide-react';
 import { calculateJobPostPrice, jobPricingOptions } from '@/utils/posting/jobPricing';
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { PricingTierSelector } from '../pricing/PricingTierSelector';
 import { DurationSelector } from '../pricing/DurationSelector';
 import { SummaryTotals } from '../pricing/SummaryTotals';
@@ -40,10 +40,14 @@ export function ReviewAndPaymentSection({
 
   // Handle tier selection change
   const handleTierChange = (tier: string) => {
-    setPricingOptions({
-      ...pricingOptions,
-      selectedPricingTier: tier
-    });
+    // Find the matching JobPricingTier object instead of just using the string
+    const selectedTierOption = jobPricingOptions.find(option => option.id === tier);
+    if (selectedTierOption) {
+      setPricingOptions({
+        ...pricingOptions,
+        selectedPricingTier: selectedTierOption.tier // Use the tier property which is of type JobPricingTier
+      });
+    }
   };
 
   // Handle duration change
