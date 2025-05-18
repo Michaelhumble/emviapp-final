@@ -10,6 +10,7 @@ import { PricingOptions } from '@/utils/posting/types';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { FormProvider, useForm } from 'react-hook-form';
+import { uploadImage } from '@/utils/uploadImage';
 
 const JobPost = () => {
   const navigate = useNavigate();
@@ -31,6 +32,18 @@ const JobPost = () => {
 
     try {
       console.log('Form submitted with price tier:', pricingOptions.selectedPricingTier);
+      
+      // Handle photo upload if any
+      let imageUrl = '';
+      if (photoUploads.length > 0) {
+        try {
+          imageUrl = await uploadImage(photoUploads[0]);
+          console.log('Image uploaded successfully:', imageUrl);
+        } catch (uploadError) {
+          console.error('Error uploading photo:', uploadError);
+          // Continue with job post even if image upload fails
+        }
+      }
 
       // Prepare job details for submission
       const jobDetails = {
@@ -50,6 +63,7 @@ const JobPost = () => {
         specialties: formData.specialties,
         requirements: formData.requirements,
         post_type: 'job',
+        image: imageUrl, // Add the image URL
       };
       
       // For free tier, process directly without payment

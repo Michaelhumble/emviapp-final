@@ -1,310 +1,389 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { CheckCircle2, ChevronLeft } from 'lucide-react';
-import { toast } from 'sonner';
-import YesLadder from '../upsell/YesLadder';
-import PricingTierSelector from '../pricing/PricingTierSelector';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { getNationwidePrice } from '@/utils/posting/pricing';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, MapPin, Building, Calendar, Mail, Phone, User, Clock, Award, CheckCircle } from 'lucide-react';
+import { PricingTierSelector } from '@/components/posting/pricing/PricingTierSelector';
+import PaymentSummary from '@/components/posting/PaymentSummary';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { PricingOptions } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { calculateJobPostPrice, getJobPostPricingSummary } from '@/utils/posting/jobPricing';
-import { DurationOption, PricingWithDuration } from '@/types/pricing';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { JobFormValues } from '../job/jobFormSchema';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;
-  onSubmit: (pricingOptions: PricingOptions) => Promise<void>;
+  onSubmit: (pricingOptions: PricingOptions) => void;
   isSubmitting: boolean;
   pricingOptions: PricingOptions;
   setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
 }
 
-export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({ 
-  formData, 
-  photoUploads, 
-  onBack, 
-  onSubmit, 
-  isSubmitting, 
-  pricingOptions, 
-  setPricingOptions 
+const getJobTypeLabel = (jobType: string): string => {
+  const jobTypeMap: Record<string, string> = {
+    'full-time': 'Full-time',
+    'part-time': 'Part-time',
+    'contract': 'Contract',
+    'temporary': 'Temporary',
+    'commission': 'Commission',
+  };
+  
+  return jobTypeMap[jobType] || jobType;
+};
+
+const getExperienceLevelLabel = (level: string): string => {
+  const levelMap: Record<string, string> = {
+    'entry': 'Entry Level',
+    'intermediate': 'Intermediate',
+    'experienced': 'Experienced',
+    'senior': 'Senior Level',
+  };
+  
+  return levelMap[level] || level;
+};
+
+export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+  formData,
+  photoUploads,
+  onBack,
+  onSubmit,
+  isSubmitting,
+  pricingOptions,
+  setPricingOptions,
 }) => {
   const { t } = useTranslation();
-  const [showPremiumSuggestion, setShowPremiumSuggestion] = useState(false);
-  const [upsellOptions, setUpsellOptions] = useState({
-    expertReview: false,
-    priorityPlacement: false,
-    extendedReach: false
-  });
   
-  const durationOptions: DurationOption[] = [
-    { months: 1, label: '1 Month', vietnameseLabel: '1 Tháng', discount: 0 },
-    { months: 3, label: '3 Months', vietnameseLabel: '3 Tháng', discount: 10 },
-    { months: 6, label: '6 Months', vietnameseLabel: '6 Tháng', discount: 20 },
-  ];
+  const [autoRenew, setAutoRenew] = useState(true);
   
-  const handleDurationChange = (months: number) => {
+  const handlePricingOptionsChange = (options: Partial<PricingOptions>) => {
     setPricingOptions(prev => ({
       ...prev,
-      durationMonths: months
+      ...options,
     }));
   };
   
-  const handleTierChange = (tier: JobPricingTier) => {
-    setPricingOptions(prev => ({
-      ...prev,
-      selectedPricingTier: tier
-    }));
-  };
-  
-  const handleUpsellOptionsChange = (options: {
-    expertReview: boolean;
-    priorityPlacement: boolean;
-    extendedReach: boolean;
-  }) => {
-    setUpsellOptions(options);
+  const calculatePricing = () => {
+    // Base pricing by tier
+    const basePrices: Record<string, number> = {
+      'free': 0,
+      'standard': 29,
+      'premium': 49,
+      'gold': 89,
+      'diamond': 129,
+    };
     
-    // Update pricing options with upsell selections
-    setPricingOptions(prev => ({
-      ...prev,
-      expertReview: options.expertReview,
-      priorityPlacement: options.priorityPlacement,
-      extendedReach: options.extendedReach
-    }));
-  };
-  
-  const suggestPremium = () => {
-    setShowPremiumSuggestion(true);
-  };
-  
-  const handleSubmitClick = async () => {
-    if (!formData) {
-      toast.error("Please complete the form before proceeding");
-      return;
+    // Discounts for longer durations
+    const durationMultipliers = {
+      1: 1, // no discount
+      3: 2.7, // 10% discount
+      6: 4.8, // 20% discount
+      12: 8.4, // 30% discount
+    };
+    
+    // Get base price
+    const basePrice = basePrices[pricingOptions.selectedPricingTier] || basePrices.standard;
+    
+    // Calculate original price without discounts
+    const originalMonthlyPrice = basePrice;
+    const originalPrice = originalMonthlyPrice * pricingOptions.durationMonths;
+    
+    // Apply first post discount if applicable (20%)
+    const firstPostDiscount = pricingOptions.isFirstPost && basePrice > 0 ? 0.2 : 0;
+    
+    // Calculate final price with all discounts
+    let discountedPrice = basePrice;
+    
+    if (firstPostDiscount > 0) {
+      discountedPrice = basePrice * (1 - firstPostDiscount);
     }
     
-    try {
-      await onSubmit(pricingOptions);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("There was an error processing your submission");
-    }
-  };
-  
-  const calculatePrice = (): PricingWithDuration => {
-    // Base price depends on the selected tier
-    let basePricePerMonth = 0;
+    // Apply duration discount
+    const durationMultiplier = durationMultipliers[pricingOptions.durationMonths as 1 | 3 | 6 | 12] || pricingOptions.durationMonths;
+    const finalPrice = discountedPrice * durationMultiplier;
     
-    switch (pricingOptions.selectedPricingTier) {
-      case 'free':
-        basePricePerMonth = 0;
-        break;
-      case 'standard':
-        basePricePerMonth = 9.99;
-        break;
-      case 'premium':
-        basePricePerMonth = 19.99;
-        break;
-      case 'gold':
-        basePricePerMonth = 29.99;
-        break;
-      case 'diamond':
-        basePricePerMonth = 49.99;
-        break;
-      default:
-        basePricePerMonth = 9.99;
-    }
-    
-    // Find the selected duration option
-    const selectedDuration = durationOptions.find(
-      option => option.months === pricingOptions.durationMonths
-    ) || durationOptions[0];
+    // Calculate discount percentage
+    const totalDiscount = pricingOptions.selectedPricingTier === 'free' 
+      ? 0 
+      : Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
     
     return {
-      basePricePerMonth,
-      durationMonths: selectedDuration.months,
-      discountPercentage: selectedDuration.discount
+      basePrice,
+      originalPrice,
+      finalPrice,
+      discountPercentage: totalDiscount,
     };
   };
   
-  const pricing = calculatePrice();
-  const discountAmount = pricing.basePricePerMonth * pricing.durationMonths * (pricing.discountPercentage / 100);
-  const totalPrice = (pricing.basePricePerMonth * pricing.durationMonths) - discountAmount;
+  const pricing = calculatePricing();
   
-  // Format price for display
-  const formattedPrice = totalPrice.toFixed(2);
+  const handleProceedToPayment = () => {
+    onSubmit(pricingOptions);
+  };
+  
+  const isFreePlan = pricingOptions.selectedPricingTier === 'free';
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onBack} 
-          className="mr-2"
-          disabled={isSubmitting}
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Back
-        </Button>
-        <h2 className="text-2xl font-semibold">Review & Payment</h2>
-      </div>
-      
-      {/* Form Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Job Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-medium">Title</h3>
-              <p>{formData?.title || 'Not provided'}</p>
-            </div>
-            
-            <div>
-              <h3 className="font-medium">Location</h3>
-              <p>{formData?.location || 'Not provided'}</p>
-            </div>
-            
-            <div>
-              <h3 className="font-medium">Job Type</h3>
-              <p>{formData?.jobType || 'Not provided'}</p>
-            </div>
-            
-            <div>
-              <h3 className="font-medium">Contact Email</h3>
-              <p>{formData?.contactEmail || 'Not provided'}</p>
-            </div>
-            
-            {photoUploads.length > 0 && (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-playfair font-medium mb-4">
+          {t({
+            english: "Review Job Details",
+            vietnamese: "Xem Lại Chi Tiết Công Việc"
+          })}
+        </h2>
+        
+        <Card className="overflow-hidden border-gray-200">
+          <CardContent className="p-6">
+            {/* Job detail preview */}
+            <div className="space-y-6">
+              {/* Header with title and location */}
               <div>
-                <h3 className="font-medium">Photos</h3>
-                <p>{photoUploads.length} photo(s) attached</p>
+                <h3 className="text-2xl font-playfair font-medium">{formData?.title || 'Job Title'}</h3>
+                <div className="flex items-center mt-1 text-gray-600">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  <span>{formData?.location || 'Location'}</span>
+                </div>
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Upsell Options */}
-      <YesLadder 
-        onOptionChange={handleUpsellOptionsChange}
-        suggestPremium={suggestPremium}
-      />
-      
-      {/* Pricing Tiers */}
-      <PricingTierSelector
-        selectedTier={pricingOptions.selectedPricingTier}
-        onTierSelect={handleTierChange}
-        pricingOptions={pricingOptions}
-        isFirstPost={pricingOptions.isFirstPost}
-      />
-      
-      {/* Duration Selection */}
-      {pricingOptions.selectedPricingTier !== 'free' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Duration</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup 
-              value={pricingOptions.durationMonths.toString()} 
-              onValueChange={(value) => handleDurationChange(parseInt(value))}
-              className="flex flex-col space-y-3"
-            >
-              {durationOptions.map((option) => (
-                <div key={option.months} className="flex items-center space-x-3 rounded-md border p-3">
-                  <RadioGroupItem value={option.months.toString()} id={`duration-${option.months}`} />
-                  <Label htmlFor={`duration-${option.months}`} className="flex-1">
-                    <div className="flex justify-between">
-                      <span>{option.label}</span>
-                      {option.discount > 0 && (
-                        <span className="text-green-600 font-medium">Save {option.discount}%</span>
+              
+              {/* Job photo (if uploaded) */}
+              {photoUploads.length > 0 && (
+                <div className="mb-6">
+                  <div className="aspect-video rounded-lg overflow-hidden border border-gray-200">
+                    <img 
+                      src={URL.createObjectURL(photoUploads[0])}
+                      alt={formData?.title || "Job environment"} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* If no photo uploaded, show placeholder */}
+              {photoUploads.length === 0 && (
+                <div className="mb-6">
+                  <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center">
+                    <div className="text-center p-6">
+                      <Building className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                      <p className="text-gray-500 text-sm">No workplace photo provided</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Job details */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  {/* Job type and experience level */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {formData?.jobType && (
+                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                        {getJobTypeLabel(formData.jobType)}
+                      </Badge>
+                    )}
+                    {formData?.experience_level && (
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        {getExperienceLevelLabel(formData.experience_level)}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {/* Description */}
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium mb-2">
+                        {t({
+                          english: "Description",
+                          vietnamese: "Mô Tả"
+                        })}
+                      </h4>
+                      <div className="text-gray-700 whitespace-pre-line">
+                        {formData?.description || 'No description provided'}
+                      </div>
+                    </div>
+                    
+                    {formData?.vietnameseDescription && (
+                      <div>
+                        <h4 className="font-medium mb-2">
+                          {t({
+                            english: "Vietnamese Description",
+                            vietnamese: "Mô Tả Tiếng Việt"
+                          })}
+                        </h4>
+                        <div className="text-gray-700 whitespace-pre-line">
+                          {formData.vietnameseDescription}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Separator className="my-6" />
+                  
+                  {/* Compensation */}
+                  <div className="space-y-4">
+                    <h4 className="font-medium">
+                      {t({
+                        english: "Compensation",
+                        vietnamese: "Thù Lao"
+                      })}
+                    </h4>
+                    
+                    {formData?.salary_range && (
+                      <div className="flex items-start gap-2">
+                        <Calendar className="h-4 w-4 text-gray-500 mt-1" />
+                        <div>
+                          <p className="font-medium text-sm">Salary Range</p>
+                          <p className="text-gray-700">{formData.salary_range}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {formData?.compensation_details && (
+                      <div className="flex items-start gap-2">
+                        <Award className="h-4 w-4 text-gray-500 mt-1" />
+                        <div>
+                          <p className="font-medium text-sm">Additional Details</p>
+                          <p className="text-gray-700">{formData.compensation_details}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Separator className="my-6" />
+                  
+                  {/* Requirements and specialties */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Specialties */}
+                    {formData?.specialties && formData.specialties.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">
+                          {t({
+                            english: "Specialties",
+                            vietnamese: "Chuyên Môn"
+                          })}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {formData.specialties.map((specialty, index) => (
+                            <Badge 
+                              key={index} 
+                              variant="outline"
+                              className="bg-gray-50 text-gray-700"
+                            >
+                              {specialty}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Requirements */}
+                    {formData?.requirements && formData.requirements.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">
+                          {t({
+                            english: "Requirements",
+                            vietnamese: "Yêu Cầu"
+                          })}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {formData.requirements.map((requirement, index) => (
+                            <Badge 
+                              key={index} 
+                              variant="outline"
+                              className="bg-gray-50 text-gray-700"
+                            >
+                              {requirement}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div>
+                  {/* Contact Information */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium mb-4">
+                      {t({
+                        english: "Contact Information",
+                        vietnamese: "Thông Tin Liên Hệ"
+                      })}
+                    </h4>
+                    
+                    <div className="space-y-3">
+                      {formData?.contactName && (
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-700">{formData.contactName}</span>
+                        </div>
+                      )}
+                      
+                      {formData?.contactEmail && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-700">{formData.contactEmail}</span>
+                        </div>
+                      )}
+                      
+                      {formData?.contactPhone && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-700">{formData.contactPhone}</span>
+                        </div>
                       )}
                     </div>
-                  </Label>
+                  </div>
                 </div>
-              ))}
-            </RadioGroup>
+              </div>
+            </div>
           </CardContent>
         </Card>
-      )}
+      </div>
       
-      {/* Order Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Order Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span>Base Price</span>
-              <span>${pricing.basePricePerMonth.toFixed(2)} × {pricing.durationMonths} {pricing.durationMonths === 1 ? 'month' : 'months'}</span>
-            </div>
-            
-            {pricing.discountPercentage > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Duration Discount ({pricing.discountPercentage}%)</span>
-                <span>-${discountAmount.toFixed(2)}</span>
-              </div>
-            )}
-            
-            <Separator />
-            
-            <div className="flex justify-between font-semibold">
-              <span>Total</span>
-              <span>${formattedPrice}</span>
-            </div>
-            
-            {pricingOptions.selectedPricingTier === 'free' && (
-              <div className="mt-4 p-3 bg-blue-50 rounded-md text-blue-700 text-sm">
-                <CheckCircle2 className="inline-block h-4 w-4 mr-1" />
-                Your first job post is free! No payment required.
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <div>
+        <h2 className="text-2xl font-playfair font-medium mb-4">
+          {t({
+            english: "Select Premium Options",
+            vietnamese: "Chọn Các Tùy Chọn Cao Cấp"
+          })}
+        </h2>
+        
+        <PricingTierSelector
+          options={pricingOptions}
+          onChange={handlePricingOptionsChange}
+          postType="job"
+        />
+        
+        <PaymentSummary 
+          basePrice={pricing.basePrice}
+          duration={pricingOptions.durationMonths}
+          autoRenew={autoRenew}
+          originalPrice={pricing.originalPrice}
+          finalPrice={pricing.finalPrice}
+          discountPercentage={pricing.discountPercentage}
+          onProceedToPayment={handleProceedToPayment}
+          isFreePlan={isFreePlan}
+          isSubmitting={isSubmitting}
+        />
+      </div>
       
-      {/* Submit Button */}
-      <Button 
-        onClick={handleSubmitClick} 
-        disabled={isSubmitting} 
-        className="w-full"
-      >
-        {isSubmitting ? 'Processing...' : pricingOptions.selectedPricingTier === 'free' ? 'Post Job' : 'Proceed to Payment'}
-      </Button>
-      
-      {/* Premium Suggestion */}
-      {showPremiumSuggestion && pricingOptions.selectedPricingTier === 'standard' && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 border border-amber-200 bg-amber-50 rounded-lg mt-4"
+      <div className="flex justify-between">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onBack}
+          disabled={isSubmitting}
         >
-          <p className="text-amber-800 text-sm">
-            <strong>Pro tip:</strong> Upgrade to Premium to get all enhancement features included, plus priority placement in search results!
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2 bg-amber-100 hover:bg-amber-200 border-amber-300"
-            onClick={() => handleTierChange('premium')}
-          >
-            Upgrade to Premium
-          </Button>
-        </motion.div>
-      )}
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          {t({
+            english: "Back to Edit",
+            vietnamese: "Quay lại chỉnh sửa"
+          })}
+        </Button>
+      </div>
     </div>
   );
 };
