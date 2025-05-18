@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
 
 interface ContactInfoSectionProps {
@@ -12,21 +11,20 @@ interface ContactInfoSectionProps {
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium leading-6 text-gray-900">Contact Information</h3>
+      <h2 className="text-xl font-semibold">Contact Information</h2>
       <p className="text-sm text-muted-foreground">How candidates can reach you about this position</p>
       
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         <FormField
           control={form.control}
-          name="contactEmail"
+          name="contactName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel>Contact Name</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="your-email@example.com" 
+                  placeholder="Who candidates should ask for" 
                   {...field} 
-                  className="w-full"
                 />
               </FormControl>
               <FormMessage />
@@ -39,12 +37,31 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
           name="contactPhone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number (Optional)</FormLabel>
+              <FormLabel>Phone Number</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="(555) 123-4567" 
+                  type="tel"
                   {...field} 
-                  className="w-full"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="contactEmail"
+          render={({ field }) => (
+            <FormItem className="md:col-span-2">
+              <FormLabel>Email Address *</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="your-email@example.com" 
+                  type="email"
+                  required
+                  {...field} 
                 />
               </FormControl>
               <FormMessage />

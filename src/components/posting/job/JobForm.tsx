@@ -1,20 +1,25 @@
 
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Switch } from '@/components/ui/switch';
-import { JobFormValues } from './jobFormSchema';
-import { IndustryType } from '@/utils/posting/types';
 import { CreatableMultiSelect } from '@/components/ui/creatable-multi-select';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Upload, Loader2 } from 'lucide-react';
+import ContactInfoSection from '../sections/ContactInfoSection';
+import { JobFormValues } from './jobFormSchema';
+import { IndustryType } from '@/types/job';
 
 interface JobFormProps {
-  onSubmit: (formData: JobFormValues) => void;
+  onSubmit: (data: any) => void;
   photoUploads: File[];
   setPhotoUploads: (files: File[]) => void;
   isSubmitting: boolean;
@@ -23,319 +28,404 @@ interface JobFormProps {
   showVietnameseByDefault?: boolean;
 }
 
-const JobForm = ({ 
+// Default recommended skills by industry
+const recommendedSkills: Record<string, string[]> = {
+  nails: ['Manicure', 'Pedicure', 'Gel', 'Acrylic', 'Dipping Powder', 'Nail Art'],
+  hair: ['Cutting', 'Coloring', 'Styling', 'Balayage', 'Extensions', 'Treatments'],
+  lashes: ['Classic Lashes', 'Volume Lashes', 'Hybrid Lashes', 'Lash Lift', 'Tinting'],
+  massage: ['Swedish', 'Deep Tissue', 'Hot Stone', 'Sports', 'Prenatal', 'Reflexology'],
+  barber: ['Fades', 'Tapers', 'Beard Trims', 'Hot Towel Shaves', 'Line-ups'],
+  makeup: ['Bridal', 'Special Event', 'Natural', 'Editorial', 'Airbrush'],
+  brows: ['Microblading', 'Threading', 'Tinting', 'Lamination', 'Waxing'],
+  skincare: ['Facials', 'Chemical Peels', 'Dermaplaning', 'Microdermabrasion', 'Extractions'],
+  tattoo: ['Traditional', 'Realistic', 'Blackwork', 'Color', 'Fine Line', 'Portrait'],
+};
+
+// Form validation schema
+const formSchema = z.object({
+  title: z.string().min(5, { message: 'Job title must be at least 5 characters' }),
+  description: z.string().min(20, { message: 'Description must be at least 20 characters' }),
+  vietnameseDescription: z.string().optional(),
+  location: z.string().min(3, { message: 'Location is required' }),
+  jobType: z.enum(['full-time', 'part-time', 'contract', 'temporary', 'commission']),
+  experience_level: z.enum(['entry', 'intermediate', 'experienced', 'senior']),
+  salary_range: z.string().optional(),
+  compensation_details: z.string().optional(),
+  requirements: z.array(z.string()).optional(),
+  specialties: z.array(z.string()).optional(),
+  contactName: z.string().optional(),
+  contactPhone: z.string().optional(),
+  contactEmail: z.string().email({ message: 'Please enter a valid email address' }),
+});
+
+const JobForm: React.FC<JobFormProps> = ({ 
   onSubmit, 
   photoUploads, 
   setPhotoUploads, 
   isSubmitting, 
   initialValues,
   onBack,
-  showVietnameseByDefault = false 
-}: JobFormProps) => {
-  const { t } = useTranslation();
-  const [showVietnameseDescription, setShowVietnameseDescription] = useState(showVietnameseByDefault);
-  const [industry, setIndustry] = useState<IndustryType>('nails');
-
-  const { register, handleSubmit, control, formState: { errors } } = useForm<JobFormValues>({
-    defaultValues: initialValues || {
-      title: '',
-      description: '',
-      vietnameseDescription: '',
-      location: '',
-      compensation_details: '',
-      salary_range: '',
-      jobType: 'full-time',
-      experience_level: 'experienced',
-      contactEmail: '',
-      requirements: [],
-      specialties: []
-    }
+  showVietnameseByDefault = false
+}) => {
+  const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | ''>('');
+  
+  // Initialize form with default values
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: initialValues?.title || '',
+      description: initialValues?.description || '',
+      vietnameseDescription: initialValues?.vietnameseDescription || '',
+      location: initialValues?.location || '',
+      jobType: initialValues?.jobType || 'full-time',
+      experience_level: initialValues?.experience_level || 'experienced',
+      requirements: initialValues?.requirements || [],
+      specialties: initialValues?.specialties || [],
+      contactEmail: initialValues?.contactEmail || '',
+      contactName: '',
+      contactPhone: '',
+      salary_range: initialValues?.salary_range || '',
+      compensation_details: initialValues?.compensation_details || '',
+    },
   });
 
-  const handleFormSubmit = (data: JobFormValues) => {
-    onSubmit(data);
+  // Update form values when initialValues change
+  useEffect(() => {
+    if (initialValues) {
+      Object.keys(initialValues).forEach((key) => {
+        const value = initialValues[key as keyof JobFormValues];
+        if (value !== undefined) {
+          form.setValue(key as any, value as any);
+        }
+      });
+      
+      // If this is a nail job template, show Vietnamese by default
+      if (initialValues.title?.toLowerCase().includes('nail') || initialValues.specialties?.some(s => s.toLowerCase().includes('nail'))) {
+        setShowVietnamese(true);
+      }
+    }
+  }, [initialValues, form]);
+  
+  // Handle file upload
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setPhotoUploads([...photoUploads, ...Array.from(files)]);
+    }
+  };
+  
+  // Remove a photo from uploads
+  const removePhoto = (index: number) => {
+    const updatedUploads = [...photoUploads];
+    updatedUploads.splice(index, 1);
+    setPhotoUploads(updatedUploads);
   };
 
-  const specialtyOptions = {
-    nails: ['Acrylic', 'Gel', 'Dip Powder', 'Nail Art', 'Pedicure', 'Manicure'],
-    hair: ['Cutting', 'Coloring', 'Styling', 'Extensions', 'Balayage', 'Treatments'],
-    lashes: ['Classic Lashes', 'Volume Lashes', 'Hybrid Lashes', 'Lash Lifts', 'Tinting'],
-    brows: ['Microblading', 'Tinting', 'Lamination', 'Threading', 'Waxing'],
-    massage: ['Swedish', 'Deep Tissue', 'Hot Stone', 'Sports', 'Thai', 'Reflexology'],
-    skincare: ['Facials', 'Chemical Peels', 'Microdermabrasion', 'Waxing', 'Body Treatments'],
-    makeup: ['Bridal', 'Editorial', 'SFX', 'Airbrush', 'Everyday'],
-    barber: ['Haircuts', 'Fades', 'Beard Trims', 'Hot Towel Shaves', 'Line Ups'],
-    tattoo: ['Traditional', 'Realism', 'Watercolor', 'Black & Grey', 'Japanese']
+  // Handle form submission
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    onSubmit(values);
   };
-
-  const commonRequirements = [
-    'License required', 'Experience needed', 
-    'English speaking', 'Vietnamese speaking', 
-    'Client base preferred', 'Transportation required',
-    'Weekends required', 'Full-time availability'
-  ];
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      <div>
-        <h3 className="text-xl font-bold mb-6">
-          {t({
-            english: 'Customize Job Details',
-            vietnamese: 'Tùy Chỉnh Chi Tiết Công Việc'
-          })}
-        </h3>
-        
-        <div className="grid gap-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">
-                {t({
-                  english: 'Job Title',
-                  vietnamese: 'Chức Danh Công Việc'
-                })}
-                <span className="text-red-500 ml-1">*</span>
-              </Label>
-              <Input 
-                id="title"
-                placeholder="e.g. Experienced Nail Technician"
-                {...register('title', { required: true })}
-                className={errors.title ? 'border-red-500' : ''}
-              />
-              {errors.title && (
-                <p className="text-red-500 text-sm">
-                  {t({
-                    english: 'Job title is required',
-                    vietnamese: 'Yêu cầu tiêu đề công việc'
-                  })}
-                </p>
-              )}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="location">
-                {t({
-                  english: 'Location',
-                  vietnamese: 'Địa Điểm'
-                })}
-                <span className="text-red-500 ml-1">*</span>
-              </Label>
-              <Input 
-                id="location"
-                placeholder="e.g. San Jose, CA"
-                {...register('location', { required: true })}
-                className={errors.location ? 'border-red-500' : ''}
-              />
-              {errors.location && (
-                <p className="text-red-500 text-sm">
-                  {t({
-                    english: 'Location is required',
-                    vietnamese: 'Yêu cầu địa điểm'
-                  })}
-                </p>
-              )}
-            </div>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="jobType">
-                {t({
-                  english: 'Job Type',
-                  vietnamese: 'Loại Công Việc'
-                })}
-              </Label>
-              <select
-                id="jobType"
-                {...register('jobType')}
-                className="w-full rounded-md border border-gray-300 p-2"
-              >
-                <option value="full-time">Full-Time</option>
-                <option value="part-time">Part-Time</option>
-                <option value="contract">Contract</option>
-                <option value="temporary">Temporary</option>
-                <option value="commission">Commission</option>
-              </select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="experience_level">
-                {t({
-                  english: 'Experience Level',
-                  vietnamese: 'Mức Độ Kinh Nghiệm'
-                })}
-              </Label>
-              <select
-                id="experience_level"
-                {...register('experience_level')}
-                className="w-full rounded-md border border-gray-300 p-2"
-              >
-                <option value="entry">Entry Level</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="experienced">Experienced</option>
-                <option value="senior">Senior</option>
-              </select>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="description">
-              {t({
-                english: 'Job Description',
-                vietnamese: 'Mô Tả Công Việc'
-              })}
-            </Label>
-            <Textarea 
-              id="description"
-              placeholder="Describe the role, responsibilities, and what you're looking for in a candidate..."
-              {...register('description')}
-              rows={5}
-              className="min-h-[150px]"
-            />
-          </div>
-          
-          {/* Vietnamese Description Toggle & Field */}
-          <div>
-            <div className="flex items-center space-x-2 mb-2">
-              <Switch 
-                checked={showVietnameseDescription}
-                onCheckedChange={setShowVietnameseDescription}
-                id="vietnamese-toggle"
-              />
-              <Label htmlFor="vietnamese-toggle" className="cursor-pointer">
-                {t({
-                  english: 'Add Vietnamese Description',
-                  vietnamese: 'Thêm Mô Tả Tiếng Việt'
-                })}
-              </Label>
-            </div>
-            
-            {showVietnameseDescription && (
-              <div className="space-y-2">
-                <Textarea 
-                  id="vietnameseDescription"
-                  placeholder="Mô tả công việc bằng tiếng Việt..."
-                  {...register('vietnameseDescription')}
-                  rows={5}
-                  className="min-h-[150px]"
+    <div className="space-y-8">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          {/* Basic Job Information */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Basic Job Information</h2>
+              
+              <div className="grid gap-6 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Job Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Experienced Nail Technician" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <Input placeholder="City, State" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="jobType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Job Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select job type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="full-time">Full-time</SelectItem>
+                        <SelectItem value="part-time">Part-time</SelectItem>
+                        <SelectItem value="contract">Contract</SelectItem>
+                        <SelectItem value="temporary">Temporary</SelectItem>
+                        <SelectItem value="commission">Commission</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="experience_level"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Experience Level</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select experience level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="entry">Entry Level</SelectItem>
+                        <SelectItem value="intermediate">Intermediate</SelectItem>
+                        <SelectItem value="experienced">Experienced</SelectItem>
+                        <SelectItem value="senior">Senior</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          
+          {/* Compensation Details */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Compensation</h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="salary_range"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Salary Range</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., $40,000 - $60,000/year" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="compensation_details"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Other Compensation</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Commission, Tips, Benefits" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          
+          {/* Job Description */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Job Description</h2>
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Detailed Job Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Describe the role, responsibilities, and what you're looking for in an ideal candidate..." 
+                      {...field}
+                      className="min-h-[200px]" 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="flex items-center space-x-2">
+              <Switch 
+                checked={showVietnamese}
+                onCheckedChange={setShowVietnamese}
+                id="vietnamese-toggle"
+              />
+              <Label htmlFor="vietnamese-toggle">Add Vietnamese Description</Label>
+            </div>
+            
+            {showVietnamese && (
+              <FormField
+                control={form.control}
+                name="vietnameseDescription"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Vietnamese Job Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Mô tả công việc bằng tiếng Việt..." 
+                        {...field}
+                        className="min-h-[200px]" 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
           </div>
           
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="compensation_details">
-                {t({
-                  english: 'Compensation Details',
-                  vietnamese: 'Chi Tiết Lương Thưởng'
-                })}
-              </Label>
-              <Input 
-                id="compensation_details"
-                placeholder="e.g. $20-25/hr plus tips"
-                {...register('compensation_details')}
-              />
-            </div>
+          {/* Skills & Requirements */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Skills & Requirements</h2>
             
-            <div className="space-y-2">
-              <Label htmlFor="contactEmail">
-                {t({
-                  english: 'Contact Email',
-                  vietnamese: 'Email Liên Hệ'
-                })}
-                <span className="text-red-500 ml-1">*</span>
-              </Label>
-              <Input 
-                id="contactEmail"
-                type="email"
-                placeholder="e.g. hiring@salon.com"
-                {...register('contactEmail', { required: true })}
-                className={errors.contactEmail ? 'border-red-500' : ''}
-              />
-              {errors.contactEmail && (
-                <p className="text-red-500 text-sm">
-                  {t({
-                    english: 'Contact email is required',
-                    vietnamese: 'Yêu cầu email liên hệ'
-                  })}
-                </p>
-              )}
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label>
-              {t({
-                english: 'Required Skills/Qualifications',
-                vietnamese: 'Kỹ Năng/Trình Độ Yêu Cầu'
-              })}
-            </Label>
-            <Controller
-              control={control}
-              name="requirements"
-              render={({ field }) => (
-                <CreatableMultiSelect
-                  value={field.value || []}
-                  onChange={field.onChange}
-                  options={commonRequirements}
-                  placeholder="Add requirements..."
-                  className="w-full"
-                />
-              )}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>
-              {t({
-                english: 'Specialties',
-                vietnamese: 'Chuyên Môn'
-              })}
-            </Label>
-            <Controller
-              control={control}
+            <FormField
+              control={form.control}
               name="specialties"
               render={({ field }) => (
-                <CreatableMultiSelect
-                  value={field.value || []}
-                  onChange={field.onChange}
-                  options={specialtyOptions[industry] || []}
-                  placeholder="Add specialties..."
-                  className="w-full"
-                />
+                <FormItem>
+                  <FormLabel>Specialties Needed</FormLabel>
+                  <FormControl>
+                    <CreatableMultiSelect
+                      value={field.value || []}
+                      onChange={field.onChange}
+                      options={recommendedSkills[selectedIndustry as string] || []}
+                      placeholder="Add specialties..."
+                      allowCreate={true}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="requirements"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Requirements</FormLabel>
+                  <FormControl>
+                    <CreatableMultiSelect
+                      value={field.value || []}
+                      onChange={field.onChange}
+                      options={['License Required', 'Experience Required', 'Portfolio Required', 'English Speaking', 'Vietnamese Speaking']}
+                      placeholder="Add requirements..."
+                      allowCreate={true}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
           </div>
-        </div>
-      </div>
-      
-      <div className="flex justify-between pt-4">
-        {onBack && (
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onBack}
-            disabled={isSubmitting}
-          >
-            {t({
-              english: 'Back',
-              vietnamese: 'Quay Lại'
-            })}
-          </Button>
-        )}
-        
-        <Button 
-          type="submit" 
-          disabled={isSubmitting}
-          className="ml-auto bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
-        >
-          {t({
-            english: 'Continue to Review',
-            vietnamese: 'Tiếp Tục Để Xem Xét'
-          })}
-        </Button>
-      </div>
-    </form>
+          
+          {/* Contact Information */}
+          <ContactInfoSection form={form} />
+          
+          {/* Photo Uploads */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Job Photos (Optional)</h2>
+            <p className="text-sm text-muted-foreground">Upload photos of your salon or workspace to attract more applicants</p>
+            
+            <div className="flex flex-wrap gap-4 mt-4">
+              {photoUploads.map((file, index) => (
+                <div key={index} className="relative">
+                  <img 
+                    src={URL.createObjectURL(file)} 
+                    alt={`Upload ${index + 1}`} 
+                    className="w-24 h-24 object-cover rounded-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+              
+              <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:border-gray-400 transition-colors">
+                <div className="flex flex-col items-center justify-center">
+                  <Upload className="w-6 h-6 text-gray-400" />
+                  <span className="mt-2 text-xs text-gray-500">Add Photo</span>
+                </div>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={handleFileChange} 
+                  multiple 
+                />
+              </label>
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex justify-between pt-6">
+            {onBack && (
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onBack}
+              >
+                Back
+              </Button>
+            )}
+            
+            <Button 
+              type="submit"
+              className="ml-auto" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : 'Continue to Review'}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };
 

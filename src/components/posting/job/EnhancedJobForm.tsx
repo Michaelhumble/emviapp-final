@@ -65,6 +65,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         contactEmail: formData.contactEmail || '',
         requirements: formData.requirements || [],
         specialties: formData.specialties || [],
+        contactName: formData.contactName || '',
+        contactPhone: formData.contactPhone || '',
       };
       
       const success = await onSubmit(jobFormValues, photoUploads, finalOptions);
@@ -118,7 +120,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
                 isSubmitting={isSubmitting}
                 initialValues={selectedTemplate || initialValues}
                 onBack={handleBack}
-                showVietnameseByDefault={selectedTemplate?.vietnameseDescription ? true : false}
+                showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') ? true : false}
               />
             </motion.div>
           ) : (

@@ -9,6 +9,8 @@ export interface JobFormValues {
   jobType: 'full-time' | 'part-time' | 'contract' | 'temporary' | 'commission';
   experience_level: 'entry' | 'intermediate' | 'experienced' | 'senior';
   contactEmail: string;
+  contactName?: string;
+  contactPhone?: string;
   requirements?: string[];
   specialties?: string[];
 }
