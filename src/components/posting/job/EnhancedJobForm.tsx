@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { JobForm } from './JobForm';
+import JobForm from './JobForm';
 import { ReviewAndPaymentSection } from '../sections/ReviewAndPaymentSection';
 import { Card, CardContent } from '@/components/ui/card';
 import { JobFormValues } from './jobFormSchema';
