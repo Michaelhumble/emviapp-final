@@ -1,432 +1,361 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { JobFormValues } from './jobFormSchema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Plus, ChevronLeft } from 'lucide-react';
-import { JobFormValues } from './jobFormSchema';
-import { toast } from 'sonner';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+import { IndustryType } from '@/utils/posting/types';
+import { beautySpecialties, commonRequirements, getAllSpecialties } from '@/data/specialties';
 import MultiSelect, { Option } from '@/components/ui/multi-select';
-import { beautySpecialties, commonRequirements } from '@/data/specialties';
+import { cn } from '@/lib/utils';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
+  initialValues?: JobFormValues;
+  isSubmitting?: boolean;
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  isSubmitting?: boolean;
-  initialValues?: JobFormValues;
   onBack?: () => void;
   showVietnameseByDefault?: boolean;
 }
 
+// Helper function to convert string array to Option array
+const mapToOptions = (items: string[]): Option[] => {
+  return items.map(item => ({ label: item, value: item }));
+};
+
+// Helper function to convert Option array to string array
+const mapFromOptions = (options: Option[]): string[] => {
+  return options.map(option => option.value);
+};
+
 const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
+  initialValues,
+  isSubmitting = false,
   photoUploads,
   setPhotoUploads,
-  isSubmitting = false,
-  initialValues,
   onBack,
   showVietnameseByDefault = false,
 }) => {
-  // Base form state
-  const [title, setTitle] = useState(initialValues?.title || '');
-  const [description, setDescription] = useState(initialValues?.description || '');
-  const [vietnameseDescription, setVietnameseDescription] = useState(initialValues?.vietnameseDescription || '');
-  const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
-  const [location, setLocation] = useState(initialValues?.location || '');
-  const [jobType, setJobType] = useState(initialValues?.jobType || 'full-time');
-  const [experienceLevel, setExperienceLevel] = useState(initialValues?.experience_level || 'experienced');
-  const [compensationDetails, setCompensationDetails] = useState(initialValues?.compensation_details || '');
-  const [salaryRange, setSalaryRange] = useState(initialValues?.salary_range || '');
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null);
+  const [jobType, setJobType] = useState<"full-time" | "part-time" | "contract" | "temporary" | "commission">(
+    initialValues?.jobType || 'full-time'
+  );
+  const [experienceLevel, setExperienceLevel] = useState<"entry" | "intermediate" | "experienced" | "senior">(
+    initialValues?.experience_level || 'experienced'
+  );
+  const [includeVietnamese, setIncludeVietnamese] = useState(showVietnameseByDefault);
   
-  // Contact info
-  const [contactName, setContactName] = useState(initialValues?.contactName || '');
-  const [contactEmail, setContactEmail] = useState(initialValues?.contactEmail || '');
-  const [contactPhone, setContactPhone] = useState(initialValues?.contactPhone || '');
+  // Convert string arrays to Option arrays for the MultiSelect component
+  const [selectedSpecialties, setSelectedSpecialties] = useState<Option[]>(
+    initialValues?.specialties ? mapToOptions(initialValues.specialties) : []
+  );
+  const [selectedRequirements, setSelectedRequirements] = useState<Option[]>(
+    initialValues?.requirements ? mapToOptions(initialValues.requirements) : []
+  );
   
-  // Requirements and specialties
-  const [showRequirements, setShowRequirements] = useState(true);
+  // Available specialties based on selected industry
+  const [availableSpecialties, setAvailableSpecialties] = useState<Option[]>([]);
+  
+  // All common requirements as options
+  const requirementOptions = mapToOptions(commonRequirements);
 
-  // Convert string arrays to Option arrays
-  const mapStringsToOptions = (strings: string[]): Option[] => {
-    return strings.map(s => ({ label: s, value: s }));
-  };
-  
-  // Map all specialty options to the required Option format
-  const getAllSpecialtyOptions = (): Option[] => {
-    const allSpecialties: string[] = [];
-    Object.values(beautySpecialties).forEach(categorySpecialties => {
-      allSpecialties.push(...categorySpecialties);
-    });
-    return mapStringsToOptions(allSpecialties);
-  };
-  
-  // Map requirement options to the required Option format
-  const getRequirementOptions = (): Option[] => {
-    return mapStringsToOptions(commonRequirements);
-  };
-
-  // Convert the initial string arrays to Option arrays
-  const initialRequirementsOptions = initialValues?.requirements 
-    ? mapStringsToOptions(initialValues.requirements) 
-    : [];
-    
-  const initialSpecialtiesOptions = initialValues?.specialties 
-    ? mapStringsToOptions(initialValues.specialties) 
-    : [];
-
-  const [selectedRequirements, setSelectedRequirements] = useState<Option[]>(initialRequirementsOptions);
-  const [selectedSpecialties, setSelectedSpecialties] = useState<Option[]>(initialSpecialtiesOptions);
-  
-  // These functions now expect and handle Option[] not string[]
-  const handleRequirementsChange = (selected: string[]) => {
-    setSelectedRequirements(mapStringsToOptions(selected));
-  };
-  
-  const handleSpecialtiesChange = (selected: string[]) => {
-    setSelectedSpecialties(mapStringsToOptions(selected));
-  };
-
-  const [error, setError] = useState<string | null>(null);
-
-  // Form validation
-  const validateForm = () => {
-    if (!title.trim()) {
-      setError('Job title is required');
-      return false;
+  // Form setup with default values
+  const form = useForm<JobFormValues>({
+    defaultValues: {
+      title: initialValues?.title || '',
+      description: initialValues?.description || '',
+      vietnameseDescription: initialValues?.vietnameseDescription || '',
+      location: initialValues?.location || '',
+      jobType: initialValues?.jobType || 'full-time',
+      experience_level: initialValues?.experience_level || 'experienced',
+      compensation_details: initialValues?.compensation_details || '',
+      salary_range: initialValues?.salary_range || '',
+      contactName: initialValues?.contactName || '',
+      contactEmail: initialValues?.contactEmail || '',
+      contactPhone: initialValues?.contactPhone || '',
+      specialties: initialValues?.specialties || [],
+      requirements: initialValues?.requirements || [],
     }
-    if (!description.trim()) {
-      setError('Job description is required');
-      return false;
-    }
-    if (!location.trim()) {
-      setError('Location is required');
-      return false;
-    }
-    if (!contactEmail.trim()) {
-      setError('Contact email is required');
-      return false;
-    }
-    return true;
-  };
+  });
 
-  // Form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      toast.error(error || 'Please complete all required fields');
-      return;
+  // Update specialties when industry changes
+  useEffect(() => {
+    if (selectedIndustry && beautySpecialties[selectedIndustry]) {
+      setAvailableSpecialties(mapToOptions(beautySpecialties[selectedIndustry]));
+    } else {
+      // If no industry is selected, show all specialties
+      setAvailableSpecialties(mapToOptions(getAllSpecialties()));
     }
+  }, [selectedIndustry]);
 
-    // Convert Option[] arrays back to string[] for submission
-    const requirementsValues = selectedRequirements.map(option => option.value);
-    const specialtiesValues = selectedSpecialties.map(option => option.value);
-    
+  // For handling form submission
+  const handleFormSubmit = (data: JobFormValues) => {
+    // Convert Option arrays back to string arrays
     const formData: JobFormValues = {
-      title,
-      description,
-      vietnameseDescription,
-      location,
+      ...data,
       jobType,
-      compensation_details: compensationDetails,
-      salary_range: salaryRange,
       experience_level: experienceLevel,
-      contactName,
-      contactEmail,
-      contactPhone,
-      requirements: requirementsValues,
-      specialties: specialtiesValues,
+      specialties: mapFromOptions(selectedSpecialties),
+      requirements: mapFromOptions(selectedRequirements),
     };
-    
     onSubmit(formData);
   };
 
-  // File upload handling
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const newFiles = Array.from(files);
-      setPhotoUploads(prev => [...prev, ...newFiles]);
+  // Handler for job type selection with type validation
+  const handleJobTypeChange = (value: string) => {
+    const allowedJobTypes = ["full-time", "part-time", "contract", "temporary", "commission"] as const;
+    if (allowedJobTypes.includes(value as any)) {
+      setJobType(value as typeof allowedJobTypes[number]);
     }
   };
 
-  // Reset validation error when user edits any field
-  useEffect(() => {
-    if (error) setError(null);
-  }, [title, description, location, contactEmail]);
+  // Handler for experience level selection with type validation
+  const handleExperienceLevelChange = (value: string) => {
+    const allowedExperienceLevels = ["entry", "intermediate", "experienced", "senior"] as const;
+    if (allowedExperienceLevels.includes(value as any)) {
+      setExperienceLevel(value as typeof allowedExperienceLevels[number]);
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Back button */}
-      {onBack && (
-        <Button 
-          type="button" 
-          variant="ghost" 
-          onClick={onBack} 
-          className="mb-4 px-2 flex items-center text-muted-foreground"
-        >
-          <ChevronLeft className="w-4 h-4 mr-1" />
-          Back to templates
-        </Button>
-      )}
+    <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+      <Card className="border-none shadow-none">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Job Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Job Title */}
+          <div className="space-y-2">
+            <FormLabel htmlFor="title">Job Title</FormLabel>
+            <Input
+              id="title"
+              placeholder="e.g. Experienced Nail Technician Needed"
+              {...form.register('title', { required: true })}
+            />
+          </div>
 
-      <div className="space-y-4">
-        {/* Job Information */}
-        <h2 className="text-xl font-semibold">Job Information</h2>
-        
-        <div className="space-y-2">
-          <Label htmlFor="title">Job Title *</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g., Nail Technician, Hair Stylist, etc."
-            required
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="description">Job Description *</Label>
-          <Textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the role, responsibilities, and qualifications..."
-            rows={5}
-            required
-          />
-        </div>
-        
-        {/* Vietnamese Description Toggle */}
-        <div className="flex items-center space-x-2">
-          <input 
-            type="checkbox" 
-            id="showVietnamese" 
-            checked={showVietnamese} 
-            onChange={() => setShowVietnamese(!showVietnamese)}
-            className="rounded border-gray-300 text-primary focus:ring-primary"
-          />
-          <Label htmlFor="showVietnamese">Add Vietnamese description (recommended for nail salons)</Label>
-        </div>
-        
-        {showVietnamese && (
+          {/* Description Tabs (English/Vietnamese) */}
           <div className="space-y-2">
-            <Label htmlFor="vietnameseDescription">Mô tả công việc (Vietnamese Description)</Label>
-            <Textarea
-              id="vietnameseDescription"
-              value={vietnameseDescription}
-              onChange={(e) => setVietnameseDescription(e.target.value)}
-              placeholder="Mô tả công việc bằng tiếng Việt..."
-              rows={5}
-            />
-          </div>
-        )}
-        
-        <div className="space-y-2">
-          <Label htmlFor="location">Location *</Label>
-          <Input
-            id="location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="City, State or Full Address"
-            required
-          />
-        </div>
-        
-        {/* Job Details */}
-        <h2 className="text-xl font-semibold pt-4">Job Details</h2>
-        
-        <div className="space-y-2">
-          <Label htmlFor="jobType">Employment Type</Label>
-          <Select value={jobType} onValueChange={setJobType}>
-            <SelectTrigger id="jobType">
-              <SelectValue placeholder="Select job type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="full-time">Full-time</SelectItem>
-              <SelectItem value="part-time">Part-time</SelectItem>
-              <SelectItem value="contract">Contract</SelectItem>
-              <SelectItem value="temporary">Temporary</SelectItem>
-              <SelectItem value="commission">Commission-based</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="compensationDetails">Compensation Details</Label>
-          <Input
-            id="compensationDetails"
-            value={compensationDetails}
-            onChange={(e) => setCompensationDetails(e.target.value)}
-            placeholder="e.g., Commission structure, benefits, etc."
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="salaryRange">Salary/Pay Range</Label>
-          <Input
-            id="salaryRange"
-            value={salaryRange}
-            onChange={(e) => setSalaryRange(e.target.value)}
-            placeholder="e.g., $15-20/hr, $40k-60k/year"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="experienceLevel">Experience Level</Label>
-          <RadioGroup 
-            value={experienceLevel} 
-            onValueChange={setExperienceLevel}
-            className="flex flex-wrap gap-4"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="entry" id="entry" />
-              <Label htmlFor="entry">Entry Level</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="intermediate" id="intermediate" />
-              <Label htmlFor="intermediate">Intermediate</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="experienced" id="experienced" />
-              <Label htmlFor="experienced">Experienced</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="senior" id="senior" />
-              <Label htmlFor="senior">Senior</Label>
-            </div>
-          </RadioGroup>
-        </div>
-        
-        {/* Specialties Section */}
-        <div className="space-y-2">
-          <Label htmlFor="specialties">Specialties Needed</Label>
-          <MultiSelect
-            options={getAllSpecialtyOptions()}
-            selected={selectedSpecialties.map(option => option.value)}
-            onChange={handleSpecialtiesChange}
-            placeholder="Select specialties..."
-          />
-        </div>
-        
-        {/* Requirements Toggle */}
-        <div className="flex items-center space-x-2">
-          <input 
-            type="checkbox" 
-            id="showRequirements" 
-            checked={showRequirements} 
-            onChange={() => setShowRequirements(!showRequirements)}
-            className="rounded border-gray-300 text-primary focus:ring-primary"
-          />
-          <Label htmlFor="showRequirements">Specify Job Requirements</Label>
-        </div>
-        
-        {/* Requirements Section */}
-        {showRequirements && (
-          <div className="space-y-2">
-            <Label htmlFor="requirements">Job Requirements</Label>
-            <MultiSelect
-              options={getRequirementOptions()}
-              selected={selectedRequirements.map(option => option.value)}
-              onChange={handleRequirementsChange}
-              placeholder="Select requirements..."
-            />
-          </div>
-        )}
-        
-        {/* Contact Info */}
-        <h2 className="text-xl font-semibold pt-4">Contact Information</h2>
-        
-        <div className="space-y-2">
-          <Label htmlFor="contactName">Contact Name</Label>
-          <Input
-            id="contactName"
-            value={contactName}
-            onChange={(e) => setContactName(e.target.value)}
-            placeholder="Your name or salon manager's name"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="contactEmail">Contact Email *</Label>
-          <Input
-            id="contactEmail"
-            type="email"
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            placeholder="Email address for applications"
-            required
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="contactPhone">Contact Phone</Label>
-          <Input
-            id="contactPhone"
-            value={contactPhone}
-            onChange={(e) => setContactPhone(e.target.value)}
-            placeholder="Phone number (optional)"
-          />
-        </div>
-        
-        {/* Image Upload */}
-        <h2 className="text-xl font-semibold pt-4">Media (Optional)</h2>
-        <Card className="bg-muted/50">
-          <CardContent className="p-4">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="photoUpload">Upload Photos</Label>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Add photos of your salon or workplace to attract more applicants
-                </p>
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                {photoUploads.map((file, index) => (
-                  <div key={index} className="relative w-24 h-24 rounded overflow-hidden border">
-                    <img 
-                      src={URL.createObjectURL(file)} 
-                      alt={`Upload ${index}`} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-                
-                <label className="flex items-center justify-center w-24 h-24 border border-dashed rounded cursor-pointer hover:bg-muted transition-colors">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                    multiple
-                  />
-                  <Plus className="w-6 h-6 text-muted-foreground" />
+            <div className="flex items-center justify-between">
+              <FormLabel>Job Description</FormLabel>
+              <div className="flex items-center">
+                <Checkbox 
+                  id="include-vietnamese"
+                  checked={includeVietnamese}
+                  onCheckedChange={(checked) => setIncludeVietnamese(checked === true)}
+                />
+                <label htmlFor="include-vietnamese" className="ml-2 text-sm text-gray-600">
+                  Include Vietnamese Translation
                 </label>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        {/* Error Display */}
-        {error && (
-          <div className="text-red-500 text-sm p-2 bg-red-50 border border-red-100 rounded">
-            {error}
+            
+            <Tabs defaultValue="english" className="w-full">
+              <TabsList className="mb-2">
+                <TabsTrigger value="english">English</TabsTrigger>
+                {includeVietnamese && <TabsTrigger value="vietnamese">Vietnamese</TabsTrigger>}
+              </TabsList>
+              
+              <TabsContent value="english">
+                <Textarea
+                  placeholder="Describe the job, responsibilities, and ideal candidate..."
+                  className="min-h-32"
+                  {...form.register('description')}
+                />
+              </TabsContent>
+              
+              {includeVietnamese && (
+                <TabsContent value="vietnamese">
+                  <Textarea
+                    placeholder="Vietnamese translation of job description..."
+                    className="min-h-32"
+                    {...form.register('vietnameseDescription')}
+                  />
+                </TabsContent>
+              )}
+            </Tabs>
           </div>
-        )}
+
+          {/* Location */}
+          <div className="space-y-2">
+            <FormLabel htmlFor="location">Location</FormLabel>
+            <Input
+              id="location"
+              placeholder="e.g. Los Angeles, CA"
+              {...form.register('location', { required: true })}
+            />
+          </div>
+
+          {/* Job Type */}
+          <div className="space-y-2">
+            <FormLabel htmlFor="jobType">Job Type</FormLabel>
+            <Select value={jobType} onValueChange={handleJobTypeChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select job type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="full-time">Full-time</SelectItem>
+                  <SelectItem value="part-time">Part-time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="temporary">Temporary</SelectItem>
+                  <SelectItem value="commission">Commission</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Experience Level */}
+          <div className="space-y-2">
+            <FormLabel htmlFor="experienceLevel">Experience Level</FormLabel>
+            <Select value={experienceLevel} onValueChange={handleExperienceLevelChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select experience level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="entry">Entry Level</SelectItem>
+                  <SelectItem value="intermediate">Intermediate</SelectItem>
+                  <SelectItem value="experienced">Experienced</SelectItem>
+                  <SelectItem value="senior">Senior</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Industry Selector */}
+          <div className="space-y-2">
+            <FormLabel htmlFor="industry">Industry (for specialized requirements)</FormLabel>
+            <Select 
+              value={selectedIndustry || ''} 
+              onValueChange={(value) => setSelectedIndustry(value as IndustryType || null)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select an industry (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="nails">Nail Salon</SelectItem>
+                <SelectItem value="hair">Hair Salon</SelectItem>
+                <SelectItem value="lashes">Lash & Brow</SelectItem>
+                <SelectItem value="massage">Massage & Spa</SelectItem>
+                <SelectItem value="barber">Barber Shop</SelectItem>
+                <SelectItem value="makeup">Makeup Artist</SelectItem>
+                <SelectItem value="tattoo">Tattoo Artist</SelectItem>
+                <SelectItem value="skincare">Skincare Specialist</SelectItem>
+                <SelectItem value="brows">Eyebrow Specialist</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Specialties */}
+          <div className="space-y-2">
+            <FormLabel>Specialties Required</FormLabel>
+            <MultiSelect
+              options={availableSpecialties}
+              selected={selectedSpecialties.map(o => o.value)}
+              onChange={(values) => {
+                const selectedOptions = availableSpecialties.filter(o => values.includes(o.value));
+                setSelectedSpecialties(selectedOptions);
+              }}
+              placeholder="Select specialties"
+            />
+          </div>
+          
+          {/* Requirements */}
+          <div className="space-y-2">
+            <FormLabel>Job Requirements</FormLabel>
+            <MultiSelect
+              options={requirementOptions}
+              selected={selectedRequirements.map(o => o.value)}
+              onChange={(values) => {
+                const selectedOptions = requirementOptions.filter(o => values.includes(o.value));
+                setSelectedRequirements(selectedOptions);
+              }}
+              placeholder="Select requirements"
+            />
+          </div>
+
+          {/* Compensation */}
+          <div className="space-y-2">
+            <FormLabel htmlFor="salary_range">Salary/Rate Range (Optional)</FormLabel>
+            <Input
+              id="salary_range"
+              placeholder="e.g. $20-25/hr or $50k-60k/year"
+              {...form.register('salary_range')}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <FormLabel htmlFor="compensation_details">Compensation Details (Optional)</FormLabel>
+            <Textarea
+              id="compensation_details"
+              placeholder="Additional details about compensation, benefits, commission structure, etc."
+              {...form.register('compensation_details')}
+            />
+          </div>
+
+          {/* Contact Information */}
+          <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+            <h3 className="text-lg font-medium">Contact Information</h3>
+            
+            <div className="space-y-2">
+              <FormLabel htmlFor="contactName">Contact Name (Optional)</FormLabel>
+              <Input
+                id="contactName"
+                placeholder="Name of the contact person"
+                {...form.register('contactName')}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <FormLabel htmlFor="contactEmail">Contact Email</FormLabel>
+              <Input
+                id="contactEmail"
+                placeholder="Email address for applications"
+                type="email"
+                {...form.register('contactEmail', { required: true })}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <FormLabel htmlFor="contactPhone">Contact Phone (Optional)</FormLabel>
+              <Input
+                id="contactPhone"
+                placeholder="Phone number"
+                type="tel"
+                {...form.register('contactPhone')}
+              />
+            </div>
+          </div>
+        </CardContent>
         
-        {/* Submit Button */}
-        <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
-            {isSubmitting ? 'Submitting...' : 'Review & Publish'}
+        <CardFooter className="flex justify-between">
+          {onBack && (
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onBack}
+            >
+              Back
+            </Button>
+          )}
+          <Button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className={cn(onBack ? "ml-auto" : "")}
+          >
+            {isSubmitting ? 'Saving...' : 'Continue'}
           </Button>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </form>
   );
 };
