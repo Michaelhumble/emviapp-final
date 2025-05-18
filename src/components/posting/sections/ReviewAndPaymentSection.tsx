@@ -90,18 +90,85 @@ export function ReviewAndPaymentSection({
           <CardTitle className="text-xl">Job Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Title */}
           <div>
             <h3 className="font-medium">Title</h3>
             <p className="text-gray-700">{formData.title}</p>
           </div>
+          
+          {/* Description */}
+          {formData.description && (
+            <div>
+              <h3 className="font-medium">Description</h3>
+              <p className="text-gray-700 whitespace-pre-wrap">{formData.description}</p>
+            </div>
+          )}
+          
+          {/* Vietnamese Description */}
+          {formData.vietnameseDescription && (
+            <div>
+              <h3 className="font-medium">Vietnamese Description</h3>
+              <p className="text-gray-700 whitespace-pre-wrap">{formData.vietnameseDescription}</p>
+            </div>
+          )}
+          
+          {/* Location */}
           <div>
             <h3 className="font-medium">Location</h3>
             <p className="text-gray-700">{formData.location}</p>
           </div>
+          
+          {/* Employment Type */}
+          {formData.jobType && (
+            <div>
+              <h3 className="font-medium">Employment Type</h3>
+              <p className="text-gray-700">{formData.jobType}</p>
+            </div>
+          )}
+          
+          {/* Requirements */}
+          {Array.isArray(formData.requirements) && formData.requirements.length > 0 && (
+            <div>
+              <h3 className="font-medium">Requirements</h3>
+              <ul className="list-disc pl-5 text-gray-700">
+                {formData.requirements.map((req, index) => (
+                  <li key={index}>{req}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* Specialties */}
+          {Array.isArray(formData.specialties) && formData.specialties.length > 0 && (
+            <div>
+              <h3 className="font-medium">Specialties</h3>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {formData.specialties.map((specialty, index) => (
+                  <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                    {specialty}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Compensation */}
+          {formData.salary_range && (
+            <div>
+              <h3 className="font-medium">Salary Range</h3>
+              <p className="text-gray-700">{formData.salary_range}</p>
+            </div>
+          )}
+          
+          {/* Contact Information */}
           <div>
-            <h3 className="font-medium">Employment Type</h3>
-            <p className="text-gray-700">{formData.jobType}</p>
+            <h3 className="font-medium">Contact Information</h3>
+            <p className="text-gray-700">{formData.contactName}</p>
+            <p className="text-gray-700">{formData.contactEmail}</p>
+            {formData.contactPhone && <p className="text-gray-700">{formData.contactPhone}</p>}
           </div>
+          
+          {/* Photos */}
           {photoUploads.length > 0 && (
             <div>
               <h3 className="font-medium">Photos</h3>
