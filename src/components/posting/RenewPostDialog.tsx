@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 interface RenewPostDialogProps {
   open?: boolean;
@@ -28,10 +29,10 @@ const RenewPostDialog = ({
   bundleWithJobPost = false,
   onRenewed
 }: RenewPostDialogProps) => {
-  const [selectedPlan, setSelectedPlan] = useState('standard');
+  const [selectedPlan, setSelectedPlan] = useState<JobPricingTier>('standard');
   const { initiatePayment, isLoading } = usePostPayment();
 
-  const handlePlanChange = (newPricing: string) => {
+  const handlePlanChange = (newPricing: JobPricingTier) => {
     setSelectedPlan(newPricing);
   };
 

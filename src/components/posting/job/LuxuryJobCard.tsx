@@ -21,17 +21,17 @@ const LuxuryJobCard: React.FC<LuxuryJobCardProps> = ({
   return (
     <motion.div
       whileHover={{ 
-        y: -4,
+        y: -2,
         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
         transition: { duration: 0.2 }
       }}
-      whileTap={{ y: -2 }}
+      whileTap={{ y: -1 }}
       onClick={onClick}
       className={cn(
         "cursor-pointer relative overflow-hidden",
-        "min-w-[280px] h-[220px] p-6 rounded-2xl",
+        "min-w-[280px] h-[220px] p-6 rounded-[18px]",
         "border border-[#e8e1d5] backdrop-blur-sm",
-        "transition-all duration-300 ease-out",
+        "transition-all duration-200 ease-out",
         "flex flex-col justify-between",
         className
       )}
@@ -45,7 +45,7 @@ const LuxuryJobCard: React.FC<LuxuryJobCardProps> = ({
       
       <div className="relative z-10 h-full flex flex-col justify-between">
         <div className="space-y-2">
-          <h3 className="font-playfair text-2xl font-bold text-gray-900 leading-tight">
+          <h3 className="font-playfair text-[1.5rem] font-bold text-gray-900 leading-tight">
             {title}
           </h3>
           <p className="text-base font-medium text-gray-600">

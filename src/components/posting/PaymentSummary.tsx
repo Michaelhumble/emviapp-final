@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, Lock, Sparkles } from 'lucide-react';
+import { Lock, Sparkles, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -41,7 +41,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   return (
     <div className="mt-6 space-y-6">
       {discountPercentage > 0 && (
-        <div className="bg-[#fefbf6] p-4 rounded-lg border border-[#f3efe0] text-gray-800">
+        <div className="bg-[#fefbf6] p-4 rounded-[18px] border border-[#f3efe0] text-gray-800">
           <p className="font-medium">
             {t({
               english: `${discountPercentage}% discount applied for ${duration} month${duration > 1 ? 's' : ''}`,
@@ -57,7 +57,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
         </div>
       )}
       
-      <div className="sticky bottom-4 bg-white bg-opacity-95 backdrop-blur-sm p-4 rounded-lg border border-[#e8e1d5] shadow-lg z-10">
+      <div className="sticky bottom-4 bg-white bg-opacity-95 backdrop-blur-sm p-4 rounded-[18px] border border-[#e8e1d5] shadow-lg z-10">
         <motion.div
           className="w-full flex flex-col gap-3"
           whileHover={{ scale: 1.01 }}
