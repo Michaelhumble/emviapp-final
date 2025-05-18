@@ -1,7 +1,5 @@
 
-import { JobFormValues } from "@/components/posting/job/jobFormSchema";
-
-export type JobTemplateType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'spa' | 'receptionist' | 'manager' | 'massage' | 'tattoo' | 'makeup' | 'booth' | 'beauty' | 'custom';
+import { JobFormValues, IndustryType } from '@/components/posting/job/jobFormSchema';
 
 export const getJobTemplate = (templateType: JobTemplateType): JobFormValues => {
   switch (templateType) {
@@ -218,3 +216,5 @@ export const getJobTemplate = (templateType: JobTemplateType): JobFormValues => 
       };
   }
 };
+
+export type JobTemplateType = IndustryType | 'custom' | 'nails' | 'lashes' | 'beauty' | 'receptionist' | 'manager';

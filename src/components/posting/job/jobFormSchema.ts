@@ -4,6 +4,7 @@ import { z } from 'zod';
 // Define the experience level options as a union type to ensure type safety
 export type ExperienceLevelType = 'entry' | 'intermediate' | 'experienced' | 'senior';
 export type JobTypeOption = 'full-time' | 'part-time' | 'contract' | 'temporary' | 'commission';
+export type IndustryType = "nail" | "hair" | "spa" | "barber" | "massage" | "tattoo" | "makeup" | "booth" | "other";
 
 // Define the job form schema using Zod
 export const jobFormSchema = z.object({

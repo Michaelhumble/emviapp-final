@@ -1,258 +1,93 @@
-
-import React, { useState } from 'react';
+import React from 'react';
+import { 
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Plus, X, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { useTranslation } from '@/hooks/useTranslation';
-import { jobPostingTranslations } from '@/translations/jobPostingForm';
-import { IndustryType } from '../job/jobFormSchema';
-import AIPolishButton from '../AIPolishButton';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { IndustryType } from '@/components/posting/job/jobFormSchema';
 
-interface JobDetailsProps {
-  details: {
-    title: string;
-    description: string;
-    vietnameseDescription?: string;
-    location: string;
-    requirements: string[];
-    specialties?: string[];
-  };
-  onChange: (details: any) => void;
-  photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  industryType?: IndustryType;
+interface JobDetailsSectionProps {
+  form: any;
+  showVietnameseByDefault?: boolean;
 }
 
-const JobDetailsSection: React.FC<JobDetailsProps> = ({ 
-  details, 
-  onChange, 
-  photoUploads, 
-  setPhotoUploads,
-  industryType
-}) => {
-  const { t } = useTranslation();
-  const jobDetailTranslations = jobPostingTranslations.jobDetails;
-  const validationTranslations = jobPostingTranslations.validation;
-  
-  const [newRequirement, setNewRequirement] = useState('');
-  const [newSpecialty, setNewSpecialty] = useState('');
-  
-  const handleAddRequirement = () => {
-    if (newRequirement.trim() === '') return;
-    onChange({
-      ...details,
-      requirements: [...details.requirements, newRequirement.trim()]
-    });
-    setNewRequirement('');
-  };
-  
-  const handleRemoveRequirement = (index: number) => {
-    const updatedRequirements = [...details.requirements];
-    updatedRequirements.splice(index, 1);
-    onChange({
-      ...details,
-      requirements: updatedRequirements
-    });
-  };
-  
-  const handleAddSpecialty = () => {
-    if (newSpecialty.trim() === '') return;
-    onChange({
-      ...details,
-      specialties: [...(details.specialties || []), newSpecialty.trim()]
-    });
-    setNewSpecialty('');
-  };
-  
-  const handleRemoveSpecialty = (index: number) => {
-    const updatedSpecialties = [...(details.specialties || [])];
-    updatedSpecialties.splice(index, 1);
-    onChange({
-      ...details,
-      specialties: updatedSpecialties
-    });
-  };
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    onChange({
-      ...details,
-      [name]: value
-    });
-  };
-
-  const handlePolishDescription = (polishedText: string) => {
-    onChange({
-      ...details,
-      description: polishedText
-    });
-  };
-  
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnameseByDefault = false }) => {
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold">{t(jobDetailTranslations.title)}</h2>
-      
-      {/* Job Title */}
-      <div>
-        <Label htmlFor="title" className="text-base">
-          {t(jobDetailTranslations.jobTitle)} <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="title"
-          name="title"
-          placeholder={t(jobDetailTranslations.jobTitlePlaceholder)}
-          value={details.title}
-          onChange={handleInputChange}
-          className="mt-1.5"
-          required
-        />
-      </div>
-      
-      {/* Job Description */}
-      <div>
-        <div className="flex justify-between items-center">
-          <Label htmlFor="description" className="text-base">
-            {t(jobDetailTranslations.description)} <span className="text-red-500">*</span>
-          </Label>
-          <AIPolishButton 
-            text={details.description}
-            onPolish={handlePolishDescription}
-            context="job description"
-          />
-        </div>
-        <Textarea
-          id="description"
-          name="description"
-          placeholder={t(jobDetailTranslations.descriptionPlaceholder)}
-          value={details.description}
-          onChange={handleInputChange}
-          className="mt-1.5 min-h-[150px]"
-          required
-        />
-      </div>
-
-      {/* Vietnamese Description */}
-      <div>
-        <Label htmlFor="vietnameseDescription" className="text-base">
-          {t(jobDetailTranslations.vietnameseDescription)}
-        </Label>
-        <Textarea
-          id="vietnameseDescription"
-          name="vietnameseDescription"
-          placeholder={t(jobDetailTranslations.vietnameseDescriptionPlaceholder)}
-          value={details.vietnameseDescription || ''}
-          onChange={handleInputChange}
-          className="mt-1.5 min-h-[150px]"
-        />
-      </div>
-      
-      {/* Location */}
-      <div>
-        <Label htmlFor="location" className="text-base">
-          {t(jobDetailTranslations.location)} <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="location"
-          name="location"
-          placeholder={t(jobDetailTranslations.locationPlaceholder)}
-          value={details.location}
-          onChange={handleInputChange}
-          className="mt-1.5"
-          required
-        />
-      </div>
-      
-      {/* Requirements */}
-      <div>
-        <Label className="text-base">
-          {t(jobDetailTranslations.requirementTitle)}
-        </Label>
-        
-        <div className="flex mt-1.5">
-          <Input
-            placeholder={t(jobDetailTranslations.requirementPlaceholder)}
-            value={newRequirement}
-            onChange={(e) => setNewRequirement(e.target.value)}
-            className="flex-1 rounded-r-none"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAddRequirement();
-              }
-            }}
-          />
-          <Button 
-            type="button" 
-            onClick={handleAddRequirement}
-            className="rounded-l-none bg-gray-800"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            {t(jobDetailTranslations.addRequirement)}
-          </Button>
-        </div>
-        
-        {details.requirements.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {details.requirements.map((requirement, index) => (
-              <Badge key={index} variant="secondary" className="pl-3 pr-2 py-1.5 text-sm bg-gray-100">
-                {requirement}
-                <X 
-                  className="h-4 w-4 ml-1 cursor-pointer hover:text-red-500" 
-                  onClick={() => handleRemoveRequirement(index)}
-                />
-              </Badge>
-            ))}
-          </div>
+    <>
+      <FormField
+        control={form.control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Job Title</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g., Senior Nail Technician" {...field} />
+            </FormControl>
+            <FormDescription>
+              What is the position you're hiring for?
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
         )}
-      </div>
+      />
 
-      {/* Specialties */}
-      <div>
-        <Label className="text-base">
-          {t("Specialties")}
-        </Label>
-        
-        <div className="flex mt-1.5">
-          <Input
-            placeholder={t("Add a specialty (e.g. Gel, Acrylic, Color)")}
-            value={newSpecialty}
-            onChange={(e) => setNewSpecialty(e.target.value)}
-            className="flex-1 rounded-r-none"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAddSpecialty();
-              }
-            }}
-          />
-          <Button 
-            type="button" 
-            onClick={handleAddSpecialty}
-            className="rounded-l-none bg-purple-600"
-          >
-            <Sparkles className="h-4 w-4 mr-1" />
-            {t("Add Specialty")}
-          </Button>
-        </div>
-        
-        {details.specialties && details.specialties.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {details.specialties.map((specialty, index) => (
-              <Badge key={index} variant="secondary" className="pl-3 pr-2 py-1.5 text-sm bg-purple-50 text-purple-700">
-                {specialty}
-                <X 
-                  className="h-4 w-4 ml-1 cursor-pointer hover:text-red-500" 
-                  onClick={() => handleRemoveSpecialty(index)}
-                />
-              </Badge>
-            ))}
-          </div>
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <Textarea placeholder="Describe the job requirements and responsibilities" className="resize-none" {...field} />
+            </FormControl>
+            <FormDescription>
+              Include details about the role, responsibilities, and what makes it a great opportunity.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
         )}
-      </div>
-    </div>
+      />
+
+      <FormField
+        control={form.control}
+        name="vietnameseDescription"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Vietnamese Description (Optional)</FormLabel>
+            <FormControl>
+              <Textarea placeholder="Mô tả công việc bằng tiếng Việt" className="resize-none" {...field} />
+            </FormControl>
+            <FormDescription>
+              Provide a description in Vietnamese to attract more candidates.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="location"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Location</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g., Ho Chi Minh City" {...field} />
+            </FormControl>
+            <FormDescription>
+              Where is the job located?
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </>
   );
 };
 
