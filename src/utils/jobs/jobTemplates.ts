@@ -128,6 +128,206 @@ export const jobTemplates: Record<string, JobFormValues> = {
       "Anti-aging Treatments"
     ]
   },
+  spa: {
+    title: "Spa Technician",
+    description: "We're looking for a dedicated spa technician to join our wellness team. You will provide a range of spa services including body treatments, wraps, scrubs, and relaxation therapies.\n\nThe ideal candidate has a calming presence and understands how to create a tranquil experience for clients.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "full-time",
+    experience_level: "intermediate",
+    salary_range: "$800-1200/week",
+    contactEmail: "",
+    requirements: [
+      "Spa therapy certification required",
+      "1+ years experience in spa setting",
+      "Knowledge of various body treatments",
+      "Understanding of aromatherapy principles",
+      "Excellent client communication skills",
+      "Professional and calming demeanor"
+    ],
+    specialties: [
+      "Body Treatments",
+      "Hot Stone Therapy",
+      "Body Wraps",
+      "Aromatherapy",
+      "Relaxation Techniques"
+    ]
+  },
+  receptionist: {
+    title: "Salon Receptionist",
+    description: "We're seeking a friendly, organized salon receptionist to manage our front desk operations. You will handle scheduling, client check-ins, phone calls, and retail sales while maintaining a welcoming salon environment.\n\nThe ideal candidate has excellent people skills and thrives in a fast-paced setting.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "full-time",
+    experience_level: "beginner",
+    salary_range: "$15-20/hour",
+    contactEmail: "",
+    requirements: [
+      "High school diploma or equivalent",
+      "Previous customer service experience preferred",
+      "Proficiency with scheduling software",
+      "Strong communication skills",
+      "Multi-tasking abilities",
+      "Professional appearance and positive attitude"
+    ],
+    specialties: [
+      "Client Relations",
+      "Appointment Scheduling",
+      "Retail Sales",
+      "Payment Processing",
+      "Salon Management Systems"
+    ]
+  },
+  manager: {
+    title: "Salon Manager",
+    description: "We're looking for an experienced salon manager to oversee daily operations and lead our team to success. You'll manage staff, monitor inventory, implement marketing strategies, and ensure exceptional client experiences.\n\nThe ideal candidate has leadership skills and a passion for the beauty industry.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "full-time",
+    experience_level: "advanced",
+    salary_range: "$50,000-65,000/year",
+    contactEmail: "",
+    requirements: [
+      "3+ years salon management experience",
+      "Strong leadership and team-building skills",
+      "Experience with scheduling and inventory systems",
+      "Knowledge of beauty industry trends and standards",
+      "Business acumen and financial management abilities",
+      "Customer service excellence"
+    ],
+    specialties: [
+      "Team Leadership",
+      "Business Operations",
+      "Staff Development",
+      "Client Retention",
+      "Revenue Growth"
+    ]
+  },
+  massage: {
+    title: "Massage Therapist",
+    description: "Join our wellness team as a licensed massage therapist. You will provide therapeutic massage services customized to client needs, including deep tissue, Swedish, and sports massage techniques.\n\nWe're seeking a therapist who understands body mechanics and creates a healing experience.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "full-time",
+    experience_level: "intermediate",
+    salary_range: "$25-40/hour + tips",
+    contactEmail: "",
+    requirements: [
+      "Licensed massage therapist certification",
+      "1+ years professional massage experience",
+      "Proficiency in multiple massage modalities",
+      "Knowledge of anatomy and physiology",
+      "Physical stamina and dexterity",
+      "Excellent client communication skills"
+    ],
+    specialties: [
+      "Deep Tissue Massage",
+      "Swedish Massage",
+      "Sports Massage",
+      "Trigger Point Therapy",
+      "Relaxation Techniques"
+    ]
+  },
+  tattoo: {
+    title: "Tattoo Artist",
+    description: "We're seeking a talented tattoo artist to join our studio. You will create custom tattoo designs and deliver professional, safe tattooing services to clients. Your portfolio should demonstrate strong artistic skills and technical precision.\n\nThe ideal candidate has a distinctive style and excellent client rapport.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "full-time",
+    experience_level: "intermediate",
+    salary_range: "Commission-based",
+    contactEmail: "",
+    requirements: [
+      "Professional tattoo experience (2+ years)",
+      "Strong portfolio of completed work",
+      "Bloodborne pathogen certification",
+      "Knowledge of sterilization procedures",
+      "Drawing and design skills",
+      "Client consultation abilities"
+    ],
+    specialties: [
+      "Custom Designs",
+      "Cover-ups",
+      "Traditional Tattoos",
+      "Fine Line Work",
+      "Color Work"
+    ]
+  },
+  makeup: {
+    title: "Makeup Artist",
+    description: "We're looking for a creative makeup artist to join our team. You will provide makeup services for special events, photoshoots, and everyday clients seeking to enhance their appearance.\n\nThe ideal candidate has knowledge of various makeup techniques and can work with diverse skin tones and face shapes.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "full-time",
+    experience_level: "intermediate",
+    salary_range: "$20-35/hour + tips",
+    contactEmail: "",
+    requirements: [
+      "Professional makeup certification preferred",
+      "Impressive makeup portfolio",
+      "Knowledge of skincare basics",
+      "Experience with diverse skin types and tones",
+      "Excellent customer service skills",
+      "Creativity and attention to detail"
+    ],
+    specialties: [
+      "Bridal Makeup",
+      "Special Event Makeup",
+      "Natural Looks",
+      "Editorial Styles",
+      "Makeup Education"
+    ]
+  },
+  booth: {
+    title: "Booth Rental Available",
+    description: "We have premium booth rental spaces available for established beauty professionals. Our modern, well-located salon offers independent practitioners the opportunity to grow their business in a supportive environment.\n\nIdeal for self-motivated stylists, barbers, and technicians with existing clientele.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "independent",
+    experience_level: "intermediate",
+    salary_range: "Rental terms negotiable",
+    contactEmail: "",
+    requirements: [
+      "Current professional license in your field",
+      "2+ years professional experience",
+      "Existing client base preferred",
+      "Professional liability insurance",
+      "Business management skills",
+      "Compatible with salon culture and values"
+    ],
+    specialties: [
+      "Hair Styling",
+      "Barbering",
+      "Nail Services",
+      "Esthetics",
+      "Lash Services"
+    ]
+  },
+  beauty: {
+    title: "Other Beauty Professional",
+    description: "We're expanding our service offerings and seeking various beauty professionals to join our team. Whether you specialize in microblading, permanent makeup, threading, waxing, or other beauty services, we'd like to hear from you.\n\nIdeal candidates have certification in their specialty and client service excellence.",
+    vietnameseDescription: "",
+    location: "",
+    jobType: "full-time",
+    experience_level: "intermediate",
+    salary_range: "Based on experience and specialty",
+    contactEmail: "",
+    requirements: [
+      "Professional certification in your beauty specialty",
+      "Minimum 1 year experience in your field",
+      "Knowledge of safety and sanitation protocols",
+      "Portfolio of work (if applicable)",
+      "Client-focused approach",
+      "Willingness to build clientele"
+    ],
+    specialties: [
+      "Microblading",
+      "Permanent Makeup",
+      "Threading",
+      "Waxing",
+      "Specialized Beauty Services"
+    ]
+  },
   custom: {
     title: "",
     description: "",

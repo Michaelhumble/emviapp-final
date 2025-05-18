@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';

@@ -5,7 +5,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { JobFormValues } from './jobFormSchema';
 import { getJobTemplate, JobTemplateType } from '@/utils/jobs/jobTemplates';
-import { Scissors, Fingerprint, Camera, Brush, PenTool, UserCircle } from 'lucide-react';
+import { 
+  Scissors, 
+  Fingerprint, 
+  PenTool, 
+  UserCircle, 
+  Brush, 
+  Spa, 
+  Phone, 
+  ClipboardList, 
+  Hands, 
+  Coffee, 
+  Paintbrush, 
+  Store, 
+  UserCheck 
+} from 'lucide-react';
 
 interface JobTemplateCardProps {
   title: string;
@@ -70,6 +84,54 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
       title: 'Esthetician',
       description: 'For spas and salons seeking skincare specialists for facials and treatments.',
       icon: <Brush size={24} />
+    },
+    {
+      type: 'spa' as JobTemplateType,
+      title: 'Spa Technician',
+      description: 'For wellness centers seeking professionals for body treatments, wraps, and therapeutic services.',
+      icon: <Spa size={24} />
+    },
+    {
+      type: 'receptionist' as JobTemplateType,
+      title: 'Salon Receptionist',
+      description: 'For salons seeking front desk staff to manage scheduling, client check-ins, and salon operations.',
+      icon: <Phone size={24} />
+    },
+    {
+      type: 'manager' as JobTemplateType,
+      title: 'Salon Manager',
+      description: 'For businesses seeking experienced professionals to oversee salon operations and team leadership.',
+      icon: <ClipboardList size={24} />
+    },
+    {
+      type: 'massage' as JobTemplateType,
+      title: 'Massage Therapist',
+      description: 'For spas and wellness centers seeking licensed therapists for massage and bodywork services.',
+      icon: <Hands size={24} />
+    },
+    {
+      type: 'tattoo' as JobTemplateType,
+      title: 'Tattoo Artist',
+      description: 'For studios seeking skilled artists with strong portfolios and tattooing expertise.',
+      icon: <PenTool size={24} strokeWidth={3} />
+    },
+    {
+      type: 'makeup' as JobTemplateType,
+      title: 'Makeup Artist',
+      description: 'For salons and studios seeking professionals skilled in makeup application for various occasions.',
+      icon: <Paintbrush size={24} />
+    },
+    {
+      type: 'booth' as JobTemplateType,
+      title: 'Booth Rental Available',
+      description: 'For salon owners offering booth rental space to independent beauty professionals.',
+      icon: <Store size={24} />
+    },
+    {
+      type: 'beauty' as JobTemplateType,
+      title: 'Other Beauty Professional',
+      description: 'For businesses seeking specialized beauty services such as microblading, threading, or waxing.',
+      icon: <UserCheck size={24} />
     },
     {
       type: 'custom' as JobTemplateType,

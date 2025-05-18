@@ -1,22 +1,19 @@
 
-export const luxuryGradients = {
-  champagne: "bg-gradient-to-br from-[#f9f6f0] to-[#f3efe0]",
-  softBlush: "bg-gradient-to-br from-[#faf4f4] to-[#f5e9e9]",
-  cream: "bg-gradient-to-br from-[#fcfaf5] to-[#f8f3e9]",
-  cashmere: "bg-gradient-to-br from-[#f7f5f3] to-[#efe8e1]",
-  paleRose: "bg-gradient-to-br from-[#faf4f6] to-[#f5e9ec]",
-  paleMocha: "bg-gradient-to-br from-[#f8f6f4] to-[#efe9e3]",
-  pearl: "bg-gradient-to-br from-[#f7f8f8] to-[#eef0f0]",
-  ivory: "bg-gradient-to-br from-[#fcfcf9] to-[#f7f7f0]",
+export const templateGradients: Record<string, string> = {
+  nails: "bg-gradient-to-br from-pink-50 to-purple-100",
+  hair: "bg-gradient-to-br from-blue-50 to-indigo-100",
+  lashes: "bg-gradient-to-br from-violet-50 to-purple-100", 
+  barber: "bg-gradient-to-br from-slate-50 to-gray-100",
+  skincare: "bg-gradient-to-br from-green-50 to-emerald-100",
+  spa: "bg-gradient-to-br from-cyan-50 to-teal-100",
+  receptionist: "bg-gradient-to-br from-gray-50 to-blue-100",
+  manager: "bg-gradient-to-br from-amber-50 to-yellow-100",
+  massage: "bg-gradient-to-br from-teal-50 to-cyan-100",
+  tattoo: "bg-gradient-to-br from-slate-50 to-gray-100",
+  makeup: "bg-gradient-to-br from-rose-50 to-pink-100",
+  booth: "bg-gradient-to-br from-orange-50 to-amber-100",
+  beauty: "bg-gradient-to-br from-purple-50 to-fuchsia-100",
+  custom: "bg-gradient-to-br from-stone-50 to-neutral-100"
 };
 
-export const luxuryBorders = {
-  champagne: "border-[#e8e1d5]",
-  softBlush: "border-[#e8dfe0]",
-  cream: "border-[#e8e3d5]",
-  cashmere: "border-[#dfd8cf]",
-  paleRose: "border-[#e8dfe3]",
-  paleMocha: "border-[#dfd8d2]",
-  pearl: "border-[#e0e3e3]",
-  ivory: "border-[#e8e8e0]",
-};
+export default templateGradients;
