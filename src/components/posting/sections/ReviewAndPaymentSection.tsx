@@ -32,7 +32,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
 }) => {
   // Fixed type: Use JobPricingTier instead of string
   const [selectedPricingTier, setSelectedPricingTier] = useState<JobPricingTier>(
-    pricingOptions.selectedPricingTier || 'premium'
+    pricingOptions.selectedPricingTier as JobPricingTier || 'premium'
   );
 
   // Fixed handler to properly use JobPricingTier type
@@ -96,7 +96,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
       
       {/* Pricing Tiers */}
       <PricingTierSelector 
-        selectedTier={pricingOptions.selectedPricingTier} 
+        selectedTier={pricingOptions.selectedPricingTier as JobPricingTier} 
         onTierSelect={handlePricingTierSelect} 
         pricingOptions={pricingOptions}
         isFirstPost={pricingOptions.isFirstPost}
@@ -144,4 +144,3 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     </div>
   );
 };
-
