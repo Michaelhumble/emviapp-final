@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JobFormValues } from './jobFormSchema';
@@ -6,6 +5,7 @@ import { PricingOptions } from '@/utils/posting/types';
 import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
 import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
+import { PaymentSummary } from '@/components/posting/PaymentSummary';
 
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
