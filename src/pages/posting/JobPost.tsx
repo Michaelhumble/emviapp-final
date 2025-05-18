@@ -81,6 +81,7 @@ const JobPost = () => {
         requirements: safeRequirements,
         post_type: 'job',
         image: imageUrl, // Add the image URL
+        templateType: formData.templateType // Include the template type
       };
       
       // For free tier, process directly without payment
