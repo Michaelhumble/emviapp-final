@@ -56,12 +56,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleSignOut }) => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="p-2 md:hidden flex items-center justify-center">
+        <Button variant="ghost" className="p-2 md:hidden">
           <Menu className="h-6 w-6" />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[80%] p-0 mobile-glass-drawer z-50">
+      <SheetContent side="right" className="w-[80%] p-0 mobile-glass-drawer">
         <div className="flex flex-col h-full p-0">
           {/* Header with logo and close button */}
           <div className="flex justify-between items-center p-4 border-b">

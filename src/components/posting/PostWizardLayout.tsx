@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import { Progress } from '@/components/ui/progress';
-import MobilePostMenu from '@/components/posting/MobilePostMenu';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -19,18 +17,10 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
   totalSteps = 3 
 }) => {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Mobile menu toggle - visible on mobile only */}
-      {isMobile && (
-        <div className="fixed top-4 right-4 z-50">
-          <MobilePostMenu className="shadow-md" />
-        </div>
-      )}
-      
       <div className="container max-w-6xl py-8 px-4">
         {/* Progress tracking */}
         <div className="mb-4">
@@ -86,13 +76,6 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
             <div className="hidden md:block">
               <LanguageToggle />
             </div>
-            
-            {/* Mobile language toggle - visible only on mobile and if menu isn't used */}
-            {isMobile && (
-              <div className="md:hidden">
-                <LanguageToggle minimal={true} />
-              </div>
-            )}
           </div>
         </motion.div>
         
@@ -130,7 +113,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           </motion.p>
           
           <motion.p 
-            className="mt-4 text-xs font-light bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent"
+            className="mt-4 text-xs font-light"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0, duration: 0.5 }}
@@ -139,9 +122,6 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           </motion.p>
         </div>
       </div>
-      
-      {/* Mobile bottom padding to account for navigation bar */}
-      <div className="h-20 md:hidden"></div>
     </div>
   );
 };

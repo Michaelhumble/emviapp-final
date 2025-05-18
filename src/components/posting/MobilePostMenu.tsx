@@ -3,12 +3,11 @@ import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Home, Briefcase, Store, Scissors, Info, Phone } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "@/components/ui/Logo";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/auth";
 
 interface MobilePostMenuProps {
   className?: string;
@@ -17,9 +16,7 @@ interface MobilePostMenuProps {
 const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { t, toggleLanguage, isVietnamese } = useTranslation();
-  const { user, signOut } = useAuth();
   
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
@@ -34,14 +31,6 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
     navigate(path);
     setOpen(false);
   };
-  
-  const handleSignOut = async () => {
-    await signOut();
-    setOpen(false);
-    navigate("/");
-  };
-
-  const isActive = (path: string) => location.pathname === path;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -49,18 +38,18 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
         <Button
           variant="ghost"
           className={cn(
-            "p-2 rounded-full border border-[#9A7B69]/30 bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md transition-all hover:scale-105 lg:hidden",
+            "p-2 rounded-full border border-[#9A7B69] bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all hover:scale-105 lg:hidden",
             className
           )}
         >
-          <Menu className="h-6 w-6 text-[#1A1A1A]" />
+          <Menu className="h-7 w-7 text-[#1A1A1A]" />
           <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
       
       <SheetContent 
-        side="right" 
-        className="w-[80%] border-l border-[#9A7B69]/20 bg-white/95 backdrop-blur-md shadow-lg p-0"
+        side="left" 
+        className="w-[75%] border-r border-[#9A7B69]/20 bg-white/90 backdrop-blur-md shadow-lg p-0"
       >
         <div className="flex flex-col h-full">
           {/* Logo and close button */}
@@ -83,8 +72,6 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
             <nav className="space-y-1">
               {navItems.map((item, index) => {
                 const Icon = item.icon;
-                const active = isActive(item.path);
-                
                 return (
                   <motion.div
                     key={item.path}
@@ -93,13 +80,8 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
                     transition={{ delay: 0.1 + index * 0.05 }}
                   >
                     <Button
-                      variant={active ? "secondary" : "ghost"}
-                      className={cn(
-                        "w-full justify-start text-xl py-5 font-medium",
-                        active 
-                          ? "bg-purple-50 text-purple-700" 
-                          : "hover:text-[#9A7B69] hover:bg-[#9A7B69]/5"
-                      )}
+                      variant="ghost"
+                      className="w-full justify-start text-xl py-5 font-medium hover:text-[#9A7B69] hover:bg-[#9A7B69]/5"
                       onClick={() => handleNavigation(item.path)}
                     >
                       <Icon className="mr-3 h-[22px] w-[22px]" />
@@ -109,67 +91,14 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
                 );
               })}
               
-              {/* User-specific actions */}
-              {user ? (
-                <motion.div
-                  className="mt-6 space-y-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <div className="px-2 py-3 bg-gray-50 rounded-md">
-                    <p className="text-sm text-gray-500 mb-1">{t("Signed in as")}</p>
-                    <p className="font-medium truncate">{user.email}</p>
-                  </div>
-                  
-                  <Button
-                    className="w-full justify-start"
-                    onClick={() => handleNavigation("/dashboard")}
-                  >
-                    <span className="mr-2">📊</span> {t("Dashboard")}
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={handleSignOut}
-                  >
-                    <span className="mr-2">👋</span> {t("Sign Out")}
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  className="mt-6 space-y-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Button
-                    className="w-full"
-                    onClick={() => handleNavigation("/sign-in")}
-                  >
-                    {t("Sign In")}
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => handleNavigation("/sign-up")}
-                  >
-                    {t("Create Account")}
-                  </Button>
-                </motion.div>
-              )}
-              
               {/* Post a Job button - highlighted */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="mt-6"
               >
                 <Button
-                  className="w-full text-lg py-6 font-bold bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600"
+                  className="w-full mt-4 text-xl py-6 font-bold bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600"
                   onClick={() => handleNavigation("/post-job")}
                 >
                   {t("Post a Job")}
@@ -211,7 +140,7 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
           
           {/* Footer with Inspired by Sunshine */}
           <div className="mt-auto p-4 border-t border-gray-100">
-            <p className="text-center text-base bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent font-medium">
+            <p className="text-center text-base bg-gradient-to-r from-yellow-500 to-pink-400 bg-clip-text text-transparent font-medium">
               {t("Inspired by Sunshine ☀️")}
             </p>
           </div>
