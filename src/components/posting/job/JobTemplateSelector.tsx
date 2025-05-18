@@ -31,13 +31,13 @@ const JobTemplateCard: React.FC<JobTemplateCardProps> = ({ title, description, i
 };
 
 interface JobTemplateSelectorProps {
-  onTemplateSelect: (template: JobFormValues) => void;
+  onTemplateSelect: (template: JobFormValues, templateType: JobTemplateType) => void;
 }
 
 const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSelect }) => {
   const handleTemplateSelect = (templateType: JobTemplateType) => {
     const template = getJobTemplate(templateType);
-    onTemplateSelect(template);
+    onTemplateSelect(template, templateType);
   };
 
   const templates = [

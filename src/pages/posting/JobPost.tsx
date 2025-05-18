@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
@@ -11,13 +11,26 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { useJobPosting } from '@/hooks/jobs/useJobPosting';
 import { FormProvider, useForm } from 'react-hook-form';
 import { uploadImage } from '@/utils/uploadImage';
+import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
+import { JobTemplateType } from '@/utils/jobs/jobTemplates';
+import { Card } from '@/components/ui/card';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(true);
+  const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
+  const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
   const { handleJobPost } = useJobPosting();
   const { initiatePayment, isLoading } = usePostPayment();
   const formMethods = useForm();
+
+  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
+    setSelectedTemplate(template);
+    setSelectedTemplateType(templateType);
+    setShowTemplateSelector(false);
+    setCurrentStep(2);
+  };
 
   const handleStepChange = (step: number) => {
     setCurrentStep(step);
@@ -96,7 +109,7 @@ const JobPost = () => {
 
   return (
     <FormProvider {...formMethods}>
-      <PostWizardLayout currentStep={currentStep} totalSteps={3}>
+      <PostWizardLayout currentStep={currentStep} totalSteps={showTemplateSelector ? 4 : 3}>
         <Helmet>
           <title>Post a Job | EmviApp</title>
           <meta 
@@ -105,10 +118,18 @@ const JobPost = () => {
           />
         </Helmet>
         
-        <EnhancedJobForm 
-          onSubmit={handleSubmit}
-          onStepChange={handleStepChange}
-        />
+        {showTemplateSelector ? (
+          <Card className="bg-white shadow-md rounded-lg p-6">
+            <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+          </Card>
+        ) : (
+          <EnhancedJobForm 
+            onSubmit={handleSubmit}
+            onStepChange={handleStepChange}
+            initialTemplate={selectedTemplate || undefined}
+            isCustomTemplate={selectedTemplateType === 'custom'}
+          />
+        )}
       </PostWizardLayout>
     </FormProvider>
   );

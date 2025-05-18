@@ -9,16 +9,19 @@ import { useState } from 'react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
+import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
+  const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
   const [step, setStep] = useState<'template' | 'form'>('template');
 
-  const handleTemplateSelect = (template: JobFormValues) => {
+  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
+    setSelectedTemplateType(templateType);
     setStep('form');
     window.scrollTo(0, 0);
   };
@@ -68,6 +71,7 @@ const CreateJobPosting = () => {
               initialValues={selectedTemplate || undefined}
               onBack={() => setStep('template')}
               showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') || false}
+              isCustomTemplate={selectedTemplateType === 'custom'}
             />
           )}
         </Card>

@@ -10,11 +10,18 @@ import JobForm from './JobForm';
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange?: (step: number) => void;
+  initialTemplate?: JobFormValues;
+  isCustomTemplate?: boolean;
 }
 
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, onStepChange }) => {
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
+  onSubmit, 
+  onStepChange, 
+  initialTemplate,
+  isCustomTemplate = false
+}) => {
   const [activeTab, setActiveTab] = useState('job-details');
-  const [jobFormData, setJobFormData] = useState<JobFormValues | null>(null);
+  const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
@@ -29,7 +36,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, onStepChang
     setJobFormData(data);
     setPhotoUploads(photos);
     setActiveTab('review-payment');
-    onStepChange?.(2);
+    onStepChange?.(3);
   };
 
   const handlePaymentSubmit = async () => {
@@ -49,7 +56,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, onStepChang
 
   const handleBackToEdit = () => {
     setActiveTab('job-details');
-    onStepChange?.(1);
+    onStepChange?.(2);
   };
 
   return (
@@ -66,6 +73,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, onStepChang
             photoUploads={photoUploads}
             setPhotoUploads={setPhotoUploads}
             initialValues={jobFormData || undefined}
+            isCustomTemplate={isCustomTemplate}
           />
         </CardContent>
       </TabsContent>
