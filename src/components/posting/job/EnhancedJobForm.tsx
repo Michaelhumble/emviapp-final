@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JobFormValues } from './jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
 import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
 import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
@@ -21,25 +22,29 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onStepChange, 
   initialTemplate,
   isCustomTemplate = false,
-  maxPhotos = 5 // Default to 5 photos
+  maxPhotos = 5
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('job-details');
   const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'premium', // Default to premium tier
+    selectedPricingTier: 'premium' as JobPricingTier, // Default to premium tier
     durationMonths: 1,             // Default to 1 month
     autoRenew: true,               // Default to auto-renew enabled
     isFirstPost: true,             // Default to first post (for free tier)
     isNationwide: false            // Default to local listing
   });
 
-  // Update the handleJobFormSubmit to match the JobForm onSubmit signature
+  // Handle job form submission
   const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
     // Validate required fields
     if (!data.title || !data.description || !data.location || !data.contactEmail) {
-      toast.error("Please complete all required fields before continuing");
+      toast.error(t({
+        english: "Please complete all required fields before continuing",
+        vietnamese: "Vui lòng điền đầy đủ các trường bắt buộc trước khi tiếp tục"
+      }));
       return;
     }
 
@@ -55,7 +60,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 
   const handlePaymentSubmit = async () => {
     if (!jobFormData) {
-      toast.error("Job information is missing");
+      toast.error(t({
+        english: "Job information is missing",
+        vietnamese: "Thông tin công việc bị thiếu"
+      }));
       return;
     }
     
@@ -66,14 +74,19 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       
       if (!success) {
         setIsSubmitting(false);
-        toast.error("There was a problem processing your payment. Please try again.");
+        toast.error(t({
+          english: "There was a problem processing your payment. Please try again.",
+          vietnamese: "Có vấn đề khi xử lý thanh toán của bạn. Vui lòng thử lại."
+        }));
         // If success is false, we don't navigate away so user can try again
       }
       // On success, the parent component will handle navigation
-      
     } catch (error) {
       console.error('Error submitting job post:', error);
-      toast.error("Error creating job post");
+      toast.error(t({
+        english: "Error creating job post",
+        vietnamese: "Lỗi khi tạo bài đăng công việc"
+      }));
       setIsSubmitting(false);
     }
   };
@@ -98,7 +111,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             setPhotoUploads={setPhotoUploads}
             initialValues={jobFormData || undefined}
             isCustomTemplate={isCustomTemplate}
-            maxPhotos={maxPhotos} // Pass maxPhotos prop
+            maxPhotos={maxPhotos}
           />
         </CardContent>
       </TabsContent>

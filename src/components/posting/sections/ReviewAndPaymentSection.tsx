@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
 import JobPostOptions from '@/components/posting/job/JobPostOptions';
@@ -12,7 +12,6 @@ import { PaymentSummary } from '@/components/posting/PaymentSummary';
 import { Separator } from '@/components/ui/separator';
 import PricingCard from '@/components/posting/pricing/PricingCard';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface ReviewAndPaymentSectionProps {
@@ -73,10 +72,18 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
   const isFreePost = pricingOptions.selectedPricingTier === 'free';
 
-  // Format price for display
-  const formattedPrice = priceData.finalPrice > 0 
-    ? `$${priceData.finalPrice.toFixed(2)}` 
-    : "Free";
+  // Format price for display - ensure we never show $0 for paid plans
+  const formattedPrice = isFreePost 
+    ? "Free" 
+    : `$${priceData.finalPrice.toFixed(2)}`;
+
+  // Determine button text - if free plan, show "Start Free Trial", otherwise show "Pay $X & Post Job"
+  const buttonText = isFreePost 
+    ? t({english: "Start Free Trial", vietnamese: "Bắt đầu dùng thử"})
+    : t({
+        english: `Pay ${formattedPrice} & Post Job`,
+        vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`
+      });
 
   return (
     <div className="space-y-6">
@@ -95,7 +102,12 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
         {/* Preview column - Job details and photos */}
         <div className="lg:col-span-2">
           <h3 className="text-lg font-medium mb-4">{t({english: "Review Your Job Post", vietnamese: "Xem xét tin của bạn"})}</h3>
-          <JobPostPreview jobData={formData} photoUploads={photoUploads} onBack={onBack} />
+          <JobPostPreview 
+            jobData={formData} 
+            photoUploads={photoUploads} 
+            onBack={onBack} 
+            pricingTier={pricingOptions.selectedPricingTier}
+          />
         </div>
         
         {/* Pricing column - Plan selection, options, and payment */}
@@ -141,7 +153,22 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
             priceData={priceData}
             durationMonths={pricingOptions.durationMonths}
             autoRenew={pricingOptions.autoRenew || false}
+            selectedPricingTier={pricingOptions.selectedPricingTier}
           />
+          
+          {/* Free plan messaging */}
+          {isFreePost && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 text-sm text-yellow-800">
+              <p className="font-medium">{t({
+                english: "Credit card required for free trial. Cancel anytime, no risk.",
+                vietnamese: "Yêu cầu thẻ tín dụng để dùng thử miễn phí. Hủy bất kỳ lúc nào, không có rủi ro."
+              })}</p>
+              <p className="mt-1">{t({
+                english: "After your 30-day free trial, plan will automatically convert to paid unless canceled.",
+                vietnamese: "Sau 30 ngày dùng thử miễn phí, gói sẽ tự động chuyển sang trả phí trừ khi bạn hủy."
+              })}</p>
+            </div>
+          )}
           
           {/* Submission button */}
           <Button 
@@ -152,15 +179,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
             {isSubmitting ? (
               <span>{t({english: "Processing...", vietnamese: "Đang xử lý..."})}</span>
             ) : (
-              <span>
-                {isFreePost 
-                  ? t({english: "Start Free Trial", vietnamese: "Bắt đầu dùng thử"})
-                  : t({
-                      english: `Pay ${formattedPrice} & Post Job`,
-                      vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`
-                    })
-                }
-              </span>
+              <span>{buttonText}</span>
             )}
           </Button>
         </div>

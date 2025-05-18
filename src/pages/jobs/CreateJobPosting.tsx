@@ -2,7 +2,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import JobForm from '@/components/posting/job/JobForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -10,6 +9,9 @@ import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
+import { PricingOptions } from '@/utils/posting/types';
+import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import { usePostPayment } from '@/hooks/usePostPayment';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ const CreateJobPosting = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
   const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
   const [step, setStep] = useState<'template' | 'form'>('template');
+  const { initiatePayment } = usePostPayment();
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
@@ -26,19 +29,50 @@ const CreateJobPosting = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (data: JobFormValues) => {
+  const handleFormSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
     try {
       setIsSubmitting(true);
       console.log('Form submitted:', data);
+      console.log('Selected pricing options:', pricingOptions);
+      console.log('Uploaded photos:', uploads);
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Prepare job details for submission and payment
+      const jobDetails = {
+        ...data,
+        // Ensure we have all needed fields for backend
+        title: data.title || '',
+        description: data.description || '',
+        location: data.location || '',
+        contact_info: {
+          email: data.contactEmail || '',
+          phone: data.contactPhone || '',
+          owner_name: data.contactName || '',
+          zalo: data.contactZalo || '',
+        },
+        vietnamese_description: data.vietnameseDescription || '',
+        requirements: data.requirements || [],
+        specialties: data.specialties || [],
+        weekly_pay: data.weeklyPay || false,
+        has_housing: data.hasHousing || false,
+        no_supply_deduction: data.noSupplyDeduction || false,
+        owner_will_train: data.ownerWillTrain || false,
+        is_urgent: data.isUrgent || false,
+      };
       
-      toast.success('Job post created successfully!');
-      navigate('/jobs');
+      // Handle payment and job posting through the usePostPayment hook
+      const paymentResponse = await initiatePayment('job', jobDetails, pricingOptions);
+      
+      if (!paymentResponse.success) {
+        throw new Error('Payment failed');
+      }
+      
+      // Note: The redirect will be handled by the usePostPayment hook
+      return paymentResponse.success;
+      
     } catch (error) {
       console.error('Error submitting form:', error);
       toast.error('Error creating job post');
+      return false;
     } finally {
       setIsSubmitting(false);
     }
@@ -63,14 +97,10 @@ const CreateJobPosting = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            <JobForm 
-              onSubmit={handleSubmit}
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              isSubmitting={isSubmitting}
-              initialValues={selectedTemplate || undefined}
+            <EnhancedJobForm 
+              onSubmit={handleFormSubmit}
+              initialTemplate={selectedTemplate || undefined}
               onBack={() => setStep('template')}
-              showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') || false}
               isCustomTemplate={selectedTemplateType === 'custom'}
               maxPhotos={5} // Set maximum photos to 5
             />

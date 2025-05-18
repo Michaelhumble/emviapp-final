@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { DurationOption } from '@/types/pricing';
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface DurationSelectorProps {
   durationMonths: number;
@@ -18,6 +19,9 @@ export function DurationSelector({
   selectedPricingTier,
   isDiamondPlan = false
 }: DurationSelectorProps) {
+  const { t } = useTranslation();
+  
+  // Duration options with discounts
   const durations: DurationOption[] = [
     { months: 1, label: '1 Month', vietnameseLabel: '1 tháng', discount: 0 },
     { months: 3, label: '3 Months', vietnameseLabel: '3 tháng', discount: 10 },
@@ -32,15 +36,15 @@ export function DurationSelector({
 
   // Helper function to determine badge content based on duration
   const getBadgeContent = (months: number) => {
-    if (months === 6) return "Most Popular";
-    if (months === 12) return "Best Value!";
+    if (months === 6) return t({english: "Most Popular", vietnamese: "Phổ biến nhất"});
+    if (months === 12) return t({english: "Best Value!", vietnamese: "Giá trị nhất!"});
     return null;
   };
 
   return (
     <div className="space-y-2">
-      <h3 className="text-lg font-medium">Post Duration</h3>
-      <p className="text-sm text-gray-500">Choose how long your job post will be active</p>
+      <h3 className="text-lg font-medium">{t({english: "Post Duration", vietnamese: "Thời hạn đăng tin"})}</h3>
+      <p className="text-sm text-gray-500">{t({english: "Choose how long your job post will be active", vietnamese: "Chọn thời gian bài đăng của bạn sẽ hoạt động"})}</p>
       
       <div className="flex flex-wrap gap-2 mt-3">
         {displayedDurations.map((duration) => {
@@ -66,7 +70,7 @@ export function DurationSelector({
                     <span>{duration.label}</span>
                     {duration.discount > 0 && (
                       <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">
-                        Save {duration.discount}%
+                        {t({english: `Save ${duration.discount}%`, vietnamese: `Tiết kiệm ${duration.discount}%`})}
                       </span>
                     )}
                     {badgeContent && (
@@ -84,7 +88,7 @@ export function DurationSelector({
                 </TooltipTrigger>
                 {isDiamondPlan && duration.months !== 12 && (
                   <TooltipContent side="top">
-                    <p>Diamond plan is only available as annual subscription</p>
+                    <p>{t({english: "Diamond plan is only available as annual subscription", vietnamese: "Gói Diamond chỉ khả dụng với đăng ký hàng năm"})}</p>
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -95,7 +99,9 @@ export function DurationSelector({
       
       {durationMonths >= 6 && (
         <p className="text-xs text-green-600 font-medium mt-2">
-          {durationMonths === 12 ? "🔒 Lock in this special pricing for a full year!" : "Great choice! Extended visibility at a discount."}
+          {durationMonths === 12 
+            ? t({english: "🔒 Lock in this special pricing for a full year!", vietnamese: "🔒 Khóa mức giá đặc biệt này trong cả năm!"})
+            : t({english: "Great choice! Extended visibility at a discount.", vietnamese: "Lựa chọn tuyệt vời! Hiển thị kéo dài với giá giảm."})}
         </p>
       )}
     </div>

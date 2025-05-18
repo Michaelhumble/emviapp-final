@@ -11,24 +11,28 @@ export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
+  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: JobDetailsSubmission, pricingOptions?: PricingOptions) => {
     setIsLoading(true);
     try {
-      console.log("Initiating payment for:", postType, "with pricing:", pricingOptions);
+      console.log("Initiating payment for:", postType, "with pricing options:", pricingOptions);
 
-      // Calculate price based on selected options
-      const priceData = pricingOptions ? calculateJobPostPrice(pricingOptions) : { finalPrice: 0 };
-      console.log("Calculated price:", priceData);
-
-      // Ensure pricing options are valid
+      // Validate pricing options to ensure they exist
       if (!pricingOptions || !pricingOptions.selectedPricingTier) {
-        throw new Error("Invalid pricing options");
+        throw new Error(t({
+          english: "Missing pricing information. Please select a plan.",
+          vietnamese: "Thiếu thông tin giá. Vui lòng chọn một gói."
+        }));
       }
 
+      // Calculate price based on selected options
+      const priceData = calculateJobPostPrice(pricingOptions);
+      console.log("Calculated price:", priceData);
+      
       // Handle free listings directly without going to Stripe
       if (pricingOptions.selectedPricingTier === 'free') {
         console.log("Processing free post...");
-        // Create the post directly in the database
+        
+        // Create the post directly in the database via edge function
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
           body: { 
             postType,
@@ -58,9 +62,8 @@ export const usePostPayment = () => {
         return { success: true };
       } 
       
-      // For paid listings, create a Stripe checkout session
-      // Log payment parameters for debugging
-      console.log("Payment parameters:", {
+      // For paid listings (including Diamond), create a Stripe checkout session
+      console.log("Creating paid post checkout with options:", {
         tier: pricingOptions.selectedPricingTier,
         duration: pricingOptions.durationMonths,
         autoRenew: pricingOptions.autoRenew,
