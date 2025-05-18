@@ -103,6 +103,16 @@
   .dashboard-section {
     @apply space-y-6;
   }
+  
+  /* Hide scrollbar for clean UI */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
 
   /* Enhanced mobile menu animations */
   @keyframes slide-in {
@@ -281,5 +291,19 @@
       rgba(255, 255, 255, 0.0) 100%
     );
     animation: shine-effect 3s infinite;
+  }
+  
+  /* Template card animation */
+  @keyframes gentle-float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+  
+  .card-float {
+    animation: gentle-float 4s ease-in-out infinite;
   }
 }

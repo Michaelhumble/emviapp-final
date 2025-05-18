@@ -19,7 +19,7 @@ export interface PricingOptions {
   bundleWithJobPost?: boolean;
   hasReferrals?: boolean;
   autoRenew?: boolean;
-  isHotListing?: boolean; // Added missing field
+  isHotListing?: boolean;
 }
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
@@ -38,7 +38,7 @@ export interface JobPricingOption {
   discountPercentage?: number;
   features: string[];
   isFirstPost?: boolean;
-  tier?: JobPricingTier; // Added missing field
+  tier?: JobPricingTier;
 }
 
 export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';

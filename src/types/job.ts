@@ -76,7 +76,7 @@ export interface Job {
 }
 
 // Add missing exported interfaces
-export interface JobDetailsSubmission {
+export type JobDetailsSubmission = {
   title: string;
   description?: string;
   location: string;
@@ -111,7 +111,7 @@ export interface JobDetailsSubmission {
 }
 
 // Ensure PricingOptions is properly exported
-export interface PricingOptions {
+export type PricingOptions = {
   isFirstPost?: boolean;
   isNationwide?: boolean;
   fastSalePackage?: boolean;
