@@ -1,205 +1,109 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { JobFormValues } from './jobFormSchema';
-import { Card } from '@/components/ui/card';
-import { luxuryGradients, luxuryBorders } from './luxuryGradients';
-import LuxuryJobCard from './LuxuryJobCard';
+import { getJobTemplate, JobTemplateType } from '@/utils/jobs/jobTemplates';
+import { Scissors, Fingerprint, Camera, Brush, PenTool, UserCircle } from 'lucide-react';
+
+interface JobTemplateCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+}
+
+const JobTemplateCard: React.FC<JobTemplateCardProps> = ({ title, description, icon, onClick }) => {
+  return (
+    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={onClick}>
+      <CardContent className="p-6">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="p-3 rounded-full bg-purple-100 text-purple-700">
+            {icon}
+          </div>
+          <h3 className="text-lg font-semibold">{title}</h3>
+        </div>
+        <p className="text-gray-600 text-sm">{description}</p>
+      </CardContent>
+    </Card>
+  );
+};
 
 interface JobTemplateSelectorProps {
   onTemplateSelect: (template: JobFormValues) => void;
 }
 
 const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSelect }) => {
-  const handleTemplateSelect = (template: JobFormValues) => {
+  const handleTemplateSelect = (templateType: JobTemplateType) => {
+    const template = getJobTemplate(templateType);
     onTemplateSelect(template);
   };
 
-  const templates: { 
-    id: string;
-    title: string;
-    description: string;
-    gradient: string;
-    border: string;
-    template: JobFormValues;
-  }[] = [
+  const templates = [
     {
-      id: 'nails',
+      type: 'nails' as JobTemplateType,
       title: 'Nail Technician',
-      description: 'Post jobs for skilled nail technicians and specialists.',
-      gradient: luxuryGradients.champagne,
-      border: luxuryBorders.champagne,
-      template: {
-        title: 'Nail Technician Needed',
-        description: 'Looking for experienced Nail Technician with a positive attitude to join our growing team. Must have strong acrylic and pedicure skills.',
-        vietnameseDescription: 'Đang tìm Kỹ thuật viên Nail có kinh nghiệm với thái độ tích cực để tham gia đội ngũ đang phát triển của chúng tôi. Phải có kỹ năng mạnh mẽ về đắp bột và làm chân.',
-        location: '',
-        jobType: 'full-time',
-        experience_level: 'experienced',
-        contactEmail: '',
-      }
+      description: 'For nail salons looking for experienced technicians with skills in manicures, pedicures, and nail art.',
+      icon: <Fingerprint size={24} />
     },
     {
-      id: 'hair',
+      type: 'hair' as JobTemplateType,
       title: 'Hair Stylist',
-      description: 'Post jobs for skilled hair stylists and colorists.',
-      gradient: luxuryGradients.softBlush,
-      border: luxuryBorders.softBlush,
-      template: {
-        title: 'Hair Stylist Position',
-        description: 'Upscale salon seeking experienced Hair Stylist. Must be skilled in cutting, styling, and coloring. Looking for someone with a strong clientele and passion for the industry.',
-        location: '',
-        jobType: 'full-time',
-        experience_level: 'intermediate',
-        contactEmail: '',
-      }
+      description: 'For salons seeking professionals skilled in cutting, coloring, and styling services.',
+      icon: <Scissors size={24} />
     },
     {
-      id: 'lashes',
-      title: 'Lash Artist',
-      description: 'Post jobs for lash extension specialists.',
-      gradient: luxuryGradients.paleRose,
-      border: luxuryBorders.paleRose,
-      template: {
-        title: 'Experienced Lash Artist',
-        description: 'Seeking skilled Lash Artist for busy studio. Experience with classic and volume sets required. Strong attention to detail and excellent client service skills a must.',
-        location: '',
-        jobType: 'part-time',
-        experience_level: 'experienced',
-        contactEmail: '',
-      }
+      type: 'lashes' as JobTemplateType,
+      title: 'Lash Technician',
+      description: 'For beauty businesses seeking specialists in eyelash extensions and lash services.',
+      icon: <PenTool size={24} />
     },
     {
-      id: 'massage',
-      title: 'Massage Therapist',
-      description: 'Post jobs for licensed massage therapists.',
-      gradient: luxuryGradients.cashmere,
-      border: luxuryBorders.cashmere,
-      template: {
-        title: 'Licensed Massage Therapist',
-        description: 'Now hiring Licensed Massage Therapists. Seeking skilled therapists with experience in various massage techniques. Must have valid license and professional demeanor.',
-        location: '',
-        jobType: 'part-time',
-        experience_level: 'intermediate',
-        contactEmail: '',
-      }
-    },
-    {
-      id: 'barber',
+      type: 'barber' as JobTemplateType,
       title: 'Barber',
-      description: 'Post jobs for professional barbers.',
-      gradient: luxuryGradients.paleMocha,
-      border: luxuryBorders.paleMocha,
-      template: {
-        title: 'Professional Barber Wanted',
-        description: 'Modern barbershop looking for professional Barber with skills in traditional and modern cuts, fades, and beard grooming. Strong portfolio and reliable work ethic required.',
-        location: '',
-        jobType: 'full-time',
-        experience_level: 'intermediate',
-        contactEmail: '',
-      }
+      description: 'For barbershops looking for skilled professionals in men\'s grooming and styling.',
+      icon: <Scissors size={24} strokeWidth={3} />
     },
     {
-      id: 'makeup',
-      title: 'Makeup Artist',
-      description: 'Post jobs for makeup artists and consultants.',
-      gradient: luxuryGradients.pearl,
-      border: luxuryBorders.pearl,
-      template: {
-        title: 'Freelance Makeup Artist',
-        description: 'Hiring Makeup Artists for bridal and special events. Must have strong portfolio showing versatility in different makeup styles and experience with diverse skin types.',
-        location: '',
-        jobType: 'contract',
-        experience_level: 'experienced',
-        contactEmail: '',
-      }
+      type: 'skincare' as JobTemplateType,
+      title: 'Esthetician',
+      description: 'For spas and salons seeking skincare specialists for facials and treatments.',
+      icon: <Brush size={24} />
     },
     {
-      id: 'brows',
-      title: 'Brow Artist',
-      description: 'Post jobs for brow specialists and technicians.',
-      gradient: luxuryGradients.cream,
-      border: luxuryBorders.cream,
-      template: {
-        title: 'Brow Artist Position',
-        description: 'Seeking skilled Brow Artist with experience in microblading, threading, and tinting. Attention to detail and ability to shape according to face structure essential.',
-        location: '',
-        jobType: 'part-time',
-        experience_level: 'experienced',
-        contactEmail: '',
-      }
-    },
-    {
-      id: 'skincare',
-      title: 'Skincare Specialist',
-      description: 'Post jobs for estheticians and skincare experts.',
-      gradient: luxuryGradients.ivory,
-      border: luxuryBorders.ivory,
-      template: {
-        title: 'Licensed Esthetician',
-        description: 'Luxury spa seeking Licensed Esthetician with knowledge of advanced skin treatments and product lines. Experience with facials, peels, and skin analysis required.',
-        location: '',
-        jobType: 'full-time',
-        experience_level: 'intermediate',
-        contactEmail: '',
-      }
-    },
-    {
-      id: 'tattoo',
-      title: 'Tattoo Artist',
-      description: 'Post jobs for professional tattoo artists.',
-      gradient: luxuryGradients.paleRose,
-      border: luxuryBorders.paleRose,
-      template: {
-        title: 'Tattoo Artist Needed',
-        description: 'Professional tattoo studio looking for experienced Tattoo Artist. Strong portfolio, excellent line work, and versatile style range required. Health certification a must.',
-        location: '',
-        jobType: 'full-time',
-        experience_level: 'experienced',
-        contactEmail: '',
-      }
-    },
-    {
-      id: 'custom',
-      title: 'Custom Job',
-      description: 'Create a custom job posting for any position.',
-      gradient: luxuryGradients.champagne,
-      border: luxuryBorders.champagne,
-      template: {
-        title: '',
-        description: '',
-        location: '',
-        jobType: 'full-time',
-        experience_level: 'intermediate',
-        contactEmail: '',
-      }
+      type: 'custom' as JobTemplateType,
+      title: 'Other / Custom',
+      description: 'Create a custom job posting for any beauty industry position with your own details.',
+      icon: <UserCircle size={24} />
     },
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="font-playfair text-3xl font-bold text-gray-900 mb-3">Select Job Template</h2>
-        <p className="text-gray-600 max-w-md mx-auto">
-          Choose a template to jumpstart your job posting. You can customize all details in the next step.
-        </p>
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-bold">Choose a Job Template</h2>
+        <p className="text-gray-600">Select a template to start with pre-filled industry-specific details</p>
       </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {templates.map((template) => (
-          <LuxuryJobCard
-            key={template.id}
+          <JobTemplateCard
+            key={template.type}
             title={template.title}
             description={template.description}
-            onClick={() => handleTemplateSelect(template.template)}
-            gradientClass={template.gradient}
-            className={template.border}
+            icon={template.icon}
+            onClick={() => handleTemplateSelect(template.type)}
           />
         ))}
       </div>
-      
-      <div className="text-center mt-8 text-xs italic text-gray-400">
-        Inspired by Sunshine ☀️
+
+      <Separator className="my-6" />
+
+      <div className="text-center">
+        <p className="text-sm text-gray-500 mb-2">
+          You'll be able to customize all details after selecting a template
+        </p>
       </div>
     </div>
   );

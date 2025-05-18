@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronLeft, Upload, X } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ChevronLeft, Upload } from 'lucide-react';
 import { JobFormValues } from './jobFormSchema';
-import { requirementOptions, specialtyOptions } from '@/utils/posting/options';
+import { convertTextToArray, convertToFormattedText } from '@/utils/jobs/jobTemplates';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[]) => void;
@@ -26,83 +26,70 @@ const JobForm: React.FC<JobFormProps> = ({
   isSubmitting = false,
   initialValues,
   onBack,
-  showVietnameseByDefault = false,
+  showVietnameseByDefault = false
 }) => {
-  const [formData, setFormData] = useState<JobFormValues>({
+  const [formData, setFormData] = useState<JobFormValues>(initialValues || {
     title: '',
     description: '',
     vietnameseDescription: '',
     location: '',
     jobType: 'full-time',
     experience_level: 'intermediate',
-    contactName: '',
     contactEmail: '',
+    contactName: '',
     contactPhone: '',
     requirements: [],
-    specialties: [],
-    salary_range: '',
-    compensation_details: '',
+    specialties: []
   });
-  
-  const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
+
+  // Convert array fields to formatted text for editing
   const [requirementsText, setRequirementsText] = useState('');
   const [specialtiesText, setSpecialtiesText] = useState('');
-
-  // Initialize form with initial values if provided
+  
+  const [showVietnameseDescription, setShowVietnameseDescription] = useState(showVietnameseByDefault);
+  
+  // Set the text areas when initial values change
   useEffect(() => {
     if (initialValues) {
-      setFormData(initialValues);
-      
-      // Convert arrays to text for the textareas
-      if (Array.isArray(initialValues.requirements)) {
-        setRequirementsText(initialValues.requirements.join('\n'));
-      }
-      
-      if (Array.isArray(initialValues.specialties)) {
-        setSpecialtiesText(initialValues.specialties.join('\n'));
-      }
+      setRequirementsText(convertToFormattedText(initialValues.requirements));
+      setSpecialtiesText(convertToFormattedText(initialValues.specialties));
     }
   }, [initialValues]);
-
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setPhotoUploads([e.target.files[0]]);
+      const newFiles = Array.from(e.target.files);
+      setPhotoUploads(newFiles);
     }
   };
-
-  const removeUploadedFile = () => {
-    setPhotoUploads([]);
-  };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Process requirements and specialties from text inputs to arrays
-    const requirements = requirementsText
-      .split(/[\n,]/) // Split by newline or comma
-      .map(item => item.trim())
-      .filter(item => item !== '');
-      
-    const specialties = specialtiesText
-      .split(/[\n,]/) // Split by newline or comma
-      .map(item => item.trim())
-      .filter(item => item !== '');
-    
-    onSubmit({
+    // Convert the text inputs to arrays
+    const submissionData = {
       ...formData,
-      requirements,
-      specialties,
-    }, photoUploads);
+      requirements: convertTextToArray(requirementsText),
+      specialties: convertTextToArray(specialtiesText)
+    };
+    
+    onSubmit(submissionData, photoUploads);
   };
-
+  
+  // Preview image
+  const imagePreview = photoUploads.length > 0 
+    ? URL.createObjectURL(photoUploads[0]) 
+    : null;
+    
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {onBack && (
@@ -110,257 +97,257 @@ const JobForm: React.FC<JobFormProps> = ({
           type="button" 
           variant="ghost" 
           onClick={onBack}
-          className="mb-4 pl-0 hover:bg-transparent"
+          className="mb-2"
         >
-          <ChevronLeft className="mr-1 h-4 w-4" />
+          <ChevronLeft className="h-4 w-4 mr-2" />
           Back to Templates
         </Button>
       )}
       
-      {/* Job Details */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Job Details</h3>
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Job Details</h2>
         
-        <div>
-          <Label htmlFor="title">Job Title*</Label>
-          <Input
-            id="title"
-            name="title"
-            placeholder="e.g. Nail Technician, Hair Stylist"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            className="mt-1"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="description">Job Description*</Label>
-          <Textarea
-            id="description"
-            name="description"
-            placeholder="Describe the job role, responsibilities, schedule, etc."
-            value={formData.description}
-            onChange={handleChange}
-            required
-            className="mt-1"
-            rows={5}
-          />
-        </div>
-        
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="showVietnamese"
-            checked={showVietnamese}
-            onChange={() => setShowVietnamese(!showVietnamese)}
-            className="mr-2"
-          />
-          <Label htmlFor="showVietnamese" className="cursor-pointer">
-            Add Vietnamese Description
-          </Label>
-        </div>
-        
-        {showVietnamese && (
-          <div>
-            <Label htmlFor="vietnameseDescription">Vietnamese Description</Label>
-            <Textarea
-              id="vietnameseDescription"
-              name="vietnameseDescription"
-              placeholder="Mô tả công việc bằng tiếng Việt"
-              value={formData.vietnameseDescription}
+        <div className="space-y-4">
+          {/* Job Title */}
+          <div className="space-y-2">
+            <Label htmlFor="title">Job Title <span className="text-red-500">*</span></Label>
+            <Input
+              id="title"
+              name="title"
+              value={formData.title || ''}
               onChange={handleChange}
-              className="mt-1"
-              rows={5}
+              placeholder="e.g., Experienced Nail Technician"
+              required
             />
           </div>
-        )}
-        
-        <div>
-          <Label htmlFor="location">Location*</Label>
-          <Input
-            id="location"
-            name="location"
-            placeholder="City, State"
-            value={formData.location}
-            onChange={handleChange}
-            required
-            className="mt-1"
-          />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="jobType">Employment Type</Label>
-            <select
-              id="jobType"
-              name="jobType"
-              value={formData.jobType}
+          
+          {/* Job Location */}
+          <div className="space-y-2">
+            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+            <Input
+              id="location"
+              name="location"
+              value={formData.location || ''}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md py-2 px-3 mt-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-              <option value="full-time">Full-time</option>
-              <option value="part-time">Part-time</option>
-              <option value="contract">Contract</option>
-              <option value="temporary">Temporary</option>
-              <option value="commission">Commission</option>
-            </select>
+              placeholder="e.g., Los Angeles, CA"
+              required
+            />
           </div>
           
-          <div>
-            <Label htmlFor="experience_level">Experience Level</Label>
-            <select
-              id="experience_level"
-              name="experience_level"
-              value={formData.experience_level}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md py-2 px-3 mt-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-              <option value="entry">Entry Level</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="experienced">Experienced</option>
-              <option value="senior">Senior</option>
-            </select>
+          {/* Job Type & Experience Level */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="jobType">Job Type</Label>
+              <Select 
+                name="jobType" 
+                value={formData.jobType} 
+                onValueChange={(value) => handleSelectChange('jobType', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select job type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="full-time">Full Time</SelectItem>
+                  <SelectItem value="part-time">Part Time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="temporary">Temporary</SelectItem>
+                  <SelectItem value="commission">Commission</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="experience_level">Experience Level</Label>
+              <Select 
+                name="experience_level" 
+                value={formData.experience_level} 
+                onValueChange={(value) => handleSelectChange('experience_level', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select experience level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="entry">Entry Level</SelectItem>
+                  <SelectItem value="intermediate">Intermediate</SelectItem>
+                  <SelectItem value="experienced">Experienced</SelectItem>
+                  <SelectItem value="senior">Senior</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-        
-        <div>
-          <Label htmlFor="requirements">Requirements (one per line or comma-separated)</Label>
-          <Textarea
-            id="requirements"
-            value={requirementsText}
-            onChange={(e) => setRequirementsText(e.target.value)}
-            placeholder="License required&#10;English speaking&#10;Experience required&#10;Own transportation"
-            className="mt-1"
-            rows={4}
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="specialties">Specialties (one per line or comma-separated)</Label>
-          <Textarea
-            id="specialties"
-            value={specialtiesText}
-            onChange={(e) => setSpecialtiesText(e.target.value)}
-            placeholder="Acrylic&#10;Gel&#10;Dip Powder&#10;Nail Art"
-            className="mt-1"
-            rows={4}
-          />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="salary_range">Salary Range</Label>
+          
+          {/* Job Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Job Description <span className="text-red-500">*</span></Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description || ''}
+              onChange={handleChange}
+              placeholder="Describe the job responsibilities, work environment, and what you're looking for in candidates..."
+              rows={5}
+              required
+            />
+          </div>
+          
+          {/* Vietnamese Description Toggle */}
+          <div className="flex items-center">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => setShowVietnameseDescription(!showVietnameseDescription)}
+            >
+              {showVietnameseDescription ? "Hide Vietnamese Description" : "Add Vietnamese Description"}
+            </Button>
+          </div>
+          
+          {/* Vietnamese Description */}
+          {showVietnameseDescription && (
+            <div className="space-y-2">
+              <Label htmlFor="vietnameseDescription">Vietnamese Description</Label>
+              <Textarea
+                id="vietnameseDescription"
+                name="vietnameseDescription"
+                value={formData.vietnameseDescription || ''}
+                onChange={handleChange}
+                placeholder="Mô tả công việc bằng tiếng Việt..."
+                rows={5}
+              />
+            </div>
+          )}
+
+          {/* Requirements - Now a text area */}
+          <div className="space-y-2">
+            <Label htmlFor="requirements">Requirements (one per line)</Label>
+            <Textarea
+              id="requirements"
+              name="requirementsText"
+              value={requirementsText}
+              onChange={(e) => setRequirementsText(e.target.value)}
+              placeholder="Valid license required&#10;2+ years experience&#10;Excellent customer service skills"
+              rows={4}
+            />
+            <p className="text-xs text-gray-500">Enter each requirement on a new line or separated by commas</p>
+          </div>
+          
+          {/* Specialties - Now a text area */}
+          <div className="space-y-2">
+            <Label htmlFor="specialties">Specialties (one per line)</Label>
+            <Textarea
+              id="specialties"
+              name="specialtiesText"
+              value={specialtiesText}
+              onChange={(e) => setSpecialtiesText(e.target.value)}
+              placeholder="Acrylic Nails&#10;Gel Manicures&#10;Nail Art"
+              rows={4}
+            />
+            <p className="text-xs text-gray-500">Enter each specialty on a new line or separated by commas</p>
+          </div>
+          
+          {/* Compensation Details */}
+          <div className="space-y-2">
+            <Label htmlFor="salary_range">Compensation Range</Label>
             <Input
               id="salary_range"
               name="salary_range"
-              placeholder="e.g. $50,000 - $70,000"
-              value={formData.salary_range}
+              value={formData.salary_range || ''}
               onChange={handleChange}
-              className="mt-1"
+              placeholder="e.g., $800-1200/week or Competitive Commission"
             />
           </div>
           
-          <div>
-            <Label htmlFor="compensation_details">Compensation Details</Label>
+          {/* Upload Photo */}
+          <div className="space-y-2">
+            <Label>Upload Photo (optional)</Label>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <label 
+                  htmlFor="photo-upload" 
+                  className="flex items-center gap-2 p-2 border border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-50"
+                >
+                  <Upload className="h-4 w-4" />
+                  <span className="text-sm text-gray-600">
+                    {photoUploads.length > 0 ? photoUploads[0].name : "Choose an image"}
+                  </span>
+                </label>
+                <input
+                  id="photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </div>
+              
+              {imagePreview && (
+                <div className="w-16 h-16 overflow-hidden rounded-md border border-gray-300">
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-gray-500">
+              Adding a photo can increase applications by up to 35%
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+        
+        <div className="space-y-4">
+          {/* Contact Email */}
+          <div className="space-y-2">
+            <Label htmlFor="contactEmail">Contact Email <span className="text-red-500">*</span></Label>
             <Input
-              id="compensation_details"
-              name="compensation_details"
-              placeholder="e.g. Commission + Tips, Hourly + Tips"
-              value={formData.compensation_details}
+              id="contactEmail"
+              name="contactEmail"
+              type="email"
+              value={formData.contactEmail || ''}
               onChange={handleChange}
-              className="mt-1"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+          
+          {/* Contact Name */}
+          <div className="space-y-2">
+            <Label htmlFor="contactName">Contact Name</Label>
+            <Input
+              id="contactName"
+              name="contactName"
+              value={formData.contactName || ''}
+              onChange={handleChange}
+              placeholder="Contact person name"
+            />
+          </div>
+          
+          {/* Contact Phone */}
+          <div className="space-y-2">
+            <Label htmlFor="contactPhone">Contact Phone</Label>
+            <Input
+              id="contactPhone"
+              name="contactPhone"
+              value={formData.contactPhone || ''}
+              onChange={handleChange}
+              placeholder="Contact phone number"
             />
           </div>
         </div>
       </div>
       
-      {/* Photo Upload */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Job Photo (Optional)</h3>
-        
-        {photoUploads.length > 0 ? (
-          <div className="relative w-full h-48 rounded-md overflow-hidden">
-            <img 
-              src={URL.createObjectURL(photoUploads[0])} 
-              alt="Job post" 
-              className="w-full h-full object-cover"
-            />
-            <button
-              type="button"
-              onClick={removeUploadedFile}
-              className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        ) : (
-          <div className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center">
-            <input
-              type="file"
-              id="photo"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <Label htmlFor="photo" className="cursor-pointer">
-              <Upload className="mx-auto h-10 w-10 text-gray-400" />
-              <p className="text-sm text-gray-500 mt-2">Click to upload an image</p>
-            </Label>
-          </div>
-        )}
-      </div>
-      
-      {/* Contact Information */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Contact Information</h3>
-        
-        <div>
-          <Label htmlFor="contactName">Contact Name</Label>
-          <Input
-            id="contactName"
-            name="contactName"
-            placeholder="Your name"
-            value={formData.contactName}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="contactEmail">Contact Email*</Label>
-          <Input
-            id="contactEmail"
-            name="contactEmail"
-            type="email"
-            placeholder="Your email"
-            value={formData.contactEmail}
-            onChange={handleChange}
-            required
-            className="mt-1"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="contactPhone">Contact Phone</Label>
-          <Input
-            id="contactPhone"
-            name="contactPhone"
-            placeholder="Your phone number"
-            value={formData.contactPhone}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-      </div>
-      
-      <div className="pt-4">
+      <div className="pt-4 flex justify-end">
         <Button 
           type="submit" 
           disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+          className="px-8"
         >
-          {isSubmitting ? 'Submitting...' : 'Continue to Review & Payment'}
+          {isSubmitting ? "Submitting..." : "Continue"}
         </Button>
       </div>
     </form>
