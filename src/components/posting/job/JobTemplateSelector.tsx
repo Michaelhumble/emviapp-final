@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,11 +10,10 @@ import {
   PenTool, 
   UserCircle, 
   Brush, 
-  Spa, 
+  Heart, 
   Phone, 
   ClipboardList, 
-  Hands, 
-  Coffee, 
+  User, 
   Paintbrush, 
   Store, 
   UserCheck 
@@ -89,7 +87,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
       type: 'spa' as JobTemplateType,
       title: 'Spa Technician',
       description: 'For wellness centers seeking professionals for body treatments, wraps, and therapeutic services.',
-      icon: <Spa size={24} />
+      icon: <Heart size={24} />
     },
     {
       type: 'receptionist' as JobTemplateType,
@@ -107,7 +105,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
       type: 'massage' as JobTemplateType,
       title: 'Massage Therapist',
       description: 'For spas and wellness centers seeking licensed therapists for massage and bodywork services.',
-      icon: <Hands size={24} />
+      icon: <User size={24} />
     },
     {
       type: 'tattoo' as JobTemplateType,
