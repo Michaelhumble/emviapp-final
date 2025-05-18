@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 
 interface PhotoUploaderProps {
   onChange: (files: File[]) => void;
+  files?: File[];  // Add this prop to match JobForm.tsx usage
   photoUploads?: File[];
   maxFiles?: number;
   className?: string;
@@ -14,11 +15,15 @@ interface PhotoUploaderProps {
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   onChange,
-  photoUploads = [],
+  files = [],        // Add this prop with default value
+  photoUploads = [], // Keep existing prop for backward compatibility
   maxFiles = 1,
   className,
 }) => {
   const [dragActive, setDragActive] = useState(false);
+  
+  // Use files prop if provided, otherwise fall back to photoUploads for compatibility
+  const currentFiles = files.length > 0 ? files : photoUploads;
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -51,19 +56,20 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   };
 
   const handleRemoveFile = (index: number) => {
-    const newFiles = [...photoUploads];
+    // Create a copy of the currentFiles array
+    const newFiles = [...currentFiles];
     newFiles.splice(index, 1);
     onChange(newFiles);
   };
 
   const renderPreview = () => {
-    if (photoUploads.length === 0) return null;
+    if (currentFiles.length === 0) return null;
 
     return (
       <div className="mt-4 space-y-2">
         <h3 className="text-sm font-medium">Selected Photos:</h3>
         <div className="flex flex-wrap gap-2">
-          {photoUploads.map((file, index) => (
+          {currentFiles.map((file, index) => (
             <div key={index} className="relative">
               <div className="w-20 h-20 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center">
                 {file.type.startsWith('image/') ? (
@@ -101,7 +107,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
           className={cn(
             "border-2 border-dashed rounded-lg p-6 text-center",
             dragActive ? "border-primary bg-primary/5" : "border-gray-200",
-            photoUploads.length > 0 ? "border-primary/50" : ""
+            currentFiles.length > 0 ? "border-primary/50" : ""
           )}
           onDragEnter={handleDrag}
           onDragOver={handleDrag}
