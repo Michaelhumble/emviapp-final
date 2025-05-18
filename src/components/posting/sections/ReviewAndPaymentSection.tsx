@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronLeft } from 'lucide-react';
 import PricingTierSelector from '@/components/posting/pricing/PricingTierSelector';
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 
 interface ReviewAndPaymentSectionProps {
@@ -29,11 +30,18 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   pricingOptions,
   setPricingOptions,
 }) => {
-  const [selectedPricingTier, setSelectedPricingTier] = useState(pricingOptions.selectedPricingTier || 'premium');
+  // Fixed type: Use JobPricingTier instead of string
+  const [selectedPricingTier, setSelectedPricingTier] = useState<JobPricingTier>(
+    pricingOptions.selectedPricingTier || 'premium'
+  );
 
-  const handlePricingTierSelect = (tier: string) => {
+  // Fixed handler to properly use JobPricingTier type
+  const handlePricingTierSelect = (tier: JobPricingTier) => {
     setSelectedPricingTier(tier);
-    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
+    setPricingOptions(prev => ({ 
+      ...prev, 
+      selectedPricingTier: tier 
+    }));
   };
 
   const handleSubmit = async () => {
@@ -88,7 +96,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
       
       {/* Pricing Tiers */}
       <PricingTierSelector 
-        selectedTier={pricingOptions.selectedPricingTier as any || 'premium'} 
+        selectedTier={pricingOptions.selectedPricingTier} 
         onTierSelect={handlePricingTierSelect} 
         pricingOptions={pricingOptions}
         isFirstPost={pricingOptions.isFirstPost}
@@ -136,3 +144,4 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     </div>
   );
 };
+

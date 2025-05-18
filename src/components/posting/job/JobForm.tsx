@@ -1,317 +1,467 @@
+
 import React, { useState, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronLeft, Upload, X, Pencil } from 'lucide-react';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import MultiSelect, { Option } from '@/components/ui/multi-select';
+import { toast } from 'sonner';
+import { ChevronLeft, Upload } from 'lucide-react';
 import { JobFormValues } from './jobFormSchema';
-import { SalonPostPhotoUpload } from '../salon/SalonPostPhotoUpload';
-import { Badge } from '@/components/ui/badge';
-
-// Define the allowed job types and experience levels
-const allowedJobTypes = ["full-time", "part-time", "contract", "temporary", "commission"] as const;
-const allowedExperienceLevels = ["entry", "intermediate", "experienced", "senior"] as const;
+import { MultiSelect } from '@/components/ui/multi-select';
+import { specialtyOptions, requirementOptions } from '@/utils/posting/options';
+import { Label } from '@/components/ui/label';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
-  onBack?: () => void;
   initialValues?: JobFormValues;
+  photoUploads: File[];
+  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
   isSubmitting?: boolean;
-  photoUploads?: File[];
-  setPhotoUploads?: React.Dispatch<React.SetStateAction<File[]>>;
   showVietnameseByDefault?: boolean;
+  onBack?: () => void;
 }
-
-const specializationOptions: Option[] = [
-  { value: 'manicure', label: 'Manicure' },
-  { value: 'pedicure', label: 'Pedicure' },
-  { value: 'gel', label: 'Gel' },
-  { value: 'acrylic', label: 'Acrylic' },
-  { value: 'dip-powder', label: 'Dip Powder' },
-  { value: 'nail-art', label: 'Nail Art' },
-  { value: 'extensions', label: 'Extensions' },
-  { value: 'waxing', label: 'Waxing' },
-  { value: 'facial', label: 'Facial' },
-  { value: 'massage', label: 'Massage' },
-  { value: 'lash-extensions', label: 'Lash Extensions' },
-  { value: 'lash-lift', label: 'Lash Lift' },
-  { value: 'brow-lamination', label: 'Brow Lamination' },
-  { value: 'microblading', label: 'Microblading' },
-  { value: 'makeup', label: 'Makeup' },
-  { value: 'hair-styling', label: 'Hair Styling' },
-  { value: 'hair-color', label: 'Hair Color' },
-  { value: 'haircut', label: 'Haircut' },
-  { value: 'barber', label: 'Barber' },
-];
-
-const requirementOptions: Option[] = [
-  { value: 'license', label: 'License Required' },
-  { value: 'experience', label: 'Experience Required' },
-  { value: 'english', label: 'English Speaking' },
-  { value: 'vietnamese', label: 'Vietnamese Speaking' },
-  { value: 'own-tools', label: 'Own Tools Required' },
-  { value: 'driver-license', label: 'Driver License' },
-  { value: 'reliable-transportation', label: 'Reliable Transportation' },
-  { value: 'portfolio', label: 'Portfolio Required' },
-  { value: 'background-check', label: 'Background Check' },
-  { value: 'reference', label: 'References Required' },
-];
 
 const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
-  onBack,
   initialValues,
-  isSubmitting = false,
-  photoUploads = [],
+  photoUploads,
   setPhotoUploads,
-  showVietnameseByDefault = false
+  isSubmitting = false,
+  showVietnameseByDefault = false,
+  onBack,
 }) => {
-  const { register, handleSubmit, formState: { errors }, setValue } = useFormContext<JobFormValues>();
   const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
-  const [specialties, setSpecialties] = useState<string[]>(initialValues?.specialties || []);
-  const [requirements, setRequirements] = useState<string[]>(initialValues?.requirements || []);
-
+  const methods = useForm<JobFormValues>({
+    defaultValues: initialValues || {
+      title: '',
+      description: '',
+      vietnameseDescription: '',
+      location: '',
+      compensation_details: '',
+      salary_range: '',
+      jobType: 'full-time',
+      experience_level: 'experienced',
+      contactEmail: '',
+      contactName: '',
+      contactPhone: '',
+      specialties: [],
+      requirements: [],
+    },
+  });
+  
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+    watch,
+  } = methods;
+  
+  // Initialize form with initial values if provided
   useEffect(() => {
-    // Initialize form values if initialValues prop is provided
     if (initialValues) {
-      Object.keys(initialValues).forEach(key => {
-        setValue(key as keyof JobFormValues, initialValues[key as keyof JobFormValues]);
+      Object.entries(initialValues).forEach(([key, value]) => {
+        if (value !== undefined) {
+          // @ts-ignore - Dynamic setting of values
+          setValue(key, value);
+        }
       });
-      setSpecialties(initialValues.specialties || []);
-      setRequirements(initialValues.requirements || []);
     }
   }, [initialValues, setValue]);
-
-  const handleSpecialtiesChange = (selected: string[]) => {
-    // Convert strings to Option objects if needed
-    const selectedOptions = selected.map(value => {
-      const option = specializationOptions.find(opt => opt.value === value);
-      return option || { value, label: value };
-    });
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     
-    setSpecialties(selected);
-  };
-
-  const handleRequirementsChange = (selected: string[]) => {
-    // Convert strings to Option objects if needed
-    const selectedOptions = selected.map(value => {
-      const option = requirementOptions.find(opt => opt.value === value);
-      return option || { value, label: value };
-    });
+    // Limit to 5 images
+    if (photoUploads.length + files.length > 5) {
+      toast.error("You can only upload a maximum of 5 images");
+      return;
+    }
     
-    setRequirements(selected);
+    const newFiles = Array.from(files);
+    setPhotoUploads(prev => [...prev, ...newFiles]);
   };
-
-  const handleFormSubmit = (data: JobFormValues) => {
-    // Set the selected specialties and requirements to the form data
-    data.specialties = specialties;
-    data.requirements = requirements;
+  
+  const handleRemovePhoto = (index: number) => {
+    setPhotoUploads(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  // Fix: Proper form submission handler with correct types
+  const onFormSubmit = handleSubmit((data: JobFormValues) => {
     onSubmit(data);
-  };
-
+  });
+  
   return (
-    <form onSubmit={handleFormSubmit} className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-playfair font-medium">Job Details</h2>
-        {onBack && (
-          <Button type="button" variant="outline" onClick={onBack} className="flex items-center gap-2">
-            <ChevronLeft className="h-4 w-4" />
-            Back
-          </Button>
-        )}
-      </div>
-
-      {/* Title and Location Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="title">Job Title</Label>
-          <Input
-            id="title"
-            placeholder="e.g., Nail Technician"
-            {...register("title", { required: "Job title is required" })}
-            className={errors.title ? "border-red-500" : ""}
-          />
-          {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+    <FormProvider {...methods}>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-playfair font-medium">Post a New Job</h2>
+          {onBack && (
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onBack}
+              disabled={isSubmitting}
+              className="flex items-center gap-1.5"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back to Templates
+            </Button>
+          )}
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="location">Location</Label>
-          <Input
-            id="location"
-            placeholder="e.g., Houston, TX"
-            {...register("location", { required: "Location is required" })}
-            className={errors.location ? "border-red-500" : ""}
-          />
-          {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
-        </div>
-      </div>
-
-      {/* Job Type and Experience Level Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="jobType">Job Type</Label>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select job type" {...register("jobType")} />
-            </SelectTrigger>
-            <SelectContent>
-              {allowedJobTypes.map(type => (
-                <SelectItem key={type} value={type}>{type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="experience_level">Experience Level</Label>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select experience level" {...register("experience_level")} />
-            </SelectTrigger>
-            <SelectContent>
-              {allowedExperienceLevels.map(level => (
-                <SelectItem key={level} value={level}>{level}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Compensation Details and Salary Range Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="compensation_details">Compensation Details</Label>
-          <Input
-            id="compensation_details"
-            placeholder="e.g., $500 - $800 weekly + tips"
-            {...register("compensation_details")}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="salary_range">Salary Range</Label>
-          <Input
-            id="salary_range"
-            placeholder="e.g., $30k - $50k annually"
-            {...register("salary_range")}
-          />
-        </div>
-      </div>
-
-      {/* Description Section */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-playfair">Description</h3>
-          <Badge onClick={() => setShowVietnamese(!showVietnamese)} className="cursor-pointer">
-            {showVietnamese ? "English" : "Tiếng Việt"}
-          </Badge>
-        </div>
-        <p className="text-sm text-gray-600">Describe the job position and responsibilities</p>
-
-        <Textarea
-          placeholder="Enter job description"
-          {...register(showVietnamese ? "vietnameseDescription" : "description", {
-            required: "Description is required",
-          })}
-          className={errors.description ? "border-red-500" : ""}
-        />
-        {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-      </div>
-
-      {/* Specialties Section */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-playfair">Specialties</h3>
-        </div>
-        <p className="text-sm text-gray-600">Select relevant specialties for this position</p>
         
-        <MultiSelect
-          options={specializationOptions}
-          selected={specialties}
-          onChange={handleSpecialtiesChange}
-          placeholder="Select specialties"
-          className="w-full"
-        />
+        <Form {...methods}>
+          <form onSubmit={onFormSubmit} className="space-y-8">
+            {/* Basic Job Details */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Basic Job Details</h3>
+              
+              <FormField
+                control={control}
+                name="title"
+                rules={{ required: "Job title is required" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Job Title*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Nail Technician" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={control}
+                name="location"
+                rules={{ required: "Location is required" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Los Angeles, CA" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={control}
+                  name="jobType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Job Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select job type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="full-time">Full Time</SelectItem>
+                          <SelectItem value="part-time">Part Time</SelectItem>
+                          <SelectItem value="contract">Contract</SelectItem>
+                          <SelectItem value="temporary">Temporary</SelectItem>
+                          <SelectItem value="commission">Commission</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={control}
+                  name="experience_level"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Experience Level</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select experience level" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="entry">Entry Level</SelectItem>
+                          <SelectItem value="intermediate">Intermediate</SelectItem>
+                          <SelectItem value="experienced">Experienced</SelectItem>
+                          <SelectItem value="senior">Senior</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            
+            {/* Job Description */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Job Description</h3>
+              
+              <FormField
+                control={control}
+                name="description"
+                rules={{ required: "Description is required" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description (English)*</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe the job responsibilities, benefits, and any other details..." 
+                        className="min-h-[150px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="showVietnamese" 
+                  checked={showVietnamese} 
+                  onChange={() => setShowVietnamese(!showVietnamese)}
+                  className="mr-2" 
+                />
+                <label htmlFor="showVietnamese" className="text-sm">Add Vietnamese Description (Recommended)</label>
+              </div>
+              
+              {showVietnamese && (
+                <FormField
+                  control={control}
+                  name="vietnameseDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description (Vietnamese)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Mô tả công việc bằng tiếng Việt..." 
+                          className="min-h-[150px]" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+            
+            {/* Compensation */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Compensation</h3>
+              
+              <FormField
+                control={control}
+                name="salary_range"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Salary Range</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. $50,000 - $60,000 per year" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={control}
+                name="compensation_details"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Additional Compensation Details</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Commission structure, tips, benefits, etc." 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            {/* Requirements & Specialties */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Requirements & Specialties</h3>
+              
+              <Controller
+                control={control}
+                name="requirements"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Requirements</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={requirementOptions}
+                        selected={field.value || []}
+                        onChange={field.onChange}
+                        placeholder="Select job requirements"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <Controller
+                control={control}
+                name="specialties"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Specialties</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={specialtyOptions}
+                        selected={field.value || []}
+                        onChange={field.onChange}
+                        placeholder="Select specialties"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            {/* Contact Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Contact Information</h3>
+              
+              <FormField
+                control={control}
+                name="contactName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={control}
+                name="contactEmail"
+                rules={{ 
+                  required: "Email is required",
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Please enter a valid email"
+                  } 
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Email*</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="your.email@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={control}
+                name="contactPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="(123) 456-7890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            {/* Photos */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Photos (Optional)</h3>
+              
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6">
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <Upload className="h-10 w-10 text-gray-400" />
+                  <div className="text-center">
+                    <Label 
+                      htmlFor="photo-upload" 
+                      className="cursor-pointer inline-flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md"
+                    >
+                      Select Images
+                    </Label>
+                    <input
+                      id="photo-upload"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <p className="mt-2 text-sm text-gray-500">Upload up to 5 photos of your salon, team, or workspace</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Photo previews */}
+              {photoUploads.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-4">
+                  {photoUploads.map((file, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Upload ${index + 1}`}
+                        className="h-24 w-24 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePhoto(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-end">
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+              >
+                {isSubmitting ? "Processing..." : "Continue to Payment"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
-      
-      {/* Requirements Section */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-playfair">Requirements</h3>
-        </div>
-        <p className="text-sm text-gray-600">Select requirements for applicants</p>
-        
-        <MultiSelect
-          options={requirementOptions}
-          selected={requirements}
-          onChange={handleRequirementsChange}
-          placeholder="Select requirements"
-          className="w-full"
-        />
-      </div>
-
-      {/* Contact Information Section */}
-      <Separator />
-      <h3 className="text-lg font-playfair">Contact Information</h3>
-      <p className="text-sm text-gray-600">Enter contact details for applicants to reach you</p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="contactName">Contact Name</Label>
-          <Input
-            id="contactName"
-            placeholder="e.g., John Doe"
-            {...register("contactName", { required: "Contact name is required" })}
-            className={errors.contactName ? "border-red-500" : ""}
-          />
-          {errors.contactName && <p className="text-red-500 text-sm">{errors.contactName.message}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="contactEmail">Contact Email</Label>
-          <Input
-            id="contactEmail"
-            placeholder="e.g., john.doe@example.com"
-            type="email"
-            {...register("contactEmail", {
-              required: "Contact email is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address",
-              },
-            })}
-            className={errors.contactEmail ? "border-red-500" : ""}
-          />
-          {errors.contactEmail && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="contactPhone">Contact Phone</Label>
-          <Input
-            id="contactPhone"
-            placeholder="e.g., 123-456-7890"
-            {...register("contactPhone")}
-          />
-        </div>
-      </div>
-
-      {/* Photo Upload Section */}
-      {setPhotoUploads && (
-        <SalonPostPhotoUpload
-          photoUploads={photoUploads}
-          setPhotoUploads={setPhotoUploads}
-        />
-      )}
-
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit"}
-      </Button>
-    </form>
+    </FormProvider>
   );
 };
 
 export default JobForm;
+
