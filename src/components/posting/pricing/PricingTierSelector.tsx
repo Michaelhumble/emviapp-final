@@ -1,249 +1,203 @@
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Card } from '@/components/ui/card';
-import { Check, Clock, Crown, Star, Zap } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import React from 'react';
+import { RadioGroup } from "@/components/ui/radio-group";
+import { Card, CardContent } from "@/components/ui/card";
+import { Check } from 'lucide-react';
+import { PricingOptions, JobPricingTier } from "@/utils/posting/types";
+import { jobPricingOptions } from "@/utils/posting/jobPricing";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface PricingTierSelectorProps {
-  selectedTier: JobPricingTier;
-  onTierSelect: (tier: JobPricingTier) => void;
+  selectedTier: string;
+  onSelectTier: (tier: string) => void;
   pricingOptions: PricingOptions;
-  isFirstPost?: boolean;
+  setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
 }
 
-const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
+// The timer animation variants
+const timerVariants = {
+  highlight: {
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 0.5,
+      repeat: Infinity,
+      repeatType: "reverse" as const,
+    },
+  },
+};
+
+export function PricingTierSelector({
   selectedTier,
-  onTierSelect,
+  onSelectTier,
   pricingOptions,
-  isFirstPost = false
-}) => {
-  const { t, isVietnamese } = useTranslation();
-  const [showDiamond, setShowDiamond] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 59, seconds: 59 });
-  
-  // Filter to show only visible tiers
-  const visibleTiers = jobPricingOptions.filter(option => 
-    !option.hidden || (option.id === 'diamond' && showDiamond)
-  );
-  
-  // Countdown timer effect
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
+  setPricingOptions,
+}: PricingTierSelectorProps) {
+  // Calculate remaining time for the discount offer (24 hours from now)
+  const [remainingTime, setRemainingTime] = React.useState({
+    hours: 23,
+    minutes: 59,
+    seconds: 59,
+  });
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setRemainingTime((prev) => {
         if (prev.seconds > 0) {
           return { ...prev, seconds: prev.seconds - 1 };
         } else if (prev.minutes > 0) {
           return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
         } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
         }
-        return prev;
+        return { hours: 23, minutes: 59, seconds: 59 }; // Reset to 24 hours
       });
     }, 1000);
-    
-    return () => clearInterval(timer);
+
+    return () => clearInterval(interval);
   }, []);
-  
-  // Format time with leading zeros
-  const formatTime = (value: number) => value.toString().padStart(2, '0');
-  
-  const handlePremiumMouseEnter = () => {
-    // When user hovers on pro or premium, consider showing diamond tier
-    if (selectedTier === 'premium' || selectedTier === 'gold') {
-      setTimeout(() => setShowDiamond(true), 500);
-    }
-  };
 
-  const getPricingBadge = (tier: JobPricingOption) => {
-    if (tier.tag === 'Limited Time') {
-      return (
-        <Badge variant="outline" className="absolute top-2 right-2 bg-amber-50 text-amber-700 border-amber-200 font-medium flex items-center gap-1">
-          <Clock className="h-3 w-3" /> Limited Time
-        </Badge>
-      );
-    }
-    
-    if (tier.tag === 'Most Popular') {
-      return (
-        <Badge variant="outline" className="absolute top-2 right-2 bg-purple-50 text-purple-700 border-purple-200 font-medium flex items-center gap-1">
-          <Star className="h-3 w-3" /> Most Popular
-        </Badge>
-      );
-    }
-    
-    if (tier.tag === 'Power Seller') {
-      return (
-        <Badge variant="outline" className="absolute top-2 right-2 bg-indigo-50 text-indigo-700 border-indigo-200 font-medium flex items-center gap-1">
-          <Zap className="h-3 w-3" /> Power Seller
-        </Badge>
-      );
-    }
-    
-    if (tier.tag === 'Ultimate') {
-      return (
-        <Badge variant="outline" className="absolute top-2 right-2 bg-gradient-to-r from-amber-100 to-yellow-50 text-amber-800 border-amber-300 font-medium flex items-center gap-1">
-          <Crown className="h-3 w-3" /> Ultimate Status
-        </Badge>
-      );
-    }
-    
-    return null;
-  };
+  // Find the pricing option
+  const currentOption = jobPricingOptions.find(option => option.id === selectedTier);
 
-  const renderLimitedSpotsIndicator = (tier: JobPricingOption) => {
-    if (!tier.limitedSpots) return null;
-    
-    return (
-      <div className="mt-2">
-        <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-amber-400 to-red-500"
-            style={{ width: tier.limitedSpots }}
-          ></div>
-        </div>
-        <p className="text-xs text-gray-500 mt-1">
-          {tier.limitedSpots} - Limited spots at this price!
-        </p>
-      </div>
-    );
+  // Handle auto-renew toggle
+  const handleAutoRenewToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPricingOptions({
+      ...pricingOptions,
+      autoRenew: event.target.checked,
+    });
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center text-center mb-8">
-        <h3 className="font-playfair text-2xl font-medium text-gray-900 mb-2">
-          {t({
-            english: '50% OFF for Launch—Today Only!',
-            vietnamese: 'Giảm 50% cho Ngày Ra Mắt - Chỉ Hôm Nay!'
-          })}
-        </h3>
-        
-        <p className="text-sm text-gray-600 max-w-lg">
-          {t({
-            english: 'Lock in forever pricing. Renew early to keep your rate.',
-            vietnamese: 'Khóa giá vĩnh viễn. Gia hạn sớm để giữ mức giá của bạn.'
-          })}
+    <div className="w-full">
+      {/* FOMO Countdown Timer */}
+      <motion.div
+        className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-center"
+        variants={timerVariants}
+        animate="highlight"
+      >
+        <p className="text-amber-800 font-medium">
+          🔥 Limited time offer! Prices will increase in:
         </p>
-        
-        <div className="mt-3 px-4 py-2 bg-red-50 rounded-full border border-red-100 text-red-700 font-medium flex items-center gap-2">
-          <Clock className="h-4 w-4" />
-          <span>
-            {t({
-              english: `Next price increase in ${formatTime(timeLeft.hours)}:${formatTime(timeLeft.minutes)}:${formatTime(timeLeft.seconds)}`,
-              vietnamese: `Tăng giá tiếp theo trong ${formatTime(timeLeft.hours)}:${formatTime(timeLeft.minutes)}:${formatTime(timeLeft.seconds)}`
-            })}
-          </span>
+        <div className="text-xl font-bold text-amber-900 mt-1">
+          {remainingTime.hours.toString().padStart(2, '0')}:
+          {remainingTime.minutes.toString().padStart(2, '0')}:
+          {remainingTime.seconds.toString().padStart(2, '0')}
         </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {visibleTiers.map((tier) => {
-          const isSelected = selectedTier === tier.tier;
-          
-          // Don't show free tier unless it's the user's first post
-          if (tier.tier === 'free' && !isFirstPost) {
-            return null;
-          }
-          
-          return (
-            <motion.div
-              key={tier.id}
-              whileHover={{ y: -2 }}
-              whileTap={{ y: 0 }}
-              className="h-full"
-            >
-              <Card 
-                className={`relative h-full overflow-hidden cursor-pointer border transition-all ${
-                  isSelected 
-                    ? 'ring-2 ring-offset-1 ring-purple-500 shadow-md' 
-                    : 'hover:border-purple-200 hover:shadow-sm'
-                }
-                ${tier.color || ''}
-                `}
-                onClick={() => {
-                  // For Diamond tier, show waitlist dialog instead
-                  if (tier.id === 'diamond') {
-                    // This would open a waitlist modal in a real implementation
-                    alert('Please join our waitlist for Diamond tier access. Limited to 3 spots only!');
-                    return;
-                  }
-                  
-                  onTierSelect(tier.tier);
-                }}
-                onMouseEnter={tier.tier === 'premium' || tier.tier === 'gold' ? handlePremiumMouseEnter : undefined}
-              >
-                {getPricingBadge(tier)}
-                
-                <div className="p-5">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold font-playfair">{tier.name}</h3>
-                    {isSelected && <Check className="h-5 w-5 text-purple-600" />}
+        <p className="text-xs text-amber-700 mt-1">
+          Lock in your special price now before it expires!
+        </p>
+      </motion.div>
+
+      <RadioGroup
+        value={selectedTier}
+        onValueChange={onSelectTier}
+        className="grid grid-cols-1 gap-4"
+      >
+        {jobPricingOptions.filter(option => !option.hidden).map((option) => (
+          <label
+            key={option.id}
+            className={cn(
+              "relative cursor-pointer rounded-xl overflow-hidden transition-all",
+              selectedTier === option.id 
+                ? "ring-2 ring-purple-500 shadow-md" 
+                : "border border-gray-200 hover:border-purple-200"
+            )}
+          >
+            <input
+              type="radio"
+              value={option.id}
+              name="pricing-tier"
+              className="sr-only"
+              checked={selectedTier === option.id}
+              onChange={() => onSelectTier(option.id)}
+            />
+            <Card className="border-0 shadow-none">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-lg">{option.name}</h3>
+                      {option.popular && (
+                        <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">
+                          Most Popular
+                        </span>
+                      )}
+                      {option.tag && (
+                        <span className="bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full">
+                          {option.tag}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="mt-2">
+                      <p className="text-2xl font-bold">${option.price.toFixed(2)}</p>
+                      {option.wasPrice && (
+                        <p className="text-sm text-gray-500 line-through mt-1">
+                          Was ${option.wasPrice.toFixed(2)}
+                        </p>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-gray-600 mt-2">
+                      {option.description}
+                    </p>
                   </div>
                   
-                  <div className="mt-3 flex items-baseline">
-                    <span className="text-2xl font-bold">${tier.price}</span>
-                    {tier.annual ? (
-                      <span className="text-sm text-gray-500 ml-1">/year</span>
-                    ) : (
-                      <span className="text-sm text-gray-500 ml-1">/month</span>
-                    )}
-                    {tier.wasPrice && (
-                      <span className="ml-2 text-sm line-through text-gray-400">
-                        ${tier.wasPrice}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <p className="text-sm font-medium text-gray-800 mt-3">
-                    {tier.primaryBenefit}
-                  </p>
-                  
-                  <p className="text-sm text-purple-700 font-medium mt-1">
-                    {tier.upsellText}
-                  </p>
-                  
-                  {renderLimitedSpotsIndicator(tier)}
-                  
-                  <div className="mt-4 space-y-2">
-                    {tier.features && tier.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start">
-                        <Check className="h-4 w-4 mr-2 mt-0.5 text-gray-400" />
-                        <span className="text-xs text-gray-600">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {selectedTier === option.id && (
+                    <div className="bg-purple-500 rounded-full p-1">
+                      <Check className="h-4 w-4 text-white" />
+                    </div>
+                  )}
                 </div>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
+
+                {option.features && (
+                  <div className="mt-4">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Includes:</p>
+                    <ul className="text-sm space-y-1">
+                      {option.features.map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <Check className="h-4 w-4 text-purple-500" /> {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {option.limitedSpots && (
+                  <div className="mt-3 bg-red-50 p-2 rounded text-sm text-red-600">
+                    <span className="font-medium">Limited availability:</span> {option.limitedSpots}
+                  </div>
+                )}
+
+                {option.upsellText && (
+                  <div className="mt-3 text-xs text-purple-600 font-medium">
+                    {option.upsellText}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </label>
+        ))}
+      </RadioGroup>
       
-      {/* Upsell for longer plans */}
-      <div className="mt-6 bg-gradient-to-r from-slate-50 to-gray-50 border border-slate-100 rounded-lg p-4">
-        <h4 className="font-medium text-gray-900 mb-2">Get extra savings with longer plans:</h4>
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-white rounded p-3 border border-gray-100 shadow-sm">
-            <div className="text-purple-600 font-bold">3 Months</div>
-            <div className="text-sm text-gray-600">10% extra off</div>
-          </div>
-          <div className="bg-white rounded p-3 border border-gray-100 shadow-sm">
-            <div className="text-purple-600 font-bold">6 Months</div>
-            <div className="text-sm text-gray-600">20% extra off</div>
-          </div>
-          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded p-3 border border-amber-100 shadow-sm">
-            <div className="text-amber-700 font-bold">12 Months</div>
-            <div className="text-sm text-amber-700">35% off + Free Feature</div>
-          </div>
+      <div className="mt-6">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="auto-renew"
+            className="rounded text-purple-500 focus:ring-purple-500 mr-2"
+            checked={pricingOptions.autoRenew}
+            onChange={handleAutoRenewToggle}
+          />
+          <label htmlFor="auto-renew" className="text-gray-700 text-sm">
+            Auto-renew my plan (recommended to maintain your special pricing)
+          </label>
         </div>
-        <p className="text-sm text-gray-500 mt-2 text-center">Secure your spot and lock in your rate today!</p>
+        <p className="text-xs text-gray-500 mt-1 ml-5">
+          You can cancel anytime. Don't lose your special rate!
+        </p>
       </div>
     </div>
   );
-};
-
-export default PricingTierSelector;
+}
