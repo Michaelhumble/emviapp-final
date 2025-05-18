@@ -1,191 +1,89 @@
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import JobForm from './JobForm';
-import { ReviewAndPaymentSection } from '../sections/ReviewAndPaymentSection';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JobFormValues } from './jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
-import JobTemplateSelector from './JobTemplateSelector';
-import { FormProvider, useForm } from 'react-hook-form';
+import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
+import { CardContent } from '@/components/ui/card';
+import JobForm from './JobForm';
 
 interface EnhancedJobFormProps {
-  onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
-  initialValues?: JobFormValues;
+  onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange?: (step: number) => void;
 }
 
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
-  onSubmit, 
-  initialValues,
-  onStepChange 
-}) => {
-  const [currentStep, setCurrentStep] = useState<'template' | 'form' | 'review'>('template');
-  const [formData, setFormData] = useState<JobFormValues | null>(null);
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit, onStepChange }) => {
+  const [activeTab, setActiveTab] = useState('job-details');
+  const [jobFormData, setJobFormData] = useState<JobFormValues | null>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     selectedPricingTier: 'premium',
+    isNationwide: false,
     durationMonths: 1,
+    autoRenew: false,
     isFirstPost: true
   });
-  
-  // Create a form method for the entire wizard
-  const formMethods = useForm();
-  
-  useEffect(() => {
-    if (onStepChange) {
-      onStepChange(currentStep === 'template' ? 1 : currentStep === 'form' ? 2 : 3);
-    }
-  }, [currentStep, onStepChange]);
-  
-  const handleTemplateSelect = (template: JobFormValues) => {
-    // Ensure requirements and specialties are arrays
-    const templateWithDefaults = {
-      ...template,
-      requirements: Array.isArray(template.requirements) ? template.requirements : [],
-      specialties: Array.isArray(template.specialties) ? template.specialties : []
-    };
-    
-    setSelectedTemplate(templateWithDefaults);
-    // Always go to the form step after template selection
-    setCurrentStep('form');
-    window.scrollTo(0, 0);
+
+  const handleJobFormSubmit = (data: JobFormValues, photos: File[]) => {
+    setJobFormData(data);
+    setPhotoUploads(photos);
+    setActiveTab('review-payment');
+    onStepChange?.(2);
   };
-  
-  const handleFormSubmit = (data: JobFormValues) => {
-    // Ensure requirements and specialties are arrays
-    const dataWithDefaults = {
-      ...data,
-      requirements: Array.isArray(data.requirements) ? data.requirements : [],
-      specialties: Array.isArray(data.specialties) ? data.specialties : []
-    };
-    
-    // Ensure all required fields are present
-    if (!validateRequiredFields(dataWithDefaults)) {
-      return;
-    }
-    
-    setFormData(dataWithDefaults);
-    setCurrentStep('review');
-    window.scrollTo(0, 0);
-  };
-  
-  const validateRequiredFields = (data: JobFormValues): boolean => {
-    // Check for required fields
-    if (!data.title || !data.description || !data.location || !data.contactEmail) {
-      return false;
-    }
-    return true;
-  };
-  
-  const handleFinalSubmit = async (finalOptions: PricingOptions) => {
-    // Double check that we have form data before allowing payment
-    if (!formData || !validateRequiredFields(formData)) {
-      setCurrentStep('form');
-      return;
-    }
+
+  const handlePaymentSubmit = async () => {
+    if (!jobFormData) return;
     
     setIsSubmitting(true);
-    
     try {
-      // Ensure requirements and specialties are arrays
-      const jobFormValues: JobFormValues = {
-        title: formData.title || '',
-        description: formData.description || '',
-        vietnameseDescription: formData.vietnameseDescription || '',
-        location: formData.location || '',
-        compensation_details: formData.compensation_details || '',
-        salary_range: formData.salary_range || '',
-        jobType: formData.jobType || 'full-time',
-        experience_level: formData.experience_level || 'experienced',
-        contactEmail: formData.contactEmail || '',
-        requirements: Array.isArray(formData.requirements) ? formData.requirements : [],
-        specialties: Array.isArray(formData.specialties) ? formData.specialties : [],
-        contactName: formData.contactName || '',
-        contactPhone: formData.contactPhone || '',
-      };
-      
-      const success = await onSubmit(jobFormValues, photoUploads, finalOptions);
-      
+      const success = await onSubmit(jobFormData, photoUploads, pricingOptions);
       if (!success) {
         setIsSubmitting(false);
       }
     } catch (error) {
-      console.error('Error in final submission:', error);
+      console.error('Error submitting job post:', error);
       setIsSubmitting(false);
     }
   };
-  
-  const handleBack = () => {
-    if (currentStep === 'review') {
-      setCurrentStep('form');
-    } else if (currentStep === 'form') {
-      setCurrentStep('template');
-    }
-    window.scrollTo(0, 0);
+
+  const handleBackToEdit = () => {
+    setActiveTab('job-details');
+    onStepChange?.(1);
   };
-  
+
   return (
-    <FormProvider {...formMethods}>
-      <Card className="border shadow-md rounded-xl overflow-hidden bg-white">
-        <CardContent className="p-0">
-          <AnimatePresence mode="wait">
-            {currentStep === 'template' ? (
-              <motion.div
-                key="template-step"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="p-6"
-              >
-                <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-              </motion.div>
-            ) : currentStep === 'form' ? (
-              <motion.div
-                key="form-step"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="p-6"
-              >
-                <JobForm 
-                  onSubmit={handleFormSubmit} 
-                  photoUploads={photoUploads} 
-                  setPhotoUploads={setPhotoUploads}
-                  isSubmitting={isSubmitting}
-                  initialValues={selectedTemplate || initialValues}
-                  onBack={handleBack}
-                  showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') ? true : false}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="review-step"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-                className="p-6"
-              >
-                <ReviewAndPaymentSection 
-                  formData={formData} 
-                  photoUploads={photoUploads}
-                  onBack={handleBack}
-                  onSubmit={handleFinalSubmit}
-                  isSubmitting={isSubmitting}
-                  pricingOptions={pricingOptions}
-                  setPricingOptions={setPricingOptions}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="hidden">
+        <TabsTrigger value="job-details">Job Details</TabsTrigger>
+        <TabsTrigger value="review-payment">Review & Payment</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="job-details" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
+          <JobForm 
+            onSubmit={handleJobFormSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            initialValues={jobFormData || undefined}
+          />
         </CardContent>
-      </Card>
-    </FormProvider>
+      </TabsContent>
+      
+      <TabsContent value="review-payment" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
+          <ReviewAndPaymentSection 
+            formData={jobFormData} 
+            photoUploads={photoUploads}
+            onBack={handleBackToEdit} 
+            onSubmit={handlePaymentSubmit}
+            isSubmitting={isSubmitting}
+            pricingOptions={pricingOptions}
+            setPricingOptions={setPricingOptions}
+          />
+        </CardContent>
+      </TabsContent>
+    </Tabs>
   );
 };
 

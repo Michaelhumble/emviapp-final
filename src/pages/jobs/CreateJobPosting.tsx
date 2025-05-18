@@ -23,7 +23,7 @@ const CreateJobPosting = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: JobFormValues) => {
     try {
       setIsSubmitting(true);
       console.log('Form submitted:', data);
