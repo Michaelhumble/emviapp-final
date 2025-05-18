@@ -72,6 +72,7 @@ const CreateJobPosting = () => {
               onBack={() => setStep('template')}
               showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') || false}
               isCustomTemplate={selectedTemplateType === 'custom'}
+              maxPhotos={5} // Set maximum photos to 5
             />
           )}
         </Card>
