@@ -1,281 +1,273 @@
 
 import { JobFormValues, IndustryType } from './jobFormSchema';
 
-// Template card data for the UI
+// Template cards displayed in the UI
 export const templateCards = [
   {
     id: 'nails',
     emoji: '💅',
-    title: 'Nail Technician',
+    title: 'Nail Tech Superstar',
     subtitle: 'Magic hands, happy clients',
-    slogan: 'Find your salon soulmate!'
+    slogan: 'Find your salon soulmate!',
   },
   {
     id: 'hair',
     emoji: '💇‍♀️',
-    title: 'Hair Stylist',
-    subtitle: 'Create stunning transformations',
-    slogan: 'Build your dream salon team!'
+    title: 'Hair Stylist Wizard',
+    subtitle: 'Cutting-edge talent wanted',
+    slogan: 'Grow your glam squad!',
   },
   {
     id: 'lashes',
     emoji: '👁️',
     title: 'Lash Artist',
-    subtitle: 'Expert in beautiful lashes',
-    slogan: 'Extend your talent search!'
+    subtitle: 'Creating stunning looks',
+    slogan: 'Join our luxury team!',
   },
   {
     id: 'massage',
     emoji: '💆‍♀️',
     title: 'Massage Therapist',
-    subtitle: 'Healing hands, relaxing touch',
-    slogan: 'Find your wellness expert!'
+    subtitle: 'Wellness professional',
+    slogan: 'Elevate your career!',
+  },
+  {
+    id: 'brows',
+    emoji: '🧿',
+    title: 'Brow Expert',
+    subtitle: 'Shape perfect arches',
+    slogan: 'Show off your artistry!',
+  },
+  {
+    id: 'skincare',
+    emoji: '✨',
+    title: 'Esthetician',
+    subtitle: 'Skincare specialist',
+    slogan: 'Make clients glow!',
   },
   {
     id: 'tattoo',
     emoji: '🎨',
     title: 'Tattoo Artist',
-    subtitle: 'Creative, skilled professionals',
-    slogan: 'Ink your way to success!'
-  },
-  {
-    id: 'brows',
-    emoji: '✨',
-    title: 'Brow Artist',
-    subtitle: 'Perfect arches, defined looks',
-    slogan: 'Raise your brow game!'
-  },
-  {
-    id: 'skincare',
-    emoji: '✨',
-    title: 'Skincare Specialist',
-    subtitle: 'Glowing results, happy clients',
-    slogan: 'Reveal your best team!'
+    subtitle: 'Create lasting art',
+    slogan: 'Express your creativity!',
   },
   {
     id: 'barber',
     emoji: '✂️',
-    title: 'Barber',
-    subtitle: 'Classic cuts, modern style',
-    slogan: 'Cut above the competition!'
+    title: 'Master Barber',
+    subtitle: 'Precision cuts & style',
+    slogan: 'Join our barbering family!',
   },
   {
     id: 'makeup',
-    emoji: '💄',
+    emoji: '💋',
     title: 'Makeup Artist',
-    subtitle: 'Beauty transformations',
-    slogan: 'Face your future together!'
+    subtitle: 'Beauty transformation pro',
+    slogan: 'Create stunning looks!',
   },
   {
     id: 'custom',
-    emoji: '🌟',
-    title: 'Custom Listing',
-    subtitle: 'Create your own perfect post',
-    slogan: 'Your vision, your way!'
-  }
+    emoji: '✏️',
+    title: 'Create My Own',
+    subtitle: 'Start from scratch',
+    slogan: 'Feeling creative? Let\'s go!',
+  },
 ];
 
-// Job templates data for pre-filling the form
-export const jobTemplates: Record<IndustryType | 'custom', JobFormValues> = {
+// The actual job templates with full data for form pre-filling
+export const jobTemplates: Record<'custom' | IndustryType, JobFormValues> = {
+  // Nail Tech template
   nails: {
     title: 'Experienced Nail Technician Needed',
-    description: 'We are looking for an experienced nail technician to join our busy salon. Must be skilled in acrylics, gel, and nail art. Great earning potential with a strong client base. Full-time position with flexible hours.',
-    vietnameseDescription: 'Chúng tôi đang tìm kiếm một kỹ thuật viên làm móng có kinh nghiệm để tham gia vào tiệm salon nhộn nhịp của chúng tôi. Phải có kỹ năng về móng acrylic, gel và nghệ thuật móng. Tiềm năng thu nhập tuyệt vời với cơ sở khách hàng vững chắc. Vị trí toàn thời gian với giờ làm việc linh hoạt.',
+    description: 'Looking for a skilled nail technician to join our busy salon. Must be experienced in all nail services including gel, acrylics, dip powder, and nail art. Great atmosphere and clientele, flexible schedule available. Competitive commission and tips.',
+    vietnameseDescription: 'Cần thợ nail có kinh nghiệm để tham gia tiệm salon nhộn nhịp của chúng tôi. Phải có kinh nghiệm về tất cả các dịch vụ làm móng bao gồm gel, acrylic, bột nhúng và nghệ thuật móng. Không khí làm việc tốt và khách hàng ổn định, lịch trình linh hoạt. Hoa hồng và tiền boa cạnh tranh.',
     location: 'Houston, TX',
-    compensation_details: 'Competitive pay + tips. Top performers earn $1,200-$1,800/week.',
-    salary_range: '$800-$1800 weekly depending on experience',
+    compensation_details: 'Commission-based pay structure with booth rental option available. Weekly pay, no supply deduction.',
+    salary_range: '$800-$1,500/week',
     jobType: 'full-time',
     experience_level: 'experienced',
-    contactEmail: 'hiring@beautysalon.com',
+    contactEmail: 'hiring@glamournails.com',
     requirements: [
-      'Minimum 2 years experience',
-      'Acrylic and gel nail skills',
-      'Nail art experience a plus',
-      'Good English communication'
+      'Valid cosmetology or nail technician license',
+      '2+ years experience in nail services',
+      'Proficiency in gel, acrylic, and dip applications',
+      'Knowledge of proper sanitation procedures',
+      'Customer service oriented',
+      'Available to work weekends'
     ],
-    specialties: [
-      'Acrylic Nails',
-      'Gel Polish',
-      'Nail Art',
-      'Pedicures'
-    ]
+    specialties: ['Acrylic Extensions', 'Gel Polish', 'Nail Art', 'Pedicures', 'Manicures']
   },
+
+  // Hair Stylist template
   hair: {
-    title: 'Professional Hair Stylist Position Available',
-    description: 'Upscale salon seeking talented hair stylist with a passion for creating beautiful, trendy styles. Experience with color, cuts, and special occasion styling required. Join our friendly, collaborative team and grow your career.',
-    location: 'Atlanta, GA',
-    compensation_details: 'Commission-based (up to 50%) plus product bonuses',
-    salary_range: '$50K-$75K annually for experienced stylists',
-    jobType: 'full-time',
-    experience_level: 'experienced',
-    contactEmail: 'careers@hairsalongroupatl.com',
-    requirements: [
-      'Cosmetology license required',
-      'Minimum 2 years salon experience',
-      'Color and cutting expertise',
-      'Client-focused attitude'
-    ],
-    specialties: [
-      'Hair Coloring',
-      'Precision Cuts',
-      'Balayage',
-      'Blowouts'
-    ]
-  },
-  lashes: {
-    title: 'Lash Extension Artist - Premium Salon',
-    description: 'Fast-growing beauty studio seeks certified lash artist specialized in classic and volume techniques. Perfect your craft in our luxurious setting with high-end clientele. Training for advanced techniques provided.',
+    title: 'Creative Hair Stylist Position',
+    description: 'Join our upscale salon as a hair stylist! We are looking for a passionate professional with excellent customer service skills and a strong portfolio. Opportunities for growth and education.',
     location: 'Miami, FL',
-    compensation_details: 'Base pay + commission + retail commission',
-    salary_range: '$800-$1500 weekly depending on clientele',
+    compensation_details: 'Competitive commission structure plus retail commission. Health benefits available for full-time stylists.',
+    salary_range: '$45,000-$70,000/year',
     jobType: 'full-time',
     experience_level: 'intermediate',
-    contactEmail: 'join@lashstudiomiami.com',
+    contactEmail: 'careers@luxehairstudio.com',
     requirements: [
-      'Lash certification required',
-      'Portfolio of work',
-      'Detail-oriented with steady hands',
-      'Excellent customer service skills'
+      'Active cosmetology license',
+      'Minimum 1 year salon experience',
+      'Color formulation knowledge',
+      'Cutting and styling proficiency',
+      'Excellent communication skills',
+      'Portfolio of work'
     ],
-    specialties: [
-      'Classic Lashes',
-      'Volume Lashes',
-      'Hybrid Sets',
-      'Lash Lifts'
-    ]
+    specialties: ['Color Specialist', 'Balayage', 'Extensions', 'Cutting', 'Styling']
   },
-  massage: {
-    title: 'Licensed Massage Therapist - Luxury Spa',
-    description: 'Upscale day spa seeking licensed massage therapists for our growing location. Experience in Swedish, deep tissue, and hot stone therapies preferred. Join our wellness team in a relaxing, client-focused environment.',
-    location: 'Chicago, IL',
-    compensation_details: 'Hourly + tips + benefits for full-time staff',
-    salary_range: '$50-70K annually including gratuities',
-    jobType: 'full-time',
-    experience_level: 'experienced',
-    contactEmail: 'staff@wellnesschicago.com',
-    requirements: [
-      'State massage license required',
-      'Minimum 500 hours certification',
-      'Knowledge of multiple modalities',
-      'Professional demeanor and presentation'
-    ],
-    specialties: [
-      'Deep Tissue Massage',
-      'Swedish Massage',
-      'Hot Stone Therapy',
-      'Sports Massage'
-    ]
-  },
-  tattoo: {
-    title: 'Experienced Tattoo Artist - Creative Studio',
-    description: 'Established tattoo studio looking for talented artists to join our team. Bring your creativity and technical skills to a supportive, artistic environment with a loyal client base and room to grow.',
-    location: 'Portland, OR',
-    compensation_details: 'Booth rental or commission options available',
-    salary_range: 'Commission-based, top artists earn $70K-$100K+',
-    jobType: 'full-time',
-    experience_level: 'experienced',
-    contactEmail: 'create@inkstudiopdx.com',
-    requirements: [
-      'Minimum 3 years professional experience',
-      'Strong portfolio of work',
-      'Blood-borne pathogens certification',
-      'Excellent line work and shading techniques'
-    ],
-    specialties: [
-      'Custom Designs',
-      'Black and Grey',
-      'Color Work',
-      'Cover-ups'
-    ]
-  },
-  brows: {
-    title: 'Eyebrow Artist & Microblading Specialist',
-    description: 'Beauty boutique seeking a skilled brow artist specializing in shaping, tinting, and microblading. Help clients achieve their perfect brows in our intimate, upscale setting. Existing clientele a plus but not required.',
-    location: 'Seattle, WA',
-    compensation_details: 'Base + commission on services and retail',
-    salary_range: '$50K-$80K annually with a strong client base',
+
+  // Lash Artist template
+  lashes: {
+    title: 'Certified Lash Technician Needed',
+    description: 'Seeking an experienced lash artist to join our beauty studio. Must be certified in classic and volume lash extensions with attention to detail and excellent time management.',
+    location: 'Dallas, TX',
+    compensation_details: 'Competitive commission rates, flexible scheduling, and opportunities for advanced training.',
+    salary_range: '$50-$75 per set + tips',
     jobType: 'part-time',
     experience_level: 'experienced',
-    contactEmail: 'hello@browstudioseattle.com',
+    contactEmail: 'join@flutterlashes.com',
     requirements: [
-      'Microblading certification',
-      'Esthetician license preferred',
-      'Experience with brow mapping',
-      'Knowledge of different face shapes and suitable styles'
+      'Lash certification (classic and volume)',
+      'Minimum 6 months professional experience',
+      'Own professional kit and tools',
+      'Portfolio of work',
+      'Excellent time management',
+      'Weekend availability'
     ],
-    specialties: [
-      'Microblading',
-      'Brow Lamination',
-      'Brow Tinting',
-      'Brow Shaping'
-    ]
+    specialties: ['Classic Extensions', 'Volume Extensions', 'Hybrid Sets', 'Lash Lifts', 'Tinting']
   },
-  skincare: {
-    title: 'Licensed Esthetician - Medical Spa',
-    description: 'Medical spa seeking a licensed esthetician with experience in advanced treatments. Work alongside medical professionals in a clinical, results-driven environment while providing exceptional skincare services.',
-    location: 'Dallas, TX',
-    compensation_details: 'Hourly + commission on services and products',
-    salary_range: '$45K-$70K depending on experience and certifications',
-    jobType: 'full-time',
-    experience_level: 'experienced',
-    contactEmail: 'careers@medspadallas.com',
-    requirements: [
-      'Current esthetician license',
-      'Experience with chemical peels and microdermabrasion',
-      'Knowledge of medical-grade skincare products',
-      'Comfortable working in a medical setting'
-    ],
-    specialties: [
-      'Chemical Peels',
-      'Hydrafacial',
-      'Microdermabrasion',
-      'LED Light Therapy'
-    ]
-  },
+
+  // Barber template
   barber: {
-    title: 'Master Barber - Premium Barbershop',
-    description: 'Modern, upscale barbershop seeking experienced barbers who excel in classic cuts, fades, beard grooming, and straight razor shaves. Join our team of professionals in a stylish, client-focused environment with steady clientele.',
-    location: 'Brooklyn, NY',
-    compensation_details: 'Commission-based structure with guaranteed minimum',
-    salary_range: '$60K-$90K annually including tips',
+    title: 'Master Barber Position Available',
+    description: 'Modern barbershop seeking experienced barber for our growing clientele. Must excel in classic cuts, fades, beard grooming, and straight razor shaves. Join our team-oriented atmosphere with high earning potential.',
+    location: 'Atlanta, GA',
+    compensation_details: 'Commission-based with guaranteed minimum. Weekly pay structure with booth rental option for experienced professionals.',
+    salary_range: '$900-$1,800/week',
     jobType: 'full-time',
     experience_level: 'experienced',
-    contactEmail: 'join@premiumcutsbk.com',
+    contactEmail: 'careers@sharpcuts.com',
     requirements: [
-      'Current barber license',
-      'Minimum 2-3 years professional experience',
-      'Proficiency in modern and classic cutting techniques',
-      'Experience with diverse hair textures and styles'
+      'Valid barber license',
+      'Minimum 2 years professional experience',
+      'Proficiency in fades, tapers, and classic cuts',
+      'Beard trimming and straight razor shaving skills',
+      'Excellent customer service',
+      'Ability to maintain client relationships'
     ],
-    specialties: [
-      'Precision Fades',
-      'Beard Sculpting',
-      'Hot Towel Shaves',
-      'Hair Design'
-    ]
+    specialties: ['Skin Fades', 'Beard Design', 'Straight Razor Shaves', 'Hair Design', 'Hot Towel Service']
   },
+
+  // Makeup Artist template
   makeup: {
-    title: 'Professional Makeup Artist - Luxury Beauty Brand',
-    description: 'High-end beauty retailer seeking a creative makeup artist to join our team. Demonstrate products, perform makeovers, and help clients achieve their desired looks. Perfect position for a passionate beauty enthusiast with excellent people skills.',
+    title: 'Professional Makeup Artist Wanted',
+    description: 'Luxury beauty studio seeking talented makeup artist for our clientele. Experience with bridal, special occasion, and photoshoot makeup necessary. Must have excellent color theory and working knowledge of various skin types and tones.',
     location: 'Los Angeles, CA',
-    compensation_details: 'Hourly rate + commission + gratis products',
-    salary_range: '$45K-$65K depending on experience and sales',
-    jobType: 'full-time',
+    compensation_details: 'Commission-based pay with product discounts and paid professional development opportunities.',
+    salary_range: '$50-$150 per service + retail commission',
+    jobType: 'part-time',
     experience_level: 'intermediate',
-    contactEmail: 'careers@luxebeauty.com',
+    contactEmail: 'artistry@glamstudio.com',
     requirements: [
       'Professional makeup certification preferred',
-      'Experience with diverse skin tones and face shapes',
-      'Knowledge of current beauty trends',
-      'Retail or customer service background a plus'
+      'Minimum 1 year experience in beauty industry',
+      'Strong portfolio demonstrating versatility',
+      'Knowledge of current trends and techniques',
+      'Excellent sanitization practices',
+      'Available for weekend appointments'
     ],
-    specialties: [
-      'Special Occasion Makeup',
-      'Natural Glam',
-      'Editorial Looks',
-      'Color Matching'
-    ]
+    specialties: ['Bridal', 'Special Occasion', 'Airbrush', 'Editorial', 'Natural Makeup']
   },
+
+  // Massage Therapist template
+  massage: {
+    title: 'Licensed Massage Therapist Position',
+    description: 'Wellness center seeking licensed massage therapist to provide therapeutic treatments to our clients. Experience in deep tissue, Swedish, and sports massage preferred.',
+    location: 'Denver, CO',
+    compensation_details: 'Hourly plus tips, or commission-based options available. Flexible scheduling.',
+    salary_range: '$40-$60/hr + tips',
+    jobType: 'part-time',
+    experience_level: 'intermediate',
+    contactEmail: 'hr@wellnessspa.com',
+    requirements: [
+      'Current massage therapy license',
+      'Liability insurance',
+      'Knowledge of multiple massage modalities',
+      'Good physical stamina',
+      'Professional demeanor',
+      'Excellent communication skills'
+    ],
+    specialties: ['Deep Tissue', 'Swedish', 'Hot Stone', 'Prenatal', 'Sports Massage']
+  },
+
+  // Brow specialist template
+  brows: {
+    title: 'Eyebrow Specialist/Microblading Artist',
+    description: 'Upscale beauty bar seeking skilled brow artist experienced in shaping, tinting, lamination, and microblading. Must have an eye for symmetry and facial proportions.',
+    location: 'Chicago, IL',
+    compensation_details: 'Commission-based with guaranteed minimum. Monthly performance bonuses available.',
+    salary_range: '$45,000-$65,000/year',
+    jobType: 'full-time',
+    experience_level: 'experienced',
+    contactEmail: 'careers@browstudio.com',
+    requirements: [
+      'Microblading certification',
+      'Brow lamination certification',
+      'Minimum 1 year professional experience',
+      'Portfolio of work',
+      'Detail-oriented with steady hands',
+      'Excellent color matching skills'
+    ],
+    specialties: ['Microblading', 'Brow Lamination', 'Brow Tinting', 'Threading', 'Brow Mapping']
+  },
+
+  // Skincare Specialist template
+  skincare: {
+    title: 'Licensed Esthetician Needed',
+    description: 'Medical spa seeking licensed esthetician with experience in clinical skincare treatments, chemical peels, microdermabrasion, and facial protocols. Must be knowledgeable about skincare ingredients and technologies.',
+    location: 'Seattle, WA',
+    compensation_details: 'Hourly base plus commission on services and retail. Medical benefits for full-time employees.',
+    salary_range: '$40,000-$60,000/year',
+    jobType: 'full-time',
+    experience_level: 'intermediate',
+    contactEmail: 'jobs@medispa.com',
+    requirements: [
+      'Current esthetics license',
+      'Minimum 1 year spa or medical spa experience',
+      'Knowledge of medical-grade skincare lines',
+      'Experience with chemical peels and microdermabrasion',
+      'Understanding of skin conditions and contraindications',
+      'Excellent sanitation practices'
+    ],
+    specialties: ['Medical Facials', 'Chemical Peels', 'Microdermabrasion', 'LED Light Therapy', 'Extraction Techniques']
+  },
+
+  // Tattoo Artist template
+  tattoo: {
+    title: 'Experienced Tattoo Artist Wanted',
+    description: 'Professional tattoo studio seeking an experienced artist to join our team. Must have a strong portfolio demonstrating technical skill and artistic ability. Clean, professional shop with established clientele.',
+    location: 'Portland, OR',
+    compensation_details: 'Booth rental or commission-based options available. Flexible schedule.',
+    salary_range: 'Commission-based',
+    jobType: 'full-time',
+    experience_level: 'experienced',
+    contactEmail: 'art@inkstudio.com',
+    requirements: [
+      'Minimum 3 years professional tattooing experience',
+      'Strong portfolio showcasing range and skill',
+      'Bloodborne pathogen certification',
+      'Excellent drawing and design skills',
+      'Knowledge of proper sterilization techniques',
+      'Professional attitude and good communication'
+    ],
+    specialties: ['Traditional', 'Realism', 'Watercolor', 'Black and Grey', 'Cover-ups']
+  },
+
+  // Custom/empty template
   custom: {
     title: '',
     description: '',
@@ -283,12 +275,12 @@ export const jobTemplates: Record<IndustryType | 'custom', JobFormValues> = {
     compensation_details: '',
     salary_range: '',
     jobType: 'full-time',
-    experience_level: 'experienced',
+    experience_level: 'entry',
     contactEmail: '',
     requirements: [],
     specialties: []
   }
 };
 
-// Export IndustryType for direct use
-export { IndustryType } from './jobFormSchema';
+// Export type instead of regular export for type definitions
+export type { JobFormValues, IndustryType };
