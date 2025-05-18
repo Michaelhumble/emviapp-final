@@ -1,282 +1,205 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
 import { JobFormValues } from './jobFormSchema';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Card } from '@/components/ui/card';
+import { luxuryGradients, luxuryBorders } from './luxuryGradients';
+import LuxuryJobCard from './LuxuryJobCard';
 
 interface JobTemplateSelectorProps {
   onTemplateSelect: (template: JobFormValues) => void;
 }
 
 const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSelect }) => {
-  const { t } = useTranslation();
+  const handleTemplateSelect = (template: JobFormValues) => {
+    onTemplateSelect(template);
+  };
 
-  const jobTemplates = [
+  const templates: { 
+    id: string;
+    title: string;
+    description: string;
+    gradient: string;
+    border: string;
+    template: JobFormValues;
+  }[] = [
     {
-      id: 'nail-tech',
-      title: t({
-        english: 'Nail Technician',
-        vietnamese: 'Thợ Nail'
-      }),
-      description: t({
-        english: 'Find experienced nail technicians for your salon',
-        vietnamese: 'Tìm thợ nail có kinh nghiệm cho salon của bạn'
-      }),
+      id: 'nails',
+      title: 'Nail Technician',
+      description: 'Post jobs for skilled nail technicians and specialists.',
+      gradient: luxuryGradients.champagne,
+      border: luxuryBorders.champagne,
       template: {
-        title: "Experienced Nail Technician Needed",
-        description: "Looking for skilled nail technicians to join our team. We offer a great working environment, competitive pay, and flexible hours. Experience with acrylics, gel, and nail art preferred.",
-        vietnameseDescription: "Cần thợ nail có kinh nghiệm để tham gia đội ngũ của chúng tôi. Chúng tôi cung cấp môi trường làm việc tuyệt vời, mức lương cạnh tranh và giờ làm việc linh hoạt. Ưu tiên kinh nghiệm với bột, gel và nail art.",
-        location: "",
-        jobType: "full-time",
-        experience_level: "experienced",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-rose-50 to-rose-50",
-      borderClass: "border-rose-100",
+        title: 'Nail Technician Needed',
+        description: 'Looking for experienced Nail Technician with a positive attitude to join our growing team. Must have strong acrylic and pedicure skills.',
+        vietnameseDescription: 'Đang tìm Kỹ thuật viên Nail có kinh nghiệm với thái độ tích cực để tham gia đội ngũ đang phát triển của chúng tôi. Phải có kỹ năng mạnh mẽ về đắp bột và làm chân.',
+        location: '',
+        jobType: 'full-time',
+        experience_level: 'experienced',
+        contactEmail: '',
+      }
     },
     {
-      id: 'hair-stylist',
-      title: t({
-        english: 'Hair Stylist',
-        vietnamese: 'Thợ Làm Tóc'
-      }),
-      description: t({
-        english: 'Hire skilled hairstylists for your salon',
-        vietnamese: 'Thuê thợ làm tóc có kỹ năng cho salon của bạn'
-      }),
+      id: 'hair',
+      title: 'Hair Stylist',
+      description: 'Post jobs for skilled hair stylists and colorists.',
+      gradient: luxuryGradients.softBlush,
+      border: luxuryBorders.softBlush,
       template: {
-        title: "Professional Hair Stylist Position",
-        description: "We are looking for talented hair stylists to join our growing team. Must have experience with various cutting techniques, color services, and styling. Great opportunity to build clientele in a busy location.",
-        location: "",
-        jobType: "full-time",
-        experience_level: "intermediate",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-amber-50 to-amber-50",
-      borderClass: "border-amber-100",
+        title: 'Hair Stylist Position',
+        description: 'Upscale salon seeking experienced Hair Stylist. Must be skilled in cutting, styling, and coloring. Looking for someone with a strong clientele and passion for the industry.',
+        location: '',
+        jobType: 'full-time',
+        experience_level: 'intermediate',
+        contactEmail: '',
+      }
     },
     {
-      id: 'lash-artist',
-      title: t({
-        english: 'Lash Artist',
-        vietnamese: 'Nghệ Sĩ Nối Mi'
-      }),
-      description: t({
-        english: 'Connect with certified lash technicians',
-        vietnamese: 'Kết nối với kỹ thuật viên nối mi được chứng nhận'
-      }),
+      id: 'lashes',
+      title: 'Lash Artist',
+      description: 'Post jobs for lash extension specialists.',
+      gradient: luxuryGradients.paleRose,
+      border: luxuryBorders.paleRose,
       template: {
-        title: "Lash Artist / Lash Tech Wanted",
-        description: "Seeking certified lash artists to provide premium lash extensions. Experience with classic, volume, and hybrid sets required. Must have great attention to detail and excellent client service skills.",
-        location: "",
-        jobType: "full-time",
-        experience_level: "intermediate",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-violet-50 to-violet-50",
-      borderClass: "border-violet-100",
+        title: 'Experienced Lash Artist',
+        description: 'Seeking skilled Lash Artist for busy studio. Experience with classic and volume sets required. Strong attention to detail and excellent client service skills a must.',
+        location: '',
+        jobType: 'part-time',
+        experience_level: 'experienced',
+        contactEmail: '',
+      }
     },
     {
-      id: 'massage-therapist',
-      title: t({
-        english: 'Massage Therapist',
-        vietnamese: 'Chuyên Viên Massage'
-      }),
-      description: t({
-        english: 'Recruit licensed massage professionals',
-        vietnamese: 'Tuyển dụng chuyên gia massage có giấy phép'
-      }),
+      id: 'massage',
+      title: 'Massage Therapist',
+      description: 'Post jobs for licensed massage therapists.',
+      gradient: luxuryGradients.cashmere,
+      border: luxuryBorders.cashmere,
       template: {
-        title: "Licensed Massage Therapist Needed",
-        description: "Seeking licensed massage therapists to provide relaxation and therapeutic massages. Experience with various modalities preferred. Must be customer-focused and professional.",
-        location: "",
-        jobType: "part-time",
-        experience_level: "experienced",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-blue-50 to-blue-50",
-      borderClass: "border-blue-100",
+        title: 'Licensed Massage Therapist',
+        description: 'Now hiring Licensed Massage Therapists. Seeking skilled therapists with experience in various massage techniques. Must have valid license and professional demeanor.',
+        location: '',
+        jobType: 'part-time',
+        experience_level: 'intermediate',
+        contactEmail: '',
+      }
     },
     {
       id: 'barber',
-      title: t({
-        english: 'Barber',
-        vietnamese: 'Thợ Cắt Tóc Nam'
-      }),
-      description: t({
-        english: 'Find skilled barbers for your barbershop',
-        vietnamese: 'Tìm thợ cắt tóc có kỹ năng cho tiệm của bạn'
-      }),
+      title: 'Barber',
+      description: 'Post jobs for professional barbers.',
+      gradient: luxuryGradients.paleMocha,
+      border: luxuryBorders.paleMocha,
       template: {
-        title: "Experienced Barber Position Available",
-        description: "Looking for talented barbers with experience in traditional and modern cuts, fades, beard trims, and hot towel shaves. Great opportunity to work in a busy shop with established clientele.",
-        location: "",
-        jobType: "full-time",
-        experience_level: "experienced",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-neutral-50 to-neutral-50",
-      borderClass: "border-neutral-100",
+        title: 'Professional Barber Wanted',
+        description: 'Modern barbershop looking for professional Barber with skills in traditional and modern cuts, fades, and beard grooming. Strong portfolio and reliable work ethic required.',
+        location: '',
+        jobType: 'full-time',
+        experience_level: 'intermediate',
+        contactEmail: '',
+      }
     },
     {
-      id: 'makeup-artist',
-      title: t({
-        english: 'Makeup Artist',
-        vietnamese: 'Chuyên Viên Trang Điểm'
-      }),
-      description: t({
-        english: 'Hire professional makeup artists',
-        vietnamese: 'Thuê chuyên gia trang điểm chuyên nghiệp'
-      }),
+      id: 'makeup',
+      title: 'Makeup Artist',
+      description: 'Post jobs for makeup artists and consultants.',
+      gradient: luxuryGradients.pearl,
+      border: luxuryBorders.pearl,
       template: {
-        title: "Makeup Artist Wanted",
-        description: "Seeking skilled makeup artists with experience in bridal, special event, and editorial makeup. Portfolio required. Must be creative, detail-oriented, and able to work well under pressure.",
-        location: "",
-        jobType: "contract",
-        experience_level: "intermediate",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-pink-50 to-pink-50",
-      borderClass: "border-pink-100",
+        title: 'Freelance Makeup Artist',
+        description: 'Hiring Makeup Artists for bridal and special events. Must have strong portfolio showing versatility in different makeup styles and experience with diverse skin types.',
+        location: '',
+        jobType: 'contract',
+        experience_level: 'experienced',
+        contactEmail: '',
+      }
     },
     {
-      id: 'brow-artist',
-      title: t({
-        english: 'Brow Artist',
-        vietnamese: 'Chuyên Viên Chăm Sóc Lông Mày'
-      }),
-      description: t({
-        english: 'Find skilled brow specialists',
-        vietnamese: 'Tìm chuyên gia lông mày có kỹ năng'
-      }),
+      id: 'brows',
+      title: 'Brow Artist',
+      description: 'Post jobs for brow specialists and technicians.',
+      gradient: luxuryGradients.cream,
+      border: luxuryBorders.cream,
       template: {
-        title: "Brow Artist / Specialist Position",
-        description: "Hiring experienced brow specialists skilled in shaping, tinting, lamination, and microblading. Must have an eye for symmetry and facial proportions. Great earning potential.",
-        location: "",
-        jobType: "full-time",
-        experience_level: "experienced",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-amber-50 to-amber-50",
-      borderClass: "border-amber-100",
+        title: 'Brow Artist Position',
+        description: 'Seeking skilled Brow Artist with experience in microblading, threading, and tinting. Attention to detail and ability to shape according to face structure essential.',
+        location: '',
+        jobType: 'part-time',
+        experience_level: 'experienced',
+        contactEmail: '',
+      }
     },
     {
-      id: 'skincare-specialist',
-      title: t({
-        english: 'Skincare Specialist',
-        vietnamese: 'Chuyên Viên Chăm Sóc Da'
-      }),
-      description: t({
-        english: 'Recruit licensed estheticians',
-        vietnamese: 'Tuyển dụng chuyên viên thẩm mỹ có giấy phép'
-      }),
+      id: 'skincare',
+      title: 'Skincare Specialist',
+      description: 'Post jobs for estheticians and skincare experts.',
+      gradient: luxuryGradients.ivory,
+      border: luxuryBorders.ivory,
       template: {
-        title: "Licensed Esthetician / Skincare Specialist",
-        description: "Seeking licensed estheticians to provide facials, peels, and other skincare treatments. Knowledge of professional product lines and current skincare technologies required.",
-        location: "",
-        jobType: "full-time",
-        experience_level: "intermediate",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-teal-50 to-teal-50",
-      borderClass: "border-teal-100",
+        title: 'Licensed Esthetician',
+        description: 'Luxury spa seeking Licensed Esthetician with knowledge of advanced skin treatments and product lines. Experience with facials, peels, and skin analysis required.',
+        location: '',
+        jobType: 'full-time',
+        experience_level: 'intermediate',
+        contactEmail: '',
+      }
     },
     {
-      id: 'tattoo-artist',
-      title: t({
-        english: 'Tattoo Artist',
-        vietnamese: 'Nghệ Sĩ Xăm'
-      }),
-      description: t({
-        english: 'Connect with professional tattoo artists',
-        vietnamese: 'Kết nối với nghệ sĩ xăm chuyên nghiệp'
-      }),
+      id: 'tattoo',
+      title: 'Tattoo Artist',
+      description: 'Post jobs for professional tattoo artists.',
+      gradient: luxuryGradients.paleRose,
+      border: luxuryBorders.paleRose,
       template: {
-        title: "Tattoo Artist Position Available",
-        description: "Looking for talented tattoo artists to join our studio. Must have a strong portfolio showing range and technical ability. Experience with various styles preferred.",
-        location: "",
-        jobType: "full-time",
-        experience_level: "experienced",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-gray-50 to-gray-50",
-      borderClass: "border-gray-100",
+        title: 'Tattoo Artist Needed',
+        description: 'Professional tattoo studio looking for experienced Tattoo Artist. Strong portfolio, excellent line work, and versatile style range required. Health certification a must.',
+        location: '',
+        jobType: 'full-time',
+        experience_level: 'experienced',
+        contactEmail: '',
+      }
     },
     {
       id: 'custom',
-      title: t({
-        english: 'Custom Job',
-        vietnamese: 'Công Việc Tùy Chỉnh'
-      }),
-      description: t({
-        english: 'Create a custom job listing',
-        vietnamese: 'Tạo danh sách công việc tùy chỉnh'
-      }),
+      title: 'Custom Job',
+      description: 'Create a custom job posting for any position.',
+      gradient: luxuryGradients.champagne,
+      border: luxuryBorders.champagne,
       template: {
-        title: "",
-        description: "",
-        location: "",
-        jobType: "full-time",
-        experience_level: "intermediate",
-        contactEmail: "",
-      },
-      bgClass: "bg-gradient-to-br from-purple-50 to-purple-50",
-      borderClass: "border-purple-100",
+        title: '',
+        description: '',
+        location: '',
+        jobType: 'full-time',
+        experience_level: 'intermediate',
+        contactEmail: '',
+      }
     },
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-2 text-gray-900">
-          {t({
-            english: 'Select a Job Template',
-            vietnamese: 'Chọn Mẫu Công Việc'
-          })}
-        </h2>
-        <p className="text-gray-600 mb-6">
-          {t({
-            english: 'Choose a template to quickly create your job posting',
-            vietnamese: 'Chọn một mẫu để nhanh chóng tạo bài đăng việc làm của bạn'
-          })}
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="font-playfair text-3xl font-bold text-gray-900 mb-3">Select Job Template</h2>
+        <p className="text-gray-600 max-w-md mx-auto">
+          Choose a template to jumpstart your job posting. You can customize all details in the next step.
         </p>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {jobTemplates.map((template) => (
-          <motion.div
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {templates.map((template) => (
+          <LuxuryJobCard
             key={template.id}
-            whileHover={{ translateY: -2, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03)" }}
-            transition={{ duration: 0.15 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => onTemplateSelect(template.template)}
-            className={`cursor-pointer rounded-2xl border overflow-hidden ${template.borderClass}`}
-            style={{ 
-              background: "#FDFDFD",
-              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.035)",
-              borderWidth: "1px",
-              borderStyle: "solid",
-            }}
-          >
-            <Card className={`p-5 h-full border-0 bg-transparent flex flex-col justify-between`}>
-              <div className="space-y-2 text-left">
-                <h3 className="font-playfair text-xl font-bold tracking-tight text-gray-900">
-                  {template.title}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {template.description}
-                </p>
-              </div>
-            </Card>
-          </motion.div>
+            title={template.title}
+            description={template.description}
+            onClick={() => handleTemplateSelect(template.template)}
+            gradientClass={template.gradient}
+            className={template.border}
+          />
         ))}
       </div>
       
-      <div className="text-center pt-8 pb-2">
-        <p className="text-sm italic text-gray-500">
-          Inspired by Sunshine ☀️
-        </p>
+      <div className="text-center mt-8 text-xs italic text-gray-400">
+        Inspired by Sunshine ☀️
       </div>
     </div>
   );

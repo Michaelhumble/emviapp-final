@@ -2,15 +2,19 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { useTranslation } from '@/hooks/useTranslation';
+import { ArrowLeft } from 'lucide-react';
 import { PricingOptions } from '@/utils/posting/types';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { JobFormValues } from '../job/jobFormSchema';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import PaymentSummary from '../PaymentSummary';
-import PaymentConfirmationModal from '../PaymentConfirmationModal';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface ReviewAndPaymentSectionProps {
-  formData: any;
+  formData: JobFormValues;
   photoUploads: File[];
   onBack: () => void;
   onSubmit: (pricingOptions: PricingOptions) => void;
@@ -26,472 +30,277 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   onSubmit,
   isSubmitting,
   pricingOptions,
-  setPricingOptions,
+  setPricingOptions
 }) => {
-  const { t, isVietnamese } = useTranslation();
   const [showVietnamese, setShowVietnamese] = useState(!!formData.vietnameseDescription);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const { initiatePayment } = usePostPayment();
   
-  // Calculate pricing based on tier, duration, etc.
-  const basePrice = pricingOptions.selectedPricingTier === 'premium' ? 29.99 :
-                   pricingOptions.selectedPricingTier === 'standard' ? 19.99 : 0;
-  
-  const originalPrice = basePrice * pricingOptions.durationMonths;
-  let discountPercentage = 0;
-  
-  if (pricingOptions.isFirstPost) {
-    discountPercentage = 15;
-  } else if (pricingOptions.autoRenew) {
-    discountPercentage = 5;
-  }
-  
-  const finalPrice = originalPrice * (1 - discountPercentage / 100);
-  const isFreePost = pricingOptions.selectedPricingTier === 'free';
+  // Calculate job price using the existing pricing logic
+  const priceCalculation = calculateJobPostPrice(pricingOptions);
   
   const handleProceedToPayment = () => {
-    if (isFreePost) {
-      onSubmit(pricingOptions);
-    } else {
-      setShowConfirmation(true);
+    onSubmit(pricingOptions);
+  };
+  
+  const formatJobType = (type: string): string => {
+    switch (type) {
+      case 'full-time': return 'Full-Time';
+      case 'part-time': return 'Part-Time';
+      case 'contract': return 'Contract';
+      case 'temporary': return 'Temporary';
+      case 'commission': return 'Commission';
+      default: return type;
     }
   };
   
-  const handleConfirmPayment = () => {
-    setShowConfirmation(false);
-    onSubmit(pricingOptions);
+  const formatExperienceLevel = (level: string): string => {
+    switch (level) {
+      case 'entry': return 'Entry Level';
+      case 'intermediate': return 'Intermediate';
+      case 'experienced': return 'Experienced';
+      case 'senior': return 'Senior';
+      default: return level;
+    }
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-2 text-gray-900">
-          {t({
-            english: 'Review Your Job Listing',
-            vietnamese: 'Xem Lại Thông Tin Công Việc'
-          })}
-        </h2>
-        <p className="text-gray-600 mb-6">
-          {t({
-            english: 'Please review your job posting before publishing',
-            vietnamese: 'Vui lòng kiểm tra thông tin trước khi đăng'
-          })}
-        </p>
+    <motion.div 
+      className="space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex items-center mb-6 space-x-4">
+        <Button variant="ghost" onClick={onBack} className="p-2">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+        <h2 className="font-playfair text-2xl font-bold text-gray-900">Review & Submit</h2>
       </div>
-      
-      {/* Job Preview Card */}
-      <Card className="overflow-hidden bg-white border border-gray-100 shadow-md rounded-xl">
-        <CardContent className="p-6">
-          <div className="space-y-6">
-            {/* Job Details */}
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-playfair text-2xl font-bold text-gray-900">{formData.title}</h3>
-                <p className="text-lg text-gray-700 mt-1">{formData.location}</p>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mt-2">
-                <span className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
-                  {formData.jobType === 'full-time' ? t({
-                    english: 'Full Time',
-                    vietnamese: 'Toàn Thời Gian'
-                  }) : 
-                  formData.jobType === 'part-time' ? t({
-                    english: 'Part Time',
-                    vietnamese: 'Bán Thời Gian'
-                  }) : 
-                  formData.jobType === 'contract' ? t({
-                    english: 'Contract',
-                    vietnamese: 'Hợp Đồng'
-                  }) :
-                  formData.jobType === 'temporary' ? t({
-                    english: 'Temporary',
-                    vietnamese: 'Tạm Thời'
-                  }) : t({
-                    english: 'Commission',
-                    vietnamese: 'Hoa Hồng'
-                  })}
-                </span>
-                <span className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
-                  {formData.experience_level === 'entry' ? t({
-                    english: 'Entry Level',
-                    vietnamese: 'Mới Bắt Đầu'
-                  }) : 
-                  formData.experience_level === 'intermediate' ? t({
-                    english: 'Intermediate',
-                    vietnamese: 'Trung Cấp'
-                  }) : 
-                  formData.experience_level === 'experienced' ? t({
-                    english: 'Experienced',
-                    vietnamese: 'Có Kinh Nghiệm'
-                  }) : t({
-                    english: 'Senior',
-                    vietnamese: 'Cao Cấp'
-                  })}
-                </span>
-                {formData.salary_range && (
-                  <span className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
-                    {formData.salary_range}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Summary Section */}
+        <div className="space-y-6">
+          <Card className="border border-[#e8e1d5] overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#fcfaf5] to-[#f8f3e9] opacity-40" />
+            <div className="relative px-6 py-5 border-b border-[#e8e1d5]">
+              <h3 className="font-playfair text-xl font-bold text-gray-900">Job Summary</h3>
+            </div>
+            <CardContent className="relative p-6 space-y-6">
+              <div className="space-y-4">
+                <h1 className="font-playfair text-2xl font-bold text-gray-900">{formData.title}</h1>
+                
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700">
+                    {formatJobType(formData.jobType)}
                   </span>
-                )}
-              </div>
-              
-              <div className="space-y-2 mt-6">
-                <h4 className="font-bold text-gray-800">{t({
-                  english: 'Job Description',
-                  vietnamese: 'Mô Tả Công Việc'
-                })}</h4>
-                <p className="text-gray-700 whitespace-pre-line">{formData.description}</p>
-              </div>
-              
-              {/* Toggle Vietnamese Description */}
-              <div className="flex items-center space-x-2 pt-4">
-                <Switch
-                  checked={showVietnamese}
-                  onCheckedChange={setShowVietnamese}
-                  id="vietnamese-preview-mode"
-                  disabled={!formData.vietnameseDescription}
-                />
-                <label
-                  htmlFor="vietnamese-preview-mode"
-                  className="text-sm font-medium leading-none cursor-pointer"
-                >
-                  {t({
-                    english: 'Show Vietnamese Description',
-                    vietnamese: 'Hiển Thị Mô Tả Tiếng Việt'
-                  })}
-                </label>
-              </div>
-              
-              {showVietnamese && formData.vietnameseDescription && (
-                <div className="space-y-2 mt-4">
-                  <h4 className="font-bold text-gray-800">
-                    {t({
-                      english: 'Vietnamese Description',
-                      vietnamese: 'Mô Tả Tiếng Việt'
-                    })}
-                  </h4>
-                  <p className="text-gray-700 whitespace-pre-line">{formData.vietnameseDescription}</p>
+                  <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700">
+                    {formatExperienceLevel(formData.experience_level)}
+                  </span>
+                  {formData.location && (
+                    <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700">
+                      {formData.location}
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-            
-            {/* Contact Information Card */}
-            <div className="bg-gray-50 p-5 rounded-xl">
-              <h4 className="font-bold text-gray-800 mb-3">{t({
-                english: 'Contact Information',
-                vietnamese: 'Thông Tin Liên Hệ'
-              })}</h4>
-              
-              <div className="grid gap-3">
-                {formData.contactName && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{t({
-                      english: 'Contact Name',
-                      vietnamese: 'Tên Liên Hệ'
-                    })}</span>
-                    <span className="font-medium text-gray-800">{formData.contactName}</span>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900">Description (English)</h4>
+                  <p className="text-gray-700 mt-1 whitespace-pre-wrap">{formData.description}</p>
+                </div>
+                
+                {formData.vietnameseDescription && (
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">Vietnamese Description</h4>
+                      <div className="flex items-center space-x-2">
+                        <Switch 
+                          id="show-vietnamese" 
+                          checked={showVietnamese} 
+                          onCheckedChange={setShowVietnamese} 
+                          className="data-[state=checked]:bg-gray-900"
+                        />
+                        <Label htmlFor="show-vietnamese" className="text-sm text-gray-600">
+                          {showVietnamese ? 'Hide' : 'Show'}
+                        </Label>
+                      </div>
+                    </div>
+                    {showVietnamese && (
+                      <p className="text-gray-700 whitespace-pre-wrap">{formData.vietnameseDescription}</p>
+                    )}
                   </div>
                 )}
                 
-                {formData.contactPhone && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{t({
-                      english: 'Phone Number',
-                      vietnamese: 'Số Điện Thoại'
-                    })}</span>
-                    <span className="font-medium text-gray-800">{formData.contactPhone}</span>
+                {formData.salary_range && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Salary Range</h4>
+                    <p className="text-gray-700 mt-1">{formData.salary_range}</p>
                   </div>
                 )}
                 
-                <div className="flex justify-between">
-                  <span className="text-gray-600">{t({
-                    english: 'Email Address',
-                    vietnamese: 'Địa Chỉ Email'
-                  })}</span>
-                  <span className="font-medium text-gray-800">{formData.contactEmail}</span>
+                {formData.compensation_details && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Compensation Details</h4>
+                    <p className="text-gray-700 mt-1">{formData.compensation_details}</p>
+                  </div>
+                )}
+
+                {/* Contact Information */}
+                <div className="py-2 border-t border-gray-100">
+                  <h3 className="font-playfair text-lg font-semibold mb-3">Contact Information</h3>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Contact Email:</span>
+                      <span className="font-medium text-gray-900">{formData.contactEmail || 'Not provided'}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Contact Name:</span>
+                      <span className="font-medium text-gray-900">{formData.contactName || 'Not provided'}</span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Contact Phone:</span>
+                      <span className="font-medium text-gray-900">{formData.contactPhone || 'Not provided'}</span>
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="flex justify-between">
-                  <span className="text-gray-600">{t({
-                    english: 'Location',
-                    vietnamese: 'Địa Điểm'
-                  })}</span>
-                  <span className="font-medium text-gray-800">{formData.location}</span>
-                </div>
+                {photoUploads.length > 0 && (
+                  <div className="py-3">
+                    <h4 className="font-semibold text-gray-900">Photos</h4>
+                    <div className="flex mt-2 gap-2 overflow-x-auto pb-2">
+                      {photoUploads.map((file, index) => (
+                        <div 
+                          key={index}
+                          className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border border-gray-200"
+                        >
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt={`Upload ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {formData.requirements && formData.requirements.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Requirements</h4>
+                    <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-700">
+                      {formData.requirements.map((req, i) => (
+                        <li key={i}>{req}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Pricing Options */}
-      <div className="space-y-6">
-        <h3 className="font-playfair text-xl font-bold text-gray-900">{t({
-          english: 'Choose Your Listing Package',
-          vietnamese: 'Chọn Gói Đăng Tin'
-        })}</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card 
-            className={`cursor-pointer overflow-hidden transition-all duration-200 ${
-              pricingOptions.selectedPricingTier === 'standard' 
-                ? 'border-2 border-blue-400 shadow-md' 
-                : 'border border-gray-200'
-            }`}
-            onClick={() => setPricingOptions({...pricingOptions, selectedPricingTier: 'standard'})}
-          >
-            <CardContent className="p-5">
-              <h4 className="font-bold text-lg text-gray-900">
-                {t({
-                  english: 'Standard',
-                  vietnamese: 'Tiêu Chuẩn'
-                })}
-              </h4>
-              <div className="mt-2">
-                <span className="text-2xl font-bold">$19.99</span>
-                <span className="text-gray-500 text-sm ml-1">/ {t({
-                  english: 'month',
-                  vietnamese: 'tháng'
-                })}</span>
+              
+              <div className="text-xs italic text-right text-gray-400">
+                EmviApp
               </div>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: 'Standard listing visibility',
-                    vietnamese: 'Hiển thị tiêu chuẩn'
-                  })}
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: '30 days active',
-                    vietnamese: 'Hiển thị 30 ngày'
-                  })}
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className={`cursor-pointer overflow-hidden transition-all duration-200 ${
-              pricingOptions.selectedPricingTier === 'premium' 
-                ? 'border-2 border-purple-500 shadow-md' 
-                : 'border border-gray-200'
-            }`}
-            onClick={() => setPricingOptions({...pricingOptions, selectedPricingTier: 'premium'})}
-          >
-            <div className="bg-gradient-to-r from-violet-500 to-purple-500 py-1.5 text-center text-white text-sm font-medium">
-              {t({
-                english: 'RECOMMENDED',
-                vietnamese: 'ĐỀ XUẤT'
-              })}
-            </div>
-            <CardContent className="p-5">
-              <h4 className="font-bold text-lg text-gray-900">
-                {t({
-                  english: 'Premium',
-                  vietnamese: 'Cao Cấp'
-                })}
-              </h4>
-              <div className="mt-2">
-                <span className="text-2xl font-bold">$29.99</span>
-                <span className="text-gray-500 text-sm ml-1">/ {t({
-                  english: 'month',
-                  vietnamese: 'tháng'
-                })}</span>
-              </div>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: 'Featured listing placement',
-                    vietnamese: 'Vị trí nổi bật'
-                  })}
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: 'Priority in search results',
-                    vietnamese: 'Ưu tiên trong kết quả tìm kiếm'
-                  })}
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: '30 days active',
-                    vietnamese: 'Hiển thị 30 ngày'
-                  })}
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className={`cursor-pointer overflow-hidden transition-all duration-200 ${
-              pricingOptions.selectedPricingTier === 'free' 
-                ? 'border-2 border-gray-400 shadow-md' 
-                : 'border border-gray-200'
-            }`}
-            onClick={() => setPricingOptions({...pricingOptions, selectedPricingTier: 'free'})}
-          >
-            <CardContent className="p-5">
-              <h4 className="font-bold text-lg text-gray-900">
-                {t({
-                  english: 'Free',
-                  vietnamese: 'Miễn Phí'
-                })}
-              </h4>
-              <div className="mt-2">
-                <span className="text-2xl font-bold">$0</span>
-              </div>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: 'Basic listing',
-                    vietnamese: 'Đăng tin cơ bản'
-                  })}
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: '7 days active',
-                    vietnamese: 'Hiển thị 7 ngày'
-                  })}
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <span className="mr-2">✓</span>
-                  {t({
-                    english: 'Limited visibility',
-                    vietnamese: 'Hiển thị giới hạn'
-                  })}
-                </li>
-              </ul>
             </CardContent>
           </Card>
         </div>
         
-        {/* Duration Selection */}
-        {pricingOptions.selectedPricingTier !== 'free' && (
-          <div className="space-y-4 mt-6">
-            <h4 className="font-medium text-gray-900">{t({
-              english: 'Duration',
-              vietnamese: 'Thời Hạn'
-            })}</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {[1, 3, 6].map((months) => (
-                <button 
-                  key={months}
-                  type="button"
-                  onClick={() => setPricingOptions({...pricingOptions, durationMonths: months})}
-                  className={`px-4 py-3 rounded-lg border text-center transition-all ${
-                    pricingOptions.durationMonths === months 
-                      ? 'border-purple-500 bg-purple-50 text-purple-700' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="font-medium">
-                    {months} {t({
-                      english: months === 1 ? 'Month' : 'Months',
-                      vietnamese: 'Tháng'
-                    })}
-                  </div>
-                  {months > 1 && (
-                    <div className="text-xs mt-1 text-green-600">
-                      {months === 3 ? '-10%' : '-15%'}
-                    </div>
-                  )}
-                </button>
-              ))}
+        {/* Pricing & Payment Section */}
+        <div className="space-y-6">
+          <Card className={cn(
+            "overflow-hidden border",
+            pricingOptions.selectedPricingTier === 'premium' ? "border-[#e8dfe3]" :
+            pricingOptions.selectedPricingTier === 'gold' ? "border-[#e8e1d5]" :
+            pricingOptions.selectedPricingTier === 'diamond' ? "border-[#dfd8cf]" :
+            "border-gray-200"
+          )}>
+            <div className={cn(
+              "absolute inset-0 opacity-40",
+              pricingOptions.selectedPricingTier === 'premium' ? "bg-gradient-to-br from-[#faf4f6] to-[#f5e9ec]" :
+              pricingOptions.selectedPricingTier === 'gold' ? "bg-gradient-to-br from-[#f9f6f0] to-[#f3efe0]" :
+              pricingOptions.selectedPricingTier === 'diamond' ? "bg-gradient-to-br from-[#f7f5f3] to-[#efe8e1]" :
+              "bg-gradient-to-br from-[#f7f8f8] to-[#eef0f0]"
+            )} />
+            <div className="relative px-6 py-5 border-b border-gray-100">
+              <h3 className="font-playfair text-xl font-bold text-gray-900">Payment Details</h3>
             </div>
-          </div>
-        )}
-        
-        {/* Auto-renew Option */}
-        {pricingOptions.selectedPricingTier !== 'free' && (
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={pricingOptions.autoRenew}
-              onCheckedChange={(checked) => setPricingOptions({...pricingOptions, autoRenew: checked})}
-              id="auto-renew"
-            />
-            <div>
-              <label 
-                htmlFor="auto-renew" 
-                className="text-sm font-medium leading-none cursor-pointer"
-              >
-                {t({
-                  english: 'Auto-renew (5% discount)',
-                  vietnamese: 'Tự động gia hạn (giảm giá 5%)'
-                })}
-              </label>
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <p className="text-xs text-gray-500 mt-0.5 cursor-help">
-                    {t({
-                      english: 'Cancel anytime',
-                      vietnamese: 'Có thể hủy bất cứ lúc nào'
-                    })}
-                  </p>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-80">
-                  <div className="text-sm">
-                    {t({
-                      english: 'Your listing will automatically renew at the end of the period. You can cancel auto-renewal at any time from your dashboard.',
-                      vietnamese: 'Tin đăng của bạn sẽ tự động gia hạn vào cuối kỳ. Bạn có thể hủy tự động gia hạn bất cứ lúc nào từ bảng điều khiển.'
-                    })}
+            
+            <CardContent className="relative p-6 space-y-5">
+              <div className="mb-6">
+                <div className="flex justify-between mb-1">
+                  <span className="text-lg font-semibold text-gray-900">
+                    {pricingOptions.selectedPricingTier.charAt(0).toUpperCase() + pricingOptions.selectedPricingTier.slice(1)} Plan
+                  </span>
+                  <span className="text-lg font-bold text-gray-900">
+                    ${priceCalculation.finalPrice.toFixed(2)}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  {pricingOptions.durationMonths} month{pricingOptions.durationMonths > 1 ? 's' : ''}
+                </div>
+              </div>
+              
+              {/* Display pricing options */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Duration</h4>
+                    <p className="text-xs text-gray-600">How long your job will be posted</p>
                   </div>
-                </HoverCardContent>
-              </HoverCard>
-            </div>
-          </div>
-        )}
-      </div>
-      
-      {/* Payment Summary & Action Buttons */}
-      <PaymentSummary 
-        basePrice={basePrice}
-        duration={pricingOptions.durationMonths}
-        autoRenew={pricingOptions.autoRenew}
-        originalPrice={originalPrice}
-        finalPrice={finalPrice}
-        discountPercentage={discountPercentage}
-        onProceedToPayment={handleProceedToPayment}
-        isFreePlan={isFreePost}
-        isSubmitting={isSubmitting}
-      />
-      
-      <div className="flex justify-between pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          disabled={isSubmitting}
-        >
-          {t({
-            english: 'Back',
-            vietnamese: 'Quay Lại'
-          })}
-        </Button>
-      </div>
+                  <div className="flex space-x-2">
+                    {[1, 3, 6].map((months) => (
+                      <button
+                        key={months}
+                        className={cn(
+                          "px-3 py-1 text-xs font-medium rounded-full transition-colors",
+                          pricingOptions.durationMonths === months
+                            ? "bg-gray-900 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        )}
+                        onClick={() => setPricingOptions({
+                          ...pricingOptions,
+                          durationMonths: months
+                        })}
+                      >
+                        {months} {months === 1 ? "month" : "months"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between pt-2">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Auto-renew</h4>
+                    <p className="text-xs text-gray-600">Automatically renew when expired</p>
+                  </div>
+                  <Switch
+                    checked={!!pricingOptions.autoRenew}
+                    onCheckedChange={(checked) => setPricingOptions({
+                      ...pricingOptions,
+                      autoRenew: checked
+                    })}
+                    className="data-[state=checked]:bg-gray-900"
+                  />
+                </div>
+              </div>
 
-      {/* Payment Confirmation Modal */}
-      <PaymentConfirmationModal
-        open={showConfirmation}
-        onClose={() => setShowConfirmation(false)}
-        onConfirmPayment={handleConfirmPayment}
-        amount={finalPrice}
-        options={pricingOptions}
-        originalPrice={originalPrice}
-        discountPercentage={discountPercentage}
-      />
-
-      <div className="text-center pt-6 pb-2">
-        <p className="text-sm italic text-gray-500">
-          Inspired by Sunshine ☀️
-        </p>
+              <PaymentSummary
+                basePrice={priceCalculation.originalPrice / pricingOptions.durationMonths}
+                duration={pricingOptions.durationMonths}
+                autoRenew={!!pricingOptions.autoRenew}
+                originalPrice={priceCalculation.originalPrice}
+                finalPrice={priceCalculation.finalPrice}
+                discountPercentage={priceCalculation.discountPercentage}
+                onProceedToPayment={handleProceedToPayment}
+                isFreePlan={pricingOptions.selectedPricingTier === 'free'}
+                isSubmitting={isSubmitting}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
