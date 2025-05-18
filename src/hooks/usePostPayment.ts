@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission, PricingOptions } from '@/types/job';
+import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +14,10 @@ export const usePostPayment = () => {
     setIsLoading(true);
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions?.selectedPricingTier);
+
+      // Calculate price based on selected options
+      const priceData = pricingOptions ? calculateJobPostPrice(pricingOptions) : { finalPrice: 0 };
+      console.log("Calculated price:", priceData);
 
       // Handle free listings directly without going to Stripe
       if (pricingOptions?.selectedPricingTier === 'free') {
@@ -56,14 +61,16 @@ export const usePostPayment = () => {
       console.log("Payment parameters:", {
         tier: selectedPricingTier,
         duration: durationMonths,
-        autoRenew: pricingOptions?.autoRenew
+        autoRenew: pricingOptions?.autoRenew,
+        finalPrice: priceData.finalPrice
       });
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           postType,
           postDetails,
-          pricingOptions
+          pricingOptions,
+          priceData // Pass the calculated price data
         }
       });
 

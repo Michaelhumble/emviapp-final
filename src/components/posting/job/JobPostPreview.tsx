@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { JobFormValues } from './jobFormSchema';
 import { JobSpecialties } from '@/components/jobs/card-sections/JobSpecialties';
 import { ChevronLeft } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 interface JobPostPreviewProps {
   jobData: JobFormValues | null;

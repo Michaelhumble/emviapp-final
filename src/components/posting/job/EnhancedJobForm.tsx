@@ -6,7 +6,7 @@ import { PricingOptions } from '@/utils/posting/types';
 import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
 import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
-import { PaymentSummary } from '@/components/posting/PaymentSummary';
+import { toast } from 'sonner';
 
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
@@ -37,13 +37,22 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 
   // Update the handleJobFormSubmit to match the JobForm onSubmit signature
   const handleJobFormSubmit = (data: JobFormValues) => {
+    // Validate required fields
+    if (!data.title || !data.description || !data.location || !data.contactEmail) {
+      toast.error("Please complete all required fields before continuing");
+      return;
+    }
+
     setJobFormData(data);
     setActiveTab('review-payment');
     onStepChange?.(3);
   };
 
   const handlePaymentSubmit = async () => {
-    if (!jobFormData) return;
+    if (!jobFormData) {
+      toast.error("Job information is missing");
+      return;
+    }
     
     setIsSubmitting(true);
     try {
@@ -52,12 +61,14 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       
       if (!success) {
         setIsSubmitting(false);
+        toast.error("There was a problem processing your payment. Please try again.");
         // If success is false, we don't navigate away so user can try again
       }
       // On success, the parent component will handle navigation
       
     } catch (error) {
       console.error('Error submitting job post:', error);
+      toast.error("Error creating job post");
       setIsSubmitting(false);
     }
   };

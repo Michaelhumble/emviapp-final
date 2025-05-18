@@ -1,228 +1,218 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import { calculatePricing, formatCurrency } from '@/utils/posting/pricing';
-import { PaymentSummary } from '@/components/posting/PaymentSummary';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from '@/components/ui/badge';
-import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { ChevronLeft, AlertCircle } from 'lucide-react';
+import { JobFormValues } from '../job/jobFormSchema';
+import { JobPostPreview } from '../job/JobPostPreview';
+import { PaymentSummary } from '../PaymentSummary';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { jobPricingOptions, calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { DurationSelector } from '../pricing/DurationSelector';
+import { SummaryTotals } from '../pricing/SummaryTotals';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import PricingCard from '../pricing/PricingCard';
+import { formatCurrency } from '@/utils/posting/pricing';
 
 interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;
-  onSubmit: () => Promise<void>;
+  onSubmit: () => void;
   isSubmitting: boolean;
   pricingOptions: PricingOptions;
   setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
 }
 
-export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({ 
-  formData, 
-  photoUploads, 
-  onBack, 
-  onSubmit, 
+export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+  formData,
+  photoUploads,
+  onBack,
+  onSubmit,
   isSubmitting,
   pricingOptions,
   setPricingOptions
 }) => {
-  const [calculatedPrice, setCalculatedPrice] = useState({ originalPrice: 0, finalPrice: 0, discountPercentage: 0 });
+  const [showPricingOptions, setShowPricingOptions] = useState(false);
 
-  useEffect(() => {
-    if (formData) {
-      const { selectedPricingTier, durationMonths, autoRenew, isFirstPost, isNationwide } = pricingOptions;
-      const calculated = calculatePricing(selectedPricingTier, durationMonths, autoRenew, isFirstPost, isNationwide);
-      setCalculatedPrice(calculated);
+  // Calculate pricing based on current options
+  const priceData = calculateJobPostPrice(pricingOptions);
+
+  // Change handler for pricing tier
+  const handlePricingTierChange = (tierId: string) => {
+    // Find the pricing tier from the job pricing options
+    const selectedOption = jobPricingOptions.find(option => option.id === tierId);
+    
+    if (selectedOption) {
+      // Update the pricing options with the new tier
+      setPricingOptions(prev => ({
+        ...prev,
+        selectedPricingTier: selectedOption.tier as JobPricingTier
+      }));
     }
-  }, [formData, pricingOptions]);
-
-  const handleAutoRenewChange = (checked: boolean) => {
-    setPricingOptions(prev => ({ ...prev, autoRenew: checked }));
   };
 
-  // Function to handle pricing tier change
-  const handlePricingTierChange = (tier: string) => {
-    setPricingOptions(prev => ({ ...prev, selectedPricingTier: tier }));
-  };
-
-  // Function to handle duration change
+  // Handle duration change
   const handleDurationChange = (months: number) => {
     setPricingOptions(prev => ({ ...prev, durationMonths: months }));
   };
 
-  // Function to handle nationwide option change
-  const handleNationwideChange = (checked: boolean) => {
-    setPricingOptions(prev => ({ ...prev, isNationwide: checked }));
+  // Toggle auto-renew
+  const handleAutoRenewChange = (autoRenew: boolean) => {
+    setPricingOptions(prev => ({ ...prev, autoRenew }));
   };
 
-  if (!formData) {
-    return <div>No form data available.</div>;
-  }
+  // Function to generate payment button text
+  const getPaymentButtonText = () => {
+    if (isSubmitting) return 'Processing...';
+    
+    const isFree = priceData.finalPrice <= 0;
+    if (isFree) {
+      return 'Submit Job Post';
+    } else {
+      return `Pay ${formatCurrency(priceData.finalPrice)} & Post Job`;
+    }
+  };
+  
+  // Determine if it's the diamond plan
+  const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-4">Review Job Post</h2>
-      
-      {/* Job Preview Card */}
-      <JobPostPreview 
-        jobData={formData} 
-        photoUploads={photoUploads}
-        onBack={onBack}
-      />
-      
-      {/* Pricing Section Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Select Pricing Plan</span>
-            {calculatedPrice.discountPercentage > 0 && (
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                Save {calculatedPrice.discountPercentage}% OFF
-              </Badge>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          {/* Pricing Tier Selection */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div 
-              onClick={() => handlePricingTierChange('standard')}
-              className={`cursor-pointer rounded-lg border p-4 ${pricingOptions.selectedPricingTier === 'standard' ? 'border-2 border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}`}
-            >
-              <div className="font-medium">Standard</div>
-              <div className="text-sm text-gray-500">Basic visibility</div>
-              <div className="mt-2 font-semibold">{formatCurrency(9.99)}/mo</div>
-            </div>
-            
-            <div 
-              onClick={() => handlePricingTierChange('premium')}
-              className={`cursor-pointer rounded-lg border p-4 relative ${pricingOptions.selectedPricingTier === 'premium' ? 'border-2 border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}`}
-            >
-              <Badge className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3">Popular</Badge>
-              <div className="font-medium">Premium</div>
-              <div className="text-sm text-gray-500">Enhanced visibility</div>
-              <div className="mt-2 font-semibold">{formatCurrency(19.99)}/mo</div>
-            </div>
-            
-            <div 
-              onClick={() => handlePricingTierChange('gold')}
-              className={`cursor-pointer rounded-lg border p-4 ${pricingOptions.selectedPricingTier === 'gold' ? 'border-2 border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}`}
-            >
-              <div className="font-medium">Gold</div>
-              <div className="text-sm text-gray-500">Maximum visibility</div>
-              <div className="mt-2 font-semibold">{formatCurrency(39.99)}/mo</div>
-            </div>
-          </div>
-          
-          {/* Duration Selection */}
-          <div className="space-y-2">
-            <Label>Duration</Label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <Button 
-                type="button" 
-                variant={pricingOptions.durationMonths === 1 ? "default" : "outline"}
-                onClick={() => handleDurationChange(1)}
-                className="w-full"
-              >
-                1 Month
-              </Button>
-              <Button 
-                type="button" 
-                variant={pricingOptions.durationMonths === 3 ? "default" : "outline"}
-                onClick={() => handleDurationChange(3)}
-                className="w-full"
-              >
-                3 Months <Badge variant="outline" className="ml-1">-10%</Badge>
-              </Button>
-              <Button 
-                type="button" 
-                variant={pricingOptions.durationMonths === 6 ? "default" : "outline"}
-                onClick={() => handleDurationChange(6)}
-                className="w-full"
-              >
-                6 Months <Badge variant="outline" className="ml-1">-15%</Badge>
-              </Button>
-              <Button 
-                type="button" 
-                variant={pricingOptions.durationMonths === 12 ? "default" : "outline"}
-                onClick={() => handleDurationChange(12)}
-                className="w-full"
-              >
-                12 Months <Badge variant="outline" className="ml-1">-20%</Badge>
-              </Button>
-            </div>
-          </div>
-          
-          {/* Additional Options */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="nationwide" className="font-medium">Nationwide Listing</Label>
-                <p className="text-sm text-gray-500">Make your job visible across the country</p>
-              </div>
-              <Switch 
-                id="nationwide" 
-                checked={pricingOptions.isNationwide || false}
-                onCheckedChange={handleNationwideChange}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="auto-renew" className="font-medium">Auto-Renew</Label>
-                <p className="text-sm text-gray-500">Automatically renew your subscription each month</p>
-              </div>
-              <Switch
-                id="auto-renew"
-                checked={pricingOptions.autoRenew}
-                onCheckedChange={handleAutoRenewChange}
-              />
-            </div>
-            
-            {pricingOptions.isFirstPost && pricingOptions.selectedPricingTier === 'free' && (
-              <div className="bg-yellow-50 p-3 rounded-md text-amber-800 text-sm">
-                <p className="font-medium">Free for your first post! Credit card required for future posts.</p>
-                <p className="mt-1">After your first free post, standard pricing will apply.</p>
-              </div>
-            )}
-          </div>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Review & Payment</h2>
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <ChevronLeft className="mr-1 h-4 w-4" /> Back to Edit
+        </Button>
+      </div>
 
-          <Separator />
-          
+      {/* Job Preview */}
+      <div className="space-y-2">
+        <h3 className="text-lg font-medium">Job Details</h3>
+        <JobPostPreview jobData={formData} photoUploads={photoUploads} onBack={onBack} />
+      </div>
+
+      {/* Pricing Options */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-medium">Pricing Plan</h3>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowPricingOptions(!showPricingOptions)}
+          >
+            {showPricingOptions ? 'Hide Options' : 'Change Plan'}
+          </Button>
+        </div>
+
+        {showPricingOptions && (
+          <div className="space-y-6">
+            {/* Plan Selector */}
+            <div className="space-y-3">
+              <h4 className="text-base font-medium">Select Your Plan</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {jobPricingOptions
+                  .filter(option => !option.hidden)
+                  .map((option) => (
+                    <PricingCard
+                      key={option.id}
+                      isSelected={pricingOptions.selectedPricingTier === option.tier}
+                      onSelect={() => handlePricingTierChange(option.id)}
+                      tier={option.tier}
+                      pricingInfo={option}
+                    />
+                  ))}
+              </div>
+            </div>
+            
+            {/* Duration Selector */}
+            <DurationSelector
+              durationMonths={pricingOptions.durationMonths}
+              onDurationChange={handleDurationChange}
+              isDiamondPlan={isDiamondPlan}
+            />
+          </div>
+        )}
+
+        {/* Current Plan Summary */}
+        <Card className="bg-gray-50">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h4 className="font-medium">Selected Plan</h4>
+                <p className="text-sm text-gray-600">
+                  {jobPricingOptions.find(opt => opt.tier === pricingOptions.selectedPricingTier)?.name} - {pricingOptions.durationMonths} {pricingOptions.durationMonths === 1 ? 'month' : 'months'}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">{formatCurrency(priceData.finalPrice)}</p>
+                {priceData.discountPercentage > 0 && (
+                  <p className="text-sm text-green-600">You save {priceData.discountPercentage}%</p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Pricing Summary and Payment */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div className="md:col-span-3 space-y-4">
           {/* Payment Summary */}
-          <PaymentSummary 
-            priceData={calculatedPrice} 
+          <SummaryTotals
+            originalPrice={priceData.originalPrice}
+            finalPrice={priceData.finalPrice}
+            discountPercentage={priceData.discountPercentage}
+            durationMonths={pricingOptions.durationMonths}
+            autoRenew={pricingOptions.autoRenew || false}
+            onAutoRenewChange={handleAutoRenewChange}
+          />
+
+          {/* Diamond Plan Notice */}
+          {isDiamondPlan && (
+            <Alert className="bg-blue-50 border-blue-200">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                The Diamond plan requires approval. Our team will contact you shortly after submission.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {/* Free Trial Notice */}
+          {pricingOptions.selectedPricingTier === 'free' && (
+            <Alert className="bg-amber-50 border-amber-200">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                Your free trial will be active for 30 days. Credit card required for verification.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+
+        <div className="md:col-span-2">
+          <PaymentSummary
+            priceData={priceData}
             durationMonths={pricingOptions.durationMonths}
             autoRenew={pricingOptions.autoRenew}
           />
-        </CardContent>
-      </Card>
-
-      {/* Action Buttons */}
-      <div className="sticky bottom-4 bg-white p-4 border border-gray-200 rounded-lg shadow-lg flex justify-between items-center">
-        <Button variant="outline" onClick={onBack}>
-          Back to Edit
-        </Button>
-        <div className="flex items-center gap-2">
-          <div className="text-right hidden md:block">
-            <div className="text-sm text-gray-500">Total Price:</div>
-            <div className="font-bold text-lg">
-              {formatCurrency(calculatedPrice.finalPrice)}
-            </div>
+        </div>
+      </div>
+      
+      {/* Sticky Payment Button Footer */}
+      <div className="sticky bottom-0 left-0 right-0 pt-4 pb-4 bg-white border-t mt-6 -mx-6 px-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm font-medium">Total to pay:</p>
+            <p className="text-xl font-bold">{formatCurrency(priceData.finalPrice)}</p>
           </div>
           <Button 
-            disabled={isSubmitting} 
+            size="lg" 
             onClick={onSubmit} 
-            size="lg"
+            disabled={isSubmitting || !formData}
+            className="min-w-[200px]"
           >
-            {isSubmitting ? 'Submitting...' : calculatedPrice.finalPrice === 0 
-              ? 'Post Job (Free Trial)'
-              : `Pay & Post Job (${formatCurrency(calculatedPrice.finalPrice)})`}
+            {getPaymentButtonText()}
           </Button>
         </div>
       </div>
