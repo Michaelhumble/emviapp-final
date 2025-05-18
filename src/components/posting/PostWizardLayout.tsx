@@ -14,7 +14,7 @@ interface PostWizardLayoutProps {
 const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ 
   children, 
   currentStep = 1, 
-  totalSteps = 2 
+  totalSteps = 3 
 }) => {
   const { t } = useTranslation();
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -32,7 +32,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
               })}
             </span>
             <span className="text-gray-500 font-medium">
-              {progressPercentage}%
+              {progressPercentage.toFixed(0)}%
             </span>
           </div>
           <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />

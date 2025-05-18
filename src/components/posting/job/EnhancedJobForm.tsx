@@ -6,7 +6,7 @@ import { ReviewAndPaymentSection } from '../sections/ReviewAndPaymentSection';
 import { Card, CardContent } from '@/components/ui/card';
 import { JobFormValues } from './jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import JobTemplateSelector from './JobTemplateSelector';
 
 interface EnhancedJobFormProps {
   onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
@@ -19,26 +19,28 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   initialValues,
   onStepChange 
 }) => {
-  const [currentStep, setCurrentStep] = useState<'form' | 'review'>('form');
+  const [currentStep, setCurrentStep] = useState<'template' | 'form' | 'review'>('template');
   const [formData, setFormData] = useState<any>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     selectedPricingTier: 'premium',
     durationMonths: 1,
     isFirstPost: true
   });
-
-  const cardAnimation = useScrollAnimation({
-    animation: 'fade-in',
-    threshold: 0.1,
-  });
   
   useEffect(() => {
     if (onStepChange) {
-      onStepChange(currentStep === 'form' ? 1 : 2);
+      onStepChange(currentStep === 'template' ? 1 : currentStep === 'form' ? 2 : 3);
     }
   }, [currentStep, onStepChange]);
+  
+  const handleTemplateSelect = (template: JobFormValues) => {
+    setSelectedTemplate(template);
+    setCurrentStep('form');
+    window.scrollTo(0, 0);
+  };
   
   const handleFormSubmit = (data: any) => {
     setFormData(data);
@@ -77,18 +79,30 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   };
   
   const handleBack = () => {
-    setCurrentStep('form');
+    if (currentStep === 'review') {
+      setCurrentStep('form');
+    } else if (currentStep === 'form') {
+      setCurrentStep('template');
+    }
     window.scrollTo(0, 0);
   };
   
   return (
-    <Card 
-      className="border shadow-lg rounded-xl overflow-hidden bg-gradient-to-b from-white to-gray-50"
-      {...cardAnimation}
-    >
+    <Card className="border shadow-lg rounded-xl overflow-hidden bg-gradient-to-b from-white to-gray-50">
       <CardContent className="p-0">
         <AnimatePresence mode="wait">
-          {currentStep === 'form' ? (
+          {currentStep === 'template' ? (
+            <motion.div
+              key="template-step"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="p-6"
+            >
+              <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+            </motion.div>
+          ) : currentStep === 'form' ? (
             <motion.div
               key="form-step"
               initial={{ opacity: 0, x: -20 }}
@@ -102,7 +116,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
                 photoUploads={photoUploads} 
                 setPhotoUploads={setPhotoUploads}
                 isSubmitting={isSubmitting}
-                initialValues={initialValues}
+                initialValues={selectedTemplate || initialValues}
+                onBack={handleBack}
               />
             </motion.div>
           ) : (

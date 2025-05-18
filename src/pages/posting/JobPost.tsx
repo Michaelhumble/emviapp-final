@@ -80,7 +80,7 @@ const JobPost = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <PostWizardLayout currentStep={currentStep} totalSteps={2}>
+        <PostWizardLayout currentStep={currentStep} totalSteps={3}>
           <EnhancedJobForm 
             onSubmit={handleSubmit} 
             onStepChange={handleFormStepChange}
