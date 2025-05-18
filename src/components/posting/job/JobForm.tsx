@@ -1,196 +1,155 @@
 import React, { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
+// TODO: Create or import PhotoUploader component
+// import PhotoUploader from '@/components/posting/PhotoUploader';
 import { JobFormValues } from './jobFormSchema';
-import { getJobTemplate } from '@/utils/jobs/jobTemplates';
+import { specialtyOptions, requirementOptions } from '@/utils/posting/options';
+import { MultiSelect } from '@/components/ui/multi-select';
 import { Separator } from '@/components/ui/separator';
-import PhotoUploader from '@/components/posting/PhotoUploader';
-import templateGradients from './luxuryGradients';
-
-// Helper utility functions since they were not found in imported module
-const convertTextToArray = (text: string): string[] => {
-  if (!text) return [];
-  // Split by newlines or commas and filter out empty items
-  return text.split(/[\n,]+/)
-    .map(item => item.trim())
-    .filter(item => item.length > 0);
-};
-
-const convertToFormattedText = (items: string[] | undefined): string => {
-  if (!items || items.length === 0) return '';
-  return items.join('\n');
-};
 
 interface JobFormProps {
-  onSubmit: (data: JobFormValues, photoUploads: File[]) => void;
-  photoUploads: File[];
-  setPhotoUploads: (files: File[]) => void;
+  onSubmit: (data: JobFormValues) => void;
+  photoUploads?: File[];
+  setPhotoUploads?: (files: File[]) => void;
   isSubmitting?: boolean;
   initialValues?: JobFormValues;
-  onBack?: (data: JobFormValues) => void;
+  onBack?: () => void;
   showVietnameseByDefault?: boolean;
   isCustomTemplate?: boolean;
 }
 
-const JobForm: React.FC<JobFormProps> = ({ 
-  onSubmit, 
-  photoUploads, 
-  setPhotoUploads, 
+// Utility functions for converting between text and arrays
+const convertTextToArray = (text: string): string[] => {
+  if (!text) return [];
+  return text.split(/[\n,]/).map(item => item.trim()).filter(Boolean);
+};
+
+const convertToFormattedText = (arr: string[] | undefined): string => {
+  if (!arr || arr.length === 0) return '';
+  return arr.join('\n');
+};
+
+const JobForm: React.FC<JobFormProps> = ({
+  onSubmit,
+  photoUploads = [],
+  setPhotoUploads = () => {},
   isSubmitting = false,
   initialValues,
   onBack,
   showVietnameseByDefault = false,
-  isCustomTemplate = false
+  isCustomTemplate = false,
 }) => {
-  const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
-  const defaultValues: JobFormValues = initialValues || {
-    title: '',
-    description: '',
-    vietnameseDescription: '',
-    location: '',
-    jobType: 'full-time',
-    compensation_details: '',
-    salary_range: '',
-    experience_level: 'entry',
-    contactName: '',
-    contactEmail: '',
-    contactPhone: '',
-    specialties: [],
-    requirements: [],
-  };
+  const [activeTab, setActiveTab] = useState('basic');
+  const [requirementsText, setRequirementsText] = useState('');
+  const [specialtiesText, setSpecialtiesText] = useState('');
 
-  const form = useForm<JobFormValues>({
-    defaultValues: defaultValues,
-    mode: 'onSubmit'
+  // Define the form schema
+  const formSchema = z.object({
+    title: z.string().min(1, "Job title is required"),
+    description: z.string().optional(),
+    vietnameseDescription: z.string().optional(),
+    location: z.string().min(1, "Location is required"),
+    compensation_details: z.string().optional(),
+    salary_range: z.string().optional(),
+    jobType: z.enum(['full-time', 'part-time', 'contract', 'temporary', 'commission']),
+    experience_level: z.enum(['entry', 'intermediate', 'experienced', 'senior']),
+    contactEmail: z.string().email("Please enter a valid email address"),
+    contactName: z.string().optional(),
+    contactPhone: z.string().optional(),
+    requirements: z.array(z.string()).optional(),
+    specialties: z.array(z.string()).optional(),
+    templateType: z.string().optional(),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: initialValues?.title || '',
+      description: initialValues?.description || '',
+      vietnameseDescription: initialValues?.vietnameseDescription || '',
+      location: initialValues?.location || '',
+      compensation_details: initialValues?.compensation_details || '',
+      salary_range: initialValues?.salary_range || '',
+      jobType: initialValues?.jobType || 'full-time',
+      experience_level: initialValues?.experience_level || 'experienced',
+      contactEmail: initialValues?.contactEmail || '',
+      contactName: initialValues?.contactName || '',
+      contactPhone: initialValues?.contactPhone || '',
+      requirements: initialValues?.requirements || [],
+      specialties: initialValues?.specialties || [],
+      templateType: initialValues?.templateType || '',
+    }
   });
 
   useEffect(() => {
-    if (initialValues) {
-      // Convert arrays back to multiline text for form display
-      form.reset({
-        ...initialValues,
-        requirements: Array.isArray(initialValues.requirements) 
-          ? convertToFormattedText(initialValues.requirements)
-          : initialValues.requirements,
-        specialties: Array.isArray(initialValues.specialties)
-          ? convertToFormattedText(initialValues.specialties)
-          : initialValues.specialties
-      });
+    if (initialValues?.requirements) {
+      setRequirementsText(convertToFormattedText(initialValues.requirements));
     }
-  }, [initialValues, form]);
+    if (initialValues?.specialties) {
+      setSpecialtiesText(convertToFormattedText(initialValues.specialties));
+    }
+  }, [initialValues]);
 
-  const onSubmit = (data: JobFormValues) => {
-    // Process multiline requirements and specialties into arrays
-    const formattedData = {
+  const handleSubmit = (data: z.infer<typeof formSchema>) => {
+    // Convert requirements and specialties from text to arrays
+    const formData = {
       ...data,
-      requirements: Array.isArray(data.requirements) 
-        ? data.requirements 
-        : convertTextToArray(data.requirements as string),
-      specialties: Array.isArray(data.specialties) 
-        ? data.specialties 
-        : convertTextToArray(data.specialties as string)
+      requirements: convertTextToArray(requirementsText),
+      specialties: convertTextToArray(specialtiesText),
     };
     
-    console.log('Submitting form data:', formattedData);
-    onBack ? onBack(formattedData) : onSubmit(formattedData, photoUploads);
+    onSubmit(formData);
   };
-
-  const handlePhotoUpload = (files: File[]) => {
-    setPhotoUploads(files);
-  };
-
-  const handleToggleVietnamese = () => {
-    setShowVietnamese(!showVietnamese);
-  };
-
-  const templateGradient = initialValues ? templateGradients[initialValues.templateType || 'custom'] : templateGradients['custom'];
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card className={`bg-white shadow-md rounded-lg ${templateGradient}`}>
-          <div className="p-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold">Job Details</h2>
-              <p className="text-gray-600">Enter the details about the job you're offering.</p>
-            </div>
-
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        {/* Basic Info Tab */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid grid-cols-3 mb-6">
+            <TabsTrigger value="basic">Basic Info</TabsTrigger>
+            <TabsTrigger value="compensation">Compensation</TabsTrigger>
+            <TabsTrigger value="contact">Contact Info</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="basic" className="space-y-4">
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Job Title</FormLabel>
+                  <FormLabel>Job Title*</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Nail Technician" {...field} />
+                    <Input placeholder="e.g. Experienced Nail Technician" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Describe the job responsibilities and requirements" {...field} rows={4} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {showVietnamese && (
-              <FormField
-                control={form.control}
-                name="vietnameseDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Vietnamese Description</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Mô tả công việc bằng tiếng Việt" {...field} rows={4} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {!isCustomTemplate && (
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="showVietnamese">Show Vietnamese Description</Label>
-                <Switch
-                  id="showVietnamese"
-                  checked={showVietnamese}
-                  onCheckedChange={handleToggleVietnamese}
-                />
-              </div>
-            )}
-
+            
             <FormField
               control={form.control}
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>Location*</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., City, State" {...field} />
+                    <Input placeholder="e.g. Houston, TX" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            
             <FormField
               control={form.control}
               name="jobType"
@@ -200,7 +159,7 @@ const JobForm: React.FC<JobFormProps> = ({
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a job type" />
+                        <SelectValue placeholder="Select job type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -208,42 +167,14 @@ const JobForm: React.FC<JobFormProps> = ({
                       <SelectItem value="part-time">Part-time</SelectItem>
                       <SelectItem value="contract">Contract</SelectItem>
                       <SelectItem value="temporary">Temporary</SelectItem>
-                      <SelectItem value="internship">Internship</SelectItem>
+                      <SelectItem value="commission">Commission</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="compensation_details"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Compensation Details</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Competitive salary, benefits" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="salary_range"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Salary Range</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., $40,000 - $60,000 per year" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+            
             <FormField
               control={form.control}
               name="experience_level"
@@ -258,134 +189,162 @@ const JobForm: React.FC<JobFormProps> = ({
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="entry">Entry Level</SelectItem>
-                      <SelectItem value="mid">Mid Level</SelectItem>
-                      <SelectItem value="senior">Senior Level</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="experienced">Experienced</SelectItem>
+                      <SelectItem value="senior">Senior</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-        </Card>
-
-        <Card className="bg-white shadow-md rounded-lg">
-          <div className="p-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold">Contact Information</h2>
-              <p className="text-gray-600">Enter your contact information for applicants.</p>
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Describe the job responsibilities, qualifications, and other details..." 
+                      className="min-h-[150px]"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="vietnameseDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vietnamese Description (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Mô tả công việc bằng tiếng Việt (nếu có)..." 
+                      className="min-h-[150px]"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div>
+              <FormLabel>Requirements (Optional)</FormLabel>
+              <Textarea
+                placeholder="Enter each requirement on a new line..."
+                className="min-h-[100px]"
+                value={requirementsText}
+                onChange={(e) => setRequirementsText(e.target.value)}
+              />
             </div>
-
+            
+            <div>
+              <FormLabel>Specialties (Optional)</FormLabel>
+              <Textarea
+                placeholder="Enter each specialty on a new line..."
+                className="min-h-[100px]"
+                value={specialtiesText}
+                onChange={(e) => setSpecialtiesText(e.target.value)}
+              />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="compensation" className="space-y-4">
+            <FormField
+              control={form.control}
+              name="salary_range"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary Range (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. $50,000 - $60,000 per year" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="compensation_details"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Compensation Details (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Describe the compensation structure, benefits, commission rates, etc..." 
+                      className="min-h-[150px]"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+          
+          <TabsContent value="contact" className="space-y-4">
             <FormField
               control={form.control}
               name="contactName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact Name</FormLabel>
+                  <FormLabel>Contact Name (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., John Doe" {...field} />
+                    <Input placeholder="e.g. John Smith" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            
             <FormField
               control={form.control}
               name="contactEmail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact Email</FormLabel>
+                  <FormLabel>Contact Email*</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="e.g., john.doe@example.com" {...field} />
+                    <Input placeholder="e.g. contact@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            
             <FormField
               control={form.control}
               name="contactPhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact Phone</FormLabel>
+                  <FormLabel>Contact Phone (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., (555) 123-4567" {...field} />
+                    <Input placeholder="e.g. (123) 456-7890" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-        </Card>
-
-        <Card className="bg-white shadow-md rounded-lg">
-          <div className="p-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold">Specialties and Requirements</h2>
-              <p className="text-gray-600">List the required and desired skills for the job.</p>
-            </div>
-
-            <FormField
-              control={form.control}
-              name="specialties"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Specialties</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="List the required specialties, separated by commas or new lines"
-                      {...field}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="requirements"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Requirements</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="List the job requirements, separated by commas or new lines"
-                      {...field}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </Card>
-
-        <Card className="bg-white shadow-md rounded-lg">
-          <div className="p-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold">Photo Upload</h2>
-              <p className="text-gray-600">Upload photos related to the job or salon.</p>
-            </div>
-
-            <PhotoUploader photos={photoUploads} onPhotoUpload={handlePhotoUpload} />
-          </div>
-        </Card>
-
-        <Separator className="my-4" />
-
-        <div className="flex justify-between">
+          </TabsContent>
+        </Tabs>
+        
+        <Separator className="my-6" />
+        
+        <div className="flex justify-between mt-8">
           {onBack && (
-            <Button variant="outline" onClick={() => onBack(form.getValues())}>
-              Back
+            <Button type="button" variant="outline" onClick={onBack}>
+              Back to Templates
             </Button>
           )}
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            {isSubmitting ? 'Submitting...' : 'Continue to Preview & Payment'}
           </Button>
         </div>
       </form>

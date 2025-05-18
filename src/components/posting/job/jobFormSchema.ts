@@ -13,6 +13,7 @@ export interface JobFormValues {
   contactPhone?: string;
   requirements?: string[];
   specialties?: string[];
+  templateType?: string;
 }
 
 export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
