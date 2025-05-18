@@ -18,7 +18,26 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Limited search results'
     ],
     isFirstPost: true,
-    tier: 'free'
+    tier: 'free',
+    primaryBenefit: 'Try our platform risk-free',
+    upsellText: 'Limited visibility'
+  },
+  {
+    id: 'standard',
+    name: 'Standard',
+    price: 9.99,
+    description: 'Regular visibility in search results',
+    vietnameseDescription: 'Hiển thị thông thường trong kết quả tìm kiếm',
+    features: [
+      'Standard search position',
+      'Basic candidate matching',
+      'Email notifications',
+      'Valid for 30 days',
+      'Unlimited candidate responses'
+    ],
+    tier: 'standard',
+    primaryBenefit: 'Reach more qualified candidates',
+    upsellText: '2x more visibility'
   },
   {
     id: 'premium',
@@ -28,6 +47,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     description: 'Enhanced visibility for quality candidates',
     vietnameseDescription: 'Hiển thị nổi bật để thu hút ứng viên chất lượng',
     popular: true,
+    recommended: true,
     tag: 'Best Value',
     features: [
       'Featured position in search',
@@ -36,7 +56,9 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Email alerts for new matches',
       'Full access to candidate profiles'
     ],
-    tier: 'premium'
+    tier: 'premium',
+    primaryBenefit: 'Get featured in top search results',
+    upsellText: '5x more applications'
   },
   {
     id: 'gold',
@@ -52,7 +74,9 @@ export const jobPricingOptions: JobPricingOption[] = [
       'SMS notifications',
       'Dedicated support agent'
     ],
-    tier: 'gold'
+    tier: 'gold',
+    primaryBenefit: 'Guaranteed top placement',
+    upsellText: '10x more visibility'
   },
   {
     id: 'diamond',
@@ -68,7 +92,10 @@ export const jobPricingOptions: JobPricingOption[] = [
       'Background screening included',
       'Interview scheduling service'
     ],
-    tier: 'diamond'
+    tier: 'diamond',
+    primaryBenefit: 'Talent sourcing team works for you',
+    upsellText: 'VIP treatment',
+    hidden: true
   }
 ];
 

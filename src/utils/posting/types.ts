@@ -11,6 +11,10 @@ export interface PricingOptions {
   showAtTop?: boolean;
   bundleWithJobPost?: boolean;
   hasReferrals?: boolean;
+  // New upsell properties
+  expertReview?: boolean;
+  priorityPlacement?: boolean;
+  extendedReach?: boolean;
 }
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
@@ -29,6 +33,12 @@ export interface JobPricingOption {
   popular?: boolean;
   isFirstPost?: boolean;
   tier: JobPricingTier;
+  // New properties
+  primaryBenefit?: string;
+  upsellText?: string;
+  color?: string;
+  recommended?: boolean;
+  hidden?: boolean;
 }
 
 export interface UserPostingStats {
