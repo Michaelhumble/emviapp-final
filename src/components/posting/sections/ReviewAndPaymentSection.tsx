@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -9,6 +9,9 @@ import JobSummary from '../JobSummary';
 import { PricingTierSelector } from '../pricing/PricingTierSelector';
 import YesLadder from '../upsell/YesLadder';
 import PaymentSummary from '../PaymentSummary';
+import { getDiscountPercentage, getPriceWithDiscount } from '@/utils/posting/pricing';
+import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import { Card } from '@/components/ui/card';
 
 interface ReviewAndPaymentSectionProps {
   formData: any;
