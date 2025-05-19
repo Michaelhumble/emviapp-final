@@ -18,7 +18,7 @@ export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;
-  onSubmit: () => void;
+  onSubmit: (exactUiPrice: number) => void; // Add exactUiPrice parameter
   isSubmitting: boolean;
 }
 
@@ -57,6 +57,11 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   const formattedPrice = priceData.finalPrice > 0 
     ? `$${priceData.finalPrice.toFixed(2)}` 
     : "Free";
+
+  // Handle submit with exact UI price
+  const handleSubmitWithExactPrice = () => {
+    onSubmit(priceData.finalPrice);
+  };
 
   return (
     <div className="space-y-6">
@@ -130,7 +135,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           
           {/* Submission button */}
           <Button 
-            onClick={onSubmit}
+            onClick={handleSubmitWithExactPrice}
             disabled={
               isSubmitting || 
               !formData || 

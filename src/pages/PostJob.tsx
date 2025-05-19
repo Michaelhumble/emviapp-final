@@ -31,11 +31,17 @@ const PostJob = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
+  const handleSubmit = async (
+    data: JobFormValues, 
+    uploads: File[], 
+    pricingOptions: PricingOptions,
+    exactUiPrice?: number
+  ) => {
     try {
       setIsSubmitting(true);
       console.log('Form submitted:', data);
       console.log('Pricing options:', pricingOptions);
+      console.log('Exact UI price:', exactUiPrice);
       
       // Convert form data to the expected format for the API
       const jobDetails = {
@@ -59,8 +65,8 @@ const PostJob = () => {
         post_type: 'job'
       };
       
-      // Initiate payment with our consolidated hook
-      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      // Initiate payment with our consolidated hook - pass the exact UI price
+      const result = await initiatePayment('job', jobDetails, pricingOptions, exactUiPrice);
       
       if (result.success) {
         toast.success('Job post created successfully!');
