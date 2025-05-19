@@ -18,7 +18,8 @@ export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;
-  onSubmit: (exactUiPrice?: number) => void; // Add exactUiPrice parameter
+  // Update the onSubmit prop to match what EnhancedJobForm expects to pass
+  onSubmit: (formData: JobFormValues) => Promise<boolean>;
   isSubmitting: boolean;
 }
 
@@ -58,9 +59,11 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     ? `$${priceData.finalPrice.toFixed(2)}` 
     : "Free";
 
-  // Handle submit with exact UI price
+  // Create a wrapper function that calls onSubmit with the formData
   const handleSubmitWithExactPrice = () => {
-    onSubmit(priceData.finalPrice);
+    if (formData) {
+      onSubmit(formData);
+    }
   };
 
   return (

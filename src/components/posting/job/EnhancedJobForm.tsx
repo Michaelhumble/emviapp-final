@@ -85,12 +85,13 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     setPhotoUploads(photos);
   };
 
+  // Modified to accept the formData parameter from ReviewAndPaymentSection
   const handleReviewAndSubmit = async (formData: JobFormValues) => {
     try {
       setIsSubmitting(true);
       
       // Calculate the final price as shown in the UI
-      const exactUiPrice = calculateFinalPrice();
+      const exactUiPrice = priceData.finalPrice;
       
       // Call the parent's onSubmit with the form data and pricing options
       const success = await onSubmit(formData, photoUploads, pricingOptions, exactUiPrice);
@@ -109,11 +110,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Helper function to calculate final price based on pricing options
-  const calculateFinalPrice = () => {
-    return priceData.finalPrice;
   };
 
   return (
