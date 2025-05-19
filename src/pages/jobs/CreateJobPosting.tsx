@@ -42,14 +42,14 @@ const CreateJobPosting = () => {
         description: data.description,
         vietnamese_description: data.vietnameseDescription,
         location: data.location,
-        employment_type: data.employmentType,
-        compensation_type: data.compensationType,
-        compensation_details: data.compensationDetails,
-        weekly_pay: data.weeklyPay,
-        has_housing: data.hasHousing,
-        has_wax_room: data.hasWaxRoom,
-        owner_will_train: data.ownerWillTrain,
-        no_supply_deduction: data.noSupplyDeduction,
+        employment_type: data.jobType, // Updated from employmentType to jobType
+        compensation_type: data.compensation_type, // Use snake_case as per schema
+        compensation_details: data.compensation_details, // Use snake_case as per schema
+        weekly_pay: data.weekly_pay, // Use snake_case as per schema
+        has_housing: data.has_housing, // Use snake_case as per schema
+        has_wax_room: data.has_wax_room, // Use snake_case as per schema
+        owner_will_train: data.owner_will_train, // Use snake_case as per schema
+        no_supply_deduction: data.no_supply_deduction, // Use snake_case as per schema
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,
@@ -98,7 +98,7 @@ const CreateJobPosting = () => {
             <EnhancedJobForm 
               onSubmit={handleSubmit}
               initialTemplate={selectedTemplate || undefined}
-              onBack={() => setStep('template')}
+              onBack={() => setStep('template')} // Added missing onBack prop
               isCustomTemplate={selectedTemplateType === 'custom'}
               maxPhotos={5} // Set maximum photos to 5
               onStepChange={(step) => console.log(`Changed to step ${step}`)}

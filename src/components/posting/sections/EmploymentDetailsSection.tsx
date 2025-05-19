@@ -30,7 +30,7 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
-          name="employmentType"
+          name="jobType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Employment Type</FormLabel>
@@ -55,7 +55,7 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
         
         <FormField
           control={form.control}
-          name="compensationType"
+          name="compensation_type"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Compensation Type</FormLabel>
@@ -81,7 +81,7 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
       
       <FormField
         control={form.control}
-        name="compensationDetails"
+        name="compensation_details"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Compensation Details</FormLabel>
@@ -99,7 +99,7 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
           control={form.control}
-          name="weeklyPay"
+          name="weekly_pay"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
@@ -120,7 +120,7 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
         
         <FormField
           control={form.control}
-          name="hasHousing"
+          name="has_housing"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
@@ -141,7 +141,7 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
         
         <FormField
           control={form.control}
-          name="ownerWillTrain"
+          name="owner_will_train"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
@@ -162,7 +162,7 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
         
         <FormField
           control={form.control}
-          name="noSupplyDeduction"
+          name="no_supply_deduction"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
@@ -175,6 +175,27 @@ const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ for
                 <FormLabel>No Supply Deduction</FormLabel>
                 <FormDescription>
                   Supplies are provided at no cost
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="has_wax_room"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Wax Room Available</FormLabel>
+                <FormDescription>
+                  Salon has a dedicated wax room
                 </FormDescription>
               </div>
             </FormItem>
