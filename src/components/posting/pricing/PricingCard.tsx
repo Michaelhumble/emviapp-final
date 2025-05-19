@@ -2,7 +2,7 @@
 import React from 'react';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Card } from '@/components/ui/card';
-import { Check, CheckCircle, Clock, Fire, Shield, ShieldCheck, Users } from 'lucide-react';
+import { Check, CheckCircle, Clock, Flame, Shield, ShieldCheck, Users } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobPricingOption } from '@/utils/posting/types';
 import { Badge } from '@/components/ui/badge';
@@ -73,7 +73,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   const getFomoIcon = () => {
     if (pricingInfo.limitedSpots) return Users;
     if (pricingInfo.tier === "diamond") return Shield;
-    if (pricingInfo.popular) return Fire;
+    if (pricingInfo.popular) return Flame;
     return Clock;
   };
 
@@ -137,7 +137,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         
         {/* Feature list */}
         <ul className="mt-4 space-y-2">
-          {pricingInfo.features.map((feature, index) => (
+          {pricingInfo.features && pricingInfo.features.map((feature, index) => (
             <li key={index} className="flex items-start">
               <Check className={`h-4 w-4 mr-2 mt-1 flex-shrink-0 ${getCheckColor()}`} />
               <span className="text-sm">{feature}</span>

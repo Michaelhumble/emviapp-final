@@ -2,23 +2,13 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { PricingOptions, JobPricingTier } from "@/utils/posting/types";
 import { getJobPrice } from "@/utils/posting/jobPricing";
+import { PriceData } from "@/components/posting/PaymentSummary";
 
 // Create a context with proper typing for both the options and the calculated price
 interface PricingContextType {
   pricingOptions: PricingOptions;
   setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
-  priceData: {
-    basePrice: number;
-    originalPrice: number;
-    finalPrice: number;
-    discountPercentage: number;
-    discountAmount: number;
-    autoRenewDiscount: number;
-    durationMonths: number;
-    isFirstPost: boolean;
-    isNationwide: boolean;
-    selectedTier: JobPricingTier;
-  };
+  priceData: PriceData;
 }
 
 // Create the context with default values
@@ -46,7 +36,16 @@ export const PricingProvider: React.FC<PricingProviderProps> = ({
 
   // Calculate price data whenever pricing options change
   const priceData = React.useMemo(() => {
-    return getJobPrice(pricingOptions);
+    const calculatedPrice = getJobPrice(pricingOptions);
+    
+    // Ensure all required properties are present for PaymentSummary
+    return {
+      ...calculatedPrice,
+      discountedPrice: calculatedPrice.originalPrice - calculatedPrice.discountAmount,
+      discountLabel: calculatedPrice.discountPercentage > 0 ? 
+        `${calculatedPrice.discountPercentage}% Discount` : '',
+      isFoundersDiscount: true // Adjust this based on your business logic
+    };
   }, [pricingOptions]);
 
   return (

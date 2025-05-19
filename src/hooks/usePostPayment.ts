@@ -51,8 +51,9 @@ export const usePostPayment = () => {
         });
         
         // Create a waitlist entry
+        // Using from() with a string for a potentially dynamic table name
         const { error: waitlistError } = await supabase
-          .from('diamond_waitlist')
+          .from('diamond_tier_waitlist')
           .insert({
             user_id: (await supabase.auth.getUser()).data.user?.id,
             post_type: postType,

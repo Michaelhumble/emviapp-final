@@ -5,7 +5,7 @@ import { Sparkle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Badge } from '@/components/ui/badge';
 
-interface PriceData {
+export interface PriceData {
   basePrice: number;
   discountedPrice: number;
   finalPrice: number;
@@ -13,6 +13,13 @@ interface PriceData {
   discountLabel: string;
   discountAmount: number;
   isFoundersDiscount: boolean;
+  // Additional properties to handle other components
+  originalPrice?: number;
+  autoRenewDiscount?: number;
+  durationMonths?: number;
+  isFirstPost?: boolean;
+  isNationwide?: boolean;
+  selectedTier?: string;
 }
 
 export interface PaymentSummaryProps {
