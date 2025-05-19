@@ -1,7 +1,8 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useSupabaseClient } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client'; // Changed from useSupabaseClient to direct import
 import { PricingOptions, PostType } from '@/utils/posting/types';
 
 // Define TypeScript interface for user privileges to include missing properties
@@ -14,7 +15,6 @@ interface UserPrivileges {
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const supabase = useSupabaseClient();
 
   const initiatePayment = async (
     postType: PostType,

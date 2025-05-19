@@ -1,26 +1,18 @@
 
 import React from 'react';
-import { 
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-  Form,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { IndustryType } from '@/components/posting/job/jobFormSchema';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 
-interface JobDetailsSectionProps {
+export interface JobDetailsSectionProps {
   form: UseFormReturn<any>;
-  showVietnameseByDefault?: boolean;
+  onNext?: () => void; // Added missing prop
 }
 
-const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnameseByDefault = false }) => {
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext }) => {
   // Make sure we have a valid form context
   if (!form) {
     console.error("JobDetailsSection requires a valid form from react-hook-form");
@@ -28,75 +20,127 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
   }
 
   return (
-    <>
-      <FormField
-        control={form.control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Job Title</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g., Senior Nail Technician" {...field} />
-            </FormControl>
-            <FormDescription>
-              What is the position you're hiring for?
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <div className="space-y-6">
+      <div className="border-b pb-4">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Details</h2>
+        <p className="text-sm text-muted-foreground mt-1">Tell candidates about this position</p>
+      </div>
+      
+      <div className="grid gap-6">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-medium">Job Title *</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="e.g., Nail Technician, Salon Manager" 
+                  {...field}
+                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="jobType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-medium">Job Type *</FormLabel>
+              <Select 
+                onValueChange={field.onChange} 
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger className="rounded-xl h-12 border-gray-300 bg-white">
+                    <SelectValue placeholder="Select job type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="full-time">Full-time</SelectItem>
+                  <SelectItem value="part-time">Part-time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="temporary">Temporary</SelectItem>
+                  <SelectItem value="commission">Commission-based</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-medium">Location *</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="City, State (e.g., Houston, TX)" 
+                  {...field}
+                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-medium">Job Description (English) *</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Describe the position, requirements, and benefits..." 
+                  rows={6}
+                  {...field}
+                  className="rounded-xl border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="vietnameseDescription"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-medium">Vietnamese Description (Optional)</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Mô tả công việc bằng tiếng Việt..." 
+                  rows={6}
+                  {...field}
+                  className="rounded-xl border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Description</FormLabel>
-            <FormControl>
-              <Textarea placeholder="Describe the job requirements and responsibilities" className="resize-none" {...field} />
-            </FormControl>
-            <FormDescription>
-              Include details about the role, responsibilities, and what makes it a great opportunity.
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
+      <div className="flex justify-end pt-4">
+        {onNext && (
+          <Button 
+            type="button" 
+            onClick={onNext}
+          >
+            Continue
+          </Button>
         )}
-      />
-
-      <FormField
-        control={form.control}
-        name="vietnameseDescription"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Vietnamese Description (Optional)</FormLabel>
-            <FormControl>
-              <Textarea placeholder="Mô tả công việc bằng tiếng Việt" className="resize-none" {...field} />
-            </FormControl>
-            <FormDescription>
-              Provide a description in Vietnamese to attract more candidates.
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="location"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Location</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g., Ho Chi Minh City" {...field} />
-            </FormControl>
-            <FormDescription>
-              Where is the job located?
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+      </div>
+    </div>
   );
 };
 
