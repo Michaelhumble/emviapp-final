@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { JobSummary } from './card-sections/JobSummary';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { PricingOptions } from '@/utils/posting/types';
+import { JobPricingTier } from '@/utils/posting/types';
 
 interface JobDetailModalProps {
   job: any; // Replace with actual Job type
@@ -14,14 +15,21 @@ interface JobDetailModalProps {
 }
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onClose }) => {
+  // Ensure we have valid job data before rendering
+  if (!job) return null;
+
   // Create default pricing options based on the job's pricing tier
+  // Ensure all required fields are defined with fallbacks
   const defaultPricingOptions: PricingOptions = {
-    selectedPricingTier: job.pricingTier || 'standard',
-    durationMonths: 1,
-    autoRenew: true,
-    isFirstPost: false,
-    isNationwide: job.isNationwide || false
+    selectedPricingTier: job.pricingTier as JobPricingTier || 'standard',
+    durationMonths: job.durationMonths || 1,
+    autoRenew: job.autoRenew !== undefined ? job.autoRenew : true,
+    isFirstPost: job.isFirstPost !== undefined ? job.isFirstPost : false,
+    isNationwide: job.isNationwide !== undefined ? job.isNationwide : false
   };
+
+  // Log the options being used to help with debugging
+  console.log('Job Detail Modal - PricingProvider Options:', defaultPricingOptions);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -36,6 +44,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
             <X className="h-4 w-4" />
           </Button>
           
+          {/* Ensure PricingProvider has valid options */}
           <PricingProvider initialOptions={defaultPricingOptions}>
             <div className="space-y-6">
               <div>

@@ -3,9 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Briefcase, Calendar, DollarSign } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { getJobTypeColor } from "../utils/badgeStyles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { JobPricingTier, PricingOptions } from "@/utils/posting/types";
 import { getJobPrice } from "@/utils/posting/jobPricing";
+import { usePricing } from "@/context/pricing/PricingProvider";
 
 interface JobSummaryProps {
   employmentType: string;
@@ -22,6 +23,17 @@ export const JobSummary = ({
   pricingTier,
   pricingOptions 
 }: JobSummaryProps) => {
+  // Safely use the pricing context, with a fallback if it's not available
+  const pricingContext = (() => {
+    try {
+      return usePricing();
+    } catch (error) {
+      console.error("Pricing context not available, using fallback", error);
+      // Return null if the context is not available
+      return null;
+    }
+  })();
+
   const formatPostedDate = (dateInput: string | Date) => {
     try {
       const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
