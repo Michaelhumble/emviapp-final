@@ -1,18 +1,15 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
 import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
 import { PaymentSummary } from '@/components/posting/PaymentSummary';
-import { Separator } from '@/components/ui/separator';
-import PricingCard from '@/components/posting/pricing/PricingCard';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useJobPosting } from '@/context/JobPostingContext';
+import { ExtendedJobFormValues } from '@/types/jobPosting';
 
 interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
@@ -22,6 +19,7 @@ interface ReviewAndPaymentSectionProps {
   isSubmitting: boolean;
   pricingOptions: PricingOptions;
   setPricingOptions: (options: PricingOptions) => void;
+  useContextAPI?: boolean;
 }
 
 export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -31,158 +29,120 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   onSubmit,
   isSubmitting,
   pricingOptions,
-  setPricingOptions
+  setPricingOptions,
+  useContextAPI = false
 }) => {
   const { t } = useTranslation();
-  const [priceData, setPriceData] = React.useState(() => 
-    calculateJobPostPrice(pricingOptions)
-  );
-
-  // Update price data when pricing options change
-  useEffect(() => {
-    const newPriceData = calculateJobPostPrice(pricingOptions);
-    setPriceData(newPriceData);
-  }, [pricingOptions]);
-
+  
+  // Access context if enabled
+  const jobPostingContext = useContextAPI ? useJobPosting() : null;
+  
+  // Use context data or props
+  const jobData = useContextAPI && jobPostingContext ? jobPostingContext.jobData : formData;
+  const uploads = useContextAPI && jobPostingContext ? jobPostingContext.photoUploads : photoUploads;
+  const priceOptions = useContextAPI && jobPostingContext ? jobPostingContext.pricingOptions : pricingOptions;
+  const calculatedPrice = useContextAPI && jobPostingContext ? jobPostingContext.calculatedPrice : {
+    originalPrice: 0,
+    finalPrice: 0,
+    discountPercentage: 0
+  };
+  const submitting = useContextAPI && jobPostingContext ? jobPostingContext.ui.isSubmitting : isSubmitting;
+  
+  // Handle pricing changes
+  const handlePricingChange = (options: PricingOptions) => {
+    if (useContextAPI && jobPostingContext) {
+      jobPostingContext.updatePricingOptions(options);
+    } else {
+      setPricingOptions(options);
+    }
+  };
+  
+  // Handle duration change
   const handleDurationChange = (months: number) => {
-    setPricingOptions({
-      ...pricingOptions,
+    handlePricingChange({
+      ...priceOptions,
       durationMonths: months
     });
   };
 
-  const handleTierChange = (tier: JobPricingTier) => {
-    setPricingOptions({
-      ...pricingOptions,
-      selectedPricingTier: tier
-    });
-  };
-
-  const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
-    setPricingOptions({
-      ...pricingOptions,
-      [option]: value
-    });
-  };
-
-  const selectedTierOption = jobPricingOptions.find(option => 
-    option.tier === pricingOptions.selectedPricingTier
-  );
-
-  const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
-  const isFreePost = pricingOptions.selectedPricingTier === 'free';
-
-  // Format price for display - ensure we never show $0 for paid plans
-  const formattedPrice = isFreePost 
-    ? "Free" 
-    : `$${priceData.finalPrice.toFixed(2)}`;
-
-  // Determine button text - if free plan, show "Start Free Trial", otherwise show "Pay $X & Post Job"
-  const buttonText = isFreePost 
-    ? t({english: "Start Free Trial", vietnamese: "Bắt đầu dùng thử"})
-    : t({
-        english: `Pay ${formattedPrice} & Post Job`,
-        vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`
-      });
+  // Check if we have necessary data to continue
+  const canContinue = jobData && jobData.title && jobData.location;
+  const isDiamondPlan = priceOptions.selectedPricingTier === 'diamond';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <Button 
-          variant="ghost" 
-          onClick={onBack} 
-          className="px-0 hover:bg-transparent hover:text-primary"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          <span>{t({english: "Back to Edit", vietnamese: "Quay lại chỉnh sửa"})}</span>
+        <h2 className="text-2xl font-semibold">
+          {t({english: "Review & Publish", vietnamese: "Xem lại & Đăng tuyển"})}
+        </h2>
+        <Button variant="outline" onClick={onBack}>
+          {t({english: "Back", vietnamese: "Quay lại"})}
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Preview column - Job details and photos */}
-        <div className="lg:col-span-2">
-          <h3 className="text-lg font-medium mb-4">{t({english: "Review Your Job Post", vietnamese: "Xem xét tin của bạn"})}</h3>
+      {/* Job preview section */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="text-lg font-medium mb-4">
+          {t({english: "Job Posting Preview", vietnamese: "Xem trước bài đăng công việc"})}
+        </h3>
+        {canContinue ? (
           <JobPostPreview 
-            jobData={formData} 
-            photoUploads={photoUploads} 
-            onBack={onBack} 
-            pricingTier={pricingOptions.selectedPricingTier}
+            jobData={jobData as ExtendedJobFormValues}
+            photoUrls={uploads.map(file => URL.createObjectURL(file))}
           />
-        </div>
-        
-        {/* Pricing column - Plan selection, options, and payment */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-medium">{t({english: "Choose Your Plan", vietnamese: "Chọn gói của bạn"})}</h3>
-          
-          {/* Plans selection grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-            {jobPricingOptions
-              .filter(option => !option.hidden)
-              .map(option => (
-                <PricingCard
-                  key={option.id}
-                  tier={option.tier}
-                  pricingInfo={option}
-                  isSelected={pricingOptions.selectedPricingTier === option.tier}
-                  onSelect={() => handleTierChange(option.tier as JobPricingTier)}
-                />
-              ))
-            }
+        ) : (
+          <div className="text-red-500 p-4 text-center">
+            {t({
+              english: "Missing required information. Please go back and complete the form.",
+              vietnamese: "Thiếu thông tin bắt buộc. Vui lòng quay lại và hoàn thành biểu mẫu."
+            })}
           </div>
-          
-          <Separator />
-          
-          {/* Duration selection */}
-          <DurationSelector
-            durationMonths={pricingOptions.durationMonths}
+        )}
+      </div>
+      
+      {/* Pricing options section */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <JobPostOptions 
+          options={priceOptions}
+          onOptionsChange={handlePricingChange}
+          isFirstPost={priceOptions.isFirstPost}
+        />
+        
+        <div className="mt-6">
+          <DurationSelector 
+            durationMonths={priceOptions.durationMonths}
             onDurationChange={handleDurationChange}
+            selectedPricingTier={priceOptions.selectedPricingTier}
             isDiamondPlan={isDiamondPlan}
           />
-          
-          {/* Additional options */}
-          <div className="space-y-4">
-            <JobPostOptions
-              options={pricingOptions}
-              onOptionsChange={(updatedOptions) => setPricingOptions(updatedOptions)}
-              isFirstPost={pricingOptions.isFirstPost}
-            />
-          </div>
-          
-          {/* Payment summary */}
-          <PaymentSummary
-            priceData={priceData}
-            durationMonths={pricingOptions.durationMonths}
-            autoRenew={pricingOptions.autoRenew || false}
-            selectedPricingTier={pricingOptions.selectedPricingTier}
-          />
-          
-          {/* Free plan messaging */}
-          {isFreePost && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 text-sm text-yellow-800">
-              <p className="font-medium">{t({
-                english: "Credit card required for free trial. Cancel anytime, no risk.",
-                vietnamese: "Yêu cầu thẻ tín dụng để dùng thử miễn phí. Hủy bất kỳ lúc nào, không có rủi ro."
-              })}</p>
-              <p className="mt-1">{t({
-                english: "After your 30-day free trial, plan will automatically convert to paid unless canceled.",
-                vietnamese: "Sau 30 ngày dùng thử miễn phí, gói sẽ tự động chuyển sang trả phí trừ khi bạn hủy."
-              })}</p>
-            </div>
-          )}
-          
-          {/* Submission button */}
-          <Button 
-            onClick={onSubmit}
-            disabled={isSubmitting || !formData}
-            className="w-full py-6 text-lg shadow-md sticky bottom-4 mt-8"
-          >
-            {isSubmitting ? (
-              <span>{t({english: "Processing...", vietnamese: "Đang xử lý..."})}</span>
-            ) : (
-              <span>{buttonText}</span>
-            )}
-          </Button>
         </div>
+      </div>
+      
+      {/* Payment summary */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <PaymentSummary
+          priceData={calculatedPrice}
+          durationMonths={priceOptions.durationMonths}
+          autoRenew={priceOptions.autoRenew}
+          onAutoRenewChange={(autoRenew) => 
+            handlePricingChange({...priceOptions, autoRenew})
+          }
+          selectedPricingTier={priceOptions.selectedPricingTier}
+        />
+      </div>
+      
+      {/* Submit button */}
+      <div className="flex justify-end">
+        <Button 
+          onClick={onSubmit}
+          disabled={!canContinue || submitting}
+          className="px-8"
+        >
+          {submitting 
+            ? t({english: "Processing...", vietnamese: "Đang xử lý..."})
+            : t({english: "Publish Job Post", vietnamese: "Đăng tin tuyển dụng"})
+          }
+        </Button>
       </div>
     </div>
   );

@@ -5,31 +5,81 @@ import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { calculateJobPostPrice, validatePricingOptions } from '@/utils/pricing/calculatePrice';
+import { useJobPosting } from '@/context/JobPostingContext';
+import { logPaymentAttempt, logError } from '@/utils/telemetry/jobPostingEvents';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+  
+  // Optionally access job posting context
+  let jobPostingContext: ReturnType<typeof useJobPosting> | null = null;
+  try {
+    jobPostingContext = useJobPosting();
+  } catch (error) {
+    // Context not available, proceed without it
+    console.log('Job posting context not available, proceeding without it');
+  }
 
-  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: JobDetailsSubmission, pricingOptions?: PricingOptions) => {
+  const initiatePayment = async (
+    postType: 'job' | 'salon', 
+    postDetails?: JobDetailsSubmission, 
+    pricingOptions?: PricingOptions
+  ) => {
     setIsLoading(true);
     try {
-      console.log("Initiating payment for:", postType, "with pricing options:", pricingOptions);
-
+      console.log("Initiating payment for:", postType);
+      
+      // Use context pricing options if available, otherwise use passed options
+      const usePricingOptions = jobPostingContext?.pricingOptions || pricingOptions;
+      
+      // Log price calculation inputs 
+      console.log("Payment using pricing options:", usePricingOptions);
+      
       // Validate pricing options to ensure they exist
-      if (!pricingOptions || !pricingOptions.selectedPricingTier) {
-        throw new Error(t({
+      if (!usePricingOptions || !usePricingOptions.selectedPricingTier) {
+        const errorMessage = t({
           english: "Missing pricing information. Please select a plan.",
           vietnamese: "Thiếu thông tin giá. Vui lòng chọn một gói."
-        }));
+        });
+        console.error("Missing pricing tier");
+        throw new Error(errorMessage);
+      }
+      
+      // Validate pricing options structure
+      const validation = validatePricingOptions(usePricingOptions);
+      if (!validation.valid) {
+        const errorMessage = validation.errors.join(', ');
+        console.error("Invalid pricing options:", errorMessage);
+        throw new Error(errorMessage);
       }
 
       // Calculate price based on selected options
-      const priceData = calculateJobPostPrice(pricingOptions);
-      console.log("Calculated price:", priceData);
+      const priceData = calculateJobPostPrice(usePricingOptions);
+      console.log("Calculated price for payment:", priceData);
+      
+      // Log the payment attempt
+      logPaymentAttempt(postType, usePricingOptions, priceData);
+      
+      // If context is available, validate the calculated price matches context price
+      if (jobPostingContext) {
+        const contextPrice = jobPostingContext.calculatedPrice;
+        if (contextPrice.finalPrice !== priceData.finalPrice) {
+          console.warn(
+            "Price mismatch detected:", 
+            "Context price:", contextPrice.finalPrice, 
+            "Calculated price:", priceData.finalPrice
+          );
+          logError('price_mismatch', 
+            `Price mismatch: Context ${contextPrice.finalPrice} vs Calculated ${priceData.finalPrice}`,
+            { contextPrice, calculatedPrice: priceData }
+          );
+        }
+      }
       
       // Handle free listings directly without going to Stripe
-      if (pricingOptions.selectedPricingTier === 'free') {
+      if (usePricingOptions.selectedPricingTier === 'free') {
         console.log("Processing free post...");
         
         // Create the post directly in the database via edge function
@@ -37,12 +87,13 @@ export const usePostPayment = () => {
           body: { 
             postType,
             postDetails,
-            pricingOptions
+            pricingOptions: usePricingOptions
           }
         });
 
         if (postError) {
           console.error("Free post creation error:", postError);
+          logError('free_post_creation', postError.message, { postType, pricingOptions: usePricingOptions });
           throw postError;
         }
 
@@ -64,23 +115,41 @@ export const usePostPayment = () => {
       
       // For paid listings (including Diamond), create a Stripe checkout session
       console.log("Creating paid post checkout with options:", {
-        tier: pricingOptions.selectedPricingTier,
-        duration: pricingOptions.durationMonths,
-        autoRenew: pricingOptions.autoRenew,
+        tier: usePricingOptions.selectedPricingTier,
+        duration: usePricingOptions.durationMonths,
+        autoRenew: usePricingOptions.autoRenew,
         finalPrice: priceData.finalPrice
       });
+      
+      // Ensure the price is greater than zero for paid plans
+      if (usePricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0) {
+        const errorMessage = t({
+          english: "Invalid price calculation. Please try again or choose a different plan.",
+          vietnamese: "Tính toán giá không hợp lệ. Vui lòng thử lại hoặc chọn một gói khác."
+        });
+        console.error("Price calculation resulted in $0 for paid plan");
+        logError('zero_price_paid_plan', 'Price calculation resulted in $0 for paid plan', {
+          pricingOptions: usePricingOptions,
+          priceData
+        });
+        throw new Error(errorMessage);
+      }
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           postType,
           postDetails,
-          pricingOptions,
+          pricingOptions: usePricingOptions,
           priceData // Pass the calculated price data
         }
       });
 
       if (error) {
         console.error("Edge function error:", error);
+        logError('create_checkout', error.message, {
+          postType,
+          pricingOptions: usePricingOptions
+        });
         throw error;
       }
       
@@ -93,10 +162,13 @@ export const usePostPayment = () => {
         return { success: true };
       } else {
         console.error("No checkout URL received");
+        logError('missing_checkout_url', 'No checkout URL received from Stripe', { data });
         throw new Error('No checkout URL received from Stripe');
       }
     } catch (error: any) {
       console.error('Payment initiation error:', error);
+      logError('payment_initiation', error.message || 'Unknown payment error');
+      
       toast.error(t({
         english: "Failed to initiate payment",
         vietnamese: "Không thể khởi tạo thanh toán"
