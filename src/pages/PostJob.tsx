@@ -2,7 +2,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import JobForm from '@/components/posting/job/JobForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -11,8 +10,8 @@ import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 const PostJob = () => {
@@ -62,7 +61,8 @@ const PostJob = () => {
           phone: data.contactPhone,
           email: data.contactEmail,
         },
-        post_type: 'job'
+        post_type: 'job',
+        pricing_tier: pricingOptions.selectedPricingTier
       };
       
       // Initiate payment with our consolidated hook - pass the exact UI price

@@ -85,7 +85,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     setPhotoUploads(photos);
   };
 
-  // Modified to accept the formData parameter from ReviewAndPaymentSection
   const handleReviewAndSubmit = async (formData: JobFormValues) => {
     try {
       setIsSubmitting(true);

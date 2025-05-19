@@ -2,14 +2,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client'; // Changed from useSupabaseClient to direct import
+import { supabase } from '@/integrations/supabase/client';
 import { PricingOptions, PostType } from '@/utils/posting/types';
 
 // Define TypeScript interface for user privileges to include missing properties
 interface UserPrivileges {
   is_diamond_invited?: boolean;
   on_diamond_waitlist?: boolean;
-  // Add any other properties that might be needed
 }
 
 export const usePostPayment = () => {
@@ -69,7 +68,8 @@ export const usePostPayment = () => {
           metadata: {
             post_type: postType,
             post_details: JSON.stringify(postDetails),
-            pricing_options: JSON.stringify(pricingOptions)
+            pricing_options: JSON.stringify(pricingOptions),
+            pricing_tier: pricingOptions.selectedPricingTier
           }
         }
       });
@@ -101,11 +101,9 @@ export const usePostPayment = () => {
       
       if (!user) return false;
       
-      // Fetch user privileges - using a type assertion to work around the table issue
-      // NOTE: This is a temporary fix for the build error - you may need to update the table name
-      // if "user_privileges" doesn't exist
+      // Fetch user privileges
       const { data } = await supabase
-        .from('users') // Changed from 'user_privileges' to 'users' which exists in the schema
+        .from('users') 
         .select('*')
         .eq('id', user.id)
         .single();

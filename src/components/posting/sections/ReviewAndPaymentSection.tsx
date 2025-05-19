@@ -18,7 +18,6 @@ export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;
-  // Update the onSubmit prop to match what EnhancedJobForm expects to pass
   onSubmit: (formData: JobFormValues) => Promise<boolean>;
   isSubmitting: boolean;
 }
@@ -59,8 +58,8 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     ? `$${priceData.finalPrice.toFixed(2)}` 
     : "Free";
 
-  // Create a wrapper function that calls onSubmit with the formData
-  const handleSubmitWithExactPrice = () => {
+  // Wrapper function to call onSubmit with formData
+  const handleSubmitWithFormData = () => {
     if (formData) {
       onSubmit(formData);
     }
@@ -138,7 +137,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           
           {/* Submission button */}
           <Button 
-            onClick={handleSubmitWithExactPrice}
+            onClick={handleSubmitWithFormData}
             disabled={
               isSubmitting || 
               !formData || 
