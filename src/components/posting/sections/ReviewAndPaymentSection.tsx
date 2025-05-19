@@ -1,25 +1,28 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft } from 'lucide-react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { PricingOptions } from '@/utils/posting/types';
+import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
 import JobPostOptions from '@/components/posting/job/JobPostOptions';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
 import { PaymentSummary } from '@/components/posting/PaymentSummary';
+import { Separator } from '@/components/ui/separator';
+import PricingCard from '@/components/posting/pricing/PricingCard';
+import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useJobPosting } from '@/context/JobPostingContext';
-import JobPostingDebugPanel from '@/components/debug/JobPostingDebugPanel';
 
 interface ReviewAndPaymentSectionProps {
-  formData?: JobFormValues | null;
-  photoUploads?: File[];
-  onBack?: () => void;
-  onSubmit?: () => void;
-  isSubmitting?: boolean;
-  pricingOptions?: PricingOptions;
-  setPricingOptions?: (options: PricingOptions) => void;
-  useContextAPI?: boolean;
+  formData: JobFormValues | null;
+  photoUploads: File[];
+  onBack: () => void;
+  onSubmit: () => void;
+  isSubmitting: boolean;
+  pricingOptions: PricingOptions;
+  setPricingOptions: (options: PricingOptions) => void;
 }
 
 export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -29,155 +32,139 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   onSubmit,
   isSubmitting,
   pricingOptions,
-  setPricingOptions,
-  useContextAPI = true
+  setPricingOptions
 }) => {
   const { t } = useTranslation();
-  
-  // Try to access context
-  let jobPostingContext = null;
-  let usingContext = false;
-  try {
-    jobPostingContext = useJobPosting();
-    usingContext = useContextAPI && jobPostingContext !== null;
-  } catch (error) {
-    console.error("Failed to load job posting context:", error);
-  }
-  
-  // Use context data or props
-  const jobData = usingContext ? jobPostingContext.jobData : formData;
-  const uploads = usingContext ? jobPostingContext.photoUploads : (photoUploads || []);
-  const priceOptions = usingContext ? jobPostingContext.pricingOptions : (pricingOptions || {
-    selectedPricingTier: 'standard' as JobPricingTier,
-    durationMonths: 1,
-    autoRenew: false,
-    isFirstPost: false,
-    isNationwide: false
-  });
-  const calculatedPrice = usingContext ? jobPostingContext.calculatedPrice : {
-    originalPrice: 0,
-    finalPrice: 0,
-    discountPercentage: 0
-  };
-  const submitting = usingContext ? jobPostingContext.ui.isSubmitting : (isSubmitting || false);
-  
-  // Handle pricing changes
-  const handlePricingChange = (options: PricingOptions) => {
-    if (usingContext) {
-      jobPostingContext.updatePricingOptions(options);
-    } else if (setPricingOptions) {
-      setPricingOptions(options);
-    }
-  };
-  
-  // Handle duration change
+  const [priceData, setPriceData] = React.useState(() => 
+    calculateJobPostPrice(pricingOptions)
+  );
+
+  // Update price data when pricing options change
+  useEffect(() => {
+    const newPriceData = calculateJobPostPrice(pricingOptions);
+    setPriceData(newPriceData);
+  }, [pricingOptions]);
+
   const handleDurationChange = (months: number) => {
-    handlePricingChange({
-      ...priceOptions,
+    setPricingOptions({
+      ...pricingOptions,
       durationMonths: months
     });
   };
-  
-  // Handle submit
-  const handleSubmit = () => {
-    if (usingContext) {
-      jobPostingContext.validateForm();
-      jobPostingContext.setStep('payment');
-    }
-    if (onSubmit) onSubmit();
-  };
-  
-  // Handle back
-  const handleBack = () => {
-    if (usingContext) {
-      jobPostingContext.navigateBack();
-      jobPostingContext.setStep('details');
-    }
-    if (onBack) onBack();
+
+  const handleTierChange = (tier: JobPricingTier) => {
+    setPricingOptions({
+      ...pricingOptions,
+      selectedPricingTier: tier
+    });
   };
 
-  // Check if we have necessary data to continue
-  const canContinue = jobData && jobData.title && jobData.location;
-  const isDiamondPlan = priceOptions.selectedPricingTier === 'diamond';
+  const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
+    setPricingOptions({
+      ...pricingOptions,
+      [option]: value
+    });
+  };
+
+  const selectedTierOption = jobPricingOptions.find(option => 
+    option.tier === pricingOptions.selectedPricingTier
+  );
+
+  const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
+  const isFreePost = pricingOptions.selectedPricingTier === 'free';
+
+  // Format price for display
+  const formattedPrice = priceData.finalPrice > 0 
+    ? `$${priceData.finalPrice.toFixed(2)}` 
+    : "Free";
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">
-          {t({english: "Review & Publish", vietnamese: "Xem lại & Đăng tuyển"})}
-        </h2>
-        <Button variant="outline" onClick={handleBack}>
-          {t({english: "Back", vietnamese: "Quay lại"})}
+        <Button 
+          variant="ghost" 
+          onClick={onBack} 
+          className="px-0 hover:bg-transparent hover:text-primary"
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          <span>{t({english: "Back to Edit", vietnamese: "Quay lại chỉnh sửa"})}</span>
         </Button>
       </div>
       
-      {/* Job preview section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h3 className="text-lg font-medium mb-4">
-          {t({english: "Job Posting Preview", vietnamese: "Xem trước bài đăng công việc"})}
-        </h3>
-        {canContinue ? (
-          <JobPostPreview 
-            jobData={jobData}
-            photoUrls={uploads.map(file => URL.createObjectURL(file))}
-          />
-        ) : (
-          <div className="text-red-500 p-4 text-center">
-            {t({
-              english: "Missing required information. Please go back and complete the form.",
-              vietnamese: "Thiếu thông tin bắt buộc. Vui lòng quay lại và hoàn thành biểu mẫu."
-            })}
-          </div>
-        )}
-      </div>
-      
-      {/* Pricing options section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <JobPostOptions 
-          options={priceOptions}
-          onOptionsChange={handlePricingChange}
-          isFirstPost={priceOptions.isFirstPost}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Preview column - Job details and photos */}
+        <div className="lg:col-span-2">
+          <h3 className="text-lg font-medium mb-4">{t({english: "Review Your Job Post", vietnamese: "Xem xét tin của bạn"})}</h3>
+          <JobPostPreview jobData={formData} photoUploads={photoUploads} onBack={onBack} />
+        </div>
         
-        <div className="mt-6">
-          <DurationSelector 
-            durationMonths={priceOptions.durationMonths}
+        {/* Pricing column - Plan selection, options, and payment */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-medium">{t({english: "Choose Your Plan", vietnamese: "Chọn gói của bạn"})}</h3>
+          
+          {/* Plans selection grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+            {jobPricingOptions
+              .filter(option => !option.hidden)
+              .map(option => (
+                <PricingCard
+                  key={option.id}
+                  tier={option.tier}
+                  pricingInfo={option}
+                  isSelected={pricingOptions.selectedPricingTier === option.tier}
+                  onSelect={() => handleTierChange(option.tier as JobPricingTier)}
+                />
+              ))
+            }
+          </div>
+          
+          <Separator />
+          
+          {/* Duration selection */}
+          <DurationSelector
+            durationMonths={pricingOptions.durationMonths}
             onDurationChange={handleDurationChange}
-            selectedPricingTier={priceOptions.selectedPricingTier}
             isDiamondPlan={isDiamondPlan}
           />
+          
+          {/* Additional options */}
+          <div className="space-y-4">
+            <JobPostOptions
+              options={pricingOptions}
+              onOptionsChange={(updatedOptions) => setPricingOptions(updatedOptions)}
+              isFirstPost={pricingOptions.isFirstPost}
+            />
+          </div>
+          
+          {/* Payment summary */}
+          <PaymentSummary
+            priceData={priceData}
+            durationMonths={pricingOptions.durationMonths}
+            autoRenew={pricingOptions.autoRenew || false}
+          />
+          
+          {/* Submission button */}
+          <Button 
+            onClick={onSubmit}
+            disabled={isSubmitting || !formData}
+            className="w-full py-6 text-lg shadow-md sticky bottom-4 mt-8"
+          >
+            {isSubmitting ? (
+              <span>{t({english: "Processing...", vietnamese: "Đang xử lý..."})}</span>
+            ) : (
+              <span>
+                {isFreePost 
+                  ? t({english: "Start Free Trial", vietnamese: "Bắt đầu dùng thử"})
+                  : t({
+                      english: `Pay ${formattedPrice} & Post Job`,
+                      vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`
+                    })
+                }
+              </span>
+            )}
+          </Button>
         </div>
       </div>
-      
-      {/* Payment summary */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <PaymentSummary
-          priceData={calculatedPrice}
-          durationMonths={priceOptions.durationMonths}
-          autoRenew={priceOptions.autoRenew}
-          onAutoRenewChange={(autoRenew) => 
-            handlePricingChange({...priceOptions, autoRenew})
-          }
-          selectedPricingTier={priceOptions.selectedPricingTier}
-        />
-      </div>
-      
-      {/* Submit button */}
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleSubmit}
-          disabled={!canContinue || submitting}
-          className="px-8"
-        >
-          {submitting 
-            ? t({english: "Processing...", vietnamese: "Đang xử lý..."})
-            : t({english: "Publish Job Post", vietnamese: "Đăng tin tuyển dụng"})
-          }
-        </Button>
-      </div>
-      
-      {/* Debug panel */}
-      <JobPostingDebugPanel />
     </div>
   );
 };

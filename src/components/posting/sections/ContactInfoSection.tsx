@@ -3,19 +3,12 @@ import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 
 interface ContactInfoSectionProps {
-  form: UseFormReturn<JobFormValues>;
+  form: UseFormReturn<any>;
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
-  // Ensure we have a valid form context
-  if (!form || !form.control) {
-    console.error("ContactInfoSection: Missing form context");
-    return null;
-  }
-
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">

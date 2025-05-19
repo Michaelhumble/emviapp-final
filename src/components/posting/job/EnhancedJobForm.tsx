@@ -1,130 +1,122 @@
 
 import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JobFormValues } from './jobFormSchema';
-import JobForm from './JobForm';
-import { useJobPosting } from '@/context/JobPostingContext';
+import { PricingOptions } from '@/utils/posting/types';
 import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
-import { useFeatureFlag } from '@/utils/featureFlags/useFeatureFlag';
-import { logJobPostingEvent } from '@/utils/telemetry/jobPostingEvents';
-import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema } from './jobFormSchema';
+import { CardContent } from '@/components/ui/card';
+import JobForm from './JobForm';
+import { toast } from 'sonner';
 
 interface EnhancedJobFormProps {
-  onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: any) => void;
-  isSubmitting?: boolean;
-  initialValues?: JobFormValues;
+  onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
+  onStepChange?: (step: number) => void;
+  initialTemplate?: JobFormValues;
+  isCustomTemplate?: boolean;
+  maxPhotos?: number;
 }
 
-/**
- * Enhanced job form that handles the complete job posting flow with multiple steps
- * Always ensures form context is available throughout the component tree
- */
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
-  onSubmit,
-  isSubmitting = false,
-  initialValues
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
+  onSubmit, 
+  onStepChange, 
+  initialTemplate,
+  isCustomTemplate = false,
+  maxPhotos = 5 // Default to 5 photos
 }) => {
-  // Use context if available, otherwise use local state
-  const isContextAvailable = useFeatureFlag('useJobPostingContext');
-  const [currentStep, setCurrentStep] = useState<'details' | 'review'>('details');
-  const [formData, setFormData] = useState<JobFormValues>(initialValues || {});
+  const [activeTab, setActiveTab] = useState('job-details');
+  const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  
-  // Create a form instance that can be passed down
-  const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: initialValues || {},
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'premium', // Default to premium tier
+    durationMonths: 1,             // Default to 1 month
+    autoRenew: true,               // Default to auto-renew enabled
+    isFirstPost: true,             // Default to first post (for free tier)
+    isNationwide: false            // Default to local listing
   });
-  
-  // Try to access context
-  let jobPostingContext;
-  let usingContext = false;
-  try {
-    jobPostingContext = useJobPosting();
-    usingContext = isContextAvailable && !!jobPostingContext;
-  } catch (error) {
-    console.error("Error accessing job posting context:", error);
-  }
-  
-  // Use context values if available, otherwise use local state
-  const effectiveStep = usingContext ? jobPostingContext.currentStep : currentStep;
-  const effectiveFormData = usingContext ? jobPostingContext.jobData : formData;
-  const effectivePhotoUploads = usingContext ? jobPostingContext.photoUploads : photoUploads;
-  const effectivePricingOptions = usingContext ? jobPostingContext.pricingOptions : { 
-    selectedPricingTier: 'standard',
-    durationMonths: 1,
-    autoRenew: false,
-    isFirstPost: true,
-    isNationwide: false
+
+  // Update the handleJobFormSubmit to match the JobForm onSubmit signature
+  const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
+    // Validate required fields
+    if (!data.title || !data.description || !data.location || !data.contactEmail) {
+      toast.error("Please complete all required fields before continuing");
+      return;
+    }
+
+    // If uploads are provided, update photoUploads state
+    if (uploads && uploads.length > 0) {
+      setPhotoUploads(uploads);
+    }
+
+    setJobFormData(data);
+    setActiveTab('review-payment');
+    onStepChange?.(3);
   };
-  
-  // Handle form submission for the details step
-  const handleDetailsSubmit = (data: JobFormValues, uploads?: File[]) => {
-    logJobPostingEvent('EDIT', 'Job form details submitted', { data });
+
+  const handlePaymentSubmit = async () => {
+    if (!jobFormData) {
+      toast.error("Job information is missing");
+      return;
+    }
     
-    if (usingContext) {
-      jobPostingContext.updateJobData(data);
-      if (uploads) jobPostingContext.setPhotoUploads(uploads);
-      jobPostingContext.setStep('review');
-    } else {
-      setFormData(data);
-      if (uploads) setPhotoUploads(uploads);
-      setCurrentStep('review');
+    setIsSubmitting(true);
+    try {
+      // Pass all data to the onSubmit handler
+      const success = await onSubmit(jobFormData, photoUploads, pricingOptions);
       
-      // Also update the form values
-      form.reset(data);
+      if (!success) {
+        setIsSubmitting(false);
+        toast.error("There was a problem processing your payment. Please try again.");
+        // If success is false, we don't navigate away so user can try again
+      }
+      // On success, the parent component will handle navigation
+      
+    } catch (error) {
+      console.error('Error submitting job post:', error);
+      toast.error("Error creating job post");
+      setIsSubmitting(false);
     }
   };
-  
-  // Handle back navigation
-  const handleBack = () => {
-    if (usingContext) {
-      jobPostingContext.setStep('details');
-    } else {
-      setCurrentStep('details');
-    }
+
+  const handleBackToEdit = () => {
+    setActiveTab('job-details');
+    onStepChange?.(2);
   };
-  
-  // Handle final submission
-  const handleSubmitFinal = () => {
-    // Use the context or local state to get the data
-    const submissionData = usingContext ? jobPostingContext.jobData : formData;
-    const uploads = usingContext ? jobPostingContext.photoUploads : photoUploads;
-    const pricing = usingContext ? jobPostingContext.pricingOptions : effectivePricingOptions;
-    
-    // Call the onSubmit prop with all the data
-    onSubmit(submissionData, uploads, pricing);
-  };
-  
+
   return (
-    <FormProvider {...form}>
-      <div className="space-y-6">
-        {effectiveStep === 'details' && (
-          <JobForm
-            onSubmit={handleDetailsSubmit}
-            photoUploads={effectivePhotoUploads}
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="hidden">
+        <TabsTrigger value="job-details">Job Details</TabsTrigger>
+        <TabsTrigger value="review-payment">Review & Payment</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="job-details" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
+          <JobForm 
+            onSubmit={handleJobFormSubmit}
+            photoUploads={photoUploads}
             setPhotoUploads={setPhotoUploads}
-            initialValues={effectiveFormData}
-            useContextAPI={usingContext}
-            form={form} // Pass the form instance down
+            initialValues={jobFormData || undefined}
+            isCustomTemplate={isCustomTemplate}
+            maxPhotos={maxPhotos} // Pass maxPhotos prop
           />
-        )}
-        
-        {effectiveStep === 'review' && (
-          <ReviewAndPaymentSection
-            formData={effectiveFormData}
-            photoUploads={effectivePhotoUploads}
-            onBack={handleBack}
-            onSubmit={handleSubmitFinal}
+        </CardContent>
+      </TabsContent>
+      
+      <TabsContent value="review-payment" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
+          <ReviewAndPaymentSection 
+            formData={jobFormData} 
+            photoUploads={photoUploads}
+            onBack={handleBackToEdit} 
+            onSubmit={handlePaymentSubmit}
             isSubmitting={isSubmitting}
-            pricingOptions={effectivePricingOptions}
-            useContextAPI={usingContext}
-            form={form} // Pass the form instance down
+            pricingOptions={pricingOptions}
+            setPricingOptions={setPricingOptions}
           />
-        )}
-      </div>
-    </FormProvider>
+        </CardContent>
+      </TabsContent>
+    </Tabs>
   );
 };
 

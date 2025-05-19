@@ -1,145 +1,84 @@
 
-import React, { useState } from 'react';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import Layout from '@/components/layout/Layout';
 import JobForm from '@/components/posting/job/JobForm';
-import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
-import { JobPostingProvider, useJobPosting } from '@/context/JobPostingContext';
-import JobPostingDebugPanel from '@/components/debug/JobPostingDebugPanel';
-import { useFeatureFlag } from '@/utils/featureFlags/useFeatureFlag';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { Card } from '@/components/ui/card';
+import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
+import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 
-// Internal component that uses the context
-const JobPostingWithContext: React.FC = () => {
-  const { 
-    jobData, 
-    photoUploads, 
-    currentStep, 
-    updateJobData, 
-    setPhotoUploads, 
-    setStep,
-    ui
-  } = useJobPosting();
-  
-  // Handle form submission
-  const handleFormSubmit = (data: JobFormValues, uploads?: File[]) => {
-    updateJobData(data);
-    if (uploads) setPhotoUploads(uploads);
-    setStep('review');
-  };
-  
-  // Handle back navigation
-  const handleBack = () => {
-    setStep('details');
-  };
-  
-  // Handle final submission
-  const handleSubmit = () => {
-    setStep('payment');
-  };
-
-  return (
-    <div className="container mx-auto py-6 max-w-4xl">
-      {currentStep === 'details' && (
-        <>
-          <h1 className="text-2xl font-bold mb-6">Create Job Posting</h1>
-          <JobForm
-            onSubmit={handleFormSubmit}
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            initialValues={jobData}
-            useContextAPI={true}
-          />
-        </>
-      )}
-      
-      {currentStep === 'review' && (
-        <ReviewAndPaymentSection 
-          useContextAPI={true}
-        />
-      )}
-      
-      {/* Always render the debug panel */}
-      <JobPostingDebugPanel />
-    </div>
-  );
-};
-
-// Legacy flow component for fallback
-const LegacyJobPosting: React.FC = () => {
-  const [jobData, setJobData] = useState<JobFormValues | null>(null);
+const CreateJobPosting = () => {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [currentStep, setCurrentStep] = useState<'details' | 'review'>('details');
-  
-  // Handle form submission
-  const handleFormSubmit = (data: JobFormValues, uploads?: File[]) => {
-    setJobData(data);
-    if (uploads) setPhotoUploads(uploads);
-    setCurrentStep('review');
+  const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
+  const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
+  const [step, setStep] = useState<'template' | 'form'>('template');
+
+  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
+    setSelectedTemplate(template);
+    setSelectedTemplateType(templateType);
+    setStep('form');
+    window.scrollTo(0, 0);
   };
-  
-  // Handle back navigation
-  const handleBack = () => {
-    setCurrentStep('details');
-  };
-  
-  // Handle final submission
-  const handleSubmit = () => {
-    // Legacy payment flow
-    console.log('Legacy payment flow initiated');
+
+  const handleSubmit = async (data: JobFormValues) => {
+    try {
+      setIsSubmitting(true);
+      console.log('Form submitted:', data);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast.success('Job post created successfully!');
+      navigate('/jobs');
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Error creating job post');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl">
-      {currentStep === 'details' && (
-        <>
-          <h1 className="text-2xl font-bold mb-6">Create Job Posting (Legacy)</h1>
-          <JobForm
-            onSubmit={handleFormSubmit}
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            initialValues={jobData || {}}
-            useContextAPI={false}
-          />
-        </>
-      )}
-      
-      {currentStep === 'review' && (
-        <ReviewAndPaymentSection 
-          formData={jobData}
-          photoUploads={photoUploads}
-          onBack={handleBack}
-          onSubmit={handleSubmit}
-          useContextAPI={false}
+    <Layout>
+      <Helmet>
+        <title>Create Job Posting | EmviApp</title>
+        <meta 
+          name="description" 
+          content="Create a new job posting to find qualified beauty professionals for your salon."
         />
-      )}
-    </div>
+      </Helmet>
+      <div className="container max-w-4xl mx-auto py-8">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Create Job Posting</h1>
+          <p className="text-gray-600">Find your perfect employee</p>
+        </div>
+        
+        <Card className="bg-white shadow-md rounded-lg p-6">
+          {step === 'template' ? (
+            <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+          ) : (
+            <JobForm 
+              onSubmit={handleSubmit}
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              isSubmitting={isSubmitting}
+              initialValues={selectedTemplate || undefined}
+              onBack={() => setStep('template')}
+              showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') || false}
+              isCustomTemplate={selectedTemplateType === 'custom'}
+              maxPhotos={5} // Set maximum photos to 5
+            />
+          )}
+        </Card>
+      </div>
+    </Layout>
   );
-};
-
-// Wrapper component that decides which flow to use
-const CreateJobPosting: React.FC = () => {
-  // Check if we should use legacy flow
-  const isLegacyFlow = useFeatureFlag('useJobPostingLegacyFlow') || 
-                       (typeof window !== 'undefined' && 
-                        window.location.search.includes('useLegacyFlow=true'));
-  
-  // Provide a fallback mechanism in case of errors
-  const [contextError, setContextError] = useState<boolean>(false);
-  
-  if (isLegacyFlow || contextError) {
-    return <LegacyJobPosting />;
-  }
-  
-  try {
-    return (
-      <JobPostingProvider>
-        <JobPostingWithContext />
-      </JobPostingProvider>
-    );
-  } catch (error) {
-    console.error("Failed to render with Context, falling back to legacy:", error);
-    setContextError(true);
-    return <LegacyJobPosting />;
-  }
 };
 
 export default CreateJobPosting;

@@ -4,8 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { JobPricingTier } from '@/types/jobPosting';
-import { PricingOptions } from '@/types/jobPosting';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 interface RenewPostDialogProps {
   open?: boolean;
@@ -41,18 +40,16 @@ const RenewPostDialog = ({
     // Setup renewal pricing options
     const pricingOptions: PricingOptions = {
       selectedPricingTier: selectedPlan,
-      durationMonths: 1,
-      autoRenew: false, // Required field in the type now
-      isFirstPost: false,
       isRenewal: true,
+      durationMonths: 1,
       isNationwide,
       fastSalePackage,
-      bundleWithJobPost
+      bundleWithJobPost,
+      autoRenew: false
     };
 
     try {
-      // Pass just postId string instead of object with id
-      const result = await initiatePayment(postType, postId, pricingOptions);
+      const result = await initiatePayment(postType, { id: postId }, pricingOptions);
       if (onRenewed) {
         onRenewed();
       }
