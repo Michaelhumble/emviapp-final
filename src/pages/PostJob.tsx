@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
@@ -13,7 +12,7 @@ import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { PricingProvider } from '@/context/pricing/PricingProvider'; // [SUNSHINE FIX] Import PricingProvider
+import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -102,7 +101,6 @@ const PostJob = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            // [SUNSHINE FIX] Wrap EnhancedJobForm with PricingProvider for proper context
             <PricingProvider>
               <EnhancedJobForm 
                 onSubmit={handleSubmit}

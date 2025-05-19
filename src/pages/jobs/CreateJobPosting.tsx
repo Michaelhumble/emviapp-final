@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
@@ -12,7 +11,7 @@ import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions } from '@/utils/posting/types';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
-import { PricingProvider } from '@/context/pricing/PricingProvider'; // [SUNSHINE FIX] Import PricingProvider
+import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
