@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions } from '@/types/jobPosting';
 import { calculateJobPostPrice } from '@/utils/pricing/calculatePrice';
 import { logJobPostingEvent } from '@/utils/telemetry/jobPostingEvents';
 
@@ -21,7 +21,7 @@ export const usePostPayment = () => {
       const priceCalculation = calculateJobPostPrice(pricingOptions);
       
       // Log the payment attempt for debugging
-      logJobPostingEvent('PAYMENT_ATTEMPT', 'Initiating payment', {
+      logJobPostingEvent('PAYMENT_INITIATED', 'Initiating payment', {
         postType,
         postId,
         pricingOptions,
@@ -48,7 +48,7 @@ export const usePostPayment = () => {
       }
     } catch (error) {
       console.error('Payment initiation error:', error);
-      logJobPostingEvent('ERROR', 'Payment initiation failed', {
+      logJobPostingEvent('PAYMENT_ERROR', 'Payment initiation failed', {
         postType,
         postId,
         pricingOptions,

@@ -15,7 +15,7 @@ const JobPostingRoute: React.FC = () => {
   
   // Log page view for analytics
   useEffect(() => {
-    logJobPostingEvent('PAGE_VIEW', 'Job Posting Route', {
+    logJobPostingEvent('VIEW', 'Job Posting Route', {
       path: location.pathname,
       isLegacyFlow
     });

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch, FormState } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
@@ -27,11 +27,26 @@ const JobFormFields: React.FC<JobFormFieldsProps> = ({
   setValue,
   isCustomTemplate = false
 }) => {
+  // Create a FormState-compatible object from errors
+  const formState: FormState<JobFormValues> = {
+    errors,
+    isDirty: false,
+    isSubmitted: false,
+    isSubmitting: false,
+    isSubmitSuccessful: false,
+    isValidating: false,
+    isValid: Object.keys(errors).length === 0,
+    submitCount: 0,
+    dirtyFields: {},
+    touchedFields: {},
+    defaultValues: {}
+  };
+
   return (
     <div className="space-y-8">
-      <JobDetailsSection form={{ control, register, formState: { errors } }} />
+      <JobDetailsSection form={{ control, register, formState }} />
       
-      <EmploymentDetailsSection form={{ control, register, formState: { errors } }} />
+      <EmploymentDetailsSection form={{ control, register, formState }} />
       
       <div className="space-y-6">
         <h2 className="font-playfair text-xl font-semibold text-gray-900">Contact Information</h2>

@@ -195,7 +195,7 @@ export function logPriceCalculation(options: PricingOptions, result: PricingSumm
   console.groupEnd();
   
   // Log pricing event
-  logJobPostingEvent('PRICE_CALCULATION', 'Price calculated', {
+  logJobPostingEvent('PRICE_CHANGE', 'Price calculated', {
     options,
     result
   });

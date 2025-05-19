@@ -5,7 +5,7 @@ import JobForm from '@/components/posting/job/JobForm';
 import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
 import { JobPostingProvider, useJobPosting } from '@/context/JobPostingContext';
 import JobPostingDebugPanel from '@/components/debug/JobPostingDebugPanel';
-import { useFeatureFlag } from '@/utils/featureFlags/jobPostingFlags';
+import { useFeatureFlag } from '@/utils/featureFlags/useFeatureFlag';
 
 // Internal component that uses the context
 const JobPostingWithContext: React.FC = () => {
