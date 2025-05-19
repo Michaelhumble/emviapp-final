@@ -12,13 +12,13 @@ import PricingCard from '@/components/posting/pricing/PricingCard';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
 import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePricing } from '@/context/pricing/PricingProvider';
+import { usePricing } from '@/context/pricing/usePricing';
 
 export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;
-  onSubmit: (exactUiPrice: number) => void; // Add exactUiPrice parameter
+  onSubmit: (exactUiPrice?: number) => void; // Add exactUiPrice parameter
   isSubmitting: boolean;
 }
 
@@ -162,3 +162,6 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     </div>
   );
 };
+
+// Ensure proper export
+export default ReviewAndPaymentSection;

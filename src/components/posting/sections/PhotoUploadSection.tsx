@@ -23,7 +23,8 @@ const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({
   onPhotoUploadsChange,
   maxPhotos = 5,
   isSubmitting = false,
-  photoUploads = []
+  photoUploads = [],
+  isCustomTemplate = false
 }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && onPhotoUploadsChange) {

@@ -4,7 +4,7 @@ import React from 'react';
 interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
-  steps?: { number: number; label: string }[]; // Added steps prop
+  steps?: { number: number; label: string }[];
 }
 
 const StepIndicator: React.FC<StepIndicatorProps> = ({ 

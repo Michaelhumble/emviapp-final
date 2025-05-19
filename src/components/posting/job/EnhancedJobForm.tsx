@@ -6,14 +6,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { JobFormSchema, JobFormValues } from './jobFormSchema';
+import { jobFormSchema, JobFormValues } from './jobFormSchema';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
 import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
-import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
+import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
 import StepIndicator from '@/components/posting/StepIndicator';
 import { PricingOptions } from '@/utils/posting/types';
-import { usePricing } from '@/context/pricing/usePricing';
+import { usePricing } from '@/context/pricing/PricingProvider';
 
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions, exactUiPrice?: number) => Promise<boolean>;
@@ -35,7 +35,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { pricingOptions, setPricingOptions, calculateFinalPrice } = usePricing();
+  const { pricingOptions, setPricingOptions, priceData } = usePricing();
   
   const totalSteps = 4; // Define the total number of steps
   
@@ -49,7 +49,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 
   // Initialize form with default values or template values
   const form = useForm<JobFormValues>({
-    resolver: zodResolver(JobFormSchema),
+    resolver: zodResolver(jobFormSchema),
     defaultValues: initialTemplate || {
       title: "",
       jobType: "full-time",
@@ -61,7 +61,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       contactEmail: "",
       compensation_type: "hourly",
       compensation_details: "",
-      weekly_pay: "",
+      weekly_pay: false,
       has_housing: false,
       has_wax_room: false,
       owner_will_train: false,
@@ -111,6 +111,11 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     }
   };
 
+  // Helper function to calculate final price based on pricing options
+  const calculateFinalPrice = () => {
+    return priceData.finalPrice;
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleReviewAndSubmit)} className="space-y-6">
@@ -155,12 +160,11 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         
         {currentStep === 4 && (
           <ReviewAndPaymentSection 
-            form={form}
-            formValues={form.getValues()}
-            onBack={handleBack}
-            isSubmitting={isSubmitting}
+            formData={form.getValues()}
             photoUploads={photoUploads}
-            isCustomTemplate={isCustomTemplate}
+            onBack={handleBack}
+            onSubmit={handleReviewAndSubmit}
+            isSubmitting={isSubmitting}
           />
         )}
       </form>

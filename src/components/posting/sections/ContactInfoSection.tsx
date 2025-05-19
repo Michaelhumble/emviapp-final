@@ -15,7 +15,8 @@ export interface ContactInfoSectionProps {
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
   form,
   onNext,
-  onBack
+  onBack,
+  isCustomTemplate = false
 }) => {
   // Make sure we have a valid form context
   if (!form) {
