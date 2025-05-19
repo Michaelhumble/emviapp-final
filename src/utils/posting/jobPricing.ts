@@ -1,5 +1,59 @@
 
-import { JobPricingTier, PricingOptions } from "./types";
+import { JobPricingTier, PricingOptions, JobPricingOption } from "./types";
+
+// Pricing tiers available for job listings
+export const jobPricingOptions: JobPricingOption[] = [
+  {
+    id: "free",
+    name: "Free Trial",
+    tier: "free",
+    priceMonthly: 0,
+    description: "Basic listing for 7 days",
+    features: ["7-day listing", "Basic visibility", "No support"],
+    color: "bg-gray-100",
+    hidden: false
+  },
+  {
+    id: "standard",
+    name: "Standard",
+    tier: "standard",
+    priceMonthly: 9.99,
+    description: "Standard listing with good visibility",
+    features: ["30-day listing", "Standard visibility", "Email support"],
+    color: "bg-blue-100",
+    hidden: false
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    tier: "premium",
+    priceMonthly: 19.99,
+    description: "Featured listing with premium visibility",
+    features: ["30-day listing", "Featured in search results", "Priority support", "Salon highlights"],
+    color: "bg-purple-100",
+    hidden: false
+  },
+  {
+    id: "gold",
+    name: "Gold",
+    tier: "gold",
+    priceMonthly: 39.99,
+    description: "Top visibility with all premium features",
+    features: ["30-day listing", "Top of search results", "Priority support", "Salon highlights", "Social media promotion"],
+    color: "bg-amber-200",
+    hidden: false
+  },
+  {
+    id: "diamond",
+    name: "Diamond",
+    tier: "diamond",
+    priceMonthly: 999.99,
+    description: "Exclusive nationwide promotion",
+    features: ["Nationwide promotion", "Premium placement", "Dedicated account manager", "Custom marketing", "Social media campaign"],
+    color: "bg-cyan-100",
+    hidden: false
+  }
+];
 
 // Calculate job price based on selected options
 export const getJobPrice = (options: PricingOptions) => {
@@ -79,6 +133,20 @@ export const getJobPrice = (options: PricingOptions) => {
   };
 };
 
+// Format price for display
+export const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  }).format(price);
+};
+
+// Convert UI price to Stripe amount (in cents)
+export const toStripeAmount = (price: number): number => {
+  return Math.round(price * 100);
+};
+
 // Get Stripe price ID based on plan details
 export const getStripePriceId = (
   pricingTier: JobPricingTier, 
@@ -128,20 +196,6 @@ export const getStripePriceId = (
   return priceIdMap[key] || '';
 };
 
-// Format price for display
-export const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2
-  }).format(price);
-};
-
-// Convert UI price to Stripe amount (in cents)
-export const toStripeAmount = (price: number): number => {
-  return Math.round(price * 100);
-};
-
 // Validate if user can access diamond tier
 export const canAccessDiamondTier = async (userId: string): Promise<boolean> => {
   try {
@@ -155,4 +209,59 @@ export const canAccessDiamondTier = async (userId: string): Promise<boolean> => 
     console.error("Error checking diamond tier access:", error);
     return false;
   }
+};
+
+// Additional exported functions required by imports
+
+export const calculateFinalPrice = (options: PricingOptions): number => {
+  const priceData = getJobPrice(options);
+  return priceData.finalPrice;
+};
+
+export const calculateJobPostPrice = (options: PricingOptions) => {
+  return getJobPrice(options);
+};
+
+export const getJobPostPricingSummary = (options: PricingOptions) => {
+  const priceData = getJobPrice(options);
+  return {
+    basePrice: priceData.basePrice,
+    finalPrice: priceData.finalPrice,
+    discountAmount: priceData.discountAmount,
+    discountPercentage: priceData.discountPercentage,
+    originalPrice: priceData.originalPrice,
+    durationMonths: priceData.durationMonths,
+    selectedTier: priceData.selectedTier
+  };
+};
+
+export const validatePricingOptions = (options: PricingOptions): boolean => {
+  // Validate that pricing options are valid
+  if (!options.selectedPricingTier) {
+    return false;
+  }
+
+  // Check if the tier exists in available options
+  const validTiers: JobPricingTier[] = ['free', 'standard', 'premium', 'gold', 'diamond'];
+  if (!validTiers.includes(options.selectedPricingTier)) {
+    return false;
+  }
+
+  // Check duration is valid
+  if (options.durationMonths !== undefined && 
+      (options.durationMonths <= 0 || 
+       ![1, 3, 6, 12].includes(options.durationMonths))) {
+    return false;
+  }
+
+  return true;
+};
+
+export const getAmountInCents = (price: number): number => {
+  return Math.round(price * 100);
+};
+
+export const isSubscriptionPlan = (pricingTier: JobPricingTier, autoRenew: boolean): boolean => {
+  // Only monthly plans with auto-renew enabled are considered subscriptions
+  return autoRenew && pricingTier !== 'free' && pricingTier !== 'diamond';
 };
