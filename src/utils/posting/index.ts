@@ -3,7 +3,6 @@ export type {
   UserPostingStats,
   PricingOptions,
   PostType,
-  JobPricingOption,
   JobPricingTier,
   IndustryType
 } from './types';
@@ -13,11 +12,11 @@ export {
   calculateFinalPrice,
   calculateJobPostPrice,
   getJobPostPricingSummary,
-  calculatePriceWithDuration,
   validatePricingOptions,
   getStripePriceId,
   getAmountInCents,
-  isSubscriptionPlan
+  isSubscriptionPlan,
+  getJobPrice
 } from './jobPricing';
 
 export {
