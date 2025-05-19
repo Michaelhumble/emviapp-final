@@ -13,6 +13,7 @@ import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { PricingProvider } from '@/context/pricing';
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -82,6 +83,15 @@ const PostJob = () => {
     setStep('template');
   };
 
+  // Initial pricing options
+  const initialPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium' as JobPricingTier,
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -101,14 +111,16 @@ const PostJob = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            <EnhancedJobForm 
-              onSubmit={handleSubmit}
-              initialTemplate={selectedTemplate || undefined}
-              onBack={handleBackToTemplates}
-              isCustomTemplate={selectedTemplateType === 'custom'}
-              maxPhotos={5}
-              onStepChange={(step) => console.log(`Changed to step ${step}`)}
-            />
+            <PricingProvider initialOptions={initialPricingOptions}>
+              <EnhancedJobForm 
+                onSubmit={handleSubmit}
+                initialTemplate={selectedTemplate || undefined}
+                onBack={handleBackToTemplates}
+                isCustomTemplate={selectedTemplateType === 'custom'}
+                maxPhotos={5}
+                onStepChange={(step) => console.log(`Changed to step ${step}`)}
+              />
+            </PricingProvider>
           )}
         </Card>
       </div>
