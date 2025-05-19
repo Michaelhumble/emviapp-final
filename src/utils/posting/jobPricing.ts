@@ -1,5 +1,5 @@
 
-import { JobPricingTier, PricingOptions } from './types';
+import { JobPricingTier, PricingOptions, JobPricingOption } from './types';
 
 // Base prices for each pricing tier (in USD)
 const BASE_PRICES: Record<JobPricingTier, number> = {
@@ -9,6 +9,75 @@ const BASE_PRICES: Record<JobPricingTier, number> = {
   'gold': 50,
   'diamond': 75
 };
+
+// Array of pricing options with detailed information for UI display
+export const jobPricingOptions: JobPricingOption[] = [
+  {
+    id: 'free-tier',
+    name: 'Free',
+    price: 0,
+    description: 'Basic job posting for first-time users',
+    features: ['7-day listing', 'Basic visibility', 'Email support'],
+    tier: 'free',
+    isFirstPost: true,
+    hidden: false,
+    tag: 'NEW USERS',
+    primaryBenefit: 'Try before you buy'
+  },
+  {
+    id: 'standard-tier',
+    name: 'Standard',
+    price: 20,
+    description: 'Essential visibility for your job post',
+    vietnameseDescription: 'Hiển thị cơ bản cho bài đăng việc làm của bạn',
+    features: ['30-day listing', 'Standard visibility', 'Email support'],
+    tier: 'standard',
+    hidden: false,
+    tag: 'BASIC',
+    primaryBenefit: 'Essential visibility'
+  },
+  {
+    id: 'premium-tier',
+    name: 'Premium',
+    price: 30,
+    description: 'Enhanced visibility with priority placement',
+    vietnameseDescription: 'Tăng cường khả năng hiển thị với vị trí ưu tiên',
+    features: ['30-day listing', 'Enhanced visibility', 'Priority in search', 'Email & chat support'],
+    tier: 'premium',
+    popular: true,
+    hidden: false,
+    tag: 'POPULAR',
+    primaryBenefit: 'Priority placement',
+    recommended: true
+  },
+  {
+    id: 'gold-tier',
+    name: 'Gold',
+    price: 50,
+    description: 'Maximum visibility with featured placement',
+    vietnameseDescription: 'Khả năng hiển thị tối đa với vị trí nổi bật',
+    features: ['30-day listing', 'Featured placement', 'Premium visibility', 'Social media promotion', 'Priority support'],
+    tier: 'gold',
+    hidden: false,
+    tag: 'FEATURED',
+    primaryBenefit: 'Featured placement'
+  },
+  {
+    id: 'diamond-tier',
+    name: 'Diamond',
+    price: 75,
+    wasPrice: 90,
+    description: 'VIP treatment with guaranteed results',
+    vietnameseDescription: 'Đối xử VIP với kết quả được đảm bảo',
+    features: ['60-day listing', 'Top placement', 'Premium visibility', 'Social media promotion', 'Dedicated account manager'],
+    tier: 'diamond',
+    hidden: false,
+    tag: 'BEST VALUE',
+    primaryBenefit: 'Top placement guarantee',
+    limitedSpots: '2 spots left',
+    upsellText: 'Our most effective package'
+  }
+];
 
 // Discount percentage for auto-renew selection
 const AUTO_RENEW_DISCOUNT = 10; // 10% discount

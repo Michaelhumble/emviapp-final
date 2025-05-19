@@ -4,7 +4,8 @@ export type {
   PricingOptions,
   PostType,
   JobPricingTier,
-  IndustryType
+  IndustryType,
+  JobPricingOption
 } from './types';
 
 export { 
