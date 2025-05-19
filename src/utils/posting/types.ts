@@ -48,6 +48,8 @@ export interface JobPricingOption {
   hidden?: boolean;
   annual?: boolean;
   limitedSpots?: string; // Added for limited spots displays
+  // Adding the priceMonthly property that is used in the config
+  priceMonthly?: number;
 }
 
 export interface UserPostingStats {

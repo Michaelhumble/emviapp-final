@@ -1,4 +1,3 @@
-
 import { JobPricingTier, PricingOptions, JobPricingOption } from "./types";
 
 // Pricing tiers available for job listings
@@ -7,6 +6,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     id: "free",
     name: "Free Trial",
     tier: "free",
+    price: 0,
     priceMonthly: 0,
     description: "Basic listing for 7 days",
     features: ["7-day listing", "Basic visibility", "No support"],
@@ -17,6 +17,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     id: "standard",
     name: "Standard",
     tier: "standard",
+    price: 9.99,
     priceMonthly: 9.99,
     description: "Standard listing with good visibility",
     features: ["30-day listing", "Standard visibility", "Email support"],
@@ -27,6 +28,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     id: "premium",
     name: "Premium",
     tier: "premium",
+    price: 19.99,
     priceMonthly: 19.99,
     description: "Featured listing with premium visibility",
     features: ["30-day listing", "Featured in search results", "Priority support", "Salon highlights"],
@@ -37,6 +39,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     id: "gold",
     name: "Gold",
     tier: "gold",
+    price: 39.99,
     priceMonthly: 39.99,
     description: "Top visibility with all premium features",
     features: ["30-day listing", "Top of search results", "Priority support", "Salon highlights", "Social media promotion"],
@@ -47,6 +50,7 @@ export const jobPricingOptions: JobPricingOption[] = [
     id: "diamond",
     name: "Diamond",
     tier: "diamond",
+    price: 999.99,
     priceMonthly: 999.99,
     description: "Exclusive nationwide promotion",
     features: ["Nationwide promotion", "Premium placement", "Dedicated account manager", "Custom marketing", "Social media campaign"],
@@ -149,9 +153,9 @@ export const toStripeAmount = (price: number): number => {
 
 // Get Stripe price ID based on plan details
 export const getStripePriceId = (
-  pricingTier: JobPricingTier, 
-  autoRenew: boolean = false, 
-  durationMonths: number = 1
+  tier: JobPricingTier, 
+  durationMonths: number = 1, 
+  autoRenew: boolean = false
 ): string => {
   // Retrieve price IDs from environment variables
   const priceIdMap: {[key: string]: string} = {
@@ -181,17 +185,17 @@ export const getStripePriceId = (
   };
   
   // For free tier, no price ID needed
-  if (pricingTier === 'free') {
+  if (tier === 'free') {
     return '';
   }
   
   // Diamond tier only has one price, regardless of duration
-  if (pricingTier === 'diamond') {
+  if (tier === 'diamond') {
     return priceIdMap['diamond'];
   }
   
   // For all other tiers, determine based on duration and auto-renewal
-  const key = `${pricingTier}_${durationMonths}m${durationMonths === 1 && autoRenew ? '_auto' : ''}`;
+  const key = `${tier}_${durationMonths}m${durationMonths === 1 && autoRenew ? '_auto' : ''}`;
   
   return priceIdMap[key] || '';
 };
