@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button';
 
 export interface JobDetailsSectionProps {
   form: UseFormReturn<any>;
-  onNext?: () => void; // Added missing prop
+  onNext?: () => void;
+  onBack?: () => void; // Added onBack prop
 }
 
-const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext }) => {
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, onBack }) => {
   // Make sure we have a valid form context
   if (!form) {
     console.error("JobDetailsSection requires a valid form from react-hook-form");
@@ -130,11 +131,22 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext }) =
         />
       </div>
 
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-between pt-4">
+        {onBack && (
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onBack}
+          >
+            Back
+          </Button>
+        )}
+        
         {onNext && (
           <Button 
             type="button" 
             onClick={onNext}
+            className="ml-auto"
           >
             Continue
           </Button>

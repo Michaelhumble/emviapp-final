@@ -4,9 +4,14 @@ import React from 'react';
 interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
+  steps?: { number: number; label: string }[]; // Added steps prop
 }
 
-const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, totalSteps }) => {
+const StepIndicator: React.FC<StepIndicatorProps> = ({ 
+  currentStep, 
+  totalSteps,
+  steps = [] // Default to empty array
+}) => {
   return (
     <div className="flex justify-center items-center space-x-2 py-4">
       {Array.from({ length: totalSteps }).map((_, index) => (

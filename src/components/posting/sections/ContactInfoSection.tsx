@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 
 export interface ContactInfoSectionProps {
   form: UseFormReturn<any>;
-  onNext?: () => void; // Added missing prop
-  onBack?: () => void; // Added for consistency
+  onNext?: () => void;
+  onBack?: () => void;
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
