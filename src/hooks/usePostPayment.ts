@@ -1,125 +1,123 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { PricingOptions, PostType } from '@/utils/posting/types';
-
-// Define TypeScript interface for user privileges to include missing properties
-interface UserPrivileges {
-  is_diamond_invited?: boolean;
-  on_diamond_waitlist?: boolean;
-}
+import { toast } from "sonner";
+import { useTranslation } from '@/hooks/useTranslation';
+import { JobDetailsSubmission } from '@/types/job';
+import { PricingOptions } from '@/utils/posting/types';
+import { getJobPrice } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const initiatePayment = async (
-    postType: PostType,
-    postDetails: any,
-    pricingOptions: PricingOptions,
-    exactUiPrice?: number
-  ) => {
+  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
+    setIsLoading(true);
     try {
-      console.log('Initiating payment for:', { postType, pricingOptions, exactUiPrice });
-      
-      setIsLoading(true);
-      
-      // Validate pricing data to prevent issues
-      if (pricingOptions && typeof exactUiPrice !== 'undefined') {
-        console.log('Using exact UI price for Stripe:', exactUiPrice);
-      } else {
-        console.warn('Missing exact UI price - this could cause pricing discrepancies');
+      console.log("Initiating payment for:", postType, "with pricing:", pricingOptions);
+
+      // Ensure pricing options exist
+      if (!pricingOptions) {
+        throw new Error("Missing pricing options");
       }
-      
-      // Handle free post case - no payment needed
-      if (
-        pricingOptions.selectedPricingTier === 'free' || 
-        exactUiPrice === 0 || 
-        (pricingOptions.selectedPricingTier === 'diamond' && await isUserDiamondEligible())
-      ) {
-        console.log('Free post or Diamond eligible - skipping payment');
-        
-        // Create the post directly without payment
-        const { data: post, error } = await supabase
-          .from('posts')
-          .insert({
-            ...postDetails,
-            status: 'active',
-          })
-          .select()
-          .single();
-          
-        if (error) {
-          console.error('Error creating free post:', error);
-          throw error;
-        }
-        
-        return { success: true, post };
+
+      // Calculate price using our centralized pricing function
+      const priceData = getJobPrice(pricingOptions);
+      console.log("Calculated price:", priceData);
+
+      // Validate pricing options
+      if (!pricingOptions.selectedPricingTier) {
+        throw new Error("Invalid pricing options: Missing tier");
       }
-      
-      // For paid posts, proceed with payment
-      const { data: session, error: sessionError } = await supabase.functions.invoke('create-stripe-checkout-session', {
-        body: {
-          price: exactUiPrice,
-          success_url: `${window.location.origin}/dashboard`,
-          cancel_url: window.location.href,
-          metadata: {
-            post_type: postType,
-            post_details: JSON.stringify(postDetails),
-            pricing_options: JSON.stringify(pricingOptions),
-            pricing_tier: pricingOptions.selectedPricingTier
+
+      // Check for the $0.00 bug - Only allow $0 for free tier
+      if (priceData.finalPrice <= 0 && pricingOptions.selectedPricingTier !== 'free') {
+        throw new Error("Invalid price: Non-free plan cannot have $0 price");
+      }
+
+      // Handle free listings directly without going to Stripe
+      if (pricingOptions.selectedPricingTier === 'free' && pricingOptions.isFirstPost) {
+        console.log("Processing free post...");
+        // Create the post directly in the database
+        const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
+          body: { 
+            postType,
+            postDetails,
+            pricingOptions
           }
+        });
+
+        if (postError) {
+          console.error("Free post creation error:", postError);
+          throw postError;
         }
+
+        toast.success(
+          t({
+            english: "Your free post has been submitted",
+            vietnamese: "Tin miễn phí của bạn đã được đăng"
+          }), {
+          description: t({
+            english: "You can view it in your dashboard now",
+            vietnamese: "Bạn có thể xem nó trong bảng điều khiển của bạn ngay bây giờ"
+          })
+        });
+        
+        // Redirect to success page
+        window.location.href = `/post-success?payment_log_id=${postData?.payment_log_id}&free=true`;
+        return { success: true };
+      } 
+      
+      // For paid listings, create a Stripe checkout session
+      // Log payment parameters for debugging
+      console.log("Payment parameters:", {
+        tier: pricingOptions.selectedPricingTier,
+        duration: pricingOptions.durationMonths,
+        autoRenew: pricingOptions.autoRenew,
+        finalPrice: priceData.finalPrice
       });
       
-      if (sessionError) {
-        console.error('Error creating Stripe checkout session:', sessionError);
-        toast.error('Error processing payment. Please try again.');
-        return { success: false };
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { 
+          postType,
+          postDetails,
+          pricingOptions,
+          priceData // Pass the calculated price data
+        }
+      });
+
+      if (error) {
+        console.error("Edge function error:", error);
+        throw error;
       }
       
-      // Redirect to Stripe checkout
-      window.location.href = session.url;
+      console.log("Checkout response:", data);
       
-      return { success: true };
-    } catch (error) {
+      if (data?.url) {
+        console.log("Redirecting to Stripe checkout URL:", data.url);
+        // Redirect to Stripe's hosted checkout
+        window.location.href = data.url;
+        return { success: true };
+      } else {
+        console.error("No checkout URL received");
+        throw new Error('No checkout URL received from Stripe');
+      }
+    } catch (error: any) {
       console.error('Payment initiation error:', error);
-      toast.error('Error processing payment. Please try again.');
+      toast.error(t({
+        english: "Failed to initiate payment",
+        vietnamese: "Không thể khởi tạo thanh toán"
+      }), {
+        description: error.message || t({
+          english: "Please try again.",
+          vietnamese: "Vui lòng thử lại."
+        })
+      });
       return { success: false };
     } finally {
       setIsLoading(false);
     }
   };
-  
-  // Check if user is eligible for Diamond tier without payment
-  const isUserDiamondEligible = async (): Promise<boolean> => {
-    try {
-      // Get the current authenticated user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) return false;
-      
-      // Fetch user privileges
-      const { data } = await supabase
-        .from('users') 
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      // Use optional chaining to safely access properties
-      const privileges = data as UserPrivileges;
-      
-      return !!(privileges?.is_diamond_invited || privileges?.on_diamond_waitlist);
-    } catch (error) {
-      console.error('Error checking Diamond eligibility:', error);
-      return false;
-    }
-  };
 
-  return {
-    initiatePayment,
-    isLoading
-  };
+  return { initiatePayment, isLoading };
 };

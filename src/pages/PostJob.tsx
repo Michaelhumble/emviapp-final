@@ -2,6 +2,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
+import JobForm from '@/components/posting/job/JobForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -10,8 +11,8 @@ import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 const PostJob = () => {
@@ -30,17 +31,11 @@ const PostJob = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (
-    data: JobFormValues, 
-    uploads: File[], 
-    pricingOptions: PricingOptions,
-    exactUiPrice?: number
-  ) => {
+  const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
     try {
       setIsSubmitting(true);
       console.log('Form submitted:', data);
       console.log('Pricing options:', pricingOptions);
-      console.log('Exact UI price:', exactUiPrice);
       
       // Convert form data to the expected format for the API
       const jobDetails = {
@@ -61,12 +56,11 @@ const PostJob = () => {
           phone: data.contactPhone,
           email: data.contactEmail,
         },
-        post_type: 'job',
-        pricing_tier: pricingOptions.selectedPricingTier
+        post_type: 'job'
       };
       
-      // Initiate payment with our consolidated hook - pass the exact UI price
-      const result = await initiatePayment('job', jobDetails, pricingOptions, exactUiPrice);
+      // Initiate payment with our consolidated hook
+      const result = await initiatePayment('job', jobDetails, pricingOptions);
       
       if (result.success) {
         toast.success('Job post created successfully!');

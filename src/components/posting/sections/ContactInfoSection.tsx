@@ -3,21 +3,12 @@ import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
 
-export interface ContactInfoSectionProps {
+interface ContactInfoSectionProps {
   form: UseFormReturn<any>;
-  onNext?: () => void;
-  onBack?: () => void;
-  isCustomTemplate?: boolean;
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
-  form,
-  onNext,
-  onBack,
-  isCustomTemplate = false
-}) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
   // Make sure we have a valid form context
   if (!form) {
     console.error("ContactInfoSection requires a valid form from react-hook-form");
@@ -88,28 +79,6 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             </FormItem>
           )}
         />
-      </div>
-
-      <div className="flex justify-between pt-4">
-        {onBack && (
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onBack}
-          >
-            Back
-          </Button>
-        )}
-        
-        {onNext && (
-          <Button 
-            type="button" 
-            onClick={onNext}
-            className="ml-auto"
-          >
-            Continue
-          </Button>
-        )}
       </div>
     </div>
   );

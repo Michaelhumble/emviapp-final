@@ -12,13 +12,13 @@ import PricingCard from '@/components/posting/pricing/PricingCard';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
 import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePricing } from '@/context/pricing/usePricing';
+import { usePricing } from '@/context/pricing/PricingProvider';
 
 export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;
-  onSubmit: (formData: JobFormValues) => Promise<boolean>;
+  onSubmit: () => void;
   isSubmitting: boolean;
 }
 
@@ -57,13 +57,6 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   const formattedPrice = priceData.finalPrice > 0 
     ? `$${priceData.finalPrice.toFixed(2)}` 
     : "Free";
-
-  // Wrapper function to call onSubmit with formData
-  const handleSubmitWithFormData = () => {
-    if (formData) {
-      onSubmit(formData);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -137,7 +130,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           
           {/* Submission button */}
           <Button 
-            onClick={handleSubmitWithFormData}
+            onClick={onSubmit}
             disabled={
               isSubmitting || 
               !formData || 
@@ -164,6 +157,3 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     </div>
   );
 };
-
-// Ensure proper export
-export default ReviewAndPaymentSection;

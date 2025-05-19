@@ -1,169 +1,217 @@
 
-import React, { useState } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
-import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
-import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
-import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
-import StepIndicator from '@/components/posting/StepIndicator';
+import React, { useState, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { JobFormValues } from './jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
+import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
+import { CardContent } from '@/components/ui/card';
+import JobForm from './JobForm';
+import { toast } from 'sonner';
 import { usePricing } from '@/context/pricing/PricingProvider';
+import { PricingProvider } from '@/context/pricing/PricingProvider';
 
-interface EnhancedJobFormProps {
-  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions, exactUiPrice?: number) => Promise<boolean>;
-  initialTemplate?: JobFormValues;
+export interface EnhancedJobFormProps {
+  onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
+  onStepChange?: (step: number) => void;
   onBack?: () => void;
+  initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
-  onStepChange?: (step: number) => void;
 }
 
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
-  onSubmit,
-  initialTemplate,
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
+  onSubmit, 
+  onStepChange, 
   onBack,
+  initialTemplate,
   isCustomTemplate = false,
-  maxPhotos = 5,
-  onStepChange
+  maxPhotos = 5
 }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [activeTab, setActiveTab] = useState('job-details');
+  const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { pricingOptions, setPricingOptions, priceData } = usePricing();
   
-  const totalSteps = 4; // Define the total number of steps
-  
-  // Form steps configuration
-  const steps = [
-    { number: 1, label: "Job Details" },
-    { number: 2, label: "Contact Info" },
-    { number: 3, label: "Photos" },
-    { number: 4, label: "Review & Publish" },
-  ];
-
-  // Initialize form with default values or template values
-  const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: initialTemplate || {
-      title: "",
-      jobType: "full-time",
-      location: "",
-      description: "",
-      vietnameseDescription: "",
-      contactName: "",
-      contactPhone: "",
-      contactEmail: "",
-      compensation_type: "hourly",
-      compensation_details: "",
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-    }
-  });
-
-  const goToStep = (step: number) => {
-    if (step >= 1 && step <= steps.length) {
-      setCurrentStep(step);
-      if (onStepChange) {
-        onStepChange(step);
-      }
-    }
-  };
-
-  const handleNext = () => goToStep(currentStep + 1);
-  const handleBack = () => goToStep(currentStep - 1);
-  
-  const handlePhotoUploadsChange = (photos: File[]) => {
-    setPhotoUploads(photos);
-  };
-
-  const handleReviewAndSubmit = async (formData: JobFormValues) => {
+  // Safely use the pricing context, with a fallback if needed
+  const usePricingHook = () => {
     try {
-      setIsSubmitting(true);
-      
-      // Calculate the final price as shown in the UI
-      const exactUiPrice = priceData.finalPrice;
-      
-      // Call the parent's onSubmit with the form data and pricing options
-      const success = await onSubmit(formData, photoUploads, pricingOptions, exactUiPrice);
-      
-      if (success) {
-        toast.success("Job posting submitted successfully!");
-        return true;
-      } else {
-        toast.error("There was an issue submitting your job post. Please try again.");
-        return false;
-      }
+      return usePricing();
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("An unexpected error occurred. Please try again later.");
-      return false;
-    } finally {
+      console.error("Pricing context not available in EnhancedJobForm, using internal fallback", error);
+      // Return null if the context is not available
+      return null;
+    }
+  };
+  
+  const pricingContext = usePricingHook();
+  
+  // If no external pricing context is available, use a default one
+  const defaultPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
+  };
+  
+  // Update the handleJobFormSubmit to match the JobForm onSubmit signature
+  const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
+    // Validate required fields
+    if (!data.title || !data.description || !data.location || !data.contactEmail) {
+      toast.error("Please complete all required fields before continuing");
+      return;
+    }
+
+    // If uploads are provided, update photoUploads state
+    if (uploads && uploads.length > 0) {
+      setPhotoUploads(uploads);
+    }
+
+    setJobFormData(data);
+    setActiveTab('review-payment');
+    onStepChange?.(3);
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!jobFormData) {
+      toast.error("Job information is missing");
+      return;
+    }
+    
+    // Use pricing options from context if available, otherwise use default
+    const pricingOptions = pricingContext?.pricingOptions || defaultPricingOptions;
+    
+    // Validation check for paid plans
+    if (pricingOptions.selectedPricingTier !== 'free' && 
+        pricingContext?.priceData && pricingContext.priceData.finalPrice <= 0) {
+      toast.error("Invalid price calculation. Please try again or contact support.");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      // Pass all data to the onSubmit handler
+      const success = await onSubmit(jobFormData, photoUploads, pricingOptions);
+      
+      if (!success) {
+        setIsSubmitting(false);
+        toast.error("There was a problem processing your payment. Please try again.");
+        // If success is false, we don't navigate away so user can try again
+      }
+      // On success, the parent component will handle navigation
+      
+    } catch (error) {
+      console.error('Error submitting job post:', error);
+      toast.error("Error creating job post");
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleReviewAndSubmit)} className="space-y-6">
-        {/* Step indicator */}
-        <StepIndicator 
-          currentStep={currentStep} 
-          totalSteps={totalSteps} 
-          steps={steps} 
+  const handleBackToEdit = () => {
+    setActiveTab('job-details');
+    onStepChange?.(2);
+  };
+
+  // If no pricing context is available, wrap with our own provider
+  if (!pricingContext) {
+    console.log('EnhancedJobForm: No pricing context available, using internal provider with defaults:', defaultPricingOptions);
+    
+    return (
+      <PricingProvider initialOptions={defaultPricingOptions}>
+        <EnhancedJobFormContent 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          jobFormData={jobFormData}
+          photoUploads={photoUploads}
+          setPhotoUploads={setPhotoUploads}
+          isSubmitting={isSubmitting}
+          handleJobFormSubmit={handleJobFormSubmit}
+          handleBackToEdit={handleBackToEdit}
+          handlePaymentSubmit={handlePaymentSubmit}
+          isCustomTemplate={isCustomTemplate}
+          maxPhotos={maxPhotos}
         />
-        
-        {/* Different sections based on current step */}
-        {currentStep === 1 && (
-          <JobDetailsSection 
-            form={form} 
-            onNext={handleNext} 
-            onBack={onBack}
+      </PricingProvider>
+    );
+  }
+
+  return (
+    <EnhancedJobFormContent 
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      jobFormData={jobFormData}
+      photoUploads={photoUploads}
+      setPhotoUploads={setPhotoUploads}
+      isSubmitting={isSubmitting}
+      handleJobFormSubmit={handleJobFormSubmit}
+      handleBackToEdit={handleBackToEdit}
+      handlePaymentSubmit={handlePaymentSubmit}
+      isCustomTemplate={isCustomTemplate}
+      maxPhotos={maxPhotos}
+    />
+  );
+};
+
+// Separate content component to avoid duplication
+interface EnhancedJobFormContentProps {
+  activeTab: string;
+  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+  jobFormData: JobFormValues | null;
+  photoUploads: File[];
+  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  isSubmitting: boolean;
+  handleJobFormSubmit: (data: JobFormValues, uploads?: File[]) => void;
+  handleBackToEdit: () => void;
+  handlePaymentSubmit: () => Promise<void>;
+  isCustomTemplate: boolean;
+  maxPhotos: number;
+}
+
+const EnhancedJobFormContent: React.FC<EnhancedJobFormContentProps> = ({
+  activeTab,
+  setActiveTab,
+  jobFormData,
+  photoUploads,
+  setPhotoUploads,
+  isSubmitting,
+  handleJobFormSubmit,
+  handleBackToEdit,
+  handlePaymentSubmit,
+  isCustomTemplate,
+  maxPhotos
+}) => {
+  return (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="hidden">
+        <TabsTrigger value="job-details">Job Details</TabsTrigger>
+        <TabsTrigger value="review-payment">Review & Payment</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="job-details" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
+          <JobForm 
+            onSubmit={handleJobFormSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            initialValues={jobFormData || undefined}
             isCustomTemplate={isCustomTemplate}
-          />
-        )}
-        
-        {currentStep === 2 && (
-          <ContactInfoSection 
-            form={form} 
-            onNext={handleNext} 
-            onBack={handleBack}
-            isCustomTemplate={isCustomTemplate}
-          />
-        )}
-        
-        {currentStep === 3 && (
-          <PhotoUploadSection
-            form={form}
-            onNext={handleNext}
-            onBack={handleBack}
-            onPhotoUploadsChange={handlePhotoUploadsChange}
             maxPhotos={maxPhotos}
-            isSubmitting={isSubmitting}
-            photoUploads={photoUploads}
-            isCustomTemplate={isCustomTemplate}
           />
-        )}
-        
-        {currentStep === 4 && (
+        </CardContent>
+      </TabsContent>
+      
+      <TabsContent value="review-payment" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
           <ReviewAndPaymentSection 
-            formData={form.getValues()}
+            formData={jobFormData} 
             photoUploads={photoUploads}
-            onBack={handleBack}
-            onSubmit={handleReviewAndSubmit}
+            onBack={handleBackToEdit} 
+            onSubmit={handlePaymentSubmit}
             isSubmitting={isSubmitting}
           />
-        )}
-      </form>
-    </Form>
+        </CardContent>
+      </TabsContent>
+    </Tabs>
   );
 };
 
