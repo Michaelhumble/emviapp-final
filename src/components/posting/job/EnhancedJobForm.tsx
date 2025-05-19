@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { JobFormValues, jobFormSchema } from '@/components/posting/job/jobFormSchema';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
@@ -73,10 +74,18 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         })}>
         <Card className="mb-4">
           {currentStep === 1 && (
-            <JobDetailsSection nextStep={nextStep} isCustomTemplate={isCustomTemplate} />
+            <JobDetailsSection 
+              form={methods}
+              nextStep={nextStep}
+              isCustomTemplate={isCustomTemplate} 
+            />
           )}
           {currentStep === 2 && (
-            <ContactInfoSection prevStep={prevStep} nextStep={nextStep} />
+            <ContactInfoSection 
+              form={methods}
+              prevStep={prevStep} 
+              nextStep={nextStep}
+            />
           )}
           {currentStep === 3 && (
             <PhotoUploadSection

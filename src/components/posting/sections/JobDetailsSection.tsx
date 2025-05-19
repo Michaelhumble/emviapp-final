@@ -15,12 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { IndustryType } from '@/components/posting/job/jobFormSchema';
 import { useForm, UseFormReturn } from 'react-hook-form';
 
-interface JobDetailsSectionProps {
+export interface JobDetailsSectionProps {
   form: UseFormReturn<any>;
   showVietnameseByDefault?: boolean;
+  nextStep?: () => Promise<void>;
+  isCustomTemplate?: boolean;
 }
 
-const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnameseByDefault = false }) => {
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnameseByDefault = false, nextStep, isCustomTemplate }) => {
   // Make sure we have a valid form context
   if (!form) {
     console.error("JobDetailsSection requires a valid form from react-hook-form");

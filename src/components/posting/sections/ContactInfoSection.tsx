@@ -4,11 +4,13 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
 
-interface ContactInfoSectionProps {
+export interface ContactInfoSectionProps {
   form: UseFormReturn<any>;
+  prevStep?: () => void;
+  nextStep?: () => Promise<void>;
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form, prevStep, nextStep }) => {
   // Make sure we have a valid form context
   if (!form) {
     console.error("ContactInfoSection requires a valid form from react-hook-form");
