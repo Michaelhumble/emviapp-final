@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ interface JobFormProps {
   isCustomTemplate?: boolean;
   maxPhotos?: number;
   useContextAPI?: boolean;
+  form?: ReturnType<typeof useForm<JobFormValues>>;
 }
 
 const JobForm = ({
@@ -26,7 +27,8 @@ const JobForm = ({
   initialValues,
   isCustomTemplate = false,
   maxPhotos = 5,
-  useContextAPI = false
+  useContextAPI = false,
+  form: externalForm
 }: JobFormProps) => {
   // Local state for file uploads
   const [uploadedFiles, setUploadedFiles] = useState<File[]>(photoUploads || []);
@@ -41,6 +43,12 @@ const JobForm = ({
   }
   
   // Initialize form with react-hook-form
+  const internalForm = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: initialValues || {}
+  });
+  
+  // Use external form if provided, otherwise use internal form
   const {
     register,
     handleSubmit,
@@ -49,10 +57,10 @@ const JobForm = ({
     control,
     watch,
     setValue
-  } = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: initialValues || {}
-  });
+  } = externalForm || internalForm;
+  
+  // Use the correct form for the component
+  const effectiveForm = externalForm || internalForm;
   
   // Watch form values for context sync
   const formValues = watch();
@@ -114,37 +122,78 @@ const JobForm = ({
     }
   };
 
+  // Render with FormProvider
+  if (externalForm) {
+    return (
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        {/* Job form fields */}
+        <JobFormFields 
+          register={register} 
+          errors={errors} 
+          control={control}
+          watch={watch}
+          setValue={setValue}
+          isCustomTemplate={isCustomTemplate}
+          form={effectiveForm}
+        />
+        
+        {/* Photo uploads section */}
+        <PhotoUploadSection
+          files={uploadedFiles}
+          onFilesSelected={handleFilesSelected}
+          onFileRemoved={handleFileRemoved}
+          maxFiles={maxPhotos}
+        />
+        
+        {/* Form actions */}
+        <div className="flex justify-end">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="px-8"
+          >
+            Continue to Review
+          </Button>
+        </div>
+      </form>
+    );
+  }
+
+  // If no external form is provided, wrap in FormProvider
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      {/* Job form fields */}
-      <JobFormFields 
-        register={register} 
-        errors={errors} 
-        control={control}
-        watch={watch}
-        setValue={setValue}
-        isCustomTemplate={isCustomTemplate}
-      />
-      
-      {/* Photo uploads section */}
-      <PhotoUploadSection
-        files={uploadedFiles}
-        onFilesSelected={handleFilesSelected}
-        onFileRemoved={handleFileRemoved}
-        maxFiles={maxPhotos}
-      />
-      
-      {/* Form actions */}
-      <div className="flex justify-end">
-        <Button 
-          type="submit" 
-          disabled={isSubmitting}
-          className="px-8"
-        >
-          Continue to Review
-        </Button>
-      </div>
-    </form>
+    <FormProvider {...internalForm}>
+      <form onSubmit={internalForm.handleSubmit(handleFormSubmit)} className="space-y-6">
+        {/* Job form fields */}
+        <JobFormFields 
+          register={register} 
+          errors={errors} 
+          control={control}
+          watch={watch}
+          setValue={setValue}
+          isCustomTemplate={isCustomTemplate}
+          form={internalForm}
+        />
+        
+        {/* Photo uploads section */}
+        <PhotoUploadSection
+          files={uploadedFiles}
+          onFilesSelected={handleFilesSelected}
+          onFileRemoved={handleFileRemoved}
+          maxFiles={maxPhotos}
+        />
+        
+        {/* Form actions */}
+        <div className="flex justify-end">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="px-8"
+          >
+            Continue to Review
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
   );
 };
 

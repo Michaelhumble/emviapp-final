@@ -15,11 +15,17 @@ import { UseFormReturn } from 'react-hook-form';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 
 interface JobDetailsSectionProps {
-  form: UseFormReturn<JobFormValues> | any;
+  form: UseFormReturn<JobFormValues>;
   showVietnameseByDefault?: boolean;
 }
 
 const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnameseByDefault = false }) => {
+  // Ensure we have a valid form context
+  if (!form || !form.control) {
+    console.error("JobDetailsSection: Missing form context");
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">

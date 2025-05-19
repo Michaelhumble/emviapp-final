@@ -13,13 +13,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { UseFormReturn } from 'react-hook-form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { JobFormValues, ExperienceLevelType, JobTypeOption } from '@/components/posting/job/jobFormSchema';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 
 interface EmploymentDetailsSectionProps {
-  form: UseFormReturn<JobFormValues> | any;
+  form: UseFormReturn<JobFormValues>;
 }
 
 const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ form }) => {
+  // Ensure we have a valid form context
+  if (!form || !form.control) {
+    console.error("EmploymentDetailsSection: Missing form context");
+    return null;
+  }
+  
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { SalonPostingProvider } from '@/context/SalonPostingContext';
 import { logSalonPostingEvent } from '@/utils/telemetry/salonPostingEvents';
 import EnhancedSalonForm from '@/components/posting/salon/EnhancedSalonForm';
+import { FormProvider, useForm } from 'react-hook-form';
 
 const SalonPost: React.FC = () => {
   const navigate = useNavigate();

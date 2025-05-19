@@ -6,6 +6,9 @@ import { useJobPosting } from '@/context/JobPostingContext';
 import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
 import { useFeatureFlag } from '@/utils/featureFlags/useFeatureFlag';
 import { logJobPostingEvent } from '@/utils/telemetry/jobPostingEvents';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema } from './jobFormSchema';
 
 interface EnhancedJobFormProps {
   onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: any) => void;
@@ -15,6 +18,7 @@ interface EnhancedJobFormProps {
 
 /**
  * Enhanced job form that handles the complete job posting flow with multiple steps
+ * Always ensures form context is available throughout the component tree
  */
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onSubmit,
@@ -26,6 +30,12 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const [currentStep, setCurrentStep] = useState<'details' | 'review'>('details');
   const [formData, setFormData] = useState<JobFormValues>(initialValues || {});
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  
+  // Create a form instance that can be passed down
+  const form = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: initialValues || {},
+  });
   
   // Try to access context
   let jobPostingContext;
@@ -61,6 +71,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       setFormData(data);
       if (uploads) setPhotoUploads(uploads);
       setCurrentStep('review');
+      
+      // Also update the form values
+      form.reset(data);
     }
   };
   
@@ -85,29 +98,33 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   };
   
   return (
-    <div className="space-y-6">
-      {effectiveStep === 'details' && (
-        <JobForm
-          onSubmit={handleDetailsSubmit}
-          photoUploads={effectivePhotoUploads}
-          setPhotoUploads={setPhotoUploads}
-          initialValues={effectiveFormData}
-          useContextAPI={usingContext}
-        />
-      )}
-      
-      {effectiveStep === 'review' && (
-        <ReviewAndPaymentSection
-          formData={effectiveFormData}
-          photoUploads={effectivePhotoUploads}
-          onBack={handleBack}
-          onSubmit={handleSubmitFinal}
-          isSubmitting={isSubmitting}
-          pricingOptions={effectivePricingOptions}
-          useContextAPI={usingContext}
-        />
-      )}
-    </div>
+    <FormProvider {...form}>
+      <div className="space-y-6">
+        {effectiveStep === 'details' && (
+          <JobForm
+            onSubmit={handleDetailsSubmit}
+            photoUploads={effectivePhotoUploads}
+            setPhotoUploads={setPhotoUploads}
+            initialValues={effectiveFormData}
+            useContextAPI={usingContext}
+            form={form} // Pass the form instance down
+          />
+        )}
+        
+        {effectiveStep === 'review' && (
+          <ReviewAndPaymentSection
+            formData={effectiveFormData}
+            photoUploads={effectivePhotoUploads}
+            onBack={handleBack}
+            onSubmit={handleSubmitFinal}
+            isSubmitting={isSubmitting}
+            pricingOptions={effectivePricingOptions}
+            useContextAPI={usingContext}
+            form={form} // Pass the form instance down
+          />
+        )}
+      </div>
+    </FormProvider>
   );
 };
 

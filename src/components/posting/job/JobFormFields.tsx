@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { JobFormValues } from './jobFormSchema';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import EmploymentDetailsSection from '@/components/posting/sections/EmploymentDetailsSection';
+import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
 
 interface JobFormFieldsProps {
   register: UseFormRegister<JobFormValues>;
@@ -35,6 +36,17 @@ const JobFormFields: React.FC<JobFormFieldsProps> = ({
       <div className="space-y-8">
         <JobDetailsSection form={form} />
         <EmploymentDetailsSection form={form} />
+        <ContactInfoSection form={form} />
+      </div>
+    );
+  }
+  
+  // If no form is provided, wrap the components in a Form component to provide context
+  return (
+    <Form {...{control} as any}>
+      <div className="space-y-8">
+        <JobDetailsSection form={{ control } as any} showVietnameseByDefault={false} />
+        <EmploymentDetailsSection form={{ control } as any} />
         
         <div className="space-y-6">
           <h2 className="font-playfair text-xl font-semibold text-gray-900">Contact Information</h2>
@@ -42,7 +54,7 @@ const JobFormFields: React.FC<JobFormFieldsProps> = ({
           
           <div className="space-y-4">
             <FormField
-              control={form.control}
+              control={control}
               name="contactName"
               render={({ field }) => (
                 <FormItem>
@@ -56,7 +68,7 @@ const JobFormFields: React.FC<JobFormFieldsProps> = ({
             />
             
             <FormField
-              control={form.control}
+              control={control}
               name="contactEmail"
               render={({ field }) => (
                 <FormItem>
@@ -70,7 +82,7 @@ const JobFormFields: React.FC<JobFormFieldsProps> = ({
             />
             
             <FormField
-              control={form.control}
+              control={control}
               name="contactPhone"
               render={({ field }) => (
                 <FormItem>
@@ -85,64 +97,7 @@ const JobFormFields: React.FC<JobFormFieldsProps> = ({
           </div>
         </div>
       </div>
-    );
-  }
-  
-  // If no form is provided, use the individual props
-  return (
-    <div className="space-y-8">
-      <JobDetailsSection form={{ control } as any} showVietnameseByDefault={false} />
-      <EmploymentDetailsSection form={{ control } as any} />
-      
-      <div className="space-y-6">
-        <h2 className="font-playfair text-xl font-semibold text-gray-900">Contact Information</h2>
-        <p className="text-sm text-muted-foreground">How candidates can reach you</p>
-        
-        <div className="space-y-4">
-          <FormField
-            control={control}
-            name="contactName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Contact person's name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={control}
-            name="contactEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Email*</FormLabel>
-                <FormControl>
-                  <Input placeholder="Email address" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={control}
-            name="contactPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="Phone number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
-    </div>
+    </Form>
   );
 };
 
