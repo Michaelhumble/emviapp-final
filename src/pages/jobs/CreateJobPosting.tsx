@@ -12,6 +12,7 @@ import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions } from '@/utils/posting/types';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import { PricingProvider } from '@/context/pricing/PricingProvider'; // [SUNSHINE FIX] Import PricingProvider
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
@@ -98,14 +99,17 @@ const CreateJobPosting = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            <EnhancedJobForm 
-              onSubmit={handleSubmit}
-              initialTemplate={selectedTemplate || undefined}
-              onBack={handleBackToTemplates}
-              isCustomTemplate={selectedTemplateType === 'custom'}
-              maxPhotos={5} // Set maximum photos to 5
-              onStepChange={(step) => console.log(`Changed to step ${step}`)}
-            />
+            // [SUNSHINE FIX] Wrap EnhancedJobForm with PricingProvider for proper context
+            <PricingProvider>
+              <EnhancedJobForm 
+                onSubmit={handleSubmit}
+                initialTemplate={selectedTemplate || undefined}
+                onBack={handleBackToTemplates}
+                isCustomTemplate={selectedTemplateType === 'custom'}
+                maxPhotos={5} // Set maximum photos to 5
+                onStepChange={(step) => console.log(`Changed to step ${step}`)}
+              />
+            </PricingProvider>
           )}
         </Card>
       </div>
