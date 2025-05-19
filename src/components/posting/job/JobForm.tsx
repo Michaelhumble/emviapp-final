@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
 import { Button } from '@/components/ui/button';
 import JobFormFields from './JobFormFields';
-import { PhotoUploadSection } from '../PhotoUploadSection';
+import { PhotoUploadSection } from '@/components/posting/PhotoUploadSection';
 import { useJobPosting } from '@/context/JobPostingContext';
 import { ExtendedJobFormValues } from '@/types/jobPosting';
 
@@ -32,7 +32,13 @@ const JobForm = ({
   const [uploadedFiles, setUploadedFiles] = useState<File[]>(photoUploads || []);
   
   // Access context if enabled
-  const jobPostingContext = useContextAPI ? useJobPosting() : null;
+  let jobPostingContext;
+  try {
+    jobPostingContext = useContextAPI ? useJobPosting() : null;
+  } catch (error) {
+    console.error("Failed to load job posting context:", error);
+    jobPostingContext = null;
+  }
   
   // Initialize form with react-hook-form
   const {
@@ -43,7 +49,7 @@ const JobForm = ({
     control,
     watch,
     setValue
-  } = useForm<ExtendedJobFormValues>({
+  } = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: initialValues || {}
   });
@@ -68,7 +74,7 @@ const JobForm = ({
   }, [photoUploads]);
   
   // Handle form submission
-  const handleFormSubmit = (data: ExtendedJobFormValues) => {
+  const handleFormSubmit = (data: JobFormValues) => {
     try {
       console.log('Form data submitted:', data);
       

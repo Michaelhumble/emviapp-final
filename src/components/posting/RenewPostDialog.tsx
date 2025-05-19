@@ -45,11 +45,13 @@ const RenewPostDialog = ({
       isNationwide,
       fastSalePackage,
       bundleWithJobPost,
-      autoRenew: false
+      autoRenew: false,
+      isFirstPost: false
     };
 
     try {
-      const result = await initiatePayment(postType, { id: postId }, pricingOptions);
+      // Pass just postId string instead of object with id
+      const result = await initiatePayment(postType, postId, pricingOptions);
       if (onRenewed) {
         onRenewed();
       }

@@ -1,5 +1,7 @@
 
 // Job posting state management types
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+
 export interface JobPostingState {
   // Form data
   jobData: JobFormValues;
@@ -64,18 +66,20 @@ export interface PricingOptions {
   // Flags for renewal and bundling
   isRenewal?: boolean;
   bundleWithSalonPost?: boolean;
+  bundleWithJobPost?: boolean;
+  
+  // Additional options
+  fastSalePackage?: boolean;
+  showAtTop?: boolean;
+  hasReferrals?: boolean;
 }
 
 // Valid pricing tiers
 export type JobPricingTier = 'free' | 'standard' | 'premium' | 'gold' | 'diamond';
 
-// Import existing JobFormValues type to ensure compatibility
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-
 // Job details normalized to match backend expectations
 export interface JobDetailsSubmission {
   // Basic information
-  id?: string;
   title: string;
   description?: string;
   vietnameseDescription?: string;
@@ -118,16 +122,7 @@ export interface JobDetailsSubmission {
 // Extended JobFormValues type to ensure compatibility with JobDetailsSubmission
 // This type augmentation helps fix the type errors in JobPostPreview and CreateJobPosting
 export interface ExtendedJobFormValues extends JobFormValues {
-  // Add missing properties from backend expectations
-  isUrgent?: boolean;
-  weeklyPay?: boolean;
-  hasHousing?: boolean;
-  noSupplyDeduction?: boolean;
-  ownerWillTrain?: boolean;
-  contactZalo?: string;
-  employmentType?: string;
-  compensationType?: string;
-  compensationDetails?: string;
+  // No need for additional fields, just ensure compatibility
 }
 
 // Action types for reducer

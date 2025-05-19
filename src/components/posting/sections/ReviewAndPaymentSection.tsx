@@ -9,16 +9,16 @@ import { DurationSelector } from '@/components/posting/pricing/DurationSelector'
 import { PaymentSummary } from '@/components/posting/PaymentSummary';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useJobPosting } from '@/context/JobPostingContext';
-import { ExtendedJobFormValues } from '@/types/jobPosting';
+import JobPostingDebugPanel from '@/components/debug/JobPostingDebugPanel';
 
 interface ReviewAndPaymentSectionProps {
-  formData: JobFormValues | null;
-  photoUploads: File[];
-  onBack: () => void;
-  onSubmit: () => void;
-  isSubmitting: boolean;
-  pricingOptions: PricingOptions;
-  setPricingOptions: (options: PricingOptions) => void;
+  formData?: JobFormValues | null;
+  photoUploads?: File[];
+  onBack?: () => void;
+  onSubmit?: () => void;
+  isSubmitting?: boolean;
+  pricingOptions?: PricingOptions;
+  setPricingOptions?: (options: PricingOptions) => void;
   useContextAPI?: boolean;
 }
 
@@ -30,29 +30,42 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   isSubmitting,
   pricingOptions,
   setPricingOptions,
-  useContextAPI = false
+  useContextAPI = true
 }) => {
   const { t } = useTranslation();
   
-  // Access context if enabled
-  const jobPostingContext = useContextAPI ? useJobPosting() : null;
+  // Try to access context
+  let jobPostingContext = null;
+  let usingContext = false;
+  try {
+    jobPostingContext = useJobPosting();
+    usingContext = useContextAPI && jobPostingContext !== null;
+  } catch (error) {
+    console.error("Failed to load job posting context:", error);
+  }
   
   // Use context data or props
-  const jobData = useContextAPI && jobPostingContext ? jobPostingContext.jobData : formData;
-  const uploads = useContextAPI && jobPostingContext ? jobPostingContext.photoUploads : photoUploads;
-  const priceOptions = useContextAPI && jobPostingContext ? jobPostingContext.pricingOptions : pricingOptions;
-  const calculatedPrice = useContextAPI && jobPostingContext ? jobPostingContext.calculatedPrice : {
+  const jobData = usingContext ? jobPostingContext.jobData : formData;
+  const uploads = usingContext ? jobPostingContext.photoUploads : (photoUploads || []);
+  const priceOptions = usingContext ? jobPostingContext.pricingOptions : (pricingOptions || {
+    selectedPricingTier: 'standard' as JobPricingTier,
+    durationMonths: 1,
+    autoRenew: false,
+    isFirstPost: false,
+    isNationwide: false
+  });
+  const calculatedPrice = usingContext ? jobPostingContext.calculatedPrice : {
     originalPrice: 0,
     finalPrice: 0,
     discountPercentage: 0
   };
-  const submitting = useContextAPI && jobPostingContext ? jobPostingContext.ui.isSubmitting : isSubmitting;
+  const submitting = usingContext ? jobPostingContext.ui.isSubmitting : (isSubmitting || false);
   
   // Handle pricing changes
   const handlePricingChange = (options: PricingOptions) => {
-    if (useContextAPI && jobPostingContext) {
+    if (usingContext) {
       jobPostingContext.updatePricingOptions(options);
-    } else {
+    } else if (setPricingOptions) {
       setPricingOptions(options);
     }
   };
@@ -63,6 +76,24 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
       ...priceOptions,
       durationMonths: months
     });
+  };
+  
+  // Handle submit
+  const handleSubmit = () => {
+    if (usingContext) {
+      jobPostingContext.validateForm();
+      jobPostingContext.setStep('payment');
+    }
+    if (onSubmit) onSubmit();
+  };
+  
+  // Handle back
+  const handleBack = () => {
+    if (usingContext) {
+      jobPostingContext.navigateBack();
+      jobPostingContext.setStep('details');
+    }
+    if (onBack) onBack();
   };
 
   // Check if we have necessary data to continue
@@ -75,7 +106,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
         <h2 className="text-2xl font-semibold">
           {t({english: "Review & Publish", vietnamese: "Xem lại & Đăng tuyển"})}
         </h2>
-        <Button variant="outline" onClick={onBack}>
+        <Button variant="outline" onClick={handleBack}>
           {t({english: "Back", vietnamese: "Quay lại"})}
         </Button>
       </div>
@@ -87,7 +118,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
         </h3>
         {canContinue ? (
           <JobPostPreview 
-            jobData={jobData as ExtendedJobFormValues}
+            jobData={jobData}
             photoUrls={uploads.map(file => URL.createObjectURL(file))}
           />
         ) : (
@@ -134,7 +165,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
       {/* Submit button */}
       <div className="flex justify-end">
         <Button 
-          onClick={onSubmit}
+          onClick={handleSubmit}
           disabled={!canContinue || submitting}
           className="px-8"
         >
@@ -144,6 +175,9 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           }
         </Button>
       </div>
+      
+      {/* Debug panel */}
+      <JobPostingDebugPanel />
     </div>
   );
 };

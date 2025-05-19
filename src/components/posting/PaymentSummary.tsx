@@ -27,10 +27,6 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   const { t } = useTranslation();
   const isFreeplan = selectedPricingTier === 'free';
   
-  // Log pricing data being received for debugging
-  console.log('PaymentSummary received price data:', priceData);
-  console.log('Duration:', durationMonths, 'Auto-renew:', autoRenew, 'Tier:', selectedPricingTier);
-
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
       <h3 className="font-semibold text-lg mb-4">

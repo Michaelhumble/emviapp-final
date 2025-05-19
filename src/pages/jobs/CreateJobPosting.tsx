@@ -1,243 +1,145 @@
 
-import React, { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/layout/Layout';
-import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
-import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { JobPostingProvider, useJobPosting, mapToJobDetailsSubmission } from '@/context/JobPostingContext';
+import React, { useState } from 'react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { JobPostingDebugPanel } from '@/components/debug/JobPostingDebugPanel';
-import { useContextBasedFlow, shouldShowDebugPanel } from '@/utils/featureFlags/jobPostingFlags';
-import JobPostingErrorBoundary from '@/components/error-handling/JobPostingErrorBoundary';
+import JobForm from '@/components/posting/job/JobForm';
+import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
+import { JobPostingProvider, useJobPosting } from '@/context/JobPostingContext';
+import JobPostingDebugPanel from '@/components/debug/JobPostingDebugPanel';
+import { useFeatureFlag } from '@/utils/featureFlags/jobPostingFlags';
 
-// Legacy version of the component to maintain backward compatibility
-const LegacyCreateJobPosting = () => {
-  const [selectedTemplate, setSelectedTemplate] = React.useState<JobFormValues | null>(null);
-  const [selectedTemplateType, setSelectedTemplateType] = React.useState<JobTemplateType | null>(null);
-  const [step, setStep] = React.useState<'template' | 'form'>('template');
-  const { initiatePayment } = usePostPayment();
-  
-  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
-    setSelectedTemplate(template);
-    setSelectedTemplateType(templateType);
-    setStep('form');
-    window.scrollTo(0, 0);
-  };
-  
-  const handleFormSubmit = async (data: JobFormValues, uploads: File[], pricingOptions) => {
-    try {
-      // Using the legacy code path for initiating payment
-      console.log('[Legacy] Form submitted:', data);
-      
-      // Map to job details
-      const jobDetails = {
-        ...data,
-        // Ensure we have all needed fields for backend
-        title: data.title || '',
-        description: data.description || '',
-        location: data.location || '',
-        contact_info: {
-          email: data.contactEmail || '',
-          phone: data.contactPhone || '',
-          owner_name: data.contactName || '',
-          zalo: data.contactZalo || '',
-        },
-        vietnamese_description: data.vietnameseDescription || '',
-        requirements: data.requirements || [],
-        specialties: data.specialties || [],
-        weekly_pay: data.weeklyPay || false,
-        has_housing: data.hasHousing || false,
-        no_supply_deduction: data.noSupplyDeduction || false,
-        owner_will_train: data.ownerWillTrain || false,
-        is_urgent: data.isUrgent || false,
-      };
-      
-      // Handle payment and job posting through the usePostPayment hook
-      const paymentResponse = await initiatePayment('job', jobDetails, pricingOptions);
-      
-      return paymentResponse.success;
-      
-    } catch (error) {
-      console.error('[Legacy] Error submitting form:', error);
-      toast.error('Error creating job post');
-      return false;
-    }
-  };
-
-  return (
-    <Card className="bg-white shadow-md rounded-lg p-6">
-      {step === 'template' ? (
-        <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-      ) : (
-        <EnhancedJobForm 
-          onSubmit={handleFormSubmit}
-          initialTemplate={selectedTemplate || undefined}
-          onBack={() => setStep('template')}
-          isCustomTemplate={selectedTemplateType === 'custom'}
-          maxPhotos={5}
-        />
-      )}
-    </Card>
-  );
-};
-
-// New version using Context API
-const ContextAwareJobPosting = () => {
-  const [step, setStep] = React.useState<'template' | 'form'>('template');
+// Internal component that uses the context
+const JobPostingWithContext: React.FC = () => {
   const { 
-    jobData,
-    photoUploads,
-    pricingOptions,
-    updateJobData,
-    setPhotoUploads,
-    validateForm,
-    startSubmission,
-    submissionSuccess,
-    submissionFailure
+    jobData, 
+    photoUploads, 
+    currentStep, 
+    updateJobData, 
+    setPhotoUploads, 
+    setStep,
+    ui
   } = useJobPosting();
-  const { initiatePayment } = usePostPayment();
   
-  // Set debug panel visibility on mount
-  useEffect(() => {
-    // Initialize debug panel based on feature flag
-    const showDebug = shouldShowDebugPanel();
-    if (showDebug) {
-      document.body.classList.add('debug-mode');
-    }
-  }, []);
-  
-  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
-    // Update context with template data
-    updateJobData(template);
-    // Store template type in localStorage for potential recovery
-    localStorage.setItem('selectedTemplateType', templateType);
-    setStep('form');
-    window.scrollTo(0, 0);
+  // Handle form submission
+  const handleFormSubmit = (data: JobFormValues, uploads?: File[]) => {
+    updateJobData(data);
+    if (uploads) setPhotoUploads(uploads);
+    setStep('review');
   };
   
-  const handleFormSubmit = async () => {
-    try {
-      // Validate the form data
-      validateForm();
-      
-      // Check if job data is valid
-      if (!jobData.title || !jobData.location || !jobData.contactEmail || !jobData.description) {
-        toast.error('Please fill in all required fields');
-        return false;
-      }
-      
-      console.log('[Context] Submitting job post with context data');
-      console.log('Job data:', jobData);
-      console.log('Pricing options:', pricingOptions);
-      console.log('Photo uploads:', photoUploads);
-      
-      // Start submission process
-      startSubmission();
-      
-      // Map jobData to the format expected by the backend
-      const jobDetails = mapToJobDetailsSubmission(jobData);
-      
-      // Initiate payment using the context data
-      const paymentResponse = await initiatePayment('job', jobDetails, pricingOptions);
-      
-      if (!paymentResponse.success) {
-        submissionFailure('Payment failed');
-        throw new Error('Payment failed');
-      }
-      
-      submissionSuccess();
-      return true;
-      
-    } catch (error) {
-      console.error('[Context] Error submitting form:', error);
-      submissionFailure(error.message || 'Error creating job post');
-      toast.error('Error creating job post');
-      return false;
-    }
-  };
-  
+  // Handle back navigation
   const handleBack = () => {
-    setStep('template');
+    setStep('details');
   };
   
-  // Get template type from localStorage if available
-  const storedTemplateType = localStorage.getItem('selectedTemplateType') as JobTemplateType | null;
-  const isCustomTemplate = storedTemplateType === 'custom';
+  // Handle final submission
+  const handleSubmit = () => {
+    setStep('payment');
+  };
 
   return (
-    <Card className="bg-white shadow-md rounded-lg p-6 relative">
-      {step === 'template' ? (
-        <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-      ) : (
-        <EnhancedJobForm 
+    <div className="container mx-auto py-6 max-w-4xl">
+      {currentStep === 'details' && (
+        <>
+          <h1 className="text-2xl font-bold mb-6">Create Job Posting</h1>
+          <JobForm
+            onSubmit={handleFormSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            initialValues={jobData}
+            useContextAPI={true}
+          />
+        </>
+      )}
+      
+      {currentStep === 'review' && (
+        <ReviewAndPaymentSection 
           useContextAPI={true}
-          onSubmit={handleFormSubmit}
-          onBack={handleBack}
-          isCustomTemplate={isCustomTemplate}
-          maxPhotos={5}
         />
       )}
       
-      {/* Debug panel will be conditionally rendered based on context */}
+      {/* Always render the debug panel */}
       <JobPostingDebugPanel />
-    </Card>
+    </div>
   );
 };
 
-// Main component with provider
-const CreateJobPosting = () => {
-  // Check feature flag to determine which version to use
-  const useContextVersion = useContextBasedFlow();
+// Legacy flow component for fallback
+const LegacyJobPosting: React.FC = () => {
+  const [jobData, setJobData] = useState<JobFormValues | null>(null);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [currentStep, setCurrentStep] = useState<'details' | 'review'>('details');
   
+  // Handle form submission
+  const handleFormSubmit = (data: JobFormValues, uploads?: File[]) => {
+    setJobData(data);
+    if (uploads) setPhotoUploads(uploads);
+    setCurrentStep('review');
+  };
+  
+  // Handle back navigation
+  const handleBack = () => {
+    setCurrentStep('details');
+  };
+  
+  // Handle final submission
+  const handleSubmit = () => {
+    // Legacy payment flow
+    console.log('Legacy payment flow initiated');
+  };
+
   return (
-    <Layout>
-      <Helmet>
-        <title>Create Job Posting | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Create a new job posting to find qualified beauty professionals for your salon."
+    <div className="container mx-auto py-6 max-w-4xl">
+      {currentStep === 'details' && (
+        <>
+          <h1 className="text-2xl font-bold mb-6">Create Job Posting (Legacy)</h1>
+          <JobForm
+            onSubmit={handleFormSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            initialValues={jobData || {}}
+            useContextAPI={false}
+          />
+        </>
+      )}
+      
+      {currentStep === 'review' && (
+        <ReviewAndPaymentSection 
+          formData={jobData}
+          photoUploads={photoUploads}
+          onBack={handleBack}
+          onSubmit={handleSubmit}
+          useContextAPI={false}
         />
-      </Helmet>
-      <div className="container max-w-4xl mx-auto py-8">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Create Job Posting</h1>
-          <p className="text-gray-600">Find your perfect employee</p>
-          
-          {/* Version indicator for developers */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-2 text-xs text-gray-400">
-              Using {useContextVersion ? 'Context API' : 'Legacy'} version
-              {/* Toggle switch */}
-              <button
-                className="ml-2 px-2 py-0.5 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 text-xs"
-                onClick={() => {
-                  const newValue = !useContextVersion;
-                  localStorage.setItem('useJobPostingLegacyFlow', newValue ? 'true' : 'false');
-                  window.location.reload();
-                }}
-              >
-                Switch to {useContextVersion ? 'Legacy' : 'Context'} Version
-              </button>
-            </div>
-          )}
-        </div>
-        
-        {useContextVersion ? (
-          <JobPostingErrorBoundary>
-            <JobPostingProvider>
-              <ContextAwareJobPosting />
-            </JobPostingProvider>
-          </JobPostingErrorBoundary>
-        ) : (
-          <LegacyCreateJobPosting />
-        )}
-      </div>
-    </Layout>
+      )}
+    </div>
   );
+};
+
+// Wrapper component that decides which flow to use
+const CreateJobPosting: React.FC = () => {
+  // Check if we should use legacy flow
+  const isLegacyFlow = useFeatureFlag('useJobPostingLegacyFlow') || 
+                       (typeof window !== 'undefined' && 
+                        window.location.search.includes('useLegacyFlow=true'));
+  
+  // Provide a fallback mechanism in case of errors
+  const [contextError, setContextError] = useState<boolean>(false);
+  
+  if (isLegacyFlow || contextError) {
+    return <LegacyJobPosting />;
+  }
+  
+  try {
+    return (
+      <JobPostingProvider>
+        <JobPostingWithContext />
+      </JobPostingProvider>
+    );
+  } catch (error) {
+    console.error("Failed to render with Context, falling back to legacy:", error);
+    setContextError(true);
+    return <LegacyJobPosting />;
+  }
 };
 
 export default CreateJobPosting;

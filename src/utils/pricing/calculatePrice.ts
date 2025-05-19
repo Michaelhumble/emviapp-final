@@ -1,6 +1,7 @@
 
 import { PricingOptions, PricingSummary } from '@/types/jobPosting';
 import { formatCurrency } from '@/utils/formatting';
+import { logJobPostingEvent } from '@/utils/telemetry/jobPostingEvents';
 
 // Base prices per tier (monthly)
 const BASE_PRICES: Record<string, number> = {
@@ -192,15 +193,10 @@ export function logPriceCalculation(options: PricingOptions, result: PricingSumm
   console.log('Discount %:', result.discountPercentage);
   console.log('Final price:', result.finalPrice);
   console.groupEnd();
-}
-
-/**
- * Format currency for display
- */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2
-  }).format(amount);
+  
+  // Log pricing event
+  logJobPostingEvent('PRICE_CALCULATION', 'Price calculated', {
+    options,
+    result
+  });
 }
