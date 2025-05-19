@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { JobPricingTier } from '@/utils/posting/types';
+import { PricingOptions } from '@/utils/posting/types';
+import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
 import JobPostOptions from '@/components/posting/job/JobPostOptions';
 import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
@@ -11,8 +12,8 @@ import { PaymentSummary } from '@/components/posting/PaymentSummary';
 import { Separator } from '@/components/ui/separator';
 import PricingCard from '@/components/posting/pricing/PricingCard';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { usePricing } from '@/context/pricing';
 
 export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
@@ -20,6 +21,8 @@ export interface ReviewAndPaymentSectionProps {
   onBack: () => void;
   onSubmit: () => void;
   isSubmitting: boolean;
+  pricingOptions: PricingOptions;
+  setPricingOptions: (options: PricingOptions) => void;
 }
 
 export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -28,24 +31,37 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   onBack,
   onSubmit,
   isSubmitting,
+  pricingOptions,
+  setPricingOptions
 }) => {
   const { t } = useTranslation();
-  const { pricingOptions, updatePricingOptions, priceData } = usePricing();
+  const [priceData, setPriceData] = React.useState(() => 
+    calculateJobPostPrice(pricingOptions)
+  );
+
+  // Update price data when pricing options change
+  useEffect(() => {
+    const newPriceData = calculateJobPostPrice(pricingOptions);
+    setPriceData(newPriceData);
+  }, [pricingOptions]);
 
   const handleDurationChange = (months: number) => {
-    updatePricingOptions({
+    setPricingOptions({
+      ...pricingOptions,
       durationMonths: months
     });
   };
 
   const handleTierChange = (tier: JobPricingTier) => {
-    updatePricingOptions({
+    setPricingOptions({
+      ...pricingOptions,
       selectedPricingTier: tier
     });
   };
 
-  const handleOptionChange = (option: keyof typeof pricingOptions, value: boolean) => {
-    updatePricingOptions({
+  const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
+    setPricingOptions({
+      ...pricingOptions,
       [option]: value
     });
   };
@@ -86,15 +102,6 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
         <div className="space-y-6">
           <h3 className="text-lg font-medium">{t({english: "Choose Your Plan", vietnamese: "Chọn gói của bạn"})}</h3>
           
-          {/* Debug panel */}
-          <div className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-40 hidden md:block">
-            <div className="font-semibold">Debug - Pricing Data:</div>
-            <pre>{JSON.stringify({
-              pricingOptions,
-              priceData
-            }, null, 2)}</pre>
-          </div>
-          
           {/* Plans selection grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
             {jobPricingOptions
@@ -124,7 +131,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           <div className="space-y-4">
             <JobPostOptions
               options={pricingOptions}
-              onOptionsChange={updatePricingOptions}
+              onOptionsChange={(updatedOptions) => setPricingOptions(updatedOptions)}
               isFirstPost={pricingOptions.isFirstPost}
             />
           </div>

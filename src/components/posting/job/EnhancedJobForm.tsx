@@ -7,12 +7,11 @@ import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAnd
 import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
 import { toast } from 'sonner';
-import { usePricing } from '@/context/pricing';
 
 export interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange?: (step: number) => void;
-  onBack?: () => void; // [SUNSHINE FIX] Added onBack prop
+  onBack?: () => void; // Added missing onBack prop
   initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
@@ -24,15 +23,19 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onBack,
   initialTemplate,
   isCustomTemplate = false,
-  maxPhotos = 5
+  maxPhotos = 5 // Default to 5 photos
 }) => {
   const [activeTab, setActiveTab] = useState('job-details');
   const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Use the pricing context instead of local state
-  const { pricingOptions, updatePricingOptions, priceData } = usePricing();
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'premium', // Default to premium tier
+    durationMonths: 1,             // Default to 1 month
+    autoRenew: true,               // Default to auto-renew enabled
+    isFirstPost: true,             // Default to first post (for free tier)
+    isNationwide: false            // Default to local listing
+  });
 
   // Update the handleJobFormSubmit to match the JobForm onSubmit signature
   const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
@@ -57,20 +60,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       toast.error("Job information is missing");
       return;
     }
-    
-    // Check if we have a valid pricing tier and price calculation
-    const { selectedPricingTier } = pricingOptions;
-    const { finalPrice } = priceData;
-    
-    // Validation check: paid plans cannot have $0 price
-    if (selectedPricingTier !== 'free' && finalPrice <= 0) {
-      toast.error("Pricing calculation error. Please reselect your plan.");
-      console.error("Pricing validation failed:", { pricingOptions, priceData });
-      return;
-    }
-    
-    console.log('[EnhancedJobForm] Final submission with pricing:', pricingOptions);
-    console.log('[EnhancedJobForm] Calculated price:', priceData);
     
     setIsSubmitting(true);
     try {
@@ -111,7 +100,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             setPhotoUploads={setPhotoUploads}
             initialValues={jobFormData || undefined}
             isCustomTemplate={isCustomTemplate}
-            maxPhotos={maxPhotos}
+            maxPhotos={maxPhotos} // Pass maxPhotos prop
           />
         </CardContent>
       </TabsContent>
@@ -124,6 +113,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             onBack={handleBackToEdit} 
             onSubmit={handlePaymentSubmit}
             isSubmitting={isSubmitting}
+            pricingOptions={pricingOptions}
+            setPricingOptions={setPricingOptions}
           />
         </CardContent>
       </TabsContent>

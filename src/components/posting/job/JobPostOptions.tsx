@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -9,7 +9,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobPostOptionsProps {
   options: PricingOptions;
-  onOptionsChange: (options: Partial<PricingOptions>) => void;
+  onOptionsChange: (options: PricingOptions) => void;
   isFirstPost?: boolean;
 }
 
@@ -19,13 +19,27 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
   isFirstPost = false
 }) => {
   const { t } = useTranslation();
+  const [localOptions, setLocalOptions] = useState<PricingOptions>({
+    ...options,
+    isFirstPost
+  });
 
   const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
-    onOptionsChange({ [option]: value });
+    const updatedOptions: PricingOptions = {
+      ...localOptions,
+      [option]: value
+    };
+    setLocalOptions(updatedOptions);
+    onOptionsChange(updatedOptions);
   };
 
   const handleTierChange = (tier: JobPricingTier) => {
-    onOptionsChange({ selectedPricingTier: tier });
+    const updatedOptions: PricingOptions = {
+      ...localOptions,
+      selectedPricingTier: tier
+    };
+    setLocalOptions(updatedOptions);
+    onOptionsChange(updatedOptions);
   };
 
   return (
@@ -42,7 +56,7 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
       </p>
 
       <RadioGroup
-        value={options.selectedPricingTier}
+        value={localOptions.selectedPricingTier}
         onValueChange={(value) => handleTierChange(value as JobPricingTier)}
         className="space-y-2"
       >
@@ -84,7 +98,7 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
         <div className="flex items-start space-x-2">
           <Checkbox
             id="isNationwide"
-            checked={options.isNationwide || false}
+            checked={localOptions.isNationwide || false}
             onCheckedChange={(checked) => handleOptionChange('isNationwide', checked === true)}
           />
           <div className="grid gap-1.5 leading-none">
@@ -107,7 +121,7 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
         <div className="flex items-start space-x-2">
           <Checkbox
             id="autoRenew"
-            checked={options.autoRenew || false}
+            checked={localOptions.autoRenew || false}
             onCheckedChange={(checked) => handleOptionChange('autoRenew', checked === true)}
           />
           <div className="grid gap-1.5 leading-none">

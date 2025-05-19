@@ -14,26 +14,20 @@ export const usePostPayment = () => {
   const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
     setIsLoading(true);
     try {
-      console.log("[usePostPayment] Initiating payment for:", postType, "with pricing:", pricingOptions);
+      console.log("Initiating payment for:", postType, "with pricing:", pricingOptions);
 
-      // Validate pricing options
+      // Calculate price based on selected options
+      const priceData = pricingOptions ? calculateJobPostPrice(pricingOptions) : { finalPrice: 0 };
+      console.log("Calculated price:", priceData);
+
+      // Ensure pricing options are valid
       if (!pricingOptions || !pricingOptions.selectedPricingTier) {
         throw new Error("Invalid pricing options");
       }
 
-      // Calculate price based on selected options
-      const priceData = calculateJobPostPrice(pricingOptions);
-      console.log("[usePostPayment] Calculated price:", priceData);
-
-      // [SUNSHINE FIX] Added validation check for paid plans with $0 price
-      // Validate pricing - ensure paid plans don't have $0 price
-      if (pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0) {
-        throw new Error("Pricing calculation error. Please reselect your plan.");
-      }
-
       // Handle free listings directly without going to Stripe
       if (pricingOptions.selectedPricingTier === 'free') {
-        console.log("[usePostPayment] Processing free post...");
+        console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
           body: { 
@@ -44,7 +38,7 @@ export const usePostPayment = () => {
         });
 
         if (postError) {
-          console.error("[usePostPayment] Free post creation error:", postError);
+          console.error("Free post creation error:", postError);
           throw postError;
         }
 
@@ -66,7 +60,7 @@ export const usePostPayment = () => {
       
       // For paid listings, create a Stripe checkout session
       // Log payment parameters for debugging
-      console.log("[usePostPayment] Payment parameters:", {
+      console.log("Payment parameters:", {
         tier: pricingOptions.selectedPricingTier,
         duration: pricingOptions.durationMonths,
         autoRenew: pricingOptions.autoRenew,
@@ -83,23 +77,23 @@ export const usePostPayment = () => {
       });
 
       if (error) {
-        console.error("[usePostPayment] Edge function error:", error);
+        console.error("Edge function error:", error);
         throw error;
       }
       
-      console.log("[usePostPayment] Checkout response:", data);
+      console.log("Checkout response:", data);
       
       if (data?.url) {
-        console.log("[usePostPayment] Redirecting to Stripe checkout URL:", data.url);
+        console.log("Redirecting to Stripe checkout URL:", data.url);
         // Redirect to Stripe's hosted checkout
         window.location.href = data.url;
         return { success: true };
       } else {
-        console.error("[usePostPayment] No checkout URL received");
+        console.error("No checkout URL received");
         throw new Error('No checkout URL received from Stripe');
       }
     } catch (error: any) {
-      console.error('[usePostPayment] Payment initiation error:', error);
+      console.error('Payment initiation error:', error);
       toast.error(t({
         english: "Failed to initiate payment",
         vietnamese: "Không thể khởi tạo thanh toán"
