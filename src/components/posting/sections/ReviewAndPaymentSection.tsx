@@ -1,161 +1,174 @@
 
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useTranslation } from '@/hooks/useTranslation';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { getJobPostPricingSummary } from '@/utils/posting/jobPricing';
+import { ChevronLeft, Timer } from 'lucide-react';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
+import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
 import { PaymentSummary } from '@/components/posting/PaymentSummary';
-import UserMessages from '@/components/posting/smart-ad-options/UserMessages';
-import { Switch } from '@/components/ui/switch';
-import { Checkbox } from '@/components/ui/checkbox';
-import { AlertCircle, CheckCircle, CreditCard, Info } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import PricingCard from '@/components/posting/pricing/PricingCard';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import { JobPricingTier } from '@/utils/posting/types';
+import { useTranslation } from '@/hooks/useTranslation';
 import { usePricing } from '@/context/pricing/PricingProvider';
-import NationwideOption from '@/components/posting/smart-ad-options/NationwideOption';
-import ShowAtTopOption from '@/components/posting/smart-ad-options/ShowAtTopOption';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 
-interface ReviewAndPaymentSectionProps {
+export interface ReviewAndPaymentSectionProps {
+  formData: JobFormValues | null;
+  photoUploads: File[];
+  onBack: () => void;
   onSubmit: () => void;
   isSubmitting: boolean;
-  isFirstPost?: boolean;
-  hasReferrals?: boolean;
-  selectedPhotos?: File[];
 }
 
-const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+  formData,
+  photoUploads,
+  onBack,
   onSubmit,
-  isSubmitting,
-  isFirstPost = false,
-  hasReferrals = false,
-  selectedPhotos
+  isSubmitting
 }) => {
   const { t } = useTranslation();
-  const { pricingOptions, setPricingOptions } = usePricing();
-  const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
-  const [isNationwide, setIsNationwide] = useState(pricingOptions.isNationwide || false);
-  const [showAtTop, setShowAtTop] = useState(false);
+  const { pricingOptions, setPricingOptions, priceData } = usePricing();
 
-  // Update pricing options when nationwide changes
-  React.useEffect(() => {
-    setPricingOptions(prev => ({ ...prev, isNationwide: isNationwide }));
-  }, [isNationwide, setPricingOptions]);
-
-  // Calculate pricing summary
-  const priceData = getJobPostPricingSummary({
-    ...pricingOptions,
-    isFirstPost: isFirstPost,
-    isNationwide: isNationwide
-  });
-
-  // Handle nationwide option change
-  const handleNationwideChange = (checked: boolean) => {
-    setIsNationwide(checked);
+  const handleDurationChange = (months: number) => {
+    setPricingOptions({
+      ...pricingOptions,
+      durationMonths: months
+    });
   };
 
-  // Handle show at top option change
-  const handleShowAtTopChange = (checked: boolean) => {
-    setShowAtTop(checked);
+  const handleTierChange = (tier: JobPricingTier) => {
+    setPricingOptions({
+      ...pricingOptions,
+      selectedPricingTier: tier
+    });
   };
 
-  // Check if Diamond tier is selected
-  const isDiamondTier = pricingOptions.selectedPricingTier === 'diamond';
+  const selectedTierOption = jobPricingOptions.find(option => 
+    option.tier === pricingOptions.selectedPricingTier
+  );
+
+  const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
+  const isFreePost = pricingOptions.selectedPricingTier === 'free' || pricingOptions.isFirstPost;
+
+  // Format price for display
+  const formattedPrice = priceData.finalPrice > 0 
+    ? `$${priceData.finalPrice.toFixed(2)}` 
+    : "Free";
 
   return (
-    <Card className="col-span-2">
-      <div className="p-6">
-        <h2 className="text-xl font-semibold mb-4">{t({
-          english: "Review & Payment",
-          vietnamese: "Xem lại & Thanh toán"
-        })}</h2>
-        <p className="text-gray-500">{t({
-          english: "Please review your job posting details and select a payment option.",
-          vietnamese: "Vui lòng xem lại chi tiết tin tuyển dụng của bạn và chọn một tùy chọn thanh toán."
-        })}</p>
-        
-        <Separator className="my-4" />
-        
-        <UserMessages 
-          isFirstPost={isFirstPost}
-          hasReferrals={hasReferrals}
-          postType="job"
-        />
-        
-        <div className="space-y-4">
-          {/* Smart Ad Options */}
-          <NationwideOption 
-            onChange={handleNationwideChange}
-            defaultChecked={isNationwide}
-          />
-          
-          <ShowAtTopOption 
-            onChange={handleShowAtTopChange}
-          />
-        </div>
-        
-        <PaymentSummary priceData={priceData} />
-        
-        {isDiamondTier && (
-          <Alert variant="default" className="mt-4">
-            <Info className="h-4 w-4" />
-            <AlertTitle>{t({
-              english: "Diamond Tier",
-              vietnamese: "Gói Kim Cương"
-            })}</AlertTitle>
-            <AlertDescription>
-              {t({
-                english: "The Diamond tier requires an invitation. Please submit your job posting and our team will contact you.",
-                vietnamese: "Gói Kim Cương yêu cầu lời mời. Vui lòng gửi tin tuyển dụng của bạn và đội ngũ của chúng tôi sẽ liên hệ với bạn."
-              })}
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        <div className="mt-6 flex items-center space-x-2">
-          <Checkbox 
-            id="terms" 
-            checked={termsAccepted}
-            onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-          />
-          <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            {t({
-              english: "I agree to the terms and conditions",
-              vietnamese: "Tôi đồng ý với các điều khoản và điều kiện"
-            })}
-          </label>
-        </div>
-        
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <Button 
-          onClick={onSubmit}
-          disabled={!termsAccepted || isSubmitting}
-          className="w-full mt-4"
+          variant="ghost" 
+          onClick={onBack} 
+          className="px-0 hover:bg-transparent hover:text-primary"
         >
-          {isSubmitting ? (
-            <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {t({
-                english: "Submitting...",
-                vietnamese: "Đang gửi..."
-              })}
-            </>
-          ) : (
-            <>
-              <CreditCard className="w-4 h-4 mr-2" />
-              {t({
-                english: "Submit & Pay",
-                vietnamese: "Gửi & Thanh toán"
-              })}
-            </>
-          )}
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          <span>{t({english: "Back to Edit", vietnamese: "Quay lại chỉnh sửa"})}</span>
         </Button>
       </div>
-    </Card>
+      
+      {/* Limited time offer banner */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-md p-3 flex items-center gap-2">
+        <Timer className="h-4 w-4 text-amber-500" />
+        <p className="text-sm text-amber-800">
+          <span className="font-medium">Nail Industry Founders Pricing:</span> Special discounted rates for the first 1,000 users. Already 783 claimed!
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Preview column - Job details and photos */}
+        <div className="lg:col-span-2">
+          <h3 className="text-lg font-medium mb-4">{t({english: "Review Your Job Post", vietnamese: "Xem xét tin của bạn"})}</h3>
+          <JobPostPreview jobData={formData} photoUploads={photoUploads} onBack={onBack} />
+        </div>
+        
+        {/* Pricing column - Plan selection, options, and payment */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-medium">{t({english: "Choose Your Plan", vietnamese: "Chọn gói của bạn"})}</h3>
+          
+          {pricingOptions.isFirstPost && (
+            <Badge className="bg-green-100 text-green-800 border-green-200 mb-2">
+              First Post Free
+            </Badge>
+          )}
+          
+          {/* Plans selection grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+            {jobPricingOptions
+              .filter(option => !option.hidden)
+              .map(option => (
+                <PricingCard
+                  key={option.id}
+                  tier={option.tier}
+                  pricingInfo={option}
+                  isSelected={pricingOptions.selectedPricingTier === option.tier}
+                  onSelect={() => handleTierChange(option.tier as JobPricingTier)}
+                />
+              ))
+            }
+          </div>
+          
+          <Separator />
+          
+          {/* Duration selection */}
+          <DurationSelector
+            durationMonths={pricingOptions.durationMonths}
+            onDurationChange={handleDurationChange}
+            isDiamondPlan={isDiamondPlan}
+          />
+          
+          {/* Additional options */}
+          <div className="space-y-4">
+            <JobPostOptions
+              options={pricingOptions}
+              onOptionsChange={(updatedOptions) => setPricingOptions(updatedOptions)}
+              isFirstPost={pricingOptions.isFirstPost}
+            />
+          </div>
+          
+          {/* Payment summary */}
+          <PaymentSummary
+            priceData={priceData}
+          />
+          
+          {/* Validation to prevent $0 paid plans */}
+          {pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0 && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+              Error: Invalid price calculation. Please try different options or contact support.
+            </div>
+          )}
+          
+          {/* Submission button */}
+          <Button 
+            onClick={onSubmit}
+            disabled={
+              isSubmitting || 
+              !formData || 
+              (pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0)
+            }
+            className="w-full py-6 text-lg shadow-md sticky bottom-4 mt-8"
+          >
+            {isSubmitting ? (
+              <span>{t({english: "Processing...", vietnamese: "Đang xử lý..."})}</span>
+            ) : (
+              <span>
+                {isFreePost 
+                  ? t({english: "Post Free Job", vietnamese: "Đăng tin miễn phí"})
+                  : t({
+                      english: `Pay ${formattedPrice} & Post Job`,
+                      vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`
+                    })
+                }
+              </span>
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
-
-export default ReviewAndPaymentSection;

@@ -44,7 +44,7 @@ export const PricingProvider: React.FC<PricingProviderProps> = ({
       discountedPrice: calculatedPrice.originalPrice - calculatedPrice.discountAmount,
       discountLabel: calculatedPrice.discountPercentage > 0 ? 
         `${calculatedPrice.discountPercentage}% Discount` : '',
-      isFoundersDiscount: true // Early adopter discount is active
+      isFoundersDiscount: true // Adjust this based on your business logic
     };
   }, [pricingOptions]);
 
