@@ -50,18 +50,17 @@ export const usePostPayment = () => {
           })
         });
         
-        // Create a waitlist entry
-        // Using from() with a string for a potentially dynamic table name
-        const { error: waitlistError } = await supabase
-          .from('diamond_tier_waitlist')
-          .insert({
-            user_id: (await supabase.auth.getUser()).data.user?.id,
-            post_type: postType,
-            requested_at: new Date().toISOString()
-          });
-          
-        if (waitlistError) {
-          console.error("Error adding to waitlist:", waitlistError);
+        // Create a waitlist entry using the dedicated edge function
+        const { data, error } = await supabase.functions.invoke('diamond-tier-request', {
+          body: { 
+            postType, 
+            additionalInfo: { ...postDetails, pricingOptions }
+          }
+        });
+        
+        if (error) {
+          console.error("Error adding to Diamond waitlist:", error);
+          throw error;
         }
         
         setIsLoading(false);

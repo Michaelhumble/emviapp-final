@@ -655,6 +655,42 @@ export type Database = {
         }
         Relationships: []
       }
+      diamond_tier_waitlist: {
+        Row: {
+          additional_info: Json | null
+          id: string
+          notes: string | null
+          post_type: string
+          processed_at: string | null
+          processed_by: string | null
+          requested_at: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          additional_info?: Json | null
+          id?: string
+          notes?: string | null
+          post_type: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          additional_info?: Json | null
+          id?: string
+          notes?: string | null
+          post_type?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       followers: {
         Row: {
           artist_id: string
@@ -2498,6 +2534,10 @@ export type Database = {
       can_user_post: {
         Args: { p_user_id: string; p_post_type: string }
         Returns: boolean
+      }
+      create_diamond_tier_waitlist_if_not_exists: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       create_notification: {
         Args: {
