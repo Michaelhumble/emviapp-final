@@ -16,7 +16,8 @@ const SalonPost: React.FC = () => {
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     selectedPricingTier: 'standard',
     durationMonths: 1,
-    isFirstPost: true
+    isFirstPost: true,
+    autoRenew: true
   });
   const navigate = useNavigate();
   const { t } = useTranslation();

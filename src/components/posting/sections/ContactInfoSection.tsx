@@ -9,6 +9,12 @@ interface ContactInfoSectionProps {
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
+  // Make sure we have a valid form context
+  if (!form) {
+    console.error("ContactInfoSection requires a valid form from react-hook-form");
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">

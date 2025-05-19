@@ -10,9 +10,13 @@ import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { PricingOptions } from '@/utils/posting/types';
+import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
+  const { initiatePayment, isLoading: isPaymentLoading } = usePostPayment();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
@@ -26,19 +30,47 @@ const CreateJobPosting = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (data: JobFormValues) => {
+  const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
     try {
       setIsSubmitting(true);
       console.log('Form submitted:', data);
+      console.log('Pricing options:', pricingOptions);
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Convert form data to the expected format for the API
+      const jobDetails = {
+        title: data.title,
+        description: data.description,
+        vietnamese_description: data.vietnameseDescription,
+        location: data.location,
+        employment_type: data.employmentType,
+        compensation_type: data.compensationType,
+        compensation_details: data.compensationDetails,
+        weekly_pay: data.weeklyPay,
+        has_housing: data.hasHousing,
+        has_wax_room: data.hasWaxRoom,
+        owner_will_train: data.ownerWillTrain,
+        no_supply_deduction: data.noSupplyDeduction,
+        contact_info: {
+          owner_name: data.contactName,
+          phone: data.contactPhone,
+          email: data.contactEmail,
+        },
+        post_type: 'job'
+      };
       
-      toast.success('Job post created successfully!');
-      navigate('/jobs');
+      // Initiate payment with our consolidated hook
+      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      
+      if (result.success) {
+        return true;
+      } else {
+        toast.error('Error processing your job posting. Please try again.');
+        return false;
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
       toast.error('Error creating job post');
+      return false;
     } finally {
       setIsSubmitting(false);
     }
@@ -63,16 +95,13 @@ const CreateJobPosting = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            <JobForm 
+            <EnhancedJobForm 
               onSubmit={handleSubmit}
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              isSubmitting={isSubmitting}
-              initialValues={selectedTemplate || undefined}
+              initialTemplate={selectedTemplate || undefined}
               onBack={() => setStep('template')}
-              showVietnameseByDefault={selectedTemplate?.title?.toLowerCase().includes('nail') || false}
               isCustomTemplate={selectedTemplateType === 'custom'}
               maxPhotos={5} // Set maximum photos to 5
+              onStepChange={(step) => console.log(`Changed to step ${step}`)}
             />
           )}
         </Card>

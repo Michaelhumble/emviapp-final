@@ -15,7 +15,7 @@ import { jobPricingOptions } from '@/utils/posting/jobPricing';
 import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
 
-interface ReviewAndPaymentSectionProps {
+export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
   photoUploads: File[];
   onBack: () => void;

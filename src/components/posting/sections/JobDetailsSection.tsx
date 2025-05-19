@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   FormField,
@@ -6,18 +7,26 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
+  Form,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IndustryType } from '@/components/posting/job/jobFormSchema';
+import { useForm, UseFormReturn } from 'react-hook-form';
 
 interface JobDetailsSectionProps {
-  form: any;
+  form: UseFormReturn<any>;
   showVietnameseByDefault?: boolean;
 }
 
 const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnameseByDefault = false }) => {
+  // Make sure we have a valid form context
+  if (!form) {
+    console.error("JobDetailsSection requires a valid form from react-hook-form");
+    return null;
+  }
+
   return (
     <>
       <FormField

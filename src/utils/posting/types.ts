@@ -4,17 +4,24 @@ export interface PricingOptions {
   durationMonths: number;
   isFirstPost?: boolean;
   autoRenew?: boolean;
-  // Additional properties needed for other components
+  // Additional properties
   isRenewal?: boolean;
   isNationwide?: boolean;
   fastSalePackage?: boolean;
   showAtTop?: boolean;
   bundleWithJobPost?: boolean;
+  bundleWithSalonPost?: boolean;
   hasReferrals?: boolean;
-  // New upsell properties
+  // Upsell properties
   expertReview?: boolean;
   priorityPlacement?: boolean;
   extendedReach?: boolean;
+  // For UI indicators
+  isUrgent?: boolean;
+  isHotListing?: boolean;
+  featuredListing?: boolean;
+  extendedDuration?: boolean;
+  boostVisibility?: boolean;
 }
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';

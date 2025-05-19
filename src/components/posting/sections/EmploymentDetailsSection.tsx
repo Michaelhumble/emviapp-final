@@ -1,8 +1,17 @@
 
 import React from 'react';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormControl, 
+  FormDescription, 
+  FormMessage 
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { employmentTypes, compensationTypes } from '@/components/posting/job/jobFormConstants';
 import { UseFormReturn } from 'react-hook-form';
 
 interface EmploymentDetailsSectionProps {
@@ -10,152 +19,164 @@ interface EmploymentDetailsSectionProps {
 }
 
 const EmploymentDetailsSection: React.FC<EmploymentDetailsSectionProps> = ({ form }) => {
+  // Make sure we have a valid form context
+  if (!form) {
+    console.error("EmploymentDetailsSection requires a valid form from react-hook-form");
+    return null;
+  }
+
   return (
     <div className="space-y-6">
-      <h2 className="font-playfair text-xl font-semibold text-gray-900">Employment Details</h2>
-      <p className="text-sm text-muted-foreground">Information about the position and requirements</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="employmentType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Employment Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select employment type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {employmentTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="compensationType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Compensation Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select compensation type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {compensationTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
       
-      <div className="space-y-5">
-        <FormField
-          control={form.control}
-          name="jobType"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Job Type *</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-wrap gap-4"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="full-time" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Full-time
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="part-time" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Part-time
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="contract" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Contract
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="temporary" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Temporary
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="commission" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Commission
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="experience_level"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Experience Level *</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-wrap gap-4"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="entry" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Entry Level
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="intermediate" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Intermediate
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="experienced" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Experienced
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="senior" />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">
-                      Senior
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="salary_range"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Salary Range</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="e.g., $20-25/hr or $40k-60k/year" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <FormField
+        control={form.control}
+        name="compensationDetails"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Compensation Details</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g., $20-30/hr plus tips, 50-60% commission, etc." {...field} />
+            </FormControl>
+            <FormDescription>
+              Include salary range, commission structure, or other compensation details
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
           control={form.control}
-          name="compensation_details"
+          name="weeklyPay"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Compensation Details</FormLabel>
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
-                <Input 
-                  placeholder="e.g., Commission structure, tips, benefits" 
-                  {...field} 
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormMessage />
+              <div className="space-y-1 leading-none">
+                <FormLabel>Weekly Pay</FormLabel>
+                <FormDescription>
+                  Employee gets paid weekly
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="hasHousing"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Housing Available</FormLabel>
+                <FormDescription>
+                  Housing is provided for employees
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="ownerWillTrain"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Owner Will Train</FormLabel>
+                <FormDescription>
+                  Owner provides on-the-job training
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="noSupplyDeduction"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>No Supply Deduction</FormLabel>
+                <FormDescription>
+                  Supplies are provided at no cost
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
