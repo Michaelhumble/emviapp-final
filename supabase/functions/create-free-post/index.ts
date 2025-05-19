@@ -1,6 +1,4 @@
 
-// @ts-nocheck
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -10,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -79,7 +76,7 @@ serve(async (req) => {
     
     const isFirstPost = !existingPosts || existingPosts.length === 0;
     
-    // Only allow free posts for first-time posters
+    // Only allow free posts for first-time posters or if marked as eligible
     if (!isFirstPost && !pricingOptions?.isFirstPost) {
       return new Response(JSON.stringify({ error: "Free tier is only available for first-time posts" }), {
         status: 403,
@@ -92,14 +89,29 @@ serve(async (req) => {
     expiresAt.setDate(expiresAt.getDate() + 30); // 30 days for free tier
 
     try {
-      // Create the post
+      // Create the job post
       const { data: newPost, error: postError } = await supabaseAdmin
         .from('jobs')
         .insert({
-          ...postDetails,
-          user_id: user.id,
-          status: 'active',
+          title: postDetails.title,
+          description: postDetails.description,
+          location: postDetails.location,
+          employment_type: postDetails.jobType,
+          compensation_type: postDetails.compensation_type,
+          compensation_details: postDetails.compensation_details,
+          weekly_pay: postDetails.weekly_pay,
+          has_housing: postDetails.has_housing,
+          has_wax_room: postDetails.has_wax_room,
+          owner_will_train: postDetails.owner_will_train,
+          no_supply_deduction: postDetails.no_supply_deduction,
+          contact_info: {
+            owner_name: postDetails.contactName,
+            phone: postDetails.contactPhone,
+            email: postDetails.contactEmail,
+          },
           post_type: postType,
+          user_id: user.id,
+          status: 'active', // Free posts are immediately active
           pricing_tier: 'free',
           expires_at: expiresAt.toISOString()
         })
@@ -121,7 +133,7 @@ serve(async (req) => {
           user_id: user.id,
           listing_id: newPost.id,
           plan_type: postType,
-          payment_status: 'free',
+          payment_status: 'free', // Special status for free posts
           expires_at: expiresAt.toISOString(),
           auto_renew_enabled: false,
           pricing_tier: 'free'

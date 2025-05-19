@@ -1,11 +1,7 @@
 
-// @ts-nocheck
-// ^ This comment disables TypeScript checking for this file since it uses Deno types
-// that aren't available in the browser/Node.js environment
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
+import Stripe from "https://esm.sh/stripe@14.14.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -78,6 +74,17 @@ serve(async (req) => {
     // Get metadata from the session
     const metadata = session.metadata || {};
     
+    // Check if payment is complete
+    if (session.payment_status !== "paid") {
+      return new Response(JSON.stringify({ 
+        error: "Payment not completed", 
+        status: session.payment_status 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    
     // Find the related payment log
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
@@ -89,13 +96,96 @@ serve(async (req) => {
       console.error("Error fetching payment log:", paymentLogError);
     }
 
+    // Get post ID from metadata or payment log
+    let postId = metadata.post_id || paymentLog?.listing_id;
+    let job: any = null;
+    
+    // Check if post exists
+    if (postId) {
+      const { data: existingJob } = await supabaseAdmin
+        .from('jobs')
+        .select('*')
+        .eq('id', postId)
+        .single();
+        
+      job = existingJob;
+    }
+    
+    // If there's no job record yet, create one from the stored details
+    if (!job && metadata.post_type === 'job') {
+      try {
+        // Get details from payment log metadata if available
+        const postDetails = paymentLog?.metadata?.post_details || {};
+        
+        const { data: newJob, error: createError } = await supabaseAdmin
+          .from('jobs')
+          .insert({
+            // Use available details or defaults
+            title: postDetails.title || 'Job Posting',
+            description: postDetails.description || '',
+            location: postDetails.location || '',
+            user_id: user.id,
+            pricing_tier: metadata.pricing_tier,
+            status: 'active',
+            expires_at: metadata.expires_at,
+            post_type: metadata.post_type,
+            contact_info: postDetails.contact_info || { email: user.email }
+          })
+          .select('id')
+          .single();
+          
+        if (createError) {
+          console.error("Error creating job record:", createError);
+        } else {
+          postId = newJob.id;
+          
+          // Update payment log with job ID if it exists
+          if (paymentLog?.id) {
+            await supabaseAdmin
+              .from('payment_logs')
+              .update({ listing_id: postId })
+              .eq('id', paymentLog.id);
+          }
+        }
+      } catch (error) {
+        console.error("Error creating job record:", error);
+      }
+    }
+    
+    // If we have a post_id, update the job status
+    if (postId) {
+      const { error: updateJobError } = await supabaseAdmin
+        .from('jobs')
+        .update({ 
+          status: 'active',
+          expires_at: metadata.expires_at
+        })
+        .eq('id', postId);
+        
+      if (updateJobError) {
+        console.error("Error updating job status:", updateJobError);
+      }
+    }
+    
+    // Update payment log status
+    if (paymentLog?.id) {
+      const { error: updateLogError } = await supabaseAdmin
+        .from('payment_logs')
+        .update({ payment_status: 'success' })
+        .eq('id', paymentLog.id);
+        
+      if (updateLogError) {
+        console.error("Error updating payment log:", updateLogError);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        post_id: metadata.post_id || paymentLog?.listing_id,
+        post_id: postId,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
-        pricing_tier: metadata.pricing_tier || paymentLog?.pricing_tier,
+        pricing_tier: metadata.pricing_tier,
         payment_log_id: paymentLog?.id
       }),
       {

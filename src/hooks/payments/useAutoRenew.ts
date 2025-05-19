@@ -8,7 +8,7 @@ export const useAutoRenew = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const { t, isVietnamese } = useTranslation();
 
-  const toggleAutoRenew = async (stripePaymentId: string, enableAutoRenew: boolean): Promise<boolean> => {
+  const toggleAutoRenew = async (stripePaymentId: string, enableAutoRenew: boolean): Promise<boolean | null> => {
     setIsUpdating(true);
     
     try {
