@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Container } from "@/components/ui/container";
 import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
@@ -6,7 +5,7 @@ import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
 import FeaturedGoldListings from "@/components/jobs/FeaturedGoldListings";
 import JobsGrid from "@/components/jobs/JobsGrid";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
-import JobDetailModal from "@/components/jobs/JobDetailModal";
+import { JobDetailModal } from "@/components/jobs/JobDetailModal";
 import useJobsData from "@/hooks/useJobsData";
 import { Job } from "@/types/job";
 import { diamondJobs } from "@/data/jobs/diamondJobs";

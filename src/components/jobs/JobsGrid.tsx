@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import JobListingCard from "@/components/jobs/JobListingCard";
-import JobDetailModal from "@/components/jobs/JobDetailModal";
+import { JobDetailModal } from "@/components/jobs/JobDetailModal";
 import { Job } from "@/types/job";
 import { differenceInDays } from 'date-fns';
 
