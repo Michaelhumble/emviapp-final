@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { getJobPrice } from '@/utils/posting/jobPricing';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,17 +16,27 @@ export const usePostPayment = () => {
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions);
 
-      // Calculate price based on selected options
-      const priceData = pricingOptions ? calculateJobPostPrice(pricingOptions) : { finalPrice: 0 };
+      // Ensure pricing options exist
+      if (!pricingOptions) {
+        throw new Error("Missing pricing options");
+      }
+
+      // Calculate price using our centralized pricing function
+      const priceData = getJobPrice(pricingOptions);
       console.log("Calculated price:", priceData);
 
-      // Ensure pricing options are valid
-      if (!pricingOptions || !pricingOptions.selectedPricingTier) {
-        throw new Error("Invalid pricing options");
+      // Validate pricing options
+      if (!pricingOptions.selectedPricingTier) {
+        throw new Error("Invalid pricing options: Missing tier");
+      }
+
+      // Check for the $0.00 bug - Only allow $0 for free tier
+      if (priceData.finalPrice <= 0 && pricingOptions.selectedPricingTier !== 'free') {
+        throw new Error("Invalid price: Non-free plan cannot have $0 price");
       }
 
       // Handle free listings directly without going to Stripe
-      if (pricingOptions.selectedPricingTier === 'free') {
+      if (pricingOptions.selectedPricingTier === 'free' && pricingOptions.isFirstPost) {
         console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {

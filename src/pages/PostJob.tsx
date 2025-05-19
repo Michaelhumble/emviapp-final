@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
@@ -82,6 +83,15 @@ const PostJob = () => {
     setStep('template');
   };
 
+  // Set the default pricing options
+  const defaultPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -101,7 +111,7 @@ const PostJob = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            <PricingProvider>
+            <PricingProvider initialOptions={defaultPricingOptions}>
               <EnhancedJobForm 
                 onSubmit={handleSubmit}
                 initialTemplate={selectedTemplate || undefined}

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { JobFormValues } from './jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
@@ -7,11 +7,12 @@ import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAnd
 import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
 import { toast } from 'sonner';
+import { usePricing } from '@/context/pricing/PricingProvider';
 
 export interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange?: (step: number) => void;
-  onBack?: () => void; // Added missing onBack prop
+  onBack?: () => void;
   initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
@@ -23,19 +24,15 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onBack,
   initialTemplate,
   isCustomTemplate = false,
-  maxPhotos = 5 // Default to 5 photos
+  maxPhotos = 5
 }) => {
   const [activeTab, setActiveTab] = useState('job-details');
   const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'premium', // Default to premium tier
-    durationMonths: 1,             // Default to 1 month
-    autoRenew: true,               // Default to auto-renew enabled
-    isFirstPost: true,             // Default to first post (for free tier)
-    isNationwide: false            // Default to local listing
-  });
+  
+  // Use the pricing context
+  const { pricingOptions, setPricingOptions, priceData } = usePricing();
 
   // Update the handleJobFormSubmit to match the JobForm onSubmit signature
   const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
@@ -58,6 +55,12 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const handlePaymentSubmit = async () => {
     if (!jobFormData) {
       toast.error("Job information is missing");
+      return;
+    }
+    
+    // Validation check for paid plans
+    if (pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0) {
+      toast.error("Invalid price calculation. Please try again or contact support.");
       return;
     }
     
@@ -100,7 +103,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             setPhotoUploads={setPhotoUploads}
             initialValues={jobFormData || undefined}
             isCustomTemplate={isCustomTemplate}
-            maxPhotos={maxPhotos} // Pass maxPhotos prop
+            maxPhotos={maxPhotos}
           />
         </CardContent>
       </TabsContent>
@@ -113,8 +116,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             onBack={handleBackToEdit} 
             onSubmit={handlePaymentSubmit}
             isSubmitting={isSubmitting}
-            pricingOptions={pricingOptions}
-            setPricingOptions={setPricingOptions}
           />
         </CardContent>
       </TabsContent>

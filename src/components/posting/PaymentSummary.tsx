@@ -1,178 +1,160 @@
 
 import React from 'react';
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/utils/posting/pricing";
-import { Shield, Clock, CreditCard, LockIcon, CheckCircle } from "lucide-react";
-import { useTranslation } from '@/hooks/useTranslation';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertCircle, ShieldCheck, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { usePricing } from '@/context/pricing/PricingProvider';
 
-// Create a proper type for the price data
-type PriceData = {
-  originalPrice: number;
-  finalPrice: number;
-  discountPercentage: number;
-};
+interface PaymentSummaryProps {
+  priceData: {
+    basePrice: number;
+    originalPrice: number;
+    finalPrice: number;
+    discountPercentage: number;
+    discountAmount: number;
+    autoRenewDiscount: number;
+    durationMonths: number;
+    isFirstPost: boolean;
+    isNationwide: boolean;
+    selectedTier: string;
+  };
+}
 
-// Update the component to use named export and accept PriceData object
-export const PaymentSummary = ({
-  priceData,
-  durationMonths = 1,
-  autoRenew = true,
-}: {
-  priceData: PriceData;
-  durationMonths?: number;
-  autoRenew?: boolean;
-}) => {
-  const { originalPrice, finalPrice, discountPercentage } = priceData;
-  const { t } = useTranslation();
+export function PaymentSummary({ priceData }: PaymentSummaryProps) {
+  const [showAutoRenewDialog, setShowAutoRenewDialog] = React.useState(false);
+  const { pricingOptions, setPricingOptions } = usePricing();
   
+  const handleAutoRenewToggle = () => {
+    if (pricingOptions.autoRenew) {
+      // Show warning dialog when turning OFF auto-renew
+      setShowAutoRenewDialog(true);
+    } else {
+      // Turn ON auto-renew directly (no warning needed)
+      setPricingOptions({
+        ...pricingOptions,
+        autoRenew: true
+      });
+    }
+  };
+
+  const confirmDisableAutoRenew = () => {
+    setPricingOptions({
+      ...pricingOptions,
+      autoRenew: false
+    });
+    setShowAutoRenewDialog(false);
+  };
+
+  const cancelDisableAutoRenew = () => {
+    setShowAutoRenewDialog(false);
+  };
+
+  const isFreeplan = priceData.finalPrice === 0;
+
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
-      <CardContent className="p-5">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-medium text-gray-900">
-                {t({english: "Payment Summary", vietnamese: "Tóm tắt thanh toán"})}
-              </h3>
-              <p className="text-sm text-gray-500">
-                {durationMonths} {durationMonths === 1 
-                  ? t({english: "month", vietnamese: "tháng"}) 
-                  : t({english: "months", vietnamese: "tháng"})
-                } {t({english: "subscription", vietnamese: "đăng ký"})}
-              </p>
-            </div>
-            {discountPercentage > 0 && (
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 px-2 py-1">
-                {t({english: "Save", vietnamese: "Tiết kiệm"})} {discountPercentage}%
-              </Badge>
-            )}
+    <div className="space-y-3 border-t pt-4">
+      <h3 className="text-lg font-medium">Summary</h3>
+      
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <span className="text-gray-500">Original Price</span>
+          <span className="text-gray-500">${priceData.originalPrice.toFixed(2)}</span>
+        </div>
+        
+        {priceData.discountPercentage > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Duration Discount ({priceData.discountPercentage}% OFF)</span>
+            <span>-${priceData.discountAmount.toFixed(2)}</span>
           </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-sm">
-                {t({english: "Base price", vietnamese: "Giá cơ bản"})}
-              </span>
-              <span className="font-medium">
-                {formatCurrency(originalPrice)}
-              </span>
-            </div>
-            
-            {discountPercentage > 0 && (
-              <div className="flex justify-between items-center">
-                <span className="text-green-600 text-sm">
-                  {t({english: "Discount", vietnamese: "Giảm giá"})}
-                </span>
-                <span className="font-medium text-green-600">
-                  -{formatCurrency(originalPrice - finalPrice)}
-                </span>
-              </div>
-            )}
-            
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-sm">
-                {t({english: "Duration", vietnamese: "Thời hạn"})}
-              </span>
-              <span className="font-medium">
-                {durationMonths} {durationMonths === 1 
-                  ? t({english: "month", vietnamese: "tháng"}) 
-                  : t({english: "months", vietnamese: "tháng"})
-                }
-              </span>
-            </div>
-            
-            {durationMonths > 1 && (
-              <div className="flex justify-between items-center">
-                <span className="text-green-600 text-sm">
-                  {t({english: "Multi-month savings", vietnamese: "Tiết kiệm nhiều tháng"})}
-                </span>
-                <span className="font-medium text-green-600">
-                  {t({english: "Included in price", vietnamese: "Đã bao gồm trong giá"})}
-                </span>
-              </div>
-            )}
+        )}
+        
+        {priceData.autoRenewDiscount > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Auto-Renew Discount (5% OFF)</span>
+            <span>-${priceData.autoRenewDiscount.toFixed(2)}</span>
           </div>
-          
-          <Separator />
-          
-          <div className="flex justify-between items-center font-medium">
-            <span>{t({english: "Total due today", vietnamese: "Tổng số tiền thanh toán ngay"})}</span>
-            <span className="text-lg">
-              {formatCurrency(finalPrice)}
+        )}
+        
+        {priceData.isNationwide && (
+          <div className="flex justify-between">
+            <span>Nationwide Visibility Fee</span>
+            <span>+$5.00</span>
+          </div>
+        )}
+        
+        <div className="flex justify-between font-medium text-lg pt-2 border-t">
+          <span>Total</span>
+          <span>${priceData.finalPrice.toFixed(2)}</span>
+        </div>
+        
+        {priceData.finalPrice > 0 && (
+          <div className="flex items-center justify-between mt-2 bg-gray-50 p-2 rounded">
+            <label className="flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="form-checkbox h-4 w-4 text-purple-600 rounded" 
+                checked={pricingOptions.autoRenew} 
+                onChange={handleAutoRenewToggle}
+              />
+              <span className="ml-2 text-sm font-medium">Auto-renew subscription</span>
+            </label>
+            <span className="text-xs text-green-600 font-medium">
+              {pricingOptions.autoRenew ? "Can turn off anytime" : ""}
             </span>
           </div>
-          
-          <div className={autoRenew ? "text-gray-600" : "text-gray-400"}>
-            <div className="flex items-center gap-1 text-sm">
-              <Clock size={14} />
-              {autoRenew ? (
-                <span>
-                  {t({
-                    english: `Auto-renews at ${formatCurrency(finalPrice / durationMonths)}/month`,
-                    vietnamese: `Tự động gia hạn với giá ${formatCurrency(finalPrice / durationMonths)}/tháng`
-                  })}
-                </span>
-              ) : (
-                <span>
-                  {t({
-                    english: "No auto-renewal (one-time payment)",
-                    vietnamese: "Không tự động gia hạn (thanh toán một lần)"
-                  })}
-                </span>
-              )}
-            </div>
-          </div>
+        )}
+        
+        <div className="text-sm text-gray-500">
+          {pricingOptions.autoRenew 
+            ? <span>Your subscription will automatically renew every {priceData.durationMonths} month{priceData.durationMonths > 1 ? 's' : ''} at ${(priceData.finalPrice / priceData.durationMonths).toFixed(2)}/month.</span>
+            : <span>Your post will expire after {priceData.durationMonths} month{priceData.durationMonths > 1 ? 's' : ''}. <span className="text-amber-600 font-medium">You'll lose your current pricing!</span></span>
+          }
         </div>
 
-        {/* Trust indicators section */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <LockIcon size={16} className="text-gray-500" />
-            <span className="text-sm font-medium text-gray-600">
-              {t({english: "100% Secure Checkout", vietnamese: "Thanh toán an toàn 100%"})}
-            </span>
+        {/* Free plan messaging */}
+        {isFreeplan && (
+          <div className="mt-3 text-xs bg-yellow-50 p-3 rounded-md text-amber-800">
+            <p className="font-medium">Credit card required for free trial. Cancel anytime, no risk.</p>
+            <p className="mt-1">After your 30-day free trial, plan will automatically convert to paid unless canceled.</p>
           </div>
-          
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <div className="flex items-start gap-2">
-              <Shield size={16} className="text-gray-500 mt-0.5" />
-              <span className="text-xs text-gray-600">
-                {t({english: "Secure payment processing by Stripe", vietnamese: "Xử lý thanh toán an toàn bởi Stripe"})}
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <CreditCard size={16} className="text-gray-500 mt-0.5" />
-              <span className="text-xs text-gray-600">
-                {t({english: "Major credit cards accepted", vietnamese: "Chấp nhận các thẻ tín dụng chính"})}
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <CheckCircle size={16} className="text-gray-500 mt-0.5" />
-              <span className="text-xs text-gray-600">
-                {t({english: "Cancel anytime, no risk", vietnamese: "Hủy bất kỳ lúc nào, không rủi ro"})}
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <Shield size={16} className="text-gray-500 mt-0.5" />
-              <span className="text-xs text-gray-600">
-                {t({english: "SSL encrypted checkout", vietnamese: "Thanh toán được mã hóa SSL"})}
-              </span>
-            </div>
+        )}
+
+        {/* Trust badges */}
+        <div className="mt-4 pt-3 border-t flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-gray-500" />
+            <span className="text-xs text-gray-600">100% Secure Payment via Stripe</span>
           </div>
-          
-          <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
-              {t({
-                english: "\"EmviApp has helped me find 3 nail techs in the last 6 months. Worth every penny!\"",
-                vietnamese: "\"EmviApp đã giúp tôi tìm 3 thợ nail trong 6 tháng qua. Đáng giá từng xu!\""
-              })}
-            </p>
-            <p className="text-xs font-medium mt-1">— Magic Nails Salon, San Jose</p>
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="text-[10px] py-0 h-4">
+              <Clock className="h-3 w-3 mr-1" />
+              Limited Time Offer
+            </Badge>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Auto-renew warning dialog */}
+      <AlertDialog open={showAutoRenewDialog} onOpenChange={setShowAutoRenewDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              Are you sure you want to disable auto-renew?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              By turning off auto-renew, you'll lose your special pricing when your subscription ends. 
+              We'll also be unable to guarantee your listing's position after expiration.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDisableAutoRenew}>Keep Auto-Renew</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDisableAutoRenew} className="bg-red-600 hover:bg-red-700">
+              Turn Off Auto-Renew
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
-};
+}

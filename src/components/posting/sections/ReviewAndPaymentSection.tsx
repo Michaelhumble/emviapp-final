@@ -1,10 +1,8 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
 import JobPostOptions from '@/components/posting/job/JobPostOptions';
 import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
@@ -14,6 +12,7 @@ import PricingCard from '@/components/posting/pricing/PricingCard';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
 import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
+import { usePricing } from '@/context/pricing/PricingProvider';
 
 export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
@@ -21,8 +20,6 @@ export interface ReviewAndPaymentSectionProps {
   onBack: () => void;
   onSubmit: () => void;
   isSubmitting: boolean;
-  pricingOptions: PricingOptions;
-  setPricingOptions: (options: PricingOptions) => void;
 }
 
 export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
@@ -30,20 +27,10 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   photoUploads,
   onBack,
   onSubmit,
-  isSubmitting,
-  pricingOptions,
-  setPricingOptions
+  isSubmitting
 }) => {
   const { t } = useTranslation();
-  const [priceData, setPriceData] = React.useState(() => 
-    calculateJobPostPrice(pricingOptions)
-  );
-
-  // Update price data when pricing options change
-  useEffect(() => {
-    const newPriceData = calculateJobPostPrice(pricingOptions);
-    setPriceData(newPriceData);
-  }, [pricingOptions]);
+  const { pricingOptions, setPricingOptions, priceData } = usePricing();
 
   const handleDurationChange = (months: number) => {
     setPricingOptions({
@@ -56,13 +43,6 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
     setPricingOptions({
       ...pricingOptions,
       selectedPricingTier: tier
-    });
-  };
-
-  const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
-    setPricingOptions({
-      ...pricingOptions,
-      [option]: value
     });
   };
 
@@ -139,14 +119,23 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           {/* Payment summary */}
           <PaymentSummary
             priceData={priceData}
-            durationMonths={pricingOptions.durationMonths}
-            autoRenew={pricingOptions.autoRenew || false}
           />
+          
+          {/* Validation to prevent $0 paid plans */}
+          {pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0 && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+              Error: Invalid price calculation. Please try different options or contact support.
+            </div>
+          )}
           
           {/* Submission button */}
           <Button 
             onClick={onSubmit}
-            disabled={isSubmitting || !formData}
+            disabled={
+              isSubmitting || 
+              !formData || 
+              (pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0)
+            }
             className="w-full py-6 text-lg shadow-md sticky bottom-4 mt-8"
           >
             {isSubmitting ? (

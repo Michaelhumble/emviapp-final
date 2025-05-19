@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
@@ -41,14 +42,14 @@ const CreateJobPosting = () => {
         description: data.description,
         vietnamese_description: data.vietnameseDescription,
         location: data.location,
-        employment_type: data.jobType, // Updated from employmentType to jobType
-        compensation_type: data.compensation_type, // Use snake_case as per schema
-        compensation_details: data.compensation_details, // Use snake_case as per schema
-        weekly_pay: data.weekly_pay, // Use snake_case as per schema
-        has_housing: data.has_housing, // Use snake_case as per schema
-        has_wax_room: data.has_wax_room, // Use snake_case as per schema
-        owner_will_train: data.owner_will_train, // Use snake_case as per schema
-        no_supply_deduction: data.no_supply_deduction, // Use snake_case as per schema
+        employment_type: data.jobType,
+        compensation_type: data.compensation_type,
+        compensation_details: data.compensation_details,
+        weekly_pay: data.weekly_pay,
+        has_housing: data.has_housing,
+        has_wax_room: data.has_wax_room,
+        owner_will_train: data.owner_will_train, 
+        no_supply_deduction: data.no_supply_deduction,
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,
@@ -61,6 +62,8 @@ const CreateJobPosting = () => {
       const result = await initiatePayment('job', jobDetails, pricingOptions);
       
       if (result.success) {
+        toast.success('Job post created successfully!');
+        navigate('/dashboard');
         return true;
       } else {
         toast.error('Error processing your job posting. Please try again.');
@@ -77,6 +80,15 @@ const CreateJobPosting = () => {
 
   const handleBackToTemplates = () => {
     setStep('template');
+  };
+
+  // Set the default pricing options
+  const defaultPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
   };
 
   return (
@@ -98,14 +110,13 @@ const CreateJobPosting = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            // [SUNSHINE FIX] Wrap EnhancedJobForm with PricingProvider for proper context
-            <PricingProvider>
+            <PricingProvider initialOptions={defaultPricingOptions}>
               <EnhancedJobForm 
                 onSubmit={handleSubmit}
                 initialTemplate={selectedTemplate || undefined}
                 onBack={handleBackToTemplates}
                 isCustomTemplate={selectedTemplateType === 'custom'}
-                maxPhotos={5} // Set maximum photos to 5
+                maxPhotos={5}
                 onStepChange={(step) => console.log(`Changed to step ${step}`)}
               />
             </PricingProvider>

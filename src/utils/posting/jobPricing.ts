@@ -1,5 +1,146 @@
+import { PricingOptions, JobPricingTier } from './types';
 
-import { JobPricingOption } from './types';
+// Define our pricing tiers and their base prices
+const BASE_PRICES: Record<JobPricingTier, number> = {
+  'free': 0,
+  'standard': 9.99,
+  'premium': 14.99,
+  'gold': 24.99,
+  'diamond': 999.99
+};
+
+// Define duration-based discount percentages
+const DURATION_DISCOUNTS = {
+  1: 0,    // No discount for 1 month
+  3: 10,   // 10% discount for 3 months
+  6: 20,   // 20% discount for 6 months
+  12: 35,  // 35% discount for 12 months
+};
+
+// Additional pricing options
+const NATIONWIDE_FEE = 5.00;         // $5 extra for nationwide visibility
+const AUTO_RENEW_DISCOUNT = 0.05;    // 5% discount for auto-renewal
+
+/**
+ * Get the job posting price based on pricing options
+ * 
+ * @param options The pricing options
+ * @returns The calculated price details including original price, discounts, and final price
+ */
+export function getJobPrice(options: PricingOptions): {
+  basePrice: number;
+  originalPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
+  discountAmount: number;
+  autoRenewDiscount: number;
+  durationMonths: number;
+  isFirstPost: boolean;
+  isNationwide: boolean;
+  selectedTier: JobPricingTier;
+} {
+  const {
+    selectedPricingTier = 'premium',
+    durationMonths = 1,
+    autoRenew = true,
+    isFirstPost = false,
+    isNationwide = false
+  } = options;
+  
+  // Handle free tier specially
+  if (selectedPricingTier === 'free' && isFirstPost) {
+    return {
+      basePrice: 0,
+      originalPrice: 0,
+      finalPrice: 0,
+      discountPercentage: 0,
+      discountAmount: 0,
+      autoRenewDiscount: 0,
+      durationMonths,
+      isFirstPost,
+      isNationwide,
+      selectedTier: selectedPricingTier
+    };
+  }
+
+  // Get base price for the selected tier
+  const basePrice = BASE_PRICES[selectedPricingTier] || BASE_PRICES.premium;
+  
+  // Calculate original price (base price × duration)
+  const originalPrice = basePrice * durationMonths;
+  
+  // Apply duration discount
+  const discountPercentage = DURATION_DISCOUNTS[durationMonths as keyof typeof DURATION_DISCOUNTS] || 0;
+  const discountAmount = originalPrice * (discountPercentage / 100);
+  
+  // Apply auto-renew discount if enabled
+  const autoRenewDiscount = autoRenew ? (originalPrice - discountAmount) * AUTO_RENEW_DISCOUNT : 0;
+  
+  // Add nationwide fee if selected
+  const nationwideFee = isNationwide ? NATIONWIDE_FEE * durationMonths : 0;
+  
+  // Calculate final price
+  let finalPrice = originalPrice - discountAmount - autoRenewDiscount + nationwideFee;
+  
+  // Ensure price is never negative
+  finalPrice = Math.max(finalPrice, 0);
+  
+  // Round to 2 decimal places
+  finalPrice = Math.round(finalPrice * 100) / 100;
+  
+  return {
+    basePrice,
+    originalPrice,
+    finalPrice,
+    discountPercentage,
+    discountAmount,
+    autoRenewDiscount,
+    durationMonths,
+    isFirstPost,
+    isNationwide,
+    selectedTier: selectedPricingTier
+  };
+}
+
+// Legacy functions for backward compatibility - these all now use the getJobPrice function
+export const calculateJobPostPrice = (options: PricingOptions) => {
+  const priceData = getJobPrice(options);
+  return {
+    originalPrice: priceData.originalPrice,
+    finalPrice: priceData.finalPrice,
+    discountPercentage: priceData.discountPercentage
+  };
+};
+
+export const getJobPostPricingSummary = (selectedTier: string, duration: number, isFirstPost: boolean = false) => {
+  const options = {
+    selectedPricingTier: selectedTier as JobPricingTier,
+    durationMonths: duration,
+    isFirstPost: isFirstPost,
+    autoRenew: true,
+    isNationwide: false
+  };
+  
+  return calculateJobPostPrice(options);
+};
+
+export const calculateFinalPrice = (basePrice: number, duration: number) => {
+  const options = {
+    selectedPricingTier: 'custom' as JobPricingTier,
+    durationMonths: duration,
+    autoRenew: true,
+    isFirstPost: false,
+    isNationwide: false
+  };
+  
+  const customPrice = getJobPrice({ ...options, basePrice });
+  
+  return {
+    originalPrice: customPrice.originalPrice,
+    finalPrice: customPrice.finalPrice,
+    discountPercentage: customPrice.discountPercentage
+  };
+};
 
 // Job pricing options
 export const jobPricingOptions: JobPricingOption[] = [
@@ -113,64 +254,6 @@ export const jobPricingOptions: JobPricingOption[] = [
     limitedSpots: '25% OFF'
   }
 ];
-
-// Calculate pricing based on duration
-export const calculateFinalPrice = (basePrice: number, duration: number) => {
-  let discountPercentage = 0;
-  
-  // Apply discount based on subscription length
-  if (duration === 3) {
-    discountPercentage = 10; // 10% for 3 months
-  } else if (duration === 6) {
-    discountPercentage = 20; // 20% for 6 months
-  } else if (duration === 12) {
-    discountPercentage = 35; // 35% for 12 months
-  }
-  
-  const originalPrice = basePrice * duration;
-  const finalPrice = originalPrice * (1 - discountPercentage / 100);
-  
-  return {
-    originalPrice,
-    finalPrice,
-    discountPercentage
-  };
-};
-
-// Calculate job post price
-export const calculateJobPostPrice = (options: any) => {
-  const { selectedPricingTier, durationMonths = 1, isFirstPost = false } = options;
-  
-  // Find the base pricing option
-  const pricingOption = jobPricingOptions.find(option => option.id === selectedPricingTier);
-  if (!pricingOption) {
-    return { originalPrice: 0, finalPrice: 0, discountPercentage: 0 };
-  }
-  
-  // Apply first post free if applicable
-  if (isFirstPost && selectedPricingTier === 'free') {
-    return { originalPrice: 0, finalPrice: 0, discountPercentage: 0 };
-  }
-  
-  // Calculate with duration discounts
-  return calculateFinalPrice(pricingOption.price, durationMonths);
-};
-
-// Function to get job post pricing summary
-export const getJobPostPricingSummary = (selectedTier: string, duration: number, isFirstPost: boolean = false) => {
-  const options = {
-    selectedPricingTier: selectedTier,
-    durationMonths: duration,
-    isFirstPost: isFirstPost
-  };
-  
-  return calculateJobPostPrice(options);
-};
-
-// Function to calculate price with duration
-export const calculatePriceWithDuration = (basePrice: number, duration: number) => {
-  return calculateFinalPrice(basePrice, duration);
-};
 
 // Function to validate pricing options
 export const validatePricingOptions = (options: any) => {
