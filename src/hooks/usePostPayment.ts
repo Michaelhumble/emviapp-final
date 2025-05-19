@@ -4,8 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission } from '@/types/job';
-import { PricingOptions } from '@/utils/posting/types';
-import { getJobPrice } from '@/utils/posting/jobPricing';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { getJobPrice, validatePricingOptions } from '@/utils/posting/jobPricing';
+import { v4 as uuidv4 } from 'uuid';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,29 +22,64 @@ export const usePostPayment = () => {
         throw new Error("Missing pricing options");
       }
 
+      // Validate pricing options
+      if (!validatePricingOptions(pricingOptions)) {
+        throw new Error("Invalid pricing options");
+      }
+
       // Calculate price using our centralized pricing function
       const priceData = getJobPrice(pricingOptions);
       console.log("Calculated price:", priceData);
 
-      // Validate pricing options
-      if (!pricingOptions.selectedPricingTier) {
-        throw new Error("Invalid pricing options: Missing tier");
-      }
-
-      // Check for the $0.00 bug - Only allow $0 for free tier
-      if (priceData.finalPrice <= 0 && pricingOptions.selectedPricingTier !== 'free') {
+      // Check for the $0.00 bug - Only allow $0 for free tier or first post
+      if (priceData.finalPrice <= 0 && pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost) {
         throw new Error("Invalid price: Non-free plan cannot have $0 price");
       }
 
+      // Diamond tier requires special access - never allow direct payment
+      if (pricingOptions.selectedPricingTier === 'diamond') {
+        // Show info about invitation process
+        toast.info(
+          t({
+            english: "Diamond tier requires an invitation",
+            vietnamese: "Gói Kim cương yêu cầu lời mời"
+          }), {
+          description: t({
+            english: "Our team will contact you about the Diamond tier",
+            vietnamese: "Đội ngũ của chúng tôi sẽ liên hệ với bạn về gói Kim cương"
+          })
+        });
+        
+        // Create a waitlist entry
+        const { error: waitlistError } = await supabase
+          .from('diamond_waitlist')
+          .insert({
+            user_id: (await supabase.auth.getUser()).data.user?.id,
+            post_type: postType,
+            requested_at: new Date().toISOString()
+          });
+          
+        if (waitlistError) {
+          console.error("Error adding to waitlist:", waitlistError);
+        }
+        
+        setIsLoading(false);
+        return { success: false, waitlisted: true };
+      }
+
+      // Generate an idempotency key to prevent double payments
+      const idempotencyKey = uuidv4();
+
       // Handle free listings directly without going to Stripe
-      if (pricingOptions.selectedPricingTier === 'free' && pricingOptions.isFirstPost) {
+      if (priceData.finalPrice <= 0) {
         console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
           body: { 
             postType,
             postDetails,
-            pricingOptions
+            pricingOptions,
+            idempotencyKey
           }
         });
 
@@ -74,7 +110,8 @@ export const usePostPayment = () => {
         tier: pricingOptions.selectedPricingTier,
         duration: pricingOptions.durationMonths,
         autoRenew: pricingOptions.autoRenew,
-        finalPrice: priceData.finalPrice
+        finalPrice: priceData.finalPrice,
+        idempotencyKey
       });
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
@@ -82,7 +119,8 @@ export const usePostPayment = () => {
           postType,
           postDetails,
           pricingOptions,
-          priceData // Pass the calculated price data
+          priceData, // Pass the calculated price data
+          idempotencyKey // Include idempotency key
         }
       });
 

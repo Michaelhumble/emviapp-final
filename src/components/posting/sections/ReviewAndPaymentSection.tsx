@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Timer } from 'lucide-react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
 import JobPostOptions from '@/components/posting/job/JobPostOptions';
@@ -13,6 +13,7 @@ import { jobPricingOptions } from '@/utils/posting/jobPricing';
 import { JobPricingTier } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { usePricing } from '@/context/pricing/PricingProvider';
+import { Badge } from '@/components/ui/badge';
 
 export interface ReviewAndPaymentSectionProps {
   formData: JobFormValues | null;
@@ -51,7 +52,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
   );
 
   const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
-  const isFreePost = pricingOptions.selectedPricingTier === 'free';
+  const isFreePost = pricingOptions.selectedPricingTier === 'free' || pricingOptions.isFirstPost;
 
   // Format price for display
   const formattedPrice = priceData.finalPrice > 0 
@@ -71,6 +72,14 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
         </Button>
       </div>
       
+      {/* Limited time offer banner */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-md p-3 flex items-center gap-2">
+        <Timer className="h-4 w-4 text-amber-500" />
+        <p className="text-sm text-amber-800">
+          <span className="font-medium">Nail Industry Founders Pricing:</span> Special discounted rates for the first 1,000 users. Already 783 claimed!
+        </p>
+      </div>
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Preview column - Job details and photos */}
         <div className="lg:col-span-2">
@@ -81,6 +90,12 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
         {/* Pricing column - Plan selection, options, and payment */}
         <div className="space-y-6">
           <h3 className="text-lg font-medium">{t({english: "Choose Your Plan", vietnamese: "Chọn gói của bạn"})}</h3>
+          
+          {pricingOptions.isFirstPost && (
+            <Badge className="bg-green-100 text-green-800 border-green-200 mb-2">
+              First Post Free
+            </Badge>
+          )}
           
           {/* Plans selection grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
@@ -122,7 +137,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
           />
           
           {/* Validation to prevent $0 paid plans */}
-          {pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0 && (
+          {pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0 && (
             <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
               Error: Invalid price calculation. Please try different options or contact support.
             </div>
@@ -134,7 +149,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
             disabled={
               isSubmitting || 
               !formData || 
-              (pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0)
+              (pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0)
             }
             className="w-full py-6 text-lg shadow-md sticky bottom-4 mt-8"
           >
@@ -143,7 +158,7 @@ export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = (
             ) : (
               <span>
                 {isFreePost 
-                  ? t({english: "Start Free Trial", vietnamese: "Bắt đầu dùng thử"})
+                  ? t({english: "Post Free Job", vietnamese: "Đăng tin miễn phí"})
                   : t({
                       english: `Pay ${formattedPrice} & Post Job`,
                       vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`

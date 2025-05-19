@@ -2,10 +2,11 @@
 import React from 'react';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Card } from '@/components/ui/card';
-import { Check, CheckCircle, Clock, ShieldCheck } from 'lucide-react';
+import { Check, CheckCircle, Clock, Fire, Shield, ShieldCheck, Users } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobPricingOption } from '@/utils/posting/types';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface PricingCardProps {
   isSelected: boolean;
@@ -60,14 +61,27 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
   // Get FOMO message based on tier
   const getFomoMessage = () => {
-    if (pricingInfo.annual) return "Limited Availability";
-    if (pricingInfo.recommended) return "Limited Time";
-    if (pricingInfo.popular) return "Ends Soon";
+    if (pricingInfo.limitedSpots) return pricingInfo.limitedSpots;
+    if (pricingInfo.tier === "diamond") return "Limited Availability";
+    if (pricingInfo.tier === "gold") return "Early Adopter Pricing";
+    if (pricingInfo.recommended) return "Nail Industry Founders Price";
+    if (pricingInfo.popular) return "Most Popular";
     return "Special Offer";
+  };
+
+  // Get FOMO icon based on tier
+  const getFomoIcon = () => {
+    if (pricingInfo.limitedSpots) return Users;
+    if (pricingInfo.tier === "diamond") return Shield;
+    if (pricingInfo.popular) return Fire;
+    return Clock;
   };
 
   // Format for Diamond plan
   const isDiamondPlan = tier === 'diamond';
+  const FomoIcon = getFomoIcon();
+  const discountPercentage = getDiscountPercentage();
+  const fomoMessage = getFomoMessage();
 
   return (
     <Card 
@@ -78,21 +92,23 @@ const PricingCard: React.FC<PricingCardProps> = ({
       }`}
       onClick={onSelect}
     >
-      {/* Display discount badge instead of spots remaining */}
-      {getDiscountPercentage() && (
+      {/* Discount percentage badge */}
+      {discountPercentage && (
         <div className="absolute top-0 right-0">
           <div className="bg-gradient-to-r from-rose-500 to-red-500 text-white text-xs px-3 py-1 transform rotate-45 translate-x-2 translate-y-3 uppercase font-semibold tracking-wide">
-            {getDiscountPercentage()}
+            {discountPercentage}
           </div>
         </div>
       )}
       
       <div className="p-5">
+        {/* Header with name and selection indicator */}
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">{pricingInfo.name}</h3>
           {isSelected && <CheckCircle className="h-5 w-5 text-purple-600" />}
         </div>
         
+        {/* Pricing display */}
         <div className="mt-2 flex items-end">
           <span className="text-2xl font-bold">${pricingInfo.price}</span>
           {pricingInfo.wasPrice && (
@@ -101,15 +117,25 @@ const PricingCard: React.FC<PricingCardProps> = ({
         </div>
         
         {/* FOMO messaging */}
-        <Badge className="mt-2 bg-amber-100 text-amber-800 border-amber-200 flex items-center gap-1.5">
-          <Clock className="h-3 w-3" />
-          <span>{getFomoMessage()}</span>
-        </Badge>
+        {(pricingInfo.popular || pricingInfo.recommended || pricingInfo.limitedSpots || isDiamondPlan) && (
+          <Badge className={cn(
+            "mt-2 flex items-center gap-1.5",
+            tier === 'premium' ? "bg-indigo-100 text-indigo-800 border-indigo-200" :
+            tier === 'gold' ? "bg-amber-100 text-amber-800 border-amber-200" :
+            tier === 'diamond' ? "bg-blue-100 text-blue-800 border-blue-200" :
+            "bg-orange-100 text-orange-800 border-orange-200"
+          )}>
+            <FomoIcon className="h-3 w-3" />
+            <span>{fomoMessage}</span>
+          </Badge>
+        )}
         
+        {/* Description */}
         <p className="text-sm text-gray-600 mt-2">
           {isVietnamese ? pricingInfo.vietnameseDescription : pricingInfo.description}
         </p>
         
+        {/* Feature list */}
         <ul className="mt-4 space-y-2">
           {pricingInfo.features.map((feature, index) => (
             <li key={index} className="flex items-start">
