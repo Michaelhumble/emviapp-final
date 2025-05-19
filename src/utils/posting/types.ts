@@ -35,19 +35,19 @@ export interface JobPricingOption {
   wasPrice?: number;
   description: string;
   vietnameseDescription?: string;
-  tag?: string;
+  tag?: string;          // Added for UI displays
   features?: string[];
   popular?: boolean;
   isFirstPost?: boolean;
   tier: JobPricingTier;
   // Properties for FOMO and UI
   primaryBenefit?: string;
-  upsellText?: string;
+  upsellText?: string;   // Added for upsell displays
   color?: string;
   recommended?: boolean;
   hidden?: boolean;
   annual?: boolean;
-  limitedSpots?: string;
+  limitedSpots?: string; // Added for limited spots displays
 }
 
 export interface UserPostingStats {
