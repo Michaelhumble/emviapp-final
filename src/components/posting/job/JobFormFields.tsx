@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch, FormState } from 'react-hook-form';
+import { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch, FormState, UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { JobFormValues } from './jobFormSchema';
@@ -17,6 +17,7 @@ interface JobFormFieldsProps {
   watch: UseFormWatch<JobFormValues>;
   setValue: UseFormSetValue<JobFormValues>;
   isCustomTemplate?: boolean;
+  form?: UseFormReturn<JobFormValues>;
 }
 
 const JobFormFields: React.FC<JobFormFieldsProps> = ({
@@ -25,28 +26,44 @@ const JobFormFields: React.FC<JobFormFieldsProps> = ({
   control,
   watch,
   setValue,
-  isCustomTemplate = false
+  isCustomTemplate = false,
+  form
 }) => {
-  // Create a FormState-compatible object from errors
-  const formState: FormState<JobFormValues> = {
-    errors,
-    isDirty: false,
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
-    isValidating: false,
-    isValid: Object.keys(errors).length === 0,
-    submitCount: 0,
-    dirtyFields: {},
-    touchedFields: {},
-    defaultValues: {}
+  // Use provided form or create a dummy one with essential properties
+  const formContext = form || {
+    control,
+    register,
+    formState: {
+      errors,
+      isDirty: false,
+      isSubmitted: false,
+      isSubmitting: false,
+      isSubmitSuccessful: false,
+      isValidating: false,
+      isValid: Object.keys(errors).length === 0,
+      submitCount: 0,
+      dirtyFields: {},
+      touchedFields: {},
+      defaultValues: {},
+      isLoading: false,
+      disabled: false,
+      validatingFields: {}
+    }
   };
 
   return (
     <div className="space-y-8">
-      <JobDetailsSection form={{ control, register, formState }} />
-      
-      <EmploymentDetailsSection form={{ control, register, formState }} />
+      {form ? (
+        <>
+          <JobDetailsSection form={formContext} />
+          <EmploymentDetailsSection form={formContext} />
+        </>
+      ) : (
+        <Form {...formContext}>
+          <JobDetailsSection form={formContext} />
+          <EmploymentDetailsSection form={formContext} />
+        </Form>
+      )}
       
       <div className="space-y-6">
         <h2 className="font-playfair text-xl font-semibold text-gray-900">Contact Information</h2>

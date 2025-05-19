@@ -56,7 +56,7 @@ export interface PricingOptions {
   
   // Special flags
   isFirstPost: boolean;
-  isNationwide: boolean;
+  isNationwide?: boolean;
   
   // Promotional options
   expertReview?: boolean;

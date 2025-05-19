@@ -2,14 +2,15 @@
 export interface PricingOptions {
   selectedPricingTier: JobPricingTier;
   durationMonths: number;
+  autoRenew: boolean;
   isFirstPost?: boolean;
-  autoRenew?: boolean;
+  isNationwide?: boolean;
   // Additional properties needed for other components
   isRenewal?: boolean;
-  isNationwide?: boolean;
   fastSalePackage?: boolean;
   showAtTop?: boolean;
   bundleWithJobPost?: boolean;
+  bundleWithSalonPost?: boolean;
   hasReferrals?: boolean;
   // New upsell properties
   expertReview?: boolean;
