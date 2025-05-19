@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,7 +34,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { pricingOptions, setPricingOptions } = usePricing();
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
   const [isNationwide, setIsNationwide] = useState(pricingOptions.isNationwide || false);
   const [showAtTop, setShowAtTop] = useState(false);
 
@@ -97,7 +98,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
         <PaymentSummary priceData={priceData} />
         
         {isDiamondTier && (
-          <Alert variant="info" className="mt-4">
+          <Alert variant="default" className="mt-4">
             <Info className="h-4 w-4" />
             <AlertTitle>{t({
               english: "Diamond Tier",
@@ -116,7 +117,7 @@ const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
           <Checkbox 
             id="terms" 
             checked={termsAccepted}
-            onCheckedChange={(checked) => setTermsAccepted(checked || false)}
+            onCheckedChange={(checked) => setTermsAccepted(checked === true)}
           />
           <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             {t({
