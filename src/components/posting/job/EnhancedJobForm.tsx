@@ -8,6 +8,7 @@ import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
 import { toast } from 'sonner';
 import { usePricing } from '@/context/pricing/PricingProvider';
+import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 export interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
@@ -31,9 +32,28 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Use the pricing context
-  const { pricingOptions, setPricingOptions, priceData } = usePricing();
-
+  // Safely use the pricing context, with a fallback if needed
+  const usePricingHook = () => {
+    try {
+      return usePricing();
+    } catch (error) {
+      console.error("Pricing context not available in EnhancedJobForm, using internal fallback", error);
+      // Return null if the context is not available
+      return null;
+    }
+  };
+  
+  const pricingContext = usePricingHook();
+  
+  // If no external pricing context is available, use a default one
+  const defaultPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
+  };
+  
   // Update the handleJobFormSubmit to match the JobForm onSubmit signature
   const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
     // Validate required fields
@@ -58,8 +78,12 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       return;
     }
     
+    // Use pricing options from context if available, otherwise use default
+    const pricingOptions = pricingContext?.pricingOptions || defaultPricingOptions;
+    
     // Validation check for paid plans
-    if (pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0) {
+    if (pricingOptions.selectedPricingTier !== 'free' && 
+        pricingContext?.priceData && pricingContext.priceData.finalPrice <= 0) {
       toast.error("Invalid price calculation. Please try again or contact support.");
       return;
     }
@@ -88,6 +112,74 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     onStepChange?.(2);
   };
 
+  // If no pricing context is available, wrap with our own provider
+  if (!pricingContext) {
+    console.log('EnhancedJobForm: No pricing context available, using internal provider with defaults:', defaultPricingOptions);
+    
+    return (
+      <PricingProvider initialOptions={defaultPricingOptions}>
+        <EnhancedJobFormContent 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          jobFormData={jobFormData}
+          photoUploads={photoUploads}
+          setPhotoUploads={setPhotoUploads}
+          isSubmitting={isSubmitting}
+          handleJobFormSubmit={handleJobFormSubmit}
+          handleBackToEdit={handleBackToEdit}
+          handlePaymentSubmit={handlePaymentSubmit}
+          isCustomTemplate={isCustomTemplate}
+          maxPhotos={maxPhotos}
+        />
+      </PricingProvider>
+    );
+  }
+
+  return (
+    <EnhancedJobFormContent 
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      jobFormData={jobFormData}
+      photoUploads={photoUploads}
+      setPhotoUploads={setPhotoUploads}
+      isSubmitting={isSubmitting}
+      handleJobFormSubmit={handleJobFormSubmit}
+      handleBackToEdit={handleBackToEdit}
+      handlePaymentSubmit={handlePaymentSubmit}
+      isCustomTemplate={isCustomTemplate}
+      maxPhotos={maxPhotos}
+    />
+  );
+};
+
+// Separate content component to avoid duplication
+interface EnhancedJobFormContentProps {
+  activeTab: string;
+  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+  jobFormData: JobFormValues | null;
+  photoUploads: File[];
+  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  isSubmitting: boolean;
+  handleJobFormSubmit: (data: JobFormValues, uploads?: File[]) => void;
+  handleBackToEdit: () => void;
+  handlePaymentSubmit: () => Promise<void>;
+  isCustomTemplate: boolean;
+  maxPhotos: number;
+}
+
+const EnhancedJobFormContent: React.FC<EnhancedJobFormContentProps> = ({
+  activeTab,
+  setActiveTab,
+  jobFormData,
+  photoUploads,
+  setPhotoUploads,
+  isSubmitting,
+  handleJobFormSubmit,
+  handleBackToEdit,
+  handlePaymentSubmit,
+  isCustomTemplate,
+  maxPhotos
+}) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="hidden">

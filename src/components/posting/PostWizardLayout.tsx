@@ -6,6 +6,8 @@ import LanguageToggle from '@/components/layout/LanguageToggle';
 import { Progress } from '@/components/ui/progress';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobilePostMenu from '@/components/posting/MobilePostMenu';
+import { PricingProvider } from '@/context/pricing/PricingProvider';
+import { PricingOptions } from '@/utils/posting/types';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -21,6 +23,15 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const progressPercentage = (currentStep / totalSteps) * 100;
+
+  // Default pricing options in case we need to provide a fallback PricingProvider
+  const defaultPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -93,7 +104,10 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           transition={{ delay: 0.2, duration: 0.5 }}
           className="overflow-hidden"
         >
-          {children}
+          {/* Wrap children in a PricingProvider as a fallback in case an outer provider isn't available */}
+          <PricingProvider initialOptions={defaultPricingOptions}>
+            {children}
+          </PricingProvider>
         </motion.div>
         
         <div className="mt-12 text-center text-sm text-gray-500">
