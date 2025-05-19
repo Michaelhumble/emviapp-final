@@ -10,8 +10,9 @@ import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import { PricingOptions } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import { PricingProvider } from '@/context/pricing'; // [SUNSHINE FIX] Import PricingProvider
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
@@ -27,6 +28,15 @@ const CreateJobPosting = () => {
     setSelectedTemplateType(templateType);
     setStep('form');
     window.scrollTo(0, 0);
+  };
+
+  // Initial pricing options
+  const initialPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium' as JobPricingTier,
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
   };
 
   const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
@@ -98,14 +108,17 @@ const CreateJobPosting = () => {
           {step === 'template' ? (
             <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
           ) : (
-            <EnhancedJobForm 
-              onSubmit={handleSubmit}
-              initialTemplate={selectedTemplate || undefined}
-              onBack={handleBackToTemplates}
-              isCustomTemplate={selectedTemplateType === 'custom'}
-              maxPhotos={5} // Set maximum photos to 5
-              onStepChange={(step) => console.log(`Changed to step ${step}`)}
-            />
+            // [SUNSHINE FIX] Added PricingProvider to wrap EnhancedJobForm
+            <PricingProvider initialOptions={initialPricingOptions}>
+              <EnhancedJobForm 
+                onSubmit={handleSubmit}
+                initialTemplate={selectedTemplate || undefined}
+                onBack={handleBackToTemplates}
+                isCustomTemplate={selectedTemplateType === 'custom'}
+                maxPhotos={5} // Set maximum photos to 5
+                onStepChange={(step) => console.log(`Changed to step ${step}`)}
+              />
+            </PricingProvider>
           )}
         </Card>
       </div>

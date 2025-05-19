@@ -25,6 +25,7 @@ export const usePostPayment = () => {
       const priceData = calculateJobPostPrice(pricingOptions);
       console.log("[usePostPayment] Calculated price:", priceData);
 
+      // [SUNSHINE FIX] Added validation check for paid plans with $0 price
       // Validate pricing - ensure paid plans don't have $0 price
       if (pricingOptions.selectedPricingTier !== 'free' && priceData.finalPrice <= 0) {
         throw new Error("Pricing calculation error. Please reselect your plan.");

@@ -12,7 +12,7 @@ import { usePricing } from '@/context/pricing';
 export interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange?: (step: number) => void;
-  onBack?: () => void;
+  onBack?: () => void; // [SUNSHINE FIX] Added onBack prop
   initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
