@@ -10,10 +10,11 @@ import { Button } from '@/components/ui/button';
 export interface JobDetailsSectionProps {
   form: UseFormReturn<any>;
   onNext?: () => void;
-  onBack?: () => void; // Added onBack prop
+  onBack?: () => void;
+  isCustomTemplate?: boolean;
 }
 
-const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, onBack }) => {
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, onBack, isCustomTemplate }) => {
   // Make sure we have a valid form context
   if (!form) {
     console.error("JobDetailsSection requires a valid form from react-hook-form");

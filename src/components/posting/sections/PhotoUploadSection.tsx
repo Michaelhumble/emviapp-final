@@ -13,6 +13,7 @@ interface PhotoUploadSectionProps {
   maxPhotos?: number;
   isSubmitting?: boolean;
   photoUploads?: File[];
+  isCustomTemplate?: boolean;
 }
 
 const PhotoUploadSection: React.FC<PhotoUploadSectionProps> = ({ 

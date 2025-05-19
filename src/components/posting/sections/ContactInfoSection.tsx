@@ -9,6 +9,7 @@ export interface ContactInfoSectionProps {
   form: UseFormReturn<any>;
   onNext?: () => void;
   onBack?: () => void;
+  isCustomTemplate?: boolean;
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
