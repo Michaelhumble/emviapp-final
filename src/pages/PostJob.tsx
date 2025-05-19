@@ -93,25 +93,25 @@ const PostJob = () => {
   };
 
   return (
-    <Layout>
-      <Helmet>
-        <title>Post a Job | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Post a job on EmviApp. Find qualified beauty professionals for your business."
-        />
-      </Helmet>
-      <div className="container max-w-4xl mx-auto py-8">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Post a Job</h1>
-          <p className="text-gray-600">Find your perfect employee</p>
-        </div>
-        
-        <Card className="bg-white shadow-md rounded-lg p-6">
-          {step === 'template' ? (
-            <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-          ) : (
-            <PricingProvider initialOptions={defaultPricingOptions}>
+    <PricingProvider initialOptions={defaultPricingOptions}>
+      <Layout>
+        <Helmet>
+          <title>Post a Job | EmviApp</title>
+          <meta 
+            name="description" 
+            content="Post a job on EmviApp. Find qualified beauty professionals for your business."
+          />
+        </Helmet>
+        <div className="container max-w-4xl mx-auto py-8">
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Post a Job</h1>
+            <p className="text-gray-600">Find your perfect employee</p>
+          </div>
+          
+          <Card className="bg-white shadow-md rounded-lg p-6">
+            {step === 'template' ? (
+              <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+            ) : (
               <EnhancedJobForm 
                 onSubmit={handleSubmit}
                 initialTemplate={selectedTemplate || undefined}
@@ -120,11 +120,11 @@ const PostJob = () => {
                 maxPhotos={5}
                 onStepChange={(step) => console.log(`Changed to step ${step}`)}
               />
-            </PricingProvider>
-          )}
-        </Card>
-      </div>
-    </Layout>
+            )}
+          </Card>
+        </div>
+      </Layout>
+    </PricingProvider>
   );
 };
 

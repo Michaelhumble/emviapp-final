@@ -75,25 +75,25 @@ const CreateJobPosting = () => {
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={3}>
-      <Helmet>
-        <title>Create Job Posting | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Create a job posting on EmviApp to find qualified beauty professionals."
-        />
-      </Helmet>
+    <PricingProvider initialOptions={defaultPricingOptions}>
+      <PostWizardLayout currentStep={currentStep} totalSteps={3}>
+        <Helmet>
+          <title>Create Job Posting | EmviApp</title>
+          <meta 
+            name="description" 
+            content="Create a job posting on EmviApp to find qualified beauty professionals."
+          />
+        </Helmet>
 
-      <Card className="bg-white shadow-md rounded-lg p-6">
-        <PricingProvider initialOptions={defaultPricingOptions}>
+        <Card className="bg-white shadow-md rounded-lg p-6">
           <EnhancedJobForm 
             onSubmit={handleSubmit}
             onStepChange={handleStepChange}
             maxPhotos={5}
           />
-        </PricingProvider>
-      </Card>
-    </PostWizardLayout>
+        </Card>
+      </PostWizardLayout>
+    </PricingProvider>
   );
 };
 
