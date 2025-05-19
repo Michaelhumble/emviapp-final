@@ -8,9 +8,10 @@ import { CardContent } from '@/components/ui/card';
 import JobForm from './JobForm';
 import { toast } from 'sonner';
 
-interface EnhancedJobFormProps {
+export interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange?: (step: number) => void;
+  onBack?: () => void; // Added missing onBack prop
   initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
@@ -19,6 +20,7 @@ interface EnhancedJobFormProps {
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
   onSubmit, 
   onStepChange, 
+  onBack,
   initialTemplate,
   isCustomTemplate = false,
   maxPhotos = 5 // Default to 5 photos

@@ -2,7 +2,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import JobForm from '@/components/posting/job/JobForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -76,6 +75,10 @@ const CreateJobPosting = () => {
     }
   };
 
+  const handleBackToTemplates = () => {
+    setStep('template');
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -98,7 +101,7 @@ const CreateJobPosting = () => {
             <EnhancedJobForm 
               onSubmit={handleSubmit}
               initialTemplate={selectedTemplate || undefined}
-              onBack={() => setStep('template')} // Added missing onBack prop
+              onBack={handleBackToTemplates}
               isCustomTemplate={selectedTemplateType === 'custom'}
               maxPhotos={5} // Set maximum photos to 5
               onStepChange={(step) => console.log(`Changed to step ${step}`)}

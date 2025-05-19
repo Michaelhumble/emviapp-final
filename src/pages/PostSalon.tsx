@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
@@ -6,6 +7,7 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { usePostPayment } from '@/hooks/usePostPayment';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 const PostSalon = () => {
   const navigate = useNavigate();
@@ -34,8 +36,8 @@ const PostSalon = () => {
       };
       
       // Define pricing options
-      const pricingOptions = {
-        selectedPricingTier: 'standard',
+      const pricingOptions: PricingOptions = {
+        selectedPricingTier: 'standard' as JobPricingTier,
         durationMonths: 1,
         autoRenew: true,
         isFirstPost: true
