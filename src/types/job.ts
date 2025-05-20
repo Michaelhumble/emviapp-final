@@ -63,6 +63,7 @@ export interface Job {
   is_vietnamese_listing?: boolean;
   industry?: string;
   post_type?: string; 
+  templateType?: string; // Added for job templates
   
   // Adding missing properties that are referenced elsewhere
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
@@ -79,14 +80,16 @@ export interface Job {
   contactEmail?: string; // From form fields
   contactZalo?: string; // From form fields
   jobType?: string; // Aliased form field for employment_type
-  
-  // Additional properties mentioned in the error report
+  salaryRange?: string; // Alternative naming convention
+  tipRange?: string; // Alternative naming convention
+  employmentType?: string; // Alternative naming convention
   badge?: string;
   color?: string;
   hidden?: boolean;
+  vietnameseDescription?: string; // Alternative naming convention
 }
 
-// Add missing exported interfaces
+// Expand JobFormValues to match the full type
 export type JobDetailsSubmission = {
   title: string;
   description?: string;
@@ -119,8 +122,13 @@ export type JobDetailsSubmission = {
   user_id?: string;
   post_type?: string;
   salonName: string; // Required field
+  templateType?: string; // Added for job templates
 }
+
+// Define JobTemplate type for job template use cases
+export type JobTemplate = JobDetailsSubmission;
 
 // Import the PricingOptions from the canonical source
 import { PricingOptions } from '@/utils/posting/types';
 export type { PricingOptions };
+

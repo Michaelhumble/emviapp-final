@@ -23,6 +23,7 @@ export const jobFormSchema = z.object({
   no_supply_deduction: z.boolean().optional().default(false),
   specialties: z.array(z.string()).optional(),
   requirements: z.union([z.string(), z.array(z.string())]).optional(),
+  templateType: z.string().optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;

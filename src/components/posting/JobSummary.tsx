@@ -1,20 +1,13 @@
 
 import React from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
 import { CheckCircle, Store } from 'lucide-react';
-import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
 import { Job } from '@/types/job';
+import { JobPricingOption } from '@/utils/posting/types';
 
-interface JobSummaryProps {
+export interface JobSummaryProps {
   title: string;
   description?: string;
   location?: string;
@@ -25,7 +18,7 @@ interface JobSummaryProps {
   salonName?: string;
 }
 
-const JobSummary: React.FC<JobSummaryProps> = ({
+export const JobSummary: React.FC<JobSummaryProps> = ({
   title,
   description,
   location,
@@ -94,11 +87,11 @@ const JobSummary: React.FC<JobSummaryProps> = ({
       
       {pricingPlan && pricingPlan.features && pricingPlan.features.length > 0 && (
         <CardFooter className="bg-gray-50 px-6 py-4 flex flex-col items-start border-t">
-          <h4 className="text-sm font-medium mb-2">Included Features</h4>
+          <h4 className="text-sm font-semibold mb-2">Included Features</h4>
           <ul className="space-y-2">
             {pricingPlan.features.map((feature, i) => (
               <li key={i} className="flex text-sm">
-                <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
             ))}

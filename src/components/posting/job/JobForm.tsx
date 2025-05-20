@@ -1,495 +1,686 @@
-
-import React, { useState, useEffect } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/components/ui/use-toast';
-import { X, ArrowLeft } from 'lucide-react';
-import PhotoUploader from '@/components/posting/PhotoUploader';
+import React, { useState, useCallback } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { ImageIcon, Plus, Trash } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { IndustryType } from '@/utils/posting/types';
-import { beautySpecialties, commonRequirements } from '@/data/specialties';
-import { specialtyOptions, requirementOptions } from '@/utils/posting/options';
+import { JobTypes } from './jobFormSchema';
+import { JobType } from './jobFormSchema';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MultiSelect } from '@/components/ui/multiselect';
+import { useTranslation } from '@/hooks/useTranslation';
+import { uploadFiles, getImageData } from '@/utils/uploadthing';
+// Import the Job type from our unified location
+import { Job } from '@/types/job';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
-  photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  isSubmitting?: boolean;
-  initialValues?: JobFormValues;
+  initialTemplate?: JobFormValues;
   onBack?: () => void;
-  showVietnameseByDefault?: boolean;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
+  onStepChange?: (step: number) => void;
 }
 
-const JobForm: React.FC<JobFormProps> = ({ 
-  onSubmit,
-  photoUploads,
-  setPhotoUploads,
-  isSubmitting = false,
-  initialValues,
-  onBack,
-  showVietnameseByDefault = false,
-  isCustomTemplate = false,
-  maxPhotos = 5
-}) => {
+const JobForm: React.FC<JobFormProps> = (props) => {
   const { toast } = useToast();
-  const [showVietnamese, setShowVietnamese] = useState(showVietnameseByDefault);
-  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null);
-  
-  const defaultValues: JobFormValues = initialValues || {
-    title: '',
-    description: '',
-    vietnameseDescription: '',
-    location: '',
-    jobType: 'full-time',
-    compensation_details: '',
-    salary_range: '',
-    experience_level: 'entry', // Updated to match valid enum value
-    contactEmail: '',
-    contactName: '',
-    contactPhone: '',
-    requirements: [],
-    specialties: [],
-    templateType: isCustomTemplate ? 'custom' : 'standard'
-  };
+  const { t } = useTranslation();
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
-  const methods = useForm<JobFormValues>({
+  const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues,
-    mode: 'onChange'
+    defaultValues: {
+      title: props.initialTemplate?.title || "",
+      description: props.initialTemplate?.description || "",
+      vietnameseDescription: props.initialTemplate?.vietnameseDescription || "",
+      location: props.initialTemplate?.location || "",
+      jobType: props.initialTemplate?.jobType || "",
+      compensation_type: props.initialTemplate?.compensation_type || "",
+      compensation_details: props.initialTemplate?.compensation_details || "",
+      salary_range: props.initialTemplate?.salary_range || "",
+      experience_level: props.initialTemplate?.experience_level || "",
+      contactName: props.initialTemplate?.contactName || "",
+      contactPhone: props.initialTemplate?.contactPhone || "",
+      contactEmail: props.initialTemplate?.contactEmail || "",
+      contactZalo: props.initialTemplate?.contactZalo || "",
+      salonName: props.initialTemplate?.salonName || "",
+      weekly_pay: props.initialTemplate?.weekly_pay || false,
+      has_housing: props.initialTemplate?.has_housing || false,
+      has_wax_room: props.initialTemplate?.has_wax_room || false,
+      owner_will_train: props.initialTemplate?.owner_will_train || false,
+      no_supply_deduction: props.initialTemplate?.no_supply_deduction || false,
+      specialties: props.initialTemplate?.specialties || [],
+      requirements: props.initialTemplate?.requirements || [],
+    },
   });
 
-  const { 
-    register, 
-    handleSubmit, 
-    control, 
-    watch, 
-    setValue, 
-    formState: { errors, isValid }
-  } = methods;
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files || files.length === 0) return;
 
-  // Update the selected industry based on initial values or specialties
-  useEffect(() => {
-    if (initialValues?.specialties?.length) {
-      // Try to determine industry from specialties
-      for (const [industry, specs] of Object.entries(beautySpecialties)) {
-        if (initialValues.specialties.some(specialty => 
-          (specs as string[]).includes(specialty)
-        )) {
-          setSelectedIndustry(industry as IndustryType);
-          break;
-        }
-      }
-    }
-  }, [initialValues]);
-
-  // Handle form submission
-  const onFormSubmit = (data: JobFormValues) => {
-    if (!isValid) {
+    if (photoUploads.length + files.length > (props.maxPhotos || 5)) {
       toast({
-        title: "Form has errors",
-        description: "Please fix the issues before submitting.",
-        variant: "destructive"
+        title: "Too many photos",
+        description: `You can only upload a maximum of ${props.maxPhotos || 5} photos.`,
       });
       return;
     }
-    
-    onSubmit(data);
-  };
 
-  // Watch for changes in job type and specialties
-  const jobType = watch('jobType');
-  const selectedSpecialties = watch('specialties') || [];
-
-  // Handle industry selection
-  const handleIndustrySelect = (industry: IndustryType) => {
-    setSelectedIndustry(industry);
-    
-    // Clear previous specialties when changing industry
-    setValue('specialties', []);
-    
-    // Auto-select some common requirements
-    if (!watch('requirements')?.length) {
-      setValue('requirements', [
-        'Clean and organized',
-        'Reliable transportation',
-        'Client-friendly attitude'
-      ]);
+    setUploading(true);
+    try {
+      setPhotoUploads((prevUploads) => [...prevUploads, ...files]);
+      toast({
+        title: "Photos added",
+        description: "Photos have been added to the upload queue.",
+      });
+    } catch (error) {
+      console.error("Error uploading photos:", error);
+      toast({
+        title: "Upload failed",
+        description: "There was an error uploading the photos. Please try again.",
+      });
+    } finally {
+      setUploading(false);
     }
   };
 
-  // Toggle Vietnamese section
-  const handleToggleVietnamese = () => {
-    setShowVietnamese(!showVietnamese);
+  const removePhoto = (indexToRemove: number) => {
+    setPhotoUploads((prevUploads) => prevUploads.filter((_, index) => index !== indexToRemove));
   };
 
-  // Handle requirements checkbox toggle
-  const handleRequirementToggle = (requirement: string) => {
-    const current = watch('requirements') || [];
-    const updated = current.includes(requirement)
-      ? current.filter(r => r !== requirement)
-      : [...current, requirement];
-    
-    setValue('requirements', updated);
+  // Fix the requirements filter issue by checking if it's an array first
+  const handleRequirementsChange = (values: string[]) => {
+    form.setValue("requirements", values);
   };
 
-  // Handle specialty checkbox toggle
-  const handleSpecialtyToggle = (specialty: string) => {
-    const current = selectedSpecialties;
-    const updated = current.includes(specialty)
-      ? current.filter(s => s !== specialty)
-      : [...current, specialty];
+  // When rendering requirements in the form, safely handle both string and array types
+  const displayRequirements = (requirements: string | string[] | undefined) => {
+    if (!requirements) return [];
     
-    setValue('specialties', updated);
+    if (Array.isArray(requirements)) {
+      return requirements;
+    }
+    
+    // If it's a string, split it by commas or new lines
+    return requirements
+      .split(/[,\n]+/)
+      .map(item => item.trim())
+      .filter(item => item !== '');
+  };
+
+  // When submitting the form, ensure templateType is properly handled
+  const onSubmit = (values: JobFormValues) => {
+    // Extract templateType before passing to onSubmit if needed
+    const { templateType, ...submissionValues } = values;
+    
+    // Process requirements field
+    let processedRequirements = values.requirements;
+    if (typeof processedRequirements === 'string' && processedRequirements.trim() !== '') {
+      processedRequirements = processedRequirements
+        .split(/[,\n]+/)
+        .map(item => item.trim())
+        .filter(item => item !== '');
+    }
+    
+    const finalValues = {
+      ...submissionValues,
+      requirements: processedRequirements
+    };
+    
+    // Call the onSubmit prop with processed values
+    props.onSubmit(finalValues);
   };
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
-        {/* Back button */}
-        {onBack && (
-          <div className="mb-4">
-            <Button 
-              variant="ghost" 
-              type="button" 
-              onClick={onBack}
-              className="flex items-center text-sm font-medium"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Templates
-            </Button>
-          </div>
-        )}
-
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Basic Job Information</h2>
-          
-          <div>
-            <Label htmlFor="title">Job Title <span className="text-red-500">*</span></Label>
-            <Input
-              id="title"
-              placeholder="e.g., Nail Technician, Hair Stylist, Salon Manager"
-              {...register('title')}
-              className="mt-1"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Job Details</CardTitle>
+            <CardDescription>
+              Enter the details about the job you are posting.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="salonName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t({
+                    english: "Salon Name",
+                    vietnamese: "Tên Salon"
+                  })}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t({
+                      english: "e.g., Beauty Nails Spa",
+                      vietnamese: "vd., Beauty Nails Spa"
+                    })} {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    {t({
+                      english: "Enter the name of your salon or business",
+                      vietnamese: "Nhập tên salon hoặc doanh nghiệp của bạn"
+                    })}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.title && (
-              <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
-            )}
-          </div>
 
-          <div>
-            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
-            <Input
-              id="location"
-              placeholder="e.g., Los Angeles, CA"
-              {...register('location')}
-              className="mt-1"
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Senior Nail Technician" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    What is the position you're hiring for?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.location && (
-              <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
-            )}
-          </div>
-          
-          <div>
-            <Label>Job Type <span className="text-red-500">*</span></Label>
-            <Controller
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Describe the job requirements and responsibilities" className="resize-none" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Include details about the role, responsibilities, and what makes it a great opportunity.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="vietnameseDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vietnamese Description (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Mô tả công việc bằng tiếng Việt" className="resize-none" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Provide a description in Vietnamese to attract more candidates.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Ho Chi Minh City" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Where is the job located?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="jobType"
-              control={control}
               render={({ field }) => (
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-wrap gap-4 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="full-time" id="full-time" />
-                    <Label htmlFor="full-time">Full-time</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="part-time" id="part-time" />
-                    <Label htmlFor="part-time">Part-time</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="contract" id="contract" />
-                    <Label htmlFor="contract">Contract</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="temporary" id="temporary" />
-                    <Label htmlFor="temporary">Temporary</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="commission" id="commission" />
-                    <Label htmlFor="commission">Commission</Label>
-                  </div>
-                </RadioGroup>
+                <FormItem>
+                  <FormLabel>Job Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a job type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {JobTypes.map((type) => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    What type of employment is this?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
               )}
             />
-          </div>
-          
-          <div>
-            <Label>Experience Level <span className="text-red-500">*</span></Label>
-            <Controller
-              name="experience_level"
-              control={control}
-              render={({ field }) => (
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-wrap gap-4 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="entry" id="entry" />
-                    <Label htmlFor="entry">Entry Level</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="intermediate" id="intermediate" />
-                    <Label htmlFor="intermediate">Intermediate</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="experienced" id="experienced" />
-                    <Label htmlFor="experienced">Experienced</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="senior" id="senior" />
-                    <Label htmlFor="senior">Senior</Label>
-                  </div>
-                </RadioGroup>
-              )}
-            />
-          </div>
-        </div>
-        
-        <Separator />
 
-        {/* Compensation */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Compensation</h2>
-          
-          <div>
-            <Label htmlFor="salary_range">Salary Range</Label>
-            <Input
-              id="salary_range"
-              placeholder="e.g., $35,000-$50,000/year or $20-30/hour + tips"
-              {...register('salary_range')}
-              className="mt-1"
+            <FormField
+              control={form.control}
+              name="compensation_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Compensation Type</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Hourly, Salary, Commission" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    How will the employee be compensated?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          
-          <div>
-            <Label htmlFor="compensation_details">Additional Compensation Details</Label>
-            <Textarea
-              id="compensation_details"
-              placeholder="Include any additional information about commission, benefits, tips, etc."
-              {...register('compensation_details')}
-              className="mt-1"
-              rows={3}
+
+            <FormField
+              control={form.control}
+              name="compensation_details"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Compensation Details</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., $15/hour + tips" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Provide specific details about the compensation.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
-        
-        <Separator />
-        
-        {/* Job Description */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Job Description</h2>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={handleToggleVietnamese}
-              className="text-sm"
-            >
-              {showVietnamese ? 'Hide Vietnamese' : 'Add Vietnamese'}
-            </Button>
-          </div>
-          
-          <div>
-            <Label htmlFor="description">Description (English) <span className="text-red-500">*</span></Label>
-            <Textarea
-              id="description"
-              placeholder="Describe the job responsibilities, requirements, and other details."
-              {...register('description')}
-              className="mt-1"
-              rows={5}
+
+            <FormField
+              control={form.control}
+              name="salary_range"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary Range</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., $30,000 - $40,000 per year" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    What is the expected salary range for this position?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.description && (
-              <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
-            )}
-          </div>
-          
-          {showVietnamese && (
-            <div>
-              <Label htmlFor="vietnameseDescription">Description (Vietnamese)</Label>
-              <Textarea
-                id="vietnameseDescription"
-                placeholder="Mô tả trách nhiệm công việc, yêu cầu và các chi tiết khác."
-                {...register('vietnameseDescription')}
-                className="mt-1"
-                rows={5}
+
+            <FormField
+              control={form.control}
+              name="experience_level"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Experience Level</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Entry-level, Mid-level, Senior-level" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    What level of experience is required for this position?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Contact Information</CardTitle>
+            <CardDescription>
+              Enter the contact information for this job posting.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="contactName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., John Doe" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Who is the contact person for this job posting?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="contactPhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., 123-456-7890" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    What is the contact phone number for this job posting?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="contactEmail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., john.doe@example.com" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    What is the contact email for this job posting?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="contactZalo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Zalo</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., 1234567890" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    What is the contact Zalo number for this job posting?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Benefits and Perks</CardTitle>
+            <CardDescription>
+              Select the benefits and perks that this job offers.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="weekly_pay"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">Weekly Pay</FormLabel>
+                      <FormDescription>
+                        Does this job offer weekly pay?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="has_housing"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">Has Housing</FormLabel>
+                      <FormDescription>
+                        Does this job offer housing?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="has_wax_room"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">Has Wax Room</FormLabel>
+                      <FormDescription>
+                        Does this job have a wax room?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="owner_will_train"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">Owner Will Train</FormLabel>
+                      <FormDescription>
+                        Will the owner train the employee?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="no_supply_deduction"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-sm">No Supply Deduction</FormLabel>
+                      <FormDescription>
+                        Is there no supply deduction for this job?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
             </div>
-          )}
-        </div>
-        
-        <Separator />
-        
-        {/* Job Requirements and Specialties */}
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Industry & Specialties</h2>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mb-6">
-              {Object.keys(beautySpecialties).map(industry => (
-                <div key={industry} className="relative">
-                  <Button
-                    type="button"
-                    variant={selectedIndustry === industry ? "default" : "outline"}
-                    className={`w-full h-full min-h-[60px] p-2 flex flex-col items-center justify-center text-xs sm:text-sm ${
-                      selectedIndustry === industry ? 'border-primary border-2' : ''
-                    }`}
-                    onClick={() => handleIndustrySelect(industry as IndustryType)}
-                  >
-                    <span className="text-center">{industry.charAt(0).toUpperCase() + industry.slice(1)}</span>
-                  </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Specialties and Requirements</CardTitle>
+            <CardDescription>
+              Enter the specialties and requirements for this job.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="specialties"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Specialties</FormLabel>
+                  <MultiSelect
+                    placeholder="Select specialties"
+                    onValuesChange={field.onChange}
+                    values={field.value || []}
+                    options={[
+                      { value: "manicures", label: "Manicures" },
+                      { value: "pedicures", label: "Pedicures" },
+                      { value: "nail_art", label: "Nail Art" },
+                      { value: "acrylics", label: "Acrylics" },
+                      { value: "haircuts", label: "Haircuts" },
+                      { value: "hair_coloring", label: "Hair Coloring" },
+                      { value: "styling", label: "Styling" },
+                      { value: "blow_outs", label: "Blow-outs" },
+                      { value: "eyelash_extensions", label: "Eyelash Extensions" },
+                      { value: "lash_lifts", label: "Lash Lifts" },
+                      { value: "facials", label: "Facials" },
+                      { value: "waxing", label: "Waxing" },
+                      { value: "massage", label: "Massage" },
+                      { value: "tattoo", label: "Tattoo" },
+                      { value: "brows", label: "Brows" },
+                      { value: "skincare", label: "Skincare" },
+                      { value: "barber", label: "Barber" },
+                      { value: "makeup", label: "Makeup" },
+                    ]}
+                  />
+                  <FormDescription>
+                    What specialties are required for this job?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="requirements"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Requirements</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter requirements separated by commas or new lines"
+                      className="resize-none"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    What are the requirements for this job?
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Photos</CardTitle>
+            <CardDescription>
+              Upload photos to showcase the job or salon.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            <div className="flex items-center space-x-4">
+              <Label htmlFor="photo-upload" className="cursor-pointer">
+                <div className="inline-flex items-center rounded-md bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-muted/80">
+                  <ImageIcon className="mr-2 h-4 w-4" />
+                  <span>Upload Photos</span>
                 </div>
-              ))}
+              </Label>
+              <Input
+                id="photo-upload"
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+              />
+              {uploading && (
+                <div className="text-sm text-muted-foreground">
+                  Uploading...
+                </div>
+              )}
             </div>
-            
-            {selectedIndustry && (
-              <div className="mt-4">
-                <Label className="font-medium mb-2 block">Specialties (Select all that apply)</Label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                  {beautySpecialties[selectedIndustry].map((specialty: string) => (
-                    <div key={specialty} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`specialty-${specialty}`}
-                        checked={selectedSpecialties.includes(specialty)}
-                        onCheckedChange={() => handleSpecialtyToggle(specialty)}
-                      />
-                      <Label htmlFor={`specialty-${specialty}`} className="cursor-pointer text-sm">
-                        {specialty}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
+
+            {photoUploads.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+                {photoUploads.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Uploaded photo ${index + 1}`}
+                      className="aspect-square rounded-md object-cover"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 h-6 w-6"
+                      onClick={() => removePhoto(index)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
             )}
-          </div>
-          
-          <div>
-            <Label className="font-medium mb-2 block">Job Requirements</Label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-              {commonRequirements.map(requirement => (
-                <div key={requirement} className="flex items-center space-x-2">
-                  <Controller
-                    name="requirements"
-                    control={control}
-                    render={({ field }) => (
-                      <Checkbox
-                        id={`req-${requirement}`}
-                        checked={(field.value || []).includes(requirement)}
-                        onCheckedChange={() => handleRequirementToggle(requirement)}
-                      />
-                    )}
-                  />
-                  <Label htmlFor={`req-${requirement}`} className="cursor-pointer text-sm">
-                    {requirement}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        <Separator />
-        
-        {/* Contact Information */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Contact Information</h2>
-          
-          <div>
-            <Label htmlFor="contactEmail">Contact Email <span className="text-red-500">*</span></Label>
-            <Input
-              id="contactEmail"
-              type="email"
-              placeholder="e.g., hiring@salon.com"
-              {...register('contactEmail')}
-              className="mt-1"
-            />
-            {errors.contactEmail && (
-              <p className="text-red-500 text-sm mt-1">{errors.contactEmail.message}</p>
-            )}
-          </div>
-          
-          <div>
-            <Label htmlFor="contactName">Contact Name</Label>
-            <Input
-              id="contactName"
-              placeholder="e.g., John Smith"
-              {...register('contactName')}
-              className="mt-1"
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="contactPhone">Contact Phone</Label>
-            <Input
-              id="contactPhone"
-              placeholder="e.g., (555) 123-4567"
-              {...register('contactPhone')}
-              className="mt-1"
-            />
-          </div>
-        </div>
-        
-        <Separator />
-        
-        {/* Photo Upload */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Add Photos (Optional)</h2>
-          <p className="text-gray-500 text-sm">
-            Upload up to {maxPhotos} photos of your salon, workspace, or team.
-          </p>
-          
-          <PhotoUploader
-            files={photoUploads}
-            onChange={setPhotoUploads}
-            maxFiles={maxPhotos}
-            accept="image/*"
-          />
-        </div>
-        
-        <div className="flex justify-between pt-6">
-          {onBack ? (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onBack}
-              className="flex items-center"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-between">
+          {props.onBack && (
+            <Button variant="outline" onClick={props.onBack}>
               Back
             </Button>
-          ) : (
-            <div></div>
           )}
-          
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Continue'}
-          </Button>
+          <Button type="submit">Submit</Button>
         </div>
       </form>
-    </FormProvider>
+    </Form>
   );
 };
 
