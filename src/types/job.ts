@@ -4,7 +4,7 @@ export interface Job {
   role?: string;
   title?: string;
   company?: string;
-  salonName?: string; // Added salonName field
+  salonName?: string;
   location: string;
   posted_at?: string;
   created_at: string;
@@ -64,11 +64,7 @@ export interface Job {
   is_vietnamese_listing?: boolean;
   industry?: string;
   post_type?: string; 
-  
-  // Updated pricing tier field to include 'gold'
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
-  
-  // Add missing properties
   monthly_revenue?: string;
   station_count?: string;
   chair_count?: string;
@@ -77,12 +73,13 @@ export interface Job {
   salon_id?: string; 
   updated_at?: string; 
   pricing_tier?: string;
+  hidden?: boolean;
 }
 
 // Add missing exported interfaces
 export type JobDetailsSubmission = {
   title: string;
-  salonName?: string; // Added salonName field
+  salonName?: string;
   description?: string;
   location: string;
   compensation_type?: string;
