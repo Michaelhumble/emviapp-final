@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
@@ -50,6 +49,7 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train, 
         no_supply_deduction: data.no_supply_deduction,
+        salonName: data.salonName, // Added salonName
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,

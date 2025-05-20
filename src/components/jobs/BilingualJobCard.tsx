@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, MapPinIcon, Phone, LockIcon } from "lucide-react";
+import { CalendarIcon, MapPinIcon, Phone, LockIcon, Store } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
@@ -51,6 +51,9 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   // Check if this is a free or starter tier listing to show contact info without login
   const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
+  // Get salon name with fallback
+  const salonName = job.salonName || job.company || "Unknown Salon";
+
   return (
     <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
@@ -68,6 +71,10 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       
       <CardContent className="p-4 flex flex-col flex-grow">
         <div className="mb-3">
+          <div className="flex items-center text-sm text-gray-600 mb-1">
+            <Store className="h-3.5 w-3.5 mr-1" />
+            <span>{salonName}</span>
+          </div>
           <h3 className="font-bold text-lg line-clamp-2">{job.title}</h3>
           
           <div className="flex items-center text-sm text-gray-500 mt-1">

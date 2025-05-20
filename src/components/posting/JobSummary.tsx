@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -9,7 +8,7 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Store } from 'lucide-react';
 import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +20,7 @@ interface JobSummaryProps {
   contactPhone?: string;
   pricingPlan?: JobPricingOption;
   jobType?: string;
+  salonName?: string;
 }
 
 const JobSummary: React.FC<JobSummaryProps> = ({
@@ -30,7 +30,8 @@ const JobSummary: React.FC<JobSummaryProps> = ({
   contactEmail,
   contactPhone,
   pricingPlan,
-  jobType
+  jobType,
+  salonName = "Unknown Salon"
 }) => {
   return (
     <Card className="bg-white shadow overflow-hidden">
@@ -40,6 +41,10 @@ const JobSummary: React.FC<JobSummaryProps> = ({
         pricingPlan?.id === 'gold' && "bg-gradient-to-r from-amber-50 to-amber-100 border-b border-amber-200",
         pricingPlan?.id === 'diamond' && "bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200"
       )}>
+        <div className="flex items-center text-sm text-gray-600 mb-1">
+          <Store className="h-3.5 w-3.5 mr-1" />
+          <span>{salonName}</span>
+        </div>
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl font-semibold">{title || "Job Title"}</CardTitle>
           {pricingPlan && (
