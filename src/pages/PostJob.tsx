@@ -14,6 +14,7 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const PostJob = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
   const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
   const [step, setStep] = useState<'template' | 'form'>('template');
+  const { t } = useTranslation();
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
@@ -40,6 +42,7 @@ const PostJob = () => {
       // Convert form data to the expected format for the API
       const jobDetails = {
         title: data.title,
+        salonName: data.salonName,
         description: data.description,
         vietnamese_description: data.vietnameseDescription,
         location: data.location,
@@ -63,16 +66,25 @@ const PostJob = () => {
       const result = await initiatePayment('job', jobDetails, pricingOptions);
       
       if (result.success) {
-        toast.success('Job post created successfully!');
+        toast.success(t({
+          english: 'Job post created successfully!',
+          vietnamese: 'Tin tuyển dụng đã được tạo thành công!'
+        }));
         navigate('/dashboard');
         return true;
       } else {
-        toast.error('Error processing your job posting. Please try again.');
+        toast.error(t({
+          english: 'Error processing your job posting. Please try again.',
+          vietnamese: 'Lỗi xử lý tin tuyển dụng của bạn. Vui lòng thử lại.'
+        }));
         return false;
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error('Error creating job post');
+      toast.error(t({
+        english: 'Error creating job post',
+        vietnamese: 'Lỗi khi tạo tin tuyển dụng'
+      }));
       return false;
     } finally {
       setIsSubmitting(false);
@@ -96,16 +108,28 @@ const PostJob = () => {
     <PricingProvider initialOptions={defaultPricingOptions}>
       <Layout>
         <Helmet>
-          <title>Post a Job | EmviApp</title>
+          <title>{t({
+            english: "Post a Job | EmviApp",
+            vietnamese: "Đăng tin tuyển dụng | EmviApp"
+          })}</title>
           <meta 
             name="description" 
-            content="Post a job on EmviApp. Find qualified beauty professionals for your business."
+            content={t({
+              english: "Post a job on EmviApp. Find qualified beauty professionals for your business.",
+              vietnamese: "Đăng tin tuyển dụng trên EmviApp. Tìm chuyên viên làm đẹp cho doanh nghiệp của bạn."
+            })}
           />
         </Helmet>
         <div className="container max-w-4xl mx-auto py-8">
           <div className="mb-8 text-center">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Post a Job</h1>
-            <p className="text-gray-600">Find your perfect employee</p>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">{t({
+              english: "Post a Job",
+              vietnamese: "Đăng tin tuyển dụng"
+            })}</h1>
+            <p className="text-gray-600">{t({
+              english: "Find your perfect employee",
+              vietnamese: "Tìm nhân viên lý tưởng cho bạn"
+            })}</p>
           </div>
           
           <Card className="bg-white shadow-md rounded-lg p-6">

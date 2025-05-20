@@ -4,6 +4,7 @@ export interface Job {
   role?: string;
   title?: string;
   company?: string;
+  salonName?: string; // Added salonName field
   location: string;
   posted_at?: string;
   created_at: string;
@@ -78,6 +79,7 @@ export interface Job {
 // Add missing exported interfaces
 export type JobDetailsSubmission = {
   title: string;
+  salonName?: string; // Added salonName field
   description?: string;
   location: string;
   compensation_type?: string;

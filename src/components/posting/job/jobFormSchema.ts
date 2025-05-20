@@ -9,6 +9,7 @@ export type IndustryType = "nail" | "hair" | "spa" | "barber" | "massage" | "tat
 // Define the job form schema using Zod
 export const jobFormSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
+  salonName: z.string().min(2, 'Salon name is required'),
   description: z.string().min(20, 'Description must be at least 20 characters').optional(),
   vietnameseDescription: z.string().optional(),
   location: z.string().min(2, 'Location is required'),

@@ -102,7 +102,8 @@ serve(async (req) => {
           user_id: user.id,
           status: 'active', // Free posts are immediately active
           pricing_tier: pricingOptions.selectedPricingTier,
-          expires_at: expiresAt.toISOString()
+          expires_at: expiresAt.toISOString(),
+          salonName: postDetails.salonName || 'Unknown Salon' // Include salonName with fallback
         })
         .select('id')
         .single();

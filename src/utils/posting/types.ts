@@ -45,7 +45,7 @@ export interface JobPricingOption {
   upsellText?: string;   // Added for upsell displays
   color?: string;
   recommended?: boolean;
-  hidden?: boolean;
+  hidden?: boolean;      // Added to fix type error
   annual?: boolean;
   limitedSpots?: string; // Added for limited spots displays
   // Adding the priceMonthly property that is used in the config
