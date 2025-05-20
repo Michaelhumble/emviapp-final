@@ -10,9 +10,6 @@ export type {
 
 export { 
   jobPricingOptions,
-  calculateFinalPrice,
-  calculateJobPostPrice,
-  getJobPostPricingSummary,
   validatePricingOptions,
   getStripePriceId,
   getAmountInCents,

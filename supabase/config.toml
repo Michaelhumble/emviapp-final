@@ -7,8 +7,17 @@ verify_jwt = true
 [functions.create-free-post]
 verify_jwt = true
 
+[functions.verify-checkout-session]
+verify_jwt = true
+
 [functions.toggle-auto-renew]
 verify_jwt = true
 
-[functions.verify-checkout-session]
+[functions.webhook-credit-purchase]
+verify_jwt = true
+
+[functions.handle-credit-purchase]
+verify_jwt = true
+
+[functions.send-booking-reminders]
 verify_jwt = true
