@@ -76,6 +76,7 @@ export interface Job {
   is_salon_for_sale?: boolean;
   salon_id?: string; // Added to fix type errors
   updated_at?: string; // Added to fix type errors
+  pricing_tier?: string; // Added to fix type errors
 }
 
 // Add missing exported interfaces
