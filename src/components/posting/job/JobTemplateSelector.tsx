@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -93,5 +94,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSel
   );
 };
 
-export { JobTemplateSelector, JobTemplateType };
+export { JobTemplateSelector };
+export type { JobTemplateType };
 export default JobTemplateSelector;
+
