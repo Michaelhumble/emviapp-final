@@ -64,11 +64,11 @@ export interface Job {
   industry?: string;
   post_type?: string; 
   templateType?: string; // Added for job templates
+  salonName?: string; // Added for displaying salon name
   
   // Adding missing properties that are referenced elsewhere
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
   pricing_tier?: string; // Keeping both naming conventions for compatibility
-  salonName?: string; // Add the missing salonName property
   salon_id?: string;
   monthly_revenue?: string;
   station_count?: string;
@@ -131,4 +131,3 @@ export type JobTemplate = JobDetailsSubmission;
 // Import the PricingOptions from the canonical source
 import { PricingOptions } from '@/utils/posting/types';
 export type { PricingOptions };
-
