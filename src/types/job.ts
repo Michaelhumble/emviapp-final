@@ -8,7 +8,6 @@ export interface Job {
   posted_at?: string;
   created_at: string;
   description?: string;
-  vietnamese_description?: string;
   employment_type?: string;
   compensation_details?: string;
   compensation_type?: string;
@@ -17,6 +16,7 @@ export interface Job {
     phone?: string;
     email?: string;
     notes?: string;
+    zalo?: string;
   };
   for_sale?: boolean;
   asking_price?: string;
@@ -37,11 +37,12 @@ export interface Job {
   owner_will_train?: boolean;
   tip_range?: string;
   salary_range?: string;
+  vietnamese_description?: string;
   salon_type?: string;
   expires_at?: string;
   boosted_until?: string;
   user_id?: string;
-  requirements?: string[];
+  requirements?: string[] | string;
   preferred_languages?: string[];
   benefits?: string[];
   features?: string[];
@@ -62,68 +63,59 @@ export interface Job {
   is_vietnamese_listing?: boolean;
   industry?: string;
   post_type?: string; 
-  templateType?: string; // Added for job templates
-  salonName?: string; // Added for displaying salon name
   
   // Adding missing properties that are referenced elsewhere
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
   pricing_tier?: string; // Keeping both naming conventions for compatibility
+  salonName?: string; // Add the missing salonName property
   salon_id?: string;
   monthly_revenue?: string;
   station_count?: string;
   chair_count?: string;
   sale_price?: string;
   is_salon_for_sale?: boolean;
-  contactName?: string; // From form fields
-  contactPhone?: string; // From form fields
-  contactEmail?: string; // From form fields
-  jobType?: string; // Aliased form field for employment_type
-  salaryRange?: string; // Alternative naming convention
-  tipRange?: string; // Alternative naming convention
-  employmentType?: string; // Alternative naming convention
+  
+  // Additional properties mentioned in the error report
   badge?: string;
   color?: string;
   hidden?: boolean;
-  vietnameseDescription?: string; // Alternative naming convention
 }
 
-// Expand JobFormValues to match the full type
+// Add missing exported interfaces
 export type JobDetailsSubmission = {
   title: string;
   description?: string;
-  vietnameseDescription?: string;
   location: string;
-  jobType?: string;
   compensation_type?: string;
   compensation_details?: string;
-  contactName?: string;
-  contactPhone?: string;
-  contactEmail?: string;
-  weekly_pay?: boolean;
-  has_housing?: boolean;
-  has_wax_room?: boolean;
-  no_supply_deduction?: boolean;
-  owner_will_train?: boolean;
-  salary_range?: string;
-  tip_range?: string;
-  experience_level?: string;
-  requirements?: string[];
-  specialties?: string[];
+  employment_type?: string;
+  requirements?: string[] | string;
+  contact_info?: {
+    owner_name?: string;
+    phone?: string;
+    email?: string;
+    notes?: string;
+    zalo?: string;
+  };
   image?: string;
   vietnamese_description?: string;
   preferred_languages?: string[];
   benefits?: string[];
   features?: string[];
   salon_type?: string;
+  specialties?: string[];
+  weekly_pay?: boolean;
+  has_housing?: boolean;
+  has_wax_room?: boolean;
+  no_supply_deduction?: boolean;
+  owner_will_train?: boolean;
+  tip_range?: string;
+  salary_range?: string;
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
-  salonName: string; // Required field
-  templateType?: string; // Added for job templates
+  salonName?: string; // Add the missing salonName property
 }
-
-// Define JobTemplate type for job template use cases
-export type JobTemplate = JobDetailsSubmission;
 
 // Import the PricingOptions from the canonical source
 import { PricingOptions } from '@/utils/posting/types';

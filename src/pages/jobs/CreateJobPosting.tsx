@@ -7,13 +7,12 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Card } from '@/components/ui/card';
-import { JobTemplateSelector, JobTemplateType } from '@/components/posting/job/JobTemplateSelector';
-import { JobTemplateType as UtilsJobTemplateType } from '@/utils/jobs/jobTemplates';
+import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
+import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions } from '@/utils/posting/types';
-import PremiumJobPostForm from '@/components/posting/job/PremiumJobPostForm';
+import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
-import { JobDetailsSubmission } from '@/types/job';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
@@ -21,12 +20,12 @@ const CreateJobPosting = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
-  const [selectedTemplateType, setSelectedTemplateType] = useState<UtilsJobTemplateType | null>(null);
+  const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
   const [step, setStep] = useState<'template' | 'form'>('template');
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
-    setSelectedTemplateType(templateType as UtilsJobTemplateType);
+    setSelectedTemplateType(templateType);
     setStep('form');
     window.scrollTo(0, 0);
   };
@@ -38,12 +37,12 @@ const CreateJobPosting = () => {
       console.log('Pricing options:', pricingOptions);
       
       // Convert form data to the expected format for the API
-      const jobDetails: JobDetailsSubmission = {
+      const jobDetails = {
         title: data.title,
         description: data.description,
-        vietnameseDescription: data.vietnameseDescription,
+        vietnamese_description: data.vietnameseDescription,
         location: data.location,
-        jobType: data.jobType,
+        employment_type: data.jobType,
         compensation_type: data.compensation_type,
         compensation_details: data.compensation_details,
         weekly_pay: data.weekly_pay,
@@ -51,12 +50,11 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train, 
         no_supply_deduction: data.no_supply_deduction,
-        salonName: data.salonName,
-        contactName: data.contactName,
-        contactPhone: data.contactPhone,
-        contactEmail: data.contactEmail,
-        requirements: data.requirements || [],
-        specialties: data.specialties || [],
+        contact_info: {
+          owner_name: data.contactName,
+          phone: data.contactPhone,
+          email: data.contactEmail,
+        },
         post_type: 'job'
       };
       
@@ -113,7 +111,7 @@ const CreateJobPosting = () => {
             {step === 'template' ? (
               <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
             ) : (
-              <PremiumJobPostForm 
+              <EnhancedJobForm 
                 onSubmit={handleSubmit}
                 initialTemplate={selectedTemplate || undefined}
                 onBack={handleBackToTemplates}

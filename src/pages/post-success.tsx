@@ -1,70 +1,151 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import JobSummary from '@/components/jobs/card-sections/JobSummary';
-import { Job } from '@/types/job';
+import { Card, CardContent } from '@/components/ui/card';
+import { Job } from '@/types/job'; // Import from central type definition
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { LinkIcon, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
+import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
 
 const PostSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const jobData = location.state?.jobData as (Job | null);
+  const searchParams = new URLSearchParams(location.search);
+  const jobId = searchParams.get('id');
   
-  const handleViewListing = () => {
-    navigate('/jobs');
+  const { data: job, isLoading, error } = useQuery({
+    queryKey: ['job', jobId],
+    queryFn: async () => {
+      if (!jobId) return null;
+      
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('id', jobId)
+        .single();
+        
+      if (error) throw error;
+      return data as Job;
+    },
+    enabled: !!jobId,
+  });
+
+  const handleShareClick = () => {
+    // Use safe navigation with fallback values for properties that might be missing
+    const location = job?.location || 'Unknown Location'; 
+    const title = job?.title || 'Job Posting';
+    const salonName = job?.salonName || job?.company || 'Unknown Salon';
+    
+    const text = `Check out this ${title} position at ${salonName} in ${location} on EmviApp!`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'EmviApp Job Posting',
+        text: text,
+        url: `https://emviapp.com/jobs/${jobId}`,
+      }).catch(err => {
+        console.error('Error sharing:', err);
+      });
+    } else {
+      // Fallback to copy to clipboard
+      navigator.clipboard.writeText(`${text} View it at: https://emviapp.com/jobs/${jobId}`);
+      toast.success('Link copied to clipboard!');
+    }
+  };
+
+  const viewJobDetails = () => {
+    navigate(`/jobs/${jobId}`);
   };
   
-  const handleCreateAnother = () => {
+  const createAnotherJob = () => {
     navigate('/post-job');
   };
 
   return (
     <Layout>
       <Helmet>
-        <title>Posting Successful | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Your job posting has been successfully submitted."
-        />
+        <title>Post Created Successfully | EmviApp</title>
       </Helmet>
-
-      <div className="container max-w-4xl mx-auto py-12 px-4">
+      
+      <div className="container max-w-3xl mx-auto py-12 px-4">
+        <ConfettiExplosion />
+        
         <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold mb-4">Success!</h1>
-          <p className="text-lg text-gray-600">Your job posting has been published successfully.</p>
+          <h1 className="text-3xl font-bold mb-3">Posting Created Successfully!</h1>
+          <p className="text-gray-600">Your job listing is now live and ready to attract qualified candidates.</p>
         </div>
         
-        <Card className="bg-white shadow-md rounded-lg p-6 mb-8">
-          {jobData && (
-            <JobSummary
-              title={jobData.title || ""}
-              description={jobData.description || ""}
-              location={jobData.location || ""}
-              salonName={jobData.salonName || ""}
-              contactEmail={jobData.contactEmail || jobData.contact_info?.email || ""}
-              contactPhone={jobData.contactPhone || jobData.contact_info?.phone || ""}
-            />
-          )}
-          {!jobData && (
-            <div className="text-center py-8 text-gray-500">
-              Job information not available
-            </div>
-          )}
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            {isLoading ? (
+              <div className="text-center p-8">
+                <p>Loading job details...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center p-8 text-red-500">
+                <p>Error loading job details. Please try again.</p>
+              </div>
+            ) : job ? (
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-semibold">{job.title}</h2>
+                  <p className="text-gray-600">{job.salonName || job.company || 'Your Business'} • {job.location || 'Unknown Location'}</p>
+                </div>
+                
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm font-medium">Posting Status</p>
+                      <p className="text-green-600 font-semibold">Active</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Plan</p>
+                      <p className="font-semibold capitalize">{job.pricingTier || job.pricing_tier || 'Standard'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Expires</p>
+                      <p className="font-semibold">In 30 days</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center p-8">
+                <p>Job details not found.</p>
+              </div>
+            )}
+          </CardContent>
         </Card>
         
-        <div className="flex flex-col md:flex-row justify-center gap-4 mt-8">
+        <div className="grid gap-4 md:grid-cols-2">
           <Button 
-            onClick={handleViewListing}
-            className="bg-primary hover:bg-primary/90"
+            onClick={viewJobDetails}
+            className="flex items-center justify-center gap-2"
           >
-            View Job Listings
+            <LinkIcon className="w-4 h-4" />
+            View Your Post
           </Button>
+          
           <Button 
-            onClick={handleCreateAnother}
+            onClick={handleShareClick}
             variant="outline"
+            className="flex items-center justify-center gap-2"
+          >
+            <Share2 className="w-4 h-4" />
+            Share Job Post
+          </Button>
+        </div>
+        
+        <div className="mt-8 text-center">
+          <Button 
+            onClick={createAnotherJob}
+            variant="link"
+            className="text-blue-600"
           >
             Create Another Job Post
           </Button>

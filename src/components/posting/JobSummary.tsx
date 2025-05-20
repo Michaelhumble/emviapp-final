@@ -1,13 +1,19 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Store } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Job } from '@/types/job';
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from '@/components/ui/card';
+import { CheckCircle } from 'lucide-react';
 import { JobPricingOption } from '@/utils/posting/types';
+import { cn } from '@/lib/utils';
 
-export interface JobSummaryProps {
+interface JobSummaryProps {
   title: string;
   description?: string;
   location?: string;
@@ -15,18 +21,16 @@ export interface JobSummaryProps {
   contactPhone?: string;
   pricingPlan?: JobPricingOption;
   jobType?: string;
-  salonName?: string;
 }
 
-export const JobSummary: React.FC<JobSummaryProps> = ({
+const JobSummary: React.FC<JobSummaryProps> = ({
   title,
   description,
   location,
   contactEmail,
   contactPhone,
   pricingPlan,
-  jobType,
-  salonName = "Unknown Salon"
+  jobType
 }) => {
   return (
     <Card className="bg-white shadow overflow-hidden">
@@ -36,10 +40,6 @@ export const JobSummary: React.FC<JobSummaryProps> = ({
         pricingPlan?.id === 'gold' && "bg-gradient-to-r from-amber-50 to-amber-100 border-b border-amber-200",
         pricingPlan?.id === 'diamond' && "bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200"
       )}>
-        <div className="flex items-center text-sm text-gray-600 mb-1">
-          <Store className="h-3.5 w-3.5 mr-1" />
-          <span>{salonName}</span>
-        </div>
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl font-semibold">{title || "Job Title"}</CardTitle>
           {pricingPlan && (
@@ -87,11 +87,11 @@ export const JobSummary: React.FC<JobSummaryProps> = ({
       
       {pricingPlan && pricingPlan.features && pricingPlan.features.length > 0 && (
         <CardFooter className="bg-gray-50 px-6 py-4 flex flex-col items-start border-t">
-          <h4 className="text-sm font-semibold mb-2">Included Features</h4>
+          <h4 className="text-sm font-medium mb-2">Included Features</h4>
           <ul className="space-y-2">
             {pricingPlan.features.map((feature, i) => (
               <li key={i} className="flex text-sm">
-                <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
             ))}

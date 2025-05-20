@@ -9,15 +9,11 @@ interface JobCardHeaderProps {
 
 export const JobCardHeader = ({ job }: JobCardHeaderProps) => {
   const isSalonForSale = job.employment_type === "For Sale";
-  const salonName = job.salonName || job.company || "Unknown Salon";
   
   return (
     <div className="mb-3">
       <div className="flex justify-between items-start gap-2">
         <div>
-          <p className="text-gray-600 mb-1">
-            {salonName}
-          </p>
           <h3 className="font-playfair font-semibold text-lg leading-tight">
             {job.title}
             {job.trust_indicators?.verified && (
@@ -26,6 +22,9 @@ export const JobCardHeader = ({ job }: JobCardHeaderProps) => {
               </Badge>
             )}
           </h3>
+          <p className="text-gray-600 mt-1">
+            {job.company}
+          </p>
         </div>
         
         {isSalonForSale && (

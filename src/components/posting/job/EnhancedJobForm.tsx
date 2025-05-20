@@ -1,210 +1,217 @@
 
-import React, { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, FormProvider } from 'react-hook-form';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Card, CardContent } from '@/components/ui/card';
-import { usePricing } from '@/context/pricing/PricingContext';
-import PhotoUploader from '@/components/posting/PhotoUploader';
+import React, { useState, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { JobFormValues } from './jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
-import JobBasicInfoForm from './forms/JobBasicInfoForm';
-import JobDetailsForm from './forms/JobDetailsForm';
-import JobContactForm from './forms/JobContactForm';
-import { PaymentSummary, type PriceData } from '@/components/posting/PaymentSummary';
-
-// Mock price calculation - replace with actual pricing logic
-const calculatePrice = (pricingOptions: PricingOptions): PriceData => {
-  const basePrice = pricingOptions.selectedPricingTier === 'premium' ? 99 : 49;
-  return {
-    basePrice,
-    discountedPrice: basePrice * 0.9,
-    finalPrice: basePrice * 0.9,
-    discountPercentage: 10,
-    discountLabel: "Early Adopter Discount",
-    discountAmount: basePrice * 0.1,
-    isFoundersDiscount: true
-  };
-};
+import { ReviewAndPaymentSection } from '@/components/posting/sections/ReviewAndPaymentSection';
+import { CardContent } from '@/components/ui/card';
+import JobForm from './JobForm';
+import { toast } from 'sonner';
+import { usePricing } from '@/context/pricing/PricingProvider';
+import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 export interface EnhancedJobFormProps {
-  onSubmit: (
-    data: JobFormValues, 
-    uploads: File[], 
-    pricingOptions: PricingOptions
-  ) => Promise<boolean>;
-  isLoading?: boolean;
-  initialTemplate?: JobFormValues;
+  onSubmit: (data: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
+  onStepChange?: (step: number) => void;
   onBack?: () => void;
+  initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
 }
 
-export const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
-  onSubmit,
-  isLoading = false,
-  initialTemplate,
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
+  onSubmit, 
+  onStepChange, 
   onBack,
+  initialTemplate,
   isCustomTemplate = false,
   maxPhotos = 5
 }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [activeTab, setActiveTab] = useState('job-details');
+  const [jobFormData, setJobFormData] = useState<JobFormValues | null>(initialTemplate || null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const { pricingOptions } = usePricing();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Create default values with proper types
-  const defaultValues: JobFormValues = {
-    title: "",
-    description: "",
-    vietnameseDescription: "",
-    location: "",
-    jobType: "",
-    compensation_type: "",
-    compensation_details: "",
-    salary_range: "",
-    experience_level: "",
-    contactName: "",
-    contactPhone: "",
-    contactEmail: "",
-    salonName: "",
-    weekly_pay: false,
-    has_housing: false,
-    has_wax_room: false,
-    owner_will_train: false,
-    no_supply_deduction: false,
-    specialties: [],
-    requirements: [], // Ensure requirements is an array
-    templateType: "",
-    image: "",
-    ...initialTemplate
+  // Safely use the pricing context, with a fallback if needed
+  const usePricingHook = () => {
+    try {
+      return usePricing();
+    } catch (error) {
+      console.error("Pricing context not available in EnhancedJobForm, using internal fallback", error);
+      // Return null if the context is not available
+      return null;
+    }
   };
   
-  // Ensure requirements is always an array
-  if (initialTemplate && typeof initialTemplate.requirements === 'string') {
-    defaultValues.requirements = (initialTemplate.requirements as unknown as string).split(',').map(s => s.trim());
+  const pricingContext = usePricingHook();
+  
+  // If no external pricing context is available, use a default one
+  const defaultPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
+  };
+  
+  // Update the handleJobFormSubmit to match the JobForm onSubmit signature
+  const handleJobFormSubmit = (data: JobFormValues, uploads?: File[]) => {
+    // Validate required fields
+    if (!data.title || !data.description || !data.location || !data.contactEmail) {
+      toast.error("Please complete all required fields before continuing");
+      return;
+    }
+
+    // If uploads are provided, update photoUploads state
+    if (uploads && uploads.length > 0) {
+      setPhotoUploads(uploads);
+    }
+
+    setJobFormData(data);
+    setActiveTab('review-payment');
+    onStepChange?.(3);
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!jobFormData) {
+      toast.error("Job information is missing");
+      return;
+    }
+    
+    // Use pricing options from context if available, otherwise use default
+    const pricingOptions = pricingContext?.pricingOptions || defaultPricingOptions;
+    
+    // Validation check for paid plans
+    if (pricingOptions.selectedPricingTier !== 'free' && 
+        pricingContext?.priceData && pricingContext.priceData.finalPrice <= 0) {
+      toast.error("Invalid price calculation. Please try again or contact support.");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      // Pass all data to the onSubmit handler
+      const success = await onSubmit(jobFormData, photoUploads, pricingOptions);
+      
+      if (!success) {
+        setIsSubmitting(false);
+        toast.error("There was a problem processing your payment. Please try again.");
+        // If success is false, we don't navigate away so user can try again
+      }
+      // On success, the parent component will handle navigation
+      
+    } catch (error) {
+      console.error('Error submitting job post:', error);
+      toast.error("Error creating job post");
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBackToEdit = () => {
+    setActiveTab('job-details');
+    onStepChange?.(2);
+  };
+
+  // If no pricing context is available, wrap with our own provider
+  if (!pricingContext) {
+    console.log('EnhancedJobForm: No pricing context available, using internal provider with defaults:', defaultPricingOptions);
+    
+    return (
+      <PricingProvider initialOptions={defaultPricingOptions}>
+        <EnhancedJobFormContent 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          jobFormData={jobFormData}
+          photoUploads={photoUploads}
+          setPhotoUploads={setPhotoUploads}
+          isSubmitting={isSubmitting}
+          handleJobFormSubmit={handleJobFormSubmit}
+          handleBackToEdit={handleBackToEdit}
+          handlePaymentSubmit={handlePaymentSubmit}
+          isCustomTemplate={isCustomTemplate}
+          maxPhotos={maxPhotos}
+        />
+      </PricingProvider>
+    );
   }
-  
-  const methods = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues,
-  });
-  
-  const handleSubmit = async (data: JobFormValues) => {
-    const success = await onSubmit(data, photoUploads, pricingOptions);
-    if (success) {
-      methods.reset();
-      setPhotoUploads([]);
-    }
-  };
-  
-  const nextStep = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo(0, 0);
-    }
-  };
 
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-      window.scrollTo(0, 0);
-    } else if (onBack) {
-      onBack();
-    }
-  };
-
-  // Calculate price based on selected options
-  const priceData = calculatePrice(pricingOptions);
-  
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="flex items-center mb-4">
-          <div className="flex-1 h-2 bg-gray-200 rounded-full">
-            <div 
-              className="h-2 bg-primary rounded-full transition-all duration-300" 
-              style={{ width: `${(currentStep / 3) * 100}%` }}
-            />
-          </div>
-          <span className="ml-4 text-sm text-gray-500">
-            Step {currentStep} of 3
-          </span>
-        </div>
-        
-        {currentStep === 1 && (
-          <Card className="overflow-hidden">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-playfair font-bold mb-6">Job Basics</h2>
-              <JobBasicInfoForm />
-            </CardContent>
-          </Card>
-        )}
-        
-        {currentStep === 2 && (
-          <Card className="overflow-hidden">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-playfair font-bold mb-6">Job Details</h2>
-              <JobDetailsForm />
+    <EnhancedJobFormContent 
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      jobFormData={jobFormData}
+      photoUploads={photoUploads}
+      setPhotoUploads={setPhotoUploads}
+      isSubmitting={isSubmitting}
+      handleJobFormSubmit={handleJobFormSubmit}
+      handleBackToEdit={handleBackToEdit}
+      handlePaymentSubmit={handlePaymentSubmit}
+      isCustomTemplate={isCustomTemplate}
+      maxPhotos={maxPhotos}
+    />
+  );
+};
 
-              <div className="mt-8">
-                <h3 className="text-lg font-medium mb-4">Upload Photos</h3>
-                <PhotoUploader 
-                  onChange={setPhotoUploads} 
-                  files={photoUploads}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        
-        {currentStep === 3 && (
-          <Card className="overflow-hidden">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-playfair font-bold mb-6">Contact Information</h2>
-              <JobContactForm />
-              
-              <Separator className="my-8" />
-              
-              <div>
-                <h3 className="text-lg font-medium mb-2">Job Post Summary</h3>
-                <p className="text-gray-500 text-sm mb-4">
-                  Review your job post details before submitting.
-                </p>
-                <PaymentSummary priceData={priceData} />
-              </div>
-            </CardContent>
-          </Card>
-        )}
+// Separate content component to avoid duplication
+interface EnhancedJobFormContentProps {
+  activeTab: string;
+  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+  jobFormData: JobFormValues | null;
+  photoUploads: File[];
+  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  isSubmitting: boolean;
+  handleJobFormSubmit: (data: JobFormValues, uploads?: File[]) => void;
+  handleBackToEdit: () => void;
+  handlePaymentSubmit: () => Promise<void>;
+  isCustomTemplate: boolean;
+  maxPhotos: number;
+}
 
-        <div className="flex justify-between mt-6">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={prevStep}
-            disabled={isLoading}
-          >
-            {currentStep === 1 && onBack ? 'Back to Templates' : 'Previous'}
-          </Button>
-          
-          {currentStep < 3 ? (
-            <Button 
-              type="button" 
-              onClick={nextStep}
-            >
-              Next
-            </Button>
-          ) : (
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-            >
-              {isLoading ? 'Submitting...' : 'Submit Job Posting'}
-            </Button>
-          )}
-        </div>
-      </form>
-    </FormProvider>
+const EnhancedJobFormContent: React.FC<EnhancedJobFormContentProps> = ({
+  activeTab,
+  setActiveTab,
+  jobFormData,
+  photoUploads,
+  setPhotoUploads,
+  isSubmitting,
+  handleJobFormSubmit,
+  handleBackToEdit,
+  handlePaymentSubmit,
+  isCustomTemplate,
+  maxPhotos
+}) => {
+  return (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="hidden">
+        <TabsTrigger value="job-details">Job Details</TabsTrigger>
+        <TabsTrigger value="review-payment">Review & Payment</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="job-details" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
+          <JobForm 
+            onSubmit={handleJobFormSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            initialValues={jobFormData || undefined}
+            isCustomTemplate={isCustomTemplate}
+            maxPhotos={maxPhotos}
+          />
+        </CardContent>
+      </TabsContent>
+      
+      <TabsContent value="review-payment" className="space-y-4">
+        <CardContent className="p-0 sm:p-2">
+          <ReviewAndPaymentSection 
+            formData={jobFormData} 
+            photoUploads={photoUploads}
+            onBack={handleBackToEdit} 
+            onSubmit={handlePaymentSubmit}
+            isSubmitting={isSubmitting}
+          />
+        </CardContent>
+      </TabsContent>
+    </Tabs>
   );
 };
 

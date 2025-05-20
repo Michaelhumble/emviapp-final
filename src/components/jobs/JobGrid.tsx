@@ -2,7 +2,7 @@
 import { useState } from "react";
 import BilingualJobCard from "@/components/jobs/BilingualJobCard";
 import { Job } from "@/types/job";
-import JobDetailModal from "@/components/jobs/JobDetailModal";
+import { JobDetailModal } from "@/components/jobs/JobDetailModal";
 
 interface JobGridProps {
   jobs: Job[];

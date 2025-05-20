@@ -22,10 +22,10 @@ const queryClient = new QueryClient({
   }
 });
 
-// Update favicon link with the corrected Emvi logo URL (removed double slash)
+// Set favicon
 const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
 if (link) {
-  link.href = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png";
+  link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
 }
 
 // Improved viewport meta tag with better mobile optimizations

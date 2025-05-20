@@ -14,7 +14,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IndustryType } from '@/components/posting/job/jobFormSchema';
 import { useForm, UseFormReturn } from 'react-hook-form';
-import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobDetailsSectionProps {
   form: UseFormReturn<any>;
@@ -28,36 +27,8 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
     return null;
   }
 
-  const { t } = useTranslation();
-
   return (
     <>
-      <FormField
-        control={form.control}
-        name="salonName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t({
-              english: "Salon Name",
-              vietnamese: "Tên Salon"
-            })}</FormLabel>
-            <FormControl>
-              <Input placeholder={t({
-                english: "e.g., Beauty Nails Spa",
-                vietnamese: "vd., Beauty Nails Spa"
-              })} {...field} />
-            </FormControl>
-            <FormDescription>
-              {t({
-                english: "Enter the name of your salon or business",
-                vietnamese: "Nhập tên salon hoặc doanh nghiệp của bạn"
-              })}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
       <FormField
         control={form.control}
         name="title"

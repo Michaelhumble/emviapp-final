@@ -1,104 +1,108 @@
 
-import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Store } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { JobPricingOption } from '@/utils/posting/types';
+import { Badge } from "@/components/ui/badge";
+import { Briefcase, Calendar, DollarSign } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { getJobTypeColor } from "../utils/badgeStyles";
+import { useState } from "react";
+import { JobPricingTier, PricingOptions } from "@/utils/posting/types";
+import { getJobPrice } from "@/utils/posting/jobPricing";
+import { usePricing } from "@/context/pricing/PricingProvider";
 
-export interface JobSummaryProps {
-  title: string;
-  description?: string;
-  location?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  pricingPlan?: JobPricingOption;
-  jobType?: string;
-  salonName?: string;
+interface JobSummaryProps {
+  employmentType: string;
+  salaryRange?: string;
+  createdAt: string | Date;
+  pricingTier?: JobPricingTier;
+  pricingOptions?: PricingOptions;
 }
 
-const JobSummary: React.FC<JobSummaryProps> = ({
-  title,
-  description,
-  location,
-  contactEmail,
-  contactPhone,
-  pricingPlan,
-  jobType,
-  salonName = "Unknown Salon"
-}) => {
+export const JobSummary = ({ 
+  employmentType, 
+  salaryRange, 
+  createdAt,
+  pricingTier,
+  pricingOptions 
+}: JobSummaryProps) => {
+  // Safely use the pricing context, with a fallback if it's not available
+  const pricingContext = (() => {
+    try {
+      return usePricing();
+    } catch (error) {
+      console.error("Pricing context not available, using fallback", error);
+      // Return null if the context is not available
+      return null;
+    }
+  })();
+
+  const formatPostedDate = (dateInput: string | Date) => {
+    try {
+      const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+      return `Posted ${formatDistanceToNow(date, { addSuffix: false })} ago`;
+    } catch (error) {
+      return "Recently posted";
+    }
+  };
+
+  // Get the pricing tier badge if available
+  const renderPricingBadge = () => {
+    if (!pricingTier) return null;
+    
+    let badgeClass = "";
+    let badgeText = "";
+    
+    switch (pricingTier) {
+      case "free":
+        badgeClass = "bg-gray-100 text-gray-800";
+        badgeText = "Free";
+        break;
+      case "standard":
+        badgeClass = "bg-blue-100 text-blue-800";
+        badgeText = "Standard";
+        break;
+      case "premium":
+        badgeClass = "bg-purple-100 text-purple-800";
+        badgeText = "Premium";
+        break;
+      case "gold":
+        badgeClass = "bg-amber-100 text-amber-800";
+        badgeText = "Gold";
+        break;
+      case "diamond":
+        badgeClass = "bg-cyan-100 text-cyan-800";
+        badgeText = "Diamond";
+        break;
+      default:
+        return null;
+    }
+    
+    return (
+      <Badge className={`ml-2 ${badgeClass}`}>
+        {badgeText}
+      </Badge>
+    );
+  };
+
   return (
-    <Card className="bg-white shadow overflow-hidden">
-      <CardHeader className={cn(
-        "pb-2", 
-        pricingPlan?.id === 'premium' && "bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200",
-        pricingPlan?.id === 'gold' && "bg-gradient-to-r from-amber-50 to-amber-100 border-b border-amber-200",
-        pricingPlan?.id === 'diamond' && "bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200"
-      )}>
-        <div className="flex items-center text-sm text-gray-600 mb-1">
-          <Store className="h-3.5 w-3.5 mr-1" />
-          <span>{salonName}</span>
-        </div>
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-semibold">{title || "Job Title"}</CardTitle>
-          {pricingPlan && (
-            <Badge className={cn(
-              "font-medium",
-              pricingPlan.id === 'standard' && "bg-blue-100 text-blue-800 hover:bg-blue-200",
-              pricingPlan.id === 'premium' && "bg-purple-100 text-purple-800 hover:bg-purple-200",
-              pricingPlan.id === 'gold' && "bg-amber-100 text-amber-800 hover:bg-amber-200",
-              pricingPlan.id === 'diamond' && "bg-sky-100 text-sky-800 hover:bg-sky-200"
-            )}>
-              {pricingPlan.name}
-            </Badge>
-          )}
-        </div>
-        
-        <CardDescription className="mt-1">
-          {location && (
-            <div className="text-sm text-gray-600">
-              {location}
-            </div>
-          )}
-          {jobType && (
-            <div className="text-xs text-gray-500 mt-1">
-              {jobType}
-            </div>
-          )}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-4">
-        {description && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-1">Description</h4>
-            <p className="text-sm text-gray-600">{description}</p>
-          </div>
-        )}
-        
-        {(contactEmail || contactPhone) && (
-          <div>
-            <h4 className="text-sm font-medium mb-1">Contact</h4>
-            {contactEmail && <p className="text-sm text-gray-600">Email: {contactEmail}</p>}
-            {contactPhone && <p className="text-sm text-gray-600">Phone: {contactPhone}</p>}
-          </div>
-        )}
-      </CardContent>
+    <div className="flex flex-wrap gap-4 mb-4 text-gray-700">
+      <div className="flex items-center gap-1">
+        <Briefcase className="h-4 w-4 text-gray-500" />
+        <Badge variant="outline" className={getJobTypeColor(employmentType)}>
+          {employmentType}
+          {renderPricingBadge()}
+        </Badge>
+      </div>
       
-      {pricingPlan && pricingPlan.features && pricingPlan.features.length > 0 && (
-        <CardFooter className="bg-gray-50 px-6 py-4 flex flex-col items-start border-t">
-          <h4 className="text-sm font-semibold mb-2">Included Features</h4>
-          <ul className="space-y-2">
-            {pricingPlan.features.map((feature, i) => (
-              <li key={i} className="flex text-sm">
-                <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </CardFooter>
+      {salaryRange && (
+        <div className="flex items-center gap-1">
+          <DollarSign className="h-4 w-4 text-gray-500" />
+          <span className="font-medium">{salaryRange}</span>
+        </div>
       )}
-    </Card>
+      
+      <div className="flex items-center gap-1">
+        <Calendar className="h-4 w-4 text-gray-500" />
+        <span className="text-sm">{formatPostedDate(createdAt)}</span>
+      </div>
+    </div>
   );
 };
-
-export default JobSummary;

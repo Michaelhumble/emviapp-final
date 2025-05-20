@@ -87,9 +87,7 @@ const FeaturedJobsShowcase = () => {
                   </div>
                   
                   <h3 className="text-xl font-bold font-serif mb-1">{job.title}</h3>
-                  <div className="text-lg font-medium text-gray-700 mb-1">
-                    {job.salonName || job.company || "Unknown Salon"}
-                  </div>
+                  <div className="text-lg font-medium text-gray-700 mb-1">{job.company}</div>
                   
                   <div className="flex items-center text-gray-500 mb-4">
                     <MapPin className="w-4 h-4 mr-1" />

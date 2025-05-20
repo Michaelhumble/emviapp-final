@@ -39,3 +39,4 @@ export const requirementOptions = [
   { value: 'housing', label: 'Housing Available' },
   { value: 'benefits', label: 'Benefits Offered' },
 ];
+

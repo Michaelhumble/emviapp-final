@@ -1,91 +1,174 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
+import { ChevronLeft, Timer } from 'lucide-react';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
+import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
+import { PaymentSummary } from '@/components/posting/PaymentSummary';
 import { Separator } from '@/components/ui/separator';
-import { Check, CreditCard } from 'lucide-react';
-import { formatDistance } from 'date-fns';
-import { usePricing } from '@/context/pricing/PricingContext';
-import { PaymentSummary, PriceData } from '@/components/posting/PaymentSummary';
+import PricingCard from '@/components/posting/pricing/PricingCard';
+import { jobPricingOptions } from '@/utils/posting/jobPricing';
+import { JobPricingTier } from '@/utils/posting/types';
+import { useTranslation } from '@/hooks/useTranslation';
+import { usePricing } from '@/context/pricing/PricingProvider';
+import { Badge } from '@/components/ui/badge';
 
-interface ReviewAndPaymentSectionProps {
+export interface ReviewAndPaymentSectionProps {
+  formData: JobFormValues | null;
+  photoUploads: File[];
+  onBack: () => void;
   onSubmit: () => void;
-  isLoading?: boolean;
-  priceData: PriceData;
+  isSubmitting: boolean;
 }
 
-const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
+  formData,
+  photoUploads,
+  onBack,
   onSubmit,
-  isLoading,
-  priceData
+  isSubmitting
 }) => {
-  const { pricingOptions } = usePricing();
-  
-  const expiryDate = new Date();
-  expiryDate.setMonth(expiryDate.getMonth() + pricingOptions.durationMonths);
-  
+  const { t } = useTranslation();
+  const { pricingOptions, setPricingOptions, priceData } = usePricing();
+
+  const handleDurationChange = (months: number) => {
+    setPricingOptions({
+      ...pricingOptions,
+      durationMonths: months
+    });
+  };
+
+  const handleTierChange = (tier: JobPricingTier) => {
+    setPricingOptions({
+      ...pricingOptions,
+      selectedPricingTier: tier
+    });
+  };
+
+  const selectedTierOption = jobPricingOptions.find(option => 
+    option.tier === pricingOptions.selectedPricingTier
+  );
+
+  const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
+  const isFreePost = pricingOptions.selectedPricingTier === 'free' || pricingOptions.isFirstPost;
+
+  // Format price for display
+  const formattedPrice = priceData.finalPrice > 0 
+    ? `$${priceData.finalPrice.toFixed(2)}` 
+    : "Free";
+
   return (
-    <Card className="border rounded-xl overflow-hidden">
-      <CardContent className="p-6 space-y-5">
-        <div>
-          <h3 className="text-lg font-medium mb-2">Review Your Job Post</h3>
-          <p className="text-sm text-gray-500">
-            Please review all details before submitting your job post.
-          </p>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <Button 
+          variant="ghost" 
+          onClick={onBack} 
+          className="px-0 hover:bg-transparent hover:text-primary"
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          <span>{t({english: "Back to Edit", vietnamese: "Quay lại chỉnh sửa"})}</span>
+        </Button>
+      </div>
+      
+      {/* Limited time offer banner */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-md p-3 flex items-center gap-2">
+        <Timer className="h-4 w-4 text-amber-500" />
+        <p className="text-sm text-amber-800">
+          <span className="font-medium">Nail Industry Founders Pricing:</span> Special discounted rates for the first 1,000 users. Already 783 claimed!
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Preview column - Job details and photos */}
+        <div className="lg:col-span-2">
+          <h3 className="text-lg font-medium mb-4">{t({english: "Review Your Job Post", vietnamese: "Xem xét tin của bạn"})}</h3>
+          <JobPostPreview jobData={formData} photoUploads={photoUploads} onBack={onBack} />
         </div>
         
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex items-center mb-2">
-            <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-3">
-              <CreditCard size={20} />
-            </div>
-            <div>
-              <p className="font-medium">
-                {pricingOptions.selectedPricingTier.charAt(0).toUpperCase() + pricingOptions.selectedPricingTier.slice(1)} Plan
-              </p>
-              <p className="text-sm text-gray-500">
-                Expires in {formatDistance(expiryDate, new Date(), { addSuffix: true })}
-              </p>
-            </div>
+        {/* Pricing column - Plan selection, options, and payment */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-medium">{t({english: "Choose Your Plan", vietnamese: "Chọn gói của bạn"})}</h3>
+          
+          {pricingOptions.isFirstPost && (
+            <Badge className="bg-green-100 text-green-800 border-green-200 mb-2">
+              First Post Free
+            </Badge>
+          )}
+          
+          {/* Plans selection grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+            {jobPricingOptions
+              .filter(option => !option.hidden)
+              .map(option => (
+                <PricingCard
+                  key={option.id}
+                  tier={option.tier}
+                  pricingInfo={option}
+                  isSelected={pricingOptions.selectedPricingTier === option.tier}
+                  onSelect={() => handleTierChange(option.tier as JobPricingTier)}
+                />
+              ))
+            }
           </div>
           
-          <ul className="mt-3 space-y-2">
-            <li className="flex items-center text-sm text-gray-600">
-              <Check size={16} className="text-green-500 mr-2" />
-              Premium placement in search results
-            </li>
-            <li className="flex items-center text-sm text-gray-600">
-              <Check size={16} className="text-green-500 mr-2" />
-              Email alerts to qualified candidates
-            </li>
-            <li className="flex items-center text-sm text-gray-600">
-              <Check size={16} className="text-green-500 mr-2" />
-              {pricingOptions.durationMonths} month{pricingOptions.durationMonths > 1 ? 's' : ''} of visibility
-            </li>
-          </ul>
-        </div>
-        
-        <Separator />
-        
-        <PaymentSummary priceData={priceData} />
-        
-        <div className="pt-4">
+          <Separator />
+          
+          {/* Duration selection */}
+          <DurationSelector
+            durationMonths={pricingOptions.durationMonths}
+            onDurationChange={handleDurationChange}
+            isDiamondPlan={isDiamondPlan}
+          />
+          
+          {/* Additional options */}
+          <div className="space-y-4">
+            <JobPostOptions
+              options={pricingOptions}
+              onOptionsChange={(updatedOptions) => setPricingOptions(updatedOptions)}
+              isFirstPost={pricingOptions.isFirstPost}
+            />
+          </div>
+          
+          {/* Payment summary */}
+          <PaymentSummary
+            priceData={priceData}
+          />
+          
+          {/* Validation to prevent $0 paid plans */}
+          {pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0 && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+              Error: Invalid price calculation. Please try different options or contact support.
+            </div>
+          )}
+          
+          {/* Submission button */}
           <Button 
-            onClick={onSubmit} 
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            size="lg"
+            onClick={onSubmit}
+            disabled={
+              isSubmitting || 
+              !formData || 
+              (pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0)
+            }
+            className="w-full py-6 text-lg shadow-md sticky bottom-4 mt-8"
           >
-            {isLoading ? 'Processing...' : 'Submit and Proceed to Payment'}
+            {isSubmitting ? (
+              <span>{t({english: "Processing...", vietnamese: "Đang xử lý..."})}</span>
+            ) : (
+              <span>
+                {isFreePost 
+                  ? t({english: "Post Free Job", vietnamese: "Đăng tin miễn phí"})
+                  : t({
+                      english: `Pay ${formattedPrice} & Post Job`,
+                      vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`
+                    })
+                }
+              </span>
+            )}
           </Button>
-          <p className="text-xs text-gray-500 text-center mt-2">
-            By clicking submit, you agree to our Terms of Service and Privacy Policy
-          </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
-
-export default ReviewAndPaymentSection;
