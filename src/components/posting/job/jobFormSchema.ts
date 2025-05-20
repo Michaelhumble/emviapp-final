@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const jobFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
-  description: z.string().optional(),
+  description: z.string().min(10, "Description must be at least 10 characters"),
   vietnameseDescription: z.string().optional(),
   location: z.string().min(2, "Location is required"),
   jobType: z.string().optional(),
@@ -11,9 +11,9 @@ export const jobFormSchema = z.object({
   compensation_details: z.string().optional(),
   salary_range: z.string().optional(),
   experience_level: z.string().optional(),
-  contactName: z.string().optional(),
-  contactPhone: z.string().optional(),
-  contactEmail: z.string().email().optional(),
+  contactName: z.string().min(2, "Contact name is required"),
+  contactPhone: z.string().min(7, "Contact phone is required"),
+  contactEmail: z.string().email("Invalid email address"),
   contactZalo: z.string().optional(),
   salonName: z.string().min(2, "Salon name must be at least 2 characters"),
   weekly_pay: z.boolean().optional().default(false),
@@ -21,10 +21,10 @@ export const jobFormSchema = z.object({
   has_wax_room: z.boolean().optional().default(false),
   owner_will_train: z.boolean().optional().default(false),
   no_supply_deduction: z.boolean().optional().default(false),
-  specialties: z.array(z.string()).optional(),
-  requirements: z.union([z.string(), z.array(z.string())]).optional(),
+  specialties: z.array(z.string()).optional().default([]),
+  requirements: z.array(z.string()).optional().default([]),
   templateType: z.string().optional(),
-  // Not adding image property as per instructions to make minimal changes
+  image: z.string().optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;

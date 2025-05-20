@@ -11,7 +11,7 @@ import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions } from '@/utils/posting/types';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import PremiumJobPostForm from '@/components/posting/job/PremiumJobPostForm';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { JobDetailsSubmission } from '@/types/job';
 
@@ -51,11 +51,12 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train, 
         no_supply_deduction: data.no_supply_deduction,
-        salonName: data.salonName, // Added salonName
+        salonName: data.salonName,
         contactName: data.contactName,
         contactPhone: data.contactPhone,
         contactEmail: data.contactEmail,
-        contactZalo: data.contactZalo,
+        requirements: data.requirements || [],
+        specialties: data.specialties || [],
         post_type: 'job'
       };
       
@@ -112,7 +113,7 @@ const CreateJobPosting = () => {
             {step === 'template' ? (
               <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
             ) : (
-              <EnhancedJobForm 
+              <PremiumJobPostForm 
                 onSubmit={handleSubmit}
                 initialTemplate={selectedTemplate || undefined}
                 onBack={handleBackToTemplates}

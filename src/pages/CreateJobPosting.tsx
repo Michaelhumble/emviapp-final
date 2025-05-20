@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
 import { Card } from '@/components/ui/card';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import PremiumJobPostForm from '@/components/posting/job/PremiumJobPostForm';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
 import { useNavigate } from 'react-router-dom';
@@ -40,6 +40,7 @@ const CreateJobPosting = () => {
           phone: data.contactPhone,
           email: data.contactEmail,
         },
+        salonName: data.salonName,
         post_type: 'job'
       };
       
@@ -86,7 +87,7 @@ const CreateJobPosting = () => {
         </Helmet>
 
         <Card className="bg-white shadow-md rounded-lg p-6">
-          <EnhancedJobForm 
+          <PremiumJobPostForm 
             onSubmit={handleSubmit}
             onStepChange={handleStepChange}
             maxPhotos={5}
