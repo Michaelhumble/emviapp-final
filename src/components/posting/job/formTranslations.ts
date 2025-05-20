@@ -31,6 +31,46 @@ export const compensationTypes = [
   { value: "other", label_en: "Other", label_vi: "Khác" }
 ];
 
+// Added the missing export needed by CompensationSection.tsx
+export const compensationTranslations = {
+  hourly: {
+    english: "Hourly Rate",
+    vietnamese: "Mức lương theo giờ"
+  },
+  commission: {
+    english: "Commission",
+    vietnamese: "Hoa hồng"
+  },
+  salary: {
+    english: "Salary",
+    vietnamese: "Lương"
+  },
+  mixed: {
+    english: "Mixed (Hourly + Commission)",
+    vietnamese: "Kết hợp (Giờ + Hoa hồng)"
+  },
+  other: {
+    english: "Other",
+    vietnamese: "Khác"
+  },
+  details: {
+    english: "Compensation Details",
+    vietnamese: "Chi Tiết Lương"
+  },
+  payRate: {
+    english: "Pay Rate",
+    vietnamese: "Mức Lương"
+  },
+  weeklyIncome: {
+    english: "Weekly Income",
+    vietnamese: "Thu Nhập Hàng Tuần"
+  },
+  additionalBenefits: {
+    english: "Additional Benefits",
+    vietnamese: "Phúc Lợi Khác"
+  }
+};
+
 export const jobFormLabels = {
   salonName: {
     english: "Salon Name",
