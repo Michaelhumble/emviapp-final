@@ -3,13 +3,12 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, MapPinIcon, Phone, LockIcon, Building } from "lucide-react";
+import { CalendarIcon, MapPinIcon, Phone, LockIcon } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
-import { useTranslation } from '@/hooks/useTranslation';
 
 interface BilingualJobCardProps {
   job: Job;
@@ -25,7 +24,6 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
   isRenewing = false,
 }) => {
   const { isSignedIn } = useAuth();
-  const { t } = useTranslation();
   
   // For displaying the posted date
   const getPostedDate = () => {
@@ -50,12 +48,6 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     })();
   };
 
-  // Display salon name with fallback
-  const displaySalonName = job.salonName || job.company || t({
-    english: "Unknown Salon",
-    vietnamese: "Tiệm không xác định"
-  });
-
   // Check if this is a free or starter tier listing to show contact info without login
   const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
@@ -76,10 +68,6 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
       
       <CardContent className="p-4 flex flex-col flex-grow">
         <div className="mb-3">
-          <div className="flex items-center mb-1">
-            <Building className="h-3.5 w-3.5 mr-1 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">{displaySalonName}</span>
-          </div>
           <h3 className="font-bold text-lg line-clamp-2">{job.title}</h3>
           
           <div className="flex items-center text-sm text-gray-500 mt-1">

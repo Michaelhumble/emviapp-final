@@ -9,14 +9,12 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { CheckCircle, Building } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
-import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobSummaryProps {
   title: string;
-  salonName?: string;
   description?: string;
   location?: string;
   contactEmail?: string;
@@ -27,7 +25,6 @@ interface JobSummaryProps {
 
 const JobSummary: React.FC<JobSummaryProps> = ({
   title,
-  salonName,
   description,
   location,
   contactEmail,
@@ -35,12 +32,6 @@ const JobSummary: React.FC<JobSummaryProps> = ({
   pricingPlan,
   jobType
 }) => {
-  const { t } = useTranslation();
-  const displaySalonName = salonName || t({
-    english: "Unknown Salon",
-    vietnamese: "Tiệm không xác định"
-  });
-  
   return (
     <Card className="bg-white shadow overflow-hidden">
       <CardHeader className={cn(
@@ -50,13 +41,7 @@ const JobSummary: React.FC<JobSummaryProps> = ({
         pricingPlan?.id === 'diamond' && "bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200"
       )}>
         <div className="flex justify-between items-start">
-          <div>
-            <div className="flex items-center mb-1">
-              <Building className="h-4 w-4 mr-1.5 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">{displaySalonName}</span>
-            </div>
-            <CardTitle className="text-xl font-semibold">{title || "Job Title"}</CardTitle>
-          </div>
+          <CardTitle className="text-xl font-semibold">{title || "Job Title"}</CardTitle>
           {pricingPlan && (
             <Badge className={cn(
               "font-medium",
@@ -86,38 +71,23 @@ const JobSummary: React.FC<JobSummaryProps> = ({
       <CardContent className="pt-4">
         {description && (
           <div className="mb-4">
-            <h4 className="text-sm font-medium mb-1">{t({
-              english: "Description",
-              vietnamese: "Mô tả"
-            })}</h4>
+            <h4 className="text-sm font-medium mb-1">Description</h4>
             <p className="text-sm text-gray-600">{description}</p>
           </div>
         )}
         
         {(contactEmail || contactPhone) && (
           <div>
-            <h4 className="text-sm font-medium mb-1">{t({
-              english: "Contact",
-              vietnamese: "Liên hệ"
-            })}</h4>
-            {contactEmail && <p className="text-sm text-gray-600">{t({
-              english: "Email: ",
-              vietnamese: "Email: "
-            })}{contactEmail}</p>}
-            {contactPhone && <p className="text-sm text-gray-600">{t({
-              english: "Phone: ",
-              vietnamese: "Điện thoại: "
-            })}{contactPhone}</p>}
+            <h4 className="text-sm font-medium mb-1">Contact</h4>
+            {contactEmail && <p className="text-sm text-gray-600">Email: {contactEmail}</p>}
+            {contactPhone && <p className="text-sm text-gray-600">Phone: {contactPhone}</p>}
           </div>
         )}
       </CardContent>
       
       {pricingPlan && pricingPlan.features && pricingPlan.features.length > 0 && (
         <CardFooter className="bg-gray-50 px-6 py-4 flex flex-col items-start border-t">
-          <h4 className="text-sm font-medium mb-2">{t({
-            english: "Included Features",
-            vietnamese: "Tính năng đi kèm"
-          })}</h4>
+          <h4 className="text-sm font-medium mb-2">Included Features</h4>
           <ul className="space-y-2">
             {pricingPlan.features.map((feature, i) => (
               <li key={i} className="flex text-sm">

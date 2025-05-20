@@ -45,26 +45,18 @@ export interface JobPricingOption {
   upsellText?: string;   // Added for upsell displays
   color?: string;
   recommended?: boolean;
-  hidden?: boolean;      // Added explicitly to fix error
+  hidden?: boolean;
   annual?: boolean;
   limitedSpots?: string; // Added for limited spots displays
   // Adding the priceMonthly property that is used in the config
   priceMonthly?: number;
-  // Additional properties from jobPricingOptions
-  vietnameseName?: string;
-  basePrice?: number;
-  durationMultipliers?: number[];
-  badge?: string;
-  isAvailableToNewUsers?: boolean;
-  isAvailableToAll?: boolean;
 }
 
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
-
-// Re-adding UserPostingStats interface that was removed
 export interface UserPostingStats {
   jobPostCount: number;
   salonPostCount: number;
   boothPostCount: number;
   supplyPostCount: number;
 }
+
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
