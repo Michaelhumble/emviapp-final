@@ -73,6 +73,28 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
             <span>${priceData.basePrice.toFixed(2)}</span>
           </div>
           
+          {/* Duration display if available */}
+          {priceData.durationMonths && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">{t({
+                english: `Duration (${priceData.durationMonths} ${priceData.durationMonths === 1 ? 'month' : 'months'})`,
+                vietnamese: `Thời hạn (${priceData.durationMonths} ${priceData.durationMonths === 1 ? 'tháng' : 'tháng'})`
+              })}</span>
+              <span>x{priceData.durationMonths}</span>
+            </div>
+          )}
+          
+          {/* Subtotal before discounts */}
+          {priceData.originalPrice && priceData.originalPrice !== priceData.basePrice && (
+            <div className="flex justify-between font-medium">
+              <span>{t({
+                english: "Subtotal",
+                vietnamese: "Tạm tính"
+              })}</span>
+              <span>${priceData.originalPrice.toFixed(2)}</span>
+            </div>
+          )}
+          
           {/* Founders discount if applicable */}
           {priceData.isFoundersDiscount && (
             <div className="flex justify-between text-green-600">
@@ -85,7 +107,8 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
                   Limited Time
                 </Badge>
               </div>
-              <span>-${(priceData.basePrice - priceData.discountedPrice).toFixed(2)}</span>
+              <span>-${(priceData.originalPrice && priceData.discountedPrice ? 
+                (priceData.originalPrice - priceData.discountedPrice) : 0).toFixed(2)}</span>
             </div>
           )}
           
@@ -93,21 +116,22 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
           {priceData.discountPercentage > 0 && (
             <div className="flex justify-between text-green-600">
               <span>{t({
-                english: priceData.discountLabel,
-                vietnamese: priceData.discountLabel
+                english: priceData.discountLabel || `${priceData.discountPercentage}% Discount`,
+                vietnamese: priceData.discountLabel || `Giảm giá ${priceData.discountPercentage}%`
               })}</span>
               <span>-${priceData.discountAmount.toFixed(2)}</span>
             </div>
           )}
           
           {/* Add any additional fees */}
-          {priceData.finalPrice > (priceData.discountedPrice - priceData.discountAmount) && (
+          {priceData.finalPrice > ((priceData.discountedPrice || priceData.originalPrice || 0) - priceData.discountAmount) && (
             <div className="flex justify-between">
               <span className="text-gray-600">{t({
                 english: "Additional services",
                 vietnamese: "Dịch vụ bổ sung"
               })}</span>
-              <span>${(priceData.finalPrice - (priceData.discountedPrice - priceData.discountAmount)).toFixed(2)}</span>
+              <span>${(priceData.finalPrice - 
+                ((priceData.discountedPrice || priceData.originalPrice || 0) - priceData.discountAmount)).toFixed(2)}</span>
             </div>
           )}
           

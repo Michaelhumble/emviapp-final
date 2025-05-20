@@ -36,16 +36,32 @@ export const PricingProvider: React.FC<PricingProviderProps> = ({
 
   // Calculate price data whenever pricing options change
   const priceData = React.useMemo(() => {
-    const calculatedPrice = getJobPrice(pricingOptions);
-    
-    // Ensure all required properties are present for PaymentSummary
-    return {
-      ...calculatedPrice,
-      discountedPrice: calculatedPrice.originalPrice - calculatedPrice.discountAmount,
-      discountLabel: calculatedPrice.discountPercentage > 0 ? 
-        `${calculatedPrice.discountPercentage}% Discount` : '',
-      isFoundersDiscount: true // Adjust this based on your business logic
-    };
+    try {
+      const calculatedPrice = getJobPrice(pricingOptions);
+      
+      // Ensure all required properties are present for PaymentSummary
+      return {
+        ...calculatedPrice,
+        discountedPrice: calculatedPrice.originalPrice - calculatedPrice.discountAmount,
+        discountLabel: calculatedPrice.discountPercentage > 0 ? 
+          `${calculatedPrice.discountPercentage}% Discount` : '',
+        isFoundersDiscount: true // Adjust this based on your business logic
+      };
+    } catch (error) {
+      console.error("Error calculating price:", error);
+      
+      // Return default price data to prevent UI errors
+      return {
+        basePrice: 0,
+        originalPrice: 0,
+        finalPrice: 0,
+        discountAmount: 0,
+        discountPercentage: 0,
+        discountedPrice: 0,
+        discountLabel: '',
+        isFoundersDiscount: false
+      };
+    }
   }, [pricingOptions]);
 
   return (

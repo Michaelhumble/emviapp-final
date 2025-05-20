@@ -1,217 +1,103 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { JobPricingTier } from '@/utils/posting/types';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from '@/components/ui/card';
+import { CheckCircle } from 'lucide-react';
+import { JobPricingOption } from '@/utils/posting/types';
+import { cn } from '@/lib/utils';
 
 interface JobSummaryProps {
-  jobData: {
-    title?: string;
-    description?: string;
-    vietnamese_description?: string;
-    location?: string;
-    contactName?: string;
-    contactEmail?: string;
-    contactPhone?: string;
-    salary_range?: string;
-    compensation_type?: string;
-    jobType?: string;
-    experience_level?: string;
-    specialties?: string[];
-    requirements?: string[];
-  };
-  pricingTier: JobPricingTier;
-  durationMonths: number;
+  title: string;
+  description?: string;
+  location?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  pricingPlan?: JobPricingOption;
+  jobType?: string;
 }
 
 const JobSummary: React.FC<JobSummaryProps> = ({
-  jobData,
-  pricingTier,
-  durationMonths
+  title,
+  description,
+  location,
+  contactEmail,
+  contactPhone,
+  pricingPlan,
+  jobType
 }) => {
-  const { t } = useTranslation();
-  const selectedTier = jobPricingOptions.find(option => option.tier === pricingTier);
-  
-  // Format job type for display
-  const formatJobType = (type: string = 'full-time') => {
-    return type.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join('-');
-  };
-  
-  // Format experience level for display
-  const formatExperienceLevel = (level: string = 'experienced') => {
-    return level.charAt(0).toUpperCase() + level.slice(1);
-  };
-  
   return (
-    <Card className="mb-6 border-[#e8e1d5] bg-[#fdfbf8] shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="font-playfair text-xl">
-          {t({
-            english: 'Job Post Summary',
-            vietnamese: 'Tóm tắt bài đăng công việc'
-          })}
-        </CardTitle>
+    <Card className="bg-white shadow overflow-hidden">
+      <CardHeader className={cn(
+        "pb-2", 
+        pricingPlan?.id === 'premium' && "bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200",
+        pricingPlan?.id === 'gold' && "bg-gradient-to-r from-amber-50 to-amber-100 border-b border-amber-200",
+        pricingPlan?.id === 'diamond' && "bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200"
+      )}>
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-xl font-semibold">{title || "Job Title"}</CardTitle>
+          {pricingPlan && (
+            <Badge className={cn(
+              "font-medium",
+              pricingPlan.id === 'standard' && "bg-blue-100 text-blue-800 hover:bg-blue-200",
+              pricingPlan.id === 'premium' && "bg-purple-100 text-purple-800 hover:bg-purple-200",
+              pricingPlan.id === 'gold' && "bg-amber-100 text-amber-800 hover:bg-amber-200",
+              pricingPlan.id === 'diamond' && "bg-sky-100 text-sky-800 hover:bg-sky-200"
+            )}>
+              {pricingPlan.name}
+            </Badge>
+          )}
+        </div>
+        
+        <CardDescription className="mt-1">
+          {location && (
+            <div className="text-sm text-gray-600">
+              {location}
+            </div>
+          )}
+          {jobType && (
+            <div className="text-xs text-gray-500 mt-1">
+              {jobType}
+            </div>
+          )}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <h3 className="font-medium text-gray-900">{jobData.title}</h3>
-          <p className="text-sm text-gray-700 mt-1">{jobData.description}</p>
-          
-          {jobData.vietnamese_description && (
-            <div className="mt-2 text-sm text-gray-600 border-l-2 border-[#e0d5c0] pl-3 italic">
-              <p>{jobData.vietnamese_description}</p>
-            </div>
-          )}
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#e8e1d5]">
-          <div>
-            <p className="text-xs text-gray-500">
-              {t({
-                english: 'Location',
-                vietnamese: 'Địa điểm'
-              })}
-            </p>
-            <p className="text-sm font-medium">{jobData.location}</p>
-          </div>
-          
-          {jobData.salary_range && (
-            <div>
-              <p className="text-xs text-gray-500">
-                {t({
-                  english: 'Compensation',
-                  vietnamese: 'Lương'
-                })}
-              </p>
-              <p className="text-sm font-medium">
-                {jobData.salary_range}
-                {jobData.compensation_type && ` (${jobData.compensation_type})`}
-              </p>
-            </div>
-          )}
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#e8e1d5]">
-          <div>
-            <p className="text-xs text-gray-500">
-              {t({
-                english: 'Job Type',
-                vietnamese: 'Loại công việc'
-              })}
-            </p>
-            <p className="text-sm font-medium">{formatJobType(jobData.jobType)}</p>
-          </div>
-          
-          <div>
-            <p className="text-xs text-gray-500">
-              {t({
-                english: 'Experience Level',
-                vietnamese: 'Mức kinh nghiệm'
-              })}
-            </p>
-            <p className="text-sm font-medium">{formatExperienceLevel(jobData.experience_level)}</p>
-          </div>
-        </div>
-        
-        {jobData.specialties && jobData.specialties.length > 0 && (
-          <div className="pt-3 border-t border-[#e8e1d5]">
-            <p className="text-xs text-gray-500 mb-1">
-              {t({
-                english: 'Specialties',
-                vietnamese: 'Chuyên môn'
-              })}
-            </p>
-            <div className="flex flex-wrap gap-1">
-              {jobData.specialties.map((specialty, index) => (
-                <span 
-                  key={index} 
-                  className="text-xs bg-[#f8f5f0] px-2 py-1 rounded-full text-gray-700"
-                >
-                  {specialty}
-                </span>
-              ))}
-            </div>
+      <CardContent className="pt-4">
+        {description && (
+          <div className="mb-4">
+            <h4 className="text-sm font-medium mb-1">Description</h4>
+            <p className="text-sm text-gray-600">{description}</p>
           </div>
         )}
         
-        {jobData.requirements && jobData.requirements.length > 0 && (
-          <div className="pt-3 border-t border-[#e8e1d5]">
-            <p className="text-xs text-gray-500 mb-1">
-              {t({
-                english: 'Requirements',
-                vietnamese: 'Yêu cầu'
-              })}
-            </p>
-            <ul className="text-sm text-gray-700 list-disc pl-5">
-              {jobData.requirements.map((requirement, index) => (
-                <li key={index}>{requirement}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        <div className="pt-3 border-t border-[#e8e1d5]">
-          <h4 className="text-sm font-medium text-gray-900">
-            {t({
-              english: 'Contact Information',
-              vietnamese: 'Thông tin liên hệ'
-            })}
-          </h4>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-            <div>
-              <p className="text-xs text-gray-500">
-                {t({
-                  english: 'Contact Name',
-                  vietnamese: 'Tên liên hệ'
-                })}
-              </p>
-              <p className="text-sm">{jobData.contactName || '-'}</p>
-            </div>
-            
-            <div>
-              <p className="text-xs text-gray-500">
-                {t({
-                  english: 'Email',
-                  vietnamese: 'Email'
-                })}
-              </p>
-              <p className="text-sm">{jobData.contactEmail || '-'}</p>
-            </div>
-            
-            <div>
-              <p className="text-xs text-gray-500">
-                {t({
-                  english: 'Phone',
-                  vietnamese: 'Điện thoại'
-                })}
-              </p>
-              <p className="text-sm">{jobData.contactPhone || '-'}</p>
-            </div>
-          </div>
-        </div>
-        
-        {pricingTier !== 'free' && (
-          <div className="mt-4 pt-3 border-t border-[#e8e1d5] flex items-center">
-            <div className={`
-              w-3 h-3 rounded-full mr-2
-              ${pricingTier === 'premium' ? 'bg-purple-500' : ''}
-              ${pricingTier === 'gold' ? 'bg-amber-500' : ''}
-              ${pricingTier === 'diamond' ? 'bg-blue-500' : ''}
-              ${pricingTier === 'standard' ? 'bg-gray-500' : ''}
-            `}></div>
-            <p className="text-sm font-medium">
-              {t({
-                english: `Featured for ${durationMonths * 30} days with ${selectedTier?.name || ''} visibility`,
-                vietnamese: `Nổi bật trong ${durationMonths * 30} ngày với khả năng hiển thị ${selectedTier?.name || ''}`
-              })}
-            </p>
+        {(contactEmail || contactPhone) && (
+          <div>
+            <h4 className="text-sm font-medium mb-1">Contact</h4>
+            {contactEmail && <p className="text-sm text-gray-600">Email: {contactEmail}</p>}
+            {contactPhone && <p className="text-sm text-gray-600">Phone: {contactPhone}</p>}
           </div>
         )}
       </CardContent>
+      
+      {pricingPlan && pricingPlan.features && pricingPlan.features.length > 0 && (
+        <CardFooter className="bg-gray-50 px-6 py-4 flex flex-col items-start border-t">
+          <h4 className="text-sm font-medium mb-2">Included Features</h4>
+          <ul className="space-y-2">
+            {pricingPlan.features.map((feature, i) => (
+              <li key={i} className="flex text-sm">
+                <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </CardFooter>
+      )}
     </Card>
   );
 };
