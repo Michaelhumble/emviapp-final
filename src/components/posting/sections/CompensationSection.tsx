@@ -1,200 +1,296 @@
 
 import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useFormContext } from 'react-hook-form';
+import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { useTranslation } from '@/hooks/useTranslation';
-import { jobPostingTranslations } from '@/translations/jobPostingForm';
+import { compensationTranslations } from '@/components/posting/job/formTranslations';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface CompensationDetailsProps {
-  details: {
-    employment_type: string;
-    compensation_type: string;
-    compensation_details?: string;
-    salary_range?: string;
-    tip_range?: string;
-    experience_level: string;
-  };
-  onChange: (details: any) => void;
+interface CompensationSectionProps {
+  onFieldChange?: (field: string, value: any) => void;
 }
 
-const CompensationSection: React.FC<CompensationDetailsProps> = ({ details, onChange }) => {
-  const { t } = useTranslation();
-  const compensationTranslations = jobPostingTranslations.compensation;
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    onChange({
-      ...details,
-      [name]: value
-    });
+export const CompensationSection = ({ onFieldChange }: CompensationSectionProps) => {
+  const form = useFormContext<JobFormValues>();
+  const { t, isVietnamese } = useTranslation();
+
+  const handleFieldChange = (field: string, value: any) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
   };
-  
-  const handleEmploymentTypeChange = (value: string) => {
-    onChange({
-      ...details,
-      employment_type: value
-    });
-  };
-  
-  const handleCompensationTypeChange = (value: string) => {
-    onChange({
-      ...details,
-      compensation_type: value
-    });
-  };
-  
-  const handleExperienceLevelChange = (value: string) => {
-    onChange({
-      ...details,
-      experience_level: value
-    });
-  };
-  
+
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">{t(compensationTranslations.title)}</h2>
-      
-      {/* Employment Type */}
-      <div className="space-y-3">
-        <Label className="text-base">{t(compensationTranslations.employmentType)}</Label>
-        <RadioGroup 
-          value={details.employment_type} 
-          onValueChange={handleEmploymentTypeChange}
-          className="flex flex-wrap gap-4"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="full-time" id="full-time" />
-            <Label htmlFor="full-time" className="cursor-pointer">
-              {t(compensationTranslations.fullTime)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="part-time" id="part-time" />
-            <Label htmlFor="part-time" className="cursor-pointer">
-              {t(compensationTranslations.partTime)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="contract" id="contract" />
-            <Label htmlFor="contract" className="cursor-pointer">
-              {t(compensationTranslations.contract)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="temporary" id="temporary" />
-            <Label htmlFor="temporary" className="cursor-pointer">
-              {t(compensationTranslations.temporary)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="commission" id="commission" />
-            <Label htmlFor="commission" className="cursor-pointer">
-              {t(compensationTranslations.commission)}
-            </Label>
-          </div>
-        </RadioGroup>
-      </div>
-      
-      {/* Compensation Type */}
-      <div className="space-y-3">
-        <Label className="text-base">{t(compensationTranslations.compensationType)}</Label>
-        <RadioGroup 
-          value={details.compensation_type} 
-          onValueChange={handleCompensationTypeChange}
-          className="flex flex-wrap gap-4"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="hourly" id="hourly" />
-            <Label htmlFor="hourly" className="cursor-pointer">
-              {t(compensationTranslations.hourly)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="salary" id="salary" />
-            <Label htmlFor="salary" className="cursor-pointer">
-              {t(compensationTranslations.salary)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="commission_only" id="commission_only" />
-            <Label htmlFor="commission_only" className="cursor-pointer">
-              {t(compensationTranslations.commissionOnly)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="hybrid" id="hybrid" />
-            <Label htmlFor="hybrid" className="cursor-pointer">
-              {t(compensationTranslations.hybrid)}
-            </Label>
-          </div>
-        </RadioGroup>
-      </div>
-      
-      {/* Salary Range */}
       <div>
-        <Label htmlFor="salary_range" className="text-base">
-          {t(compensationTranslations.salaryRange)} <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="salary_range"
-          name="salary_range"
-          placeholder={t(compensationTranslations.salaryRangePlaceholder)}
-          value={details.salary_range || ''}
-          onChange={handleInputChange}
-          className="mt-1.5"
-          required
+        <h2 className="text-xl font-semibold mb-2">
+          {t({
+            english: "Compensation Details",
+            vietnamese: "Chi tiết bồi thường"
+          })}
+        </h2>
+        <p className="text-gray-500">
+          {t({
+            english: "Provide details about the compensation package for this position.",
+            vietnamese: "Cung cấp chi tiết về gói lương thưởng cho vị trí này."
+          })}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="compensation_type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t({
+                  english: "Compensation Type",
+                  vietnamese: "Loại thù lao"
+                })}
+              </FormLabel>
+              <Select 
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  handleFieldChange('compensation_type', value);
+                }}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t({
+                      english: "Select compensation type",
+                      vietnamese: "Chọn loại thù lao"
+                    })} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="hourly">{t({
+                    english: "Hourly Rate",
+                    vietnamese: "Mức giờ"
+                  })}</SelectItem>
+                  <SelectItem value="commission">{t({
+                    english: "Commission Only",
+                    vietnamese: "Chỉ hoa hồng"
+                  })}</SelectItem>
+                  <SelectItem value="mixed">{t({
+                    english: "Hourly + Commission",
+                    vietnamese: "Giờ + Hoa hồng"
+                  })}</SelectItem>
+                  <SelectItem value="salary">{t({
+                    english: "Salary",
+                    vietnamese: "Lương"
+                  })}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="compensation_details"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t({
+                  english: "Compensation Range",
+                  vietnamese: "Phạm vi thù lao"
+                })}
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder={t({
+                    english: "e.g., $20-25/hour or 60% commission",
+                    vietnamese: "VD: 20-25$/giờ hoặc 60% hoa hồng"
+                  })} 
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleFieldChange('compensation_details', e.target.value);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
       </div>
-      
-      {/* Tip Range */}
-      <div>
-        <Label htmlFor="tip_range" className="text-base">
-          {t(compensationTranslations.tipRange)}
-        </Label>
-        <Input
-          id="tip_range"
-          name="tip_range"
-          placeholder={t(compensationTranslations.tipRangePlaceholder)}
-          value={details.tip_range || ''}
-          onChange={handleInputChange}
-          className="mt-1.5"
-        />
-      </div>
-      
-      {/* Experience Level */}
-      <div className="space-y-3">
-        <Label className="text-base">{t(compensationTranslations.experienceLevel)}</Label>
-        <RadioGroup 
-          value={details.experience_level} 
-          onValueChange={handleExperienceLevelChange}
-          className="flex flex-wrap gap-4"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="entry" id="entry" />
-            <Label htmlFor="entry" className="cursor-pointer">
-              {t(compensationTranslations.entry)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="intermediate" id="intermediate" />
-            <Label htmlFor="intermediate" className="cursor-pointer">
-              {t(compensationTranslations.intermediate)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="experienced" id="experienced" />
-            <Label htmlFor="experienced" className="cursor-pointer">
-              {t(compensationTranslations.experienced)}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="senior" id="senior" />
-            <Label htmlFor="senior" className="cursor-pointer">
-              {t(compensationTranslations.senior)}
-            </Label>
-          </div>
-        </RadioGroup>
+
+      <div className="space-y-4">
+        <h3 className="font-medium">
+          {t({
+            english: "Additional Benefits",
+            vietnamese: "Quyền lợi bổ sung"
+          })}
+        </h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="weekly_pay"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value} 
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      handleFieldChange('weekly_pay', checked);
+                    }} 
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    {t({
+                      english: "Weekly Pay",
+                      vietnamese: "Trả lương hàng tuần"
+                    })}
+                  </FormLabel>
+                  <FormDescription>
+                    {t({
+                      english: "Employee gets paid on a weekly basis",
+                      vietnamese: "Nhân viên được trả lương hàng tuần"
+                    })}
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="has_housing"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value} 
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      handleFieldChange('has_housing', checked);
+                    }} 
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    {t({
+                      english: "Housing Provided",
+                      vietnamese: "Có chỗ ở"
+                    })}
+                  </FormLabel>
+                  <FormDescription>
+                    {t({
+                      english: "Housing is available for staff",
+                      vietnamese: "Có chỗ ở dành cho nhân viên"
+                    })}
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="has_wax_room"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value} 
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      handleFieldChange('has_wax_room', checked);
+                    }} 
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    {t({
+                      english: "Wax Room Available",
+                      vietnamese: "Có phòng wax"
+                    })}
+                  </FormLabel>
+                  <FormDescription>
+                    {t({
+                      english: "Includes a wax room for services",
+                      vietnamese: "Bao gồm phòng wax cho dịch vụ"
+                    })}
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="owner_will_train"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value} 
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      handleFieldChange('owner_will_train', checked);
+                    }} 
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    {t({
+                      english: "Owner Will Train",
+                      vietnamese: "Chủ sẽ đào tạo"
+                    })}
+                  </FormLabel>
+                  <FormDescription>
+                    {t({
+                      english: "On-the-job training is provided",
+                      vietnamese: "Đào tạo tại chỗ được cung cấp"
+                    })}
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="no_supply_deduction"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value} 
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked);
+                      handleFieldChange('no_supply_deduction', checked);
+                    }} 
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    {t({
+                      english: "No Supply Deduction",
+                      vietnamese: "Không trừ tiền vật tư"
+                    })}
+                  </FormLabel>
+                  <FormDescription>
+                    {t({
+                      english: "Supplies provided at no cost to employee",
+                      vietnamese: "Vật tư được cung cấp miễn phí"
+                    })}
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
     </div>
   );

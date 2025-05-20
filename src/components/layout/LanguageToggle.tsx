@@ -11,7 +11,7 @@ interface LanguageToggleProps {
 }
 
 const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = false }) => {
-  const [language, setLanguage] = useState<string>(getLanguagePreference());
+  const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -22,10 +22,10 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
     return removeListener;
   }, []);
 
-  const handleLanguageChange = (value: string) => {
+  const handleLanguageChange = (value: "en" | "vi") => {
     if (value && (value === 'en' || value === 'vi')) {
       setLanguage(value);
-      setLanguagePreference(value as 'en' | 'vi');
+      setLanguagePreference(value);
       setDrawerOpen(false);
     }
   };

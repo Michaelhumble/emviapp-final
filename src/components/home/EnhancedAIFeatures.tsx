@@ -1,119 +1,117 @@
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { BriefcaseBusiness, BarChart3, Users, Sparkles } from "lucide-react";
-import FeatureCard from "@/components/artists/FeatureCard";
-import { getLanguagePreference } from "@/utils/languagePreference";
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Brain, MessageSquare, Search, Sparkles } from 'lucide-react';
+import { getLanguagePreference } from '@/utils/languagePreference';
 
 const EnhancedAIFeatures = () => {
-  const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
+  const [language] = useState(getLanguagePreference());
 
-  // Listen for language change event
-  useEffect(() => {
-    const handleLanguageChange = (event: CustomEvent) => {
-      if (event.detail && event.detail.language) {
-        setLanguage(event.detail.language);
-      }
-    };
-    
-    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
-    
-    // Get initial language preference
-    const storedLanguage = localStorage.getItem('emvi_language_preference');
-    if (storedLanguage === 'vi' || storedLanguage === 'en') {
-      setLanguage(storedLanguage as "en" | "vi");
-    }
-    
-    return () => {
-      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
-    };
-  }, []);
+  const getText = (en: string, vi: string) => {
+    return language === 'vi' ? vi : en;
+  };
 
   const features = [
     {
-      icon: <BriefcaseBusiness className="h-10 w-10 text-primary" />,
-      title: language === "en" ? "Smart Job Matching" : "Kết Nối Công Việc Thông Minh",
-      description: language === "en" 
-        ? "Our AI matches you with salon positions and clients that align with your style, skills, and career goals."
-        : "AI của chúng tôi kết nối bạn với vị trí làm việc và khách hàng phù hợp với phong cách, kỹ năng và mục tiêu nghề nghiệp của bạn."
+      title: getText("AI Resume Polish", "AI Hoàn thiện hồ sơ"),
+      description: getText("Our AI analyzes your profile and suggests professional improvements to make you stand out to employers.", "AI của chúng tôi phân tích hồ sơ của bạn và đề xuất những cải tiến chuyên nghiệp giúp bạn nổi bật trong mắt nhà tuyển dụng."),
+      icon: <Sparkles className="h-5 w-5" />,
+      tag: getText("New", "Mới"),
+      color: "bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100"
     },
     {
-      icon: <Users className="h-10 w-10 text-primary" />,
-      title: language === "en" ? "Auto-Generated Profiles" : "Hồ Sơ Tự Động",
-      description: language === "en"
-        ? "Create a stunning profile in minutes with our AI-powered tools that highlight your best work."
-        : "Tạo hồ sơ ấn tượng chỉ trong vài phút với công cụ AI của chúng tôi để nổi bật những thành tựu tốt nhất của bạn."
+      title: getText("Smart Job Matching", "Khớp công việc thông minh"),
+      description: getText("Get matched with jobs that align with your skills, experience level, and preferred work environment.", "Được ghép với công việc phù hợp với kỹ năng, cấp độ kinh nghiệm và môi trường làm việc ưa thích của bạn."),
+      icon: <Search className="h-5 w-5" />,
+      tag: getText("Popular", "Phổ biến"),
+      color: "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100"
     },
     {
-      icon: <BarChart3 className="h-10 w-10 text-primary" />,
-      title: language === "en" ? "Boosted Visibility" : "Tăng Độ Nhận Diện",
-      description: language === "en"
-        ? "Get discovered by more clients through our intelligent recommendation algorithm."
-        : "Được nhiều khách hàng tìm thấy hơn thông qua thuật toán gợi ý thông minh của chúng tôi."
+      title: getText("AI Chat Assistant", "Trợ lý chat AI"),
+      description: getText("Get immediate answers about job listings, application status, or general beauty industry questions.", "Nhận câu trả lời ngay lập tức về danh sách công việc, trạng thái đơn xin việc hoặc các câu hỏi chung về ngành làm đẹp."),
+      icon: <MessageSquare className="h-5 w-5" />,
+      tag: getText("Beta", "Thử nghiệm"),
+      color: "bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100"
+    },
+    {
+      title: getText("AI Career Advisor", "Cố vấn nghề nghiệp AI"),
+      description: getText("Receive personalized career guidance and growth strategies based on your skills and goals.", "Nhận hướng dẫn nghề nghiệp cá nhân hóa và chiến lược phát triển dựa trên kỹ năng và mục tiêu của bạn."),
+      icon: <Brain className="h-5 w-5" />,
+      tag: getText("Coming Soon", "Sắp ra mắt"),
+      color: "bg-gradient-to-br from-green-50 to-emerald-50 border-green-100"
     }
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-primary/5 overflow-hidden">
-      <div className="container mx-auto px-4">
-        <motion.div
+    <section className="py-16 bg-white">
+      <div className="container px-4 mx-auto">
+        <motion.div 
+          className="text-center max-w-3xl mx-auto mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-3">
-            {language === "en" ? (
-              <span>Let AI Do the Hard Work — You Just Focus on Your Craft</span>
-            ) : (
-              <span>Hãy Để AI Lo Việc Khó — Bạn Chỉ Cần Làm Điều Mình Giỏi</span>
+          <Badge variant="outline" className="mb-4">
+            {getText("AI-POWERED", "CÔNG NGHỆ AI")}
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-serif font-medium mb-4">
+            {getText(
+              "Enhanced with Advanced AI Features", 
+              "Tăng cường bằng các tính năng AI tiên tiến"
             )}
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            {language === "en" 
-              ? "Our AI-powered platform helps you build your career and connect with clients who value your talent."
-              : "Nền tảng AI của chúng tôi giúp bạn phát triển sự nghiệp và kết nối với khách hàng đánh giá cao tài năng của bạn."}
+          <p className="text-lg text-gray-600">
+            {getText(
+              "Our platform leverages artificial intelligence to make your job search smarter and more effective.", 
+              "Nền tảng của chúng tôi tận dụng trí tuệ nhân tạo để giúp việc tìm kiếm việc làm của bạn thông minh và hiệu quả hơn."
+            )}
           </p>
         </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: index * 0.2 }}
+              transition={{ duration: 0.5, delay: 0.1 * index }}
               viewport={{ once: true }}
-              className="backdrop-blur-sm"
             >
-              <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6 h-full">
-                <div className="flex flex-col items-center text-center">
-                  <div className="p-3 rounded-full bg-primary/10 mb-4">
-                    {feature.icon}
+              <Card className={`h-full overflow-hidden ${feature.color} border`}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center shadow-sm mb-3">
+                      {feature.icon}
+                    </div>
+                    {feature.tag && (
+                      <Badge variant="secondary" className="bg-white">
+                        {feature.tag}
+                      </Badge>
+                    )}
                   </div>
-                  <h3 className="text-xl font-serif font-semibold mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </div>
-              </div>
+                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  <CardDescription className="text-base text-gray-700">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  {feature.tag !== getText("Coming Soon", "Sắp ra mắt") ? (
+                    <Button variant="outline" className="bg-white">
+                      {getText("Try Now", "Thử ngay")}
+                    </Button>
+                  ) : (
+                    <Button variant="outline" className="bg-white opacity-50 cursor-not-allowed">
+                      {getText("Coming Soon", "Sắp ra mắt")}
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
             </motion.div>
           ))}
-        </div>
-        
-        <div className="mt-12 text-center">
-          <button
-            onClick={() => {
-              const newLanguage = language === "en" ? "vi" : "en";
-              setLanguage(newLanguage);
-              localStorage.setItem('emvi_language_preference', newLanguage);
-              window.dispatchEvent(new CustomEvent('languageChanged', { 
-                detail: { language: newLanguage } 
-              }));
-            }}
-            className="px-4 py-2 rounded-full bg-white shadow-sm text-gray-700 text-sm border border-gray-200 hover:bg-gray-50 transition-colors duration-200"
-          >
-            {language === "en" ? "EN / VI" : "VI / EN"}
-          </button>
         </div>
       </div>
     </section>

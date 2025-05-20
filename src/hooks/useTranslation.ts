@@ -28,7 +28,7 @@ export function useTranslation() {
   // Toggle between English and Vietnamese
   const toggleLanguage = () => {
     const newLanguage = language === 'vi' ? 'en' : 'vi';
-    setLanguagePreference(newLanguage);
+    setLanguagePreference(newLanguage as 'en' | 'vi');
     setLanguage(newLanguage);
   };
   
