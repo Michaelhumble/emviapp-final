@@ -1,157 +1,137 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import Layout from '@/components/layout/Layout';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
-import PostWizardLayout from '@/components/posting/PostWizardLayout';
+import { useState } from 'react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { useJobPosting } from '@/hooks/jobs/useJobPosting';
-import { FormProvider, useForm } from 'react-hook-form';
-import { uploadImage } from '@/utils/uploadImage';
+import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
-import { Card } from '@/components/ui/card';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { PricingOptions } from '@/utils/posting/types';
+import PremiumJobPostForm from '@/components/posting/job/PremiumJobPostForm';
+import { PricingProvider } from '@/context/pricing/PricingProvider';
+import { JobDetailsSubmission } from '@/types/job';
 
 const JobPost = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showTemplateSelector, setShowTemplateSelector] = useState(true);
+  const { initiatePayment, isLoading } = usePostPayment();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
   const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
-  const { handleJobPost } = useJobPosting();
-  const { initiatePayment, isLoading } = usePostPayment();
-  const formMethods = useForm();
-  const [userPricingOptions, setUserPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'premium', // Default to premium tier
-    durationMonths: 1,             // Default to 1 month
-    autoRenew: true,               // Default to auto-renew enabled
-    isFirstPost: true,             // Default to first post (for free tier)
-    isNationwide: false            // Default to local listing
-  });
+  const [step, setStep] = useState<'template' | 'form'>('template');
+  const [currentFormStep, setCurrentFormStep] = useState(1);
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
     setSelectedTemplateType(templateType);
-    setShowTemplateSelector(false);
-    setCurrentStep(2);
+    setStep('form');
+    window.scrollTo(0, 0);
+  };
+
+  const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
+    try {
+      setIsSubmitting(true);
+      console.log('Form submitted:', data);
+      console.log('Pricing options:', pricingOptions);
+      
+      // Convert form data to the expected format for the API
+      const jobDetails: JobDetailsSubmission = {
+        title: data.title,
+        description: data.description,
+        vietnameseDescription: data.vietnameseDescription,
+        location: data.location,
+        jobType: data.jobType, 
+        compensation_type: data.compensation_type,
+        compensation_details: data.compensation_details,
+        weekly_pay: data.weekly_pay,
+        has_housing: data.has_housing,
+        has_wax_room: data.has_wax_room,
+        owner_will_train: data.owner_will_train,
+        no_supply_deduction: data.no_supply_deduction,
+        salonName: data.salonName,
+        contactName: data.contactName,
+        contactPhone: data.contactPhone,
+        contactEmail: data.contactEmail,
+        requirements: data.requirements || [],
+        specialties: data.specialties || [],
+        post_type: 'job'
+      };
+      
+      // Initiate payment with our consolidated hook
+      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      
+      if (result.success) {
+        toast.success('Job post created successfully!');
+        navigate('/dashboard');
+        return true;
+      } else {
+        toast.error('Error processing your job posting. Please try again.');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Error creating job post');
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBackToTemplates = () => {
+    setStep('template');
   };
 
   const handleStepChange = (step: number) => {
-    setCurrentStep(step);
+    setCurrentFormStep(step);
   };
 
-  const handleSubmit = async (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => {
-    // Validate required fields one more time
-    if (!formData.title || !formData.description || !formData.location || !formData.contactEmail) {
-      toast.error("Please complete all required fields before submitting");
-      return false;
-    }
-
-    // Save the user's pricing options for persistent state
-    setUserPricingOptions(pricingOptions);
-    
-    // Ensure requirements and specialties are arrays
-    const safeRequirements = Array.isArray(formData.requirements) ? formData.requirements : [];
-    const safeSpecialties = Array.isArray(formData.specialties) ? formData.specialties : [];
-
-    try {
-      console.log('Form submitted with price tier:', pricingOptions.selectedPricingTier);
-      console.log('Duration months:', pricingOptions.durationMonths);
-      console.log('Auto-renew:', pricingOptions.autoRenew);
-      console.log('Nationwide:', pricingOptions.isNationwide);
-      console.log('First post:', pricingOptions.isFirstPost);
-      console.log('Photos count:', photoUploads.length);
-      
-      // Handle photo upload if any
-      let imageUrls: string[] = [];
-      if (photoUploads.length > 0) {
-        try {
-          // Upload each photo and collect URLs
-          const uploadPromises = photoUploads.map(photo => uploadImage(photo));
-          imageUrls = await Promise.all(uploadPromises);
-          console.log('Images uploaded successfully:', imageUrls);
-        } catch (uploadError) {
-          console.error('Error uploading photos:', uploadError);
-          toast.error("There was an issue uploading your photos");
-          // Continue with job post even if image upload fails
-        }
-      }
-
-      // Prepare job details for submission
-      const jobDetails = {
-        title: formData.title,
-        description: formData.description,
-        vietnamese_description: formData.vietnameseDescription || '',
-        location: formData.location,
-        employment_type: formData.jobType,
-        compensation_details: formData.compensation_details || '',
-        salary_range: formData.salary_range || '',
-        experience_level: formData.experience_level,
-        contact_info: {
-          email: formData.contactEmail,
-          owner_name: formData.contactName || '',
-          phone: formData.contactPhone || ''
-        },
-        specialties: safeSpecialties,
-        requirements: safeRequirements,
-        post_type: 'job',
-        images: imageUrls,
-        templateType: formData.templateType || selectedTemplateType
-      };
-      
-      // Diamond plan handling - direct to waitlist instead of payment
-      if (pricingOptions.selectedPricingTier === 'diamond') {
-        toast.success("Diamond plan request submitted", {
-          description: "Our team will contact you shortly to discuss premium options."
-        });
-        
-        // Submit the request to a different endpoint or track in database
-        // For now, we'll just simulate success
-        setTimeout(() => {
-          navigate('/post-success?tier=diamond&waitlist=true');
-        }, 1500);
-        return true;
-      }
-      
-      // Process payment through Stripe or direct posting for free tier
-      const result = await initiatePayment('job', jobDetails, pricingOptions);
-      return result?.success || false;
-    } catch (error) {
-      console.error('Error submitting job post:', error);
-      toast.error("Error creating job post");
-      return false;
-    }
+  // Set the default pricing options
+  const defaultPricingOptions: PricingOptions = {
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true,
+    isNationwide: false
   };
 
   return (
-    <FormProvider {...formMethods}>
-      <PostWizardLayout currentStep={currentStep} totalSteps={showTemplateSelector ? 4 : 3}>
+    <PricingProvider initialOptions={defaultPricingOptions}>
+      <Layout>
         <Helmet>
           <title>Post a Job | EmviApp</title>
           <meta 
             name="description" 
-            content="Find qualified candidates for your salon position quickly with EmviApp job listings."
+            content="Post a job on EmviApp. Find qualified beauty professionals for your business."
           />
         </Helmet>
-        
-        {showTemplateSelector ? (
-          <Card className="bg-white shadow-md rounded-lg p-6">
-            <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+        <div className="container max-w-4xl mx-auto py-8 px-4">
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl md:text-3xl font-bold font-playfair mb-2">Post a Job</h1>
+            <p className="text-gray-600">Find your perfect employee</p>
+          </div>
+          
+          <Card className="bg-white shadow-md rounded-lg border-0 p-0 overflow-hidden">
+            {step === 'template' ? (
+              <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+            ) : (
+              <PremiumJobPostForm 
+                onSubmit={handleSubmit}
+                initialTemplate={selectedTemplate || undefined}
+                onBack={handleBackToTemplates}
+                isLoading={isLoading || isSubmitting}
+                isCustomTemplate={selectedTemplateType === 'custom'}
+                maxPhotos={5}
+                onStepChange={handleStepChange}
+              />
+            )}
           </Card>
-        ) : (
-          <EnhancedJobForm 
-            onSubmit={handleSubmit}
-            onStepChange={handleStepChange}
-            initialTemplate={selectedTemplate || undefined}
-            isCustomTemplate={selectedTemplateType === 'custom'}
-            maxPhotos={5} // Set maximum photos to 5
-          />
-        )}
-      </PostWizardLayout>
-    </FormProvider>
+        </div>
+      </Layout>
+    </PricingProvider>
   );
 };
 

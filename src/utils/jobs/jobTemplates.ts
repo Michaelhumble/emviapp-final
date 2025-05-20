@@ -1,209 +1,268 @@
 import { JobFormValues } from "@/components/posting/job/jobFormSchema";
 
-export type JobTemplateType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 
-                             'spa' | 'receptionist' | 'manager' | 'massage' | 
-                             'tattoo' | 'makeup' | 'booth' | 'beauty' | 'custom';
+export type JobTemplateType = 
+  | 'nails' 
+  | 'hair' 
+  | 'lashes' 
+  | 'massage' 
+  | 'tattoo' 
+  | 'barber'
+  | 'skincare'
+  | 'makeup'
+  | 'booth'
+  | 'receptionist'
+  | 'manager'
+  | 'spa'
+  | 'beauty'
+  | 'custom';
 
+// Main function to get job templates
 export const getJobTemplate = (type: JobTemplateType): JobFormValues => {
-  // Base template that all specific templates will extend
-  const baseTemplate: JobFormValues = {
-    title: "",
-    description: "",
-    vietnameseDescription: "",
-    location: "",
-    jobType: "Full-time",
-    compensation_type: "Commission",
-    compensation_details: "",
-    salary_range: "",
-    experience_level: "",
-    contactName: "",
-    contactPhone: "",
-    contactEmail: "",
-    contactZalo: "",
-    salonName: "",
-    weekly_pay: false,
-    has_housing: false,
-    has_wax_room: false,
-    owner_will_train: false,
-    no_supply_deduction: false,
-    specialties: [],
-    requirements: [],
-    templateType: type,
-    image: "",
-  };
-  
-  // Template-specific customizations
   switch (type) {
     case 'nails':
-      return {
-        ...baseTemplate,
-        title: "Nail Technician",
-        description: "We are looking for an experienced nail technician to join our team. Must be skilled in manicures, pedicures, and nail art.",
-        jobType: "Full-time",
-        compensation_type: "Commission",
-        compensation_details: "Up to 60% commission based on experience",
-        specialties: ["acrylic", "gel", "dip-powder"],
-        requirements: ["license", "experience", "english"],
-      };
+      return nailTechTemplate;
     case 'hair':
-      return {
-        ...baseTemplate,
-        title: "Hair Stylist",
-        description: "Join our salon as a hair stylist with opportunities for growth and a positive team environment.",
-        jobType: "Full-time",
-        compensation_type: "Commission",
-        compensation_details: "50-60% commission based on experience",
-        specialties: ["haircut", "color", "highlights"],
-        requirements: ["license", "experience"],
-      };
+      return hairStylistTemplate;
     case 'lashes':
-      return {
-        ...baseTemplate,
-        title: "Eyelash Extension Technician",
-        description: "We are looking for a skilled eyelash extension technician to provide high-quality lash services to our clients.",
-        jobType: "Part-time",
-        compensation_type: "Hourly + Tips",
-        compensation_details: "Hourly rate + tips",
-        specialties: ["Classic Lashes", "Volume Lashes", "Lash Lifts", "Lash Tints"],
-        requirements: ["Eyelash extension certification", "Experience with different lash techniques", "Attention to detail", "Excellent hygiene practices"],
-      };
+      return lashTechTemplate;
     case 'barber':
-      return {
-        ...baseTemplate,
-        title: "Experienced Barber Wanted",
-        description: "Our barbershop is looking for a barber with experience in traditional and modern cuts, fades, and shaves.",
-        jobType: "Full-time",
-        compensation_type: "Commission",
-        compensation_details: "Commission based on experience",
-        specialties: ["Fades", "Tapers", "Straight Razor Shaves", "Beard Trims"],
-        requirements: ["Barber license", "Proficiency in various cutting techniques", "Knowledge of beard grooming", "Strong customer service skills"],
-      };
+      return barberTemplate;
     case 'skincare':
-      return {
-        ...baseTemplate,
-        title: "Esthetician for Spa",
-        description: "We are seeking a licensed esthetician to provide facials, waxing, and other skincare treatments in our spa.",
-        jobType: "Full-time",
-        compensation_type: "Hourly + Commission",
-        compensation_details: "Hourly rate + commission",
-        specialties: ["Facials", "Waxing", "Microdermabrasion", "Chemical Peels"],
-        requirements: ["Esthetician license", "Experience in skincare treatments", "Knowledge of skincare products", "Ability to recommend treatments"],
-      };
-    case 'spa':
-      return {
-        ...baseTemplate,
-        title: "Spa Technician",
-        description: "We are seeking a skilled spa technician to provide body treatments, wraps, and therapeutic services in our wellness center.",
-        jobType: "Full-time",
-        compensation_type: "Hourly + Tips",
-        compensation_details: "Hourly rate + tips",
-        specialties: ["Body Wraps", "Massage", "Salt Scrubs", "Aromatherapy"],
-        requirements: ["Certification in spa therapies", "Experience in body treatments", "Knowledge of aromatherapy", "Excellent communication skills"],
-      };
-    case 'receptionist':
-      return {
-        ...baseTemplate,
-        title: "Salon Receptionist",
-        description: "We are looking for a friendly and organized receptionist to manage scheduling, client check-ins, and salon operations.",
-        jobType: "Part-time",
-        compensation_type: "Hourly",
-        compensation_details: "Hourly rate",
-        specialties: ["Customer Service", "Scheduling", "Phone Etiquette", "Cash Handling"],
-        requirements: ["High school diploma", "Excellent communication skills", "Basic computer skills", "Ability to multitask"],
-      };
-    case 'manager':
-      return {
-        ...baseTemplate,
-        title: "Salon Manager",
-        description: "We are seeking an experienced salon manager to oversee salon operations, manage staff, and ensure customer satisfaction.",
-        jobType: "Full-time",
-        compensation_type: "Salary + Bonuses",
-        compensation_details: "Salary + bonuses",
-        specialties: ["Staff Management", "Inventory Control", "Customer Relations", "Marketing"],
-        requirements: ["Management experience", "Leadership skills", "Knowledge of salon operations", "Excellent problem-solving skills"],
-      };
+      return skinCareTemplate;
     case 'massage':
-      return {
-        ...baseTemplate,
-        title: "Licensed Massage Therapist",
-        description: "Our spa is looking for a licensed massage therapist to provide therapeutic massage and bodywork services to our clients.",
-        jobType: "Part-time",
-        compensation_type: "Commission",
-        compensation_details: "Commission based on experience",
-        specialties: ["Swedish Massage", "Deep Tissue Massage", "Hot Stone Massage", "Prenatal Massage"],
-        requirements: ["Massage therapy license", "Experience in massage techniques", "Knowledge of anatomy", "Excellent communication skills"],
-      };
+      return massageTemplate;
     case 'tattoo':
-      return {
-        ...baseTemplate,
-        title: "Tattoo Artist",
-        description: "Our tattoo studio is looking for a skilled tattoo artist with a strong portfolio and expertise in various tattooing styles.",
-        jobType: "Full-time",
-        compensation_type: "Commission",
-        compensation_details: "Commission based on experience",
-        specialties: ["Black and Gray", "Color Realism", "Traditional", "Geometric"],
-        requirements: ["Tattoo license", "Strong portfolio", "Knowledge of sterilization", "Excellent artistic skills"],
-      };
+      return tattooTemplate;
     case 'makeup':
-      return {
-        ...baseTemplate,
-        title: "Makeup Artist",
-        description: "Our salon is seeking a talented makeup artist to provide makeup application services for weddings, events, and photoshoots.",
-        jobType: "Part-time",
-        compensation_type: "Hourly + Tips",
-        compensation_details: "Hourly rate + tips",
-        specialties: ["Bridal Makeup", "Special Effects", "Editorial", "Airbrushing"],
-        requirements: ["Makeup artistry certification", "Experience in makeup application", "Knowledge of makeup products", "Excellent customer service skills"],
-      };
+      return makeupTemplate;
     case 'booth':
-      return {
-        ...baseTemplate,
-        title: "Booth Rental Available",
-        description: "We are offering booth rental space to independent beauty professionals in our well-established salon.",
-        jobType: "Booth Rental",
-        compensation_type: "Rental Fee",
-        compensation_details: "Rental fee",
-        specialties: ["Hair Stylists", "Nail Technicians", "Estheticians", "Massage Therapists"],
-        requirements: ["Valid professional license", "Liability insurance", "Own clientele", "Professional demeanor"],
-      };
+      return boothRentalTemplate;
+    case 'receptionist':
+      return receptionistTemplate;
+    case 'manager':
+      return managerTemplate;
+    case 'spa':
+      return spaTemplate;
     case 'beauty':
-      return {
-        ...baseTemplate,
-        title: "Other Beauty Professional",
-        description: "We are looking for a skilled beauty professional to provide specialized beauty services such as microblading, threading, or waxing.",
-        jobType: "Contract",
-        compensation_type: "Commission",
-        compensation_details: "Commission based on experience",
-        specialties: ["Microblading", "Threading", "Waxing", "Lash Extensions"],
-        requirements: ["Certification in the specific service", "Experience in the service", "Knowledge of safety procedures", "Excellent customer service skills"],
-      };
+      return beautyTemplate;
     case 'custom':
-      return {
-        ...baseTemplate,
-        title: "",
-        description: "",
-        vietnameseDescription: "",
-        location: "",
-        jobType: "",
-        compensation_type: "",
-        compensation_details: "",
-        salary_range: "",
-        experience_level: "",
-        contactName: "",
-        contactPhone: "",
-        contactEmail: "",
-        contactZalo: "",
-        salonName: "",
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        specialties: [],
-        requirements: [],
-        templateType: "custom",
-      };
     default:
-      return baseTemplate;
+      return blankTemplate;
   }
+};
+
+// Blank template for custom jobs
+const blankTemplate: JobFormValues = {
+  title: "",
+  description: "",
+  vietnameseDescription: "",
+  location: "",
+  jobType: "Full-time",
+  compensation_type: "",
+  compensation_details: "",
+  contactName: "",
+  contactPhone: "",
+  contactEmail: "",
+  salonName: "",
+  salary_range: "",
+  specialties: [],
+  requirements: [],
+  weekly_pay: false,
+  has_housing: false,
+  has_wax_room: false,
+  owner_will_train: false,
+  no_supply_deduction: false,
+  image: "",
+  templateType: "custom",
+};
+
+// Nail tech template
+const nailTechTemplate: JobFormValues = {
+  title: "Nail Technician",
+  description: "We are seeking skilled nail technicians to join our salon. The ideal candidate has experience with manicures, pedicures, and nail enhancements. Must be professional, detail-oriented, and provide excellent customer service.",
+  vietnameseDescription: "Chúng tôi đang tìm kiếm các kỹ thuật viên làm móng có kỹ năng để tham gia tiệm của chúng tôi. Ứng viên lý tưởng có kinh nghiệm với dịch vụ làm móng tay, móng chân và đắp móng. Phải chuyên nghiệp, chú ý đến chi tiết và cung cấp dịch vụ khách hàng xuất sắc.",
+  location: "",
+  jobType: "Full-time",
+  compensation_type: "Hourly + Commission",
+  compensation_details: "60/40 commission split",
+  contactName: "",
+  contactPhone: "",
+  contactEmail: "",
+  salonName: "",
+  requirements: ["Valid nail technician license", "2+ years experience", "Acrylic and gel experience", "Customer service skills"],
+  specialties: ["Dip Powder", "Gel", "Acrylic", "Nail Art"],
+  weekly_pay: true,
+  has_housing: false,
+  has_wax_room: false,
+  owner_will_train: false,
+  no_supply_deduction: false,
+  templateType: "nails",
+};
+
+// Hair stylist template
+const hairStylistTemplate: JobFormValues = {
+  title: "Hair Stylist",
+  description: "We're looking for a creative and enthusiastic hair stylist to join our team. The ideal candidate has experience in cutting, coloring, and styling for a diverse clientele. Must be professional, passionate about hair, and committed to ongoing education.",
+  vietnameseDescription: "",
+  location: "",
+  jobType: "Full-time",
+  compensation_type: "Commission",
+  compensation_details: "Competitive commission structure",
+  contactName: "",
+  contactPhone: "",
+  contactEmail: "",
+  salonName: "",
+  requirements: ["Cosmetology license", "2+ years salon experience", "Color and cutting skills", "Portfolio of work"],
+  specialties: ["Hair Cuts", "Color", "Balayage", "Extensions"],
+  weekly_pay: false,
+  has_housing: false,
+  has_wax_room: false,
+  owner_will_train: false,
+  no_supply_deduction: false,
+  templateType: "hair",
+};
+
+// Lash tech template
+const lashTechTemplate: JobFormValues = {
+  title: "Lash Technician",
+  description: "We are seeking a skilled lash technician to join our beauty team. The ideal candidate has experience in classic and volume lash extensions, lash lifts, and providing exceptional client experiences.",
+  vietnameseDescription: "",
+  location: "",
+  jobType: "Full-time",
+  compensation_type: "Hourly + Commission",
+  compensation_details: "",
+  contactName: "",
+  contactPhone: "",
+  contactEmail: "",
+  salonName: "",
+  requirements: ["Lash certification", "1+ year experience", "Knowledge of lash types and styles", "Attention to detail"],
+  specialties: ["Classic Lashes", "Volume Lashes", "Hybrid Lashes", "Lash Lifts"],
+  weekly_pay: false,
+  has_housing: false,
+  has_wax_room: false,
+  owner_will_train: false,
+  no_supply_deduction: false,
+  templateType: "lashes",
+};
+
+// Other templates follow a similar pattern
+const barberTemplate: JobFormValues = {
+  title: "Barber",
+  description: "Looking for a skilled barber to join our team. The ideal candidate has experience in men's haircuts, beard trims, and hot towel shaves. Must be professional, personable, and have excellent customer service skills.",
+  vietnameseDescription: "",
+  location: "",
+  jobType: "Full-time",
+  compensation_type: "Commission",
+  compensation_details: "",
+  contactName: "",
+  contactPhone: "",
+  contactEmail: "",
+  salonName: "",
+  requirements: ["Barber license", "1+ years experience", "Expertise in modern cutting techniques", "Customer service skills"],
+  specialties: ["Fades", "Beard Trims", "Hot Towel Shaves", "Hair Design"],
+  weekly_pay: false,
+  has_housing: false,
+  has_wax_room: false,
+  owner_will_train: false,
+  no_supply_deduction: false,
+  templateType: "barber",
+};
+
+// Simplified templates for remaining types
+const skinCareTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Esthetician",
+  description: "Seeking a licensed esthetician for facials, skin treatments, and skincare consultations.",
+  requirements: ["Esthetician license", "Skincare knowledge", "Customer service skills"],
+  specialties: ["Facials", "Chemical Peels", "Microdermabrasion"],
+  jobType: "Full-time",
+  compensation_type: "Hourly + Commission",
+  templateType: "skincare",
+};
+
+const massageTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Massage Therapist",
+  description: "Looking for a licensed massage therapist to provide various massage techniques.",
+  requirements: ["Massage therapy license", "Training in multiple techniques", "Customer service skills"],
+  specialties: ["Deep Tissue", "Swedish", "Hot Stone", "Aromatherapy"],
+  jobType: "Full-time",
+  templateType: "massage",
+};
+
+const tattooTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Tattoo Artist",
+  description: "Seeking a talented tattoo artist with a strong portfolio and client base.",
+  requirements: ["3+ years experience", "Strong portfolio", "Excellent sanitation practices"],
+  specialties: ["Black & Gray", "Color", "Custom Design", "Cover-ups"],
+  compensation_type: "Commission",
+  templateType: "tattoo",
+};
+
+const makeupTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Makeup Artist",
+  description: "Looking for a creative makeup artist for our beauty salon.",
+  requirements: ["Makeup artistry certification", "Portfolio of work", "Experience with diverse skin tones"],
+  specialties: ["Bridal", "Editorial", "Special Effects", "Everyday Glam"],
+  compensation_type: "Hourly + Commission",
+  templateType: "makeup",
+};
+
+const boothRentalTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Booth Rental Available",
+  description: "Booth rental available in our busy salon for nail technicians, hair stylists, or beauty professionals.",
+  location: "",
+  jobType: "For Sale",
+  compensation_type: "Other",
+  compensation_details: "Weekly booth rental",
+  requirements: ["Valid license", "Own clientele preferred", "Professional attitude"],
+  specialties: ["Booth Rental"],
+  templateType: "booth",
+};
+
+const receptionistTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Salon Receptionist",
+  description: "Front desk position for our busy salon. Responsibilities include scheduling, check-ins, retail sales, and maintaining a welcoming atmosphere.",
+  jobType: "Full-time",
+  compensation_type: "Hourly",
+  requirements: ["Customer service experience", "Computer skills", "Multi-tasking abilities"],
+  specialties: ["Reception", "Scheduling", "Retail"],
+  templateType: "receptionist",
+};
+
+const managerTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Salon Manager",
+  description: "Seeking an experienced salon manager to oversee daily operations, staff management, and client relations.",
+  jobType: "Full-time",
+  compensation_type: "Salary",
+  requirements: ["3+ years salon management experience", "Staff leadership skills", "Business acumen"],
+  specialties: ["Management", "Operations", "Team Building"],
+  templateType: "manager",
+};
+
+const spaTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Spa Technician",
+  description: "Seeking a spa technician with experience in body treatments, wraps, and scrubs.",
+  jobType: "Full-time",
+  compensation_type: "Hourly + Commission",
+  requirements: ["Spa technician certification", "1+ year experience", "Customer service skills"],
+  specialties: ["Body Wraps", "Scrubs", "Relaxation Treatments"],
+  templateType: "spa",
+};
+
+const beautyTemplate: JobFormValues = {
+  ...blankTemplate,
+  title: "Beauty Professional",
+  description: "Seeking a licensed beauty professional for specialized services.",
+  jobType: "Full-time",
+  compensation_type: "Commission",
+  requirements: ["Relevant license", "Experience in specialty", "Customer service skills"],
+  specialties: ["Microblading", "Threading", "Waxing"],
+  templateType: "beauty",
 };

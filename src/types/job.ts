@@ -17,7 +17,6 @@ export interface Job {
     phone?: string;
     email?: string;
     notes?: string;
-    zalo?: string;
   };
   for_sale?: boolean;
   asking_price?: string;
@@ -78,7 +77,6 @@ export interface Job {
   contactName?: string; // From form fields
   contactPhone?: string; // From form fields
   contactEmail?: string; // From form fields
-  contactZalo?: string; // From form fields
   jobType?: string; // Aliased form field for employment_type
   salaryRange?: string; // Alternative naming convention
   tipRange?: string; // Alternative naming convention
@@ -101,7 +99,6 @@ export type JobDetailsSubmission = {
   contactName?: string;
   contactPhone?: string;
   contactEmail?: string;
-  contactZalo?: string;
   weekly_pay?: boolean;
   has_housing?: boolean;
   has_wax_room?: boolean;

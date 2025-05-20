@@ -150,3 +150,5 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
     </Card>
   );
 };
+
+export default PaymentSummary;

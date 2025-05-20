@@ -1,27 +1,42 @@
 
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
 import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Card } from '@/components/ui/card';
-import PhotoUploader from '../PhotoUploader';
-import { PricingSection } from '../PricingSection';
-import { getJobPrice, jobPricingOptions } from '@/utils/posting/jobPricing';
-import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
-import PaymentSummary from '../PaymentSummary';
+import { Card, CardContent } from '@/components/ui/card';
 import { usePricing } from '@/context/pricing/PricingContext';
-import JobDetailsSection from '../sections/JobDetailsSection';
-import ContactInfoSection from '../sections/ContactInfoSection';
+import PhotoUploader from '@/components/posting/PhotoUploader';
+import { PricingOptions } from '@/utils/posting/types';
+import JobBasicInfoForm from './forms/JobBasicInfoForm';
+import JobDetailsForm from './forms/JobDetailsForm';
+import JobContactForm from './forms/JobContactForm';
+import { PaymentSummary, type PriceData } from '@/components/posting/PaymentSummary';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Check, ChevronLeft } from 'lucide-react';
 
-interface PremiumJobPostFormProps {
-  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
+// Mock price calculation - replace with actual pricing logic
+const calculatePrice = (pricingOptions: PricingOptions): PriceData => {
+  const basePrice = pricingOptions.selectedPricingTier === 'premium' ? 99 : 49;
+  return {
+    basePrice,
+    discountedPrice: basePrice * 0.9,
+    finalPrice: basePrice * 0.9,
+    discountPercentage: 10,
+    discountLabel: "Early Adopter Discount",
+    discountAmount: basePrice * 0.1,
+    isFoundersDiscount: true
+  };
+};
+
+export interface PremiumJobPostFormProps {
+  onSubmit: (
+    data: JobFormValues, 
+    uploads: File[], 
+    pricingOptions: PricingOptions
+  ) => Promise<boolean>;
   initialTemplate?: JobFormValues;
   onBack?: () => void;
+  isLoading?: boolean;
   isCustomTemplate?: boolean;
   maxPhotos?: number;
   onStepChange?: (step: number) => void;
@@ -31,22 +46,23 @@ const PremiumJobPostForm: React.FC<PremiumJobPostFormProps> = ({
   onSubmit,
   initialTemplate,
   onBack,
+  isLoading = false,
   isCustomTemplate = false,
-  maxPhotos = 3,
+  maxPhotos = 5,
   onStepChange
 }) => {
-  const { t } = useTranslation();
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
-  const { pricingOptions, setPricingOptions } = usePricing();
-
-  // Ensure proper types for the initial values
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const { pricingOptions } = usePricing();
+  const { t } = useTranslation();
+  
+  // Create default values with proper types
   const defaultValues: JobFormValues = {
     title: "",
     description: "",
     vietnameseDescription: "",
     location: "",
-    jobType: "Full-time",
+    jobType: "",
     compensation_type: "",
     compensation_details: "",
     salary_range: "",
@@ -54,7 +70,6 @@ const PremiumJobPostForm: React.FC<PremiumJobPostFormProps> = ({
     contactName: "",
     contactPhone: "",
     contactEmail: "",
-    contactZalo: "",
     salonName: "",
     weekly_pay: false,
     has_housing: false,
@@ -62,177 +77,177 @@ const PremiumJobPostForm: React.FC<PremiumJobPostFormProps> = ({
     owner_will_train: false,
     no_supply_deduction: false,
     specialties: [],
-    requirements: [],
-    templateType: isCustomTemplate ? "custom" : "",
+    requirements: [], // Ensure requirements is an array
+    templateType: "",
     image: "",
     ...initialTemplate
   };
-
+  
   // Ensure requirements is always an array
   if (initialTemplate && typeof initialTemplate.requirements === 'string') {
-    defaultValues.requirements = initialTemplate.requirements ? [initialTemplate.requirements as string] : [];
+    defaultValues.requirements = (initialTemplate.requirements as unknown as string).split(',').map(s => s.trim());
   }
-
-  const form = useForm<JobFormValues>({
+  
+  const methods = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues
+    defaultValues,
   });
-
+  
   const handleSubmit = async (data: JobFormValues) => {
-    return await onSubmit(data, photoUploads, pricingOptions);
+    const success = await onSubmit(data, photoUploads, pricingOptions);
+    if (success) {
+      methods.reset();
+      setPhotoUploads([]);
+    }
   };
-
-  const handleTierSelect = (tier: string) => {
-    setPricingOptions({
-      ...pricingOptions,
-      selectedPricingTier: tier as JobPricingTier
-    });
-  };
-
+  
   const nextStep = () => {
-    const newStep = currentStep + 1;
-    setCurrentStep(newStep);
-    if (onStepChange) onStepChange(newStep);
-    window.scrollTo(0, 0);
-  };
-
-  const prevStep = () => {
-    const newStep = currentStep - 1;
-    setCurrentStep(newStep);
-    if (onStepChange) onStepChange(newStep);
-    window.scrollTo(0, 0);
-  };
-
-  const availableTiers = jobPricingOptions.filter(option => !option.hidden);
-
-  // Define steps
-  const steps = [
-    { title: "Job Details", key: "details" },
-    { title: "Contact Information", key: "contact" },
-    { title: "Photos & Pricing", key: "photos" }
-  ];
-
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return <JobDetailsSection form={form} showVietnameseByDefault={true} />;
-      case 2:
-        return <ContactInfoSection form={form} />;
-      case 3:
-        return (
-          <>
-            {/* Photos */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium mb-4">
-                {t({
-                  english: "Add Photos (Optional)",
-                  vietnamese: "Thêm Hình Ảnh (Không bắt buộc)"
-                })}
-              </h3>
-              <PhotoUploader 
-                maxPhotos={maxPhotos} 
-                onUploadsChange={setPhotoUploads} 
-                uploads={photoUploads}
-              />
-            </div>
-            
-            {/* Pricing */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium mb-4">
-                {t({
-                  english: "Select Your Pricing Plan",
-                  vietnamese: "Chọn Gói Dịch Vụ"
-                })}
-              </h3>
-              <PricingSection 
-                pricingOptions={availableTiers}
-                selectedTier={pricingOptions.selectedPricingTier}
-                onSelectTier={handleTierSelect}
-              />
-            </div>
-            
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <PaymentSummary
-                pricingOptions={pricingOptions}
-                setPricingOptions={setPricingOptions}
-                basePrice={getJobPrice(pricingOptions.selectedPricingTier, pricingOptions)}
-                postType="job"
-              />
-            </div>
-          </>
-        );
-      default:
-        return null;
+    if (currentStep < 3) {
+      const newStep = currentStep + 1;
+      setCurrentStep(newStep);
+      if (onStepChange) onStepChange(newStep);
+      window.scrollTo(0, 0);
     }
   };
 
+  const prevStep = () => {
+    if (currentStep > 1) {
+      const newStep = currentStep - 1;
+      setCurrentStep(newStep);
+      if (onStepChange) onStepChange(newStep);
+      window.scrollTo(0, 0);
+    } else if (onBack) {
+      onBack();
+    }
+  };
+
+  // Calculate price based on selected options
+  const priceData = calculatePrice(pricingOptions);
+  
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        {/* Step indicator */}
-        <div className="mb-8">
-          <div className="flex mb-6 overflow-x-auto">
-            {steps.map((step, index) => (
-              <div key={step.key} className="flex items-center">
-                <div className={`flex items-center justify-center w-8 h-8 rounded-full mr-2 ${
-                  currentStep > index + 1 
-                    ? 'bg-green-500 text-white' 
-                    : currentStep === index + 1 
-                      ? 'bg-primary text-white' 
-                      : 'bg-gray-200'
-                }`}>
-                  {currentStep > index + 1 ? <Check size={16} /> : index + 1}
-                </div>
-                <span className={`mr-4 text-sm font-medium ${
-                  currentStep === index + 1 ? 'text-primary' : 'text-gray-500'
-                }`}>
-                  {step.title}
-                </span>
-                {index < steps.length - 1 && (
-                  <div className="w-8 h-px bg-gray-300 mr-4"></div>
-                )}
-              </div>
-            ))}
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(handleSubmit)} className="space-y-6">
+        <div className="flex items-center mb-6">
+          <div className="flex-1 h-2 bg-gray-100 rounded-full">
+            <div 
+              className="h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-300" 
+              style={{ width: `${(currentStep / 3) * 100}%` }}
+            />
           </div>
+          <span className="ml-4 text-sm font-medium text-gray-700">
+            {t({
+              english: `Step ${currentStep} of 3`,
+              vietnamese: `Bước ${currentStep} / 3`
+            })}
+          </span>
         </div>
         
-        <Card className="p-6">
-          {renderStepContent()}
-        </Card>
-        
-        <div className="flex justify-between mt-6">
-          {currentStep > 1 ? (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={currentStep === 1 && onBack ? onBack : prevStep}
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
+        {currentStep === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-xl md:text-2xl font-playfair font-bold mb-4">
               {t({
+                english: "Job Basics",
+                vietnamese: "Thông tin cơ bản"
+              })}
+            </h2>
+            <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardContent className="p-6 md:p-8">
+                <JobBasicInfoForm />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+        
+        {currentStep === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-xl md:text-2xl font-playfair font-bold mb-4">
+              {t({
+                english: "Job Details",
+                vietnamese: "Chi tiết công việc"
+              })}
+            </h2>
+            <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardContent className="p-6 md:p-8">
+                <JobDetailsForm />
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardContent className="p-6 md:p-8">
+                <h3 className="text-lg font-medium mb-4">
+                  {t({
+                    english: "Upload Photos",
+                    vietnamese: "Tải lên hình ảnh"
+                  })}
+                </h3>
+                <PhotoUploader 
+                  onChange={setPhotoUploads}
+                  files={photoUploads}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+        
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <h2 className="text-xl md:text-2xl font-playfair font-bold mb-4">
+              {t({
+                english: "Contact & Review",
+                vietnamese: "Liên hệ & Xem lại"
+              })}
+            </h2>
+            <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+              <CardContent className="p-6 md:p-8">
+                <JobContactForm />
+              </CardContent>
+            </Card>
+              
+            <PaymentSummary priceData={priceData} />
+            
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start">
+              <div className="text-blue-500 mr-3 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
+              <p className="text-sm text-blue-800">
+                {t({
+                  english: "Your job post will be reviewed and published within 24 hours after payment. You'll receive an email confirmation.",
+                  vietnamese: "Bài đăng của bạn sẽ được xem xét và xuất bản trong vòng 24 giờ sau khi thanh toán. Bạn sẽ nhận được email xác nhận."
+                })}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-between mt-8">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={prevStep}
+            disabled={isLoading}
+            className="px-6"
+          >
+            {currentStep === 1 && onBack ? 
+              t({
+                english: "Back to Templates",
+                vietnamese: "Quay lại Mẫu"
+              }) : 
+              t({
                 english: "Previous",
                 vietnamese: "Quay lại"
-              })}
-            </Button>
-          ) : onBack ? (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onBack}
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              {t({
-                english: "Back to Templates",
-                vietnamese: "Trở về Mẫu"
-              })}
-            </Button>
-          ) : (
-            <div></div>
-          )}
+              })
+            }
+          </Button>
           
-          {currentStep < steps.length ? (
+          {currentStep < 3 ? (
             <Button 
               type="button" 
               onClick={nextStep}
+              className="px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               {t({
                 english: "Next",
@@ -242,23 +257,24 @@ const PremiumJobPostForm: React.FC<PremiumJobPostFormProps> = ({
           ) : (
             <Button 
               type="submit" 
-              disabled={form.formState.isSubmitting}
+              disabled={isLoading}
+              className="px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
-              {form.formState.isSubmitting ? 
+              {isLoading ? 
                 t({
                   english: "Submitting...",
                   vietnamese: "Đang gửi..."
                 }) : 
                 t({
                   english: "Submit Job Posting",
-                  vietnamese: "Đăng Tin Tuyển Dụng"
+                  vietnamese: "Đăng tin tuyển dụng"
                 })
               }
             </Button>
           )}
         </div>
       </form>
-    </Form>
+    </FormProvider>
   );
 };
 

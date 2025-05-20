@@ -14,7 +14,6 @@ export const jobFormSchema = z.object({
   contactName: z.string().min(2, "Contact name is required"),
   contactPhone: z.string().min(7, "Contact phone is required"),
   contactEmail: z.string().email("Invalid email address"),
-  contactZalo: z.string().optional(),
   salonName: z.string().min(2, "Salon name must be at least 2 characters"),
   weekly_pay: z.boolean().optional().default(false),
   has_housing: z.boolean().optional().default(false),
@@ -39,6 +38,15 @@ export const JobTypes = [
 ] as const;
 
 export type JobType = typeof JobTypes[number];
+
+export const CompensationTypes = [
+  "Hourly",
+  "Commission",
+  "Hourly + Commission",
+  "Other",
+] as const;
+
+export type CompensationType = typeof CompensationTypes[number];
 
 export const IndustryTypes = [
   "nails",

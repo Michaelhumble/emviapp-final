@@ -11,21 +11,35 @@ interface PhotoUploaderProps {
   photoUploads?: File[];
   maxFiles?: number;
   className?: string;
-  accept?: string;  // Add the accept prop for file type filtering
+  accept?: string;
+  maxPhotos?: number; // Added for backward compatibility
+  uploads?: File[]; // Added for backward compatibility
+  onUploadsChange?: (files: File[]) => void; // Added for backward compatibility
 }
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   onChange,
   files = [],
   photoUploads = [],
-  maxFiles = 5, // Updated to 5 photos by default
+  maxFiles = 5,
+  maxPhotos, // Handle backward compatibility
   className,
   accept,
+  uploads, // Handle backward compatibility
+  onUploadsChange, // Handle backward compatibility
 }) => {
   const [dragActive, setDragActive] = useState(false);
   
-  // Use files prop if provided, otherwise fall back to photoUploads for compatibility
-  const currentFiles = files.length > 0 ? files : photoUploads;
+  // Use files prop if provided, otherwise fall back to uploads or photoUploads for compatibility
+  const currentFiles = files.length > 0 ? files : uploads?.length ? uploads : photoUploads;
+  
+  // Use the higher level onChange function, or fall back to onUploadsChange if provided
+  const handleChange = (newFiles: File[]) => {
+    onChange(newFiles);
+    if (onUploadsChange) {
+      onUploadsChange(newFiles);
+    }
+  };
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -46,8 +60,8 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       // Only allow up to maxFiles
       const newFiles = Array.from(e.dataTransfer.files)
         .filter(file => file.type.startsWith('image/'))
-        .slice(0, maxFiles);
-      onChange(newFiles);
+        .slice(0, maxFiles || maxPhotos || 5);
+      handleChange(newFiles);
     }
   };
 
@@ -56,8 +70,8 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       // Only allow up to maxFiles
       const newFiles = Array.from(e.target.files)
         .filter(file => file.type.startsWith('image/'))
-        .slice(0, maxFiles);
-      onChange(newFiles);
+        .slice(0, maxFiles || maxPhotos || 5);
+      handleChange(newFiles);
     }
   };
 
@@ -65,7 +79,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     // Create a copy of the currentFiles array
     const newFiles = [...currentFiles];
     newFiles.splice(index, 1);
-    onChange(newFiles);
+    handleChange(newFiles);
   };
 
   const renderPreview = () => {
@@ -73,7 +87,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
     return (
       <div className="mt-4 space-y-2">
-        <h3 className="text-sm font-medium">Selected Photos: ({currentFiles.length}/{maxFiles})</h3>
+        <h3 className="text-sm font-medium">Selected Photos: ({currentFiles.length}/{maxFiles || maxPhotos || 5})</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
           {currentFiles.map((file, index) => (
             <div key={index} className="relative">
@@ -106,7 +120,8 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     );
   };
 
-  const remainingSlots = maxFiles - currentFiles.length;
+  const maxFileLimit = maxFiles || maxPhotos || 5;
+  const remainingSlots = maxFileLimit - currentFiles.length;
 
   return (
     <Card className={cn("w-full", className)}>
@@ -153,7 +168,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
           </div>
         ) : (
           <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-700">Maximum {maxFiles} photos reached</p>
+            <p className="text-sm font-medium text-gray-700">Maximum {maxFileLimit} photos reached</p>
             <p className="text-xs text-gray-500 mt-1">Remove some photos to add more</p>
           </div>
         )}
