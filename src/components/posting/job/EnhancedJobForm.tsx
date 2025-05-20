@@ -1,303 +1,360 @@
-import React, { useState, useEffect } from 'react';
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import JobForm from "./JobForm";
-import JobSummary from '@/components/posting/JobSummary';
-import { JobFormValues } from './jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
-import { usePricingContext } from '@/context/pricing/PricingProvider';
-import { uploadFiles, getImageData } from '@/utils/uploadthing'; // Changed to use the mock functions
 
-// Replace useUploadThing and UploadDropzone with mock implementations
-// or comment out the affected code
-// You would need to replace these imports:
-// import { useUploadThing } from "@/utils/uploadthing";
-// import { UploadDropzone } from "@/utils/uploadthing";
+import React, { useState, useEffect } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Card, CardContent } from '@/components/ui/card';
+import JobForm from './JobForm';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { jobFormSchema, JobFormValues } from './jobFormSchema';
+import PaymentSummary from '@/components/posting/PaymentSummary';
+import { JobSummary } from '@/components/posting/JobSummary';
+import { PricingOptions, JobPricingOption } from '@/utils/posting/types';
+import { usePricing } from '@/context/pricing/PricingProvider'; // Fixed import to use usePricing hook instead of usePricingContext
+
+// Mock function instead of useUploadThing
+const useUploadImages = () => {
+  return {
+    startUpload: async (files: File[]) => {
+      console.log("Mock upload for files:", files);
+      // Return mock URLs
+      return files.map(file => ({
+        fileUrl: URL.createObjectURL(file),
+        fileKey: `mock-key-${file.name}`
+      }));
+    },
+    isUploading: false
+  };
+};
 
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
-  onBack?: () => void;
   initialTemplate?: JobFormValues;
-  isCustomTemplate?: boolean; 
+  onBack?: () => void;
+  isCustomTemplate?: boolean;
   maxPhotos?: number;
   onStepChange?: (step: number) => void;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onSubmit,
-  onBack,
   initialTemplate,
+  onBack,
   isCustomTemplate = false,
   maxPhotos = 5,
-  onStepChange
+  onStepChange,
 }) => {
-  const [step, setStep] = useState(1);
-  const [progress, setProgress] = useState(33);
-  const [formData, setFormData] = useState<JobFormValues>(initialTemplate || {
-    title: '',
-    description: '',
-    location: '',
-    salonName: '',
-  });
+  const [activeTab, setActiveTab] = useState('details');
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { pricingOptions } = usePricingContext();
-
-  // Mock implementation for handling file uploads
-  const handleFileUpload = async (files: File[]) => {
-    // Limit the number of files to maxPhotos
-    const limitedFiles = files.slice(0, maxPhotos);
-    setPhotoUploads(limitedFiles);
-    return limitedFiles;
-  };
+  const [reviewData, setReviewData] = useState<JobFormValues | null>(null);
+  const [previewData, setPreviewData] = useState<JobFormValues | null>(null);
   
+  // Use usePricing hook from PricingProvider
+  const { pricingOptions, setPricingOptions, priceData } = usePricing();
+
+  // Get the startUpload function from our mock hook
+  const { startUpload, isUploading } = useUploadImages();
+
+  const methods = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: initialTemplate || {
+      title: '',
+      description: '',
+      vietnameseDescription: '',
+      location: '',
+      jobType: '',
+      compensation_type: '',
+      compensation_details: '',
+      contactName: '',
+      contactPhone: '',
+      contactEmail: '',
+      contactZalo: '',
+      salonName: '',
+      weekly_pay: false,
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: false,
+    },
+  });
+
+  const { handleSubmit, watch, formState: { errors, isValid } } = methods;
+  const watchedValues = watch();
+
+  // Update preview data whenever form values change
   useEffect(() => {
-    if (onStepChange) {
-      onStepChange(step);
-    }
-  }, [step, onStepChange]);
+    setPreviewData(watchedValues);
+  }, [watchedValues]);
 
-  const updateProgress = (newStep: number) => {
-    switch (newStep) {
-      case 1:
-        setProgress(33);
-        break;
-      case 2:
-        setProgress(66);
-        break;
-      case 3:
-        setProgress(100);
-        break;
-      default:
-        setProgress(33);
+  // Navigate to the next tab when details are completed
+  const handleDetailsNext = () => {
+    if (Object.keys(errors).length === 0) {
+      setActiveTab('pricing');
+      onStepChange?.(2);
     }
   };
 
-  const nextStep = () => {
-    const newStep = step + 1;
-    setStep(newStep);
-    updateProgress(newStep);
-    window.scrollTo(0, 0);
+  // Navigate to the review tab
+  const handlePricingNext = () => {
+    setReviewData(watchedValues);
+    setActiveTab('review');
+    onStepChange?.(3);
   };
 
-  const prevStep = () => {
-    if (step === 1 && onBack) {
-      onBack();
-      return;
-    }
-    
-    const newStep = step - 1;
-    setStep(newStep);
-    updateProgress(newStep);
-    window.scrollTo(0, 0);
-  };
-
-  const handleFormSubmit = async (data: JobFormValues) => {
-    setFormData(data);
-    
-    if (step < 3) {
-      nextStep();
-      return;
-    }
-    
-    setIsSubmitting(true);
+  // Handle form submission
+  const handleFinalSubmit = async () => {
     try {
-      const success = await onSubmit(data, photoUploads, pricingOptions);
-      if (success) {
-        // Reset form or navigate away
+      setIsSubmitting(true);
+      
+      let uploadedImageUrls: string[] = [];
+      
+      if (photoUploads.length > 0) {
+        try {
+          const uploadResults = await startUpload(photoUploads);
+          uploadedImageUrls = uploadResults.map(result => result.fileUrl);
+        } catch (err) {
+          // Fixed error handling to use a proper error object
+          console.error("Error uploading images:", err);
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          toast({ 
+            title: "Upload Error", 
+            description: `Failed to upload images: ${errorMessage}`,
+            variant: "destructive" 
+          });
+          return;
+        }
+      }
+      
+      // Process the form data with uploaded image URLs
+      const formData = methods.getValues();
+      
+      // If we have uploaded images, add the first one to the job post
+      if (uploadedImageUrls.length > 0) {
+        formData.image = uploadedImageUrls[0];
+      }
+      
+      const result = await onSubmit(formData, photoUploads, pricingOptions);
+      
+      if (result) {
+        // Success handling
+        console.log('Job posted successfully!');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error('Error submitting form. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
+  
+  const handlePhotoUpload = (files: File[]) => {
+    if (files.length + photoUploads.length > maxPhotos) {
+      // TODO: Show error about max photos
+      return;
+    }
+    setPhotoUploads(prev => [...prev, ...files]);
+  };
+  
+  const removePhoto = (index: number) => {
+    setPhotoUploads(prev => prev.filter((_, i) => i !== index));
+  };
 
-  const renderStepContent = () => {
-    switch (step) {
-      case 1:
-        return (
-          <JobForm 
-            initialValues={formData} 
-            onSubmit={handleFormSubmit} 
-            isLoading={isSubmitting}
-          />
-        );
-      case 2:
-        return (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Upload Photos</h2>
-            <p className="text-gray-600">Add photos of your salon or workplace to attract more applicants.</p>
-            
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files) {
-                    handleFileUpload(Array.from(e.target.files));
-                  }
-                }}
-                className="w-full"
-              />
-              <p className="text-sm text-gray-500 mt-2">
-                Drag and drop files here or click to browse (max {maxPhotos} photos)
-              </p>
-            </div>
-            
-            {photoUploads.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium mb-2">Selected Photos ({photoUploads.length}/{maxPhotos})</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {photoUploads.map((file, index) => (
-                    <div key={index} className="relative">
-                      <img 
-                        src={URL.createObjectURL(file)} 
-                        alt={`Upload ${index + 1}`} 
-                        className="h-24 w-full object-cover rounded-md"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPhotoUploads(photoUploads.filter((_, i) => i !== index));
-                        }}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back
-              </Button>
-              <Button type="button" onClick={nextStep}>
-                Continue <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        );
-      case 3:
-        return (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Review & Submit</h2>
-            <p className="text-gray-600">Review your job posting before submitting.</p>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-sm font-medium mb-2">Job Preview</h3>
-                <JobSummary 
-                  title={formData.title || "Job Title"}
-                  description={formData.description}
-                  location={formData.location}
-                  contactEmail={formData.contactEmail}
-                  contactPhone={formData.contactPhone}
-                  jobType={formData.jobType}
-                  salonName={formData.salonName}
-                  pricingPlan={pricingOptions.selectedPricingTier ? {
-                    id: pricingOptions.selectedPricingTier,
-                    name: pricingOptions.selectedPricingTier.charAt(0).toUpperCase() + pricingOptions.selectedPricingTier.slice(1),
-                    features: ['Feature 1', 'Feature 2']
-                  } : undefined}
-                />
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium mb-2">Selected Plan</h3>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="font-medium">Plan:</span>
-                        <span className="capitalize">{pricingOptions.selectedPricingTier}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="font-medium">Duration:</span>
-                        <span>{pricingOptions.durationMonths} month(s)</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="font-medium">Auto-renew:</span>
-                        <span>{pricingOptions.autoRenew ? 'Yes' : 'No'}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                {photoUploads.length > 0 && (
-                  <div className="mt-4">
-                    <h3 className="text-sm font-medium mb-2">Photos ({photoUploads.length})</h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      {photoUploads.map((file, index) => (
-                        <img 
-                          key={index}
-                          src={URL.createObjectURL(file)} 
-                          alt={`Upload ${index + 1}`} 
-                          className="h-16 w-full object-cover rounded-md"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex justify-between mt-6">
-              <Button type="button" variant="outline" onClick={prevStep}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back
-              </Button>
-              <Button 
-                type="button" 
-                onClick={() => handleFormSubmit(formData)}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit Job Posting'}
-              </Button>
-            </div>
-          </div>
-        );
+  // Handle tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    switch (value) {
+      case 'details':
+        onStepChange?.(1);
+        break;
+      case 'pricing':
+        onStepChange?.(2);
+        break;
+      case 'review':
+        setReviewData(watchedValues);
+        onStepChange?.(3);
+        break;
       default:
-        return null;
+        break;
     }
   };
 
+  // Function to go back
+  const handleBack = () => {
+    if (activeTab === 'pricing') {
+      setActiveTab('details');
+      onStepChange?.(1);
+    } else if (activeTab === 'review') {
+      setActiveTab('pricing');
+      onStepChange?.(2);
+    } else if (onBack) {
+      onBack();
+    }
+  };
+
+  const getPricingTierLabel = (tierKey: string): JobPricingOption => {
+    // Fixed the JobPricingOption type by adding the required properties
+    const tierLabels: Record<string, JobPricingOption> = {
+      'standard': { 
+        id: 'standard', 
+        name: 'Standard', 
+        price: 25,
+        description: 'Basic job listing', 
+        tier: 'standard', 
+        features: ['Basic visibility', '30-day listing'] 
+      },
+      'premium': { 
+        id: 'premium', 
+        name: 'Premium', 
+        price: 50,
+        description: 'Enhanced visibility for your job posting',
+        tier: 'premium', 
+        features: ['Higher visibility', 'Featured in search results', '30-day listing'] 
+      },
+      'gold': { 
+        id: 'gold', 
+        name: 'Gold', 
+        price: 75,
+        description: 'Maximum visibility package',
+        tier: 'gold', 
+        features: ['Top visibility', 'Social media promotion', '30-day listing', 'Highlighted in search'] 
+      },
+      'diamond': { 
+        id: 'diamond', 
+        name: 'Diamond', 
+        price: 100,
+        description: 'Elite visibility package',
+        tier: 'diamond', 
+        features: ['Premium placement', 'Featured on homepage', 'Email blast to candidates', '45-day listing'] 
+      },
+      'free': { 
+        id: 'free', 
+        name: 'Free', 
+        price: 0,
+        description: 'Limited free listing',
+        tier: 'free', 
+        features: ['Basic listing', '15-day listing'] 
+      }
+    };
+    
+    return tierLabels[tierKey] || tierLabels['standard'];
+  };
+
+  // Function to declare toast
+  const toast = ({ title, description, variant }: { title: string; description: string; variant?: "default" | "destructive" }) => {
+    console.log(`${title}: ${description}`);
+    // This would be replaced with your actual toast implementation
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Progress value={progress} className="h-2" />
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>Job Details</span>
-          <span>Photos</span>
-          <span>Review & Submit</span>
-        </div>
+    <FormProvider {...methods}>
+      <div className="space-y-8">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="details">Job Details</TabsTrigger>
+            <TabsTrigger value="pricing">Pricing Options</TabsTrigger>
+            <TabsTrigger value="review">Review & Post</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="details" className="space-y-4 pt-4">
+            <JobForm />
+            
+            <div className="flex justify-between mt-6">
+              {onBack && (
+                <Button 
+                  variant="outline" 
+                  onClick={handleBack}
+                >
+                  Back
+                </Button>
+              )}
+              <Button 
+                onClick={handleDetailsNext} 
+                disabled={Object.keys(errors).length > 0}
+                className="ml-auto"
+              >
+                Next: Pricing Options
+              </Button>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="pricing" className="pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                {/* Pricing options would go here */}
+                <h2 className="text-xl font-semibold mb-4">Select Visibility Package</h2>
+                <div className="space-y-4">
+                  {/* Pricing options UI here */}
+                </div>
+              </div>
+              
+              <div>
+                <Card>
+                  <CardContent className="pt-6">
+                    <PaymentSummary priceData={priceData} />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+            
+            <div className="flex justify-between mt-6">
+              <Button 
+                variant="outline" 
+                onClick={handleBack}
+              >
+                Back to Details
+              </Button>
+              <Button onClick={handlePricingNext}>
+                Next: Review
+              </Button>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="review" className="pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Review Your Job Posting</h2>
+                {reviewData && (
+                  <JobSummary
+                    title={reviewData.title}
+                    description={reviewData.description}
+                    location={reviewData.location}
+                    contactEmail={reviewData.contactEmail}
+                    contactPhone={reviewData.contactPhone}
+                    pricingPlan={getPricingTierLabel(pricingOptions.selectedPricingTier)}
+                    jobType={reviewData.jobType}
+                    salonName={reviewData.salonName}
+                  />
+                )}
+              </div>
+              
+              <div>
+                <Card>
+                  <CardContent className="pt-6">
+                    <PaymentSummary priceData={priceData} />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+            
+            <div className="flex justify-between mt-6">
+              <Button 
+                variant="outline" 
+                onClick={handleBack}
+              >
+                Back to Pricing
+              </Button>
+              <Button 
+                onClick={handleSubmit(handleFinalSubmit)}
+                disabled={isSubmitting || isUploading}
+              >
+                {isSubmitting ? 'Processing...' : 'Post Job'}
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-      
-      <Tabs value={`step-${step}`} className="w-full">
-        <TabsList className="hidden">
-          <TabsTrigger value="step-1">Job Details</TabsTrigger>
-          <TabsTrigger value="step-2">Photos</TabsTrigger>
-          <TabsTrigger value="step-3">Review & Submit</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value={`step-${step}`} className="mt-0">
-          {renderStepContent()}
-        </TabsContent>
-      </Tabs>
-    </div>
+    </FormProvider>
   );
 };
 
 export default EnhancedJobForm;
-
-function toast(arg0: { error: string; }) {
-  throw new Error('Function not implemented.');
-}
