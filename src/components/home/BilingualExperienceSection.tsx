@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Globe } from "lucide-react";
 
 const BilingualExperienceSection: React.FC = () => {
   const { t, toggleLanguage, isVietnamese } = useTranslation();
@@ -76,6 +76,7 @@ const BilingualExperienceSection: React.FC = () => {
                 onClick={toggleLanguage}
                 className="border-emvi-accent/30 text-gray-700 hover:bg-emvi-accent/10"
               >
+                <Globe className="mr-2 h-4 w-4" />
                 {isVietnamese ? "Switch to English" : "Chuyển sang Tiếng Việt"}
               </Button>
             </div>

@@ -61,7 +61,7 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
             className="w-full h-10 justify-start text-base font-medium"
             onClick={() => handleLanguageChange('en')}
           >
-            <span className="mr-2">🇺🇸</span> English
+            <Globe className="mr-2 h-4 w-4" /> English
             {language === 'en' && <Check className="ml-auto h-4 w-4" />}
           </Button>
           <Button
@@ -69,7 +69,7 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
             className="w-full h-10 justify-start text-base font-medium"
             onClick={() => handleLanguageChange('vi')}
           >
-            <span className="mr-2">🇻🇳</span> Tiếng Việt
+            <Globe className="mr-2 h-4 w-4" /> Tiếng Việt
             {language === 'vi' && <Check className="ml-auto h-4 w-4" />}
           </Button>
         </div>

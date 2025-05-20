@@ -6,6 +6,7 @@ import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getLanguagePreference, setLanguagePreference, hasLanguagePreference } from "@/utils/languagePreference";
+import { Globe } from "lucide-react";
 
 // Key for storing the dialog visibility state
 const LANGUAGE_PREFERENCE_SHOWN_KEY = 'emviapp_language_preference_shown';
@@ -80,7 +81,7 @@ const LanguagePreference = () => {
             onClick={() => setLanguage('en')}
             disabled={loading}
           >
-            <span className="mr-2">🇺🇸</span> English
+            <Globe className="h-5 w-5 mr-2" /> English
           </Button>
           
           <Button 
@@ -90,7 +91,7 @@ const LanguagePreference = () => {
             onClick={() => setLanguage('vi')}
             disabled={loading}
           >
-            Tiếng Việt
+            <Globe className="h-5 w-5 mr-2" /> Tiếng Việt
           </Button>
         </div>
         
