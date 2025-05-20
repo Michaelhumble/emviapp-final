@@ -96,7 +96,7 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
           )}
           
           {/* Founders discount if applicable */}
-          {priceData.isFoundersDiscount && (
+          {priceData.isFoundersDiscount && priceData.discountAmount > 0 && (
             <div className="flex justify-between text-green-600">
               <div className="flex items-center">
                 <span>{t({

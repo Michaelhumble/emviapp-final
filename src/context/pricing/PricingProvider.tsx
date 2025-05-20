@@ -45,7 +45,13 @@ export const PricingProvider: React.FC<PricingProviderProps> = ({
         discountedPrice: calculatedPrice.originalPrice - calculatedPrice.discountAmount,
         discountLabel: calculatedPrice.discountPercentage > 0 ? 
           `${calculatedPrice.discountPercentage}% Discount` : '',
-        isFoundersDiscount: true // Adjust this based on your business logic
+        isFoundersDiscount: true, // Adjust this based on your business logic
+        // Additional properties needed by other components
+        durationMonths: pricingOptions.durationMonths,
+        isFirstPost: pricingOptions.isFirstPost,
+        isNationwide: pricingOptions.isNationwide,
+        selectedTier: pricingOptions.selectedPricingTier,
+        autoRenewDiscount: pricingOptions.autoRenew ? 5 : 0
       };
     } catch (error) {
       console.error("Error calculating price:", error);
@@ -59,7 +65,11 @@ export const PricingProvider: React.FC<PricingProviderProps> = ({
         discountPercentage: 0,
         discountedPrice: 0,
         discountLabel: '',
-        isFoundersDiscount: false
+        isFoundersDiscount: false,
+        durationMonths: pricingOptions.durationMonths,
+        isFirstPost: pricingOptions.isFirstPost,
+        isNationwide: pricingOptions.isNationwide,
+        selectedTier: pricingOptions.selectedPricingTier
       };
     }
   }, [pricingOptions]);
