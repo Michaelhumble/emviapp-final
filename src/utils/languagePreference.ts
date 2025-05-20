@@ -1,71 +1,40 @@
 
-/**
- * Language preference utility
- * Provides functions to manage language preferences throughout the application
- */
-
-type Language = 'en' | 'vi';
-
-// Define listeners array for language change events
-const listeners: Array<(lang: Language) => void> = [];
+// Language preference utility
 
 /**
- * Get the current language preference from localStorage or default to English
+ * Get the user's language preference from local storage
+ * @returns The language preference ('en' or 'vi')
  */
-export const getLanguagePreference = (): Language => {
-  const savedPreference = localStorage.getItem('emvi_language_preference');
-  return (savedPreference as Language) || 'en';
+export const getLanguagePreference = (): string => {
+  return localStorage.getItem('language') || 'en';
 };
 
 /**
- * Check if a language preference has been set
+ * Set the user's language preference in local storage
+ * @param lang The language preference to set ('en' or 'vi')
  */
-export const hasLanguagePreference = (): boolean => {
-  return localStorage.getItem('emvi_language_preference') !== null;
-};
-
-/**
- * Set language preference and notify all listeners
- */
-export const setLanguagePreference = (language: Language): void => {
-  localStorage.setItem('emvi_language_preference', language);
+export const setLanguagePreference = (lang: string): void => {
+  localStorage.setItem('language', lang);
   
-  // Notify all listeners about the language change
-  listeners.forEach(listener => listener(language));
-  
-  // Also dispatch a custom event for components that might not have direct access to listeners
-  window.dispatchEvent(new CustomEvent('languageChanged', { 
-    detail: { language } 
-  }));
+  // Dispatch a custom event so other components can react to the language change
+  window.dispatchEvent(
+    new CustomEvent('languageChanged', { detail: { language: lang } })
+  );
 };
 
 /**
- * Register a language change listener
- * Returns a function to remove the listener
+ * Toggle the language preference between English and Vietnamese
  */
-export const addLanguageChangeListener = (callback: (lang: Language) => void): (() => void) => {
-  listeners.push(callback);
-  
-  // Return a function to remove this listener
-  return () => {
-    const index = listeners.indexOf(callback);
-    if (index > -1) {
-      listeners.splice(index, 1);
-    }
-  };
+export const toggleLanguagePreference = (): void => {
+  const currentLang = getLanguagePreference();
+  const newLang = currentLang === 'en' ? 'vi' : 'en';
+  setLanguagePreference(newLang);
 };
 
 /**
- * Get a translation for a key
- * @param translations Object with language keys and values
- * @param key The translation key to look up
- * @param fallback Optional fallback if translation is not found
+ * Check if the current language preference is Vietnamese
+ * @returns True if the language preference is Vietnamese
  */
-export const getTranslation = (
-  translations: Record<string, Record<string, string>>, 
-  key: string,
-  fallback?: string
-): string => {
-  const lang = getLanguagePreference();
-  return translations[lang]?.[key] || translations['en']?.[key] || fallback || key;
+export const isVietnameseLanguage = (): boolean => {
+  return getLanguagePreference() === 'vi';
 };

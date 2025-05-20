@@ -7,13 +7,15 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Card } from '@/components/ui/card';
-import { JobTemplateSelector, JobTemplateType } from '@/components/posting/job/JobTemplateSelector';
+import { JobTemplateSelector } from '@/components/posting/job/JobTemplateSelector';
+import type { JobTemplateType } from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType as UtilsJobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions } from '@/utils/posting/types';
 import PremiumJobPostForm from '@/components/posting/job/PremiumJobPostForm';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { JobDetailsSubmission } from '@/types/job';
+import { uploadImage } from '@/utils/uploadImage';
 
 const JobPost = () => {
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const JobPost = () => {
   const [selectedTemplateType, setSelectedTemplateType] = useState<UtilsJobTemplateType | null>(null);
   const [step, setStep] = useState<'template' | 'form'>('template');
   const [currentFormStep, setCurrentFormStep] = useState(1);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
@@ -35,8 +38,24 @@ const JobPost = () => {
   const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
     try {
       setIsSubmitting(true);
-      console.log('Form submitted:', data);
-      console.log('Pricing options:', pricingOptions);
+      setUploadProgress(0);
+      
+      // Upload images if any
+      let imageUrls: string[] = [];
+      
+      if (uploads.length > 0) {
+        toast.info('Uploading images...');
+        
+        // Upload each image and track progress
+        for (let i = 0; i < uploads.length; i++) {
+          const url = await uploadImage(uploads[i], (progress) => {
+            // Calculate overall progress across all uploads
+            const overallProgress = ((i / uploads.length) * 100) + (progress / uploads.length);
+            setUploadProgress(Math.round(overallProgress));
+          });
+          imageUrls.push(url);
+        }
+      }
       
       // Convert form data to the expected format for the API
       const jobDetails: JobDetailsSubmission = {
@@ -58,7 +77,9 @@ const JobPost = () => {
         contactEmail: data.contactEmail,
         requirements: data.requirements || [],
         specialties: data.specialties || [],
-        post_type: 'job'
+        post_type: 'job',
+        // Add the primary image if available
+        image: imageUrls.length > 0 ? imageUrls[0] : undefined
       };
       
       // Initiate payment with our consolidated hook
@@ -78,6 +99,7 @@ const JobPost = () => {
       return false;
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -114,7 +136,7 @@ const JobPost = () => {
             <p className="text-gray-600">Find your perfect employee</p>
           </div>
           
-          <Card className="bg-white shadow-md rounded-lg border-0 p-0 overflow-hidden">
+          <Card className="bg-white shadow-md rounded-lg border-0 p-6 overflow-hidden">
             {step === 'template' ? (
               <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
             ) : (
