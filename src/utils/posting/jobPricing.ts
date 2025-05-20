@@ -15,6 +15,8 @@ export const jobPricingOptions = [
     features: ['7-day listing', 'Standard listing', 'Local visibility'],
     color: 'gray',
     isAvailableToNewUsers: true,
+    tier: 'free' as JobPricingTier,
+    price: 0,
   },
   {
     id: 'standard',
@@ -28,6 +30,8 @@ export const jobPricingOptions = [
     features: ['30-day listing', 'Enhanced visibility', 'Featured in category'],
     color: 'blue',
     isAvailableToAll: true,
+    tier: 'standard' as JobPricingTier,
+    price: 39.99,
   },
   {
     id: 'premium',
@@ -41,6 +45,8 @@ export const jobPricingOptions = [
     features: ['30-day listing', 'Top visibility', 'Featured in search results', 'Priority support'],
     color: 'purple',
     isAvailableToAll: true,
+    tier: 'premium' as JobPricingTier,
+    price: 89.99,
   },
   {
     id: 'gold',
@@ -54,19 +60,23 @@ export const jobPricingOptions = [
     features: ['30-day listing', 'Maximum visibility', 'Top of search & browse', 'Featured on homepage', 'Priority support'],
     color: 'yellow',
     isAvailableToAll: true,
+    tier: 'gold' as JobPricingTier,
+    price: 149.99,
   },
   {
     id: 'diamond',
     name: 'Diamond Featured',
     vietnameseName: 'Kim cương',
-    description: 'Exclusive diamond featured listing (by invitation only)',
-    vietnameseDescription: 'Đăng tin kim cương độc quyền (chỉ theo lời mời)',
-    basePrice: 299.99,
-    durationMultipliers: [1, 0.9, 0.8],
+    description: 'Exclusive diamond featured listing with premium support',
+    vietnameseDescription: 'Đăng tin kim cương độc quyền với hỗ trợ cao cấp',
+    basePrice: 999.99,
+    durationMultipliers: [1],  // Only 12-month option for Diamond
     badge: 'Diamond',
-    features: ['30-day listing', 'Custom branding', 'Premium placement', 'Featured across the platform', 'Dedicated account manager'],
+    features: ['12-month listing', 'Custom branding', 'Premium placement', 'Featured across the platform', 'Dedicated account manager'],
     color: 'cyan',
-    inviteOnly: true,
+    isAvailableToAll: true, // Changed from inviteOnly: true to make it available to all
+    tier: 'diamond' as JobPricingTier,
+    price: 999.99,
   }
 ];
 
@@ -86,8 +96,8 @@ export const validatePricingOptions = (options: PricingOptions) => {
   const validTier = jobPricingOptions.find(tier => tier.id === selectedPricingTier);
   if (!validTier) return false;
   
-  // Verify duration is valid (1, 3, or 6 months)
-  if (![1, 3, 6].includes(durationMonths)) return false;
+  // Verify duration is valid (1, 3, 6 or 12 months)
+  if (![1, 3, 6, 12].includes(durationMonths)) return false;
   
   // All other fields have sensible defaults if not provided
   return true;
@@ -134,6 +144,19 @@ export const getJobPrice = (options: PricingOptions) => {
   // Calculate the base price for 1 month
   let basePrice = tier.basePrice;
   
+  // Diamond plan is special - fixed 12 months
+  if (tier.id === 'diamond') {
+    // For diamond, price is fixed for 12 months
+    const originalPrice = basePrice;
+    return {
+      basePrice,
+      originalPrice,
+      finalPrice: originalPrice,
+      discountAmount: 0,
+      discountPercentage: 0
+    };
+  }
+  
   // Calculate the price for the selected duration
   let durationIndex = 0; // Default to first multiplier (1.0)
   if (durationMonths === 3) durationIndex = 1;
@@ -153,11 +176,17 @@ export const getJobPrice = (options: PricingOptions) => {
     discountedPrice *= 0.95; // 5% discount
   }
   
+  // Add nationwide fee if applicable
+  let nationwideFee = 0;
+  if (isNationwide) {
+    nationwideFee = 5 * durationMonths; // $5 per month for nationwide visibility
+  }
+  
   // Round to 2 decimal places
-  const finalPrice = Math.round(discountedPrice * 100) / 100;
+  const finalPrice = Math.round((discountedPrice + nationwideFee) * 100) / 100;
   
   // Calculate discount amount and percentage
-  const discountAmount = originalPrice - finalPrice;
+  const discountAmount = originalPrice - discountedPrice;
   const discountPercentage = Math.round((discountAmount / originalPrice) * 100);
   
   return {
@@ -187,6 +216,9 @@ export const getStripePriceId = (tier: JobPricingTier, months: number = 1) => {
       1: 'price_gold_1month',
       3: 'price_gold_3month',
       6: 'price_gold_6month'
+    },
+    diamond: {
+      12: 'price_diamond_12month'
     }
   };
   
@@ -201,5 +233,6 @@ export const getAmountInCents = (amount: number) => {
 // Determine if this tier uses subscription billing
 export const isSubscriptionPlan = (tier: JobPricingTier, autoRenew: boolean) => {
   // Only paid plans with auto-renew enabled are subscription plans
-  return tier !== 'free' && autoRenew;
+  // Diamond is never auto-renew (always 12 months fixed)
+  return tier !== 'free' && autoRenew && tier !== 'diamond';
 };

@@ -50,6 +50,13 @@ export interface JobPricingOption {
   limitedSpots?: string; // Added for limited spots displays
   // Adding the priceMonthly property that is used in the config
   priceMonthly?: number;
+  // Additional properties from jobPricingOptions
+  vietnameseName?: string;
+  basePrice?: number;
+  durationMultipliers?: number[];
+  badge?: string;
+  isAvailableToNewUsers?: boolean;
+  isAvailableToAll?: boolean;
 }
 
 export interface UserPostingStats {

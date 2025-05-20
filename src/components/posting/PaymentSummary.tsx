@@ -7,12 +7,12 @@ import { Badge } from '@/components/ui/badge';
 
 export interface PriceData {
   basePrice: number;
-  discountedPrice: number;
+  discountedPrice?: number;
   finalPrice: number;
   discountPercentage: number;
-  discountLabel: string;
+  discountLabel?: string;
   discountAmount: number;
-  isFoundersDiscount: boolean;
+  isFoundersDiscount?: boolean;
   // Additional properties to handle other components
   originalPrice?: number;
   autoRenewDiscount?: number;
@@ -51,6 +51,9 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
       </Card>
     );
   }
+  
+  // Special message for Diamond tier
+  const isDiamondTier = priceData.selectedTier === 'diamond';
 
   return (
     <Card className="mt-4">
@@ -67,14 +70,14 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
           {/* Base price */}
           <div className="flex justify-between">
             <span className="text-gray-600">{t({
-              english: "Base price",
-              vietnamese: "Giá cơ bản"
+              english: isDiamondTier ? "Diamond plan (12 months)" : "Base price",
+              vietnamese: isDiamondTier ? "Gói Kim cương (12 tháng)" : "Giá cơ bản"
             })}</span>
             <span>${priceData.basePrice.toFixed(2)}</span>
           </div>
           
-          {/* Duration display if available */}
-          {priceData.durationMonths && (
+          {/* Duration display if available and not Diamond (which is always 12 months) */}
+          {priceData.durationMonths && !isDiamondTier && (
             <div className="flex justify-between">
               <span className="text-gray-600">{t({
                 english: `Duration (${priceData.durationMonths} ${priceData.durationMonths === 1 ? 'month' : 'months'})`,
@@ -85,7 +88,7 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
           )}
           
           {/* Subtotal before discounts */}
-          {priceData.originalPrice && priceData.originalPrice !== priceData.basePrice && (
+          {priceData.originalPrice && priceData.originalPrice !== priceData.basePrice && !isDiamondTier && (
             <div className="flex justify-between font-medium">
               <span>{t({
                 english: "Subtotal",
@@ -96,7 +99,7 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
           )}
           
           {/* Founders discount if applicable */}
-          {priceData.isFoundersDiscount && (
+          {priceData.isFoundersDiscount && !isDiamondTier && (
             <div className="flex justify-between text-green-600">
               <div className="flex items-center">
                 <span>{t({
@@ -112,8 +115,8 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
             </div>
           )}
           
-          {/* Duration discount if applicable */}
-          {priceData.discountPercentage > 0 && (
+          {/* Duration discount if applicable and not Diamond */}
+          {priceData.discountPercentage > 0 && !isDiamondTier && (
             <div className="flex justify-between text-green-600">
               <span>{t({
                 english: priceData.discountLabel || `${priceData.discountPercentage}% Discount`,
@@ -123,15 +126,14 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
             </div>
           )}
           
-          {/* Add any additional fees */}
-          {priceData.finalPrice > ((priceData.discountedPrice || priceData.originalPrice || 0) - priceData.discountAmount) && (
+          {/* Additional services (like nationwide) */}
+          {priceData.isNationwide && (
             <div className="flex justify-between">
               <span className="text-gray-600">{t({
-                english: "Additional services",
-                vietnamese: "Dịch vụ bổ sung"
+                english: "Nationwide visibility",
+                vietnamese: "Hiện thị toàn quốc"
               })}</span>
-              <span>${(priceData.finalPrice - 
-                ((priceData.discountedPrice || priceData.originalPrice || 0) - priceData.discountAmount)).toFixed(2)}</span>
+              <span>+$5.00{isDiamondTier ? '' : ' per month'}</span>
             </div>
           )}
           

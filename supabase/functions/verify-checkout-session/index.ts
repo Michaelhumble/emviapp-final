@@ -89,7 +89,7 @@ serve(async (req) => {
     const paymentLogId = metadata.payment_log_id;
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
-      .select('*, jobs:listing_id(*)')
+      .select('*, jobs(*)')
       .eq('id', paymentLogId)
       .single();
     
@@ -126,7 +126,10 @@ serve(async (req) => {
     // Update payment log status
     const { error: updateLogError } = await supabaseAdmin
       .from('payment_logs')
-      .update({ payment_status: 'success' })
+      .update({ 
+        payment_status: 'success', 
+        stripe_payment_id: session.id
+      })
       .eq('id', paymentLog.id);
       
     if (updateLogError) {
@@ -135,15 +138,17 @@ serve(async (req) => {
     
     // Get job title if available
     let jobTitle = "your job";
+    let title = "your job";
     if (paymentLog?.jobs) {
-      jobTitle = paymentLog.jobs.title || "your job";
+      title = paymentLog.jobs.title || "your job";
+      jobTitle = title;
     }
 
     return new Response(
       JSON.stringify({
         success: true,
         post_id: postId,
-        title: jobTitle,
+        title: title,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
         pricing_tier: metadata.pricing_tier || paymentLog?.pricing_tier,

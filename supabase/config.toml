@@ -21,3 +21,7 @@ verify_jwt = true
 
 [functions.send-booking-reminders]
 verify_jwt = true
+
+[functions.handle-user-tag]
+verify_jwt = true
+

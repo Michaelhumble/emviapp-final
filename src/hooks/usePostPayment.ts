@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { getJobPrice, validatePricingOptions } from '@/utils/posting/jobPricing';
 import { v4 as uuidv4 } from 'uuid';
@@ -36,42 +35,11 @@ export const usePostPayment = () => {
         throw new Error("Invalid price: Non-free plan cannot have $0 price");
       }
 
-      // Diamond tier requires special access - never allow direct payment
-      if (pricingOptions.selectedPricingTier === 'diamond') {
-        // Show info about invitation process
-        toast.info(
-          t({
-            english: "Diamond tier requires an invitation",
-            vietnamese: "Gói Kim cương yêu cầu lời mời"
-          }), {
-          description: t({
-            english: "Our team will contact you about the Diamond tier",
-            vietnamese: "Đội ngũ của chúng tôi sẽ liên hệ với bạn về gói Kim cương"
-          })
-        });
-        
-        // Create a waitlist entry using the dedicated edge function
-        const { data, error } = await supabase.functions.invoke('diamond-tier-request', {
-          body: { 
-            postType, 
-            additionalInfo: { ...postDetails, pricingOptions }
-          }
-        });
-        
-        if (error) {
-          console.error("Error adding to Diamond waitlist:", error);
-          throw error;
-        }
-        
-        setIsLoading(false);
-        return { success: false, waitlisted: true };
-      }
-
       // Generate an idempotency key to prevent double payments
       const idempotencyKey = uuidv4();
 
       // Handle free listings directly without going to Stripe
-      if (priceData.finalPrice <= 0) {
+      if (priceData.finalPrice <= 0 || pricingOptions.selectedPricingTier === 'free') {
         console.log("Processing free post...");
         // Create the post directly in the database
         const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
@@ -113,6 +81,13 @@ export const usePostPayment = () => {
         finalPrice: priceData.finalPrice,
         idempotencyKey
       });
+      
+      // Special case for diamond tier - ensure it always has 12 months duration
+      if (pricingOptions.selectedPricingTier === 'diamond') {
+        pricingOptions.durationMonths = 12;
+        // Diamond tier should never be auto-renew
+        pricingOptions.autoRenew = false;
+      }
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
