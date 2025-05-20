@@ -40,7 +40,17 @@ const PostSuccess = () => {
         if (error) {
           console.error('Error fetching job details:', error);
         } else if (data) {
-          setJobData(data);
+          // Add required fields with default values if they don't exist
+          const jobWithDefaults = {
+            ...data,
+            location: data.location || '', // Ensure location exists
+            salonName: data.salonName || t({
+              english: "Unknown Salon",
+              vietnamese: "Tiệm không xác định"
+            })
+          } as Job;
+          
+          setJobData(jobWithDefaults);
         }
       } catch (error) {
         console.error('Error in job fetch:', error);

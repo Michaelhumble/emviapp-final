@@ -59,11 +59,4 @@ export interface JobPricingOption {
   isAvailableToAll?: boolean;
 }
 
-export interface UserPostingStats {
-  jobPostCount: number;
-  salonPostCount: number;
-  boothPostCount: number;
-  supplyPostCount: number;
-}
-
 export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
