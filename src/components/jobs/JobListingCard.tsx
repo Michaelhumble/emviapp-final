@@ -12,11 +12,26 @@ interface JobListingCardProps {
   job: Job;
   onClick: (job: Job) => void;
   compact?: boolean;
+  isExpired?: boolean;
+  currentUserId?: string;
+  onViewDetails?: () => void;
+  onRenew?: () => void;
+  isRenewing?: boolean;
 }
 
-const JobListingCard: React.FC<JobListingCardProps> = ({ job, onClick, compact = false }) => {
+const JobListingCard: React.FC<JobListingCardProps> = ({ 
+  job, 
+  onClick, 
+  compact = false,
+  isExpired,
+  currentUserId,
+  onViewDetails,
+  onRenew,
+  isRenewing 
+}) => {
   const handleClick = () => {
     onClick(job);
+    if (onViewDetails) onViewDetails();
   };
 
   return (
@@ -67,6 +82,22 @@ const JobListingCard: React.FC<JobListingCardProps> = ({ job, onClick, compact =
           View Details <ArrowRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
+
+      {isExpired && onRenew && (
+        <div className="mt-2 flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onRenew) onRenew();
+            }}
+            disabled={isRenewing}
+          >
+            {isRenewing ? 'Renewing...' : 'Renew Listing'}
+          </Button>
+        </div>
+      )}
     </Card>
   );
 };

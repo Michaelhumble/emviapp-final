@@ -4,17 +4,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
 import { Button } from '@/components/ui/button';
+import { PricingOptions } from '@/utils/posting/types';
 
 interface JobFormProps {
-  onSubmit: (data: JobFormValues, uploads: File[]) => Promise<boolean>;
+  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions?: PricingOptions) => Promise<boolean>;
   initialValues?: JobFormValues;
   isLoading?: boolean;
+  onStepChange?: (step: number) => void;
+  maxPhotos?: number;
 }
 
 export const JobForm: React.FC<JobFormProps> = ({
   onSubmit,
   initialValues,
-  isLoading = false
+  isLoading = false,
+  onStepChange,
+  maxPhotos
 }) => {
   const [photoUploads, setPhotoUploads] = React.useState<File[]>([]);
   

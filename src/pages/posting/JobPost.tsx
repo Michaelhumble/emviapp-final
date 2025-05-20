@@ -7,8 +7,8 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { Card } from '@/components/ui/card';
-import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
+import { JobTemplateSelector, JobTemplateType } from '@/components/posting/job/JobTemplateSelector';
+import { JobTemplateType as UtilsJobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions } from '@/utils/posting/types';
 import PremiumJobPostForm from '@/components/posting/job/PremiumJobPostForm';
@@ -21,13 +21,13 @@ const JobPost = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
-  const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
+  const [selectedTemplateType, setSelectedTemplateType] = useState<UtilsJobTemplateType | null>(null);
   const [step, setStep] = useState<'template' | 'form'>('template');
   const [currentFormStep, setCurrentFormStep] = useState(1);
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
-    setSelectedTemplateType(templateType);
+    setSelectedTemplateType(templateType as UtilsJobTemplateType);
     setStep('form');
     window.scrollTo(0, 0);
   };
