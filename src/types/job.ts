@@ -42,7 +42,7 @@ export interface Job {
   expires_at?: string;
   boosted_until?: string;
   user_id?: string;
-  requirements?: string[] | string;
+  requirements?: string[];
   preferred_languages?: string[];
   benefits?: string[];
   features?: string[];
@@ -110,7 +110,7 @@ export type JobDetailsSubmission = {
   salary_range?: string;
   tip_range?: string;
   experience_level?: string;
-  requirements?: string[] | string;
+  requirements?: string[];
   specialties?: string[];
   image?: string;
   vietnamese_description?: string;

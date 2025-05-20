@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -49,7 +50,13 @@ interface JobTemplateSelectorProps {
 const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSelect }) => {
   const handleTemplateSelect = (templateType: JobTemplateType) => {
     const template = getJobTemplate(templateType);
-    onTemplateSelect(template, templateType);
+    // Ensure requirements is an array
+    const formattedTemplate: JobFormValues = {
+      ...template,
+      requirements: Array.isArray(template.requirements) ? template.requirements : [],
+      specialties: Array.isArray(template.specialties) ? template.specialties : []
+    };
+    onTemplateSelect(formattedTemplate, templateType);
   };
 
   const templates = [

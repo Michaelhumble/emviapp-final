@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { JobPricingOption } from '@/utils/posting/types';
 
-interface PricingSectionProps {
+export interface PricingSectionProps {
   pricingOptions: JobPricingOption[];
   selectedTier: string;
   onSelectTier: (tier: string) => void;
