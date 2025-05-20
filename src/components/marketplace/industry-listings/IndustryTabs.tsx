@@ -75,7 +75,7 @@ const IndustryTabs = () => {
           ))}
         </TabsList>
         
-        <LanguageToggle />
+        <LanguageToggle minimal />
       </div>
       
       {tabData.map(tab => (
