@@ -9,6 +9,8 @@ export const jobFormSchema = z.object({
   jobType: z.string().optional(),
   compensation_type: z.string().optional(),
   compensation_details: z.string().optional(),
+  salary_range: z.string().optional(),
+  experience_level: z.string().optional(),
   contactName: z.string().optional(),
   contactPhone: z.string().optional(),
   contactEmail: z.string().email().optional(),
@@ -19,6 +21,8 @@ export const jobFormSchema = z.object({
   has_wax_room: z.boolean().optional().default(false),
   owner_will_train: z.boolean().optional().default(false),
   no_supply_deduction: z.boolean().optional().default(false),
+  specialties: z.array(z.string()).optional(),
+  requirements: z.union([z.string(), z.array(z.string())]).optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;

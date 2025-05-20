@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   role?: string;
@@ -7,6 +8,7 @@ export interface Job {
   posted_at?: string;
   created_at: string;
   description?: string;
+  vietnamese_description?: string;
   employment_type?: string;
   compensation_details?: string;
   compensation_type?: string;
@@ -36,7 +38,6 @@ export interface Job {
   owner_will_train?: boolean;
   tip_range?: string;
   salary_range?: string;
-  vietnamese_description?: string;
   salon_type?: string;
   expires_at?: string;
   boosted_until?: string;
@@ -73,6 +74,11 @@ export interface Job {
   chair_count?: string;
   sale_price?: string;
   is_salon_for_sale?: boolean;
+  contactName?: string; // From form fields
+  contactPhone?: string; // From form fields
+  contactEmail?: string; // From form fields
+  contactZalo?: string; // From form fields
+  jobType?: string; // Aliased form field for employment_type
   
   // Additional properties mentioned in the error report
   badge?: string;
@@ -84,36 +90,35 @@ export interface Job {
 export type JobDetailsSubmission = {
   title: string;
   description?: string;
+  vietnameseDescription?: string;
   location: string;
+  jobType?: string;
   compensation_type?: string;
   compensation_details?: string;
-  employment_type?: string;
+  contactName?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  contactZalo?: string;
+  weekly_pay?: boolean;
+  has_housing?: boolean;
+  has_wax_room?: boolean;
+  no_supply_deduction?: boolean;
+  owner_will_train?: boolean;
+  salary_range?: string;
+  tip_range?: string;
+  experience_level?: string;
   requirements?: string[] | string;
-  contact_info?: {
-    owner_name?: string;
-    phone?: string;
-    email?: string;
-    notes?: string;
-    zalo?: string;
-  };
+  specialties?: string[];
   image?: string;
   vietnamese_description?: string;
   preferred_languages?: string[];
   benefits?: string[];
   features?: string[];
   salon_type?: string;
-  specialties?: string[];
-  weekly_pay?: boolean;
-  has_housing?: boolean;
-  has_wax_room?: boolean;
-  no_supply_deduction?: boolean;
-  owner_will_train?: boolean;
-  tip_range?: string;
-  salary_range?: string;
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
-  salonName: string; // Updated to be required
+  salonName: string; // Required field
 }
 
 // Import the PricingOptions from the canonical source

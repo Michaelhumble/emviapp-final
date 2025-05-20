@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -11,6 +12,7 @@ import {
 import { CheckCircle, Store } from 'lucide-react';
 import { JobPricingOption } from '@/utils/posting/types';
 import { cn } from '@/lib/utils';
+import { Job } from '@/types/job';
 
 interface JobSummaryProps {
   title: string;

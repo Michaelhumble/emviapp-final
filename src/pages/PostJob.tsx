@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import JobForm from '@/components/posting/job/JobForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -13,6 +13,7 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
+import { JobDetailsSubmission } from '@/types/job';
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -37,12 +38,12 @@ const PostJob = () => {
       console.log('Pricing options:', pricingOptions);
       
       // Convert form data to the expected format for the API
-      const jobDetails = {
+      const jobDetails: JobDetailsSubmission = {
         title: data.title,
         description: data.description,
-        vietnamese_description: data.vietnameseDescription,
+        vietnameseDescription: data.vietnameseDescription,
         location: data.location,
-        employment_type: data.jobType, 
+        jobType: data.jobType, 
         compensation_type: data.compensation_type,
         compensation_details: data.compensation_details,
         weekly_pay: data.weekly_pay,
@@ -51,11 +52,10 @@ const PostJob = () => {
         owner_will_train: data.owner_will_train,
         no_supply_deduction: data.no_supply_deduction,
         salonName: data.salonName, // Added salonName
-        contact_info: {
-          owner_name: data.contactName,
-          phone: data.contactPhone,
-          email: data.contactEmail,
-        },
+        contactName: data.contactName,
+        contactPhone: data.contactPhone,
+        contactEmail: data.contactEmail,
+        contactZalo: data.contactZalo,
         post_type: 'job'
       };
       
