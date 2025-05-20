@@ -1,5 +1,5 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 interface TranslationOptions {
   english: string;
@@ -7,12 +7,18 @@ interface TranslationOptions {
 }
 
 export const useTranslation = () => {
-  // In a real implementation, this would check the user's language preference
-  const currentLanguage = 'english';
+  // In a real implementation, this would be based on user settings
+  const [currentLanguage, setCurrentLanguage] = useState<'english' | 'vietnamese'>('english');
+  
+  const isVietnamese = currentLanguage === 'vietnamese';
 
   const t = useCallback((options: TranslationOptions): string => {
-    return options[currentLanguage as keyof TranslationOptions] || options.english;
+    return options[currentLanguage] || options.english;
   }, [currentLanguage]);
 
-  return { t };
+  const toggleLanguage = useCallback(() => {
+    setCurrentLanguage(currentLanguage === 'english' ? 'vietnamese' : 'english');
+  }, [currentLanguage]);
+
+  return { t, currentLanguage, setCurrentLanguage, isVietnamese, toggleLanguage };
 };

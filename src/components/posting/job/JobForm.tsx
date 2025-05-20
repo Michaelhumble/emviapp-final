@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
 import { Button } from '@/components/ui/button';
 
@@ -30,7 +31,6 @@ export const JobForm: React.FC<JobFormProps> = ({
     contactName: "",
     contactPhone: "",
     contactEmail: "",
-    contactZalo: "",
     salonName: "",
     weekly_pay: false,
     has_housing: false,
@@ -44,11 +44,6 @@ export const JobForm: React.FC<JobFormProps> = ({
     image: "",
     ...initialValues
   };
-  
-  // Ensure requirements is always an array
-  if (initialValues && typeof initialValues.requirements === 'string') {
-    defaultValues.requirements = initialValues.requirements ? [initialValues.requirements] : [];
-  }
   
   const methods = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),

@@ -1,65 +1,73 @@
 
-// Update JobListingCard component to handle both created_at and createdAt
 import React from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import JobSummary from './card-sections/JobSummary';
+import { ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Job } from '@/types/job';
-import { JobSummary } from './card-sections/JobSummary';
 
 interface JobListingCardProps {
   job: Job;
-  isExpired?: boolean;
-  onViewDetails: () => void;
-  onRenew?: () => void;
-  isRenewing?: boolean;
-  currentUserId?: string; // Added to match props being passed
+  onClick: (job: Job) => void;
+  compact?: boolean;
 }
 
-const JobListingCard: React.FC<JobListingCardProps> = ({
-  job,
-  isExpired,
-  onViewDetails,
-  onRenew,
-  isRenewing,
-  currentUserId, // Added to match props being passed
-}) => {
-  // Create a compatibility layer for the date property - explicitly cast to string
-  const jobCreatedAt = job.created_at ? String(job.created_at) : '';
-  // Create a compatibility layer for salary/compensation
-  const jobCompensation = 'salary' in job ? job.salary as string : 
-                   job.compensation_details || job.compensation_type || '';
-  
+const JobListingCard: React.FC<JobListingCardProps> = ({ job, onClick, compact = false }) => {
+  const handleClick = () => {
+    onClick(job);
+  };
+
   return (
-    // Component implementation...
-    <div className="border rounded-lg overflow-hidden bg-white">
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">{job.title}</h3>
-        <p className="text-gray-600">{job.company}</p>
-        
-        <JobSummary 
-          employmentType={job.employment_type} 
-          salaryRange={jobCompensation} 
-          createdAt={jobCreatedAt} 
-        />
-        
-        <div className="mt-4">
-          <button 
-            onClick={onViewDetails}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            View Details
-          </button>
-          
-          {isExpired && onRenew && (
-            <button
-              onClick={onRenew}
-              disabled={isRenewing}
-              className="w-full mt-2 bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:bg-gray-400"
-            >
-              {isRenewing ? 'Processing...' : 'Renew Listing'}
-            </button>
-          )}
+    <Card 
+      className={cn(
+        "relative overflow-hidden transition-all bg-white hover:shadow-md cursor-pointer",
+        job.featured && "border-yellow-300 shadow-md",
+        compact ? "p-4" : "p-5"
+      )}
+      onClick={handleClick}
+    >
+      {job.featured && (
+        <div className="absolute top-0 right-0 p-1 px-2 bg-yellow-400 text-yellow-900 text-xs font-medium rounded-bl-md">
+          Featured
         </div>
+      )}
+      
+      {compact ? (
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <h3 className="font-medium text-lg truncate mr-2">{job.title}</h3>
+            {job.is_urgent && <Badge className="bg-red-500">Urgent</Badge>}
+          </div>
+          <p className="text-sm text-gray-500 truncate">{job.salonName || job.company || "Unknown Salon"}</p>
+          <p className="text-sm text-gray-500">{job.location}</p>
+        </div>
+      ) : (
+        <JobSummary
+          title={job.title || ""}
+          description={job.description?.substring(0, 120) + (job.description && job.description.length > 120 ? "..." : "")}
+          location={job.location || ""}
+          contactEmail={job.contactEmail || job.contact_info?.email || ""}
+          contactPhone={job.contactPhone || job.contact_info?.phone || ""}
+          salonName={job.salonName || job.company || ""}
+        />
+      )}
+      
+      <div className="mt-4 flex justify-end">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-primary hover:text-primary/70"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClick();
+          }}
+        >
+          View Details <ArrowRight className="h-4 w-4 ml-1" />
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 };
 
