@@ -4,7 +4,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client'; // Updated import path
 import Confetti from '@/components/ui/confetti';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CheckCircle } from 'lucide-react';
