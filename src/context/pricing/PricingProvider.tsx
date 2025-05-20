@@ -69,7 +69,8 @@ export const PricingProvider: React.FC<PricingProviderProps> = ({
         durationMonths: pricingOptions.durationMonths,
         isFirstPost: pricingOptions.isFirstPost,
         isNationwide: pricingOptions.isNationwide,
-        selectedTier: pricingOptions.selectedPricingTier
+        selectedTier: pricingOptions.selectedPricingTier,
+        autoRenewDiscount: pricingOptions.autoRenew ? 5 : 0
       };
     }
   }, [pricingOptions]);

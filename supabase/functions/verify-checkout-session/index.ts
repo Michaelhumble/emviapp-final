@@ -88,7 +88,7 @@ serve(async (req) => {
     // Find the related payment log
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
-      .select('*')
+      .select('*, jobs(*)')
       .eq('stripe_payment_id', session.id)
       .single();
 
@@ -97,7 +97,7 @@ serve(async (req) => {
     }
 
     // Get post ID from metadata or payment log
-    let postId = metadata.post_id || paymentLog?.listing_id;
+    let postId = metadata.post_id || (paymentLog?.jobs ? paymentLog.jobs.id : paymentLog?.listing_id);
     let job: any = null;
     
     // Check if post exists
@@ -125,13 +125,13 @@ serve(async (req) => {
             description: postDetails.description || '',
             location: postDetails.location || '',
             user_id: user.id,
-            pricing_tier: metadata.pricing_tier,
+            pricing_tier: metadata.pricing_tier || paymentLog?.pricing_tier,
             status: 'active',
-            expires_at: metadata.expires_at,
-            post_type: metadata.post_type,
-            contact_info: postDetails.contact_info || { email: user.email }
+            payment_id: paymentLog?.id,
+            expires_at: metadata.expires_at || paymentLog?.expires_at,
+            post_type: metadata.post_type || paymentLog?.plan_type
           })
-          .select('id')
+          .select()
           .single();
           
         if (createError) {
@@ -158,7 +158,7 @@ serve(async (req) => {
         .from('jobs')
         .update({ 
           status: 'active',
-          expires_at: metadata.expires_at
+          expires_at: metadata.expires_at || paymentLog?.expires_at
         })
         .eq('id', postId);
         
@@ -185,7 +185,7 @@ serve(async (req) => {
         post_id: postId,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
-        pricing_tier: metadata.pricing_tier,
+        pricing_tier: metadata.pricing_tier || paymentLog?.pricing_tier,
         payment_log_id: paymentLog?.id
       }),
       {

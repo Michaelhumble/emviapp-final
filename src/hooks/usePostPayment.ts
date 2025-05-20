@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
-import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { getJobPrice, validatePricingOptions } from '@/utils/posting/jobPricing';
 import { v4 as uuidv4 } from 'uuid';

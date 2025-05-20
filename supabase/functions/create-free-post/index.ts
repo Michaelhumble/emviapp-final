@@ -82,7 +82,10 @@ serve(async (req) => {
         pricing_tier: pricingOptions.selectedPricingTier,
         expires_at: expiresAt.toISOString(),
         is_free: true,
-        auto_renew_enabled: false
+        auto_renew_enabled: false,
+        metadata: {
+          post_details: postDetails
+        }
       })
       .select()
       .single();
