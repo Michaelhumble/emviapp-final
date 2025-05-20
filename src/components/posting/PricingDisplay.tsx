@@ -2,7 +2,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { JobPricingTier } from '@/utils/posting/types';
 
 interface PricingDisplayProps {
   basePrice: number;
@@ -24,7 +23,7 @@ const PricingDisplay: React.FC<PricingDisplayProps> = ({
   discountPercentage
 }) => {
   // Get the selected pricing tier details
-  const selectedPricing = jobPricingOptions.find(option => option.id === pricingId || option.tier === pricingId);
+  const selectedPricing = jobPricingOptions.find(option => option.id === pricingId);
   if (!selectedPricing) return null;
   
   // Calculate end date

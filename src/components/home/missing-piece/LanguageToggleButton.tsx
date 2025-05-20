@@ -1,7 +1,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Globe } from "lucide-react";
 
 interface LanguageToggleButtonProps {
   isVietnamese: boolean;
@@ -16,7 +15,6 @@ const LanguageToggleButton = ({ isVietnamese, toggleLanguage }: LanguageToggleBu
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <Globe className="h-4 w-4 mr-1" />
       <span className={isVietnamese ? "opacity-50" : "font-medium"}>English</span>
       <span className="w-px h-4 bg-gray-300 mx-2"></span>
       <span className={isVietnamese ? "font-medium" : "opacity-50"}>Tiếng Việt</span>

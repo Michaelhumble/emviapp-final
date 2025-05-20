@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, Briefcase, Store, Scissors, Info, Phone, Globe } from "lucide-react";
+import { Menu, X, Home, Briefcase, Store, Scissors, Info, Phone } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "@/components/ui/Logo";
@@ -126,7 +126,6 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
                   )}
                   onClick={() => !isVietnamese || toggleLanguage()}
                 >
-                  <Globe className="h-4 w-4 mr-1 inline" />
                   English
                 </Button>
                 <Button
@@ -139,7 +138,6 @@ const MobilePostMenu: React.FC<MobilePostMenuProps> = ({ className }) => {
                   )}
                   onClick={() => isVietnamese || toggleLanguage()}
                 >
-                  <Globe className="h-4 w-4 mr-1 inline" />
                   Tiếng Việt
                 </Button>
               </div>

@@ -53,7 +53,7 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
             className="w-full h-14 justify-start text-lg font-medium"
             onClick={() => handleLanguageChange('en')}
           >
-            English
+            <span className="mr-2">🇺🇸</span> English
             {language === 'en' && <Check className="ml-auto h-4 w-4" />}
           </Button>
           <Button
@@ -61,7 +61,7 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
             className="w-full h-14 justify-start text-lg font-medium"
             onClick={() => handleLanguageChange('vi')}
           >
-            Tiếng Việt
+            <span className="mr-2">🇻🇳</span> Tiếng Việt
             {language === 'vi' && <Check className="ml-auto h-4 w-4" />}
           </Button>
         </div>
@@ -86,7 +86,6 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
           onClick={() => handleLanguageChange(language === "en" ? "vi" : "en")}
           className="flex items-center gap-2 hover:bg-primary/5 transition-colors"
         >
-          <Globe className="h-4 w-4 mr-1" />
           <span className="text-sm">
             {language === "en" ? "English | Tiếng Việt" : "Tiếng Việt | English"}
           </span>

@@ -3,29 +3,19 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
+import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { getJobPrice, validatePricingOptions } from '@/utils/posting/jobPricing';
 import { v4 as uuidv4 } from 'uuid';
-import { useAuth } from '@/context/auth';
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
-  const { user } = useAuth();
 
   const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
     setIsLoading(true);
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions);
-      
-      // Ensure user is logged in
-      if (!user) {
-        toast.error(t({
-          english: "You must be logged in to post",
-          vietnamese: "Bạn phải đăng nhập để đăng bài"
-        }));
-        return { success: false };
-      }
 
       // Ensure pricing options exist
       if (!pricingOptions) {

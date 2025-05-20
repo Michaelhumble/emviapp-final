@@ -1,7 +1,11 @@
 
+// @ts-nocheck
+// ^ This comment disables TypeScript checking for this file since it uses Deno types
+// that aren't available in the browser/Node.js environment
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0";
+import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,7 +21,6 @@ serve(async (req) => {
   try {
     // Parse request body
     const { sessionId } = await req.json();
-    console.log("Verifying checkout session:", sessionId);
 
     // Authentication check
     const authHeader = req.headers.get("Authorization");
@@ -64,7 +67,6 @@ serve(async (req) => {
     });
 
     // Retrieve the session
-    console.log("Retrieving Stripe session");
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
       return new Response(JSON.stringify({ error: "Invalid session" }), {
@@ -75,7 +77,6 @@ serve(async (req) => {
 
     // Get metadata from the session
     const metadata = session.metadata || {};
-    console.log("Session metadata:", metadata);
     
     // Check if payment is complete
     if (session.payment_status !== "paid") {
@@ -89,7 +90,6 @@ serve(async (req) => {
     }
     
     // Find the related payment log
-    console.log("Looking for payment log with session ID:", session.id);
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
       .select('*')
@@ -100,91 +100,23 @@ serve(async (req) => {
       console.error("Error fetching payment log:", paymentLogError);
     }
 
-    console.log("Payment log found:", paymentLog ? "yes" : "no");
-
-    // Get post ID from metadata or payment log
-    let postId = metadata.post_id || paymentLog?.listing_id;
-    let job: any = null;
-    
-    // Check if post exists
-    if (postId) {
-      console.log("Looking for existing job with ID:", postId);
-      const { data: existingJob } = await supabaseAdmin
-        .from('jobs')
-        .select('*')
-        .eq('id', postId)
-        .single();
-        
-      job = existingJob;
-      console.log("Existing job found:", job ? "yes" : "no");
-    }
-    
-    // If there's no job record yet, create one from the stored details
-    if (!job && metadata.post_type === 'job') {
-      try {
-        console.log("Creating new job from stored details");
-        // Get details from payment log metadata if available
-        const postDetails = paymentLog?.metadata?.post_details || {};
-        
-        const { data: newJob, error: createError } = await supabaseAdmin
-          .from('jobs')
-          .insert({
-            // Use available details or defaults
-            title: postDetails.title || 'Job Posting',
-            description: postDetails.description || '',
-            location: postDetails.location || '',
-            user_id: user.id,
-            pricing_tier: metadata.pricing_tier,
-            status: 'active',
-            expires_at: metadata.expires_at,
-            post_type: metadata.post_type,
-            contact_info: postDetails.contact_info || { email: user.email }
-          })
-          .select('id')
-          .single();
-          
-        if (createError) {
-          console.error("Error creating job record:", createError);
-        } else {
-          postId = newJob.id;
-          console.log("New job created with ID:", postId);
-          
-          // Update payment log with job ID if it exists
-          if (paymentLog?.id) {
-            await supabaseAdmin
-              .from('payment_logs')
-              .update({ listing_id: postId })
-              .eq('id', paymentLog.id);
-              
-            console.log("Updated payment log with job ID");
-          }
-        }
-      } catch (error) {
-        console.error("Error creating job record:", error);
-      }
-    }
-    
-    // If we have a post_id, update the job status
-    if (postId) {
-      console.log("Updating job status for ID:", postId);
+    // If we have a post_id in metadata, update the job status
+    if (metadata.post_id) {
       const { error: updateJobError } = await supabaseAdmin
         .from('jobs')
         .update({ 
           status: 'active',
           expires_at: metadata.expires_at
         })
-        .eq('id', postId);
+        .eq('id', metadata.post_id);
         
       if (updateJobError) {
         console.error("Error updating job status:", updateJobError);
-      } else {
-        console.log("Job status updated successfully");
       }
     }
     
     // Update payment log status
     if (paymentLog?.id) {
-      console.log("Updating payment log status for ID:", paymentLog.id);
       const { error: updateLogError } = await supabaseAdmin
         .from('payment_logs')
         .update({ payment_status: 'success' })
@@ -192,16 +124,13 @@ serve(async (req) => {
         
       if (updateLogError) {
         console.error("Error updating payment log:", updateLogError);
-      } else {
-        console.log("Payment log updated successfully");
       }
     }
 
-    console.log("Verification completed successfully");
     return new Response(
       JSON.stringify({
         success: true,
-        post_id: postId,
+        post_id: metadata.post_id || paymentLog?.listing_id,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
         pricing_tier: metadata.pricing_tier,
