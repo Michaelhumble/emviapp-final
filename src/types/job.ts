@@ -74,6 +74,8 @@ export interface Job {
   chair_count?: string;
   sale_price?: string;
   is_salon_for_sale?: boolean;
+  salon_id?: string; // Added to fix type errors
+  updated_at?: string; // Added to fix type errors
 }
 
 // Add missing exported interfaces

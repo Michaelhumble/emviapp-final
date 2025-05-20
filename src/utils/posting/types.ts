@@ -60,3 +60,11 @@ export interface JobPricingOption {
 }
 
 export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
+
+// Re-adding UserPostingStats interface that was removed
+export interface UserPostingStats {
+  jobPostCount: number;
+  salonPostCount: number;
+  boothPostCount: number;
+  supplyPostCount: number;
+}
