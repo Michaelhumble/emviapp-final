@@ -15,3 +15,4 @@ export const getImageData = async (file: File) => {
     size: file.size
   };
 };
+
