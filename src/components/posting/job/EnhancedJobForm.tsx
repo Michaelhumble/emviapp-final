@@ -1,420 +1,396 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import React, { useState, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema, JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { CreatableMultiSelect } from '@/components/ui/creatable-multi-select';
+import { specialtyOptions, requirementOptions } from '@/utils/posting/options';
+import PhotoUploader from '@/components/posting/PhotoUploader';
+import { useTranslation } from '@/hooks/useTranslation';
+import { JobTypes } from '@/components/posting/job/jobFormSchema';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/components/ui/use-toast';
+import { ProgressBar } from '@/components/posting/job/ProgressBar';
+import { PricingSection } from '@/components/posting/PricingSection';
+import { PricingContext } from '@/context/pricing/PricingContext';
+import { JobPricingOption } from '@/utils/posting/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-import { Button } from "@/components/ui/button";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-
-// Fixed import from uploadthing.ts (now defined in the file)
-import { UploadButton, uploadFiles } from "@/utils/uploadthing";
-
-// Fix PricingContext import by using PricingProvider
-import { usePricing } from "@/context/pricing/PricingProvider";
-// Fix PricingSummary import by using PaymentSummary
-import { PaymentSummary } from "@/components/posting/PaymentSummary";
-import { jobFormSchema, JobFormValues } from "@/components/posting/job/jobFormSchema";
-import { PricingOptions } from "@/utils/posting/types";
-import { JobSummary } from "@/components/posting/JobSummary";
-
-// Define props interface for this component
 interface EnhancedJobFormProps {
-  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
+  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: any) => Promise<boolean>;
   initialTemplate?: JobFormValues;
-  maxPhotos?: number;
-  onStepChange?: (step: number) => void;
   onBack?: () => void;
   isCustomTemplate?: boolean;
+  maxPhotos?: number;
+  onStepChange?: (step: number) => void;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onSubmit,
   initialTemplate,
+  onBack,
+  isCustomTemplate,
   maxPhotos = 5,
   onStepChange,
-  onBack,
-  isCustomTemplate = false,
 }) => {
-  const { pricingOptions, setPricingOptions, priceData } = usePricing();
-  const [step, setStep] = useState(1);
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const isMobile = useIsMobile();
+  const { pricingOptions, setPricingOptions } = React.useContext(PricingContext);
+  const [uploads, setUploads] = useState<File[]>([]);
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 4;
 
-  // Setup form with zodResolver and default values
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      // Initialize with template or empty values
-      title: initialTemplate?.title || "",
-      description: initialTemplate?.description || "",
-      vietnameseDescription: initialTemplate?.vietnameseDescription || "",
-      location: initialTemplate?.location || "",
-      jobType: initialTemplate?.jobType || "",
-      compensation_type: initialTemplate?.compensation_type || "",
-      compensation_details: initialTemplate?.compensation_details || "",
-      contactName: initialTemplate?.contactName || "",
-      contactPhone: initialTemplate?.contactPhone || "",
-      contactEmail: initialTemplate?.contactEmail || "",
-      contactZalo: initialTemplate?.contactZalo || "",
-      weekly_pay: initialTemplate?.weekly_pay || false,
-      has_housing: initialTemplate?.has_housing || false,
-      has_wax_room: initialTemplate?.has_wax_room || false,
-      owner_will_train: initialTemplate?.owner_will_train || false,
-      no_supply_deduction: initialTemplate?.no_supply_deduction || false,
-      experience_level: initialTemplate?.experience_level || "",
-      salary_range: initialTemplate?.salary_range || "",
-      specialties: initialTemplate?.specialties || [],
-      requirements: initialTemplate?.requirements || [],
-      salonName: initialTemplate?.salonName || "",
-      // Default value for templateType
-      templateType: initialTemplate?.templateType || "custom",
-      // Removed 'image' property as it's not in the JobFormValues type
+    defaultValues: initialTemplate || {
+      title: '',
+      description: '',
+      vietnameseDescription: '',
+      location: '',
+      jobType: '',
+      compensation_type: '',
+      compensation_details: '',
+      salary_range: '',
+      experience_level: '',
+      contactName: '',
+      contactPhone: '',
+      contactEmail: '',
+      contactZalo: '',
+      salonName: '',
+      weekly_pay: false,
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: false,
+      specialties: [],
+      requirements: [],
+      templateType: '',
     },
+    mode: 'onChange',
   });
 
-  const handlePhotoUpload = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > maxPhotos) {
-      alert(`You can only upload up to ${maxPhotos} photos.`);
+  const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = form;
+
+  const handlePhotoUpload = useCallback((files: File[]) => {
+    setUploads(files);
+  }, []);
+
+  const nextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+      onStepChange?.(currentStep + 1);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      onStepChange?.(currentStep - 1);
+      window.scrollTo(0, 0);
+    } else {
+      onBack?.();
+    }
+  };
+
+  const salaryRange = watch('salary_range');
+  const compensationType = watch('compensation_type');
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <>
+            <CardHeader>
+              <CardTitle>{t({ english: 'Salon Details', vietnamese: 'Chi tiết về Salon' })}</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="salonName">{t({ english: 'Salon Name', vietnamese: 'Tên Salon' })}</Label>
+                <Input id="salonName" placeholder={t({ english: 'Enter salon name', vietnamese: 'Nhập tên salon' })} {...register('salonName', { required: 'Salon name is required' })} />
+                {errors.salonName && (
+                  <p className="text-red-500 text-sm">{errors.salonName.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="contactName">{t({ english: 'Contact Name', vietnamese: 'Tên Liên Hệ' })}</Label>
+                <Input id="contactName" placeholder={t({ english: 'Enter contact name', vietnamese: 'Nhập tên liên hệ' })} {...register('contactName')} />
+                {errors.contactName && (
+                  <p className="text-red-500 text-sm">{errors.contactName.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="contactPhone">{t({ english: 'Contact Phone', vietnamese: 'Số Điện Thoại Liên Hệ' })}</Label>
+                <Input id="contactPhone" placeholder={t({ english: 'Enter contact phone', vietnamese: 'Nhập số điện thoại liên hệ' })} {...register('contactPhone')} />
+                {errors.contactPhone && (
+                  <p className="text-red-500 text-sm">{errors.contactPhone.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="contactEmail">{t({ english: 'Contact Email', vietnamese: 'Email Liên Hệ' })}</Label>
+                <Input id="contactEmail" type="email" placeholder={t({ english: 'Enter contact email', vietnamese: 'Nhập email liên hệ' })} {...register('contactEmail')} />
+                {errors.contactEmail && (
+                  <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="location">{t({ english: 'Location', vietnamese: 'Địa Điểm' })}</Label>
+                <Input id="location" placeholder={t({ english: 'Enter location', vietnamese: 'Nhập địa điểm' })} {...register('location', { required: 'Location is required' })} />
+                {errors.location && (
+                  <p className="text-red-500 text-sm">{errors.location.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </>
+        );
+      case 2:
+        return (
+          <>
+            <CardHeader>
+              <CardTitle>{t({ english: 'Job Details', vietnamese: 'Chi tiết Công việc' })}</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="title">{t({ english: 'Job Title', vietnamese: 'Tiêu Đề Công Việc' })}</Label>
+                <Input id="title" placeholder={t({ english: 'Enter job title', vietnamese: 'Nhập tiêu đề công việc' })} {...register('title', { required: 'Job title is required' })} />
+                {errors.title && (
+                  <p className="text-red-500 text-sm">{errors.title.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="jobType">{t({ english: 'Job Type', vietnamese: 'Loại Công Việc' })}</Label>
+                <Select onValueChange={(value) => setValue('jobType', value)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t({ english: 'Select a job type', vietnamese: 'Chọn loại công việc' })} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {JobTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{t({ english: type, vietnamese: type })}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.jobType && (
+                  <p className="text-red-500 text-sm">{errors.jobType.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="specialties">{t({ english: 'Specialties', vietnamese: 'Chuyên Môn' })}</Label>
+                <CreatableMultiSelect
+                  value={watch('specialties') || []}
+                  onChange={(values) => setValue('specialties', values)}
+                  placeholder={t({ english: 'Select specialties', vietnamese: 'Chọn chuyên môn' })}
+                  options={specialtyOptions.map((option) => option.label)}
+                />
+                {errors.specialties && (
+                  <p className="text-red-500 text-sm">{errors.specialties.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="compensation_type">{t({ english: 'Compensation Type', vietnamese: 'Loại Hình Trả Lương' })}</Label>
+                <Input id="compensation_type" placeholder={t({ english: 'Enter compensation type', vietnamese: 'Nhập loại hình trả lương' })} {...register('compensation_type')} />
+                {errors.compensation_type && (
+                  <p className="text-red-500 text-sm">{errors.compensation_type.message}</p>
+                )}
+              </div>
+              {compensationType && (
+                <div className="grid gap-2">
+                  <Label htmlFor="compensation_details">{t({ english: 'Compensation Details', vietnamese: 'Chi Tiết Về Lương' })}</Label>
+                  <Input id="compensation_details" placeholder={t({ english: 'Enter compensation details', vietnamese: 'Nhập chi tiết về lương' })} {...register('compensation_details')} />
+                  {errors.compensation_details && (
+                    <p className="text-red-500 text-sm">{errors.compensation_details.message}</p>
+                  )}
+                </div>
+              )}
+              <div className="grid gap-2">
+                <Label htmlFor="salary_range">{t({ english: 'Salary Range', vietnamese: 'Mức Lương' })}</Label>
+                <Input id="salary_range" placeholder={t({ english: 'Enter salary range', vietnamese: 'Nhập mức lương' })} {...register('salary_range')} />
+                {errors.salary_range && (
+                  <p className="text-red-500 text-sm">{errors.salary_range.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </>
+        );
+      case 3:
+        return (
+          <>
+            <CardHeader>
+              <CardTitle>{t({ english: 'More Details & Requirements', vietnamese: 'Thông Tin Chi Tiết & Yêu Cầu' })}</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="description">{t({ english: 'Job Description (English)', vietnamese: 'Mô Tả Công Việc (Tiếng Anh)' })}</Label>
+                <Textarea id="description" placeholder={t({ english: 'Enter job description in English', vietnamese: 'Nhập mô tả công việc bằng tiếng Anh' })} {...register('description', { required: 'Job description is required' })} />
+                {errors.description && (
+                  <p className="text-red-500 text-sm">{errors.description.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="vietnameseDescription">{t({ english: 'Job Description (Vietnamese)', vietnamese: 'Mô Tả Công Việc (Tiếng Việt)' })}</Label>
+                <Textarea id="vietnameseDescription" placeholder={t({ english: 'Enter job description in Vietnamese', vietnamese: 'Nhập mô tả công việc bằng tiếng Việt' })} {...register('vietnameseDescription')} />
+                {errors.vietnameseDescription && (
+                  <p className="text-red-500 text-sm">{errors.vietnameseDescription.message}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="requirements">{t({ english: 'Requirements', vietnamese: 'Yêu Cầu' })}</Label>
+                <CreatableMultiSelect
+                  value={watch('requirements') || []}
+                  onChange={(values) => setValue('requirements', values)}
+                  placeholder={t({ english: 'Select requirements', vietnamese: 'Chọn yêu cầu' })}
+                  options={requirementOptions.map((option) => option.label)}
+                />
+                {errors.requirements && (
+                  <p className="text-red-500 text-sm">{errors.requirements.message}</p>
+                )}
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="weekly_pay" {...register('weekly_pay')} className="peer h-5 w-5" />
+                <Label htmlFor="weekly_pay" className="peer-data-[state=checked]:text-sky-500">
+                  {t({ english: 'Weekly Pay', vietnamese: 'Trả Lương Hàng Tuần' })}
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="has_housing" {...register('has_housing')} className="peer h-5 w-5" />
+                <Label htmlFor="has_housing" className="peer-data-[state=checked]:text-sky-500">
+                  {t({ english: 'Housing Provided', vietnamese: 'Cung Cấp Chỗ Ở' })}
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="has_wax_room" {...register('has_wax_room')} className="peer h-5 w-5" />
+                <Label htmlFor="has_wax_room" className="peer-data-[state=checked]:text-sky-500">
+                  {t({ english: 'Wax Room Available', vietnamese: 'Phòng Wax Sẵn Có' })}
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="owner_will_train" {...register('owner_will_train')} className="peer h-5 w-5" />
+                <Label htmlFor="owner_will_train" className="peer-data-[state=checked]:text-sky-500">
+                  {t({ english: 'Owner Will Train', vietnamese: 'Chủ Sẽ Đào Tạo' })}
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="no_supply_deduction" {...register('no_supply_deduction')} className="peer h-5 w-5" />
+                <Label htmlFor="no_supply_deduction" className="peer-data-[state=checked]:text-sky-500">
+                  {t({ english: 'No Supply Deduction', vietnamese: 'Không Trừ Chi Phí Vật Tư' })}
+                </Label>
+              </div>
+            </CardContent>
+          </>
+        );
+      case 4:
+        return (
+          <>
+            <CardHeader>
+              <CardTitle>{t({ english: 'Photos & Pricing', vietnamese: 'Hình Ảnh & Giá' })}</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <PhotoUploader
+                onChange={handlePhotoUpload}
+                files={uploads}
+                maxFiles={maxPhotos}
+                accept="image/*"
+              />
+              <PricingSection />
+            </CardContent>
+          </>
+        );
+      default:
+        return <div>{t({ english: 'Unknown step', vietnamese: 'Bước không xác định' })}</div>;
+    }
+  };
+
+  const pricingTiers: JobPricingOption[] = [
+    {
+      id: 'standard',
+      name: 'Standard',
+      price: 99,
+      description: 'Standard Job Listing',
+      tier: 'standard',
+      features: ['7-day listing', 'Basic visibility'],
+    },
+    {
+      id: 'premium',
+      name: 'Premium',
+      price: 199,
+      description: 'Premium Job Listing',
+      tier: 'premium',
+      features: ['14-day listing', 'Featured visibility', 'Priority placement'],
+    },
+    {
+      id: 'gold',
+      name: 'Gold',
+      price: 299,
+      description: 'Gold Job Listing',
+      tier: 'gold',
+      features: ['30-day listing', 'Top visibility', 'Social promotion', 'Priority support'],
+    },
+  ];
+
+  const handleSubmitForm = async (data: JobFormValues) => {
+    if (!isValid) {
+      toast({
+        title: t({ english: 'Error', vietnamese: 'Lỗi' }),
+        description: t({ english: 'Please fill in all required fields.', vietnamese: 'Vui lòng điền đầy đủ các trường bắt buộc.' }),
+      });
       return;
     }
-    setPhotoUploads(acceptedFiles);
-  }, [maxPhotos, setPhotoUploads]);
 
-  const handleRemovePhoto = (indexToRemove: number) => {
-    setPhotoUploads(photos => photos.filter((_, index) => index !== indexToRemove));
-  };
+    if (uploads.length > maxPhotos) {
+      toast({
+        title: t({ english: 'Error', vietnamese: 'Lỗi' }),
+        description: t({ english: `You can only upload up to ${maxPhotos} photos.`, vietnamese: `Bạn chỉ có thể tải lên tối đa ${maxPhotos} ảnh.` }),
+      });
+      return;
+    }
 
-  const handleFormSubmit = async (values: JobFormValues) => {
-    setIsSubmitting(true);
-    try {
-      const success = await onSubmit(values, photoUploads, pricingOptions);
-      if (success) {
-        // Reset form or navigate on success
-        form.reset();
-        setPhotoUploads([]);
-      }
-    } finally {
-      setIsSubmitting(false);
+    if (!pricingOptions) {
+      toast({
+        title: t({ english: 'Error', vietnamese: 'Lỗi' }),
+        description: t({ english: 'Please select a pricing option.', vietnamese: 'Vui lòng chọn một tùy chọn giá.' }),
+      });
+      return;
+    }
+
+    const success = await onSubmit(data, uploads, pricingOptions);
+    if (success) {
+      toast({
+        title: t({ english: 'Success', vietnamese: 'Thành công' }),
+        description: t({ english: 'Job post created successfully!', vietnamese: 'Bài đăng công việc đã được tạo thành công!' }),
+      });
+    } else {
+      toast({
+        title: t({ english: 'Error', vietnamese: 'Lỗi' }),
+        description: t({ english: 'Failed to create job post. Please try again.', vietnamese: 'Không thể tạo bài đăng công việc. Vui lòng thử lại.' }),
+      });
     }
   };
 
-  useEffect(() => {
-    onStepChange?.(step);
-  }, [step, onStepChange]);
-
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-        {step === 1 && (
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Nail Technician" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="salonName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Salon Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter salon name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. San Francisco, CA" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="jobType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Type</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Full-time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+    <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
+      <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+      {renderStepContent()}
+      <div className="flex justify-between">
+        <Button variant="secondary" onClick={prevStep}>
+          {currentStep === 1 ? t({ english: 'Back to Templates', vietnamese: 'Quay lại Mẫu' }) : t({ english: 'Previous', vietnamese: 'Trước' })}
+        </Button>
+        {currentStep < totalSteps ? (
+          <Button onClick={nextStep} disabled={!isValid}>
+            {t({ english: 'Next', vietnamese: 'Tiếp theo' })}
+          </Button>
+        ) : (
+          <Button type="submit" disabled={!isValid}>
+            {t({ english: 'Submit', vietnamese: 'Gửi' })}
+          </Button>
         )}
-
-        {step === 2 && (
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe the job and requirements"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="vietnameseDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Vietnamese Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe the job and requirements in Vietnamese"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="compensation_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Compensation Type</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Hourly, Salary, Commission" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="compensation_details"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Compensation Details</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. $15/hour + tips" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="contactName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter contact name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="contactPhone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Phone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter contact phone" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="contactEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter contact email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="contactZalo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Zalo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter contact Zalo" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex items-center space-x-2">
-              <FormField
-                control={form.control}
-                name="weekly_pay"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-nowrap">Weekly Pay</FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="has_housing"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-nowrap">Has Housing</FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="has_wax_room"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-nowrap">Has Wax Room</FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="owner_will_train"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-nowrap">Owner Will Train</FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="no_supply_deduction"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-nowrap">No Supply Deduction</FormLabel>
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="space-y-4">
-            <JobSummary
-              title={form.getValues("title")}
-              description={form.getValues("description")}
-              location={form.getValues("location")}
-              contactEmail={form.getValues("contactEmail")}
-              contactPhone={form.getValues("contactPhone")}
-              pricingPlan={{
-                id: pricingOptions.selectedPricingTier,
-                name: pricingOptions.selectedPricingTier,
-                price: 99,
-                features: ["Feature 1", "Feature 2"],
-              }}
-              jobType={form.getValues("jobType")}
-              salonName={form.getValues("salonName")}
-            />
-            <PaymentSummary priceData={priceData} />
-          </div>
-        )}
-
-        <div className="flex justify-between mt-6">
-          {step > 1 ? (
-            <Button variant="secondary" onClick={prevStep}>
-              Previous
-            </Button>
-          ) : (
-            <Button variant="secondary" onClick={onBack}>
-              Back to Templates
-            </Button>
-          )}
-          {step < 4 ? (
-            <Button onClick={nextStep}>Next</Button>
-          ) : (
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
-          )}
-        </div>
-      </form>
-    </Form>
+      </div>
+    </form>
   );
 };
 
