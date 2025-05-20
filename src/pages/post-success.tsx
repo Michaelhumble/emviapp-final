@@ -4,7 +4,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client'; // Updated import path
+import { supabase } from '@/integrations/supabase/client'; 
 import Confetti from '@/components/ui/confetti';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CheckCircle } from 'lucide-react';
@@ -40,15 +40,17 @@ const PostSuccess = () => {
         if (error) {
           console.error('Error fetching job details:', error);
         } else if (data) {
-          // Add required fields with default values if they don't exist
-          const jobWithDefaults = {
+          // Ensure all required fields exist with fallbacks if they don't
+          const jobWithDefaults: Job = {
             ...data,
-            location: data.location || '', // Ensure location exists
+            id: data.id || '',
+            location: data.location || '',
+            created_at: data.created_at || new Date().toISOString(),
             salonName: data.salonName || t({
               english: "Unknown Salon",
               vietnamese: "Tiệm không xác định"
             })
-          } as Job;
+          };
           
           setJobData(jobWithDefaults);
         }
