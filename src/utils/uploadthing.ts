@@ -16,3 +16,8 @@ export const getImageData = async (file: File) => {
   };
 };
 
+// Adding a basic UploadButton component function to fix imports
+export const UploadButton = ({ onUploadComplete }: { onUploadComplete: (urls: string[]) => void }) => {
+  console.warn("Mock UploadButton used. This should be replaced with actual upload functionality.");
+  return null; // Return null as a placeholder
+};

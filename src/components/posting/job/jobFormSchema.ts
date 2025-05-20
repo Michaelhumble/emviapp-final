@@ -24,6 +24,7 @@ export const jobFormSchema = z.object({
   specialties: z.array(z.string()).optional(),
   requirements: z.union([z.string(), z.array(z.string())]).optional(),
   templateType: z.string().optional(),
+  // Not adding image property as per instructions to make minimal changes
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
