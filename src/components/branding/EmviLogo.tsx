@@ -10,7 +10,7 @@ interface EmviLogoProps {
 
 const EmviLogo: React.FC<EmviLogoProps> = ({
   className,
-  size = "medium",
+  size = "large",
   showText = true
 }) => {
   return (
