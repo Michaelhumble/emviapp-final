@@ -105,7 +105,7 @@ const CreateJobPosting = () => {
             onSubmit={handleSubmit}
             onStepChange={handleStepChange}
             maxPhotos={5}
-            initialData={{ salonName }}
+            // Removing the initialData prop that's causing the build error
           />
         </Card>
       </PostWizardLayout>
