@@ -6,12 +6,12 @@ import PricingSection from '@/components/pricing/PricingSection';
 import PricingComparison from '@/components/pricing/PricingComparison';
 import FoundingMemberOffer from '@/components/pricing/FoundingMemberOffer';
 import FoundersEarlyAccess from '@/components/pricing/FoundersEarlyAccess';
-import ReferralRewards from '@/components/pricing/ReferralRewards';
+import FoundersGetMore from '@/components/pricing/FoundersGetMore';
 import ClientManagementSection from '@/components/pricing/ClientManagementSection';
+import ReferralRewards from '@/components/pricing/ReferralRewards';
+import EmotionalClosing from '@/components/pricing/EmotionalClosing';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
 import FinalCTA from '@/components/pricing/FinalCTA';
-import FoundersGetMore from '@/components/pricing/FoundersGetMore';
-import EmotionalClosing from '@/components/pricing/EmotionalClosing';
 
 const PricingPage = () => {
   return (
