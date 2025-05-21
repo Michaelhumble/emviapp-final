@@ -9,15 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { useState } from 'react';
-
-// Create a type for pricing options
-interface PricingOptions {
-  selectedPricingTier: string;
-  durationMonths: number;
-  autoRenew: boolean;
-  isFirstPost: boolean;
-  isNationwide: boolean;
-}
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 const PostJob = () => {
   const navigate = useNavigate();

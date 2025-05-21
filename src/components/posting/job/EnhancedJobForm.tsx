@@ -14,9 +14,10 @@ import { toast } from 'sonner';
 // Import sections that were missing
 import UploadSection from '../sections/UploadSection';
 import PricingSection from '../sections/PricingSection';
+import { PricingOptions } from '@/utils/posting/types';
 
 interface EnhancedJobFormProps {
-  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: any) => Promise<boolean>;
+  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange: (step: number) => void;
   maxPhotos?: number;
   defaultValues?: Partial<JobFormValues>;
@@ -45,7 +46,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 
   const [step, setStep] = React.useState(1);
   const [uploads, setUploads] = React.useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = React.useState<any>(null);
+  const [pricingOptions, setPricingOptions] = React.useState<PricingOptions | null>(null);
   const navigate = useNavigate();
 
   const handleNext = () => {
@@ -91,6 +92,11 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     console.log('Current uploads:', uploads);
     console.log('Pricing options at submit:', pricingOptions);
 
+    if (!pricingOptions) {
+      toast.error('Please select pricing options');
+      return;
+    }
+
     const success = await onSubmit(data, uploads, pricingOptions);
     if (success) {
       toast.success('Job post created successfully!');
@@ -100,7 +106,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     }
   };
 
-  const handlePricingOptionsChange = (options: any) => {
+  const handlePricingOptionsChange = (options: PricingOptions) => {
     setPricingOptions(options);
   };
 
