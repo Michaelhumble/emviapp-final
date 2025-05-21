@@ -21,9 +21,8 @@ const SalonNameInput: React.FC<SalonNameInputProps> = ({ value, onChange, id = "
   }, [id]);
 
   return (
-    <div className="mb-6 border-4 border-red-500 p-6 bg-yellow-50 rounded-md shadow-lg">
-      <h3 className="text-xl font-bold mb-4 text-red-800">🔴 SALON INFORMATION 🔴</h3>
-      <Label htmlFor={id} className="text-lg font-bold block mb-2 text-black">
+    <div className="mb-4">
+      <Label htmlFor={id} className="text-base font-medium text-gray-900 block mb-2">
         Salon Name <span className="text-red-500">*</span>
       </Label>
       <div className="mt-1">
@@ -36,10 +35,10 @@ const SalonNameInput: React.FC<SalonNameInputProps> = ({ value, onChange, id = "
             onChange(e.target.value);
           }}
           placeholder="Enter your salon name"
-          className="w-full rounded-md border-2 border-gray-400 px-4 py-3 text-lg font-medium"
+          className="w-full rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
         />
       </div>
-      <p className="mt-3 text-sm font-medium text-gray-700">
+      <p className="mt-1 text-sm text-gray-500">
         The name of your salon or business
       </p>
     </div>

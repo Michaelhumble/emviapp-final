@@ -10,14 +10,12 @@ import { PricingOptions } from '@/utils/posting/types';
 import { useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
-import SalonNameInput from '@/components/posting/wrappers/SalonNameInput';
 import { useState } from 'react';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
   const [currentStep, setCurrentStep] = React.useState(1);
-  // Add state for salon name
   const [salonName, setSalonName] = useState('');
 
   // Add useEffect to log component mount and salon name value
@@ -47,7 +45,7 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train,
         no_supply_deduction: data.no_supply_deduction,
-        salonName: salonName, // Include salon name from our wrapper state
+        salonName: data.salonName || salonName, // Use form data first, fallback to the state
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,
@@ -98,34 +96,16 @@ const CreateJobPosting = () => {
           />
         </Helmet>
 
-        {/* PROMINENT: SalonNameInput rendered with high visibility styling */}
-        <SalonNameInput 
-          value={salonName}
-          onChange={setSalonName}
-          id="salonName_top_level"
-        />
-
         <Card className="bg-white shadow-md rounded-lg p-6">
-          {/* Debug info for salon name */}
           <div className="mb-6 bg-blue-100 p-4 rounded-md">
             <p className="text-blue-800 font-bold">Current step: {currentStep}</p>
-            <p className="text-sm">Salon Name: {salonName || 'Not yet provided'}</p>
-          </div>
-          
-          {/* PROMINENT: SalonNameInput inside card */}
-          <div className="border-2 border-red-500 p-2 mb-6 rounded-md">
-            <p className="text-red-800 font-bold mb-2">Salon Information Section</p>
-            <SalonNameInput 
-              value={salonName}
-              onChange={setSalonName}
-              id="salonName_inside"
-            />
           </div>
           
           <EnhancedJobForm 
             onSubmit={handleSubmit}
             onStepChange={handleStepChange}
             maxPhotos={5}
+            initialData={{ salonName }}
           />
         </Card>
       </PostWizardLayout>
