@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -8,12 +9,15 @@ import Logo from "@/components/ui/Logo";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { User } from "@/context/auth/types";
 
 interface MobileMenuProps {
   className?: string;
+  user?: any;
+  handleSignOut?: () => Promise<void>;
 }
 
-const MobileMenu = ({ className }: MobileMenuProps) => {
+const MobileMenu = ({ className, user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { t, toggleLanguage, isVietnamese } = useTranslation();
