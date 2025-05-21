@@ -4,11 +4,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Home, Briefcase, PlusSquare, User } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const MobileJobsNavBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
   
   // Don't render on desktop
   if (!isMobile) return null;
@@ -19,25 +21,25 @@ const MobileJobsNavBar = () => {
   const navItems = [
     { 
       icon: Home, 
-      label: 'Home', 
+      label: t('Home'), 
       path: '/',
       isActive: location.pathname === '/'
     },
     { 
       icon: Briefcase, 
-      label: 'Jobs', 
+      label: t('Jobs'), 
       path: '/jobs',
       isActive: location.pathname === '/jobs' || location.pathname.startsWith('/jobs/')
     },
     { 
       icon: PlusSquare, 
-      label: 'Post Job', 
+      label: t('Post Job'), 
       path: '/post-job',
       isActive: location.pathname === '/post-job'
     },
     { 
       icon: User, 
-      label: 'Profile', 
+      label: t('Profile'), 
       path: '/dashboard',
       isActive: location.pathname.startsWith('/dashboard')
     },
@@ -56,7 +58,7 @@ const MobileJobsNavBar = () => {
             <div 
               className={cn(
                 "flex items-center justify-center",
-                item.isActive ? "text-purple-600" : "text-gray-500"
+                item.isActive ? "text-emvi-accent" : "text-gray-500"
               )}
             >
               <item.icon size={24} strokeWidth={1.75} />
@@ -64,7 +66,7 @@ const MobileJobsNavBar = () => {
             <span 
               className={cn(
                 "text-xs mt-1 font-medium",
-                item.isActive ? "text-purple-600" : "text-gray-500"
+                item.isActive ? "text-emvi-accent" : "text-gray-500"
               )}
             >
               {item.label}
