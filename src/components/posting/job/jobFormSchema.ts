@@ -28,7 +28,7 @@ export const jobFormSchema = z.object({
   requirements: z.array(z.string()).optional(),
   specialties: z.array(z.string()).optional(),
   templateType: z.string().optional(),
-  salonName: z.string().min(2, 'Salon name is required') // Added validation for salon name
+  salonName: z.string().min(2, 'Salon name is required') // Updated validation for salon name
 });
 
 // Define the type for the form values based on the schema

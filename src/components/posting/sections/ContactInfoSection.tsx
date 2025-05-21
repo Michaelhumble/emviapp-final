@@ -23,7 +23,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
       </div>
       
       <div className="grid gap-6 md:grid-cols-2">
-        {/* SALON NAME FIELD - Added at the beginning of the contact section */}
+        {/* SALON NAME FIELD - First field in the section */}
         <FormField
           control={form.control}
           name="salonName"
@@ -39,6 +39,26 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
                 />
               </FormControl>
               <p className="text-sm text-gray-500 mt-1">The name of your salon or business</p>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="contactEmail"
+          render={({ field }) => (
+            <FormItem className="md:col-span-2">
+              <FormLabel className="text-gray-900 font-medium">Email Address *</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="your-email@example.com" 
+                  type="email"
+                  required
+                  {...field}
+                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -72,26 +92,6 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
                 <Input 
                   placeholder="(555) 123-4567" 
                   type="tel"
-                  {...field}
-                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="contactEmail"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormLabel className="text-gray-900 font-medium">Email Address *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="your-email@example.com" 
-                  type="email"
-                  required
                   {...field}
                   className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
                 />
