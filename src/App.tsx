@@ -84,7 +84,7 @@ function App() {
                     {routes.map((route, index) => (
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
-                       route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/pricing") && (
+                       route.path !== "/privacy" && route.path !== "/cookies") && (
                         <Route 
                           key={index}
                           path={route.path}

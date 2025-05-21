@@ -30,6 +30,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/about" className="text-gray-600 hover:text-primary">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-600 hover:text-primary">Contact</Link></li>
+              <li><Link to="/pricing" className="text-gray-600 hover:text-primary">Pricing</Link></li>
               <li><Link to="/early-access" className="text-gray-600 hover:text-primary">Early Access</Link></li>
             </ul>
           </div>
@@ -52,7 +53,7 @@ const Footer = () => {
             </span>
           </p>
           
-          {/* New legal links row */}
+          {/* New legal links row - UPDATED with Privacy and Cookie links */}
           <div className="flex flex-wrap justify-center gap-6 mb-4">
             <Link to="/terms" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
               <span className="mr-1">📄</span> Terms of Service
