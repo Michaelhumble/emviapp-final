@@ -1,4 +1,7 @@
 
+// WARNING: Do NOT move logic into locked job posting files.
+// All fixes MUST remain in this adapter/patch.
+
 /**
  * This file provides type compatibility layers for job types without modifying
  * the original job schema or form types.

@@ -1,4 +1,7 @@
 
+// WARNING: Do NOT move logic into locked job posting files.
+// All fixes MUST remain in this adapter/patch.
+
 /**
  * This file is a patch to fix type errors without modifying locked files.
  * It exports the original EnhancedJobForm but provides the proper adapter for consumption.

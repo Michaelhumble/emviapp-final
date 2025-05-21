@@ -1,5 +1,8 @@
 
-import React from 'react';
+// WARNING: Do NOT move logic into locked job posting files.
+// All fixes MUST remain in this adapter/patch.
+
+import React, { useState } from 'react';
 import JobForm from '@/components/posting/job/JobForm';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
@@ -19,6 +22,8 @@ interface LocalJobFormProps {
   onBack?: () => void;
   initialTemplate?: JobFormValues;
   isCustomTemplate?: boolean;
+  photoUploads: File[];
+  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
 }
 
 // Define the props that our adapter expects
@@ -34,16 +39,22 @@ interface JobFormAdapterProps {
 }
 
 const JobFormAdapter: React.FC<JobFormAdapterProps> = ({
-  photoUploads,
+  photoUploads: externalPhotoUploads,
   maxPhotos,
   onStepChange,
   onSubmit,
   ...validJobFormProps
 }) => {
+  // Maintain internal state for photo uploads if not provided externally
+  const [internalPhotoUploads, setInternalPhotoUploads] = useState<File[]>([]);
+  
+  // Use external photoUploads if provided, otherwise use internal state
+  const photoUploads = externalPhotoUploads || internalPhotoUploads;
+  
   // Handle the translation of onSubmit prop to match JobForm's expectations
   const handleSubmit = (data: JobFormValues, uploads?: File[]) => {
     // Ensure we have a proper uploads array
-    const processedUploads = uploads || [];
+    const processedUploads = uploads || photoUploads || [];
     
     // Create default pricing options when not provided explicitly
     const defaultPricingOptions: PricingOptions = {
@@ -62,6 +73,8 @@ const JobFormAdapter: React.FC<JobFormAdapterProps> = ({
   return <JobForm 
     {...validJobFormProps}
     onSubmit={handleSubmit}
+    photoUploads={photoUploads}
+    setPhotoUploads={setInternalPhotoUploads}
   />;
 };
 
