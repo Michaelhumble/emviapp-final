@@ -1,257 +1,270 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useTranslation } from '@/hooks/useTranslation';
+import { MobileButton } from '@/components/ui/mobile-button';
 
-// Configuration for easy updates to pricing, features, etc.
+// Configuration for easy updates
 const PRICING_CONFIG = {
   discountPercentage: 50,
-  currency: '$',
+  accentColor: '#9b87f5', // EmviApp purple
+  badgeColor: '#FF7743', // Orange accent
   plans: [
     {
-      id: 'starter',
       name: {
         english: 'Starter',
         vietnamese: 'Khởi Đầu'
       },
-      originalPrice: 19.99,
       description: {
-        english: 'Perfect for individuals starting their beauty journey',
-        vietnamese: 'Hoàn hảo cho cá nhân bắt đầu hành trình làm đẹp'
+        english: 'Perfect for individuals getting started',
+        vietnamese: 'Hoàn hảo cho cá nhân bắt đầu'
       },
+      originalPrice: 19.99,
+      discountedPrice: 9.99,
       features: [
         {
-          english: 'Basic listing promotion',
-          vietnamese: 'Quảng bá danh sách cơ bản'
+          english: '3 Job Listings per month',
+          vietnamese: '3 Danh sách công việc mỗi tháng'
         },
         {
-          english: 'Email support',
-          vietnamese: 'Hỗ trợ qua email'
+          english: 'Basic Profile Visibility',
+          vietnamese: 'Khả năng hiển thị hồ sơ cơ bản'
         },
         {
-          english: 'Mobile app access',
-          vietnamese: 'Truy cập ứng dụng di động'
+          english: 'Standard Client Management',
+          vietnamese: 'Quản lý khách hàng tiêu chuẩn'
         },
         {
-          english: '1 free job posting',
-          vietnamese: '1 đăng tin tuyển dụng miễn phí'
+          english: 'Mobile Access',
+          vietnamese: 'Truy cập di động'
         },
-      ],
-      popular: false,
-      buttonText: {
-        english: 'Start Free Trial',
-        vietnamese: 'Bắt Đầu Dùng Thử'
-      },
-      accent: false
+        {
+          english: 'Basic Appointment Scheduling',
+          vietnamese: 'Lập lịch hẹn cơ bản'
+        }
+      ]
     },
     {
-      id: 'pro',
       name: {
         english: 'Pro',
         vietnamese: 'Chuyên Nghiệp'
       },
-      originalPrice: 29.99,
       description: {
-        english: 'For growing beauty professionals and small salons',
-        vietnamese: 'Dành cho các chuyên gia làm đẹp đang phát triển và các tiệm nhỏ'
+        english: 'For growing professionals and businesses',
+        vietnamese: 'Cho các chuyên gia và doanh nghiệp đang phát triển'
       },
+      originalPrice: 29.99,
+      discountedPrice: 14.99,
+      popular: true,
       features: [
         {
-          english: 'Enhanced visibility',
-          vietnamese: 'Khả năng hiển thị nâng cao'
+          english: '10 Job Listings per month',
+          vietnamese: '10 Danh sách công việc mỗi tháng'
         },
         {
-          english: 'Priority support',
+          english: 'Enhanced Profile Visibility',
+          vietnamese: 'Khả năng hiển thị hồ sơ nâng cao'
+        },
+        {
+          english: 'Advanced Client Management',
+          vietnamese: 'Quản lý khách hàng nâng cao'
+        },
+        {
+          english: 'Featured Placement',
+          vietnamese: 'Vị trí nổi bật'
+        },
+        {
+          english: 'Priority Support',
           vietnamese: 'Hỗ trợ ưu tiên'
         },
         {
-          english: 'Analytics dashboard',
-          vietnamese: 'Bảng điều khiển phân tích'
+          english: 'Advanced Appointment Scheduling',
+          vietnamese: 'Lập lịch hẹn nâng cao'
         },
         {
-          english: '3 free job postings',
-          vietnamese: '3 đăng tin tuyển dụng miễn phí'
-        },
-        {
-          english: 'Client management tools',
-          vietnamese: 'Công cụ quản lý khách hàng'
+          english: 'Monthly Analytics Reports',
+          vietnamese: 'Báo cáo phân tích hàng tháng'
         }
-      ],
-      popular: true,
-      buttonText: {
-        english: 'Start Free Trial',
-        vietnamese: 'Bắt Đầu Dùng Thử'
-      },
-      accent: true
+      ]
     },
     {
-      id: 'ultimate',
       name: {
         english: 'Ultimate',
-        vietnamese: 'Cao Cấp'
+        vietnamese: 'Tối Thượng'
+      },
+      description: {
+        english: 'For established salons and power users',
+        vietnamese: 'Cho các tiệm nail đã thành lập và người dùng nâng cao'
       },
       originalPrice: 49.99,
-      description: {
-        english: 'Complete solution for established salons and chains',
-        vietnamese: 'Giải pháp toàn diện cho các tiệm đã thành lập và chuỗi tiệm'
-      },
+      discountedPrice: 24.99,
       features: [
         {
-          english: 'Maximum visibility',
-          vietnamese: 'Khả năng hiển thị tối đa'
+          english: 'Unlimited Job Listings',
+          vietnamese: 'Danh sách công việc không giới hạn'
         },
         {
-          english: 'Dedicated account manager',
-          vietnamese: 'Người quản lý tài khoản riêng'
+          english: 'Maximum Profile Visibility',
+          vietnamese: 'Khả năng hiển thị hồ sơ tối đa'
         },
         {
-          english: 'Advanced analytics & reports',
-          vietnamese: 'Phân tích & báo cáo nâng cao'
+          english: 'Premium Client Management',
+          vietnamese: 'Quản lý khách hàng cao cấp'
         },
         {
-          english: 'Unlimited job postings',
-          vietnamese: 'Đăng tin tuyển dụng không giới hạn'
+          english: 'Featured Placement',
+          vietnamese: 'Vị trí nổi bật'
         },
         {
-          english: 'Team collaboration tools',
-          vietnamese: 'Công cụ cộng tác nhóm'
+          english: 'Priority Support',
+          vietnamese: 'Hỗ trợ ưu tiên'
         },
         {
-          english: 'White-label booking system',
-          vietnamese: 'Hệ thống đặt chỗ white-label'
+          english: 'Premium Appointment Scheduling',
+          vietnamese: 'Lập lịch hẹn cao cấp'
+        },
+        {
+          english: 'Weekly Analytics Reports',
+          vietnamese: 'Báo cáo phân tích hàng tuần'
+        },
+        {
+          english: 'Dedicated Account Manager',
+          vietnamese: 'Người quản lý tài khoản chuyên biệt'
         }
-      ],
-      popular: false,
-      buttonText: {
-        english: 'Start Free Trial',
-        vietnamese: 'Bắt Đầu Dùng Thử'
-      },
-      accent: false
+      ]
     }
   ]
 };
 
-const PricingSection: React.FC = () => {
+const PricingSection = () => {
   const { t } = useTranslation();
   
-  const calculateDiscountedPrice = (originalPrice: number) => {
-    const discount = originalPrice * (PRICING_CONFIG.discountPercentage / 100);
-    return (originalPrice - discount).toFixed(2);
-  };
-
   return (
-    <section className="py-16 md:py-24 w-full bg-gradient-to-b from-white via-purple-50/20 to-white">
-      <div className="container px-4 sm:px-6 lg:px-8 mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-playfair mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-emvi-accent">
+    <section className="py-16">
+      <div className="container px-4 mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-playfair mb-4 bg-gradient-to-r from-purple-600 to-emvi-accent bg-clip-text text-transparent">
             {t({
-              english: "Premium Plans for Beauty Professionals",
-              vietnamese: "Gói Cao Cấp cho Chuyên Gia Làm Đẹp"
+              english: "Pricing that Delivers Value",
+              vietnamese: "Giá Cả Mang Lại Giá Trị"
             })}
           </h2>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-gray-600 max-w-3xl mx-auto text-lg">
             {t({
-              english: "Choose the perfect plan to elevate your beauty business",
-              vietnamese: "Chọn gói hoàn hảo để nâng tầm doanh nghiệp làm đẹp của bạn"
+              english: "Whether you're a freelance artist, salon owner, or beauty enterprise, our pricing is crafted to ensure your investment pays off.",
+              vietnamese: "Dù bạn là nghệ sĩ tự do, chủ salon, hay doanh nghiệp làm đẹp, giá của chúng tôi được thiết kế để đảm bảo đầu tư của bạn sinh lời."
             })}
           </p>
-          <div className="inline-block bg-purple-100 rounded-full px-4 py-2 text-sm text-purple-700 font-medium">
-            {t({
-              english: "50% OFF for founding members",
-              vietnamese: "Giảm 50% cho thành viên sáng lập"
-            })}
-          </div>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {PRICING_CONFIG.plans.map((plan) => (
-            <div key={plan.id} className={`relative flex flex-col ${plan.popular ? 'md:-mt-4 md:mb-4' : ''}`}>
+        
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          {PRICING_CONFIG.plans.map((plan, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={`relative rounded-xl overflow-hidden bg-white backdrop-blur-sm bg-opacity-90 shadow-lg border border-gray-100 ${
+                plan.popular ? 'ring-2 ring-emvi-accent' : ''
+              }`}
+              style={{
+                boxShadow: plan.popular 
+                  ? '0 10px 30px -5px rgba(155, 135, 245, 0.3)' 
+                  : '0 10px 30px -5px rgba(0, 0, 0, 0.1)'
+              }}
+            >
               {/* Popular badge */}
               {plan.popular && (
-                <div className="absolute -top-5 inset-x-0 flex justify-center">
-                  <Badge className="bg-[#FF7743] text-white border-0 px-3 py-1 text-sm font-medium">
-                    {t({
-                      english: "MOST POPULAR",
-                      vietnamese: "PHỔ BIẾN NHẤT"
-                    })}
-                  </Badge>
-                </div>
+                <Badge 
+                  className="absolute top-4 right-4 bg-[#FF7743] text-white border-0 font-medium px-3 py-1"
+                >
+                  {t({
+                    english: "Most Popular",
+                    vietnamese: "Phổ Biến Nhất"
+                  })}
+                </Badge>
               )}
               
-              <Card className={`flex-1 overflow-hidden backdrop-blur-sm bg-white/90 border border-purple-100 ${
-                plan.popular 
-                  ? 'shadow-lg shadow-purple-200/50 ring-2 ring-purple-200' 
-                  : 'shadow-md shadow-purple-100/30'
-                } rounded-2xl transition-all hover:shadow-xl hover:shadow-purple-200/40`}
-              >
-                <div className="p-6 md:p-8">
-                  {/* Plan name and description */}
-                  <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold font-playfair mb-2">{t(plan.name)}</h3>
-                    <p className="text-gray-600 text-sm">{t(plan.description)}</p>
-                  </div>
-                  
-                  {/* Pricing */}
-                  <div className="text-center mb-8">
-                    <div className="flex items-center justify-center mb-1">
-                      <span className="text-gray-400 line-through text-lg mr-2">
-                        {PRICING_CONFIG.currency}{plan.originalPrice}
-                      </span>
-                      <Badge className="bg-[#FF7743] text-white border-0">
-                        {PRICING_CONFIG.discountPercentage}% OFF
-                      </Badge>
-                    </div>
-                    <div className="flex items-baseline justify-center">
-                      <span className="text-sm text-gray-500 mr-1">{PRICING_CONFIG.currency}</span>
-                      <span className={`text-4xl font-bold ${plan.accent ? 'text-emvi-accent' : 'text-purple-700'}`}>
-                        {calculateDiscountedPrice(plan.originalPrice)}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-1">/mo</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2 italic">
-                      {t({
-                        english: "Lock in this price for life—limited time only!",
-                        vietnamese: "Giữ giá này trọn đời—chỉ giới hạn thời gian!"
-                      })}
-                    </p>
-                  </div>
-                  
-                  {/* Features */}
-                  <div className="space-y-3 mb-8">
-                    {plan.features.map((feature, index) => (
-                      <div key={index} className="flex items-start">
-                        <Check className={`h-5 w-5 flex-shrink-0 ${plan.accent ? 'text-emvi-accent' : 'text-purple-600'} mr-2`} />
-                        <span className="text-gray-700 text-sm">{t(feature)}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Button */}
-                  <Button 
-                    className={`w-full py-6 text-white font-bold rounded-xl transition-transform hover:scale-[1.02] ${
-                      plan.accent 
-                        ? 'bg-emvi-accent hover:bg-emvi-accent/90 shadow-lg shadow-emvi-accent/20' 
-                        : 'bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-600/20'
-                    }`}
-                  >
-                    {t(plan.buttonText)}
-                  </Button>
+              {/* Plan header */}
+              <div className={`p-6 ${plan.popular ? 'bg-purple-50' : ''}`}>
+                <h3 className="text-xl font-bold font-playfair">
+                  {t(plan.name)}
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">{t(plan.description)}</p>
+              </div>
+              
+              {/* Plan pricing */}
+              <div className="px-6 py-4 border-t border-b border-gray-100">
+                {/* Discount badge */}
+                <Badge 
+                  className="bg-[#FF7743] text-white border-0 mb-2 font-medium"
+                >
+                  {PRICING_CONFIG.discountPercentage}% OFF
+                </Badge>
+                
+                {/* Original price */}
+                <div className="line-through text-gray-400 text-sm">
+                  ${plan.originalPrice.toFixed(2)}/{t({english: "month", vietnamese: "tháng"})}
                 </div>
-              </Card>
-            </div>
+                
+                {/* Discounted price */}
+                <div className="flex items-end">
+                  <span className="text-4xl font-bold text-emvi-accent">
+                    ${plan.discountedPrice.toFixed(2)}
+                  </span>
+                  <span className="text-gray-500 ml-1 mb-1">
+                    /{t({english: "month", vietnamese: "tháng"})}
+                  </span>
+                </div>
+                
+                {/* Lock-in price message */}
+                <p className="text-xs text-gray-500 mt-2 italic">
+                  {t({
+                    english: "Lock in this price for life—limited time only!",
+                    vietnamese: "Giữ nguyên giá này mãi mãi—chỉ trong thời gian giới hạn!"
+                  })}
+                </p>
+              </div>
+              
+              {/* Features list */}
+              <div className="p-6">
+                <ul className="space-y-3">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-start">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0 mr-2 mt-0.5" />
+                      <span className="text-gray-700">{t(feature)}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                {/* Action button */}
+                <div className="mt-8">
+                  <MobileButton
+                    className={`w-full py-3 ${
+                      plan.popular ? 'bg-emvi-accent hover:bg-purple-600' : 'bg-gray-800 hover:bg-gray-700'
+                    } text-white font-medium rounded-xl transition-transform transform hover:scale-105 shadow-md`}
+                  >
+                    {t({
+                      english: "Start Free Trial",
+                      vietnamese: "Bắt Đầu Dùng Thử"
+                    })}
+                  </MobileButton>
+                </div>
+              </div>
+            </motion.div>
           ))}
         </div>
         
-        <div className="text-center mt-12">
-          <p className="text-sm text-gray-500">
-            {t({
-              english: "All plans include a 14-day free trial. No credit card required.",
-              vietnamese: "Tất cả các gói bao gồm dùng thử miễn phí 14 ngày. Không cần thẻ tín dụng."
-            })}
-          </p>
+        {/* Save reminder */}
+        <div className="text-center text-gray-500 text-sm mb-16">
+          {t({
+            english: "All plans include a 14-day free trial. No credit card required to start.",
+            vietnamese: "Tất cả các gói đều có 14 ngày dùng thử miễn phí. Không cần thẻ tín dụng để bắt đầu."
+          })}
         </div>
       </div>
     </section>
