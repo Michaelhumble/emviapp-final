@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IndustryType } from '@/components/posting/job/jobFormSchema';
 import { useForm, UseFormReturn } from 'react-hook-form';
+import AIPolishButton from '@/components/posting/job/AIPolishButton';
 
 interface JobDetailsSectionProps {
   form: UseFormReturn<any>;
@@ -26,6 +27,17 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
     console.error("JobDetailsSection requires a valid form from react-hook-form");
     return null;
   }
+  
+  // Get the industry type from the form if available
+  const industryType = form.watch('industryType') || 'nails';
+
+  const handlePolishDescription = (polishedText: string, vietnameseText?: string) => {
+    form.setValue('description', polishedText, { shouldValidate: true });
+    
+    if (vietnameseText) {
+      form.setValue('vietnameseDescription', vietnameseText, { shouldValidate: true });
+    }
+  };
 
   return (
     <>
@@ -51,9 +63,15 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Description</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>Description</FormLabel>
+              <AIPolishButton 
+                onPolish={handlePolishDescription}
+                industryType={industryType}
+              />
+            </div>
             <FormControl>
-              <Textarea placeholder="Describe the job requirements and responsibilities" className="resize-none" {...field} />
+              <Textarea placeholder="Describe the job requirements and responsibilities" className="resize-none min-h-[150px]" {...field} />
             </FormControl>
             <FormDescription>
               Include details about the role, responsibilities, and what makes it a great opportunity.
@@ -70,7 +88,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
           <FormItem>
             <FormLabel>Vietnamese Description (Optional)</FormLabel>
             <FormControl>
-              <Textarea placeholder="Mô tả công việc bằng tiếng Việt" className="resize-none" {...field} />
+              <Textarea placeholder="Mô tả công việc bằng tiếng Việt" className="resize-none min-h-[150px]" {...field} />
             </FormControl>
             <FormDescription>
               Provide a description in Vietnamese to attract more candidates.

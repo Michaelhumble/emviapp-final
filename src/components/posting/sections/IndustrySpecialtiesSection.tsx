@@ -1,226 +1,316 @@
 
-import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Control } from 'react-hook-form';
+import React, { useState } from 'react';
+import { Control, Controller, ControllerRenderProps } from 'react-hook-form';
 import { JobFormValues } from '../job/jobFormSchema';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
-import { useTranslation } from '@/hooks/useTranslation';
-
-// Define specialties and requirements for different industries
-const industryOptions = {
-  nails: {
-    specialties: [
-      'Manicure', 'Pedicure', 'Gel', 'Acrylic', 'Dipping Powder', 
-      'Nail Art', 'Pink & White', 'Shellac', 'Polish Change'
-    ],
-    requirements: [
-      'Nail License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Bilingual Vietnamese', 'Customer Service Skills', 'Nail Art Skills', 'Full-time Available'
-    ]
-  },
-  hair: {
-    specialties: [
-      'Cutting', 'Coloring', 'Highlights', 'Balayage', 'Extensions', 
-      'Blowouts', 'Styling', 'Men\'s Cuts', 'Women\'s Cuts', 'Children\'s Cuts'
-    ],
-    requirements: [
-      'Cosmetology License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Color Certification', 'Full-time Available'
-    ]
-  },
-  lashes: {
-    specialties: [
-      'Classic Lashes', 'Volume Lashes', 'Hybrid Lashes', 'Mega Volume', 'Lash Lifts',
-      'Lash Tinting', 'Brow Lamination', 'Brow Tinting'
-    ],
-    requirements: [
-      'Esthetician License', 'Lash Certification', '1+ Year Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Attention to Detail', 'Full-time Available'
-    ]
-  },
-  barber: {
-    specialties: [
-      'Fades', 'Tapers', 'Hot Towel Shaves', 'Beard Trims', 'Line-ups',
-      'Hair Design', 'Hair Tattoos', 'Straight Razor'
-    ],
-    requirements: [
-      'Barber License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Own Tools Required', 'Full-time Available'
-    ]
-  },
-  skincare: {
-    specialties: [
-      'Facials', 'Chemical Peels', 'Microdermabrasion', 'Waxing', 'Microblading',
-      'LED Therapy', 'Dermaplaning', 'Skin Analysis'
-    ],
-    requirements: [
-      'Esthetician License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Product Knowledge', 'Customer Service Skills', 'Skincare Certification', 'Full-time Available'
-    ]
-  },
-  spa: {
-    specialties: [
-      'Body Treatments', 'Body Scrubs', 'Body Wraps', 'Hot Stone Therapy', 'Aromatherapy',
-      'Hydrotherapy', 'Wellness Counseling', 'Foot Treatments'
-    ],
-    requirements: [
-      'Massage License', 'Spa Certification', '1+ Year Experience', 'Speaks English',
-      'Treatment Knowledge', 'Customer Service Skills', 'Wellness Knowledge', 'Full-time Available'
-    ]
-  },
-  massage: {
-    specialties: [
-      'Swedish', 'Deep Tissue', 'Sports Massage', 'Hot Stone', 'Prenatal',
-      'Reflexology', 'Thai Massage', 'Shiatsu'
-    ],
-    requirements: [
-      'Massage License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Multiple Modalities', 'Customer Service Skills', 'Physical Stamina', 'Full-time Available'
-    ]
-  },
-  makeup: {
-    specialties: [
-      'Bridal', 'Special Event', 'Editorial', 'Airbrush', 'HD Makeup',
-      'Natural Makeup', 'Halloween/SFX', 'Contouring'
-    ],
-    requirements: [
-      'Cosmetology License', 'Makeup Certification', '1+ Year Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Own Kit Required', 'Weekend Availability'
-    ]
-  },
-  custom: {
-    specialties: [
-      'Hair Services', 'Nail Services', 'Skincare', 'Massage', 'Makeup',
-      'Waxing', 'Lash & Brow', 'Spa Treatments', 'Barbering', 'Administrative'
-    ],
-    requirements: [
-      'Professional License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Bilingual Vietnamese', 'Customer Service Skills', 'Technical Skills', 'Full-time Available'
-    ]
-  }
-};
-
-// For any industry not specifically defined, use the custom options
-const getIndustryOptions = (industry: string) => {
-  return industryOptions[industry as keyof typeof industryOptions] || industryOptions.custom;
-};
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 
 interface IndustrySpecialtiesSectionProps {
   control: Control<JobFormValues>;
-  industry: JobTemplateType | 'custom';
+  industry?: string;
 }
 
+// Specialty options by industry
+const specialtiesByIndustry = {
+  nails: [
+    "Manicure", "Pedicure", "Acrylic", "Gel Polish", "Dip Powder", 
+    "Nail Art", "Gel Extensions", "Paraffin Treatments", "SNS", "Polygel", "Sculpting"
+  ],
+  hair: [
+    "Haircuts", "Hair Color", "Highlights", "Balayage", "Blowouts", 
+    "Extensions", "Keratin Treatments", "Perms", "Bridal", "Men's Cuts", "Children's Cuts"
+  ],
+  lashes: [
+    "Classic Lashes", "Volume Lashes", "Hybrid Lashes", "Mega Volume", 
+    "Lash Lifts", "Lash Tinting", "Bottom Lashes", "Removal"
+  ],
+  barber: [
+    "Men's Cuts", "Fades", "Beard Trims", "Hot Towel Shaves", "Hair Design", 
+    "Color Services", "Kids Cuts", "Straight Razor"
+  ],
+  skincare: [
+    "Facials", "Chemical Peels", "Microdermabrasion", "Waxing", "Tinting", 
+    "Body Treatments", "Microcurrent", "LED Therapy", "Dermaplaning", "Extractions"
+  ],
+  microblading: [
+    "Microblading", "Powder Brows", "Combo Brows", "Lip Blush", 
+    "Eyeliner", "Corrections", "Touch-Ups", "Areola Restoration"
+  ],
+  makeup: [
+    "Bridal Makeup", "Special Event", "Editorial", "Airbrush Makeup", 
+    "Natural Makeup", "Drag Makeup", "Theatrical Makeup", "Lesson/Class"
+  ],
+  custom: [
+    "Reception", "Cleaning", "Scheduling", "Client Service", "Retail", 
+    "Management", "Education", "Product Knowledge", "Social Media"
+  ]
+};
+
+// Requirements options
+const requirementOptions = [
+  "License Required", 
+  "2+ Years Experience", 
+  "Portfolio Required",
+  "References Required",
+  "English Speaking", 
+  "Vietnamese Speaking",
+  "Own Tools/Equipment",
+  "Valid ID/Work Permit", 
+  "Weekend Availability",
+  "Evening Availability"
+];
+
+// Benefits options
+const benefitsOptions = [
+  "Health Insurance",
+  "Paid Time Off",
+  "401k/Retirement Plan",
+  "Flexible Schedule",
+  "Free Education",
+  "Commission Bonuses",
+  "Product Discounts",
+  "Free Parking",
+  "Tips",
+  "Advanced Training"
+];
+
+type FieldArrayItemType = string;
+
 const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ 
-  control,
-  industry
+  control, 
+  industry = 'nails' 
 }) => {
-  const { t } = useTranslation();
-  const options = getIndustryOptions(industry);
+  const [activeTab, setActiveTab] = useState(industry);
   
-  // Default to the current industry tab
-  const [activeTab, setActiveTab] = React.useState('specialties');
+  // Dynamically get specialties based on active tab
+  const getSpecialtiesByTab = (tab: string) => {
+    return specialtiesByIndustry[tab as keyof typeof specialtiesByIndustry] || specialtiesByIndustry.custom;
+  };
+  
+  // Checkbox group for specialties
+  const renderSpecialtiesCheckboxes = (field: ControllerRenderProps<JobFormValues, "specialties">) => {
+    const specialties = getSpecialtiesByTab(activeTab);
+    
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {specialties.map((specialty) => (
+          <div key={specialty} className="flex items-center space-x-2">
+            <Checkbox
+              id={`specialty-${specialty}`}
+              checked={field.value?.includes(specialty)}
+              onCheckedChange={(checked) => {
+                const newValue = checked
+                  ? [...(field.value || []), specialty]
+                  : (field.value || []).filter((val: string) => val !== specialty);
+                field.onChange(newValue);
+              }}
+            />
+            <Label
+              htmlFor={`specialty-${specialty}`}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {specialty}
+            </Label>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Checkbox group for requirements
+  const renderRequirementsCheckboxes = (field: ControllerRenderProps<JobFormValues, "requirements">) => {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {requirementOptions.map((requirement) => (
+          <div key={requirement} className="flex items-center space-x-2">
+            <Checkbox
+              id={`requirement-${requirement}`}
+              checked={field.value?.includes(requirement)}
+              onCheckedChange={(checked) => {
+                const newValue = checked
+                  ? [...(field.value || []), requirement]
+                  : (field.value || []).filter((val: any) => val !== requirement);
+                field.onChange(newValue);
+              }}
+            />
+            <Label
+              htmlFor={`requirement-${requirement}`}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {requirement}
+            </Label>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
-        <h2 className="font-playfair text-2xl font-semibold text-gray-900">
-          {t({
-            english: 'Job Specialties & Requirements',
-            vietnamese: 'Chuyên Môn & Yêu Cầu Công Việc'
-          })}
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          {t({
-            english: 'Select the skills and requirements for this position',
-            vietnamese: 'Chọn kỹ năng và yêu cầu cho vị trí này'
-          })}
-        </p>
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Specialties & Requirements</h2>
+        <p className="text-sm text-muted-foreground mt-1">Select the specific skills and requirements for this position</p>
       </div>
-
-      <Tabs defaultValue="specialties" className="w-full">
-        <TabsList className="w-full mb-6">
-          <TabsTrigger 
-            value="specialties" 
-            className="flex-1"
-            onClick={() => setActiveTab('specialties')}
-          >
-            {t({
-              english: 'Specialties',
-              vietnamese: 'Chuyên Môn'
-            })}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="requirements" 
-            className="flex-1"
-            onClick={() => setActiveTab('requirements')}
-          >
-            {t({
-              english: 'Requirements',
-              vietnamese: 'Yêu Cầu'
-            })}
-          </TabsTrigger>
+      
+      {/* Industry Type Field - Hidden but used for the form state */}
+      <FormField
+        control={control}
+        name="industryType"
+        render={({ field }) => (
+          <FormItem className="hidden">
+            <FormControl>
+              <input type="hidden" {...field} value={activeTab} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      
+      {/* Industry Tabs */}
+      <Tabs value={activeTab} onValueChange={(value) => {
+        setActiveTab(value);
+        // Update the industryType field in the form
+        const industryTypeField = control._fields.industryType;
+        if (industryTypeField) {
+          industryTypeField._f.onChange(value);
+        }
+      }}>
+        <TabsList className="grid grid-cols-4 md:grid-cols-8">
+          <TabsTrigger value="nails">Nails</TabsTrigger>
+          <TabsTrigger value="hair">Hair</TabsTrigger>
+          <TabsTrigger value="lashes">Lashes</TabsTrigger>
+          <TabsTrigger value="barber">Barber</TabsTrigger>
+          <TabsTrigger value="skincare">Skincare</TabsTrigger>
+          <TabsTrigger value="microblading">PMU</TabsTrigger>
+          <TabsTrigger value="makeup">Makeup</TabsTrigger>
+          <TabsTrigger value="custom">Other</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="specialties" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-            <FormField
-              control={control}
-              name="specialties"
-              render={({ field }) => {
-                return options.specialties.map((specialty, index) => (
-                  <FormItem
-                    key={`specialty-${index}`}
-                    className="flex flex-row items-start space-x-3 space-y-0 py-1"
-                  >
+        <TabsContent value={activeTab} className="space-y-4 mt-4">
+          <Card>
+            <CardContent className="pt-6">
+              {/* Specialties Section */}
+              <FormField
+                control={control}
+                name="specialties"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">Specialties Required</FormLabel>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value?.includes(specialty)}
-                        onCheckedChange={(checked) => {
-                          const updatedValue = checked
-                            ? [...(field.value || []), specialty]
-                            : (field.value || []).filter((val) => val !== specialty);
-                          field.onChange(updatedValue);
-                        }}
-                      />
+                      {renderSpecialtiesCheckboxes(field)}
                     </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">{specialty}</FormLabel>
+                    <FormMessage />
                   </FormItem>
-                ));
-              }}
-            />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="requirements" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-            <FormField
-              control={control}
-              name="requirements"
-              render={({ field }) => {
-                return options.requirements.map((requirement, index) => (
-                  <FormItem
-                    key={`requirement-${index}`}
-                    className="flex flex-row items-start space-x-3 space-y-0 py-1"
-                  >
+                )}
+              />
+              
+              <Separator className="my-6" />
+              
+              {/* Requirements Section */}
+              <FormField
+                control={control}
+                name="requirements"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">Job Requirements</FormLabel>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value?.includes(requirement)}
-                        onCheckedChange={(checked) => {
-                          const updatedValue = checked
-                            ? [...(field.value || []), requirement]
-                            : (field.value || []).filter((val) => val !== requirement);
-                          field.onChange(updatedValue);
-                        }}
-                      />
+                      {renderRequirementsCheckboxes(field)}
                     </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">{requirement}</FormLabel>
+                    <FormMessage />
                   </FormItem>
-                ));
-              }}
-            />
-          </div>
+                )}
+              />
+              
+              <Separator className="my-6" />
+              
+              {/* Basic Benefits Toggles */}
+              <div className="space-y-4">
+                <FormLabel className="text-base font-medium">Benefits Offered</FormLabel>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={control}
+                    name="has_housing"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Housing Provided</FormLabel>
+                          <FormMessage />
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={control}
+                    name="has_wax_room"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Wax Room Available</FormLabel>
+                          <FormMessage />
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={control}
+                    name="owner_will_train"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Owner Will Train</FormLabel>
+                          <FormMessage />
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={control}
+                    name="no_supply_deduction"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">No Supply Deduction</FormLabel>
+                          <FormMessage />
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

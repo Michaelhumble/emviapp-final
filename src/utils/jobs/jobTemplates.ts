@@ -1,291 +1,207 @@
 
+// Basic job templates for common industries
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 
-export type JobTemplateType = 
-  | 'nails' 
-  | 'hair' 
-  | 'lashes' 
-  | 'barber' 
-  | 'skincare' 
-  | 'spa' 
-  | 'receptionist' 
-  | 'manager' 
-  | 'massage' 
-  | 'tattoo' 
-  | 'makeup' 
-  | 'booth' 
-  | 'beauty' 
-  | 'custom';
+export type JobTemplateType = 'nails' | 'hair' | 'makeup' | 'barber' | 'lashes' | 'skincare' | 'microblading' | 'custom';
 
-export const getJobTemplate = (type: JobTemplateType): JobFormValues => {
-  const templates: Record<JobTemplateType, JobFormValues> = {
-    nails: {
-      title: "Nail Technician Needed",
-      description: "We're seeking a skilled nail technician with experience in manicures, pedicures, and nail art. Join our team in a friendly, upscale salon environment with competitive compensation.",
-      vietnameseDescription: "Chúng tôi đang tìm kiếm một kỹ thuật viên nail có kinh nghiệm về làm móng tay, móng chân và nghệ thuật móng. Tham gia đội của chúng tôi trong môi trường salon sang trọng, thân thiện với mức thù lao cạnh tranh.",
-      location: "",
+interface JobTemplate {
+  title: string;
+  description: string;
+  type: JobTemplateType;
+  values: JobFormValues;
+}
+
+export const JOB_TEMPLATES: JobTemplate[] = [
+  {
+    title: "Nail Technician",
+    description: "Find experienced nail technicians for your salon",
+    type: "nails",
+    values: {
+      title: "Nail Technician",
+      description: "We're seeking an experienced nail technician to join our team. The ideal candidate will have expertise in manicures, pedicures, gel polish, and acrylics.",
+      vietnameseDescription: "Chúng tôi đang tìm kiếm thợ nail có kinh nghiệm để tham gia vào đội ngũ của chúng tôi. Ứng viên lý tưởng sẽ có chuyên môn về mani, pedi, sơn gel và bột.",
+      specialties: ["Manicure", "Pedicure", "Gel Polish", "Acrylics"],
       jobType: "full-time",
       compensation_type: "commission",
-      weekly_pay: true,
       has_housing: false,
       has_wax_room: true,
       owner_will_train: false,
       no_supply_deduction: true,
-      requirements: ["1+ year experience", "Nail art skills", "Customer service", "English basics"],
-      specialties: ["Manicure", "Pedicure", "Gel", "Acrylic", "Nail Art", "Dipping Powder"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    hair: {
-      title: "Hair Stylist Position Available",
-      description: "Looking for an experienced hair stylist to join our team. Skills in cutting, coloring, and styling required. Great opportunity to build your clientele in a busy salon.",
-      vietnameseDescription: "Đang tìm kiếm một nhà tạo mẫu tóc có kinh nghiệm để tham gia nhóm của chúng tôi. Yêu cầu kỹ năng cắt, nhuộm và tạo kiểu. Cơ hội tuyệt vời để xây dựng khách hàng của bạn trong một salon nhộn nhịp.",
       location: "",
+      salonName: "",
+      industryType: "nails"
+    }
+  },
+  {
+    title: "Hair Stylist",
+    description: "Hire talented hair stylists for your salon",
+    type: "hair",
+    values: {
+      title: "Hair Stylist",
+      description: "We are looking for a creative and skilled hair stylist to join our team. Experience with cutting, coloring, and styling required.",
+      specialties: ["Haircuts", "Hair Color", "Blowouts", "Treatments"],
       jobType: "full-time",
+      compensation_type: "commission",
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: true,
+      location: "",
+      salonName: "",
+      industryType: "hair"
+    }
+  },
+  {
+    title: "Lash Technician",
+    description: "Find certified lash techs for your beauty studio",
+    type: "lashes",
+    values: {
+      title: "Lash Technician",
+      description: "Seeking certified lash technician with experience in classic and volume extensions. Must have attention to detail and excellent client skills.",
+      specialties: ["Classic Lashes", "Volume Lashes", "Lash Lifts", "Lash Tinting"],
+      jobType: "full-time",
+      compensation_type: "commission",
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: true,
+      location: "",
+      salonName: "",
+      industryType: "lashes"
+    }
+  },
+  {
+    title: "Barber",
+    description: "Hire skilled barbers for your shop",
+    type: "barber",
+    values: {
+      title: "Barber",
+      description: "Modern barbershop seeking talented barber with skills in precision cuts, fades, beard trims, and hot towel shaves.",
+      specialties: ["Haircuts", "Fades", "Beard Trims", "Hot Towel Shaves"],
+      jobType: "full-time",
+      compensation_type: "commission",
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: true,
+      location: "",
+      salonName: "",
+      industryType: "barber"
+    }
+  },
+  {
+    title: "Booth Rental",
+    description: "Advertise booth rental opportunities at your salon",
+    type: "custom",
+    values: {
+      title: "Booth Rental Opportunity",
+      description: "Beautiful salon has booth rental opportunities available for established stylists with existing clientele. Prime location with great walk-in traffic.",
+      specialties: [],
+      jobType: "contract",
       compensation_type: "booth rental",
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-      requirements: ["2+ years experience", "Cutting & coloring skills", "Client portfolio", "Professional attitude"],
-      specialties: ["Cutting", "Coloring", "Styling", "Extensions", "Balayage", "Highlights"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    lashes: {
-      title: "Eyelash Extension Technician",
-      description: "Seeking a lash artist to join our beauty studio. Experience with classic, volume, and hybrid lash extensions required. Certification preferred.",
-      vietnameseDescription: "Tìm kiếm một nghệ sĩ mi để tham gia studio làm đẹp của chúng tôi. Yêu cầu kinh nghiệm với nối mi classic, volume và hybrid. Ưu tiên có chứng chỉ.",
-      location: "",
-      jobType: "full-time",
-      compensation_type: "commission",
-      weekly_pay: true,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: true,
-      requirements: ["Lash certification", "1+ year experience", "Portfolio of work", "Client retention skills"],
-      specialties: ["Classic Lashes", "Volume Lashes", "Hybrid Lashes", "Lash Lifts", "Lash Tinting"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    barber: {
-      title: "Barber Wanted - Immediate Position",
-      description: "Busy barbershop looking for skilled barber. Experience with fades, beard trims, and razor work required. Great earning potential with existing clientele.",
-      vietnameseDescription: "Tiệm cắt tóc bận rộn đang tìm thợ cắt tóc có kỹ năng. Yêu cầu kinh nghiệm với kiểu fade, tỉa râu và làm việc với dao cạo. Tiềm năng thu nhập tốt với khách hàng hiện có.",
-      location: "",
-      jobType: "full-time",
-      compensation_type: "commission",
-      weekly_pay: true,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: true,
-      requirements: ["2+ years experience", "Skilled in modern techniques", "Professional appearance", "Reliable transportation"],
-      specialties: ["Fades", "Beard Trims", "Hot Towel Shaves", "Razor Work", "Line-ups", "Hair Design"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    skincare: {
-      title: "Esthetician Needed",
-      description: "Spa seeking licensed esthetician for facials, treatments, and skincare services. Knowledge of professional product lines and excellent customer service required.",
-      vietnameseDescription: "Spa đang tìm kiếm chuyên gia thẩm mỹ được cấp phép cho các dịch vụ chăm sóc da mặt, điều trị và chăm sóc da. Yêu cầu kiến thức về các dòng sản phẩm chuyên nghiệp và dịch vụ khách hàng xuất sắc.",
-      location: "",
-      jobType: "full-time",
-      compensation_type: "hourly + commission",
-      weekly_pay: false,
       has_housing: false,
       has_wax_room: true,
       owner_will_train: false,
       no_supply_deduction: true,
-      requirements: ["Esthetician license", "1+ year experience", "Product knowledge", "Sales ability"],
-      specialties: ["Facials", "Chemical Peels", "Waxing", "Microdermabrasion", "LED Therapy", "Skin Analysis"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    spa: {
-      title: "Spa Technician Position",
-      description: "Luxury spa seeking technicians for body treatments, scrubs, and wraps. Experience with high-end spa protocols preferred. Full and part-time positions available.",
-      vietnameseDescription: "Spa cao cấp đang tìm kiếm kỹ thuật viên cho các liệu pháp cơ thể, tẩy tế bào chết và ủ. Ưu tiên có kinh nghiệm với các quy trình spa cao cấp. Có vị trí toàn thời gian và bán thời gian.",
       location: "",
+      salonName: "",
+      industryType: "other"
+    }
+  },
+  {
+    title: "Salon Assistant",
+    description: "Hire support staff for your beauty business",
+    type: "custom",
+    values: {
+      title: "Salon Assistant",
+      description: "Busy salon seeking reliable assistant for front desk operations, client check-in/out, scheduling, cleaning, and general support.",
+      specialties: ["Reception", "Scheduling", "Cleaning", "Client Service"],
       jobType: "part-time",
-      compensation_type: "hourly + commission",
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: true,
-      no_supply_deduction: true,
-      requirements: ["Spa certification", "Customer service skills", "Knowledge of body treatments", "Professional demeanor"],
-      specialties: ["Body Treatments", "Body Scrubs", "Body Wraps", "Aromatherapy", "Hot Stone Therapy", "Hydrotherapy"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    receptionist: {
-      title: "Salon Receptionist / Front Desk",
-      description: "Busy salon seeking friendly, organized receptionist. Duties include scheduling appointments, greeting clients, handling phone calls, and processing payments.",
-      vietnameseDescription: "Salon bận rộn đang tìm kiếm lễ tân thân thiện, có tổ chức. Nhiệm vụ bao gồm lên lịch hẹn, chào đón khách hàng, xử lý cuộc gọi điện thoại và xử lý thanh toán.",
-      location: "",
-      jobType: "full-time",
       compensation_type: "hourly",
-      weekly_pay: true,
       has_housing: false,
       has_wax_room: false,
       owner_will_train: true,
-      no_supply_deduction: false,
-      requirements: ["Customer service experience", "Computer skills", "Multi-tasking ability", "Professional phone manner"],
-      specialties: ["Appointment Scheduling", "Client Relations", "Payment Processing", "Inventory Management", "Phone Skills"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    manager: {
-      title: "Salon Manager - Experienced Leader Needed",
-      description: "Growing salon seeking experienced manager to oversee daily operations, staff management, and business development. Leadership experience in beauty industry required.",
-      vietnameseDescription: "Salon đang phát triển tìm kiếm người quản lý có kinh nghiệm để giám sát hoạt động hàng ngày, quản lý nhân viên và phát triển kinh doanh. Yêu cầu kinh nghiệm lãnh đạo trong ngành làm đẹp.",
+      no_supply_deduction: true,
       location: "",
-      jobType: "full-time",
-      compensation_type: "salary + bonus",
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-      requirements: ["3+ years salon management", "Staff supervision experience", "Business acumen", "Marketing skills"],
-      specialties: ["Team Leadership", "Scheduling", "Inventory Control", "Client Relations", "Business Growth", "Staff Training"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    massage: {
-      title: "Licensed Massage Therapist",
-      description: "Wellness center seeking licensed massage therapist. Experience with Swedish, deep tissue, and sports massage required. Flexible scheduling available.",
-      vietnameseDescription: "Trung tâm sức khỏe đang tìm kiếm nhà trị liệu massage có giấy phép. Yêu cầu kinh nghiệm với massage kiểu Thụy Điển, mô sâu và thể thao. Có lịch linh hoạt.",
-      location: "",
+      salonName: "",
+      industryType: "other"
+    }
+  },
+  {
+    title: "Makeup Artist",
+    description: "Find talented makeup artists for your studio",
+    type: "makeup",
+    values: {
+      title: "Makeup Artist",
+      description: "Seeking experienced makeup artist skilled in bridal, special event, and photoshoot makeup. Must have professional kit and portfolio.",
+      specialties: ["Bridal Makeup", "Special Event Makeup", "Editorial", "Airbrush"],
       jobType: "part-time",
       compensation_type: "commission",
-      weekly_pay: false,
       has_housing: false,
       has_wax_room: false,
       owner_will_train: false,
       no_supply_deduction: true,
-      requirements: ["Massage therapy license", "2+ years experience", "Multiple modalities", "Professional boundaries"],
-      specialties: ["Swedish", "Deep Tissue", "Sports Massage", "Prenatal", "Hot Stone", "Reflexology"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    tattoo: {
-      title: "Tattoo Artist Position",
-      description: "Established tattoo studio seeking experienced artist. Must have strong portfolio showing diverse styles. Existing client base preferred but not required.",
-      vietnameseDescription: "Studio xăm hình đã thành lập đang tìm kiếm nghệ sĩ có kinh nghiệm. Phải có portfolio mạnh mẽ thể hiện các phong cách đa dạng. Ưu tiên có sẵn khách hàng nhưng không bắt buộc.",
       location: "",
-      jobType: "commission",
-      compensation_type: "booth rental",
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-      requirements: ["3+ years professional experience", "Strong portfolio", "Bloodborne pathogen certification", "Clean work habits"],
-      specialties: ["Traditional", "Realism", "Japanese", "Blackwork", "Color", "Custom Design"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    makeup: {
-      title: "Makeup Artist Wanted",
-      description: "Beauty studio seeking talented makeup artist for special events, bridal, and editorial work. Experience with diverse skin tones and photography makeup required.",
-      vietnameseDescription: "Studio làm đẹp đang tìm kiếm chuyên gia trang điểm tài năng cho các sự kiện đặc biệt, trang điểm cô dâu và công việc biên tập. Yêu cầu kinh nghiệm với các tông da đa dạng và trang điểm chụp ảnh.",
-      location: "",
-      jobType: "part-time",
-      compensation_type: "per event",
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-      requirements: ["Professional makeup kit", "Portfolio of work", "Weekend availability", "Client-focused approach"],
-      specialties: ["Bridal", "Special Event", "Editorial", "Airbrush", "Halloween/SFX", "Natural Makeup"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    booth: {
-      title: "Booth Rental Available - Prime Location",
-      description: "Established salon offering booth rental for beauty professionals. Great location with high foot traffic and existing clientele. All utilities included in rental fee.",
-      vietnameseDescription: "Salon đã thành lập cung cấp cho thuê booth cho các chuyên gia làm đẹp. Vị trí tốt với lưu lượng khách bộ hành cao và khách hàng hiện tại. Tất cả tiện ích đều được bao gồm trong phí thuê.",
-      location: "",
-      jobType: "booth rental",
-      compensation_type: "booth rental",
-      weekly_pay: false,
+      salonName: "",
+      industryType: "makeup"
+    }
+  },
+  {
+    title: "Esthetician",
+    description: "Hire licensed estheticians for spa services",
+    type: "skincare",
+    values: {
+      title: "Licensed Esthetician",
+      description: "Upscale spa seeking licensed esthetician experienced in facials, chemical peels, waxing, and body treatments. Knowledge of premium skincare lines preferred.",
+      specialties: ["Facials", "Chemical Peels", "Waxing", "Body Treatments"],
+      jobType: "full-time",
+      compensation_type: "commission",
       has_housing: false,
       has_wax_room: true,
       owner_will_train: false,
-      no_supply_deduction: false,
-      requirements: ["Beauty professional license", "Self-motivated", "Client base preferred", "Professional equipment"],
-      specialties: ["Hair", "Nails", "Lashes", "Brows", "Facials", "Waxing"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    beauty: {
-      title: "Beauty Professional Needed",
-      description: "Full-service salon seeking licensed beauty professional. Multiple services possible depending on your specialization and experience.",
-      vietnameseDescription: "Salon dịch vụ đầy đủ đang tìm kiếm chuyên gia làm đẹp được cấp phép. Có thể cung cấp nhiều dịch vụ tùy thuộc vào chuyên môn và kinh nghiệm của bạn.",
+      no_supply_deduction: true,
       location: "",
-      jobType: "full-time",
+      salonName: "",
+      industryType: "skincare"
+    }
+  },
+  {
+    title: "Microblading Artist",
+    description: "Find certified permanent makeup specialists",
+    type: "microblading",
+    values: {
+      title: "Certified Microblading Artist",
+      description: "Seeking certified microblading artist with portfolio showing exceptional technique. Experience in powder brows and color theory preferred.",
+      specialties: ["Microblading", "Powder Brows", "Lip Blush", "Eyeliner"],
+      jobType: "contract",
       compensation_type: "commission",
-      weekly_pay: true,
       has_housing: false,
       has_wax_room: false,
-      owner_will_train: true,
+      owner_will_train: false,
       no_supply_deduction: true,
-      requirements: ["Beauty professional license", "Customer service skills", "Reliable", "Team player"],
-      specialties: ["Various beauty services"],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
-    },
-    custom: {
+      location: "",
+      salonName: "",
+      industryType: "microblading"
+    }
+  },
+  {
+    title: "Custom Job Post",
+    description: "Create a completely custom job listing",
+    type: "custom",
+    values: {
       title: "",
       description: "",
       vietnameseDescription: "",
-      location: "",
+      specialties: [],
       jobType: "full-time",
-      compensation_type: "",
-      weekly_pay: false,
+      compensation_type: "commission",
       has_housing: false,
       has_wax_room: false,
       owner_will_train: false,
       no_supply_deduction: false,
-      requirements: [],
-      specialties: [],
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      salonName: ""
+      location: "",
+      salonName: "",
+      industryType: "other"
     }
-  };
-
-  return templates[type] || templates.custom;
-};
+  },
+];

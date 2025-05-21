@@ -43,6 +43,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       contactEmail: '',
       contactName: '',
       contactPhone: '',
+      industryType: 'nails',
       ...defaultValues, // Override with any provided defaultValues
     },
   });
@@ -122,7 +123,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     form.reset({
       ...template,
       // Always preserve the salon name from the current form if it exists
-      salonName: form.getValues('salonName') || template.salonName
+      salonName: form.getValues('salonName') || template.salonName,
+      // Set the industryType based on the template
+      industryType: templateType
     });
     setSelectedTemplate(templateType);
     // Move to the next step
@@ -141,7 +144,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         {step === 2 && (
           <IndustrySpecialtiesSection 
             control={form.control} 
-            industry={selectedTemplate || 'custom'} 
+            industry={form.getValues('industryType') || selectedTemplate || 'nails'} 
           />
         )}
 
