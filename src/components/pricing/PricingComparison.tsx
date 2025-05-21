@@ -24,7 +24,7 @@ const PricingComparison = () => {
       transition={{ duration: 0.6, delay: 0.3 }}
       className="mt-24"
     >
-      <div className="mb-8 text-center">
+      <div className="mb-10 text-center">
         <h2 className="text-3xl font-playfair font-bold text-gray-800">
           {t({
             english: "Compare Plans",
@@ -39,11 +39,11 @@ const PricingComparison = () => {
         </p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100/50 backdrop-blur-sm">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50 border-b border-gray-200">
+              <TableRow className="bg-gray-50/80 border-b border-gray-200">
                 <TableHead className="font-medium text-gray-600 py-6 pl-6 w-[40%]">
                   {t({english: "Features", vietnamese: "Tính năng"})}
                 </TableHead>

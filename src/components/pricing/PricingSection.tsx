@@ -77,18 +77,20 @@ const PricingSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 * (index + 1) }}
-              className={`flex flex-col relative rounded-2xl border border-gray-200 overflow-hidden
-                ${isHighlighted ? 'bg-white shadow-[0_8px_30px_rgb(155,135,245,0.15)] border-emvi-accent/30 scale-105 z-10' : 'bg-white shadow-md'}`}
+              className={`flex flex-col relative rounded-2xl border overflow-hidden
+                ${isHighlighted 
+                  ? 'bg-white/90 shadow-[0_8px_30px_rgb(155,135,245,0.25)] border-emvi-accent/30 scale-105 z-10 backdrop-blur-sm' 
+                  : 'bg-white/80 shadow-lg border-gray-100/50 backdrop-blur-sm'}`}
             >
               {plan.badge && (
-                <div className="absolute top-4 right-4">
-                  <span className="inline-block bg-[#FF7743] text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute top-4 right-4 z-10">
+                  <span className="inline-block bg-[#FF7743] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                     {plan.badge}
                   </span>
                 </div>
               )}
 
-              <div className={`p-6 ${isHighlighted ? 'bg-gradient-to-br from-emvi-accent/10 to-purple-100/30' : ''}`}>
+              <div className={`p-8 ${isHighlighted ? 'bg-gradient-to-br from-emvi-accent/10 to-purple-100/20' : ''}`}>
                 <h3 className={`text-2xl font-playfair font-bold 
                   ${isHighlighted ? 'text-emvi-accent' : 'text-gray-800'}`}>
                   {t({english: plan.name, vietnamese: plan.vietnameseName})}
@@ -104,14 +106,14 @@ const PricingSection = () => {
                     </span>
                   </div>
                   <div className="flex items-baseline">
-                    <span className={`text-3xl font-bold ${isHighlighted ? 'text-emvi-accent' : 'text-gray-800'}`}>
+                    <span className={`text-4xl font-bold ${isHighlighted ? 'text-emvi-accent' : 'text-gray-800'}`}>
                       {getPriceLabel(adjustedPrice)}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex-1 p-6 space-y-4 bg-gray-50/70">
+              <div className="flex-1 p-8 space-y-4 bg-gray-50/70">
                 <div className="space-y-3">
                   {(plan.vietnameseFeatures || plan.features).map((feature, i) => (
                     <div key={i} className="flex">
@@ -126,12 +128,12 @@ const PricingSection = () => {
                 </div>
               </div>
 
-              <div className="p-6 bg-white/90">
+              <div className="p-8 bg-white/90">
                 <Button 
-                  className={`w-full py-6 rounded-xl text-base transition-all
+                  className={`w-full py-7 rounded-xl text-base font-bold transition-all text-white
                     ${isHighlighted 
-                      ? 'bg-emvi-accent hover:bg-emvi-accent/90 shadow-xl shadow-emvi-accent/20' 
-                      : 'bg-gray-800 hover:bg-gray-700'}`}
+                      ? 'bg-emvi-accent hover:bg-emvi-accent/90 shadow-xl shadow-emvi-accent/30' 
+                      : 'bg-gray-800 hover:bg-gray-700 shadow-lg'}`}
                 >
                   {t({english: plan.buttonText, vietnamese: plan.vietnameseButtonText})}
                 </Button>

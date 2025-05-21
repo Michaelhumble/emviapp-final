@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 
-type TranslatableContent = {
+export type TranslatableContent = {
   english: string;
   vietnamese: string;
 };
@@ -16,7 +16,9 @@ export const useTranslation = () => {
     return content[currentLanguage as keyof TranslatableContent] || content.english;
   }, []);
 
-  return { t };
+  const isVietnamese = currentLanguage === 'vietnamese';
+
+  return { t, isVietnamese };
 };
 
 export default useTranslation;

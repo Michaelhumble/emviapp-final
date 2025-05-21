@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { DurationOption } from '@/types/pricing';
@@ -54,7 +54,7 @@ const HeroSection = ({
       </p>
 
       <div className="flex justify-center mb-8">
-        <div className="bg-white rounded-full p-2 shadow-md">
+        <div className="bg-white rounded-full p-2 shadow-lg">
           <ToggleGroup 
             type="single" 
             value={selectedDuration.toString()}
@@ -65,9 +65,9 @@ const HeroSection = ({
               <ToggleGroupItem 
                 key={option.months} 
                 value={option.months.toString()}
-                className={`px-6 py-2 rounded-full transition-all ${
+                className={`px-6 py-3 rounded-full transition-all ${
                   selectedDuration === option.months 
-                    ? 'bg-emvi-accent text-white shadow-sm' 
+                    ? 'bg-emvi-accent text-white shadow-md' 
                     : 'hover:bg-gray-100'
                 }`}
               >
