@@ -7,6 +7,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { jobPostingTranslations } from '@/translations/jobPostingForm';
 
 interface ContactInfo {
+  salon_name?: string;
   owner_name?: string;
   phone?: string;
   email?: string;
@@ -38,6 +39,22 @@ const ContactInformationSection: React.FC<ContactInformationSectionProps> = ({
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">{t(contactInfoTranslations.title)}</h2>
+      
+      {/* Salon Name */}
+      <div>
+        <Label htmlFor="salon_name" className="text-base">
+          {t(contactInfoTranslations.salonName)} <span className="text-red-500">*</span>
+        </Label>
+        <Input
+          id="salon_name"
+          name="salon_name"
+          placeholder={t(contactInfoTranslations.salonNamePlaceholder)}
+          value={contactInfo.salon_name || ''}
+          onChange={handleInputChange}
+          className="mt-1.5"
+          required
+        />
+      </div>
       
       {/* Owner/Manager Name */}
       <div>

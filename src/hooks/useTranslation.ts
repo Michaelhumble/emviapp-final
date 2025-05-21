@@ -50,7 +50,8 @@ export function useTranslation() {
         "Sign In": { english: "Sign In", vietnamese: "Đăng nhập" },
         "Sign Out": { english: "Sign Out", vietnamese: "Đăng xuất" },
         "Dashboard": { english: "Dashboard", vietnamese: "Bảng điều khiển" },
-        "Profile": { english: "Profile", vietnamese: "Hồ sơ" }
+        "Profile": { english: "Profile", vietnamese: "Hồ sơ" },
+        "Salon Name": { english: "Salon Name", vietnamese: "Tên Tiệm" }
       };
       
       if (commonTranslations[key]) {

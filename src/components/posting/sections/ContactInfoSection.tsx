@@ -25,6 +25,25 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
       <div className="grid gap-6 md:grid-cols-2">
         <FormField
           control={form.control}
+          name="salonName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-900 font-medium">Salon Name *</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="Enter the name of your salon, business, or company" 
+                  {...field}
+                  required
+                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
           name="contactName"
           render={({ field }) => (
             <FormItem>

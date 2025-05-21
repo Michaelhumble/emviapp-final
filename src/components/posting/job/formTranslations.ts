@@ -1,4 +1,5 @@
 
+
 // Form translations for job posting components
 export const compensationLabels = {
   hourly: {
@@ -129,3 +130,4 @@ export const jobFormLabels = {
     vietnamese: "Quay Lại"
   }
 };
+
