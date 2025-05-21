@@ -1,65 +1,44 @@
-
-import React from "react";
+// MissingPieceSection.tsx file
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import SectionTitle from "./SectionTitle";
-import ContentCard from "./ContentCard";
-import LanguageToggleButton from "./LanguageToggleButton";
 import { useTranslation } from "@/hooks/useTranslation";
+import LanguageToggleButton from "./LanguageToggleButton";
+import EnglishContent from "./EnglishContent";
+import VietnameseContent from "./VietnameseContent";
+import SectionTitle from "./SectionTitle";
 
 const MissingPieceSection = () => {
-  // Replace incorrect lang usage with isVietnamese
   const { isVietnamese, toggleLanguage } = useTranslation();
-  
-  // Define animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-  
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5 }
-    }
-  };
-  
+
   return (
-    <section className="py-20 px-4 relative overflow-hidden bg-gradient-to-b from-white to-gray-50">
-      <div className="container mx-auto max-w-6xl">
-        <motion.div
-          className="flex flex-col items-center"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {/* Language toggle */}
-          <div className="mb-8">
-            <LanguageToggleButton 
-              isVietnamese={isVietnamese} 
-              toggleLanguage={toggleLanguage} 
+    <section className="py-16 md:py-24 bg-white">
+      <div className="container mx-auto px-4">
+        <SectionTitle />
+        <div className="relative">
+          <motion.div
+            className="relative rounded-3xl shadow-xl overflow-hidden"
+            style={{
+              backgroundImage: "url('/images/home/missing-piece-bg.webp')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="absolute inset-0 bg-black opacity-60"></div>
+            <div className="relative py-12 px-6 md:px-12 lg:px-24 text-white">
+              {isVietnamese ? <VietnameseContent /> : <EnglishContent />}
+            </div>
+          </motion.div>
+          <div className="absolute bottom-4 right-4">
+            <LanguageToggleButton
+              isVietnamese={isVietnamese}
+              toggleLanguage={toggleLanguage}
             />
           </div>
-          
-          {/* Section title */}
-          <SectionTitle 
-            language={isVietnamese ? "vi" : "en"} 
-            itemVariants={itemVariants} 
-          />
-          
-          {/* Content card */}
-          <ContentCard 
-            language={isVietnamese ? "vi" : "en"} 
-            itemVariants={itemVariants} 
-          />
-        </motion.div>
+        </div>
       </div>
     </section>
   );

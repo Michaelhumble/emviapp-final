@@ -1,14 +1,13 @@
-
-import React from 'react';
+import React from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { CalendarDays, Heart, Users, Star, Sparkles, Lightbulb, Sun, Medal } from "lucide-react";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "@/hooks/useTranslation";
 import LanguageToggleButton from "@/components/home/missing-piece/LanguageToggleButton";
 
-export default function About() {
+const About = () => {
   const { t, isVietnamese, toggleLanguage } = useTranslation();
 
   // Timeline data with translations
@@ -394,4 +393,6 @@ export default function About() {
       </section>
     </Layout>
   );
-}
+};
+
+export default About;
