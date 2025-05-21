@@ -20,6 +20,12 @@ const CreateJobPosting = () => {
   // Add state for salon name
   const [salonName, setSalonName] = useState('');
 
+  // Add useEffect to log component mount and salon name value
+  React.useEffect(() => {
+    console.log('CreateJobPosting wizard component mounted');
+    console.log('Initial salonName state:', salonName);
+  }, []);
+
   const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
     try {
       console.log('Form submitted:', data);
@@ -91,13 +97,25 @@ const CreateJobPosting = () => {
           />
         </Helmet>
 
-        <Card className="bg-white shadow-md rounded-lg p-6">
-          {/* Always render the SalonNameInput component */}
+        {/* IMPORTANT: SalonNameInput rendered OUTSIDE the Card to debug any Card-related issues */}
+        <div className="mb-4">
           <SalonNameInput 
             value={salonName}
             onChange={setSalonName}
             id="salonName"
           />
+        </div>
+
+        <Card className="bg-white shadow-md rounded-lg p-6">
+          {/* Secondary SalonNameInput inside the card as a fallback */}
+          <div className="border-2 border-blue-500 p-2 mb-6 rounded-md">
+            <p className="text-blue-800 font-bold mb-2">Salon Information Section</p>
+            <SalonNameInput 
+              value={salonName}
+              onChange={setSalonName}
+              id="salonName_inside"
+            />
+          </div>
           
           <EnhancedJobForm 
             onSubmit={handleSubmit}

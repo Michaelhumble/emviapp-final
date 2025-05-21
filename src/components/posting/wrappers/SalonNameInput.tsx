@@ -21,7 +21,8 @@ const SalonNameInput: React.FC<SalonNameInputProps> = ({ value, onChange, id = "
   }, []);
 
   return (
-    <div className="mb-6 border-b pb-6 border-gray-200">
+    <div className="mb-6 border-b pb-6 border-gray-200 bg-white rounded-md">
+      <h3 className="text-lg font-medium mb-4 text-gray-800">Salon Information</h3>
       <Label htmlFor={id} className="text-sm font-medium">
         Salon Name
       </Label>

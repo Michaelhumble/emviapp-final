@@ -26,6 +26,12 @@ const CreateJobPosting = () => {
   // Add state for salon name
   const [salonName, setSalonName] = useState('');
 
+  // Add useEffect to log component mount and salon name value
+  React.useEffect(() => {
+    console.log('CreateJobPosting component mounted');
+    console.log('Initial salonName state:', salonName);
+  }, []);
+
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
     setSelectedTemplateType(templateType);
@@ -112,27 +118,37 @@ const CreateJobPosting = () => {
             <p className="text-gray-600">Find your perfect employee</p>
           </div>
           
-          <Card className="bg-white shadow-md rounded-lg p-6">
-            {/* Always render the SalonNameInput component outside any conditional rendering */}
+          {/* IMPORTANT: SalonNameInput rendered OUTSIDE the Card to debug any Card-related issues */}
+          <div className="mb-4">
             <SalonNameInput 
               value={salonName}
               onChange={setSalonName}
               id="salonName"
             />
+          </div>
+          
+          <Card className="bg-white shadow-md rounded-lg p-6">
+            {/* Secondary SalonNameInput inside the card as a fallback */}
+            <div className="border-2 border-blue-500 p-2 mb-6 rounded-md">
+              <p className="text-blue-800 font-bold mb-2">Salon Information Section</p>
+              <SalonNameInput 
+                value={salonName}
+                onChange={setSalonName}
+                id="salonName_inside"
+              />
+            </div>
             
             {step === 'template' ? (
               <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
             ) : (
-              <>
-                <EnhancedJobForm 
-                  onSubmit={handleSubmit}
-                  initialTemplate={selectedTemplate || undefined}
-                  onBack={handleBackToTemplates}
-                  isCustomTemplate={selectedTemplateType === 'custom'}
-                  maxPhotos={5}
-                  onStepChange={(step) => console.log(`Changed to step ${step}`)}
-                />
-              </>
+              <EnhancedJobForm 
+                onSubmit={handleSubmit}
+                initialTemplate={selectedTemplate || undefined}
+                onBack={handleBackToTemplates}
+                isCustomTemplate={selectedTemplateType === 'custom'}
+                maxPhotos={5}
+                onStepChange={(step) => console.log(`Changed to step ${step}`)}
+              />
             )}
           </Card>
         </div>
