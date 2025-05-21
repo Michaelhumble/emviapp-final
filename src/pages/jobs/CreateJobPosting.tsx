@@ -38,6 +38,7 @@ const CreateJobPosting = () => {
       setIsSubmitting(true);
       console.log('Form submitted:', data);
       console.log('Pricing options:', pricingOptions);
+      console.log('Salon name submitted:', salonName);
       
       // Convert form data to the expected format for the API
       const jobDetails = {
@@ -112,16 +113,17 @@ const CreateJobPosting = () => {
           </div>
           
           <Card className="bg-white shadow-md rounded-lg p-6">
+            {/* Always render the SalonNameInput component outside any conditional rendering */}
+            <SalonNameInput 
+              value={salonName}
+              onChange={setSalonName}
+              id="salonName"
+            />
+            
             {step === 'template' ? (
               <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
             ) : (
               <>
-                {/* Add the Salon Name input before the EnhancedJobForm */}
-                <SalonNameInput 
-                  value={salonName}
-                  onChange={setSalonName}
-                />
-                
                 <EnhancedJobForm 
                   onSubmit={handleSubmit}
                   initialTemplate={selectedTemplate || undefined}

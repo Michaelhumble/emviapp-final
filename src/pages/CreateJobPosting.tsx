@@ -24,6 +24,7 @@ const CreateJobPosting = () => {
     try {
       console.log('Form submitted:', data);
       console.log('Pricing options:', pricingOptions);
+      console.log('Salon name submitted:', salonName);
       
       // Convert form data to the expected format for the API
       const jobDetails = {
@@ -91,10 +92,11 @@ const CreateJobPosting = () => {
         </Helmet>
 
         <Card className="bg-white shadow-md rounded-lg p-6">
-          {/* Add the Salon Name input before the EnhancedJobForm */}
+          {/* Always render the SalonNameInput component */}
           <SalonNameInput 
             value={salonName}
             onChange={setSalonName}
+            id="salonName"
           />
           
           <EnhancedJobForm 
