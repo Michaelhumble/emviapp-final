@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import ContactInfoSection from '../sections/ContactInfoSection';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import RequirementsSection from '../sections/RequirementsSection';
-import { usePricing } from '@/context/pricing/PricingContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -46,7 +45,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 
   const [step, setStep] = React.useState(1);
   const [uploads, setUploads] = React.useState<File[]>([]);
-  const { pricingOptions } = usePricing();
+  const [pricingOptions, setPricingOptions] = React.useState<any>(null);
   const navigate = useNavigate();
 
   const handleNext = () => {
@@ -101,6 +100,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     }
   };
 
+  const handlePricingOptionsChange = (options: any) => {
+    setPricingOptions(options);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
@@ -117,14 +120,14 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         {/* Step 3: Requirements and Uploads */}
         {step === 3 && (
           <div className="space-y-8">
-            <RequirementsSection form={form} />
+            <RequirementsSection control={form.control} />
             <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
           </div>
         )}
 
         {/* Step 4: Pricing - Conditionally render only if step is 4 */}
         {step === 4 && (
-          <PricingSection />
+          <PricingSection onPricingChange={handlePricingOptionsChange} />
         )}
 
         {/* Navigation Buttons */}

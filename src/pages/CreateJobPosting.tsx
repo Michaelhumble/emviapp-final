@@ -3,14 +3,21 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
 import { Card } from '@/components/ui/card';
-import { PricingProvider } from '@/context/pricing/PricingProvider';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { PricingOptions } from '@/utils/posting/types';
 import { useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { useState } from 'react';
+
+// Create a type for pricing options
+interface PricingOptions {
+  selectedPricingTier: string;
+  durationMonths: number;
+  autoRenew: boolean;
+  isFirstPost: boolean;
+  isNationwide: boolean;
+}
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
@@ -69,15 +76,6 @@ const CreateJobPosting = () => {
     setCurrentStep(step);
   };
 
-  // Set the default pricing options
-  const defaultPricingOptions: PricingOptions = {
-    selectedPricingTier: 'premium',
-    durationMonths: 1,
-    autoRenew: true,
-    isFirstPost: true,
-    isNationwide: false
-  };
-
   // Define default values for the form, ensuring salonName is included
   const defaultFormValues: Partial<JobFormValues> = {
     salonName: '',
@@ -87,26 +85,24 @@ const CreateJobPosting = () => {
   };
 
   return (
-    <PricingProvider initialOptions={defaultPricingOptions}>
-      <PostWizardLayout currentStep={currentStep} totalSteps={3}>
-        <Helmet>
-          <title>Create Job Posting | EmviApp</title>
-          <meta 
-            name="description" 
-            content="Create a job posting on EmviApp to find qualified beauty professionals."
-          />
-        </Helmet>
+    <PostWizardLayout currentStep={currentStep} totalSteps={3}>
+      <Helmet>
+        <title>Create Job Posting | EmviApp</title>
+        <meta 
+          name="description" 
+          content="Create a job posting on EmviApp to find qualified beauty professionals."
+        />
+      </Helmet>
 
-        <Card className="bg-white shadow-md rounded-lg p-6">
-          <EnhancedJobForm 
-            onSubmit={handleSubmit}
-            onStepChange={handleStepChange}
-            maxPhotos={5}
-            defaultValues={defaultFormValues}
-          />
-        </Card>
-      </PostWizardLayout>
-    </PricingProvider>
+      <Card className="bg-white shadow-md rounded-lg p-6">
+        <EnhancedJobForm 
+          onSubmit={handleSubmit}
+          onStepChange={handleStepChange}
+          maxPhotos={5}
+          defaultValues={defaultFormValues}
+        />
+      </Card>
+    </PostWizardLayout>
   );
 };
 
