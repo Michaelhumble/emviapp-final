@@ -4,14 +4,6 @@ import LanguageToggle from '@/components/layout/LanguageToggle';
 import HeroSection from '@/components/pricing/HeroSection';
 import PricingSection from '@/components/pricing/PricingSection';
 import PricingComparison from '@/components/pricing/PricingComparison';
-import FoundingMemberOffer from '@/components/pricing/FoundingMemberOffer';
-import FoundersEarlyAccess from '@/components/pricing/FoundersEarlyAccess';
-import FoundersGetMore from '@/components/pricing/FoundersGetMore';
-import ClientManagementSection from '@/components/pricing/ClientManagementSection';
-import ReferralRewards from '@/components/pricing/ReferralRewards';
-import EmotionalClosing from '@/components/pricing/EmotionalClosing';
-import PricingFAQ from '@/components/pricing/PricingFAQ';
-import FinalCTA from '@/components/pricing/FinalCTA';
 
 const PricingPage = () => {
   return (
@@ -20,18 +12,10 @@ const PricingPage = () => {
         <LanguageToggle minimal={true} />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 space-y-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 space-y-16">
         <HeroSection />
         <PricingSection />
         <PricingComparison />
-        <FoundingMemberOffer />
-        <FoundersEarlyAccess />
-        <FoundersGetMore />
-        <ClientManagementSection />
-        <ReferralRewards />
-        <EmotionalClosing />
-        <PricingFAQ />
-        <FinalCTA />
       </div>
     </div>
   );
