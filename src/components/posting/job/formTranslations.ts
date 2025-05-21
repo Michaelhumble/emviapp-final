@@ -1,5 +1,4 @@
 
-
 // Form translations for job posting components
 export const compensationLabels = {
   hourly: {
