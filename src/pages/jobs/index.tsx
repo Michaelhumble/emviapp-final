@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Container } from "@/components/ui/container";
 import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
@@ -20,9 +21,11 @@ import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const JobsPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { 
     jobs, 
     loading, 
@@ -48,7 +51,7 @@ const JobsPage: React.FC = () => {
   };
 
   return (
-    <Container className="py-8 max-w-7xl">
+    <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
       {/* Back to Home button */}
       <div className="mb-6">
         <Button

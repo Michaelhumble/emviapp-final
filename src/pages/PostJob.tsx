@@ -103,7 +103,7 @@ const PostJob = () => {
             content="Post a job on EmviApp. Find qualified beauty professionals for your business."
           />
         </Helmet>
-        <div className="container max-w-4xl mx-auto py-8">
+        <div className="container max-w-4xl mx-auto py-8 pb-20 md:pb-8">
           <div className="mb-8 text-center">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Post a Job</h1>
             <p className="text-gray-600">Find your perfect employee</p>

@@ -130,4 +130,10 @@
   body {
     padding-bottom: env(safe-area-inset-bottom, 16px);
   }
+  
+  /* Add extra bottom padding on job pages for the nav bar */
+  .job-content {
+    padding-bottom: 5rem !important;
+  }
 }
+

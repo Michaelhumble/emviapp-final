@@ -31,10 +31,12 @@ const Jobs = () => {
           }
         />
       </Helmet>
-      <Routes>
-        <Route path="/" element={<JobsPage />} />
-        <Route path="/create" element={<CreateJobPosting />} />
-      </Routes>
+      <div className="pb-20 md:pb-0">
+        <Routes>
+          <Route path="/" element={<JobsPage />} />
+          <Route path="/create" element={<CreateJobPosting />} />
+        </Routes>
+      </div>
       <MobileJobsNavBar />
     </Layout>
   );
