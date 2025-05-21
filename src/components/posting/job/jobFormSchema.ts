@@ -33,6 +33,10 @@ export const jobFormSchema = z.object({
   salonName: z.string().optional(),
   experience_level: z.string().optional(),
   is_urgent: z.boolean().optional(),
+  
+  // Adding the missing fields that were causing errors
+  requirements: z.array(z.string()).or(z.string()).optional(),
+  specialties: z.array(z.string()).optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
