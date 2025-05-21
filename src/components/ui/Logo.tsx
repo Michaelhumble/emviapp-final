@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 interface LogoProps {
@@ -13,6 +13,8 @@ const Logo: React.FC<LogoProps> = ({
   size = "medium",
   showText = false
 }) => {
+  const [imageError, setImageError] = useState<string | null>(null);
+  
   // Define the sizes for the logo
   const sizeClasses = {
     small: "h-12 w-auto",
@@ -22,6 +24,13 @@ const Logo: React.FC<LogoProps> = ({
 
   // The direct Supabase storage URL for the EmviApp logo
   const logoUrl = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png";
+  
+  useEffect(() => {
+    console.log("Logo component mounted, using URL:", logoUrl);
+    return () => {
+      console.log("Logo component unmounted");
+    };
+  }, [logoUrl]);
 
   return (
     <div className={cn("flex items-center", className)}>
@@ -30,11 +39,14 @@ const Logo: React.FC<LogoProps> = ({
           src={logoUrl}
           alt="EmviApp Logo"
           className="h-full w-auto object-contain"
+          onLoad={() => console.log("Logo image loaded successfully")}
           onError={(e) => {
-            console.error("Failed to load EmviApp logo:", e);
-            // Fallback handling if needed in the future
+            const error = `Failed to load EmviApp logo: ${e instanceof Error ? e.message : 'unknown error'}`;
+            console.error(error);
+            setImageError(error);
           }}
         />
+        {imageError && <div className="text-xs text-red-500">Error loading logo</div>}
       </div>
       
       {showText && (

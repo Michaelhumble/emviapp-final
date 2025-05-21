@@ -1,4 +1,3 @@
-
 export const jobPostingTranslations = {
   common: {
     submitting: {
@@ -197,45 +196,53 @@ export const jobPostingTranslations = {
       english: "Contact Information",
       vietnamese: "Thông tin liên lạc"
     },
+    salonName: {
+      english: "Salon Name",
+      vietnamese: "Tên Tiệm"
+    },
+    salonNamePlaceholder: {
+      english: "Enter the name of your salon, business, or company",
+      vietnamese: "Nhập tên tiệm, doanh nghiệp hoặc công ty của bạn"
+    },
     ownerName: {
       english: "Owner/Manager Name",
-      vietnamese: "Tên chủ/quản lý"
+      vietnamese: "Tên Chủ/Quản Lý"
     },
     ownerNamePlaceholder: {
-      english: "Enter name",
-      vietnamese: "Nhập tên"
+      english: "Who candidates should ask for",
+      vietnamese: "Người mà ứng viên nên hỏi"
     },
     phone: {
       english: "Phone Number",
-      vietnamese: "Số điện thoại"
+      vietnamese: "Số Điện Thoại"
     },
     phonePlaceholder: {
-      english: "Enter phone number",
-      vietnamese: "Nhập số điện thoại"
+      english: "(555) 123-4567",
+      vietnamese: "(555) 123-4567"
     },
     email: {
       english: "Email Address",
-      vietnamese: "Địa chỉ email"
+      vietnamese: "Địa Chỉ Email"
     },
     emailPlaceholder: {
-      english: "Enter email address",
-      vietnamese: "Nhập địa chỉ email"
+      english: "your-email@example.com",
+      vietnamese: "email-của-bạn@example.com"
     },
     zalo: {
-      english: "Zalo ID (Optional)",
-      vietnamese: "ID Zalo (Không bắt buộc)"
+      english: "Zalo ID",
+      vietnamese: "Zalo ID"
     },
     zaloPlaceholder: {
-      english: "Enter Zalo ID or phone number",
-      vietnamese: "Nhập ID Zalo hoặc số điện thoại"
+      english: "Your Zalo ID or phone number",
+      vietnamese: "ID Zalo hoặc số điện thoại của bạn"
     },
     notes: {
-      english: "Additional Notes (Optional)",
-      vietnamese: "Ghi chú thêm (Không bắt buộc)"
+      english: "Additional Notes",
+      vietnamese: "Ghi Chú Thêm"
     },
     notesPlaceholder: {
-      english: "Any additional information for applicants",
-      vietnamese: "Bất kỳ thông tin bổ sung nào cho ứng viên"
+      english: "Any other contact information or special instructions",
+      vietnamese: "Bất kỳ thông tin liên hệ hoặc hướng dẫn đặc biệt nào khác"
     }
   },
   validation: {
