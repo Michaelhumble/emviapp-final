@@ -11,8 +11,11 @@ interface SalonNameInputProps {
 }
 
 const SalonNameInput: React.FC<SalonNameInputProps> = ({ value, onChange, id = "salonName" }) => {
+  // Adding console log to help debug rendering issues
+  console.log('SalonNameInput rendering with value:', value);
+
   return (
-    <div className="mb-6">
+    <div className="mb-6 border-b pb-6 border-gray-200">
       <Label htmlFor={id} className="text-sm font-medium">
         Salon Name
       </Label>
