@@ -30,7 +30,12 @@ const CreateJobPosting = () => {
   React.useEffect(() => {
     console.log('CreateJobPosting component mounted');
     console.log('Initial salonName state:', salonName);
+    console.log('Current step:', step);
   }, []);
+
+  React.useEffect(() => {
+    console.log('Step changed to:', step);
+  }, [step]);
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
@@ -118,37 +123,53 @@ const CreateJobPosting = () => {
             <p className="text-gray-600">Find your perfect employee</p>
           </div>
           
-          {/* IMPORTANT: SalonNameInput rendered OUTSIDE the Card to debug any Card-related issues */}
-          <div className="mb-4">
-            <SalonNameInput 
-              value={salonName}
-              onChange={setSalonName}
-              id="salonName"
-            />
-          </div>
+          {/* PROMINENT: SalonNameInput rendered with high visibility styling */}
+          <SalonNameInput 
+            value={salonName}
+            onChange={setSalonName}
+            id="salonName_top_level"
+          />
           
           <Card className="bg-white shadow-md rounded-lg p-6">
-            {/* Secondary SalonNameInput inside the card as a fallback */}
-            <div className="border-2 border-blue-500 p-2 mb-6 rounded-md">
-              <p className="text-blue-800 font-bold mb-2">Salon Information Section</p>
-              <SalonNameInput 
-                value={salonName}
-                onChange={setSalonName}
-                id="salonName_inside"
-              />
+            {/* Step indicator that always shows the SalonNameInput regardless of step */}
+            <div className="mb-6 bg-blue-100 p-4 rounded-md">
+              <p className="text-blue-800 font-bold">Current step: {step}</p>
+              <p className="text-sm">Salon Name: {salonName || 'Not yet provided'}</p>
             </div>
             
             {step === 'template' ? (
-              <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+              <>
+                {/* Show SalonNameInput even in template selection step */}
+                <div className="border-2 border-purple-500 p-4 mb-6 rounded-md">
+                  <p className="font-bold text-purple-800">Please enter your salon name first:</p>
+                  <SalonNameInput 
+                    value={salonName}
+                    onChange={setSalonName}
+                    id="salonName_template_step"
+                  />
+                </div>
+                <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+              </>
             ) : (
-              <EnhancedJobForm 
-                onSubmit={handleSubmit}
-                initialTemplate={selectedTemplate || undefined}
-                onBack={handleBackToTemplates}
-                isCustomTemplate={selectedTemplateType === 'custom'}
-                maxPhotos={5}
-                onStepChange={(step) => console.log(`Changed to step ${step}`)}
-              />
+              <>
+                {/* Show SalonNameInput in form step too */}
+                <div className="border-2 border-green-500 p-4 mb-6 rounded-md">
+                  <p className="font-bold text-green-800">Salon Information (Form Step)</p>
+                  <SalonNameInput 
+                    value={salonName}
+                    onChange={setSalonName}
+                    id="salonName_form_step"
+                  />
+                </div>
+                <EnhancedJobForm 
+                  onSubmit={handleSubmit}
+                  initialTemplate={selectedTemplate || undefined}
+                  onBack={handleBackToTemplates}
+                  isCustomTemplate={selectedTemplateType === 'custom'}
+                  maxPhotos={5}
+                  onStepChange={(step) => console.log(`Changed to step ${step}`)}
+                />
+              </>
             )}
           </Card>
         </div>

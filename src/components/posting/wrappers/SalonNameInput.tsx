@@ -11,32 +11,35 @@ interface SalonNameInputProps {
 }
 
 const SalonNameInput: React.FC<SalonNameInputProps> = ({ value, onChange, id = "salonName" }) => {
-  // Adding console log to help debug rendering issues
-  console.log('SalonNameInput rendering with value:', value);
-
+  // Enhanced debug logging
+  console.log('SalonNameInput RENDERING with value:', value, 'and id:', id);
+  
   // Add effect to log when component mounts
   useEffect(() => {
-    console.log('SalonNameInput mounted');
-    return () => console.log('SalonNameInput unmounted');
-  }, []);
+    console.log('SalonNameInput MOUNTED with id:', id);
+    return () => console.log('SalonNameInput UNMOUNTED with id:', id);
+  }, [id]);
 
   return (
-    <div className="mb-6 border-b pb-6 border-gray-200 bg-white rounded-md">
-      <h3 className="text-lg font-medium mb-4 text-gray-800">Salon Information</h3>
-      <Label htmlFor={id} className="text-sm font-medium">
-        Salon Name
+    <div className="mb-6 border-4 border-red-500 p-6 bg-yellow-50 rounded-md shadow-lg">
+      <h3 className="text-xl font-bold mb-4 text-red-800">🔴 SALON INFORMATION 🔴</h3>
+      <Label htmlFor={id} className="text-lg font-bold block mb-2 text-black">
+        Salon Name <span className="text-red-500">*</span>
       </Label>
       <div className="mt-1">
         <Input
           id={id}
           type="text"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            console.log('SalonNameInput CHANGE:', e.target.value);
+            onChange(e.target.value);
+          }}
           placeholder="Enter your salon name"
-          className="w-full rounded-md border border-input px-3 py-2 text-sm"
+          className="w-full rounded-md border-2 border-gray-400 px-4 py-3 text-lg font-medium"
         />
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">
+      <p className="mt-3 text-sm font-medium text-gray-700">
         The name of your salon or business
       </p>
     </div>

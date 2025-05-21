@@ -24,6 +24,7 @@ const CreateJobPosting = () => {
   React.useEffect(() => {
     console.log('CreateJobPosting wizard component mounted');
     console.log('Initial salonName state:', salonName);
+    console.log('--- RENDERING CreateJobPosting (Wizard) ---');
   }, []);
 
   const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
@@ -97,19 +98,23 @@ const CreateJobPosting = () => {
           />
         </Helmet>
 
-        {/* IMPORTANT: SalonNameInput rendered OUTSIDE the Card to debug any Card-related issues */}
-        <div className="mb-4">
-          <SalonNameInput 
-            value={salonName}
-            onChange={setSalonName}
-            id="salonName"
-          />
-        </div>
+        {/* PROMINENT: SalonNameInput rendered with high visibility styling */}
+        <SalonNameInput 
+          value={salonName}
+          onChange={setSalonName}
+          id="salonName_top_level"
+        />
 
         <Card className="bg-white shadow-md rounded-lg p-6">
-          {/* Secondary SalonNameInput inside the card as a fallback */}
-          <div className="border-2 border-blue-500 p-2 mb-6 rounded-md">
-            <p className="text-blue-800 font-bold mb-2">Salon Information Section</p>
+          {/* Debug info for salon name */}
+          <div className="mb-6 bg-blue-100 p-4 rounded-md">
+            <p className="text-blue-800 font-bold">Current step: {currentStep}</p>
+            <p className="text-sm">Salon Name: {salonName || 'Not yet provided'}</p>
+          </div>
+          
+          {/* PROMINENT: SalonNameInput inside card */}
+          <div className="border-2 border-red-500 p-2 mb-6 rounded-md">
+            <p className="text-red-800 font-bold mb-2">Salon Information Section</p>
             <SalonNameInput 
               value={salonName}
               onChange={setSalonName}
