@@ -28,16 +28,17 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
           control={form.control}
           name="salonName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="md:col-span-2">
               <FormLabel className="text-gray-900 font-medium">Salon Name *</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="Enter the name of your salon or business" 
+                  placeholder="Enter your salon name" 
                   {...field}
                   required
                   className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
                 />
               </FormControl>
+              <p className="text-sm text-gray-500 mt-1">The name of your salon or business</p>
               <FormMessage />
             </FormItem>
           )}
