@@ -13,6 +13,7 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions } from '@/utils/posting/types';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
+import SalonNameInput from '@/components/posting/wrappers/SalonNameInput';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const CreateJobPosting = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<JobFormValues | null>(null);
   const [selectedTemplateType, setSelectedTemplateType] = useState<JobTemplateType | null>(null);
   const [step, setStep] = useState<'template' | 'form'>('template');
+  // Add state for salon name
+  const [salonName, setSalonName] = useState('');
 
   const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
     setSelectedTemplate(template);
@@ -50,7 +53,7 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train, 
         no_supply_deduction: data.no_supply_deduction,
-        salonName: data.salonName, // Include salon name in job details
+        salonName: salonName, // Include salon name from our wrapper state
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,
@@ -112,14 +115,22 @@ const CreateJobPosting = () => {
             {step === 'template' ? (
               <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
             ) : (
-              <EnhancedJobForm 
-                onSubmit={handleSubmit}
-                initialTemplate={selectedTemplate || undefined}
-                onBack={handleBackToTemplates}
-                isCustomTemplate={selectedTemplateType === 'custom'}
-                maxPhotos={5}
-                onStepChange={(step) => console.log(`Changed to step ${step}`)}
-              />
+              <>
+                {/* Add the Salon Name input before the EnhancedJobForm */}
+                <SalonNameInput 
+                  value={salonName}
+                  onChange={setSalonName}
+                />
+                
+                <EnhancedJobForm 
+                  onSubmit={handleSubmit}
+                  initialTemplate={selectedTemplate || undefined}
+                  onBack={handleBackToTemplates}
+                  isCustomTemplate={selectedTemplateType === 'custom'}
+                  maxPhotos={5}
+                  onStepChange={(step) => console.log(`Changed to step ${step}`)}
+                />
+              </>
             )}
           </Card>
         </div>
