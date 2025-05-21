@@ -1,7 +1,6 @@
 
 import React, { ReactNode } from 'react';
 import Navbar from './Navbar';
-import SuperMobileBottomNavBar from './SuperMobileBottomNavBar';
 import Footer from './Footer';
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -20,7 +19,6 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
         {children}
       </main>
       <Footer />
-      <SuperMobileBottomNavBar />
     </div>
   );
 };

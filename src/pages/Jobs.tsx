@@ -6,6 +6,7 @@ import Layout from '@/components/layout/Layout';
 import { Routes, Route } from 'react-router-dom';
 import CreateJobPosting from './jobs/CreateJobPosting';
 import { useTranslation } from '@/hooks/useTranslation';
+import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
 
 const Jobs = () => {
   const { isVietnamese } = useTranslation();
@@ -34,6 +35,7 @@ const Jobs = () => {
         <Route path="/" element={<JobsPage />} />
         <Route path="/create" element={<CreateJobPosting />} />
       </Routes>
+      <MobileJobsNavBar />
     </Layout>
   );
 };

@@ -14,6 +14,7 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
+import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -123,6 +124,7 @@ const PostJob = () => {
             )}
           </Card>
         </div>
+        <MobileJobsNavBar />
       </Layout>
     </PricingProvider>
   );
