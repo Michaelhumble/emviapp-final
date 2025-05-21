@@ -20,13 +20,20 @@ const Logo: React.FC<LogoProps> = ({
     large: "h-20 w-auto"
   };
 
+  // The direct Supabase storage URL for the EmviApp logo
+  const logoUrl = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png";
+
   return (
     <div className={cn("flex items-center", className)}>
       <div className={cn("relative", sizeClasses[size])}>
         <img
-          src="https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/emvilogo/emvi-logo-transparent.png"
+          src={logoUrl}
           alt="EmviApp Logo"
           className="h-full w-auto object-contain"
+          onError={(e) => {
+            console.error("Failed to load EmviApp logo:", e);
+            // Fallback handling if needed in the future
+          }}
         />
       </div>
       
