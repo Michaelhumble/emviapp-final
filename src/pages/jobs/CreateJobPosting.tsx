@@ -50,6 +50,7 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train, 
         no_supply_deduction: data.no_supply_deduction,
+        salonName: data.salonName, // Include salon name in job details
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,

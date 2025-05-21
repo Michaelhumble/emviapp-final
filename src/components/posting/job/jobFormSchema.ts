@@ -27,7 +27,8 @@ export const jobFormSchema = z.object({
   no_supply_deduction: z.boolean().optional(),
   requirements: z.array(z.string()).optional(),
   specialties: z.array(z.string()).optional(),
-  templateType: z.string().optional()
+  templateType: z.string().optional(),
+  salonName: z.string().optional() // Added salonName field
 });
 
 // Define the type for the form values based on the schema
