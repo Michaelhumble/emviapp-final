@@ -10,20 +10,12 @@ import { PricingOptions } from '@/utils/posting/types';
 import { useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
   const [currentStep, setCurrentStep] = React.useState(1);
-  const [salonName, setSalonName] = useState('');
-
-  // Enhanced debugging
-  useEffect(() => {
-    console.log('CreateJobPosting component mounted');
-    console.log('Initial salonName state:', salonName);
-    console.log('Current step:', currentStep);
-  }, []);
 
   const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
     try {
@@ -45,7 +37,7 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train,
         no_supply_deduction: data.no_supply_deduction,
-        salonName: data.salonName, // Using the field from form data
+        salonName: data.salonName,
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,
@@ -86,6 +78,14 @@ const CreateJobPosting = () => {
     isNationwide: false
   };
 
+  // Define default values for the form, ensuring salonName is included
+  const defaultFormValues: Partial<JobFormValues> = {
+    salonName: '',
+    contactEmail: '',
+    contactName: '',
+    contactPhone: ''
+  };
+
   return (
     <PricingProvider initialOptions={defaultPricingOptions}>
       <PostWizardLayout currentStep={currentStep} totalSteps={3}>
@@ -98,21 +98,11 @@ const CreateJobPosting = () => {
         </Helmet>
 
         <Card className="bg-white shadow-md rounded-lg p-6">
-          <div className="mb-6 bg-blue-100 p-4 rounded-md">
-            <p className="text-blue-800 font-bold">Current step: {currentStep}</p>
-          </div>
-          
           <EnhancedJobForm 
             onSubmit={handleSubmit}
             onStepChange={handleStepChange}
             maxPhotos={5}
-            // Passing defaultValues to ensure salonName field is initialized
-            defaultValues={{
-              salonName: '',
-              contactEmail: '',
-              contactName: '',
-              contactPhone: ''
-            }}
+            defaultValues={defaultFormValues}
           />
         </Card>
       </PostWizardLayout>
