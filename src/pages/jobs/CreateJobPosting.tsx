@@ -10,8 +10,9 @@ import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
-import { PricingOptions } from '@/utils/posting/types';
+// Continue using EnhancedJobForm directly - we're not changing its usage
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
+import { PricingOptions } from '@/utils/posting/types';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 
 const CreateJobPosting = () => {

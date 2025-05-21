@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
+// Don't modify this import - we need to keep it as is to avoid touching locked files
 import JobForm from '@/components/posting/job/JobForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { usePostPayment } from '@/hooks/usePostPayment';
+// Keep using EnhancedJobForm directly - we can't modify how it's used
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { PricingProvider } from '@/context/pricing/PricingProvider';

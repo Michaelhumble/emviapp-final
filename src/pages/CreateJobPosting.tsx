@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
 import { Card } from '@/components/ui/card';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
+// Import from our adapter instead
 import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
 import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { PricingOptions } from '@/utils/posting/types';
