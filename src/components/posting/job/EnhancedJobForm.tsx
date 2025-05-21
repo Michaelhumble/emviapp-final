@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { jobFormSchema, JobFormValues } from './jobFormSchema';
@@ -11,9 +11,12 @@ import RequirementsSection from '../sections/RequirementsSection';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-// Import sections that were missing
+// Import sections
 import UploadSection from '../sections/UploadSection';
 import PricingSection from '../sections/PricingSection';
+import JobTemplateSelector from './JobTemplateSelector';
+import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
+import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { PricingOptions } from '@/utils/posting/types';
 
 interface EnhancedJobFormProps {
@@ -44,9 +47,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     },
   });
 
-  const [step, setStep] = React.useState(1);
-  const [uploads, setUploads] = React.useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = React.useState<PricingOptions | null>(null);
+  const [step, setStep] = useState(1);
+  const [uploads, setUploads] = useState<File[]>([]);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<JobTemplateType | null>(null);
   const navigate = useNavigate();
 
   const handleNext = () => {
@@ -54,20 +58,23 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     let isValid = false;
     
     if (step === 1) {
-      // Only validate the fields in Contact Info section
-      form.trigger(['salonName', 'contactEmail', 'contactName', 'contactPhone'])
-        .then(valid => {
-          if (valid) {
-            setStep(step + 1);
-            onStepChange(step + 1);
-          }
-        });
+      // Template selection step - no validation needed
+      setStep(step + 1);
+      onStepChange(step + 1);
       return;
     }
     
     if (step === 2) {
-      // Only validate the fields in Job Details section
-      form.trigger(['title', 'description', 'location', 'jobType', 'compensation_type'])
+      // Only validate the fields in Industry Specialties section
+      // Since this is mostly checkboxes, we can just proceed
+      setStep(step + 1);
+      onStepChange(step + 1);
+      return;
+    }
+    
+    if (step === 3) {
+      // Validate contact info and job details
+      form.trigger(['salonName', 'contactEmail', 'title', 'description', 'location', 'jobType'])
         .then(valid => {
           if (valid) {
             setStep(step + 1);
@@ -110,28 +117,45 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     setPricingOptions(options);
   };
 
+  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
+    // When a template is selected, update the form with the template values
+    form.reset({
+      ...template,
+      // Always preserve the salon name from the current form if it exists
+      salonName: form.getValues('salonName') || template.salonName
+    });
+    setSelectedTemplate(templateType);
+    // Move to the next step
+    handleNext();
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Step 1: Contact Info */}
+        {/* Step 1: Job Template Selection */}
         {step === 1 && (
-          <ContactInfoSection form={form} />
+          <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
         )}
 
-        {/* Step 2: Job Details */}
+        {/* Step 2: Industry Specialties */}
         {step === 2 && (
-          <JobDetailsSection form={form} />
+          <IndustrySpecialtiesSection 
+            control={form.control} 
+            industry={selectedTemplate || 'custom'} 
+          />
         )}
 
-        {/* Step 3: Requirements and Uploads */}
+        {/* Step 3: Contact Info & Job Details */}
         {step === 3 && (
           <div className="space-y-8">
+            <ContactInfoSection form={form} />
+            <JobDetailsSection form={form} />
             <RequirementsSection control={form.control} />
             <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
           </div>
         )}
 
-        {/* Step 4: Pricing - Conditionally render only if step is 4 */}
+        {/* Step 4: Pricing */}
         {step === 4 && (
           <PricingSection onPricingChange={handlePricingOptionsChange} />
         )}
@@ -145,11 +169,11 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
           )}
 
           {step < 4 ? (
-            <Button type="button" onClick={handleNext}>
+            <Button type="button" onClick={handleNext} className="ml-auto">
               Next
             </Button>
           ) : (
-            <Button type="submit" disabled={!pricingOptions}>
+            <Button type="submit" disabled={!pricingOptions} className="ml-auto">
               Submit
             </Button>
           )}

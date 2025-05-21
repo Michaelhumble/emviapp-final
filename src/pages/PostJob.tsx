@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { PricingOptions } from '@/utils/posting/types';
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ const PostJob = () => {
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={3}>
+    <PostWizardLayout currentStep={currentStep} totalSteps={4}>
       <Helmet>
         <title>Post Job | EmviApp</title>
         <meta 
