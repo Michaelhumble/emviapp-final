@@ -68,20 +68,6 @@ import SimpleSalonDetailPage from './pages/salons/SimpleSalonDetailPage';
 import SalonDetailPage from './pages/salons/SalonDetailPage';
 import SalonListingForm from './pages/salons/SalonListingForm';
 
-// Import the new payment result pages
-import PaymentSuccess from './pages/payments/PaymentSuccess';
-import PaymentCanceled from './pages/payments/PaymentCanceled';
-
-const PAYMENT_SUCCESS_ROUTE = {
-  path: '/payment-success',
-  element: <PaymentSuccess />
-};
-
-const PAYMENT_CANCELED_ROUTE = {
-  path: '/payment-canceled',
-  element: <PaymentCanceled />
-};
-
 const routes = [
   {
     path: '/auth/redirect',
@@ -369,8 +355,6 @@ const routes = [
     path: '/salon-listing',
     element: <SalonListingForm />,
   },
-  PAYMENT_SUCCESS_ROUTE,
-  PAYMENT_CANCELED_ROUTE,
 ];
 
 export default routes;

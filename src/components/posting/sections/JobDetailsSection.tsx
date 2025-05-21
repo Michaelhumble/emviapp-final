@@ -7,11 +7,13 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
+  Form,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { UseFormReturn } from 'react-hook-form';
+import { IndustryType } from '@/components/posting/job/jobFormSchema';
+import { useForm, UseFormReturn } from 'react-hook-form';
 
 interface JobDetailsSectionProps {
   form: UseFormReturn<any>;

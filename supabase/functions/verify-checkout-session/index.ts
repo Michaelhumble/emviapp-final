@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
+import Stripe from "https://esm.sh/stripe@14.14.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,15 +17,6 @@ serve(async (req) => {
   try {
     // Parse request body
     const { sessionId } = await req.json();
-    
-    if (!sessionId) {
-      return new Response(JSON.stringify({ error: "Missing session ID" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    console.log("Verifying checkout session:", sessionId);
 
     // Authentication check
     const authHeader = req.headers.get("Authorization");
@@ -66,33 +57,13 @@ serve(async (req) => {
       });
     }
 
-    console.log("User authenticated:", user.id);
-
     // Initialize Stripe
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) {
-      return new Response(JSON.stringify({ error: "Stripe key missing" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const stripe = new Stripe(stripeKey, {
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
 
     // Retrieve the session
-    let session;
-    try {
-      session = await stripe.checkout.sessions.retrieve(sessionId);
-    } catch (stripeError) {
-      console.error("Stripe error:", stripeError);
-      return new Response(JSON.stringify({ error: "Invalid session ID" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
       return new Response(JSON.stringify({ error: "Invalid session" }), {
         status: 400,
@@ -114,8 +85,6 @@ serve(async (req) => {
       });
     }
     
-    console.log("Payment is complete, updating records...");
-    
     // Find the related payment log
     const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
       .from('payment_logs')
@@ -127,61 +96,79 @@ serve(async (req) => {
       console.error("Error fetching payment log:", paymentLogError);
     }
 
-    if (!paymentLog) {
-      console.log("Payment log not found, creating new job record");
-      
-      // If we have a post_id in metadata, update the job status
-      if (metadata.post_id) {
-        console.log("Updating job status for post_id:", metadata.post_id);
-        const { error: updateJobError } = await supabaseAdmin
+    // Get post ID from metadata or payment log
+    let postId = metadata.post_id || paymentLog?.listing_id;
+    let job: any = null;
+    
+    // Check if post exists
+    if (postId) {
+      const { data: existingJob } = await supabaseAdmin
+        .from('jobs')
+        .select('*')
+        .eq('id', postId)
+        .single();
+        
+      job = existingJob;
+    }
+    
+    // If there's no job record yet, create one from the stored details
+    if (!job && metadata.post_type === 'job') {
+      try {
+        // Get details from payment log metadata if available
+        const postDetails = paymentLog?.metadata?.post_details || {};
+        
+        const { data: newJob, error: createError } = await supabaseAdmin
           .from('jobs')
-          .update({ 
+          .insert({
+            // Use available details or defaults
+            title: postDetails.title || 'Job Posting',
+            description: postDetails.description || '',
+            location: postDetails.location || '',
+            user_id: user.id,
+            pricing_tier: metadata.pricing_tier,
             status: 'active',
-            expires_at: metadata.expires_at
+            expires_at: metadata.expires_at,
+            post_type: metadata.post_type,
+            contact_info: postDetails.contact_info || { email: user.email }
           })
-          .eq('id', metadata.post_id);
+          .select('id')
+          .single();
           
-        if (updateJobError) {
-          console.error("Error updating job status:", updateJobError);
-          return new Response(JSON.stringify({ error: "Failed to update job status" }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-      } else {
-        // If no existing job, create one based on metadata
-        if (metadata.job_details) {
-          try {
-            const jobDetails = JSON.parse(metadata.job_details);
-            const { data: jobData, error: jobError } = await supabaseAdmin
-              .from('jobs')
-              .insert({
-                ...jobDetails,
-                user_id: user.id,
-                status: 'active',
-                expires_at: metadata.expires_at,
-                pricing_tier: metadata.pricing_tier,
-                payment_id: session.id
-              })
-              .select()
-              .single();
-              
-            if (jobError) {
-              console.error("Error creating job:", jobError);
-              return new Response(JSON.stringify({ error: "Failed to create job record" }), {
-                status: 500,
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-              });
-            }
-            
-            metadata.post_id = jobData.id;
-          } catch (parseError) {
-            console.error("Error parsing job details from metadata:", parseError);
+        if (createError) {
+          console.error("Error creating job record:", createError);
+        } else {
+          postId = newJob.id;
+          
+          // Update payment log with job ID if it exists
+          if (paymentLog?.id) {
+            await supabaseAdmin
+              .from('payment_logs')
+              .update({ listing_id: postId })
+              .eq('id', paymentLog.id);
           }
         }
+      } catch (error) {
+        console.error("Error creating job record:", error);
       }
-    } else {
-      // Update payment log status
+    }
+    
+    // If we have a post_id, update the job status
+    if (postId) {
+      const { error: updateJobError } = await supabaseAdmin
+        .from('jobs')
+        .update({ 
+          status: 'active',
+          expires_at: metadata.expires_at
+        })
+        .eq('id', postId);
+        
+      if (updateJobError) {
+        console.error("Error updating job status:", updateJobError);
+      }
+    }
+    
+    // Update payment log status
+    if (paymentLog?.id) {
       const { error: updateLogError } = await supabaseAdmin
         .from('payment_logs')
         .update({ payment_status: 'success' })
@@ -190,26 +177,12 @@ serve(async (req) => {
       if (updateLogError) {
         console.error("Error updating payment log:", updateLogError);
       }
-      
-      // Update job status if we have a listing ID
-      if (paymentLog.listing_id) {
-        const { error: updateJobError } = await supabaseAdmin
-          .from('jobs')
-          .update({ status: 'active' })
-          .eq('id', paymentLog.listing_id);
-          
-        if (updateJobError) {
-          console.error("Error updating job status:", updateJobError);
-        }
-        
-        metadata.post_id = paymentLog.listing_id;
-      }
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        post_id: metadata.post_id || paymentLog?.listing_id,
+        post_id: postId,
         expires_at: metadata.expires_at || paymentLog?.expires_at,
         post_type: metadata.post_type || paymentLog?.plan_type,
         pricing_tier: metadata.pricing_tier,
