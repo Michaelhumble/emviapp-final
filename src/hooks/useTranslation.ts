@@ -1,10 +1,9 @@
-
 import { useCallback } from 'react';
 
-export type TranslatableContent = {
-  english: string;
-  vietnamese: string;
-};
+export type TranslatableContent = string | { english: string; vietnamese: string };
+
+// For compatibility with components expecting this format
+export type Translation = { english: string; vietnamese: string };
 
 export const useTranslation = () => {
   // This would normally check user preferences or browser settings
@@ -13,7 +12,12 @@ export const useTranslation = () => {
 
   const t = useCallback((content: TranslatableContent): string => {
     if (!content) return '';
-    return content[currentLanguage as keyof TranslatableContent] || content.english;
+    
+    // If content is a string, return it directly
+    if (typeof content === 'string') return content;
+    
+    // Otherwise, get the appropriate translation
+    return content[currentLanguage as keyof typeof content] || content.english;
   }, []);
 
   const isVietnamese = currentLanguage === 'vietnamese';
