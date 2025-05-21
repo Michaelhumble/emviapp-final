@@ -31,6 +31,10 @@ export const jobFormSchema = z.object({
   owner_will_train: z.boolean().optional(),
   no_supply_deduction: z.boolean().optional(),
   
+  // New fields to match what's being used in the templates
+  experience_level: z.string().optional(),
+  salary_range: z.string().optional(),
+  
   // Contact info
   salonName: z.string().min(2, "Salon name must be at least 2 characters"),
   contactName: z.string().optional(),
