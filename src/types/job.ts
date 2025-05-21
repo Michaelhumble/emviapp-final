@@ -64,10 +64,10 @@ export interface Job {
   industry?: string;
   post_type?: string; 
   
-  // Adding missing properties that are referenced elsewhere
+  // Properties from various parts of the codebase
   pricingTier?: 'diamond' | 'premium' | 'gold' | 'featured' | 'standard' | 'starter' | 'free' | 'expired';
   pricing_tier?: string; // Keeping both naming conventions for compatibility
-  salonName?: string; // Add the missing salonName property
+  salonName?: string;
   salon_id?: string;
   monthly_revenue?: string;
   station_count?: string;
@@ -75,13 +75,13 @@ export interface Job {
   sale_price?: string;
   is_salon_for_sale?: boolean;
   
-  // Additional properties mentioned in the error report
+  // Additional properties
   badge?: string;
   color?: string;
   hidden?: boolean;
 }
 
-// Add missing exported interfaces
+// Job Details Submission type, aligned with form schema values
 export type JobDetailsSubmission = {
   title: string;
   description?: string;
@@ -114,7 +114,8 @@ export type JobDetailsSubmission = {
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
-  salonName?: string; // Add the missing salonName property
+  salonName?: string;
+  templateType?: string; // Added to match job templates
 }
 
 // Import the PricingOptions from the canonical source

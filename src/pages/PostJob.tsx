@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
@@ -56,7 +55,10 @@ const PostJob = () => {
           phone: data.contactPhone,
           email: data.contactEmail,
         },
-        post_type: 'job'
+        post_type: 'job',
+        // Add specialties and requirements
+        specialties: data.specialties,
+        requirements: data.requirements
       };
       
       // Initiate payment with our consolidated hook

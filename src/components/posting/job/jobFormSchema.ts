@@ -1,6 +1,9 @@
 
 import { z } from 'zod';
 
+// Define IndustryType enum that can be exported and used in other files
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
+
 export const jobFormSchema = z.object({
   // Basic Job Info
   title: z.string().min(2, { message: "Job title is required" }),
@@ -34,9 +37,12 @@ export const jobFormSchema = z.object({
   experience_level: z.string().optional(),
   is_urgent: z.boolean().optional(),
   
-  // Adding the missing fields that were causing errors
+  // Required fields that were causing errors
   requirements: z.array(z.string()).or(z.string()).optional(),
   specialties: z.array(z.string()).optional(),
+  
+  // Template metadata (used in job templates but not stored in the database)
+  templateType: z.string().optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
