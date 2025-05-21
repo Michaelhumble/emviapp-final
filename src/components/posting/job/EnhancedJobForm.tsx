@@ -8,11 +8,13 @@ import { Button } from '@/components/ui/button';
 import ContactInfoSection from '../sections/ContactInfoSection';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import RequirementsSection from '../sections/RequirementsSection';
-import UploadSection from '../sections/UploadSection';
-import PricingSection from '../sections/PricingSection';
 import { usePricing } from '@/context/pricing/PricingContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+
+// Import sections that were missing
+import UploadSection from '../sections/UploadSection';
+import PricingSection from '../sections/PricingSection';
 
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: any) => Promise<boolean>;
