@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
@@ -15,11 +15,23 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
     return null;
   }
 
+  // Add debug logging
+  useEffect(() => {
+    console.log("ContactInfoSection rendering with form:", form);
+    console.log("Form values:", form.getValues());
+    console.log("salonName field:", form.getValues('salonName'));
+  }, [form]);
+
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
         <h2 className="font-playfair text-2xl font-semibold text-gray-900">Contact Information</h2>
         <p className="text-sm text-muted-foreground mt-1">How candidates can reach you about this position</p>
+      </div>
+      
+      {/* Debug div to check if this section renders */}
+      <div className="bg-yellow-100 p-2 text-sm border border-yellow-300 rounded">
+        Debug: Contact Section is rendering. Salon Name should be below.
       </div>
       
       <div className="grid gap-6 md:grid-cols-2">

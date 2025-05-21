@@ -10,7 +10,7 @@ import { PricingOptions } from '@/utils/posting/types';
 import { useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const CreateJobPosting = () => {
   const navigate = useNavigate();
@@ -18,18 +18,18 @@ const CreateJobPosting = () => {
   const [currentStep, setCurrentStep] = React.useState(1);
   const [salonName, setSalonName] = useState('');
 
-  // Add useEffect to log component mount and salon name value
-  React.useEffect(() => {
-    console.log('CreateJobPosting wizard component mounted');
+  // Enhanced debugging
+  useEffect(() => {
+    console.log('CreateJobPosting component mounted');
     console.log('Initial salonName state:', salonName);
-    console.log('--- RENDERING CreateJobPosting (Wizard) ---');
+    console.log('Current step:', currentStep);
   }, []);
 
   const handleSubmit = async (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => {
     try {
-      console.log('Form submitted:', data);
+      console.log('Form submitted with data:', data);
+      console.log('Salon name in data:', data.salonName);
       console.log('Pricing options:', pricingOptions);
-      console.log('Salon name submitted:', salonName);
       
       // Convert form data to the expected format for the API
       const jobDetails = {
@@ -45,7 +45,7 @@ const CreateJobPosting = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train,
         no_supply_deduction: data.no_supply_deduction,
-        salonName: data.salonName || salonName, // Use form data first, fallback to the state
+        salonName: data.salonName, // Using the field from form data
         contact_info: {
           owner_name: data.contactName,
           phone: data.contactPhone,
@@ -73,6 +73,7 @@ const CreateJobPosting = () => {
   };
 
   const handleStepChange = (step: number) => {
+    console.log(`Changing step to ${step}`);
     setCurrentStep(step);
   };
 
@@ -105,7 +106,13 @@ const CreateJobPosting = () => {
             onSubmit={handleSubmit}
             onStepChange={handleStepChange}
             maxPhotos={5}
-            // Removing the initialData prop that's causing the build error
+            // Passing defaultValues to ensure salonName field is initialized
+            defaultValues={{
+              salonName: '',
+              contactEmail: '',
+              contactName: '',
+              contactPhone: ''
+            }}
           />
         </Card>
       </PostWizardLayout>
