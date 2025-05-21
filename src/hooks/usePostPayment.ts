@@ -8,11 +8,24 @@ import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { getJobPrice, validatePricingOptions } from '@/utils/posting/jobPricing';
 import { v4 as uuidv4 } from 'uuid';
 
+export interface PaymentResult {
+  success: boolean;
+  error?: string;
+  waitlisted?: boolean;
+  payment_log_id?: string;
+  job_id?: string;
+}
+
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  const initiatePayment = async (postType: 'job' | 'salon', postDetails?: any, pricingOptions?: PricingOptions) => {
+  const initiatePayment = async (
+    postType: 'job' | 'salon', 
+    postDetails?: any, 
+    pricingOptions?: PricingOptions,
+    idempotencyKey: string = uuidv4() // Allow custom idempotency key or generate one
+  ): Promise<PaymentResult> => {
     setIsLoading(true);
     try {
       console.log("Initiating payment for:", postType, "with pricing:", pricingOptions);
@@ -60,21 +73,18 @@ export const usePostPayment = () => {
         
         if (error) {
           console.error("Error adding to Diamond waitlist:", error);
-          throw error;
+          throw new Error(`Diamond tier request error: ${error.message}`);
         }
         
         setIsLoading(false);
         return { success: false, waitlisted: true };
       }
 
-      // Generate an idempotency key to prevent double payments
-      const idempotencyKey = uuidv4();
-
       // Handle free listings directly without going to Stripe
       if (priceData.finalPrice <= 0) {
         console.log("Processing free post...");
         // Create the post directly in the database
-        const { data: postData, error: postError } = await supabase.functions.invoke('create-free-post', {
+        const { data, error } = await supabase.functions.invoke('create-free-post', {
           body: { 
             postType,
             postDetails,
@@ -83,9 +93,13 @@ export const usePostPayment = () => {
           }
         });
 
-        if (postError) {
-          console.error("Free post creation error:", postError);
-          throw postError;
+        if (error) {
+          console.error("Free post creation error:", error);
+          throw new Error(`Free post creation error: ${error.message}`);
+        }
+
+        if (!data) {
+          throw new Error("No data returned from free post creation");
         }
 
         toast.success(
@@ -99,9 +113,12 @@ export const usePostPayment = () => {
           })
         });
         
-        // Redirect to success page
-        window.location.href = `/post-success?payment_log_id=${postData?.payment_log_id}&free=true`;
-        return { success: true };
+        setIsLoading(false);
+        return { 
+          success: true, 
+          payment_log_id: data.payment_log_id,
+          job_id: data.job_id
+        };
       } 
       
       // For paid listings, create a Stripe checkout session
@@ -126,7 +143,7 @@ export const usePostPayment = () => {
 
       if (error) {
         console.error("Edge function error:", error);
-        throw error;
+        throw new Error(`Payment processing error: ${error.message}`);
       }
       
       console.log("Checkout response:", data);
@@ -142,20 +159,57 @@ export const usePostPayment = () => {
       }
     } catch (error: any) {
       console.error('Payment initiation error:', error);
-      toast.error(t({
-        english: "Failed to initiate payment",
-        vietnamese: "Không thể khởi tạo thanh toán"
-      }), {
-        description: error.message || t({
-          english: "Please try again.",
-          vietnamese: "Vui lòng thử lại."
-        })
+      const errorMessage = error.message || t({
+        english: "An unexpected error occurred",
+        vietnamese: "Đã xảy ra lỗi không mong muốn"
       });
-      return { success: false };
+      
+      setIsLoading(false);
+      return { 
+        success: false, 
+        error: errorMessage
+      };
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { initiatePayment, isLoading };
+  // New method to verify a checkout session
+  const verifyCheckoutSession = async (sessionId: string): Promise<PaymentResult> => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
+        body: { sessionId }
+      });
+
+      if (error) {
+        console.error("Error verifying checkout session:", error);
+        throw new Error(`Verification error: ${error.message}`);
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || "Payment verification failed");
+      }
+
+      return {
+        success: true,
+        payment_log_id: data.payment_log_id,
+        job_id: data.post_id
+      };
+    } catch (error: any) {
+      console.error('Payment verification error:', error);
+      return { 
+        success: false, 
+        error: error.message || "Payment verification failed"
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { 
+    initiatePayment, 
+    verifyCheckoutSession,
+    isLoading 
+  };
 };
