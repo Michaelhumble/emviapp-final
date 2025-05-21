@@ -1,8 +1,11 @@
 
 import React from 'react';
-import LanguageToggle from '@/components/ui/LanguageToggle';
+import LanguageToggle from '@/components/layout/LanguageToggle';
 import HeroSection from '@/components/pricing/HeroSection';
+import PricingSection from '@/components/pricing/PricingSection';
+import PricingComparison from '@/components/pricing/PricingComparison';
 import FoundingMemberOffer from '@/components/pricing/FoundingMemberOffer';
+import FoundersEarlyAccess from '@/components/pricing/FoundersEarlyAccess';
 import ReferralRewards from '@/components/pricing/ReferralRewards';
 import ClientManagementSection from '@/components/pricing/ClientManagementSection';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
@@ -19,7 +22,10 @@ const PricingPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 space-y-24">
         <HeroSection />
+        <PricingSection />
+        <PricingComparison />
         <FoundingMemberOffer />
+        <FoundersEarlyAccess />
         <FoundersGetMore />
         <ClientManagementSection />
         <ReferralRewards />
