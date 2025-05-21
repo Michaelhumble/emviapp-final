@@ -22,7 +22,6 @@ const Footer = () => {
               <li><Link to="/salons" className="text-gray-600 hover:text-primary">Browse Salons</Link></li>
               <li><Link to="/jobs" className="text-gray-600 hover:text-primary">Job Openings</Link></li>
               <li><Link to="/freelancers" className="text-gray-600 hover:text-primary">Freelancers</Link></li>
-              <li><Link to="/pricing" className="text-gray-600 hover:text-primary">Pricing</Link></li>
             </ul>
           </div>
           
@@ -31,7 +30,6 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/about" className="text-gray-600 hover:text-primary">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-600 hover:text-primary">Contact</Link></li>
-              <li><Link to="/pricing" className="text-gray-600 hover:text-primary">Pricing</Link></li>
               <li><Link to="/early-access" className="text-gray-600 hover:text-primary">Early Access</Link></li>
             </ul>
           </div>
@@ -54,7 +52,7 @@ const Footer = () => {
             </span>
           </p>
           
-          {/* New legal links row - UPDATED with Privacy and Cookie links */}
+          {/* New legal links row */}
           <div className="flex flex-wrap justify-center gap-6 mb-4">
             <Link to="/terms" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
               <span className="mr-1">📄</span> Terms of Service

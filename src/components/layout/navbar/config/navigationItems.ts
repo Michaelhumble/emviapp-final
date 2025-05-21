@@ -32,12 +32,6 @@ export const mainNavigation: NavigationItem[] = [
     visibleFor: 'all',
   },
   {
-    label: 'Pricing',
-    path: '/pricing',
-    vietnameseLabel: 'Bảng giá',
-    visibleFor: 'all',
-  },
-  {
     label: 'About',
     path: '/about',
     vietnameseLabel: 'Giới thiệu',
