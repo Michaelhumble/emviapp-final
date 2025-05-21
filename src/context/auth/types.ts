@@ -20,7 +20,7 @@ export interface UserProfile {
 }
 
 export interface AuthContextType {
-  user: User | null;
+  user: SupabaseUser | null;
   userProfile: UserProfile | null;
   userRole: UserRole;
   loading: boolean;
