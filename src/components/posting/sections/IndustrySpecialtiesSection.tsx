@@ -16,29 +16,30 @@ import {
   Brush, 
   Star, 
   Palmtree, 
-  Hammer, 
   SunMedium, 
-  Dumbbell, 
-  Phone, 
-  ClipboardList, 
-  User,
-  Radiation, 
-  CircleDashed,
   Heart,
-  Shirt
+  User,
+  Phone,
+  ClipboardList,
+  CircleDashed,
+  Shirt,
+  Radiation
 } from 'lucide-react';
 
 interface IndustrySpecialtiesSectionProps {
   control: Control<JobFormValues>;
-  industry: string;
+  industry?: string;
 }
 
-const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ control, industry }) => {
+const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ 
+  control, 
+  industry 
+}) => {
   const industryOptions = [
     { 
       id: 'nails', 
       title: 'Nail Technician', 
-      description: 'For salons looking for experienced technicians with skills in manicures, pedicures, and nail art.',
+      description: 'For nail salons looking for experienced technicians with skills in manicures, pedicures, and nail art.',
       icon: Palmtree
     },
     { 
@@ -75,19 +76,13 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
       id: 'massage', 
       title: 'Massage Therapist', 
       description: 'For spas and wellness centers seeking licensed therapists for massage and bodywork services.',
-      icon: Dumbbell
+      icon: User
     },
     { 
       id: 'makeup', 
       title: 'Makeup Artist', 
       description: 'For salons and studios seeking professionals skilled in makeup application for various occasions.',
       icon: Brush
-    },
-    { 
-      id: 'microblading', 
-      title: 'Microblading Artist', 
-      description: 'For salons seeking technicians specialized in microblading and permanent makeup.',
-      icon: Hammer
     },
     { 
       id: 'tattoo', 

@@ -1,21 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues } from './jobFormSchema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import ContactInfoSection from '../sections/ContactInfoSection';
-import JobDetailsSection from '../sections/JobDetailsSection';
-import RequirementsSection from '../sections/RequirementsSection';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-
-// Import sections
-import UploadSection from '../sections/UploadSection';
-import PricingSection from '../sections/PricingSection';
-import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
+import { JobFormValues, jobFormSchema } from './jobFormSchema';
+import { IndustrySpecialtiesSection } from '@/components/posting/sections';
 import { PricingOptions } from '@/utils/posting/types';
+import { getJobTemplate } from '@/utils/templates/jobTemplates';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
@@ -25,175 +17,141 @@ interface JobFormProps {
   initialIndustryType?: string;
 }
 
-const JobForm: React.FC<JobFormProps> = ({ 
-  onSubmit, 
-  onStepChange, 
+const JobForm: React.FC<JobFormProps> = ({
+  onSubmit,
+  onStepChange,
   maxPhotos = 5,
   defaultValues = {},
   initialIndustryType
 }) => {
-  // Initialize the form with default values
-  const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      salonName: '',
-      title: '',
-      description: '',
-      location: '',
-      contactEmail: '',
-      contactName: '',
-      contactPhone: '',
-      industryType: initialIndustryType || '',
-      ...defaultValues, // Override with any provided defaultValues
-    },
+  const [step, setStep] = useState(1);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedPricingOption, setSelectedPricingOption] = useState<PricingOptions>({
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: false,
+    isFirstPost: true,
   });
 
-  // If initialIndustryType changes, update the form value
+  const form = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: defaultValues,
+    mode: 'onBlur',
+  });
+
+  const { watch, setValue, getValues } = form;
+  
+  // Watch for industry type changes to load templates
+  const industryType = watch('industryType');
+  
   useEffect(() => {
-    if (initialIndustryType) {
-      form.setValue('industryType', initialIndustryType);
+    if (industryType && industryType !== '') {
+      const templateValues = getJobTemplate(industryType);
+      
+      // Only apply template values if they exist and fields are empty or default
+      Object.entries(templateValues).forEach(([key, value]) => {
+        // Skip if it's the industryType itself to avoid circular updates
+        if (key === 'industryType') return;
+        
+        // Only set values that are not already set (except for booleans which should be applied)
+        const currentValue = getValues(key as keyof JobFormValues);
+        if (
+          value !== undefined && 
+          (currentValue === '' || 
+           currentValue === undefined || 
+           typeof value === 'boolean')
+        ) {
+          setValue(key as keyof JobFormValues, value as any, { shouldValidate: false });
+        }
+      });
+      
+      // Move to next step automatically when template is selected
+      if (step === 1) {
+        handleNextStep();
+      }
     }
-  }, [initialIndustryType, form]);
+  }, [industryType, setValue, getValues]);
 
-  const [step, setStep] = useState(1);
-  const [uploads, setUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions | null>(null);
-  const navigate = useNavigate();
+  const handleNextStep = useCallback(() => {
+    const newStep = step + 1;
+    setStep(newStep);
+    onStepChange(newStep);
+  }, [step, onStepChange]);
 
-  const handleNext = () => {
-    // Get the current step validation status
-    let isValid = false;
-    
-    if (step === 1) {
-      // Industry selection step validation
-      form.trigger(['industryType'])
-        .then(valid => {
-          if (valid && form.getValues('industryType')) {
-            setStep(step + 1);
-            onStepChange(step + 1);
-          } else {
-            toast.error("Please select an industry to continue");
-          }
-        });
-      return;
-    }
-    
-    if (step === 2) {
-      // Contact info and job details validation
-      form.trigger(['salonName', 'contactEmail', 'title', 'description', 'location', 'jobType'])
-        .then(valid => {
-          if (valid) {
-            setStep(step + 1);
-            onStepChange(step + 1);
-          }
-        });
-      return;
-    }
-    
-    // Default case - just go to next step
-    setStep(step + 1);
-    onStepChange(step + 1);
-  };
-
-  const handlePrev = () => {
-    setStep(step - 1);
-    onStepChange(step - 1);
-  };
+  const handlePreviousStep = useCallback(() => {
+    const newStep = step - 1;
+    setStep(newStep);
+    onStepChange(newStep);
+  }, [step, onStepChange]);
 
   const handleFormSubmit = async (data: JobFormValues) => {
-    // Ensure we only pass valid JobFormValues fields to the API
-    const cleanedData: JobFormValues = {
-      salonName: data.salonName,
-      title: data.title,
-      description: data.description,
-      vietnameseDescription: data.vietnameseDescription,
-      location: data.location,
-      contactEmail: data.contactEmail,
-      contactName: data.contactName,
-      contactPhone: data.contactPhone,
-      industryType: data.industryType,
-      jobType: data.jobType,
-      compensation_type: data.compensation_type,
-      compensation_details: data.compensation_details,
-      weekly_pay: data.weekly_pay,
-      has_housing: data.has_housing,
-      has_wax_room: data.has_wax_room,
-      owner_will_train: data.owner_will_train,
-      no_supply_deduction: data.no_supply_deduction,
-      specialties: data.specialties,
-    };
-
-    console.log('Submitting form with data:', cleanedData);
-    console.log('Current uploads:', uploads);
-    console.log('Pricing options at submit:', pricingOptions);
-
-    if (!pricingOptions) {
-      toast.error('Please select pricing options');
-      return;
-    }
-
-    const success = await onSubmit(cleanedData, uploads, pricingOptions);
-    if (success) {
-      toast.success('Job post created successfully!');
-      navigate('/dashboard');
-    } else {
-      toast.error('Failed to create job post.');
+    setIsSubmitting(true);
+    try {
+      const success = await onSubmit(data, photoUploads, selectedPricingOption);
+      if (success) {
+        form.reset();
+        setPhotoUploads([]);
+      }
+    } catch (error) {
+      console.error('Error submitting job form:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handlePricingOptionsChange = (options: PricingOptions) => {
-    setPricingOptions(options);
+  // Render the appropriate step content
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return (
+          <IndustrySpecialtiesSection 
+            control={form.control} 
+            industry={initialIndustryType} 
+          />
+        );
+      case 2:
+        // Next steps would go here
+        return <div>Step 2 Content</div>;
+      case 3:
+        // Final review would go here
+        return <div>Review & Submit</div>;
+      default:
+        return <div>Unknown step</div>;
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Step 1: Industry Selection */}
-        {step === 1 && (
-          <IndustrySpecialtiesSection 
-            control={form.control} 
-            industry={form.getValues('industryType')}
-          />
-        )}
+        {renderStepContent()}
 
-        {/* Step 2: Contact Info & Job Details */}
-        {step === 2 && (
-          <div className="space-y-8">
-            <ContactInfoSection form={form} />
-            <JobDetailsSection 
-              form={form} 
-              showVietnameseByDefault={form.getValues('industryType') === 'nails'} 
-            />
-            <RequirementsSection control={form.control} />
-            <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
-          </div>
-        )}
-
-        {/* Step 3: Pricing */}
-        {step === 3 && (
-          <PricingSection onPricingChange={handlePricingOptionsChange} />
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between">
-          {step > 1 && (
-            <Button type="button" variant="secondary" onClick={handlePrev}>
+        <div className="flex justify-between pt-6 border-t border-gray-200">
+          {step > 1 ? (
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handlePreviousStep}
+            >
               Previous
             </Button>
+          ) : (
+            <div /> // Empty div for spacing
           )}
-
+          
           {step < 3 ? (
             <Button 
               type="button" 
-              onClick={handleNext} 
-              className="ml-auto"
-              disabled={step === 1 && !form.getValues('industryType')}
+              onClick={handleNextStep}
             >
               Next
             </Button>
           ) : (
-            <Button type="submit" disabled={!pricingOptions} className="ml-auto">
-              Submit
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Creating Job...' : 'Create Job'}
             </Button>
           )}
         </div>

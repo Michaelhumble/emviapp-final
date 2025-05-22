@@ -8,7 +8,7 @@ export interface IndustryCardProps {
   id: string;
   title: string;
   description: string;
-  icon: LucideIcon; // Using LucideIcon component directly
+  icon: LucideIcon;
   selected?: boolean;
   onClick: (id: string) => void;
 }
@@ -17,7 +17,7 @@ const IndustryCard: React.FC<IndustryCardProps> = ({
   id, 
   title, 
   description, 
-  icon: IconComponent, // Renamed for clarity
+  icon: IconComponent,
   selected = false,
   onClick
 }) => {
@@ -36,7 +36,7 @@ const IndustryCard: React.FC<IndustryCardProps> = ({
           "w-10 h-10 rounded-full flex items-center justify-center",
           selected ? "bg-primary/20" : "bg-primary/10"
         )}>
-          <IconComponent size={20} className={cn("text-primary")} />
+          <IconComponent size={20} className="text-primary" />
         </div>
         
         <h3 className="text-lg font-semibold">{title}</h3>

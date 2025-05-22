@@ -11,7 +11,7 @@ interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Grid = React.forwardRef<HTMLDivElement, GridProps>(
   ({ className, children, cols = 2, gap = 4, ...props }, ref) => {
     // Create the correct Tailwind classes based on the props
-    const gridColsClass = `grid-cols-1 md:grid-cols-${cols}`;
+    const gridColsClass = cols === 1 ? 'grid-cols-1' : `grid-cols-1 md:grid-cols-${cols}`;
     const gapClass = `gap-${gap}`;
     
     return (
