@@ -54,6 +54,7 @@ const PostJob = () => {
     if (errors.length > 0) {
       setValidationErrors(errors);
       toast.error("Please fill out all required fields");
+      console.error("Validation errors:", errors);
       return;
     }
     

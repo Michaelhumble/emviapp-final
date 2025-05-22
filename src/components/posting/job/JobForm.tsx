@@ -14,9 +14,10 @@ interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
   defaultValues?: Partial<JobFormValues>;
   onTemplateSelect?: (template: JobFormValues, templateType: IndustryType) => void;
+  expressMode?: boolean; // Add expressMode prop
 }
 
-const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProps) => {
+const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect, expressMode = false }: JobFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<JobFormValues>({
@@ -25,7 +26,7 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
       salonName: '',
       title: '',
       description: '',
-      vietnameseDescription: '',
+      vietnamese_description: '',
       location: '',
       specialties: [],
       requirements: [],
@@ -53,7 +54,7 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
         salonName: template.salonName,
         title: template.title,
         description: template.description,
-        vietnameseDescription: template.vietnameseDescription,
+        vietnamese_description: template.vietnamese_description || '',
         location: template.location,
         jobType: template.jobType as JobType,
         specialties: template.specialties || [],
@@ -81,7 +82,7 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
         salonName: template.salonName,
         title: template.title,
         description: template.description,
-        vietnameseDescription: template.vietnameseDescription,
+        vietnamese_description: template.vietnamese_description || '',
         location: template.location,
         jobType: template.jobType as JobType,
         specialties: template.specialties || [],
@@ -107,21 +108,47 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
   // Enforce validation and show toast with errors if form is invalid
   const handleSubmit = async (data: JobFormValues) => {
     setIsSubmitting(true);
+    
     try {
-      // Map form values to JobDetailsSubmission structure
-      const formattedData = {
-        ...data,
-        // Required by JobDetailsSubmission
-        company: data.salonName, // For backward compatibility
-        contact_info: {
-          owner_name: data.contactName,
-          phone: data.contactPhone,
-          email: data.contactEmail,
-          notes: '',
-        },
+      // Check required fields explicitly to ensure thorough validation
+      const requiredFields = [
+        { field: 'title', message: 'Job title is required' },
+        { field: 'salonName', message: 'Salon name is required' },
+        { field: 'location', message: 'Location is required' },
+        { field: 'description', message: 'Job description is required' },
+        { field: 'jobType', message: 'Job type is required' },
+        { field: 'contactName', message: 'Contact name is required' },
+        { field: 'contactEmail', message: 'Contact email is required' },
+        { field: 'contactPhone', message: 'Contact phone is required' },
+      ];
+      
+      // Check for missing required fields
+      const missingFields = requiredFields.filter(
+        rf => !data[rf.field as keyof JobFormValues]
+      );
+      
+      if (missingFields.length > 0) {
+        const errorMessages = missingFields.map(f => f.message).join('\n');
+        toast.error(`Please fix the following errors:\n${errorMessages}`);
+        console.error("Validation errors:", missingFields);
+        return;
+      }
+      
+      // Prepare contact_info object from separate fields for consistency with JobDetailsSubmission
+      data.contact_info = {
+        owner_name: data.contactName,
+        email: data.contactEmail,
+        phone: data.contactPhone,
+        notes: data.contactNotes || '',
+        zalo: data.contactZalo || ''
       };
       
-      onSubmit(formattedData);
+      // Set employment_type to match jobType for consistency
+      data.employment_type = data.jobType;
+      data.post_type = 'job';
+      
+      console.log("Form data validated, submitting:", data);
+      onSubmit(data);
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("There was a problem submitting your form");
@@ -133,8 +160,8 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-        <JobDetailsSection form={form} />
-        <ContactInfoSection form={form} />
+        <JobDetailsSection form={form} expressMode={expressMode} />
+        <ContactInfoSection form={form} expressMode={expressMode} />
 
         <div className="flex justify-end mt-6">
           <Button 

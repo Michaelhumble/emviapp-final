@@ -10,9 +10,16 @@ interface ContactInfoSectionProps {
   form?: UseFormReturn<JobFormValues>;
   onNext?: () => void;
   onPrevious?: () => void; 
+  expressMode?: boolean; // Added missing prop
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext, onPrevious }) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
+  control, 
+  form, 
+  onNext, 
+  onPrevious,
+  expressMode = false // Default value
+}) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
