@@ -9,7 +9,7 @@ interface ContactInfoSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
   onNext?: () => void;
-  onPrevious?: () => void; // Add this prop to match usage in JobPost.tsx
+  onPrevious?: () => void; // Ensure this prop is properly declared
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext, onPrevious }) => {
