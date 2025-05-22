@@ -23,3 +23,8 @@ export const experienceLevels = [
   { value: 'experienced', label: 'Experienced' },
   { value: 'senior', label: 'Senior' }
 ];
+
+// Add aliases to match the names being imported
+export const JOB_TYPES = employmentTypes;
+export const COMPENSATION_TYPES = compensationTypes;
+export const EXPERIENCE_LEVELS = experienceLevels;
