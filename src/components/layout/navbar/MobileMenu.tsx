@@ -2,24 +2,25 @@
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, Briefcase, Store, Scissors, Info, Phone, Globe } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, Home, Briefcase, Store, Scissors, Info, Phone, Globe, Plus } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "@/components/ui/Logo";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { User } from "@/context/auth/types";
 
 interface MobileMenuProps {
   className?: string;
   user?: any;
   handleSignOut?: () => Promise<void>;
+  minimal?: boolean;
 }
 
-const MobileMenu = ({ className, user, handleSignOut }: MobileMenuProps) => {
+const MobileMenu = ({ className, user, handleSignOut, minimal = false }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t, toggleLanguage, isVietnamese } = useTranslation();
   const isMobile = useIsMobile();
   
@@ -37,7 +38,8 @@ const MobileMenu = ({ className, user, handleSignOut }: MobileMenuProps) => {
     setOpen(false);
   };
 
-  if (!isMobile) {
+  // Don't render anything if we're not on mobile and the component isn't forced to appear
+  if (!isMobile && !minimal) {
     return null;
   }
 
@@ -47,18 +49,18 @@ const MobileMenu = ({ className, user, handleSignOut }: MobileMenuProps) => {
         <Button
           variant="ghost"
           className={cn(
-            "p-2 rounded-full border border-[#9A7B69] bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all hover:scale-105 lg:hidden",
+            "p-2 rounded-full border border-[#9A7B69]/40 bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md transition-all hover:scale-105",
             className
           )}
         >
-          <Menu className="h-7 w-7 text-[#1A1A1A]" />
+          <Menu className="h-6 w-6 text-[#1A1A1A]" />
           <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
       
       <SheetContent 
         side="right" 
-        className="w-[75%] border-l border-[#9A7B69]/20 bg-white/90 backdrop-blur-md shadow-lg p-0 z-[100]"
+        className="w-[75%] border-l border-[#9A7B69]/20 bg-white/95 backdrop-blur-md shadow-lg p-0 z-[100]"
       >
         <div className="flex flex-col h-full">
           {/* Logo and close button */}
@@ -81,6 +83,9 @@ const MobileMenu = ({ className, user, handleSignOut }: MobileMenuProps) => {
             <nav className="space-y-1">
               {navItems.map((item, index) => {
                 const Icon = item.icon;
+                const isActive = location.pathname === item.path || 
+                  (item.path !== '/' && location.pathname.startsWith(item.path));
+                
                 return (
                   <motion.div
                     key={item.path}
@@ -90,7 +95,12 @@ const MobileMenu = ({ className, user, handleSignOut }: MobileMenuProps) => {
                   >
                     <Button
                       variant="ghost"
-                      className="w-full justify-start text-xl py-5 font-medium hover:text-[#9A7B69] hover:bg-[#9A7B69]/5"
+                      className={cn(
+                        "w-full justify-start text-xl py-5 font-medium",
+                        isActive 
+                          ? "text-[#9A7B69] bg-[#9A7B69]/5"
+                          : "hover:text-[#9A7B69] hover:bg-[#9A7B69]/5"
+                      )}
                       onClick={() => handleNavigation(item.path)}
                     >
                       <Icon className="mr-3 h-[22px] w-[22px]" />
@@ -110,9 +120,44 @@ const MobileMenu = ({ className, user, handleSignOut }: MobileMenuProps) => {
                   className="w-full mt-4 text-xl py-6 font-bold bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600"
                   onClick={() => handleNavigation("/post-job")}
                 >
+                  <Plus className="mr-2 h-5 w-5" />
                   {t("Post a Job")}
                 </Button>
               </motion.div>
+
+              {/* Show Dashboard link if user is logged in */}
+              {user && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.55 }}
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2 text-lg py-4 font-medium"
+                    onClick={() => handleNavigation("/dashboard")}
+                  >
+                    {t("Your Dashboard")}
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* Sign out button if user is logged in */}
+              {user && handleSignOut && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <Button
+                    variant="ghost"
+                    className="w-full mt-2 text-lg py-4 font-medium text-red-500 hover:text-red-600 hover:bg-red-50"
+                    onClick={handleSignOut}
+                  >
+                    {t("Sign Out")}
+                  </Button>
+                </motion.div>
+              )}
             </nav>
             
             {/* Language switcher */}

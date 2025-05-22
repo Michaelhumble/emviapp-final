@@ -15,6 +15,9 @@ const MobileJobsNavBar = () => {
   // Don't render on desktop
   if (!isMobile) return null;
   
+  // Don't render on post-job pages as they have their own navigation
+  if (location.pathname === '/post-job') return null;
+  
   // Check current route for active state
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path);
   

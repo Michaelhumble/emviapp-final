@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -7,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import MobilePostMenu from '@/components/posting/MobilePostMenu';
 import { PricingProvider } from '@/context/pricing/PricingProvider';
 import { PricingOptions } from '@/utils/posting/types';
+import MobileMenu from '@/components/layout/navbar/MobileMenu';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -34,7 +36,12 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Mobile navigation menu for posting flow */}
+      {/* Mobile hamburger menu */}
+      <div className="fixed top-4 left-4 z-50">
+        <MobileMenu />
+      </div>
+      
+      {/* Mobile post-specific menu (settings, language, etc) */}
       <div className="fixed top-4 right-4 z-50">
         <MobilePostMenu />
       </div>
