@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
@@ -9,6 +8,13 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+
+// Define the posting steps for a clearer workflow
+enum PostingStep {
+  JOB_DETAILS = 0,
+  PRICING = 1,
+  PROCESSING = 2
+}
 
 interface JobPostWrapperProps {
   jobDetails: JobDetailsSubmission;
@@ -23,6 +29,9 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { initiatePayment, isLoading } = usePostPayment();
+  
+  // Track the current step in the posting process
+  const [currentStep, setCurrentStep] = useState<PostingStep>(PostingStep.PRICING);
   const [isFirstPost, setIsFirstPost] = useState<boolean>(true);
   
   // We'd fetch the user's post count from API to determine if it's their first post
@@ -35,16 +44,38 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
       return;
     }
     
+    // Move to the processing step
+    setCurrentStep(PostingStep.PROCESSING);
+    
     try {
       const result = await initiatePayment('job', jobDetails, options);
       
       if (result.waitlisted) {
         navigate('/dashboard');
+        return;
       }
       
-      // If it's a free post, the redirect will happen in the initiatePayment function
+      // If it's a free post or payment was successful, the redirect will happen in the initiatePayment function
+      // Otherwise, we should return to the pricing step
+      if (!result.success) {
+        setCurrentStep(PostingStep.PRICING);
+        toast.error("There was an issue with your payment. Please try again.");
+      }
+      
     } catch (error) {
       console.error("Error in job post payment process:", error);
+      setCurrentStep(PostingStep.PRICING);
+      toast.error("There was an error processing your request. Please try again later.");
+    }
+  };
+
+  const handleGoBack = () => {
+    if (currentStep === PostingStep.PRICING) {
+      // Go back to job details
+      onBack();
+    } else {
+      // If in processing or any other step, go back to pricing
+      setCurrentStep(PostingStep.PRICING);
     }
   };
   
@@ -60,16 +91,28 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
         )}
       </div>
       
-      <JobPostPricing
-        onContinue={handleSelectPlan}
-        isFirstPost={isFirstPost}
-      />
+      {currentStep === PostingStep.PRICING && (
+        <>
+          <JobPostPricing
+            onContinue={handleSelectPlan}
+            isFirstPost={isFirstPost}
+          />
+          
+          <div className="flex justify-between pt-4">
+            <Button variant="outline" onClick={handleGoBack}>
+              Back to Details
+            </Button>
+          </div>
+        </>
+      )}
       
-      <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={onBack}>
-          Back to Details
-        </Button>
-      </div>
+      {currentStep === PostingStep.PROCESSING && (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin mb-4" />
+          <h2 className="text-xl font-medium">Processing your job post</h2>
+          <p className="text-muted-foreground">Please wait while we prepare your listing...</p>
+        </div>
+      )}
     </div>
   );
 };
