@@ -19,49 +19,44 @@ import {
   Hammer, 
   SunMedium, 
   Dumbbell, 
-  Users, 
-  Heart, 
+  Phone, 
+  ClipboardList, 
+  User,
   Radiation, 
-  CircleDashed 
+  CircleDashed,
+  Heart,
+  Shirt
 } from 'lucide-react';
-import { LucideIcon } from 'lucide-react';
 
 interface IndustrySpecialtiesSectionProps {
   control: Control<JobFormValues>;
   industry: string;
 }
 
-interface IndustryOption {
-  id: string;
-  title: string;
-  description: string;
-  icon: LucideIcon; // LucideIcon type for direct component reference
-}
-
 const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ control, industry }) => {
-  const industryOptions: IndustryOption[] = [
+  const industryOptions = [
     { 
       id: 'nails', 
       title: 'Nail Technician', 
-      description: 'For salons seeking skilled nail technicians with experience in manicures, pedicures, and nail art.',
-      icon: Palmtree // Direct component reference
+      description: 'For salons looking for experienced technicians with skills in manicures, pedicures, and nail art.',
+      icon: Palmtree
     },
     { 
       id: 'hair', 
       title: 'Hair Stylist', 
-      description: 'For salons seeking skilled professionals in cutting, coloring, and styling hair.',
+      description: 'For salons seeking professionals skilled in cutting, coloring, and styling hair.',
       icon: Scissors
     },
     { 
       id: 'lashes', 
       title: 'Lash Technician', 
-      description: 'For salons seeking technicians specialized in lash extensions, lifts, and tinting.',
+      description: 'For beauty businesses seeking specialists in eyelash extensions and lash services.',
       icon: Star
     },
     { 
       id: 'barber', 
       title: 'Barber', 
-      description: 'For barber shops seeking professionals skilled in men\'s haircuts, beard trims, and grooming.',
+      description: 'For barbershops looking for skilled professionals in men\'s grooming and styling.',
       icon: Scissors
     },
     { 
@@ -71,9 +66,15 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
       icon: SunMedium
     },
     { 
+      id: 'spa', 
+      title: 'Spa Technician', 
+      description: 'For wellness centers seeking professionals for body treatments, wraps, and therapeutic services.',
+      icon: Heart
+    },
+    { 
       id: 'massage', 
       title: 'Massage Therapist', 
-      description: 'For spas seeking licensed massage therapists for various massage modalities.',
+      description: 'For spas and wellness centers seeking licensed therapists for massage and bodywork services.',
       icon: Dumbbell
     },
     { 
@@ -91,25 +92,37 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
     { 
       id: 'tattoo', 
       title: 'Tattoo Artist', 
-      description: 'For studios seeking skilled tattoo artists with a strong portfolio.',
+      description: 'For studios seeking skilled artists with strong portfolios and tattooing expertise.',
       icon: Radiation
     },
     { 
       id: 'receptionist', 
-      title: 'Receptionist', 
-      description: 'For salons seeking front desk staff to manage appointments, greet clients, and handle administrative tasks.',
-      icon: Users
+      title: 'Salon Receptionist', 
+      description: 'For salons seeking front desk staff to manage scheduling, client check-ins, and salon operations.',
+      icon: Phone
     },
     { 
       id: 'manager', 
       title: 'Salon Manager', 
-      description: 'For salons seeking professionals to oversee operations, staff, and customer service.',
-      icon: Users
+      description: 'For businesses seeking experienced professionals to oversee salon operations and team leadership.',
+      icon: ClipboardList
+    },
+    { 
+      id: 'booth', 
+      title: 'Booth Rental Available', 
+      description: 'For salon owners offering booth rental space to independent beauty professionals.',
+      icon: Shirt
+    },
+    { 
+      id: 'other_beauty', 
+      title: 'Other Beauty Professional', 
+      description: 'For businesses seeking specialized beauty services such as microblading, threading, or waxing.',
+      icon: User
     },
     { 
       id: 'custom', 
-      title: 'Other', 
-      description: 'For other beauty industry positions not listed above.',
+      title: 'Other / Custom', 
+      description: 'Create a custom job posting for any beauty industry position with your own details.',
       icon: CircleDashed
     },
   ];
@@ -117,9 +130,9 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-semibold mb-2">Choose Job Category</h2>
+        <h2 className="text-2xl font-semibold mb-2">Choose Job Template</h2>
         <p className="text-gray-600">
-          Select the category that best matches the position you're hiring for
+          Select a template to start with pre-filled industry-specific details
         </p>
       </div>
       

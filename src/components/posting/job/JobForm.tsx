@@ -101,7 +101,29 @@ const JobForm: React.FC<JobFormProps> = ({
   };
 
   const handleFormSubmit = async (data: JobFormValues) => {
-    console.log('Submitting form with data:', data);
+    // Ensure we only pass valid JobFormValues fields to the API
+    const cleanedData: JobFormValues = {
+      salonName: data.salonName,
+      title: data.title,
+      description: data.description,
+      vietnameseDescription: data.vietnameseDescription,
+      location: data.location,
+      contactEmail: data.contactEmail,
+      contactName: data.contactName,
+      contactPhone: data.contactPhone,
+      industryType: data.industryType,
+      jobType: data.jobType,
+      compensation_type: data.compensation_type,
+      compensation_details: data.compensation_details,
+      weekly_pay: data.weekly_pay,
+      has_housing: data.has_housing,
+      has_wax_room: data.has_wax_room,
+      owner_will_train: data.owner_will_train,
+      no_supply_deduction: data.no_supply_deduction,
+      specialties: data.specialties,
+    };
+
+    console.log('Submitting form with data:', cleanedData);
     console.log('Current uploads:', uploads);
     console.log('Pricing options at submit:', pricingOptions);
 
@@ -110,7 +132,7 @@ const JobForm: React.FC<JobFormProps> = ({
       return;
     }
 
-    const success = await onSubmit(data, uploads, pricingOptions);
+    const success = await onSubmit(cleanedData, uploads, pricingOptions);
     if (success) {
       toast.success('Job post created successfully!');
       navigate('/dashboard');

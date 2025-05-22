@@ -1,21 +1,9 @@
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import ContactInfoSection from '../sections/ContactInfoSection';
-import JobDetailsSection from '../sections/JobDetailsSection';
-import RequirementsSection from '../sections/RequirementsSection';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import JobForm from './JobForm';
-
-// Import sections
-import UploadSection from '../sections/UploadSection';
-import PricingSection from '../sections/PricingSection';
-import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
 import { PricingOptions } from '@/utils/posting/types';
 
 interface EnhancedJobFormProps {
@@ -41,12 +29,34 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     onStepChange(step);
   };
 
+  // Make sure we don't pass any unexpected properties
+  const cleanDefaultValues: Partial<JobFormValues> = {
+    salonName: defaultValues.salonName || '',
+    title: defaultValues.title || '',
+    description: defaultValues.description || '',
+    vietnameseDescription: defaultValues.vietnameseDescription || '',
+    location: defaultValues.location || '',
+    contactEmail: defaultValues.contactEmail || '',
+    contactName: defaultValues.contactName || '',
+    contactPhone: defaultValues.contactPhone || '',
+    industryType: defaultValues.industryType || initialIndustryType || '',
+    jobType: defaultValues.jobType || '',
+    compensation_type: defaultValues.compensation_type || '',
+    compensation_details: defaultValues.compensation_details || '',
+    weekly_pay: defaultValues.weekly_pay || '',
+    has_housing: defaultValues.has_housing || false,
+    has_wax_room: defaultValues.has_wax_room || false,
+    owner_will_train: defaultValues.owner_will_train || false,
+    no_supply_deduction: defaultValues.no_supply_deduction || false,
+    specialties: defaultValues.specialties || [],
+  };
+
   return (
     <JobForm 
       onSubmit={onSubmit}
       onStepChange={handleStepChange}
       maxPhotos={maxPhotos}
-      defaultValues={defaultValues}
+      defaultValues={cleanDefaultValues}
       initialIndustryType={initialIndustryType}
     />
   );
