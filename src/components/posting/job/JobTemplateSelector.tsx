@@ -15,6 +15,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onSelect }) =
     { id: 'lashes', name: 'Lash Studio', icon: '👁️' },
     { id: 'massage', name: 'Massage', icon: '👐' },
     { id: 'tattoo', name: 'Tattoo Studio', icon: '🎨' },
+    { id: 'brows', name: 'Brows Studio', icon: '🧿' },
     { id: 'skincare', name: 'Skincare', icon: '✨' },
     { id: 'barber', name: 'Barber Shop', icon: '💈' },
     { id: 'makeup', name: 'Makeup Artist', icon: '🧑‍🎨' },

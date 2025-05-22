@@ -1,144 +1,164 @@
 
 import React from 'react';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { PricingOptions, JobPricingOption, JobPricingTier } from '@/utils/posting/types';
+import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { jobPricingOptions } from '@/utils/posting';
+import { cn } from '@/lib/utils';
 
-interface PricingSectionProps {
+export interface PricingSectionProps {
+  onPricingChange: (options: PricingOptions) => void;
   pricingOptions: PricingOptions;
   setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
-  onPricingChange?: (options: PricingOptions) => void;
 }
 
-const PricingSection: React.FC<PricingSectionProps> = ({
-  pricingOptions,
-  setPricingOptions,
-  onPricingChange
+const PricingSection: React.FC<PricingSectionProps> = ({ 
+  onPricingChange, 
+  pricingOptions, 
+  setPricingOptions 
 }) => {
-  const handlePricingChange = (value: JobPricingTier) => {
-    const newOptions: PricingOptions = {
+  const handlePricingTierChange = (tier: JobPricingTier) => {
+    const updatedOptions = {
       ...pricingOptions,
-      selectedPricingTier: value
+      selectedPricingTier: tier
     };
-    setPricingOptions(newOptions);
-    
-    if (onPricingChange) {
-      onPricingChange(newOptions);
-    }
+    setPricingOptions(updatedOptions);
+    onPricingChange(updatedOptions);
   };
   
-  const handleDurationChange = (value: number) => {
-    const newOptions: PricingOptions = {
+  const handleDurationChange = (months: number) => {
+    const updatedOptions = {
       ...pricingOptions,
-      durationMonths: value
+      durationMonths: months
     };
-    setPricingOptions(newOptions);
-    
-    if (onPricingChange) {
-      onPricingChange(newOptions);
-    }
+    setPricingOptions(updatedOptions);
+    onPricingChange(updatedOptions);
   };
   
   const handleAutoRenewChange = (checked: boolean) => {
-    const newOptions: PricingOptions = {
+    const updatedOptions = {
       ...pricingOptions,
       autoRenew: checked
     };
-    setPricingOptions(newOptions);
-    
-    if (onPricingChange) {
-      onPricingChange(newOptions);
-    }
+    setPricingOptions(updatedOptions);
+    onPricingChange(updatedOptions);
   };
+
+  const availablePricingOptions: JobPricingOption[] = jobPricingOptions.filter(
+    option => !option.hidden
+  );
 
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
-        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Pricing & Duration</h2>
-        <p className="text-sm text-muted-foreground mt-1">Choose your posting options</p>
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Pricing Options</h2>
+        <p className="text-sm text-muted-foreground mt-1">Select a pricing tier for your job posting</p>
       </div>
       
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-medium mb-4">Select Plan</h3>
-          <RadioGroup
-            value={pricingOptions.selectedPricingTier}
-            onValueChange={(value: JobPricingTier) => handlePricingChange(value)}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
-          >
-            <div className="border rounded-lg p-4 hover:border-primary cursor-pointer">
-              <RadioGroupItem value="standard" id="standard" className="sr-only" />
-              <Label htmlFor="standard" className="flex flex-col cursor-pointer">
-                <span className="text-lg font-medium">Standard</span>
-                <span className="font-bold text-xl mt-1">$49</span>
-                <span className="text-sm text-gray-500 mt-1">Basic visibility for your job posting</span>
-              </Label>
-            </div>
-            
-            <div className="border rounded-lg p-4 hover:border-primary cursor-pointer relative">
-              <div className="absolute -top-2 -right-2 bg-amber-400 text-amber-900 text-xs px-2 py-1 rounded-full font-semibold">Popular</div>
-              <RadioGroupItem value="premium" id="premium" className="sr-only" />
-              <Label htmlFor="premium" className="flex flex-col cursor-pointer">
-                <span className="text-lg font-medium">Premium</span>
-                <span className="font-bold text-xl mt-1">$79</span>
-                <span className="text-sm text-gray-500 mt-1">Enhanced visibility and featured placement</span>
-              </Label>
-            </div>
-            
-            <div className="border rounded-lg p-4 hover:border-primary cursor-pointer">
-              <RadioGroupItem value="gold" id="gold" className="sr-only" />
-              <Label htmlFor="gold" className="flex flex-col cursor-pointer">
-                <span className="text-lg font-medium">Gold</span>
-                <span className="font-bold text-xl mt-1">$129</span>
-                <span className="text-sm text-gray-500 mt-1">Top visibility and exclusive features</span>
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
+      <RadioGroup
+        value={pricingOptions.selectedPricingTier}
+        onValueChange={(value) => handlePricingTierChange(value as JobPricingTier)}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
+        {availablePricingOptions.map((option) => (
+          <div key={option.id} className="relative">
+            <RadioGroupItem
+              value={option.tier}
+              id={option.id}
+              className="sr-only"
+            />
+            <Label
+              htmlFor={option.id}
+              className="cursor-pointer"
+            >
+              <Card className={cn(
+                "border-2 h-full transition-colors",
+                pricingOptions.selectedPricingTier === option.tier 
+                  ? "border-primary" 
+                  : "border-gray-200 hover:border-gray-300"
+              )}>
+                <CardContent className="p-6">
+                  {option.popular && (
+                    <div className="absolute top-0 right-0 bg-primary text-white text-xs px-2 py-1 rounded-bl">
+                      Popular
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-lg">{option.name}</h3>
+                      {option.tag && (
+                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                          {option.tag}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-baseline">
+                      <span className="text-2xl font-bold">${option.price}</span>
+                      {option.wasPrice && (
+                        <span className="ml-2 text-gray-500 line-through text-sm">
+                          ${option.wasPrice}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <p className="text-sm text-gray-600">{option.description}</p>
+                    
+                    {option.features && option.features.length > 0 && (
+                      <ul className="text-sm space-y-1 mt-4">
+                        {option.features.map((feature, index) => (
+                          <li key={index} className="flex items-center">
+                            <span className="text-green-500 mr-2">✓</span>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+      
+      <div className="border-t border-b py-4 mt-8">
+        <h3 className="font-medium text-lg mb-3">Additional Options</h3>
         
-        <div>
-          <h3 className="text-lg font-medium mb-4">Duration</h3>
-          <RadioGroup
-            value={String(pricingOptions.durationMonths)}
-            onValueChange={(value) => handleDurationChange(Number(value))}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
-          >
-            <div className="border rounded-lg p-4 hover:border-primary cursor-pointer">
-              <RadioGroupItem value="1" id="one-month" className="sr-only" />
-              <Label htmlFor="one-month" className="flex flex-col cursor-pointer">
-                <span className="text-lg font-medium">1 Month</span>
-                <span className="text-sm text-gray-500 mt-1">Standard duration</span>
-              </Label>
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium mb-2">Duration</h4>
+            <div className="flex space-x-4">
+              {[1, 3, 6].map((months) => (
+                <button
+                  key={months}
+                  type="button"
+                  onClick={() => handleDurationChange(months)}
+                  className={cn(
+                    "px-4 py-2 border rounded-md",
+                    pricingOptions.durationMonths === months
+                      ? "bg-primary text-white border-primary"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  )}
+                >
+                  {months} {months === 1 ? 'Month' : 'Months'}
+                </button>
+              ))}
             </div>
-            
-            <div className="border rounded-lg p-4 hover:border-primary cursor-pointer relative">
-              <div className="absolute -top-2 -right-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">-10%</div>
-              <RadioGroupItem value="3" id="three-months" className="sr-only" />
-              <Label htmlFor="three-months" className="flex flex-col cursor-pointer">
-                <span className="text-lg font-medium">3 Months</span>
-                <span className="text-sm text-gray-500 mt-1">Save 10%</span>
-              </Label>
-            </div>
-            
-            <div className="border rounded-lg p-4 hover:border-primary cursor-pointer relative">
-              <div className="absolute -top-2 -right-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">-15%</div>
-              <RadioGroupItem value="6" id="six-months" className="sr-only" />
-              <Label htmlFor="six-months" className="flex flex-col cursor-pointer">
-                <span className="text-lg font-medium">6 Months</span>
-                <span className="text-sm text-gray-500 mt-1">Save 15%</span>
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Switch 
-            id="auto-renew" 
-            checked={pricingOptions.autoRenew}
-            onCheckedChange={handleAutoRenewChange}
-          />
-          <Label htmlFor="auto-renew">Auto-renew your posting when it expires</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="auto-renew"
+              checked={pricingOptions.autoRenew}
+              onCheckedChange={(checked) => handleAutoRenewChange(!!checked)}
+            />
+            <Label htmlFor="auto-renew" className="text-sm text-gray-700">
+              Auto-renew my posting (cancel any time)
+            </Label>
+          </div>
         </div>
       </div>
     </div>

@@ -2,69 +2,46 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues, JobTemplateType } from './jobFormSchema';
+import { jobFormSchema, JobFormValues, IndustryType } from './jobFormSchema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { MobileButton } from '@/components/ui/mobile-button';
-import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import JobTemplateSelector from './JobTemplateSelector';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import JobDetailsSection from '../sections/JobDetailsSection';
-import ContactInfoSection from '../sections/ContactInfoSection'; 
+import ContactInfoSection from '../sections/ContactInfoSection';
 import RequirementsSection from '../sections/RequirementsSection';
 import SpecialtiesSection from '../sections/SpecialtiesSection';
-import CompensationSection from '../sections/CompensationSection';
+import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
 import PhotoUpload from '../sections/PhotoUpload';
-import { ProgressBar } from './ProgressBar';
-import { PricingOptions } from '@/utils/posting/types';
+import PricingSection from '../sections/PricingSection';
+import JobSummary from '../JobSummary';
+import JobTemplateSelector from './JobTemplateSelector';
+import { getJobTemplate } from '@/utils/jobs/jobTemplates';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
 
 interface EnhancedJobFormProps {
-  onSubmit: (data: JobFormValues, uploads: File[], pricing: PricingOptions) => Promise<boolean>;
-  onStepChange?: (step: number) => void;
-  currentStep?: number;
-  maxPhotos?: number;
-  defaultFormValues?: Partial<JobFormValues>;
-  expressMode?: boolean;
+  onSubmit: (data: JobFormValues, photos: File[], pricing: PricingOptions) => void;
 }
 
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
-  onSubmit,
-  onStepChange,
-  currentStep: externalCurrentStep,
-  maxPhotos = 5,
-  defaultFormValues = {},
-  expressMode = false
-}) => {
-  const [currentStep, setCurrentStep] = useState(expressMode ? 0 : 1); // Start with template selection in express mode
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
+  const [selectedTab, setSelectedTab] = useState<string>('template');
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'premium',
+    selectedPricingTier: 'standard' as JobPricingTier,
     durationMonths: 1,
-    autoRenew: true,
-    isFirstPost: true,
+    autoRenew: false,
   });
-  
-  // Use external step control if provided
-  const activeStep = externalCurrentStep !== undefined ? externalCurrentStep : currentStep;
-
-  // Steps configuration
-  const totalSteps = expressMode ? 2 : 4; // Express mode has template selection + form
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      salonName: '',
       title: '',
+      salonName: '',
       description: '',
       vietnameseDescription: '',
       location: '',
       jobType: 'full-time',
-      specialties: [],
-      requirements: [],
-      contactName: '',
-      contactEmail: '',
-      contactPhone: '',
       compensation_type: 'hourly',
       compensation_details: '',
       weekly_pay: false,
@@ -72,262 +49,184 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       has_wax_room: false,
       owner_will_train: false,
       no_supply_deduction: false,
-      salary_range: '',
-      experience_level: '',
-      ...defaultFormValues,
-    },
+      contactName: '',
+      contactEmail: '',
+      contactPhone: '',
+      specialties: [],
+      requirements: [],
+    }
   });
 
-  // Template selection handler for step 1 in express mode
-  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
-    console.log("Template selected:", templateType);
+  const handleTemplateSelect = (template: JobFormValues, templateType: IndustryType) => {
+    // Get the full template data
+    const fullTemplate = getJobTemplate(templateType);
+    
+    // Pre-populate the form with the template data
     form.reset({
-      ...template,
-      // Preserve any user-entered values that might already exist
-      salonName: form.getValues('salonName') || template.salonName,
-      contactName: form.getValues('contactName') || template.contactName,
-      contactEmail: form.getValues('contactEmail') || template.contactEmail,
-      contactPhone: form.getValues('contactPhone') || template.contactPhone,
+      title: fullTemplate.title,
+      salonName: fullTemplate.salonName,
+      description: fullTemplate.description,
+      vietnameseDescription: fullTemplate.vietnameseDescription,
+      location: fullTemplate.location,
+      jobType: fullTemplate.jobType,
+      compensation_type: fullTemplate.compensation_type,
+      compensation_details: fullTemplate.compensation_details,
+      weekly_pay: fullTemplate.weekly_pay,
+      has_housing: fullTemplate.has_housing,
+      has_wax_room: fullTemplate.has_wax_room,
+      owner_will_train: fullTemplate.owner_will_train,
+      no_supply_deduction: fullTemplate.no_supply_deduction,
+      salary_range: fullTemplate.salary_range,
+      experience_level: fullTemplate.experience_level,
+      contactName: fullTemplate.contactName,
+      contactEmail: fullTemplate.contactEmail,
+      contactPhone: fullTemplate.contactPhone,
+      requirements: fullTemplate.requirements,
+      specialties: fullTemplate.specialties,
+      industry: templateType,
+      templateType: templateType
     });
     
-    // Move to the next step after template selection
-    if (expressMode) {
-      handleNextStep();
-    }
+    // Move to the details tab
+    setSelectedTab('details');
   };
 
-  // Handle form submission
-  const handleFormSubmit = async (data: JobFormValues) => {
-    try {
-      setIsSubmitting(true);
-      const success = await onSubmit(data, photoUploads, pricingOptions);
-      
-      if (success) {
-        // Success handling is managed by the parent component
-        return;
-      } else {
-        setIsSubmitting(false);
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      setIsSubmitting(false);
-    }
+  const onPricingChange = (options: PricingOptions) => {
+    setPricingOptions(options);
+  };
+  
+  const handleFormSubmit = (data: JobFormValues) => {
+    setShowConfetti(true);
+    onSubmit(data, photoUploads, pricingOptions);
+    
+    // Reset confetti after animation
+    setTimeout(() => {
+      setShowConfetti(false);
+    }, 3000);
   };
 
-  // Navigation handlers
-  const handleNextStep = () => {
-    const nextStep = activeStep + 1;
-    if (nextStep <= totalSteps) {
-      setCurrentStep(nextStep);
-      if (onStepChange) {
-        onStepChange(nextStep);
-      }
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const handlePreviousStep = () => {
-    const prevStep = activeStep - 1;
-    if (prevStep >= 0) { // Allow going back to template selection (step 0) in express mode
-      setCurrentStep(prevStep);
-      if (onStepChange) {
-        onStepChange(prevStep);
-      }
-      window.scrollTo(0, 0);
-    }
-  };
-
-  // Express mode with template selection first
-  if (expressMode && activeStep === 0) {
-    return (
-      <div className="space-y-6">
-        <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-      </div>
-    );
-  }
-
-  // Express mode form
-  if (expressMode && activeStep === 1) {
-    return (
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-          {/* Template type validation - Check if a template was selected */}
-          {!form.getValues('templateType') && (
-            <Card className="p-4 border-red-200 bg-red-50 mb-4">
-              <p className="text-red-600">Please select a job template first before continuing.</p>
-              <Button 
-                type="button" 
-                onClick={handlePreviousStep}
-                variant="outline" 
-                className="mt-2"
-              >
-                Go Back to Templates
-              </Button>
-            </Card>
-          )}
-          
-          <Card className="p-6">
-            <JobDetailsSection form={form} />
-          </Card>
-          
-          <Separator />
-          
-          <Card className="p-6">
-            <CompensationSection form={form} />
-          </Card>
-          
-          <Separator />
-          
-          <Card className="p-6">
-            <RequirementsSection form={form} />
-          </Card>
-          
-          <Separator />
-          
-          <Card className="p-6">
-            <SpecialtiesSection form={form} />
-          </Card>
-          
-          <Separator />
-          
-          <Card className="p-6">
-            <ContactInfoSection form={form} />
-          </Card>
-          
-          <Separator />
-          
-          <Card className="p-6">
-            <PhotoUpload
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              maxPhotos={maxPhotos}
-            />
-          </Card>
-          
-          <div className="flex justify-between mt-8">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handlePreviousStep}
-            >
-              Back to Templates
-            </Button>
-            
-            <MobileButton 
-              type="submit" 
-              disabled={isSubmitting}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              {isSubmitting ? "Submitting..." : "Preview Job Post"}
-            </MobileButton>
-          </div>
-        </form>
-      </Form>
-    );
-  }
-
-  // Regular step-by-step mode
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        <ProgressBar currentStep={activeStep} totalSteps={totalSteps} />
+    <div className="w-full">
+      {showConfetti && <ConfettiExplosion duration={3000} />}
+      
+      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+        <TabsList className="grid grid-cols-5 mb-8">
+          <TabsTrigger value="template">Template</TabsTrigger>
+          <TabsTrigger value="details">Job Details</TabsTrigger>
+          <TabsTrigger value="requirements">Requirements</TabsTrigger>
+          <TabsTrigger value="photos">Photos</TabsTrigger>
+          <TabsTrigger value="preview">Preview & Publish</TabsTrigger>
+        </TabsList>
         
-        {/* Step 1: Job Details */}
-        {activeStep === 1 && (
-          <>
-            <JobDetailsSection form={form} />
-            <div className="flex justify-end">
-              <MobileButton
-                type="button"
-                onClick={handleNextStep}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                Continue to Compensation
-              </MobileButton>
-            </div>
-          </>
-        )}
-        
-        {/* Step 2: Compensation & Requirements */}
-        {activeStep === 2 && (
-          <>
-            <CompensationSection form={form} />
-            <div className="mt-8">
-              <RequirementsSection form={form} />
-            </div>
-            <div className="flex justify-between mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePreviousStep}
-              >
-                Back
-              </Button>
-              <MobileButton
-                type="button"
-                onClick={handleNextStep}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                Continue to Specialties
-              </MobileButton>
-            </div>
-          </>
-        )}
-        
-        {/* Step 3: Specialties & Contact */}
-        {activeStep === 3 && (
-          <>
-            <SpecialtiesSection form={form} />
-            <div className="mt-8">
-              <ContactInfoSection form={form} />
-            </div>
-            <div className="flex justify-between mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePreviousStep}
-              >
-                Back
-              </Button>
-              <MobileButton
-                type="button"
-                onClick={handleNextStep}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                Continue to Photos
-              </MobileButton>
-            </div>
-          </>
-        )}
-        
-        {/* Step 4: Photos & Submit */}
-        {activeStep === 4 && (
-          <>
-            <PhotoUpload
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              maxPhotos={maxPhotos}
-            />
-            <div className="flex justify-between mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePreviousStep}
-              >
-                Back
-              </Button>
-              <MobileButton
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                {isSubmitting ? "Submitting..." : "Create Job Post"}
-              </MobileButton>
-            </div>
-          </>
-        )}
-      </form>
-    </Form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+            <TabsContent value="template" className="mt-0">
+              <JobTemplateSelector onSelect={handleTemplateSelect} />
+            </TabsContent>
+            
+            <TabsContent value="details" className="mt-0 space-y-8">
+              <JobDetailsSection 
+                form={form} 
+                onNext={() => setSelectedTab('requirements')} 
+                onPrevious={() => setSelectedTab('template')} 
+              />
+              
+              <ContactInfoSection 
+                form={form} 
+                onNext={() => setSelectedTab('requirements')} 
+                onPrevious={() => setSelectedTab('template')} 
+              />
+            </TabsContent>
+            
+            <TabsContent value="requirements" className="mt-0 space-y-8">
+              <RequirementsSection 
+                form={form} 
+                onNext={() => setSelectedTab('photos')} 
+                onPrevious={() => setSelectedTab('details')} 
+              />
+              
+              <SpecialtiesSection 
+                form={form} 
+                onNext={() => setSelectedTab('photos')} 
+                onPrevious={() => setSelectedTab('details')} 
+              />
+              
+              <IndustrySpecialtiesSection 
+                form={form} 
+                onNext={() => setSelectedTab('photos')} 
+                onPrevious={() => setSelectedTab('details')} 
+              />
+              
+              <div className="flex justify-between">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setSelectedTab('details')}
+                >
+                  Previous
+                </Button>
+                <Button 
+                  type="button"
+                  onClick={() => setSelectedTab('photos')}
+                >
+                  Next
+                </Button>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="photos" className="mt-0">
+              <PhotoUpload 
+                photoUploads={photoUploads} 
+                setPhotoUploads={setPhotoUploads} 
+                maxPhotos={5} 
+              />
+              
+              <div className="flex justify-between mt-8">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setSelectedTab('requirements')}
+                >
+                  Previous
+                </Button>
+                <Button 
+                  type="button"
+                  onClick={() => setSelectedTab('preview')}
+                >
+                  Next
+                </Button>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="preview" className="mt-0 space-y-8">
+              <PricingSection 
+                onPricingChange={onPricingChange} 
+                pricingOptions={pricingOptions}
+                setPricingOptions={setPricingOptions}
+              />
+              
+              <JobSummary 
+                formValues={form.getValues()} 
+                photos={photoUploads} 
+              />
+              
+              <div className="flex justify-between">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setSelectedTab('photos')}
+                >
+                  Previous
+                </Button>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                  Publish Job Post
+                </Button>
+              </div>
+            </TabsContent>
+          </form>
+        </Form>
+      </Tabs>
+    </div>
   );
 };
 
