@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { IndustrySpecialtiesSection } from '@/components/posting/sections';
+import { IndustrySpecialtiesSection } from '../sections/IndustrySpecialtiesSection';
 import { PricingOptions } from '@/utils/posting/types';
 import { getJobTemplate } from '@/utils/templates/jobTemplates';
 
