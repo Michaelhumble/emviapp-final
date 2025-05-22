@@ -18,13 +18,14 @@ import { Button } from '@/components/ui/button';
 import { IndustryType } from '@/utils/posting/types';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 const JobPost: React.FC = () => {
   const [step, setStep] = useState(1);
   const [showTemplateSelector, setShowTemplateSelector] = useState(true);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState({
-    selectedPricingTier: 'standard',
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'standard' as JobPricingTier,
     durationMonths: 1,
     autoRenew: false,
   });
@@ -78,7 +79,7 @@ const JobPost: React.FC = () => {
     }
   };
   
-  const onPricingChange = (options: any) => {
+  const onPricingChange = (options: PricingOptions) => {
     setPricingOptions(options);
   };
   

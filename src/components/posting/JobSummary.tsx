@@ -1,104 +1,102 @@
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { CheckCircle } from 'lucide-react';
-import { JobPricingOption } from '@/utils/posting/types';
-import { cn } from '@/lib/utils';
+import { JobFormValues } from './job/jobFormSchema';
 
-interface JobSummaryProps {
-  title: string;
-  description?: string;
-  location?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  pricingPlan?: JobPricingOption;
-  jobType?: string;
+export interface JobSummaryProps {
+  formValues: JobFormValues;
+  photos: File[];
 }
 
-const JobSummary: React.FC<JobSummaryProps> = ({
-  title,
-  description,
-  location,
-  contactEmail,
-  contactPhone,
-  pricingPlan,
-  jobType
-}) => {
+const JobSummary: React.FC<JobSummaryProps> = ({ formValues, photos }) => {
   return (
-    <Card className="bg-white shadow overflow-hidden">
-      <CardHeader className={cn(
-        "pb-2", 
-        pricingPlan?.id === 'premium' && "bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200",
-        pricingPlan?.id === 'gold' && "bg-gradient-to-r from-amber-50 to-amber-100 border-b border-amber-200",
-        pricingPlan?.id === 'diamond' && "bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200"
-      )}>
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-semibold">{title || "Job Title"}</CardTitle>
-          {pricingPlan && (
-            <Badge className={cn(
-              "font-medium",
-              pricingPlan.id === 'standard' && "bg-blue-100 text-blue-800 hover:bg-blue-200",
-              pricingPlan.id === 'premium' && "bg-purple-100 text-purple-800 hover:bg-purple-200",
-              pricingPlan.id === 'gold' && "bg-amber-100 text-amber-800 hover:bg-amber-200",
-              pricingPlan.id === 'diamond' && "bg-sky-100 text-sky-800 hover:bg-sky-200"
-            )}>
-              {pricingPlan.name}
-            </Badge>
+    <div className="space-y-6">
+      <div className="border-b pb-4">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Summary</h2>
+        <p className="text-sm text-muted-foreground mt-1">Preview your job posting before publishing</p>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="border rounded-lg p-4">
+          <h3 className="text-lg font-semibold mb-2">{formValues.title || 'No title provided'}</h3>
+          <p className="text-sm text-gray-600 mb-2">
+            <span className="font-medium">Salon:</span> {formValues.salonName || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600 mb-2">
+            <span className="font-medium">Location:</span> {formValues.location || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600 mb-2">
+            <span className="font-medium">Job Type:</span> {formValues.jobType || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600 mb-4">
+            <span className="font-medium">Compensation:</span> {formValues.compensation_type || 'N/A'}{formValues.compensation_details ? ` - ${formValues.compensation_details}` : ''}
+          </p>
+          
+          <div className="mb-4">
+            <h4 className="text-md font-medium mb-2">Description:</h4>
+            <p className="text-sm">{formValues.description || 'No description provided'}</p>
+          </div>
+          
+          {formValues.vietnameseDescription && (
+            <div className="mb-4">
+              <h4 className="text-md font-medium mb-2">Vietnamese Description:</h4>
+              <p className="text-sm">{formValues.vietnameseDescription}</p>
+            </div>
+          )}
+
+          {formValues.requirements && formValues.requirements.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-md font-medium mb-2">Requirements:</h4>
+              <ul className="list-disc pl-5 text-sm">
+                {Array.isArray(formValues.requirements) && formValues.requirements.map((req, index) => (
+                  <li key={index}>{req}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {formValues.specialties && formValues.specialties.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-md font-medium mb-2">Specialties:</h4>
+              <ul className="list-disc pl-5 text-sm">
+                {formValues.specialties.map((specialty, index) => (
+                  <li key={index}>{specialty}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          <div className="mb-4">
+            <h4 className="text-md font-medium mb-2">Contact Information:</h4>
+            <p className="text-sm mb-1">
+              <span className="font-medium">Name:</span> {formValues.contactName || 'N/A'}
+            </p>
+            <p className="text-sm mb-1">
+              <span className="font-medium">Email:</span> {formValues.contactEmail || 'N/A'}
+            </p>
+            <p className="text-sm mb-1">
+              <span className="font-medium">Phone:</span> {formValues.contactPhone || 'N/A'}
+            </p>
+          </div>
+          
+          {photos.length > 0 && (
+            <div>
+              <h4 className="text-md font-medium mb-2">Photos:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {photos.map((photo, index) => (
+                  <div key={index} className="aspect-square rounded-md bg-gray-100 relative overflow-hidden">
+                    <img
+                      src={URL.createObjectURL(photo)}
+                      alt={`Job photo ${index + 1}`}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-        
-        <CardDescription className="mt-1">
-          {location && (
-            <div className="text-sm text-gray-600">
-              {location}
-            </div>
-          )}
-          {jobType && (
-            <div className="text-xs text-gray-500 mt-1">
-              {jobType}
-            </div>
-          )}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-4">
-        {description && (
-          <div className="mb-4">
-            <h4 className="text-sm font-medium mb-1">Description</h4>
-            <p className="text-sm text-gray-600">{description}</p>
-          </div>
-        )}
-        
-        {(contactEmail || contactPhone) && (
-          <div>
-            <h4 className="text-sm font-medium mb-1">Contact</h4>
-            {contactEmail && <p className="text-sm text-gray-600">Email: {contactEmail}</p>}
-            {contactPhone && <p className="text-sm text-gray-600">Phone: {contactPhone}</p>}
-          </div>
-        )}
-      </CardContent>
-      
-      {pricingPlan && pricingPlan.features && pricingPlan.features.length > 0 && (
-        <CardFooter className="bg-gray-50 px-6 py-4 flex flex-col items-start border-t">
-          <h4 className="text-sm font-medium mb-2">Included Features</h4>
-          <ul className="space-y-2">
-            {pricingPlan.features.map((feature, i) => (
-              <li key={i} className="flex text-sm">
-                <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </CardFooter>
-      )}
-    </Card>
+      </div>
+    </div>
   );
 };
 
