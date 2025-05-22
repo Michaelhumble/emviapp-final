@@ -44,7 +44,8 @@ export const calculatePricing = (
   };
 };
 
-export const getNationwidePrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): string => {
+// Exporting with a different name to avoid conflict
+export const getPostNationwidePrice = (postType: 'job' | 'salon' | 'booth' | 'supply'): string => {
   switch (postType) {
     case 'job': return '+$5';
     case 'salon': return '+$10';

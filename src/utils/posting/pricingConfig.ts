@@ -2,7 +2,7 @@
 import { JobPricingOption } from './types';
 
 // Duration discount rates - easily configurable
-export const DURATION_DISCOUNTS = {
+export const DURATION_DISCOUNTS: Record<string, number> = {
   '1': 0, // No discount for monthly
   '3': 25, // 25% off for 3 months
   '6': 35, // 35% off for 6 months
@@ -127,8 +127,9 @@ export const calculateDiscount = (basePrice: number, durationMonths: number, aut
   discountPercentage: number;
   finalPrice: number;
 } => {
-  // Get duration discount percentage
-  const durationDiscount = DURATION_DISCOUNTS[durationMonths as keyof typeof DURATION_DISCOUNTS] || 0;
+  // Get duration discount percentage - convert number to string for lookup
+  const durationKey = String(durationMonths) as keyof typeof DURATION_DISCOUNTS;
+  const durationDiscount = DURATION_DISCOUNTS[durationKey] || 0;
   
   // Add auto-renew discount if enabled
   const totalDiscount = autoRenew ? durationDiscount + AUTO_RENEW_DISCOUNT : durationDiscount;
