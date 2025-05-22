@@ -20,12 +20,16 @@ export interface PricingSectionProps {
   onPricingChange: (options: PricingOptions) => void;
   pricingOptions: PricingOptions;
   setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
 const PricingSection: React.FC<PricingSectionProps> = ({ 
   onPricingChange,
   pricingOptions,
-  setPricingOptions
+  setPricingOptions,
+  onNext,
+  onPrevious
 }) => {
   const [selectedTier, setSelectedTier] = useState<JobPricingTier>(
     pricingOptions?.selectedPricingTier || 'premium'

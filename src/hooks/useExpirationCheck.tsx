@@ -1,51 +1,58 @@
 
-import { useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { useState, useEffect } from 'react';
+import { differenceInDays, isPast, parseISO } from 'date-fns';
+import { toast } from 'sonner';
 
-export const useExpirationCheck = (userId: string | null) => {
-  const { toast } = useToast();
+export interface ExpirationCheckOptions {
+  expiresAt: string | null;
+  onExpired?: () => void;
+  onExpiring?: (daysLeft: number) => void;
+  warningThresholdDays?: number;
+  showToast?: boolean;
+}
+
+export const useExpirationCheck = ({
+  expiresAt,
+  onExpired,
+  onExpiring,
+  warningThresholdDays = 7,
+  showToast = true,
+}: ExpirationCheckOptions) => {
+  const [isExpired, setIsExpired] = useState(false);
+  const [isExpiring, setIsExpiring] = useState(false);
+  const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
-    
-    const checkExpiringPosts = async () => {
-      try {
-        // Query posts that are about to expire (within 5 days)
-        const { data: expiringPosts, error } = await supabase
-          .from('post_status_view')
-          .select('id, title, post_type, expires_at')
-          .eq('user_id', userId)
-          .eq('is_expiring_soon', true)
-          .eq('status', 'active');
-        
-        if (error) {
-          throw error;
-        }
-        
-        // Show a toast for each expiring post
-        expiringPosts?.forEach(post => {
-          const expirationDate = new Date(post.expires_at);
-          
-          toast({
-            title: "Post expiring soon",
-            description: `Your ${post.post_type} post "${post.title}" will expire on ${format(expirationDate, "MMMM d, yyyy")}. Renew it to keep it active.`,
-            // Remove duration property as it's not part of the ToastProps interface
-          });
+    if (!expiresAt) return;
+
+    const expDate = parseISO(expiresAt);
+    const expired = isPast(expDate);
+    setIsExpired(expired);
+
+    if (expired) {
+      if (onExpired) onExpired();
+      if (showToast) {
+        toast.warning("Listing has expired", {
+          description: "This listing is no longer visible to the public."
         });
-        
-      } catch (error) {
-        console.error("Error checking for expiring posts:", error);
       }
-    };
-    
-    // Check for expiring posts when the component mounts
-    checkExpiringPosts();
-    
-    // Check for expiring posts every hour
-    const intervalId = setInterval(checkExpiringPosts, 60 * 60 * 1000); // 1 hour in milliseconds
-    
-    return () => clearInterval(intervalId);
-  }, [userId, toast]);
+      setDaysLeft(0);
+      return;
+    }
+
+    const days = differenceInDays(expDate, new Date());
+    setDaysLeft(days);
+
+    if (days <= warningThresholdDays) {
+      setIsExpiring(true);
+      if (onExpiring) onExpiring(days);
+      if (showToast) {
+        toast.info("Listing will expire soon", {
+          description: `${days} days left before this listing expires.`
+        });
+      }
+    }
+  }, [expiresAt, onExpired, onExpiring, warningThresholdDays, showToast]);
+
+  return { isExpired, isExpiring, daysLeft };
 };
