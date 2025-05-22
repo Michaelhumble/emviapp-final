@@ -1,175 +1,293 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/hooks/useTranslation';
 import { JobFormValues } from '../job/jobFormSchema';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils';
 
 interface ReviewSectionProps {
-  formData: JobFormValues;
-  onSubmit?: () => void;
+  formValues: JobFormValues;
+  onNext?: () => void;
   onPrevious?: () => void;
-  isSubmitting?: boolean;
+  isLastStep?: boolean;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
-  formData,
-  onSubmit,
+  formValues,
+  onNext,
   onPrevious,
-  isSubmitting = false
+  isLastStep = false
 }) => {
   const { t } = useTranslation();
-  
+
+  // Format the compensation range
+  const formatCompensationRange = () => {
+    const min = formValues.compensationMin;
+    const max = formValues.compensationMax;
+    const type = formValues.compensation_type;
+    
+    if (!min && !max) return 'Not specified';
+    
+    let result = '';
+    
+    if (min) {
+      result += formatCurrency(Number(min));
+    }
+    
+    if (min && max) {
+      result += ' - ';
+    }
+    
+    if (max) {
+      result += formatCurrency(Number(max));
+    }
+    
+    if (type === 'hourly') {
+      result += '/hour';
+    } else if (type === 'salary') {
+      result += '/year';
+    }
+    
+    return result;
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="border-b pb-4">
         <h2 className="font-playfair text-2xl font-semibold text-gray-900">
           {t({
-            english: 'Review Your Job Post',
-            vietnamese: 'Xem lại Tin Tuyển dụng của bạn'
+            english: 'Review Your Job Posting',
+            vietnamese: 'Xem lại Bài đăng Công việc của Bạn'
           })}
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
           {t({
-            english: 'Please review your job details before submitting',
-            vietnamese: 'Vui lòng xem lại chi tiết công việc trước khi gửi'
+            english: 'Review your job posting before submitting',
+            vietnamese: 'Xem lại bài đăng công việc của bạn trước khi gửi'
           })}
         </p>
       </div>
 
-      <div className="space-y-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">
-              {t({
-                english: 'Basic Information',
-                vietnamese: 'Thông tin cơ bản'
-              })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="space-y-2">
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium">
+            {t({
+              english: 'Basic Information',
+              vietnamese: 'Thông tin Cơ bản'
+            })}
+          </h3>
+          
+          <div className="mt-3 space-y-3">
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Job Title',
+                  vietnamese: 'Chức danh Công việc'
+                })}
+              </p>
+              <p className="mt-1">{formValues.title || 'Not specified'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Salon Name',
+                  vietnamese: 'Tên Salon'
+                })}
+              </p>
+              <p className="mt-1">{formValues.salonName || 'Not specified'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Location',
+                  vietnamese: 'Địa điểm'
+                })}
+              </p>
+              <p className="mt-1">{formValues.location || 'Not specified'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Employment Type',
+                  vietnamese: 'Loại Hình Công việc'
+                })}
+              </p>
+              <p className="mt-1">
+                {formValues.jobType ? 
+                  formValues.jobType.charAt(0).toUpperCase() + formValues.jobType.slice(1) : 
+                  'Not specified'
+                }
+              </p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Experience Level',
+                  vietnamese: 'Cấp độ Kinh nghiệm'
+                })}
+              </p>
+              <p className="mt-1">
+                {formValues.experience_level ? 
+                  formValues.experience_level.charAt(0).toUpperCase() + formValues.experience_level.slice(1) : 
+                  'Not specified'
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h3 className="text-lg font-medium">
+            {t({
+              english: 'Compensation',
+              vietnamese: 'Lương thưởng'
+            })}
+          </h3>
+          
+          <div className="mt-3 space-y-3">
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Compensation Type',
+                  vietnamese: 'Loại Lương'
+                })}
+              </p>
+              <p className="mt-1">
+                {formValues.compensation_type ? 
+                  formValues.compensation_type.charAt(0).toUpperCase() + formValues.compensation_type.slice(1) : 
+                  'Not specified'
+                }
+              </p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Compensation Range',
+                  vietnamese: 'Phạm vi Lương'
+                })}
+              </p>
+              <p className="mt-1">{formatCompensationRange()}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Compensation Details',
+                  vietnamese: 'Chi tiết Lương thưởng'
+                })}
+              </p>
+              <p className="mt-1">{formValues.compensation_details || 'Not specified'}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h3 className="text-lg font-medium">
+            {t({
+              english: 'Job Details',
+              vietnamese: 'Chi tiết Công việc'
+            })}
+          </h3>
+          
+          <div className="mt-3 space-y-3">
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Description',
+                  vietnamese: 'Mô tả'
+                })}
+              </p>
+              <p className="mt-1 whitespace-pre-line">{formValues.description || 'Not specified'}</p>
+            </div>
+            
+            {formValues.vietnameseDescription && (
               <div>
-                <dt className="font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-gray-500">
                   {t({
-                    english: 'Job Title',
-                    vietnamese: 'Chức danh công việc'
+                    english: 'Vietnamese Description',
+                    vietnamese: 'Mô tả tiếng Việt'
                   })}
-                </dt>
-                <dd>{formData.title || '-'}</dd>
+                </p>
+                <p className="mt-1 whitespace-pre-line">{formValues.vietnameseDescription}</p>
               </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Salon Name',
-                    vietnamese: 'Tên Salon'
-                  })}
-                </dt>
-                <dd>{formData.salonName || '-'}</dd>
+            )}
+            
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                {t({
+                  english: 'Job Features',
+                  vietnamese: 'Tính năng Công việc'
+                })}
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {formValues.weekly_pay && (
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
+                    <p className="text-sm">
+                      {t({
+                        english: 'Weekly Pay',
+                        vietnamese: 'Lương Hàng Tuần'
+                      })}
+                    </p>
+                  </div>
+                )}
+                
+                {formValues.has_housing && (
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
+                    <p className="text-sm">
+                      {t({
+                        english: 'Housing Provided',
+                        vietnamese: 'Có Cung cấp Chỗ ở'
+                      })}
+                    </p>
+                  </div>
+                )}
+                
+                {formValues.owner_will_train && (
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
+                    <p className="text-sm">
+                      {t({
+                        english: 'Owner Will Train',
+                        vietnamese: 'Chủ sẽ Đào tạo'
+                      })}
+                    </p>
+                  </div>
+                )}
+                
+                {formValues.no_supply_deduction && (
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
+                    <p className="text-sm">
+                      {t({
+                        english: 'No Supply Deduction',
+                        vietnamese: 'Không Khấu trừ Chi phí Vật tư'
+                      })}
+                    </p>
+                  </div>
+                )}
+                
+                {formValues.has_wax_room && (
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
+                    <p className="text-sm">
+                      {t({
+                        english: 'Wax Room Available',
+                        vietnamese: 'Có Phòng Wax'
+                      })}
+                    </p>
+                  </div>
+                )}
               </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Location',
-                    vietnamese: 'Địa điểm'
-                  })}
-                </dt>
-                <dd>{formData.location || '-'}</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">
-              {t({
-                english: 'Job Details',
-                vietnamese: 'Chi tiết Công việc'
-              })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="space-y-2">
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Job Type',
-                    vietnamese: 'Loại Công việc'
-                  })}
-                </dt>
-                <dd className="capitalize">{formData.jobType || '-'}</dd>
-              </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Experience Level',
-                    vietnamese: 'Mức Kinh nghiệm'
-                  })}
-                </dt>
-                <dd className="capitalize">{formData.experienceLevel || '-'}</dd>
-              </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Description',
-                    vietnamese: 'Mô tả'
-                  })}
-                </dt>
-                <dd className="whitespace-pre-line">{formData.description || '-'}</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">
-              {t({
-                english: 'Compensation',
-                vietnamese: 'Lương thưởng'
-              })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="space-y-2">
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Compensation Type',
-                    vietnamese: 'Loại Lương'
-                  })}
-                </dt>
-                <dd className="capitalize">{formData.compensation_type || '-'}</dd>
-              </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Range',
-                    vietnamese: 'Phạm vi'
-                  })}
-                </dt>
-                <dd>
-                  {formData.compensation_min && formData.compensation_max ? 
-                    `$${formData.compensation_min} - $${formData.compensation_max}` : 
-                    formData.compensation_min ? 
-                      `$${formData.compensation_min}+` :
-                      '-'
-                  }
-                </dd>
-              </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  {t({
-                    english: 'Additional Details',
-                    vietnamese: 'Chi tiết Bổ sung'
-                  })}
-                </dt>
-                <dd>{formData.compensation_details || '-'}</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Navigation buttons */}
@@ -179,7 +297,6 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             type="button"
             variant="outline"
             onClick={onPrevious}
-            disabled={isSubmitting}
           >
             {t({
               english: 'Previous',
@@ -188,21 +305,20 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           </Button>
         )}
         
-        {onSubmit && (
+        {onNext && (
           <Button
             type="button"
-            onClick={onSubmit}
-            disabled={isSubmitting}
+            onClick={onNext}
             className="ml-auto"
           >
-            {isSubmitting ? 
+            {isLastStep ? 
               t({
-                english: 'Submitting...',
-                vietnamese: 'Đang gửi...'
+                english: 'Submit',
+                vietnamese: 'Gửi'
               }) : 
               t({
-                english: 'Submit Job Post',
-                vietnamese: 'Gửi Tin Tuyển dụng'
+                english: 'Next',
+                vietnamese: 'Tiếp theo'
               })
             }
           </Button>

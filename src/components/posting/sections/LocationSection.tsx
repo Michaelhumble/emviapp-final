@@ -67,12 +67,12 @@ const LocationSection: React.FC<LocationSectionProps> = ({
 
       <FormField
         control={control}
-        name="is_nationwide"
+        name="isNationwide"
         render={({ field }) => (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-4">
             <FormControl>
               <Checkbox
-                checked={field.value}
+                checked={field.value as boolean}
                 onCheckedChange={field.onChange}
               />
             </FormControl>

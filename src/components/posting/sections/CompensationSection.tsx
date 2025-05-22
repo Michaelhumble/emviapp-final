@@ -80,59 +80,62 @@ const CompensationSection: React.FC<CompensationSectionProps> = ({
         )}
       />
 
-      <FormField
-        control={control}
-        name="compensation_min"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              {t({
-                english: 'Minimum Compensation',
-                vietnamese: 'Lương Tối thiểu'
-              })}
-            </FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                placeholder={t({
-                  english: 'e.g. 15',
-                  vietnamese: 'VD: 15'
+      {/* Adding compensationMin and compensationMax as custom fields to avoid schema mismatch */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField
+          control={control}
+          name="compensationMin"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t({
+                  english: 'Minimum Compensation',
+                  vietnamese: 'Lương Tối thiểu'
                 })}
-                {...field}
-                onChange={(e) => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder={t({
+                    english: 'e.g. 15',
+                    vietnamese: 'VD: 15'
+                  })}
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={control}
-        name="compensation_max"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              {t({
-                english: 'Maximum Compensation',
-                vietnamese: 'Lương Tối đa'
-              })}
-            </FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                placeholder={t({
-                  english: 'e.g. 25',
-                  vietnamese: 'VD: 25'
+        <FormField
+          control={control}
+          name="compensationMax"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t({
+                  english: 'Maximum Compensation',
+                  vietnamese: 'Lương Tối đa'
                 })}
-                {...field}
-                onChange={(e) => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder={t({
+                    english: 'e.g. 25',
+                    vietnamese: 'VD: 25'
+                  })}
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       <FormField
         control={control}
