@@ -7,12 +7,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 
-interface SpecialtiesSectionProps {
+export interface SpecialtiesSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ control, form }) => {
+const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ control, form, onNext, onPrevious }) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
@@ -86,6 +88,28 @@ const SpecialtiesSection: React.FC<SpecialtiesSectionProps> = ({ control, form }
           </FormItem>
         )}
       />
+
+      <div className="flex justify-between">
+        {onPrevious && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          >
+            Previous
+          </button>
+        )}
+        
+        {onNext && (
+          <button
+            type="button"
+            onClick={onNext}
+            className="ml-auto px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+          >
+            Next
+          </button>
+        )}
+      </div>
     </div>
   );
 };

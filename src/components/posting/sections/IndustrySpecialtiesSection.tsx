@@ -6,13 +6,21 @@ import { JobFormValues } from '../job/jobFormSchema';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { beautySpecialties } from '@/data/specialties';
 
-interface IndustrySpecialtiesSectionProps {
+export interface IndustrySpecialtiesSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
   onIndustryChange?: (industry: string) => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ control, form, onIndustryChange }) => {
+const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ 
+  control, 
+  form, 
+  onIndustryChange,
+  onNext,
+  onPrevious
+}) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
@@ -59,6 +67,28 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
           </FormItem>
         )}
       />
+
+      <div className="flex justify-between">
+        {onPrevious && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          >
+            Previous
+          </button>
+        )}
+        
+        {onNext && (
+          <button
+            type="button"
+            onClick={onNext}
+            className="ml-auto px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+          >
+            Next
+          </button>
+        )}
+      </div>
     </div>
   );
 };

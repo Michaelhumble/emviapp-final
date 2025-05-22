@@ -5,13 +5,19 @@ import { Control, UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { JobFormValues } from '../job/jobFormSchema';
 
-interface ContactInfoSectionProps {
+export interface ContactInfoSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
   onNext?: () => void;
+  onPrevious?: () => void;
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext }) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
+  control, 
+  form, 
+  onNext,
+  onPrevious 
+}) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
@@ -86,17 +92,27 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, 
         )}
       />
       
-      {onNext && (
-        <div className="flex justify-end">
+      <div className="flex justify-between">
+        {onPrevious && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          >
+            Previous
+          </button>
+        )}
+        
+        {onNext && (
           <button
             type="button"
             onClick={onNext}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+            className="ml-auto px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
           >
             Next
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
