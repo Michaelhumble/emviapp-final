@@ -1,191 +1,140 @@
-
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { JobPostPricing } from './JobPostPricing';
 import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
-import { Loader2, ArrowLeft } from 'lucide-react';
-import { useAuth } from '@/context/auth';
+import JobPostPricing from '@/components/posting/job/JobPostPricing';
+import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import PostWizardLayout from '@/components/layout/PostWizardLayout';
-import { calculatePricing } from '@/utils/posting/pricing';
-import { PaymentSummary } from '@/components/posting/PaymentSummary';
+import { useNavigate } from 'react-router-dom';
 import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
-
-// Define the posting steps for a clearer workflow
-enum PostingStep {
-  JOB_DETAILS = 0,
-  PRICING = 1,
-  PAYMENT_REVIEW = 2,
-  PROCESSING = 3
-}
+import { calculatePricing } from '@/utils/posting/pricing';
 
 interface JobPostWrapperProps {
   jobDetails: JobDetailsSubmission;
   onBack: () => void;
 }
 
-export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({ 
-  jobDetails, 
-  onBack 
-}) => {
-  const location = useLocation();
+export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({ jobDetails, onBack }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const [step, setStep] = useState<'pricing' | 'payment'>('pricing');
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions | null>(null);
   const { initiatePayment, isLoading } = usePostPayment();
-  
-  // Track the current step in the posting process
-  const [currentStep, setCurrentStep] = useState<PostingStep>(PostingStep.PRICING);
-  const [isFirstPost, setIsFirstPost] = useState<boolean>(true);
-  const [selectedOptions, setSelectedOptions] = useState<PricingOptions | null>(null);
-  const [priceData, setPriceData] = useState<any>(null);
-  
-  // We'd fetch the user's post count from API to determine if it's their first post
-  // For now, we'll just assume it's their first post
-  
-  const handleSelectPlan = (options: PricingOptions) => {
-    setSelectedOptions(options);
-    
-    // Calculate pricing data
-    const pricingData = calculatePricing(
-      options.selectedPricingTier,
-      options.durationMonths,
-      options.autoRenew || false,
-      isFirstPost,
-      options.isNationwide || false
-    );
-    
-    setPriceData({
-      basePrice: pricingData.originalPrice / options.durationMonths,
-      originalPrice: pricingData.originalPrice,
-      finalPrice: pricingData.finalPrice,
-      discountAmount: pricingData.originalPrice - pricingData.finalPrice,
-      discountPercentage: pricingData.discountPercentage
-    });
-    
-    // Move to payment review step
-    setCurrentStep(PostingStep.PAYMENT_REVIEW);
+  const isFirstPost = true; // This would ideally be determined from user data
+
+  const handleSelectPricingOptions = (options: PricingOptions) => {
+    setPricingOptions(options);
+    setStep('payment');
   };
 
-  const handleGoBack = () => {
-    if (currentStep === PostingStep.PRICING) {
-      // Go back to job details
-      onBack();
-    } else if (currentStep === PostingStep.PAYMENT_REVIEW) {
-      // Go back to pricing
-      setCurrentStep(PostingStep.PRICING);
-    }
+  const handleBackToPricing = () => {
+    setStep('pricing');
   };
-  
+
   const handleProceedToPayment = async () => {
-    if (!user) {
-      toast.error("You need to be logged in to post a job");
-      navigate('/login', { state: { from: location } });
+    if (!pricingOptions) {
+      toast.error("Please select a pricing option first");
       return;
     }
-    
-    if (!selectedOptions) {
-      toast.error("Please select a plan first");
-      return;
-    }
-    
-    // Move to the processing step
-    setCurrentStep(PostingStep.PROCESSING);
-    
+
     try {
-      const result = await initiatePayment('job', jobDetails, selectedOptions);
-      
-      if (result.waitlisted) {
-        navigate('/dashboard');
+      // Calculate pricing for display
+      const priceData = calculatePricing(
+        pricingOptions.selectedPricingTier,
+        pricingOptions.durationMonths,
+        pricingOptions.autoRenew,
+        isFirstPost,
+        pricingOptions.isNationwide
+      );
+
+      // If this is a free post (first post or free tier)
+      if (priceData.finalPrice === 0) {
+        toast.success("Your job post has been submitted!");
+        navigate('/dashboard/jobs'); // Redirect to jobs dashboard or confirmation page
         return;
       }
+
+      // Otherwise, initiate payment
+      const result = await initiatePayment('job', jobDetails, pricingOptions);
       
-      // If it's a free post or payment was successful, the redirect will happen in the initiatePayment function
-      // Otherwise, we should return to the pricing step
-      if (!result.success) {
-        setCurrentStep(PostingStep.PAYMENT_REVIEW);
-        toast.error("There was an issue with your payment. Please try again.");
+      if (result?.waitlisted) {
+        toast.info("We've received your Diamond tier request. Our team will contact you shortly.");
+        navigate('/dashboard/jobs');
+      } else if (!result?.success) {
+        toast.error("There was an issue processing your payment. Please try again.");
       }
-      
+      // If successful, the initiatePayment function will redirect to Stripe checkout
     } catch (error) {
-      console.error("Error in job post payment process:", error);
-      setCurrentStep(PostingStep.PAYMENT_REVIEW);
-      toast.error("There was an error processing your request. Please try again later.");
+      console.error("Payment error:", error);
+      toast.error("There was an issue processing your request. Please try again.");
     }
   };
-  
-  // Calculate total steps based on the enum
-  const totalSteps = Object.keys(PostingStep).length / 2; // Division by 2 because enums have both key/value pairs
-  
+
+  // Calculate pricing data for display in the payment review section
+  const getPriceData = () => {
+    if (!pricingOptions) return { basePrice: 0, originalPrice: 0, finalPrice: 0, discountAmount: 0, discountPercentage: 0 };
+    
+    const { finalPrice, originalPrice, discountPercentage } = calculatePricing(
+      pricingOptions.selectedPricingTier,
+      pricingOptions.durationMonths,
+      pricingOptions.autoRenew,
+      isFirstPost,
+      pricingOptions.isNationwide
+    );
+    
+    return {
+      basePrice: originalPrice / pricingOptions.durationMonths,
+      originalPrice,
+      finalPrice,
+      discountAmount: originalPrice - finalPrice,
+      discountPercentage
+    };
+  };
+
   return (
-    <PostWizardLayout
-      currentStep={currentStep + 1} // Add 1 to make it 1-indexed for display
-      totalSteps={totalSteps}
-    >
-      {currentStep === PostingStep.PRICING && (
-        <div className="space-y-8">
-          <h2 className="text-2xl font-semibold">Select Your Plan</h2>
-          <p className="text-gray-600">Choose a pricing plan that fits your needs</p>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {step === 'pricing' && (
+        <div className="space-y-6">
+          <div className="flex items-center">
+            <button 
+              onClick={onBack}
+              className="text-gray-600 hover:text-gray-900 mr-4"
+            >
+              ← Back to Job Details
+            </button>
+            <h2 className="text-2xl font-semibold">Select a Pricing Plan</h2>
+          </div>
           
-          <JobPostPricing
-            onContinue={handleSelectPlan}
+          <JobPostPricing 
+            onContinue={handleSelectPricingOptions} 
             isFirstPost={isFirstPost}
           />
-          
-          <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={handleGoBack}>
-              Back to Details
-            </Button>
+        </div>
+      )}
+      
+      {step === 'payment' && pricingOptions && (
+        <div className="space-y-6">
+          <div className="flex items-center">
+            <button 
+              onClick={handleBackToPricing}
+              className="text-gray-600 hover:text-gray-900 mr-4"
+            >
+              ← Back to Plans
+            </button>
+            <h2 className="text-2xl font-semibold">Review & Payment</h2>
           </div>
+          
+          <ReviewAndPaymentSection
+            priceData={getPriceData()}
+            durationMonths={pricingOptions.durationMonths}
+            autoRenew={pricingOptions.autoRenew || false}
+            onAutoRenewChange={(checked) => {
+              setPricingOptions({...pricingOptions, autoRenew: checked});
+            }}
+            onProceedToPayment={handleProceedToPayment}
+            isProcessing={isLoading}
+          />
         </div>
       )}
-      
-      {currentStep === PostingStep.PAYMENT_REVIEW && selectedOptions && priceData && (
-        <ReviewAndPaymentSection
-          priceData={priceData}
-          durationMonths={selectedOptions.durationMonths}
-          autoRenew={selectedOptions.autoRenew || false}
-          onAutoRenewChange={(checked) => {
-            if (selectedOptions) {
-              const updatedOptions = {
-                ...selectedOptions,
-                autoRenew: checked
-              };
-              setSelectedOptions(updatedOptions);
-              
-              // Recalculate pricing
-              const updatedPricing = calculatePricing(
-                updatedOptions.selectedPricingTier,
-                updatedOptions.durationMonths,
-                checked,
-                isFirstPost,
-                updatedOptions.isNationwide || false
-              );
-              
-              setPriceData({
-                basePrice: updatedPricing.originalPrice / updatedOptions.durationMonths,
-                originalPrice: updatedPricing.originalPrice,
-                finalPrice: updatedPricing.finalPrice,
-                discountAmount: updatedPricing.originalPrice - updatedPricing.finalPrice,
-                discountPercentage: updatedPricing.discountPercentage
-              });
-            }
-          }}
-          onProceedToPayment={handleProceedToPayment}
-          isProcessing={isLoading}
-        />
-      )}
-      
-      {currentStep === PostingStep.PROCESSING && (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin mb-4" />
-          <h2 className="text-xl font-medium">Processing your job post</h2>
-          <p className="text-muted-foreground">Please wait while we prepare your listing...</p>
-        </div>
-      )}
-    </PostWizardLayout>
+    </div>
   );
 };
 
