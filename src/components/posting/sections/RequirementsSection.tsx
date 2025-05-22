@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Control } from 'react-hook-form';
@@ -27,6 +26,7 @@ const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control }) =>
               <Textarea
                 placeholder="List any skills, experience, or certifications required for this position"
                 className="min-h-[120px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field}
                 value={field.value ? field.value.join('\n') : ''}
                 onChange={e => {
                   const value = e.target.value;

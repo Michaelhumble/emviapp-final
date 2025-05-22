@@ -14,7 +14,7 @@ import { PricingOptions } from '@/utils/posting/types';
 const JobPost = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = React.useState(1);
 
   const handleSubmit = async (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => {
     try {
@@ -42,9 +42,7 @@ const JobPost = () => {
           phone: formData.contactPhone,
           email: formData.contactEmail,
         },
-        post_type: 'job',
-        industry: formData.industryType,
-        specialties: formData.specialties
+        post_type: 'job'
       };
       
       // Initiate payment with our consolidated hook
@@ -79,7 +77,7 @@ const JobPost = () => {
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={3}>
+    <PostWizardLayout currentStep={currentStep} totalSteps={4}>
       <Helmet>
         <title>Create Job Listing | EmviApp</title>
         <meta 

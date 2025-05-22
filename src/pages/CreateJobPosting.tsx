@@ -42,9 +42,7 @@ const CreateJobPosting = () => {
           phone: data.contactPhone,
           email: data.contactEmail,
         },
-        post_type: 'job',
-        industry: data.industryType,
-        specialties: data.specialties
+        post_type: 'job'
       };
       
       // Initiate payment with our consolidated hook
@@ -79,7 +77,7 @@ const CreateJobPosting = () => {
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={3}>
+    <PostWizardLayout currentStep={currentStep} totalSteps={4}>
       <Helmet>
         <title>Create Job Posting | EmviApp</title>
         <meta 

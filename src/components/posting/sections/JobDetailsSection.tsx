@@ -7,6 +7,7 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
+  Form,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,48 +26,6 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
     console.error("JobDetailsSection requires a valid form from react-hook-form");
     return null;
   }
-  
-  // Get the industry type from the form if available
-  const industryType = form.watch('industryType') || 'nails';
-
-  // Generate placeholder text based on selected industry
-  const getPlaceholder = () => {
-    switch(industryType) {
-      case 'nails':
-        return "e.g., Experienced Nail Technician for busy salon";
-      case 'hair':
-        return "e.g., Hair Stylist with color expertise";
-      case 'lashes':
-        return "e.g., Lash Technician - Classic & Volume";
-      case 'barber':
-        return "e.g., Skilled Barber for upscale shop";
-      case 'skincare':
-        return "e.g., Licensed Esthetician for med spa";
-      default:
-        return "e.g., Beauty Professional";
-    }
-  };
-
-  // Generate description placeholder based on industry
-  const getDescriptionPlaceholder = () => {
-    switch(industryType) {
-      case 'nails':
-        return "Describe the job requirements, skills needed, and what makes your salon a great place to work";
-      case 'hair':
-        return "Describe the position, required experience, and what makes your salon special";
-      case 'lashes':
-        return "Describe the position, certification requirements, and why someone should join your team";
-      case 'barber':
-        return "Describe the position, clientele, and what sets your barbershop apart";
-      case 'skincare':
-        return "Describe the role, required certifications, and your spa environment";
-      default:
-        return "Describe the job requirements and responsibilities";
-    }
-  };
-
-  // Show Vietnamese description by default for nail industry
-  const showVietnamese = showVietnameseByDefault || industryType === 'nails';
 
   return (
     <>
@@ -77,7 +36,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
           <FormItem>
             <FormLabel>Job Title</FormLabel>
             <FormControl>
-              <Input placeholder={getPlaceholder()} {...field} />
+              <Input placeholder="e.g., Senior Nail Technician" {...field} />
             </FormControl>
             <FormDescription>
               What is the position you're hiring for?
@@ -94,7 +53,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
           <FormItem>
             <FormLabel>Description</FormLabel>
             <FormControl>
-              <Textarea placeholder={getDescriptionPlaceholder()} className="resize-none min-h-[150px]" {...field} />
+              <Textarea placeholder="Describe the job requirements and responsibilities" className="resize-none" {...field} />
             </FormControl>
             <FormDescription>
               Include details about the role, responsibilities, and what makes it a great opportunity.
@@ -104,24 +63,22 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
         )}
       />
 
-      {showVietnamese && (
-        <FormField
-          control={form.control}
-          name="vietnameseDescription"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Vietnamese Description (Optional)</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Mô tả công việc bằng tiếng Việt" className="resize-none min-h-[150px]" {...field} />
-              </FormControl>
-              <FormDescription>
-                Provide a description in Vietnamese to attract more candidates.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
+      <FormField
+        control={form.control}
+        name="vietnameseDescription"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Vietnamese Description (Optional)</FormLabel>
+            <FormControl>
+              <Textarea placeholder="Mô tả công việc bằng tiếng Việt" className="resize-none" {...field} />
+            </FormControl>
+            <FormDescription>
+              Provide a description in Vietnamese to attract more candidates.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <FormField
         control={form.control}
