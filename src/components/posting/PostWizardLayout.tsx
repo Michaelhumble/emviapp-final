@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -18,7 +17,7 @@ interface PostWizardLayoutProps {
 const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ 
   children, 
   currentStep = 1, 
-  totalSteps = 4 // Updated to 4 steps
+  totalSteps = 4 // Using 4 steps
 }) => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
@@ -54,7 +53,11 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
               {progressPercentage.toFixed(0)}%
             </span>
           </div>
-          <Progress value={progressPercentage} className="h-1.5 bg-gray-100" />
+          <Progress 
+            value={progressPercentage} 
+            className="h-1.5 bg-gray-100"
+            indicatorClassName="bg-purple-600" 
+          />
         </div>
         
         <motion.div 

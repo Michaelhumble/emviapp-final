@@ -16,6 +16,7 @@ import UploadSection from '../sections/UploadSection';
 import PricingSection from '../sections/PricingSection';
 import JobTemplateSelector from './JobTemplateSelector';
 import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
+import SpecialtiesRequirementsSection from '../sections/SpecialtiesRequirementsSection';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { PricingOptions } from '@/utils/posting/types';
 
@@ -67,8 +68,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     }
     
     if (step === 2) {
-      // Only validate the fields in Industry Specialties section
-      // Since this is mostly checkboxes, we can just proceed
+      // Specialties & Requirements step
       setStep(step + 1);
       onStepChange(step + 1);
       return;
@@ -142,9 +142,9 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
           <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
         )}
 
-        {/* Step 2: Industry Specialties */}
+        {/* Step 2: Specialties & Requirements */}
         {step === 2 && (
-          <IndustrySpecialtiesSection 
+          <SpecialtiesRequirementsSection 
             control={form.control} 
             industry={selectedTemplate || 'custom'} 
           />
@@ -155,7 +155,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
           <div className="space-y-8">
             <ContactInfoSection form={form} />
             <JobDetailsSection form={form} />
-            <RequirementsSection control={form.control} />
             <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
           </div>
         )}
