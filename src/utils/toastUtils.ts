@@ -1,9 +1,23 @@
 
 import { toast as sonnerToast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import React from 'react';
 
 // This utility wraps the toast function from sonner to ensure consistent usage
 // and to avoid TypeScript errors with the ReactNode properties
+
+/**
+ * Convert localized content to string based on current language preference
+ */
+const getLocalizedText = (
+  content: string | { english: string; vietnamese: string }
+): string => {
+  if (typeof content === 'string') return content;
+  
+  // Get current language preference
+  const lang = localStorage.getItem('emvi_language_preference') || 'en';
+  return lang === 'vi' ? content.vietnamese : content.english;
+};
 
 /**
  * Show a success toast notification
@@ -12,19 +26,14 @@ export const showSuccessToast = (
   title: string | { english: string; vietnamese: string },
   description?: string | { english: string; vietnamese: string }
 ) => {
-  if (typeof title === 'object' && ('english' in title || 'vietnamese' in title)) {
-    // Get current language preference
-    const lang = localStorage.getItem('emvi_language_preference') || 'en';
-    const titleText = lang === 'vi' ? title.vietnamese : title.english;
-    
-    if (description && typeof description === 'object') {
-      const descText = lang === 'vi' ? description.vietnamese : description.english;
-      return sonnerToast.success(titleText, { description: descText });
-    }
-    return sonnerToast.success(titleText, description ? { description } : undefined);
+  const titleText = getLocalizedText(title);
+  
+  if (description) {
+    const descriptionText = getLocalizedText(description);
+    return sonnerToast.success(titleText, { description: descriptionText });
   }
   
-  return sonnerToast.success(title, description ? { description: description } : undefined);
+  return sonnerToast.success(titleText);
 };
 
 /**
@@ -34,19 +43,14 @@ export const showErrorToast = (
   title: string | { english: string; vietnamese: string },
   description?: string | { english: string; vietnamese: string }
 ) => {
-  if (typeof title === 'object' && ('english' in title || 'vietnamese' in title)) {
-    // Get current language preference
-    const lang = localStorage.getItem('emvi_language_preference') || 'en';
-    const titleText = lang === 'vi' ? title.vietnamese : title.english;
-    
-    if (description && typeof description === 'object') {
-      const descText = lang === 'vi' ? description.vietnamese : description.english;
-      return sonnerToast.error(titleText, { description: descText });
-    }
-    return sonnerToast.error(titleText, description ? { description } : undefined);
+  const titleText = getLocalizedText(title);
+  
+  if (description) {
+    const descriptionText = getLocalizedText(description);
+    return sonnerToast.error(titleText, { description: descriptionText });
   }
   
-  return sonnerToast.error(title, description ? { description: description } : undefined);
+  return sonnerToast.error(titleText);
 };
 
 /**
@@ -56,19 +60,14 @@ export const showWarningToast = (
   title: string | { english: string; vietnamese: string },
   description?: string | { english: string; vietnamese: string }
 ) => {
-  if (typeof title === 'object' && ('english' in title || 'vietnamese' in title)) {
-    // Get current language preference
-    const lang = localStorage.getItem('emvi_language_preference') || 'en';
-    const titleText = lang === 'vi' ? title.vietnamese : title.english;
-    
-    if (description && typeof description === 'object') {
-      const descText = lang === 'vi' ? description.vietnamese : description.english;
-      return sonnerToast.warning(titleText, { description: descText });
-    }
-    return sonnerToast.warning(titleText, description ? { description } : undefined);
+  const titleText = getLocalizedText(title);
+  
+  if (description) {
+    const descriptionText = getLocalizedText(description);
+    return sonnerToast.warning(titleText, { description: descriptionText });
   }
   
-  return sonnerToast.warning(title, description ? { description: description } : undefined);
+  return sonnerToast.warning(titleText);
 };
 
 /**
@@ -78,19 +77,14 @@ export const showInfoToast = (
   title: string | { english: string; vietnamese: string },
   description?: string | { english: string; vietnamese: string }
 ) => {
-  if (typeof title === 'object' && ('english' in title || 'vietnamese' in title)) {
-    // Get current language preference
-    const lang = localStorage.getItem('emvi_language_preference') || 'en';
-    const titleText = lang === 'vi' ? title.vietnamese : title.english;
-    
-    if (description && typeof description === 'object') {
-      const descText = lang === 'vi' ? description.vietnamese : description.english;
-      return sonnerToast.info(titleText, { description: descText });
-    }
-    return sonnerToast.info(titleText, description ? { description } : undefined);
+  const titleText = getLocalizedText(title);
+  
+  if (description) {
+    const descriptionText = getLocalizedText(description);
+    return sonnerToast.info(titleText, { description: descriptionText });
   }
   
-  return sonnerToast.info(title, description ? { description: description } : undefined);
+  return sonnerToast.info(titleText);
 };
 
 /**

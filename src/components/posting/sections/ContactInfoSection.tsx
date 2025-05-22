@@ -9,9 +9,10 @@ interface ContactInfoSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
   onNext?: () => void;
+  onPrevious?: () => void; // Add this prop to match usage in JobPost.tsx
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext }) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext, onPrevious }) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
@@ -86,17 +87,27 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, 
         )}
       />
       
-      {onNext && (
-        <div className="flex justify-end">
+      {/* Navigation buttons */}
+      <div className="flex justify-between">
+        {onPrevious && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 text-primary hover:underline"
+          >
+            Previous
+          </button>
+        )}
+        {onNext && (
           <button
             type="button"
             onClick={onNext}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 ml-auto"
           >
             Next
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

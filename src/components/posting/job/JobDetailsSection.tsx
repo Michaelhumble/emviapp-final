@@ -1,198 +1,223 @@
 
 import React from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { JobFormValues } from './jobFormSchema';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { InfoCircle } from './icons/InfoCircle';
+import { JOB_TYPES, COMPENSATION_TYPES, EXPERIENCE_LEVELS } from './jobConstants';
 
 interface JobDetailsSectionProps {
-  formValues: Partial<JobFormValues>;
-  onChange: (values: Partial<JobFormValues>) => void;
+  form: UseFormReturn<JobFormValues>;
+  onNext?: () => void;
+  onPrevious?: () => void; // Add this prop to match usage in JobPost.tsx
 }
 
-export const JobDetailsSection = ({ formValues, onChange }: JobDetailsSectionProps) => {
-  const { t } = useTranslation();
-  
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, onPrevious }) => {
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">
-        {t("Job Details")}
-      </h2>
-      <p className="text-gray-600">
-        {t("Provide clear information to attract qualified candidates")}
-      </p>
+      <div className="border-b pb-4">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Details</h2>
+        <p className="text-sm text-muted-foreground mt-1">Tell candidates about the position</p>
+      </div>
       
-      <div className="grid gap-6">
-        {/* Job Title */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="title" className="text-base font-medium">
-              {t("Job Title")} <span className="text-red-500">*</span>
-            </Label>
-            <span className="text-xs text-gray-500">
-              {formValues.title?.length || 0}/100
-            </span>
-          </div>
-          <Input
-            id="title"
-            value={formValues.title || ''}
-            onChange={(e) => onChange({ title: e.target.value })}
-            placeholder={t("e.g. Experienced Nail Technician - High Tips")}
-            className="h-12 text-base"
-            maxLength={100}
-            required
-          />
-          <p className="text-xs text-gray-500 flex items-start mt-1">
-            <InfoCircle className="h-3.5 w-3.5 mr-1 mt-0.5 flex-shrink-0" />
-            {t("Be specific. Include key details like experience level, specialties, or unique perks")}
-          </p>
-        </div>
-        
-        {/* Job Type */}
-        <div className="space-y-2">
-          <Label htmlFor="jobType" className="text-base font-medium">
-            {t("Job Type")} <span className="text-red-500">*</span>
-          </Label>
-          <Select 
-            value={formValues.jobType || 'full-time'}
-            onValueChange={(value) => onChange({ jobType: value as JobFormValues['jobType'] })}
+      {/* Job Title */}
+      <FormField
+        control={form.control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Job Title <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="e.g. Nail Technician, Hair Stylist" 
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Salon Name */}
+      <FormField
+        control={form.control}
+        name="salonName"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Salon/Business Name <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="Name of your salon or business"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Job Description */}
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Job Description <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Textarea 
+                placeholder="Describe responsibilities, benefits, and why someone should apply"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 min-h-[120px]"
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Vietnamese Description - Optional */}
+      <FormField
+        control={form.control}
+        name="vietnameseDescription"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Vietnamese Description (Optional)</FormLabel>
+            <FormControl>
+              <Textarea 
+                placeholder="Mô tả công việc bằng tiếng Việt"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 min-h-[120px]"
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Job Type */}
+      <FormField
+        control={form.control}
+        name="jobType"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Job Type <span className="text-red-500">*</span></FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500">
+                  <SelectValue placeholder="Select job type" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {JOB_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Compensation Type */}
+      <FormField
+        control={form.control}
+        name="compensation_type"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Compensation Type <span className="text-red-500">*</span></FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500">
+                  <SelectValue placeholder="Select compensation type" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {COMPENSATION_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Experience Level */}
+      <FormField
+        control={form.control}
+        name="experience_level"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Experience Level <span className="text-red-500">*</span></FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500">
+                  <SelectValue placeholder="Select experience level" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {EXPERIENCE_LEVELS.map((level) => (
+                  <SelectItem key={level.value} value={level.value}>
+                    {level.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Location */}
+      <FormField
+        control={form.control}
+        name="location"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Location <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="City, State (e.g., San Jose, CA)"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Navigation */}
+      <div className="flex justify-between">
+        {onPrevious && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 text-primary hover:underline"
           >
-            <SelectTrigger id="jobType" className="h-12 text-base">
-              <SelectValue placeholder={t("Select job type")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="full-time">{t("Full-time")}</SelectItem>
-              <SelectItem value="part-time">{t("Part-time")}</SelectItem>
-              <SelectItem value="contract">{t("Contract")}</SelectItem>
-              <SelectItem value="temporary">{t("Temporary")}</SelectItem>
-              <SelectItem value="commission">{t("Commission")}</SelectItem>
-              <SelectItem value="booth-rental">{t("Booth Rental")}</SelectItem>
-              <SelectItem value="freelance">{t("Freelance")}</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-gray-500 flex items-start mt-1">
-            <InfoCircle className="h-3.5 w-3.5 mr-1 mt-0.5 flex-shrink-0" />
-            {t("Different job types attract different candidates. Be clear about your expectations")}
-          </p>
-        </div>
-        
-        {/* Experience Level */}
-        <div className="space-y-2">
-          <Label htmlFor="experience" className="text-base font-medium">
-            {t("Experience Level")} <span className="text-red-500">*</span>
-          </Label>
-          <Select 
-            value={formValues.experience_level || 'intermediate'}
-            onValueChange={(value) => onChange({ experience_level: value as JobFormValues['experience_level'] })}
+            Previous
+          </button>
+        )}
+        {onNext && (
+          <button
+            type="button"
+            onClick={onNext}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 ml-auto"
           >
-            <SelectTrigger id="experience" className="h-12 text-base">
-              <SelectValue placeholder={t("Select experience level")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="entry">{t("Entry Level")}</SelectItem>
-              <SelectItem value="intermediate">{t("Intermediate")}</SelectItem>
-              <SelectItem value="experienced">{t("Experienced")}</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-gray-500 flex items-start mt-1">
-            <InfoCircle className="h-3.5 w-3.5 mr-1 mt-0.5 flex-shrink-0" />
-            {t("Setting the right experience level helps reach the right candidates")}
-          </p>
-        </div>
-        
-        {/* Description */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="description" className="text-base font-medium">
-              {t("Job Description")} <span className="text-red-500">*</span>
-            </Label>
-            <span className="text-xs text-gray-500">
-              {formValues.description?.length || 0}/2000
-            </span>
-          </div>
-          <Textarea 
-            id="description"
-            value={formValues.description || ''}
-            onChange={(e) => onChange({ description: e.target.value })}
-            placeholder={t("Describe the responsibilities and qualifications for this position...")}
-            rows={6}
-            className="text-base resize-none"
-            maxLength={2000}
-            required
-          />
-          <p className="text-xs text-gray-500 flex items-start mt-1">
-            <InfoCircle className="h-3.5 w-3.5 mr-1 mt-0.5 flex-shrink-0" />
-            {t("Be honest and specific about day-to-day responsibilities, salon culture, and growth opportunities")}
-          </p>
-        </div>
-        
-        {/* Location */}
-        <div className="space-y-2">
-          <Label htmlFor="location" className="text-base font-medium">
-            {t("Location")} <span className="text-red-500">*</span>
-          </Label>
-          <Input 
-            id="location"
-            value={formValues.location || ''}
-            onChange={(e) => onChange({ location: e.target.value })}
-            placeholder={t("City, State or Neighborhood")}
-            className="h-12 text-base"
-            required
-          />
-          <p className="text-xs text-gray-500 flex items-start mt-1">
-            <InfoCircle className="h-3.5 w-3.5 mr-1 mt-0.5 flex-shrink-0" />
-            {t("Be specific. Include the neighborhood for better visibility in local searches")}
-          </p>
-        </div>
-        
-        {/* Salary Range */}
-        <div className="space-y-2">
-          <Label htmlFor="salary" className="text-base font-medium">
-            {t("Salary Range")} <span className="text-red-500">*</span>
-          </Label>
-          <Input 
-            id="salary"
-            value={formValues.salary_range || ''}
-            onChange={(e) => onChange({ salary_range: e.target.value })}
-            placeholder={t("e.g. $50-70K/year or $20-30/hour or 60/40 split + tips")}
-            className="h-12 text-base"
-            required
-          />
-          <p className="text-xs text-gray-500 flex items-start mt-1">
-            <InfoCircle className="h-3.5 w-3.5 mr-1 mt-0.5 flex-shrink-0" />
-            {t("Posts with salary details get 2.5x more applicants. Be transparent for best results")}
-          </p>
-        </div>
-        
-        {/* Contact Email */}
-        <div className="space-y-2">
-          <Label htmlFor="contactEmail" className="text-base font-medium">
-            {t("Contact Email")} <span className="text-red-500">*</span>
-          </Label>
-          <Input 
-            id="contactEmail"
-            type="email"
-            value={formValues.contactEmail || ''}
-            onChange={(e) => onChange({ contactEmail: e.target.value })}
-            placeholder={t("contact@yoursalon.com")}
-            className="h-12 text-base"
-            required
-          />
-          <p className="text-xs text-gray-500 flex items-start mt-1">
-            <InfoCircle className="h-3.5 w-3.5 mr-1 mt-0.5 flex-shrink-0" />
-            {t("Applications and inquiries will be sent to this email")}
-          </p>
-        </div>
+            Next
+          </button>
+        )}
       </div>
     </div>
   );
 };
+
+export default JobDetailsSection;
