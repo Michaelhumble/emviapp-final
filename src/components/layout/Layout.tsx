@@ -4,7 +4,6 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
-import MobileJobsNavBar from '@/components/jobs/MobileJobsNavBar';
 import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
 import MobileMenu from '@/components/layout/MobileMenu';
 
@@ -20,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
   // Check if we're on a job page
   const isJobsPage = location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
   
-  // Don't show mobile bottom navbar on post-job page as it has its own navigation
+  // Always show mobile bottom navbar on all pages except post-job that will use its own PostWizardLayout
   const isPostJobPage = location.pathname === '/post-job';
   const showMobileNav = isMobile && !isPostJobPage;
 
@@ -46,9 +45,8 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
       
       <Footer />
       
-      {/* Show the appropriate mobile navigation based on the page */}
-      {isJobsPage && <MobileJobsNavBar />}
-      {!isJobsPage && showMobileNav && <MobileBottomNavBar />}
+      {/* Show the bottom navbar on all pages except post-job */}
+      {showMobileNav && <MobileBottomNavBar />}
     </div>
   );
 };

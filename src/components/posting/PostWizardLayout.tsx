@@ -54,7 +54,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
             </div>
             
             <div className="flex items-center gap-2">
-              {/* Always show mobile menu hamburger */}
+              {/* Use the global mobile menu hamburger */}
               <MobileMenu />
             </div>
           </div>

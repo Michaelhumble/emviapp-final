@@ -37,6 +37,15 @@ function App() {
     console.log('Current route:', location.pathname);
   }, [location.pathname]);
 
+  // Define routes that don't need to be wrapped in the default Layout
+  const customLayoutRoutes = [
+    '/post-job',
+  ];
+  
+  const needsCustomLayout = customLayoutRoutes.some(route => 
+    location.pathname === route || location.pathname.startsWith(`${route}/`)
+  );
+
   return (
     <HelmetProvider>
       <GeneralErrorBoundary>
@@ -46,55 +55,60 @@ function App() {
               <NotificationProvider>
                 <RouteLogger />
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
-                  <Routes>
-                    {/* All routes now use the Layout component with unified mobile navigation */}
-                    {/* Add our custom fallback for the checkout route */}
-                    <Route path="/checkout" element={<CheckoutFallback />} />
-                    
-                    {/* Add post success and canceled page routes */}
-                    <Route path="/post-success" element={<PostSuccess />} />
-                    <Route path="/post-canceled" element={<PostCanceled />} />
-                    
-                    {/* Explicitly define the /salons route to use StableSalonPage */}
-                    <Route path="/salons" element={<StableSalonPage />} />
-                    
-                    {/* Add our new job post route */}
-                    <Route path="/post-job" element={<JobPost />} />
-                    
-                    {/* Explicitly add the /jobs route to ensure it uses the correct component */}
-                    <Route path="/jobs" element={<Jobs />} />
-                    
-                    {/* Add the new About page route */}
-                    <Route path="/about" element={<About />} />
-                    
-                    {/* Add the new Contact page route */}
-                    <Route path="/contact" element={<Contact />} />
-                    
-                    {/* Add the new Terms page route */}
-                    <Route path="/terms" element={<Terms />} />
-                    
-                    {/* Add the new Refund page route */}
-                    <Route path="/refund" element={<Refund />} />
-                    
-                    {/* Add the Privacy and Cookies page routes */}
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/cookies" element={<Cookies />} />
-                    
-                    {/* Keep existing routes */}
-                    {routes.map((route, index) => (
-                      (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
-                       route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
-                       route.path !== "/privacy" && route.path !== "/cookies") && (
-                        <Route 
-                          key={index}
-                          path={route.path}
-                          element={route.element}
-                        />
-                      )
-                    ))}
-                    <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
-                    <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
-                  </Routes>
+                  {/* We only render routes without the standard Layout if they need a custom layout */}
+                  {needsCustomLayout ? (
+                    <Routes>
+                      <Route path="/post-job" element={<JobPost />} />
+                    </Routes>
+                  ) : (
+                    <Layout>
+                      <Routes>
+                        {/* Add our custom fallback for the checkout route */}
+                        <Route path="/checkout" element={<CheckoutFallback />} />
+                        
+                        {/* Add post success and canceled page routes */}
+                        <Route path="/post-success" element={<PostSuccess />} />
+                        <Route path="/post-canceled" element={<PostCanceled />} />
+                        
+                        {/* Explicitly define the /salons route to use StableSalonPage */}
+                        <Route path="/salons" element={<StableSalonPage />} />
+                        
+                        {/* Explicitly add the /jobs route to ensure it uses the correct component */}
+                        <Route path="/jobs" element={<Jobs />} />
+                        
+                        {/* Add the new About page route */}
+                        <Route path="/about" element={<About />} />
+                        
+                        {/* Add the new Contact page route */}
+                        <Route path="/contact" element={<Contact />} />
+                        
+                        {/* Add the new Terms page route */}
+                        <Route path="/terms" element={<Terms />} />
+                        
+                        {/* Add the new Refund page route */}
+                        <Route path="/refund" element={<Refund />} />
+                        
+                        {/* Add the Privacy and Cookies page routes */}
+                        <Route path="/privacy" element={<Privacy />} />
+                        <Route path="/cookies" element={<Cookies />} />
+                        
+                        {/* Keep existing routes */}
+                        {routes.map((route, index) => (
+                          (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
+                           route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
+                           route.path !== "/privacy" && route.path !== "/cookies") && (
+                            <Route 
+                              key={index}
+                              path={route.path}
+                              element={route.element}
+                            />
+                          )
+                        ))}
+                        <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
+                        <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
+                      </Routes>
+                    </Layout>
+                  )}
                 </Suspense>
                 <Toaster />
               </NotificationProvider>

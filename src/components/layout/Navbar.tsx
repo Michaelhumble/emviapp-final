@@ -3,10 +3,8 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import Logo from "@/components/ui/Logo";
-import MainNavigation from "./navbar/MainNavigation";
 import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
-import MobileMenu from "./navbar/MobileMenu";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { mainNavigationItems } from "./navbar/config/navigationItems";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -47,7 +46,24 @@ const Navbar = () => {
 
         {/* Main navigation - centered (hidden on mobile) */}
         <div className="hidden md:flex justify-center flex-grow">
-          <MainNavigation />
+          <nav className="flex items-center space-x-1">
+            {mainNavigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === item.path
+                    ? "text-purple-700 bg-purple-50"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {t({
+                  english: item.title,
+                  vietnamese: item.vietnameseTitle || item.title
+                })}
+              </Link>
+            ))}
+          </nav>
         </div>
 
         {/* Auth buttons or user menu with language toggle and Post Job button */}
@@ -93,12 +109,6 @@ const Navbar = () => {
               <AuthButtons />
             )}
           </div>
-          
-          {/* Enhanced mobile menu - passing the required props */}
-          <MobileMenu 
-            user={user}
-            handleSignOut={handleSignOut}
-          />
         </div>
       </div>
     </header>

@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Home, Briefcase, Store, Scissors, Users, Phone, Info, MessageCircle, PlusSquare, User } from 'lucide-react';
+import { Menu, X, PlusSquare, User } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import { cn } from '@/lib/utils';
@@ -22,27 +22,13 @@ const MobileMenu: React.FC = () => {
     setOpen(false);
   };
   
-  // Get additional navigation items not in the main nav
+  // Additional navigation items not in the main nav
   const additionalNavItems = [
-    { 
-      title: 'Home', 
-      path: '/', 
-      icon: Home 
-    },
-    {
-      title: 'About',
-      path: '/about',
-      icon: Info
-    },
-    {
-      title: 'Contact',
-      path: '/contact',
-      icon: Phone
-    },
     { 
       title: 'Dashboard', 
       path: '/dashboard',
-      icon: User
+      icon: User,
+      vietnameseTitle: 'Bảng điều khiển'
     },
   ];
   
@@ -116,10 +102,10 @@ const MobileMenu: React.FC = () => {
                         : "text-gray-700 hover:bg-gray-100"
                     )}
                   >
-                    <item.icon className="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                    {item.icon && <item.icon className="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />}
                     {t({
                       english: item.title,
-                      vietnamese: item.title // Add Vietnamese translation as needed
+                      vietnamese: item.vietnameseTitle || item.title
                     })}
                   </button>
                 ))}
