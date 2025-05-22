@@ -1,26 +1,27 @@
 
-import React, { useState, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema, JobFormValues, JobTemplateType } from './jobFormSchema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { MobileButton } from '@/components/ui/mobile-button';
-import { ArrowRight } from 'lucide-react';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import { useTranslation } from '@/hooks/useTranslation';
-import SalonNameInput from '../wrappers/SalonNameInput';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import JobTemplateSelector from './JobTemplateSelector';
 import JobDetailsSection from '../sections/JobDetailsSection';
-import ContactInfoSection from '../sections/ContactInfoSection';
+import ContactInfoSection from '../sections/ContactInfoSection'; 
 import RequirementsSection from '../sections/RequirementsSection';
-import PricingSection from '../sections/PricingSection';
-import PhotoUpload from '../sections/PhotoUpload';
 import SpecialtiesSection from '../sections/SpecialtiesSection';
-import UploadSection from '../sections/UploadSection';
+import CompensationSection from '../sections/CompensationSection';
+import PhotoUpload from '../sections/PhotoUpload';
+import { ProgressBar } from './ProgressBar';
 import { PricingOptions } from '@/utils/posting/types';
 
 interface EnhancedJobFormProps {
-  onSubmit: (formData: JobFormValues, uploads: File[], pricing: PricingOptions) => Promise<boolean>;
+  onSubmit: (data: JobFormValues, uploads: File[], pricing: PricingOptions) => Promise<boolean>;
   onStepChange?: (step: number) => void;
+  currentStep?: number;
   maxPhotos?: number;
   defaultFormValues?: Partial<JobFormValues>;
   expressMode?: boolean;
@@ -29,313 +30,301 @@ interface EnhancedJobFormProps {
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onSubmit,
   onStepChange,
+  currentStep: externalCurrentStep,
   maxPhotos = 5,
   defaultFormValues = {},
   expressMode = false
 }) => {
-  const { t } = useTranslation();
-  const [step, setStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(expressMode ? 0 : 1); // Start with template selection in express mode
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     selectedPricingTier: 'premium',
     durationMonths: 1,
     autoRenew: true,
-    isFirstPost: true
+    isFirstPost: true,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Use external step control if provided
+  const activeStep = externalCurrentStep !== undefined ? externalCurrentStep : currentStep;
+
+  // Steps configuration
+  const totalSteps = expressMode ? 2 : 4; // Express mode has template selection + form
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      title: '',
       salonName: '',
+      title: '',
       description: '',
       vietnameseDescription: '',
       location: '',
       jobType: 'full-time',
-      compensation_type: 'hourly',
-      has_housing: false,
-      has_wax_room: false,
-      weekly_pay: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
+      specialties: [],
+      requirements: [],
       contactName: '',
       contactEmail: '',
       contactPhone: '',
-      requirements: [],
-      specialties: [],
+      compensation_type: 'hourly',
+      compensation_details: '',
+      weekly_pay: false,
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: false,
+      salary_range: '',
+      experience_level: '',
       ...defaultFormValues,
-    }
+    },
   });
 
-  // Get salonName from form state for display
-  const salonName = form.watch('salonName');
-  
-  const steps = expressMode ? 1 : 4;
-
-  useEffect(() => {
-    if (onStepChange) {
-      onStepChange(step);
-    }
-  }, [step, onStepChange]);
-
-  const nextStep = () => {
-    if (step < steps) {
-      setStep(step + 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const prevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      window.scrollTo(0, 0);
+  // Template selection handler for step 1 in express mode
+  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
+    console.log("Template selected:", templateType);
+    form.reset({
+      ...template,
+      // Preserve any user-entered values that might already exist
+      salonName: form.getValues('salonName') || template.salonName,
+      contactName: form.getValues('contactName') || template.contactName,
+      contactEmail: form.getValues('contactEmail') || template.contactEmail,
+      contactPhone: form.getValues('contactPhone') || template.contactPhone,
+    });
+    
+    // Move to the next step after template selection
+    if (expressMode) {
+      handleNextStep();
     }
   };
 
-  const handleFormSubmit: SubmitHandler<JobFormValues> = async (data) => {
+  // Handle form submission
+  const handleFormSubmit = async (data: JobFormValues) => {
     try {
       setIsSubmitting(true);
-      console.log('Form data before submit:', data);
-      console.log('Pricing options:', pricingOptions);
-      
       const success = await onSubmit(data, photoUploads, pricingOptions);
       
       if (success) {
-        // If we're in express mode, don't reset the form
-        if (!expressMode) {
-          form.reset();
-          setPhotoUploads([]);
-          setStep(1);
-        }
+        // Success handling is managed by the parent component
+        return;
+      } else {
+        setIsSubmitting(false);
       }
-      
-      setIsSubmitting(false);
     } catch (error) {
       console.error('Error submitting form:', error);
       setIsSubmitting(false);
     }
   };
 
-  const handlePricingChange = (options: PricingOptions) => {
-    setPricingOptions(prev => ({ ...prev, ...options }));
+  // Navigation handlers
+  const handleNextStep = () => {
+    const nextStep = activeStep + 1;
+    if (nextStep <= totalSteps) {
+      setCurrentStep(nextStep);
+      if (onStepChange) {
+        onStepChange(nextStep);
+      }
+      window.scrollTo(0, 0);
+    }
   };
 
-  // Handle SalonName change directly (convenience for this field)
-  const handleSalonNameChange = (value: string) => {
-    form.setValue('salonName', value);
+  const handlePreviousStep = () => {
+    const prevStep = activeStep - 1;
+    if (prevStep >= 0) { // Allow going back to template selection (step 0) in express mode
+      setCurrentStep(prevStep);
+      if (onStepChange) {
+        onStepChange(prevStep);
+      }
+      window.scrollTo(0, 0);
+    }
   };
 
-  // For express mode, we show all sections in one page
-  if (expressMode) {
+  // Express mode with template selection first
+  if (expressMode && activeStep === 0) {
+    return (
+      <div className="space-y-6">
+        <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+      </div>
+    );
+  }
+
+  // Express mode form
+  if (expressMode && activeStep === 1) {
     return (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-          <div className="space-y-8">
-            {/* Salon Name Input */}
-            <div className="border-b pb-4 mb-6">
-              <h2 className="font-playfair text-2xl font-semibold text-gray-900">
-                {t({
-                  english: 'Express Job Posting',
-                  vietnamese: 'Đăng tin nhanh'
-                })}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t({
-                  english: 'Fill in all job details on one page',
-                  vietnamese: 'Điền tất cả thông tin công việc trong một trang'
-                })}
-              </p>
-            </div>
-
-            <SalonNameInput
-              value={salonName}
-              onChange={handleSalonNameChange}
-            />
-            
-            {/* Job Details Section */}
-            <JobDetailsSection control={form.control} />
-            
-            {/* Specialties Section */}
-            <SpecialtiesSection control={form.control} />
-            
-            {/* Requirements Section */}
+        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+          {/* Template type validation - Check if a template was selected */}
+          {!form.getValues('templateType') && (
+            <Card className="p-4 border-red-200 bg-red-50 mb-4">
+              <p className="text-red-600">Please select a job template first before continuing.</p>
+              <Button 
+                type="button" 
+                onClick={handlePreviousStep}
+                variant="outline" 
+                className="mt-2"
+              >
+                Go Back to Templates
+              </Button>
+            </Card>
+          )}
+          
+          <Card className="p-6">
+            <JobDetailsSection form={form} />
+          </Card>
+          
+          <Separator />
+          
+          <Card className="p-6">
+            <CompensationSection form={form} />
+          </Card>
+          
+          <Separator />
+          
+          <Card className="p-6">
             <RequirementsSection form={form} />
-            
-            {/* Contact Info Section */}
-            <ContactInfoSection control={form.control} />
-            
-            {/* Upload Section */}
+          </Card>
+          
+          <Separator />
+          
+          <Card className="p-6">
+            <SpecialtiesSection form={form} />
+          </Card>
+          
+          <Separator />
+          
+          <Card className="p-6">
+            <ContactInfoSection form={form} />
+          </Card>
+          
+          <Separator />
+          
+          <Card className="p-6">
             <PhotoUpload
               photoUploads={photoUploads}
               setPhotoUploads={setPhotoUploads}
               maxPhotos={maxPhotos}
             />
+          </Card>
+          
+          <div className="flex justify-between mt-8">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handlePreviousStep}
+            >
+              Back to Templates
+            </Button>
             
-            {/* Pricing Section */}
-            <PricingSection 
-              onPricingChange={handlePricingChange} 
-              pricingOptions={pricingOptions}
-              setPricingOptions={setPricingOptions}
-            />
-            
-            <div className="flex justify-end pt-4">
-              <MobileButton 
-                type="submit" 
-                disabled={isSubmitting}
-                className="w-full sm:w-auto"
-              >
-                {isSubmitting ? 
-                  t({
-                    english: 'Creating...',
-                    vietnamese: 'Đang tạo...'
-                  }) :
-                  t({
-                    english: 'Continue to Preview',
-                    vietnamese: 'Tiếp tục đến Xem trước'
-                  })
-                }
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </MobileButton>
-            </div>
+            <MobileButton 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              {isSubmitting ? "Submitting..." : "Preview Job Post"}
+            </MobileButton>
           </div>
         </form>
       </Form>
     );
   }
 
-  // Step-by-step wizard for regular mode
+  // Regular step-by-step mode
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-        {/* Step 1: Salon & Job Details */}
-        {step === 1 && (
-          <div className="space-y-8">
-            <SalonNameInput
-              value={salonName}
-              onChange={handleSalonNameChange}
-            />
-            <JobDetailsSection control={form.control} />
-            
-            <div className="flex justify-end pt-4">
-              <Button 
-                type="button" 
-                onClick={nextStep}
-                className="w-full sm:w-auto"
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+        <ProgressBar currentStep={activeStep} totalSteps={totalSteps} />
+        
+        {/* Step 1: Job Details */}
+        {activeStep === 1 && (
+          <>
+            <JobDetailsSection form={form} />
+            <div className="flex justify-end">
+              <MobileButton
+                type="button"
+                onClick={handleNextStep}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
-                {t({
-                  english: 'Next: Specialties & Requirements',
-                  vietnamese: 'Tiếp: Chuyên môn & Yêu cầu'
-                })}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+                Continue to Compensation
+              </MobileButton>
             </div>
-          </div>
+          </>
         )}
         
-        {/* Step 2: Specialties & Requirements */}
-        {step === 2 && (
-          <div className="space-y-8">
-            <SpecialtiesSection control={form.control} />
-            <RequirementsSection control={form.control} />
-            
-            <div className="flex justify-between pt-4">
-              <Button 
-                type="button" 
-                onClick={prevStep} 
+        {/* Step 2: Compensation & Requirements */}
+        {activeStep === 2 && (
+          <>
+            <CompensationSection form={form} />
+            <div className="mt-8">
+              <RequirementsSection form={form} />
+            </div>
+            <div className="flex justify-between mt-6">
+              <Button
+                type="button"
                 variant="outline"
+                onClick={handlePreviousStep}
               >
-                {t({
-                  english: 'Back',
-                  vietnamese: 'Quay lại'
-                })}
+                Back
               </Button>
-              <Button 
-                type="button" 
-                onClick={nextStep}
+              <MobileButton
+                type="button"
+                onClick={handleNextStep}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
-                {t({
-                  english: 'Next: Contact & Photos',
-                  vietnamese: 'Tiếp: Liên hệ & Hình ảnh'
-                })}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+                Continue to Specialties
+              </MobileButton>
             </div>
-          </div>
+          </>
         )}
         
-        {/* Step 3: Contact Info & Photos */}
-        {step === 3 && (
-          <div className="space-y-8">
-            <ContactInfoSection control={form.control} />
+        {/* Step 3: Specialties & Contact */}
+        {activeStep === 3 && (
+          <>
+            <SpecialtiesSection form={form} />
+            <div className="mt-8">
+              <ContactInfoSection form={form} />
+            </div>
+            <div className="flex justify-between mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handlePreviousStep}
+              >
+                Back
+              </Button>
+              <MobileButton
+                type="button"
+                onClick={handleNextStep}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                Continue to Photos
+              </MobileButton>
+            </div>
+          </>
+        )}
+        
+        {/* Step 4: Photos & Submit */}
+        {activeStep === 4 && (
+          <>
             <PhotoUpload
               photoUploads={photoUploads}
               setPhotoUploads={setPhotoUploads}
               maxPhotos={maxPhotos}
             />
-            
-            <div className="flex justify-between pt-4">
-              <Button 
-                type="button" 
-                onClick={prevStep} 
+            <div className="flex justify-between mt-6">
+              <Button
+                type="button"
                 variant="outline"
+                onClick={handlePreviousStep}
               >
-                {t({
-                  english: 'Back',
-                  vietnamese: 'Quay lại'
-                })}
+                Back
               </Button>
-              <Button 
-                type="button" 
-                onClick={nextStep}
-              >
-                {t({
-                  english: 'Next: Pricing & Promotion',
-                  vietnamese: 'Tiếp: Định giá & Quảng bá'
-                })}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-        
-        {/* Step 4: Pricing & Promotion */}
-        {step === 4 && (
-          <div className="space-y-8">
-            <PricingSection 
-              onPricingChange={handlePricingChange} 
-              pricingOptions={pricingOptions}
-              setPricingOptions={setPricingOptions}
-            />
-            
-            <div className="flex justify-between pt-4">
-              <Button 
-                type="button" 
-                onClick={prevStep} 
-                variant="outline"
-              >
-                {t({
-                  english: 'Back',
-                  vietnamese: 'Quay lại'
-                })}
-              </Button>
-              <Button 
-                type="submit" 
+              <MobileButton
+                type="submit"
                 disabled={isSubmitting}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
-                {isSubmitting ?
-                  t({
-                    english: 'Creating Job...',
-                    vietnamese: 'Đang tạo công việc...'
-                  }) :
-                  t({
-                    english: 'Create Job Listing',
-                    vietnamese: 'Tạo tin tuyển dụng'
-                  })
-                }
-              </Button>
+                {isSubmitting ? "Submitting..." : "Create Job Post"}
+              </MobileButton>
             </div>
-          </div>
+          </>
         )}
       </form>
     </Form>

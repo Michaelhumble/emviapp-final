@@ -1,6 +1,12 @@
 
 import { z } from 'zod';
 
+// Define industry types
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'spa' | 'receptionist' | 'manager' | 'massage' | 'tattoo' | 'makeup' | 'booth' | 'beauty' | 'custom';
+
+// Define job templates
+export type JobTemplateType = IndustryType;
+
 // Define the schema for job form validation
 export const jobFormSchema = z.object({
   title: z.string().min(1, { message: 'Job title is required' }),
@@ -23,6 +29,8 @@ export const jobFormSchema = z.object({
   specialties: z.array(z.string()).optional(),
   salary_range: z.string().optional(),
   experience_level: z.string().optional(),
+  industry: z.string().optional(), // Store the selected template industry
+  templateType: z.string().optional(), // Store the selected template type
 });
 
 // Infer TypeScript type from schema

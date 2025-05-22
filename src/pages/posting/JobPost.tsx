@@ -16,7 +16,7 @@ import ThankYouModal from '@/components/posting/ThankYouModal';
 const JobPost = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(expressMode ? 0 : 1); // Start with template in express mode
   const [expressMode, setExpressMode] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [previewData, setPreviewData] = useState<JobFormValues | null>(null);
@@ -44,6 +44,13 @@ const JobPost = () => {
       console.log('Salon name in data:', formData.salonName);
       console.log('Pricing options:', pricing);
       
+      // Validate that a template was selected in express mode
+      if (expressMode && !formData.templateType) {
+        toast.error('Please select a job template before publishing');
+        setCurrentStep(0); // Go back to template selection
+        return false;
+      }
+      
       // Convert form data to the expected format for the API
       const jobDetails = {
         title: formData.title,
@@ -66,7 +73,8 @@ const JobPost = () => {
           phone: formData.contactPhone,
           email: formData.contactEmail,
         },
-        post_type: 'job'
+        post_type: 'job',
+        industry: formData.industry
       };
       
       // Initiate payment with our consolidated hook
@@ -75,7 +83,6 @@ const JobPost = () => {
       if (result.success) {
         setShowConfetti(true);
         setShowThankYouModal(true);
-        
         return true;
       } else {
         toast.error('Error processing your job posting. Please try again.');
@@ -95,12 +102,13 @@ const JobPost = () => {
 
   const handleToggleExpressMode = () => {
     setExpressMode(!expressMode);
-    // Reset to step 1 when toggling mode
-    setCurrentStep(1);
+    // Reset to appropriate first step when toggling mode
+    setCurrentStep(expressMode ? 1 : 0); // If leaving express mode, go to step 1, else step 0
     setPreviewData(null);
   };
   
   const handleEditFromPreview = (section?: string) => {
+    // Go back to the form in express mode
     setCurrentStep(1);
     // Optional: Pass the section to focus on when returning to the form
     console.log(`Editing section: ${section}`);
@@ -143,7 +151,8 @@ const JobPost = () => {
         />
       </Helmet>
 
-      {currentStep === 1 && (
+      {/* Template Selection Step in Express Mode */}
+      {expressMode && currentStep === 0 && (
         <Card className="bg-white shadow-md rounded-lg p-6">
           <EnhancedJobForm 
             onSubmit={handleSubmit}
@@ -151,11 +160,27 @@ const JobPost = () => {
             maxPhotos={5}
             defaultFormValues={defaultFormValues}
             expressMode={expressMode}
+            currentStep={currentStep}
           />
         </Card>
       )}
       
-      {currentStep === 2 && expressMode && previewData && (
+      {/* Form Step */}
+      {((expressMode && currentStep === 1) || (!expressMode && currentStep >= 1 && currentStep <= 4)) && (
+        <Card className="bg-white shadow-md rounded-lg p-6">
+          <EnhancedJobForm 
+            onSubmit={handleSubmit}
+            onStepChange={handleStepChange}
+            currentStep={currentStep}
+            maxPhotos={5}
+            defaultFormValues={defaultFormValues}
+            expressMode={expressMode}
+          />
+        </Card>
+      )}
+      
+      {/* Preview Step in Express Mode */}
+      {expressMode && currentStep === 2 && previewData && (
         <JobPreview 
           jobData={previewData}
           onEdit={handleEditFromPreview}

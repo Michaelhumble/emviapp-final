@@ -1,15 +1,24 @@
 
 import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Control } from 'react-hook-form';
+import { Control, UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { JobFormValues } from '../job/jobFormSchema';
 
 interface ContactInfoSectionProps {
-  control: Control<JobFormValues>;
+  control?: Control<JobFormValues>;
+  form?: UseFormReturn<JobFormValues>;
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control }) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form }) => {
+  // Use either control directly or from form object
+  const formControl = control || form?.control;
+  
+  if (!formControl) {
+    console.error("ContactInfoSection requires either control or form prop");
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
@@ -19,7 +28,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control }) => {
       
       {/* Contact Name */}
       <FormField
-        control={control}
+        control={formControl}
         name="contactName"
         render={({ field }) => (
           <FormItem>
@@ -38,7 +47,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control }) => {
       
       {/* Contact Phone */}
       <FormField
-        control={control}
+        control={formControl}
         name="contactPhone"
         render={({ field }) => (
           <FormItem>
@@ -58,7 +67,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control }) => {
       
       {/* Contact Email */}
       <FormField
-        control={control}
+        control={formControl}
         name="contactEmail"
         render={({ field }) => (
           <FormItem>
