@@ -3,7 +3,6 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Scissors, Store, Briefcase, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const MobileBottomNavBar = () => {
@@ -11,7 +10,7 @@ const MobileBottomNavBar = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
-  // Filter the main navigation items to show only key items in the bottom bar
+  // Define bottom navigation items with consistent properties
   const bottomNavItems = [
     { icon: Home, path: '/', label: t('Home') },
     { icon: Briefcase, path: '/jobs', label: t('Jobs') },

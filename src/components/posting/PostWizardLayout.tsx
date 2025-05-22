@@ -7,7 +7,7 @@ import EmviLogo from '@/components/branding/EmviLogo';
 import { Progress } from '@/components/ui/progress';
 import MobileMenu from '@/components/layout/MobileMenu';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
 
 interface PostWizardLayoutProps {
