@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import ContactInfoSection from '../sections/ContactInfoSection';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import { getJobTemplate } from '@/utils/jobs/jobTemplates';
+import { toast } from 'sonner';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
@@ -16,6 +17,8 @@ interface JobFormProps {
 }
 
 const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
@@ -38,6 +41,7 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
       experience_level: '',
       ...defaultValues,
     },
+    mode: 'onBlur', // Validate on blur for better UX
   });
 
   const handleTemplateSelect = (templateType: IndustryType) => {
@@ -100,14 +104,46 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
     }
   };
 
+  // Enforce validation and show toast with errors if form is invalid
+  const handleSubmit = async (data: JobFormValues) => {
+    setIsSubmitting(true);
+    try {
+      // Map form values to JobDetailsSubmission structure
+      const formattedData = {
+        ...data,
+        // Required by JobDetailsSubmission
+        company: data.salonName, // For backward compatibility
+        contact_info: {
+          owner_name: data.contactName,
+          phone: data.contactPhone,
+          email: data.contactEmail,
+          notes: '',
+        },
+      };
+      
+      onSubmit(formattedData);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error("There was a problem submitting your form");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <JobDetailsSection form={form} />
         <ContactInfoSection form={form} />
 
-        <div className="flex justify-end">
-          <Button type="submit">Submit</Button>
+        <div className="flex justify-end mt-6">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="min-w-[150px] bg-primary text-white hover:bg-primary/90"
+          >
+            {isSubmitting ? 'Submitting...' : 'Continue'}
+          </Button>
         </div>
       </form>
     </Form>

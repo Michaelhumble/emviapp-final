@@ -21,7 +21,7 @@ export const jobFormSchema = z.object({
   vietnameseDescription: z.string().optional(),
   location: z.string().min(1, { message: 'Location is required' }),
   jobType: z.enum(['full-time', 'part-time', 'contract', 'temporary']).default('full-time'),
-  compensation_type: z.enum(['hourly', 'commission', 'salary', 'hybrid']).default('hourly'),
+  compensation_type: z.enum(['hourly', 'commission', 'salary', 'hybrid']).optional(),
   compensation_details: z.string().optional(),
   weekly_pay: z.boolean().default(false),
   has_housing: z.boolean().default(false),

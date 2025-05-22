@@ -9,7 +9,7 @@ interface ContactInfoSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
   onNext?: () => void;
-  onPrevious?: () => void; // Ensure this prop is properly declared
+  onPrevious?: () => void; 
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext, onPrevious }) => {
@@ -101,7 +101,13 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, 
         {onNext && (
           <button
             type="button"
-            onClick={onNext}
+            onClick={() => {
+              // Validate contact fields before proceeding
+              const isValid = form?.trigger(['contactName', 'contactPhone', 'contactEmail']);
+              if (isValid) {
+                onNext();
+              }
+            }}
             className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 ml-auto"
           >
             Next

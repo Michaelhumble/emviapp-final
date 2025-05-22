@@ -87,7 +87,7 @@ export type JobDetailsSubmission = {
   title: string;
   description: string;
   location: string;
-  company: string | undefined; // For backward compatibility
+  company?: string; // For backward compatibility
   salonName: string; // Making salonName the standard field for salon/company name
   jobType: string;
   
