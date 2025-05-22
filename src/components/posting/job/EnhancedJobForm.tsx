@@ -43,6 +43,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       contactEmail: '',
       contactName: '',
       contactPhone: '',
+      requirements: [],
+      specialties: [],
       ...defaultValues, // Override with any provided defaultValues
     },
   });
@@ -122,7 +124,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     form.reset({
       ...template,
       // Always preserve the salon name from the current form if it exists
-      salonName: form.getValues('salonName') || template.salonName
+      salonName: form.getValues('salonName') || template.salonName,
+      // Ensure requirements and specialties are arrays
+      requirements: Array.isArray(template.requirements) ? template.requirements : [],
+      specialties: Array.isArray(template.specialties) ? template.specialties : [],
     });
     setSelectedTemplate(templateType);
     // Move to the next step
