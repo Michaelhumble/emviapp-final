@@ -31,7 +31,7 @@ export const jobFormSchema = z.object({
   owner_will_train: z.boolean().default(false),
   no_supply_deduction: z.boolean().default(false),
   
-  // Additional fields mentioned in errors but not in original schema
+  // Additional fields
   salary_range: z.string().optional(),
   experience_level: z.string().optional(),
 });

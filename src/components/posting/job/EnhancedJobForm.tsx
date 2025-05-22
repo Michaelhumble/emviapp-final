@@ -9,13 +9,13 @@ import ContactInfoSection from '../sections/ContactInfoSection';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 
 // Import sections
 import UploadSection from '../sections/UploadSection';
 import PricingSection from '../sections/PricingSection';
 import JobTemplateSelector from './JobTemplateSelector';
 import SpecialtiesRequirementsSection from '../sections/SpecialtiesRequirementsSection';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { PricingOptions } from '@/utils/posting/types';
 
 interface EnhancedJobFormProps {
