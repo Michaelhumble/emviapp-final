@@ -10,6 +10,7 @@ import JobDetailsSection from '../sections/JobDetailsSection';
 import RequirementsSection from '../sections/RequirementsSection';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import JobForm from './JobForm';
 
 // Import sections
 import UploadSection from '../sections/UploadSection';
@@ -22,152 +23,32 @@ interface EnhancedJobFormProps {
   onStepChange: (step: number) => void;
   maxPhotos?: number;
   defaultValues?: Partial<JobFormValues>;
+  initialIndustryType?: string;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
   onSubmit, 
   onStepChange, 
   maxPhotos = 5,
-  defaultValues = {}
+  defaultValues = {},
+  initialIndustryType
 }) => {
-  // Initialize the form with default values including salonName
-  const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      salonName: '',
-      title: '',
-      description: '',
-      location: '',
-      contactEmail: '',
-      contactName: '',
-      contactPhone: '',
-      industryType: '',
-      ...defaultValues, // Override with any provided defaultValues
-    },
-  });
-
-  const [step, setStep] = useState(1);
-  const [uploads, setUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions | null>(null);
-  const navigate = useNavigate();
-
-  const handleNext = () => {
-    // Get the current step validation status
-    let isValid = false;
-    
-    if (step === 1) {
-      // Industry selection step validation
-      form.trigger(['industryType'])
-        .then(valid => {
-          if (valid && form.getValues('industryType')) {
-            setStep(step + 1);
-            onStepChange(step + 1);
-          } else {
-            toast.error("Please select an industry to continue");
-          }
-        });
-      return;
-    }
-    
-    if (step === 2) {
-      // Contact info and job details validation
-      form.trigger(['salonName', 'contactEmail', 'title', 'description', 'location', 'jobType'])
-        .then(valid => {
-          if (valid) {
-            setStep(step + 1);
-            onStepChange(step + 1);
-          }
-        });
-      return;
-    }
-    
-    // Default case - just go to next step
-    setStep(step + 1);
-    onStepChange(step + 1);
-  };
-
-  const handlePrev = () => {
-    setStep(step - 1);
-    onStepChange(step - 1);
-  };
-
-  const handleFormSubmit = async (data: JobFormValues) => {
-    console.log('Submitting form with data:', data);
-    console.log('Current uploads:', uploads);
-    console.log('Pricing options at submit:', pricingOptions);
-
-    if (!pricingOptions) {
-      toast.error('Please select pricing options');
-      return;
-    }
-
-    const success = await onSubmit(data, uploads, pricingOptions);
-    if (success) {
-      toast.success('Job post created successfully!');
-      navigate('/dashboard');
-    } else {
-      toast.error('Failed to create job post.');
-    }
-  };
-
-  const handlePricingOptionsChange = (options: PricingOptions) => {
-    setPricingOptions(options);
+  const [currentStep, setCurrentStep] = useState(1);
+  
+  // Handle step change
+  const handleStepChange = (step: number) => {
+    setCurrentStep(step);
+    onStepChange(step);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Step 1: Industry Selection */}
-        {step === 1 && (
-          <IndustrySpecialtiesSection 
-            control={form.control} 
-            industry={form.getValues('industryType')}
-          />
-        )}
-
-        {/* Step 2: Contact Info & Job Details */}
-        {step === 2 && (
-          <div className="space-y-8">
-            <ContactInfoSection form={form} />
-            <JobDetailsSection 
-              form={form} 
-              showVietnameseByDefault={form.getValues('industryType') === 'nails'} 
-            />
-            <RequirementsSection control={form.control} />
-            <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
-          </div>
-        )}
-
-        {/* Step 3: Pricing */}
-        {step === 3 && (
-          <PricingSection onPricingChange={handlePricingOptionsChange} />
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between">
-          {step > 1 && (
-            <Button type="button" variant="secondary" onClick={handlePrev}>
-              Previous
-            </Button>
-          )}
-
-          {step < 3 ? (
-            <Button 
-              type="button" 
-              onClick={handleNext} 
-              className="ml-auto"
-              disabled={step === 1 && !form.getValues('industryType')}
-            >
-              Next
-            </Button>
-          ) : (
-            <Button type="submit" disabled={!pricingOptions} className="ml-auto">
-              Submit
-            </Button>
-          )}
-        </div>
-      </form>
-    </Form>
+    <JobForm 
+      onSubmit={onSubmit}
+      onStepChange={handleStepChange}
+      maxPhotos={maxPhotos}
+      defaultValues={defaultValues}
+      initialIndustryType={initialIndustryType}
+    />
   );
 };
 

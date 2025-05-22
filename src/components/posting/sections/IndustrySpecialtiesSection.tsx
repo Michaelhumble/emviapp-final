@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Control } from 'react-hook-form';
 import { 
   FormField, 
@@ -35,7 +35,7 @@ interface IndustryOption {
   id: string;
   title: string;
   description: string;
-  icon: LucideIcon; // Updated to use LucideIcon type
+  icon: LucideIcon; // LucideIcon type for direct component reference
 }
 
 const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ control, industry }) => {
@@ -44,7 +44,7 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
       id: 'nails', 
       title: 'Nail Technician', 
       description: 'For salons seeking skilled nail technicians with experience in manicures, pedicures, and nail art.',
-      icon: Palmtree // Pass the component directly
+      icon: Palmtree // Direct component reference
     },
     { 
       id: 'hair', 
