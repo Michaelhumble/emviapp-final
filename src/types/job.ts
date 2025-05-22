@@ -114,6 +114,10 @@ export type JobDetailsSubmission = {
   user_id?: string;
   post_type?: string;
   salonName?: string; // Ensure salonName property is here
+  photos?: File[]; // Add photos property to fix the TypeScript error
+  jobType?: string; // Add jobType property
+  salary?: string; // Add salary property
+  company?: string; // Add company property
 }
 
 // Import the PricingOptions from the canonical source

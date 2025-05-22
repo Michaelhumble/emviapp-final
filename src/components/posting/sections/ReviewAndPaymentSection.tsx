@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/lib/utils';
-import PaymentSummary, { PriceData } from '@/components/posting/PaymentSummary';
+import { PaymentSummary, PriceData } from '@/components/posting/PaymentSummary';
 
 interface ReviewAndPaymentSectionProps {
   priceData: PriceData;

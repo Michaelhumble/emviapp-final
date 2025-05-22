@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
@@ -9,12 +10,16 @@ import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import PostWizardLayout from '@/components/layout/PostWizardLayout';
+import { calculatePricing } from '@/utils/posting/pricing';
+import { PaymentSummary } from '@/components/posting/PaymentSummary';
+import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
 
 // Define the posting steps for a clearer workflow
 enum PostingStep {
   JOB_DETAILS = 0,
   PRICING = 1,
-  PROCESSING = 2
+  PAYMENT_REVIEW = 2,
+  PROCESSING = 3
 }
 
 interface JobPostWrapperProps {
@@ -34,14 +39,55 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
   // Track the current step in the posting process
   const [currentStep, setCurrentStep] = useState<PostingStep>(PostingStep.PRICING);
   const [isFirstPost, setIsFirstPost] = useState<boolean>(true);
+  const [selectedOptions, setSelectedOptions] = useState<PricingOptions | null>(null);
+  const [priceData, setPriceData] = useState<any>(null);
   
   // We'd fetch the user's post count from API to determine if it's their first post
   // For now, we'll just assume it's their first post
   
-  const handleSelectPlan = async (options: PricingOptions) => {
+  const handleSelectPlan = (options: PricingOptions) => {
+    setSelectedOptions(options);
+    
+    // Calculate pricing data
+    const pricingData = calculatePricing(
+      options.selectedPricingTier,
+      options.durationMonths,
+      options.autoRenew || false,
+      isFirstPost,
+      options.isNationwide || false
+    );
+    
+    setPriceData({
+      basePrice: pricingData.originalPrice / options.durationMonths,
+      originalPrice: pricingData.originalPrice,
+      finalPrice: pricingData.finalPrice,
+      discountAmount: pricingData.originalPrice - pricingData.finalPrice,
+      discountPercentage: pricingData.discountPercentage
+    });
+    
+    // Move to payment review step
+    setCurrentStep(PostingStep.PAYMENT_REVIEW);
+  };
+
+  const handleGoBack = () => {
+    if (currentStep === PostingStep.PRICING) {
+      // Go back to job details
+      onBack();
+    } else if (currentStep === PostingStep.PAYMENT_REVIEW) {
+      // Go back to pricing
+      setCurrentStep(PostingStep.PRICING);
+    }
+  };
+  
+  const handleProceedToPayment = async () => {
     if (!user) {
       toast.error("You need to be logged in to post a job");
       navigate('/login', { state: { from: location } });
+      return;
+    }
+    
+    if (!selectedOptions) {
+      toast.error("Please select a plan first");
       return;
     }
     
@@ -49,7 +95,7 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
     setCurrentStep(PostingStep.PROCESSING);
     
     try {
-      const result = await initiatePayment('job', jobDetails, options);
+      const result = await initiatePayment('job', jobDetails, selectedOptions);
       
       if (result.waitlisted) {
         navigate('/dashboard');
@@ -59,20 +105,15 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
       // If it's a free post or payment was successful, the redirect will happen in the initiatePayment function
       // Otherwise, we should return to the pricing step
       if (!result.success) {
-        setCurrentStep(PostingStep.PRICING);
+        setCurrentStep(PostingStep.PAYMENT_REVIEW);
         toast.error("There was an issue with your payment. Please try again.");
       }
       
     } catch (error) {
       console.error("Error in job post payment process:", error);
-      setCurrentStep(PostingStep.PRICING);
+      setCurrentStep(PostingStep.PAYMENT_REVIEW);
       toast.error("There was an error processing your request. Please try again later.");
     }
-  };
-
-  const handleGoBack = () => {
-    // Go back to job details
-    onBack();
   };
   
   // Calculate total steps based on the enum
@@ -99,6 +140,42 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
             </Button>
           </div>
         </div>
+      )}
+      
+      {currentStep === PostingStep.PAYMENT_REVIEW && selectedOptions && priceData && (
+        <ReviewAndPaymentSection
+          priceData={priceData}
+          durationMonths={selectedOptions.durationMonths}
+          autoRenew={selectedOptions.autoRenew || false}
+          onAutoRenewChange={(checked) => {
+            if (selectedOptions) {
+              const updatedOptions = {
+                ...selectedOptions,
+                autoRenew: checked
+              };
+              setSelectedOptions(updatedOptions);
+              
+              // Recalculate pricing
+              const updatedPricing = calculatePricing(
+                updatedOptions.selectedPricingTier,
+                updatedOptions.durationMonths,
+                checked,
+                isFirstPost,
+                updatedOptions.isNationwide || false
+              );
+              
+              setPriceData({
+                basePrice: updatedPricing.originalPrice / updatedOptions.durationMonths,
+                originalPrice: updatedPricing.originalPrice,
+                finalPrice: updatedPricing.finalPrice,
+                discountAmount: updatedPricing.originalPrice - updatedPricing.finalPrice,
+                discountPercentage: updatedPricing.discountPercentage
+              });
+            }
+          }}
+          onProceedToPayment={handleProceedToPayment}
+          isProcessing={isLoading}
+        />
       )}
       
       {currentStep === PostingStep.PROCESSING && (
