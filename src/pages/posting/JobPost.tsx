@@ -1,204 +1,195 @@
 
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema, JobFormValues, JobTemplateType } from '@/components/posting/job/jobFormSchema';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
-import { Card } from '@/components/ui/card';
-import EnhancedJobForm from '@/components/posting/job/EnhancedJobForm';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { useNavigate } from 'react-router-dom';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { toast } from 'sonner';
-import { PricingOptions } from '@/utils/posting/types';
-import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
+import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
+import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
+import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
+import { MobileButton } from '@/components/ui/mobile-button';
+import SpecialtiesRequirementsSection from '@/components/posting/sections/SpecialtiesRequirementsSection';
+import PhotoUpload from '@/components/posting/sections/PhotoUpload';
 import JobPreview from '@/components/posting/JobPreview';
-import ThankYouModal from '@/components/posting/ThankYouModal';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { getJobTemplate } from '@/utils/jobs/jobTemplates';
+import { useJobPosting } from '@/hooks/jobs/useJobPosting';
+import { toast } from 'sonner';
+
+// Define the possible steps in the job posting process
+type JobPostStep = 'template' | 'details' | 'specialties' | 'contact' | 'photos' | 'preview' | 'payment';
 
 const JobPost = () => {
-  const navigate = useNavigate();
-  const { initiatePayment, isLoading } = usePostPayment();
-  const [currentStep, setCurrentStep] = useState(expressMode ? 0 : 1); // Start with template in express mode
-  const [expressMode, setExpressMode] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [previewData, setPreviewData] = useState<JobFormValues | null>(null);
-  const [showThankYouModal, setShowThankYouModal] = useState(false);
+  // Define state variables
+  const [step, setStep] = useState<JobPostStep>('template');
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'premium',
-    durationMonths: 1,
-    autoRenew: true,
-    isFirstPost: true
+  const [expressMode, setExpressMode] = useState<boolean>(true);
+  
+  const { handleJobPost } = useJobPosting();
+  const navigate = useNavigate();
+
+  // Initialize form with zod resolver
+  const form = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: {
+      title: '',
+      salonName: '',
+      description: '',
+      location: '',
+      jobType: 'full-time',
+      compensation_type: 'hourly',
+      contactName: '',
+      contactEmail: '',
+      contactPhone: '',
+      weekly_pay: false,
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: false,
+      requirements: [],
+      specialties: [],
+    },
   });
 
-  const handleSubmit = async (formData: JobFormValues, uploads: File[], pricing: PricingOptions) => {
-    if (expressMode && currentStep === 1) {
-      // In Express Mode, first submission moves to preview
-      setPreviewData(formData);
-      setPhotoUploads(uploads);
-      setPricingOptions(pricing);
-      setCurrentStep(2);
-      return true; // Return true to prevent form reset
+  // Navigation functions between steps
+  const goToNextStep = () => {
+    switch (step) {
+      case 'template': setStep('details'); break;
+      case 'details': setStep('specialties'); break;
+      case 'specialties': setStep('contact'); break;
+      case 'contact': setStep('photos'); break;
+      case 'photos': setStep('preview'); break;
+      case 'preview': setStep('payment'); break;
+      default: break;
     }
-    
+  };
+
+  const goToPreviousStep = () => {
+    switch (step) {
+      case 'details': setStep('template'); break;
+      case 'specialties': setStep('details'); break;
+      case 'contact': setStep('specialties'); break;
+      case 'photos': setStep('contact'); break;
+      case 'preview': setStep('photos'); break;
+      case 'payment': setStep('preview'); break;
+      default: break;
+    }
+  };
+
+  const handleFormSubmit = async (data: JobFormValues) => {
+    console.log('Form submitted with data:', data);
+
     try {
-      console.log('Form submitted with data:', formData);
-      console.log('Salon name in data:', formData.salonName);
-      console.log('Pricing options:', pricing);
-      
-      // Validate that a template was selected in express mode
-      if (expressMode && !formData.templateType) {
-        toast.error('Please select a job template before publishing');
-        setCurrentStep(0); // Go back to template selection
-        return false;
-      }
-      
-      // Convert form data to the expected format for the API
-      const jobDetails = {
-        title: formData.title,
-        description: formData.description,
-        vietnamese_description: formData.vietnameseDescription,
-        location: formData.location,
-        employment_type: formData.jobType, 
-        compensation_type: formData.compensation_type,
-        compensation_details: formData.compensation_details,
-        weekly_pay: formData.weekly_pay,
-        has_housing: formData.has_housing,
-        has_wax_room: formData.has_wax_room,
-        owner_will_train: formData.owner_will_train,
-        no_supply_deduction: formData.no_supply_deduction,
-        salary_range: formData.salary_range,
-        experience_level: formData.experience_level,
-        salonName: formData.salonName,
-        contact_info: {
-          owner_name: formData.contactName,
-          phone: formData.contactPhone,
-          email: formData.contactEmail,
-        },
-        post_type: 'job',
-        industry: formData.industry
-      };
-      
-      // Initiate payment with our consolidated hook
-      const result = await initiatePayment('job', jobDetails, pricing);
-      
-      if (result.success) {
-        setShowConfetti(true);
-        setShowThankYouModal(true);
-        return true;
+      const success = await handleJobPost({
+        ...data,
+        // Add any additional fields needed for job post
+        user_id: 'user_123', // Replace with actual user ID from auth context
+        status: 'active',
+        created_at: new Date().toISOString(),
+      });
+
+      if (success) {
+        toast.success('Job posted successfully!');
+        navigate('/dashboard');
       } else {
-        toast.error('Error processing your job posting. Please try again.');
-        return false;
+        toast.error('Failed to post job');
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('Error creating job post');
-      return false;
+      console.error('Error posting job:', error);
+      toast.error('Error posting job');
     }
   };
 
-  const handleStepChange = (step: number) => {
-    console.log(`Changing step to ${step}`);
-    setCurrentStep(step);
+  // Handle template selection
+  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
+    form.reset({
+      ...template,
+      industry: templateType,
+    });
+    goToNextStep();
   };
 
-  const handleToggleExpressMode = () => {
+  // Get the current step based on the state
+  const renderCurrentStep = () => {
+    switch (step) {
+      case 'template':
+        return <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />;
+      case 'details':
+        return <JobDetailsSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} expressMode={expressMode} />;
+      case 'specialties':
+        return <SpecialtiesRequirementsSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} expressMode={expressMode} />;
+      case 'contact':
+        return <ContactInfoSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} />;
+      case 'photos':
+        return <PhotoUpload photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />;
+      case 'preview':
+        return <JobPreview formData={form.getValues()} photoUploads={photoUploads} onEdit={(section) => {
+          switch (section) {
+            case 'details': setStep('details'); break;
+            case 'specialties': setStep('specialties'); break;
+            case 'contact': setStep('contact'); break;
+            case 'photos': setStep('photos'); break;
+            default: break;
+          }
+        }} />;
+      default:
+        return <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />;
+    }
+  };
+
+  // Toggle between express and guided modes
+  const toggleExpressMode = () => {
     setExpressMode(!expressMode);
-    // Reset to appropriate first step when toggling mode
-    setCurrentStep(expressMode ? 1 : 0); // If leaving express mode, go to step 1, else step 0
-    setPreviewData(null);
-  };
-  
-  const handleEditFromPreview = (section?: string) => {
-    // Go back to the form in express mode
-    setCurrentStep(1);
-    // Optional: Pass the section to focus on when returning to the form
-    console.log(`Editing section: ${section}`);
-  };
-  
-  const handlePublishFromPreview = async () => {
-    if (previewData) {
-      await handleSubmit(previewData, photoUploads, pricingOptions);
-    }
-  };
-  
-  const handleBoostPost = () => {
-    setShowThankYouModal(false);
-    // Navigate to boost page or show boost options
-    navigate('/dashboard');
   };
 
-  // Define default values for the form, ensuring salonName is included
-  const defaultFormValues: Partial<JobFormValues> = {
-    salonName: '',
-    contactEmail: '',
-    contactName: '',
-    contactPhone: '',
-    salary_range: '',
-    experience_level: ''
+  // Define the current step number and total steps for the progress bar
+  const getCurrentStepNumber = () => {
+    switch (step) {
+      case 'template': return 1;
+      case 'details': return 2;
+      case 'specialties': return 3;
+      case 'contact': return 4;
+      case 'photos': return 5;
+      case 'preview': return 6;
+      case 'payment': return 7;
+      default: return 1;
+    }
   };
+
+  const totalSteps = 7;
 
   return (
     <PostWizardLayout 
-      currentStep={currentStep} 
-      totalSteps={expressMode ? 2 : 4} 
-      expressMode={expressMode} 
-      onToggleExpressMode={handleToggleExpressMode}
+      currentStep={getCurrentStepNumber()} 
+      totalSteps={totalSteps}
+      expressMode={expressMode}
+      onToggleExpressMode={toggleExpressMode}
     >
-      <Helmet>
-        <title>Create Job Listing | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Create a job posting on EmviApp to find qualified beauty professionals."
-        />
-      </Helmet>
-
-      {/* Template Selection Step in Express Mode */}
-      {expressMode && currentStep === 0 && (
-        <Card className="bg-white shadow-md rounded-lg p-6">
-          <EnhancedJobForm 
-            onSubmit={handleSubmit}
-            onStepChange={handleStepChange}
-            maxPhotos={5}
-            defaultFormValues={defaultFormValues}
-            expressMode={expressMode}
-            currentStep={currentStep}
-          />
-        </Card>
-      )}
-      
-      {/* Form Step */}
-      {((expressMode && currentStep === 1) || (!expressMode && currentStep >= 1 && currentStep <= 4)) && (
-        <Card className="bg-white shadow-md rounded-lg p-6">
-          <EnhancedJobForm 
-            onSubmit={handleSubmit}
-            onStepChange={handleStepChange}
-            currentStep={currentStep}
-            maxPhotos={5}
-            defaultFormValues={defaultFormValues}
-            expressMode={expressMode}
-          />
-        </Card>
-      )}
-      
-      {/* Preview Step in Express Mode */}
-      {expressMode && currentStep === 2 && previewData && (
-        <JobPreview 
-          jobData={previewData}
-          onEdit={handleEditFromPreview}
-          onPublish={handlePublishFromPreview}
-          isPublishing={isLoading}
-        />
-      )}
-      
-      {/* Celebration confetti effect on successful job post */}
-      {showConfetti && <ConfettiExplosion duration={3000} particleCount={100} />}
-      
-      {/* Thank you modal after successful submission */}
-      <ThankYouModal
-        open={showThankYouModal}
-        onOpenChange={setShowThankYouModal}
-        postType="job"
-        onBoostClick={handleBoostPost}
-      />
+      <FormProvider {...form}>
+        {renderCurrentStep()}
+        
+        {/* Navigation buttons for express mode */}
+        {expressMode && step !== 'template' && step !== 'preview' && (
+          <div className="flex justify-between mt-6">
+            <Button variant="outline" type="button" onClick={goToPreviousStep}>
+              Previous
+            </Button>
+            <Button type="button" onClick={goToNextStep}>
+              Next
+            </Button>
+          </div>
+        )}
+        
+        {/* Submit button for preview step */}
+        {step === 'preview' && (
+          <div className="flex justify-center mt-8">
+            <MobileButton onClick={form.handleSubmit(handleFormSubmit)} className="bg-primary hover:bg-primary/90">
+              Publish Job
+            </MobileButton>
+          </div>
+        )}
+      </FormProvider>
     </PostWizardLayout>
   );
 };

@@ -1,275 +1,206 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { JobFormValues } from './job/jobFormSchema';
 import { Button } from '@/components/ui/button';
-import { MobileButton } from '@/components/ui/mobile-button';
-import { Calendar, MapPin, Banknote, BadgeCheck, Clock, Home, Paintbrush, Phone, Mail, User, PenSquare } from 'lucide-react';
+import { Edit, MapPin, Clock, DollarSign, Award, CheckCircle, House, BadgeDollarSign, School } from 'lucide-react';
 
 interface JobPreviewProps {
-  jobData: JobFormValues;
-  onEdit: (section?: string) => void;
-  onPublish: () => void;
-  isPublishing?: boolean;
+  formData: JobFormValues;
+  photoUploads: File[];
+  onEdit: (section: string) => void;
 }
 
-const JobPreview: React.FC<JobPreviewProps> = ({ 
-  jobData, 
-  onEdit, 
-  onPublish, 
-  isPublishing = false 
-}) => {
-  return (
-    <div className="space-y-6">
-      <Card className="overflow-hidden border-gray-200">
-        <div className="bg-gradient-to-r from-purple-100 to-indigo-100 p-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">{jobData.title}</h2>
-              <p className="text-gray-700 mt-1">{jobData.salonName}</p>
-              
-              <div className="flex items-center mt-3 text-gray-600">
-                <MapPin size={16} className="mr-1" />
-                <span>{jobData.location}</span>
-              </div>
-            </div>
-            
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => onEdit('basic')}
-              className="bg-white/80 hover:bg-white"
+const JobPreview: React.FC<JobPreviewProps> = ({ formData, photoUploads, onEdit }) => {
+  // Function to render the preview section with an edit button
+  const renderSection = (title: string, content: React.ReactNode, section: string) => {
+    return (
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold text-lg">{title}</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(section)}
+              className="flex items-center gap-1 text-sm"
             >
-              <PenSquare size={16} className="mr-1" />
+              <Edit className="h-4 w-4" />
               Edit
             </Button>
           </div>
-        </div>
+          {content}
+        </CardContent>
+      </Card>
+    );
+  };
 
-        <CardContent className="p-0">
-          {/* Job Details Section */}
-          <div className="p-6 border-b">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold">Job Details</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => onEdit('details')}
-              >
-                <PenSquare size={14} className="mr-1" />
-                Edit
-              </Button>
+  // Create URLs for photo previews
+  const photoUrls = photoUploads.map(file => URL.createObjectURL(file));
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-center mb-6">Preview Your Job Posting</h2>
+      <p className="text-center text-gray-600 mb-6">
+        Review your job posting below. Click "Edit" on any section to make changes.
+      </p>
+
+      {/* Main Job Details Section */}
+      {renderSection(
+        "Job Details",
+        <div className="space-y-4">
+          <h1 className="text-xl font-bold">{formData.title || "Job Title"}</h1>
+          <div className="text-lg font-semibold">{formData.salonName || "Salon Name"}</div>
+          
+          <div className="flex items-center text-gray-600">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span>{formData.location || "Location"}</span>
+          </div>
+          
+          <div className="flex items-center text-gray-600">
+            <Clock className="h-4 w-4 mr-1" />
+            <span>{formData.jobType === 'full-time' ? 'Full-time' : 
+                  formData.jobType === 'part-time' ? 'Part-time' : 
+                  formData.jobType === 'contract' ? 'Contract' : 'Temporary'}</span>
+          </div>
+
+          <div className="flex items-center text-gray-600">
+            <DollarSign className="h-4 w-4 mr-1" />
+            <span>{formData.compensation_type === 'hourly' ? 'Hourly' : 
+                  formData.compensation_type === 'commission' ? 'Commission' : 
+                  formData.compensation_type === 'salary' ? 'Salary' : 'Hybrid'}</span>
+            {formData.salary_range && <span className="ml-1">• {formData.salary_range}</span>}
+          </div>
+          
+          <div className="mt-4">
+            <h4 className="font-medium mb-2">Description</h4>
+            <p className="whitespace-pre-wrap">{formData.description || "No description provided."}</p>
+          </div>
+          
+          {formData.vietnameseDescription && (
+            <div className="mt-4 p-3 bg-gray-50 rounded-md">
+              <h4 className="font-medium mb-2">Vietnamese Description</h4>
+              <p className="whitespace-pre-wrap">{formData.vietnameseDescription}</p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center">
-                <Clock size={18} className="mr-3 text-gray-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Job Type</p>
-                  <p className="font-medium">{jobData.jobType?.replace('-', ' ')}</p>
-                </div>
+          )}
+        </div>,
+        "details"
+      )}
+
+      {/* Specialties & Requirements Section */}
+      {renderSection(
+        "Specialties & Requirements",
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium mb-2">Specialties</h4>
+            {Array.isArray(formData.specialties) && formData.specialties.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {formData.specialties.map((specialty, index) => (
+                  <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    {specialty}
+                  </span>
+                ))}
               </div>
-              
-              <div className="flex items-center">
-                <Banknote size={18} className="mr-3 text-gray-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Compensation</p>
-                  <p className="font-medium">{jobData.compensation_type} {jobData.compensation_details}</p>
-                </div>
-              </div>
-              
-              {jobData.salary_range && (
-                <div className="flex items-center">
-                  <Banknote size={18} className="mr-3 text-gray-500" />
-                  <div>
-                    <p className="text-sm text-gray-500">Salary Range</p>
-                    <p className="font-medium">{jobData.salary_range}</p>
-                  </div>
-                </div>
-              )}
-              
-              {jobData.experience_level && (
-                <div className="flex items-center">
-                  <BadgeCheck size={18} className="mr-3 text-gray-500" />
-                  <div>
-                    <p className="text-sm text-gray-500">Experience</p>
-                    <p className="font-medium">{jobData.experience_level}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Benefits */}
-            {(jobData.weekly_pay || jobData.has_housing || jobData.has_wax_room || jobData.owner_will_train || jobData.no_supply_deduction) && (
-              <div className="mt-4">
-                <p className="text-sm text-gray-500 mb-2">Benefits</p>
-                <div className="flex flex-wrap gap-2">
-                  {jobData.weekly_pay && (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
-                      Weekly Pay
-                    </Badge>
-                  )}
-                  {jobData.has_housing && (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
-                      Housing Provided
-                    </Badge>
-                  )}
-                  {jobData.has_wax_room && (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
-                      Wax Room
-                    </Badge>
-                  )}
-                  {jobData.owner_will_train && (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
-                      Training Provided
-                    </Badge>
-                  )}
-                  {jobData.no_supply_deduction && (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
-                      No Supply Deduction
-                    </Badge>
-                  )}
-                </div>
-              </div>
+            ) : (
+              <p className="text-gray-500">No specialties specified.</p>
             )}
           </div>
-          
-          {/* Description Section */}
-          <div className="p-6 border-b">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold">Description</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => onEdit('description')}
-              >
-                <PenSquare size={14} className="mr-1" />
-                Edit
-              </Button>
-            </div>
-            
-            <div className="prose max-w-none">
-              <p className="whitespace-pre-line">{jobData.description}</p>
-              
-              {jobData.vietnameseDescription && (
-                <>
-                  <div className="my-4 border-t border-dashed"></div>
-                  <h4 className="text-md font-medium mt-4">Tiếng Việt</h4>
-                  <p className="whitespace-pre-line">{jobData.vietnameseDescription}</p>
-                </>
-              )}
-            </div>
-          </div>
-          
-          {/* Requirements Section */}
-          {(Array.isArray(jobData.requirements) && jobData.requirements.length > 0) && (
-            <div className="p-6 border-b">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold">Requirements</h3>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => onEdit('requirements')}
-                >
-                  <PenSquare size={14} className="mr-1" />
-                  Edit
-                </Button>
-              </div>
-              
+
+          <div>
+            <h4 className="font-medium mb-2">Requirements</h4>
+            {Array.isArray(formData.requirements) && formData.requirements.length > 0 ? (
               <ul className="list-disc pl-5 space-y-1">
-                {jobData.requirements.map((requirement, index) => (
+                {formData.requirements.map((requirement, index) => (
                   <li key={index}>{requirement}</li>
                 ))}
               </ul>
-            </div>
-          )}
+            ) : (
+              <p className="text-gray-500">No requirements specified.</p>
+            )}
+          </div>
           
-          {/* Specialties Section */}
-          {(Array.isArray(jobData.specialties) && jobData.specialties.length > 0) && (
-            <div className="p-6 border-b">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold">Specialties</h3>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => onEdit('specialties')}
-                >
-                  <PenSquare size={14} className="mr-1" />
-                  Edit
-                </Button>
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                {jobData.specialties.map((specialty, index) => (
-                  <Badge key={index} variant="secondary" className="bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-200">
-                    <Paintbrush size={12} className="mr-1" />
-                    {specialty}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Contact Information */}
-          <div className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold">Contact Information</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => onEdit('contact')}
-              >
-                <PenSquare size={14} className="mr-1" />
-                Edit
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <User size={18} className="mr-3 text-gray-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Contact Name</p>
-                  <p className="font-medium">{jobData.contactName}</p>
+          <div>
+            <h4 className="font-medium mb-2">Benefits</h4>
+            <div className="grid grid-cols-2 gap-2">
+              {formData.weekly_pay && (
+                <div className="flex items-center">
+                  <BadgeDollarSign className="h-4 w-4 mr-1 text-green-600" />
+                  <span>Weekly Pay</span>
                 </div>
-              </div>
+              )}
               
-              <div className="flex items-center">
-                <Phone size={18} className="mr-3 text-gray-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <p className="font-medium">{jobData.contactPhone}</p>
+              {formData.has_housing && (
+                <div className="flex items-center">
+                  <House className="h-4 w-4 mr-1 text-green-600" />
+                  <span>Housing Available</span>
                 </div>
-              </div>
+              )}
               
-              <div className="flex items-center">
-                <Mail size={18} className="mr-3 text-gray-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-medium">{jobData.contactEmail}</p>
+              {formData.has_wax_room && (
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-1 text-green-600" />
+                  <span>Wax Room Available</span>
                 </div>
-              </div>
+              )}
+              
+              {formData.owner_will_train && (
+                <div className="flex items-center">
+                  <School className="h-4 w-4 mr-1 text-green-600" />
+                  <span>Owner Will Train</span>
+                </div>
+              )}
+              
+              {formData.no_supply_deduction && (
+                <div className="flex items-center">
+                  <Award className="h-4 w-4 mr-1 text-green-600" />
+                  <span>No Supply Deduction</span>
+                </div>
+              )}
             </div>
           </div>
-        </CardContent>
-      </Card>
-      
-      <div className="flex flex-col space-y-4">
-        <MobileButton
-          onClick={onPublish}
-          disabled={isPublishing}
-          className="bg-purple-600 hover:bg-purple-700 text-white"
-        >
-          {isPublishing ? "Publishing..." : "Publish Job Listing"}
-        </MobileButton>
-        
-        <Button
-          variant="outline"
-          onClick={() => onEdit()}
-        >
-          Go Back and Edit
-        </Button>
-      </div>
+        </div>,
+        "specialties"
+      )}
+
+      {/* Contact Information Section */}
+      {renderSection(
+        "Contact Information",
+        <div className="space-y-3">
+          <div>
+            <span className="font-medium">Contact Name:</span> {formData.contactName || "Not provided"}
+          </div>
+          <div>
+            <span className="font-medium">Phone:</span> {formData.contactPhone || "Not provided"}
+          </div>
+          <div>
+            <span className="font-medium">Email:</span> {formData.contactEmail || "Not provided"}
+          </div>
+        </div>,
+        "contact"
+      )}
+
+      {/* Photos Section */}
+      {renderSection(
+        "Photos",
+        <div>
+          {photoUrls.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {photoUrls.map((url, index) => (
+                <div key={index} className="relative aspect-square">
+                  <img
+                    src={url}
+                    alt={`Job photo ${index + 1}`}
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No photos uploaded.</p>
+          )}
+        </div>,
+        "photos"
+      )}
     </div>
   );
 };

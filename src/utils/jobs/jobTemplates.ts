@@ -1,371 +1,155 @@
 
 import { JobFormValues, IndustryType, JobTemplateType } from '@/components/posting/job/jobFormSchema';
+import { beautySpecialties, commonRequirements } from '@/data/specialties';
 
-export const getJobTemplate = (type: JobTemplateType): JobFormValues => {
-  switch (type) {
+// Export the templates for different job types
+export const getJobTemplate = (templateType: JobTemplateType): JobFormValues => {
+  // Default template values shared across all templates
+  const defaultTemplate: JobFormValues = {
+    title: '',
+    salonName: '',
+    description: '',
+    location: '',
+    jobType: 'full-time',
+    compensation_type: 'hourly',
+    contactName: '',
+    contactEmail: '',
+    contactPhone: '',
+    weekly_pay: false,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: false,
+    requirements: [],
+    specialties: [],
+    industry: templateType,
+  };
+
+  // Template-specific values
+  switch (templateType) {
     case 'nails':
       return {
+        ...defaultTemplate,
         title: 'Nail Technician',
-        salonName: '',
-        description: 'We are seeking experienced nail technicians to join our salon team. Successful candidates will perform manicures, pedicures, and nail enhancements with excellent attention to detail and customer service.',
-        vietnameseDescription: 'Chúng tôi đang tìm kiếm thợ nail có kinh nghiệm để gia nhập đội ngũ của tiệm. Ứng viên sẽ thực hiện các dịch vụ làm móng tay, móng chân và đắp móng với sự chú ý đến chi tiết và dịch vụ khách hàng xuất sắc.',
-        location: '',
-        jobType: 'full-time',
+        description: 'We are seeking experienced nail technicians to join our growing team. The ideal candidate should be skilled in manicures, pedicures, and various nail enhancement techniques.',
+        vietnameseDescription: 'Chúng tôi đang tìm kiếm thợ nail có kinh nghiệm để tham gia vào đội ngũ đang phát triển của chúng tôi. Ứng viên lý tưởng phải có kỹ năng làm móng tay, móng chân và các kỹ thuật làm móng khác nhau.',
+        specialties: beautySpecialties.nails,
+        requirements: commonRequirements,
         compensation_type: 'commission',
-        compensation_details: '60/40 split',
+        salary_range: '$800-1200/week',
         weekly_pay: true,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Valid nail technician license', 'At least 1 year experience', 'Excellent customer service skills', 'Ability to work weekends'],
-        specialties: ['Manicures', 'Pedicures', 'Gel', 'Acrylic', 'Nail Art'],
-        salary_range: '$800-$1500/week',
         experience_level: '1+ years',
-        industry: 'nails',
-        templateType: 'nails'
       };
-
     case 'hair':
       return {
+        ...defaultTemplate,
         title: 'Hair Stylist',
-        salonName: '',
-        description: 'Looking for a talented Hair Stylist to join our team. The ideal candidate will provide exceptional hair services including cutting, coloring, styling, and treatments. Must have a passion for customer satisfaction and staying current with industry trends.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
+        description: 'Join our salon as a professional hair stylist. We're looking for talented individuals with a passion for hair cutting, coloring, and styling techniques.',
+        specialties: beautySpecialties.hair,
+        requirements: commonRequirements,
         compensation_type: 'commission',
-        compensation_details: '50/50 split',
+        salary_range: '$800-1500/week',
         weekly_pay: true,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Cosmetology license', 'Experience with cutting and coloring', 'Strong communication skills', 'Portfolio of previous work preferred'],
-        specialties: ['Hair Cutting', 'Color', 'Highlights', 'Styling', 'Extensions'],
-        salary_range: '$30,000-$60,000/year',
         experience_level: '2+ years',
-        industry: 'hair',
-        templateType: 'hair'
       };
-
     case 'lashes':
       return {
+        ...defaultTemplate,
         title: 'Lash Technician',
-        salonName: '',
-        description: 'We are looking for a certified Lash Technician to join our beauty team. You will be responsible for applying and maintaining eyelash extensions with precision and attention to detail.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'commission',
-        compensation_details: '55/45 split',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Lash certification', 'Good eye-hand coordination', 'Attention to detail', 'Knowledge of lash application techniques'],
-        specialties: ['Classic Lashes', 'Volume Lashes', 'Hybrid Sets', 'Lash Lifts'],
-        salary_range: '$700-$1200/week',
-        experience_level: '1+ years',
-        industry: 'lashes',
-        templateType: 'lashes'
-      };
-
-    case 'booth':
-      return {
-        title: 'Booth Rental Available',
-        salonName: '',
-        description: 'Prime booth rental available for beauty professionals. Great location with high foot traffic and established clientele. Perfect for nail technicians, hair stylists, estheticians, or lash artists looking to be their own boss.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'contract',
-        compensation_type: 'hourly', // This needs to match one of the enum values
-        compensation_details: 'Weekly/monthly booth rental',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Valid cosmetology or related license', 'Own clientele preferred', 'Professional attitude', 'Liability insurance'],
-        specialties: [],
-        salary_range: 'Varies based on services',
-        experience_level: '1+ years',
-        industry: 'booth',
-        templateType: 'booth'
-      };
-
-    case 'skincare':
-      return {
-        title: 'Esthetician',
-        salonName: '',
-        description: 'Seeking a licensed Esthetician to join our spa team. Responsibilities include facials, skin treatments, waxing, and skin care consultations. Must have excellent customer service skills.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'commission',
-        compensation_details: '50/50 split',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Esthetician license', 'Knowledge of skin types and treatments', 'Experience with facial treatments and waxing', 'Retail sales ability'],
-        specialties: ['Facials', 'Chemical Peels', 'Microdermabrasion', 'Waxing', 'Skin Analysis'],
-        salary_range: '$35,000-$50,000/year',
-        experience_level: '2+ years',
-        industry: 'skincare',
-        templateType: 'skincare'
-      };
-
-    case 'spa':
-      return {
-        title: 'Spa Technician',
-        salonName: '',
-        description: 'Join our luxury spa as a Spa Technician providing massage, body treatments, and spa services. Must have excellent technique and a calming presence.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
+        description: 'We are looking for certified lash technicians skilled in classic and volume lash extensions. Join our beauty studio and grow your career in a supportive environment.',
+        specialties: beautySpecialties.lashes,
+        requirements: commonRequirements,
         compensation_type: 'hourly',
-        compensation_details: '$20-25/hr plus tips',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Massage therapy license or spa certification', 'Experience with body treatments', 'Professional demeanor', 'Available weekends'],
-        specialties: ['Swedish Massage', 'Body Wraps', 'Salt Scrubs', 'Hot Stone Therapy'],
-        salary_range: '$30,000-$45,000/year',
+        salary_range: '$700-1100/week',
         experience_level: '1+ years',
-        industry: 'spa',
-        templateType: 'spa'
       };
-
-    case 'receptionist':
-      return {
-        title: 'Salon Receptionist',
-        salonName: '',
-        description: 'We are seeking a professional front desk receptionist for our salon. Responsibilities include greeting clients, scheduling appointments, answering phones, and processing payments.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'hourly',
-        compensation_details: '$15-18/hr',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Previous customer service experience', 'Basic computer skills', 'Multi-tasking ability', 'Professional appearance'],
-        specialties: [],
-        salary_range: '$25,000-$35,000/year',
-        experience_level: 'Entry level',
-        industry: 'receptionist',
-        templateType: 'receptionist'
-      };
-
-    case 'manager':
-      return {
-        title: 'Salon Manager',
-        salonName: '',
-        description: 'Experienced Salon Manager needed to oversee daily operations, staff management, inventory control, and client satisfaction. Looking for a leader who can help grow our business.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'salary',
-        compensation_details: 'Competitive salary plus bonus',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['3+ years salon management experience', 'Staff supervision experience', 'Strong business acumen', 'Customer service excellence'],
-        specialties: [],
-        salary_range: '$40,000-$60,000/year',
-        experience_level: '3+ years',
-        industry: 'manager',
-        templateType: 'manager'
-      };
-
-    case 'massage':
-      return {
-        title: 'Massage Therapist',
-        salonName: '',
-        description: 'Licensed Massage Therapist wanted for busy spa. Must be proficient in various massage techniques including Swedish, deep tissue, and hot stone therapy.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'commission',
-        compensation_details: '60/40 split',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Massage therapy license', 'Knowledge of multiple massage techniques', 'Physical stamina', 'Professional demeanor'],
-        specialties: ['Swedish Massage', 'Deep Tissue', 'Sports Massage', 'Hot Stone'],
-        salary_range: '$35,000-$55,000/year',
-        experience_level: '2+ years',
-        industry: 'massage',
-        templateType: 'massage'
-      };
-
-    case 'tattoo':
-      return {
-        title: 'Tattoo Artist',
-        salonName: '',
-        description: 'Talented Tattoo Artist needed for established studio. Must have a strong portfolio, excellent drawing skills, and knowledge of tattoo techniques and safety protocols.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'commission',
-        compensation_details: '50/50 split',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Professional tattoo experience', 'Strong portfolio', 'Knowledge of sterilization procedures', 'Artistic ability'],
-        specialties: ['Traditional', 'Realism', 'Japanese', 'Black and Grey', 'Color Work'],
-        salary_range: 'Commission-based',
-        experience_level: '3+ years',
-        industry: 'tattoo',
-        templateType: 'tattoo'
-      };
-
-    case 'makeup':
-      return {
-        title: 'Makeup Artist',
-        salonName: '',
-        description: 'Creative Makeup Artist needed for our beauty studio. Experience with bridal, special event, and editorial makeup application required. Must be able to work with diverse clientele.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'part-time',
-        compensation_type: 'commission',
-        compensation_details: '60/40 split',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Makeup certification preferred', 'Professional makeup kit', 'Portfolio of previous work', 'Excellent color theory knowledge'],
-        specialties: ['Bridal', 'Special Event', 'Natural Makeup', 'Glamour', 'Editorial'],
-        salary_range: 'Varies by bookings',
-        experience_level: '1+ years',
-        industry: 'makeup',
-        templateType: 'makeup'
-      };
-
     case 'barber':
       return {
+        ...defaultTemplate,
         title: 'Barber',
-        salonName: '',
-        description: 'Professional Barber wanted for modern barbershop. Skills in precision cutting, fades, beard grooming, and straight razor shaves required. Must have excellent customer service skills.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
+        description: 'Experienced barber needed for our modern barbershop. Skills in men's cuts, fades, beard trimming, and hot towel shaves are required.',
+        specialties: beautySpecialties.barber,
+        requirements: commonRequirements,
         compensation_type: 'commission',
-        compensation_details: '60/40 split',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Barber license', 'Experience with modern cutting techniques', 'Knowledge of men\'s grooming trends', 'Customer service skills'],
-        specialties: ['Fades', 'Beard Trims', 'Straight Razor Shaves', 'Hair Design'],
-        salary_range: '$30,000-$50,000/year',
+        salary_range: '$800-1400/week',
         experience_level: '2+ years',
-        industry: 'barber',
-        templateType: 'barber'
       };
-
+    case 'skincare':
+      return {
+        ...defaultTemplate,
+        title: 'Esthetician',
+        description: 'Licensed esthetician wanted for our spa. Must be experienced in facials, peels, and other skincare treatments.',
+        specialties: beautySpecialties.skincare,
+        requirements: commonRequirements,
+        compensation_type: 'hourly',
+        salary_range: '$700-1200/week',
+        experience_level: '1+ years',
+      };
+    case 'massage':
+      return {
+        ...defaultTemplate,
+        title: 'Massage Therapist',
+        description: 'Licensed massage therapist needed for our wellness center. Experience in various massage modalities required.',
+        specialties: beautySpecialties.massage,
+        requirements: commonRequirements,
+        compensation_type: 'hourly',
+        salary_range: '$800-1300/week',
+        experience_level: '2+ years',
+      };
+    case 'tattoo':
+      return {
+        ...defaultTemplate,
+        title: 'Tattoo Artist',
+        description: 'Talented tattoo artist with a strong portfolio needed for our studio. Must have excellent line work and shading skills.',
+        specialties: beautySpecialties.tattoo,
+        requirements: commonRequirements,
+        compensation_type: 'commission',
+        salary_range: '$1000-2500/week',
+        experience_level: '3+ years',
+      };
+    case 'makeup':
+      return {
+        ...defaultTemplate,
+        title: 'Makeup Artist',
+        description: 'Professional makeup artist needed for our salon. Experience in bridal, special occasion, and editorial makeup preferred.',
+        specialties: beautySpecialties.makeup,
+        requirements: commonRequirements,
+        compensation_type: 'commission',
+        salary_range: '$700-1500/week',
+        experience_level: '2+ years',
+      };
+    case 'booth':
+      return {
+        ...defaultTemplate,
+        title: 'Booth Rental Available',
+        description: 'Booth rental opportunity for independent beauty professionals. Great location with high foot traffic and established clientele.',
+        requirements: ['Valid professional license', 'Own clientele preferred', 'Must carry own liability insurance', 'Professional attitude'],
+        compensation_type: 'commission',
+        salary_range: 'Varies based on services',
+        experience_level: '2+ years',
+      };
+    case 'spa':
+    case 'receptionist':
+    case 'manager':
     case 'beauty':
       return {
-        title: 'Beauty Professional',
-        salonName: '',
-        description: 'Seeking a skilled Beauty Professional with multiple specialties to join our full-service salon. Experience in at least two beauty disciplines preferred.',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'commission',
-        compensation_details: '55/45 split',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: ['Relevant beauty licensing', 'Multi-discipline skills preferred', 'Client-focused attitude', 'Team player'],
-        specialties: [],
-        salary_range: 'Based on experience and services',
-        experience_level: '2+ years',
-        industry: 'beauty',
-        templateType: 'beauty'
+        ...defaultTemplate,
+        title: templateType === 'spa' ? 'Spa Technician' : 
+               templateType === 'receptionist' ? 'Salon Receptionist' :
+               templateType === 'manager' ? 'Salon Manager' : 'Beauty Professional',
+        description: `We are currently hiring a ${templateType === 'spa' ? 'Spa Technician' : 
+               templateType === 'receptionist' ? 'Salon Receptionist' :
+               templateType === 'manager' ? 'Salon Manager' : 'Beauty Professional'} to join our team.`,
+        requirements: commonRequirements.slice(0, 5),
+        compensation_type: 'hourly',
+        salary_range: templateType === 'manager' ? '$900-1800/week' : '$600-1000/week',
+        experience_level: templateType === 'manager' ? '3+ years' : '1+ years',
       };
-
     case 'custom':
     default:
-      return {
-        title: '',
-        salonName: '',
-        description: '',
-        vietnameseDescription: '',
-        location: '',
-        jobType: 'full-time',
-        compensation_type: 'hourly',
-        compensation_details: '',
-        weekly_pay: false,
-        has_housing: false,
-        has_wax_room: false,
-        owner_will_train: false,
-        no_supply_deduction: false,
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        requirements: [],
-        specialties: [],
-        salary_range: '',
-        experience_level: '',
-        industry: 'custom',
-        templateType: 'custom'
-      };
+      return defaultTemplate;
   }
 };
+
+// Export any types that need to be used by other components
+export type { JobTemplateType };
