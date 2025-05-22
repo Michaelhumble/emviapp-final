@@ -59,4 +59,5 @@ export interface UserPostingStats {
   supplyPostCount: number;
 }
 
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
+// Fixed IndustryType to match with jobFormSchema
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup' | 'custom';

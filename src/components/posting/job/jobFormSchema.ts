@@ -1,8 +1,9 @@
 
 import { z } from 'zod';
+import { IndustryType as PostingIndustryType } from '@/utils/posting/types';
 
-// Define industry types
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'spa' | 'receptionist' | 'manager' | 'massage' | 'tattoo' | 'makeup' | 'booth' | 'beauty' | 'custom';
+// Use the same IndustryType from utils/posting/types
+export type IndustryType = PostingIndustryType;
 
 // Define job types
 export type JobType = 'full-time' | 'part-time' | 'contract' | 'temporary';

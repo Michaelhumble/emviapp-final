@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues } from '@/components/posting/job/jobFormSchema';
+import { jobFormSchema, JobFormValues, IndustryType } from '@/components/posting/job/jobFormSchema';
 import { Form } from '@/components/ui/form';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
 import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
@@ -15,10 +15,9 @@ import PricingSection from '@/components/posting/sections/PricingSection';
 import JobSummary from '@/components/posting/JobSummary';
 import PostWizardLayout from '@/components/layout/PostWizardLayout';
 import { Button } from '@/components/ui/button';
-import { IndustryType } from '@/utils/posting/types';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 const JobPost: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -121,15 +120,27 @@ const JobPost: React.FC = () => {
           )}
           
           {step === 3 && (
-            <RequirementsSection form={form} onNext={handleNext} onPrevious={handlePrevious} />
+            <RequirementsSection 
+              form={form} 
+              onNext={handleNext} 
+              onPrevious={handlePrevious} 
+            />
           )}
           
           {step === 4 && (
-            <SpecialtiesSection form={form} onNext={handleNext} onPrevious={handlePrevious} />
+            <SpecialtiesSection 
+              form={form} 
+              onNext={handleNext} 
+              onPrevious={handlePrevious} 
+            />
           )}
           
           {step === 5 && (
-            <IndustrySpecialtiesSection form={form} onNext={handleNext} onPrevious={handlePrevious} />
+            <IndustrySpecialtiesSection 
+              form={form} 
+              onNext={handleNext} 
+              onPrevious={handlePrevious} 
+            />
           )}
           
           {step === 6 && (
