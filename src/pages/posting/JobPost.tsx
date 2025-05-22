@@ -1,195 +1,231 @@
-
 import React, { useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues, JobTemplateType } from '@/components/posting/job/jobFormSchema';
-import PostWizardLayout from '@/components/posting/PostWizardLayout';
-import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
-import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
-import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
-import { MobileButton } from '@/components/ui/mobile-button';
-import SpecialtiesRequirementsSection from '@/components/posting/sections/SpecialtiesRequirementsSection';
-import PhotoUpload from '@/components/posting/sections/PhotoUpload';
-import JobPreview from '@/components/posting/JobPreview';
-import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { getJobTemplate } from '@/utils/jobs/jobTemplates';
-import { useJobPosting } from '@/hooks/jobs/useJobPosting';
-import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema, JobFormValues } from '@/components/posting/job/jobFormSchema';
+import PostWizardLayout from '@/components/layout/PostWizardLayout';
+import BasicInfoSection from '@/components/posting/sections/BasicInfoSection';
+import LocationSection from '@/components/posting/sections/LocationSection';
+import DetailsSection from '@/components/posting/sections/DetailsSection';
+import CompensationSection from '@/components/posting/sections/CompensationSection';
+import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
+import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
+import ReviewSection from '@/components/posting/sections/ReviewSection';
+import { Button } from '@/components/ui/button';
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from '@/hooks/useTranslation';
+import { uploadImage } from '@/utils/uploadImage';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { useSession } from "next-auth/react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { UploadSection } from '@/components/posting/sections/UploadSection';
+import { showSuccessToast, showErrorToast } from '@/utils/toastUtils';
+import { useRouter } from '@/hooks/useRouter';
 
-// Define the possible steps in the job posting process
-type JobPostStep = 'template' | 'details' | 'specialties' | 'contact' | 'photos' | 'preview' | 'payment';
+const steps = ['basic', 'location', 'details', 'compensation', 'contact', 'photos', 'review'];
 
-const JobPost = () => {
-  // Define state variables
-  const [step, setStep] = useState<JobPostStep>('template');
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [expressMode, setExpressMode] = useState<boolean>(true);
-  
-  const { handleJobPost } = useJobPosting();
+const JobPost: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { t } = useTranslation();
+  const { push } = useRouter();
+  const isMobile = useIsMobile();
+  const { data: session } = useSession();
+  
+  const [currentStep, setCurrentStep] = useState(0);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expressMode, setExpressMode] = useState(false);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'free' as JobPricingTier,
+    durationMonths: 1,
+  });
 
-  // Initialize form with zod resolver
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      title: '',
-      salonName: '',
-      description: '',
-      location: '',
-      jobType: 'full-time',
-      compensation_type: 'hourly',
+      jobTitle: '',
+      employmentType: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      address: '',
+      salaryRangeFrom: '',
+      salaryRangeTo: '',
+      salaryType: '',
       contactName: '',
-      contactEmail: '',
       contactPhone: '',
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-      requirements: [],
-      specialties: [],
+      contactEmail: '',
+      description: '',
+      companyName: '',
+      experienceLevel: '',
     },
+    mode: "onChange",
   });
 
-  // Navigation functions between steps
-  const goToNextStep = () => {
-    switch (step) {
-      case 'template': setStep('details'); break;
-      case 'details': setStep('specialties'); break;
-      case 'specialties': setStep('contact'); break;
-      case 'contact': setStep('photos'); break;
-      case 'photos': setStep('preview'); break;
-      case 'preview': setStep('payment'); break;
-      default: break;
+  const handleNextStep = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const goToPreviousStep = () => {
-    switch (step) {
-      case 'details': setStep('template'); break;
-      case 'specialties': setStep('details'); break;
-      case 'contact': setStep('specialties'); break;
-      case 'photos': setStep('contact'); break;
-      case 'preview': setStep('photos'); break;
-      case 'payment': setStep('preview'); break;
-      default: break;
+  const handlePreviousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleFormSubmit = async (data: JobFormValues) => {
-    console.log('Form submitted with data:', data);
+  const renderCurrentStep = () => {
+    const step = steps[currentStep];
+    
+    if (expressMode) {
+      const isLastStep = currentStep === steps.length - 1;
 
+      return (
+        <UploadSection
+          uploads={photoUploads}
+          setUploads={setPhotoUploads}
+          onPrevious={handlePreviousStep}
+          onNext={handleNextStep}
+          isLastStep={isLastStep}
+        />
+      );
+    }
+
+    switch (step) {
+      case 'basic':
+        return <BasicInfoSection control={form.control} onNext={handleNextStep} />;
+      case 'location':
+        return <LocationSection control={form.control} onNext={handleNextStep} onPrevious={handlePreviousStep} />;
+      case 'details':
+        return <DetailsSection control={form.control} onNext={handleNextStep} onPrevious={handlePreviousStep} />;
+      case 'compensation':
+        return <CompensationSection control={form.control} onNext={handleNextStep} onPrevious={handlePreviousStep} />;
+      case 'contact':
+        return <ContactInfoSection control={form.control} onNext={handleNextStep} onPrevious={handlePreviousStep} />;
+      case 'photos':
+        return (
+          <PhotoUploadSection 
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            onPrevious={handlePreviousStep}
+            onNext={handleNextStep}
+            isLastStep={currentStep === steps.length - 1}
+          />
+        );
+      case 'review':
+        return <ReviewSection formValues={form.getValues()} photoUploads={photoUploads} onPrevious={handlePreviousStep} onSubmit={handleSubmit} />;
+      default:
+        return <div>{t({english: 'Unknown step', vietnamese: 'Bước không xác định'})}</div>;
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!session?.user?.email) {
+      showErrorToast(
+        t({ english: 'Authentication required', vietnamese: 'Yêu cầu xác thực' }),
+        t({ english: 'Please sign in to post a job.', vietnamese: 'Vui lòng đăng nhập để đăng tin tuyển dụng.' })
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const success = await handleJobPost({
-        ...data,
-        // Add any additional fields needed for job post
-        user_id: 'user_123', // Replace with actual user ID from auth context
-        status: 'active',
-        created_at: new Date().toISOString(),
+      // 1. Upload images
+      const imageUrls = [];
+      for (const file of photoUploads) {
+        try {
+          const imageUrl = await uploadImage(file, (progress) => {
+            console.log(`Uploading ${file.name}: ${progress}%`);
+          });
+          imageUrls.push(imageUrl);
+        } catch (uploadError) {
+          console.error("Failed to upload image:", uploadError);
+          showErrorToast(
+            t({ english: 'Image upload failed', vietnamese: 'Tải ảnh lên thất bại' }),
+            t({ english: 'Please try again or use a different image.', vietnamese: 'Vui lòng thử lại hoặc sử dụng một hình ảnh khác.' })
+          );
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // 2. Prepare form data
+      const formData = form.getValues();
+      const postData = {
+        ...formData,
+        imageUrls: imageUrls,
+        pricingOptions: pricingOptions,
+        email: session.user.email,
+      };
+
+      // 3. Post data to API
+      const response = await fetch('/api/postJob', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
       });
 
-      if (success) {
-        toast.success('Job posted successfully!');
-        navigate('/dashboard');
+      if (response.ok) {
+        showSuccessToast(
+          t({ english: 'Job posted successfully!', vietnamese: 'Đăng tin tuyển dụng thành công!' }),
+          t({ english: 'Your job is now live.', vietnamese: 'Tin tuyển dụng của bạn đã được đăng.' })
+        );
+        push('/jobs');
       } else {
-        toast.error('Failed to post job');
+        const errorData = await response.json();
+        console.error("Failed to post job:", errorData);
+        showErrorToast(
+          t({ english: 'Job posting failed', vietnamese: 'Đăng tin tuyển dụng thất bại' }),
+          t({ english: errorData.message || 'Please check your information and try again.' , vietnamese: 'Vui lòng kiểm tra thông tin của bạn và thử lại.' })
+        );
       }
-    } catch (error) {
-      console.error('Error posting job:', error);
-      toast.error('Error posting job');
+    } catch (error: any) {
+      console.error("Error during job posting:", error);
+      showErrorToast(
+        t({ english: 'An unexpected error occurred', vietnamese: 'Đã xảy ra lỗi không mong muốn' }),
+        t({ english: error.message || 'Please try again later.', vietnamese: 'Vui lòng thử lại sau.' })
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // Handle template selection
-  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
-    form.reset({
-      ...template,
-      industry: templateType,
-    });
-    goToNextStep();
-  };
-
-  // Get the current step based on the state
-  const renderCurrentStep = () => {
-    switch (step) {
-      case 'template':
-        return <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />;
-      case 'details':
-        return <JobDetailsSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} expressMode={expressMode} />;
-      case 'specialties':
-        return <SpecialtiesRequirementsSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} expressMode={expressMode} />;
-      case 'contact':
-        return <ContactInfoSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} />;
-      case 'photos':
-        return <PhotoUpload photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />;
-      case 'preview':
-        return <JobPreview formData={form.getValues()} photoUploads={photoUploads} onEdit={(section) => {
-          switch (section) {
-            case 'details': setStep('details'); break;
-            case 'specialties': setStep('specialties'); break;
-            case 'contact': setStep('contact'); break;
-            case 'photos': setStep('photos'); break;
-            default: break;
-          }
-        }} />;
-      default:
-        return <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />;
-    }
-  };
-
-  // Toggle between express and guided modes
   const toggleExpressMode = () => {
     setExpressMode(!expressMode);
   };
 
-  // Define the current step number and total steps for the progress bar
-  const getCurrentStepNumber = () => {
-    switch (step) {
-      case 'template': return 1;
-      case 'details': return 2;
-      case 'specialties': return 3;
-      case 'contact': return 4;
-      case 'photos': return 5;
-      case 'preview': return 6;
-      case 'payment': return 7;
-      default: return 1;
-    }
-  };
-
-  const totalSteps = 7;
-
   return (
     <PostWizardLayout 
-      currentStep={getCurrentStepNumber()} 
-      totalSteps={totalSteps}
+      currentStep={currentStep + 1} 
+      totalSteps={steps.length}
       expressMode={expressMode}
       onToggleExpressMode={toggleExpressMode}
     >
-      <FormProvider {...form}>
-        {renderCurrentStep()}
-        
-        {/* Navigation buttons for express mode */}
-        {expressMode && step !== 'template' && step !== 'preview' && (
-          <div className="flex justify-between mt-6">
-            <Button variant="outline" type="button" onClick={goToPreviousStep}>
-              Previous
-            </Button>
-            <Button type="button" onClick={goToNextStep}>
-              Next
-            </Button>
-          </div>
-        )}
-        
-        {/* Submit button for preview step */}
-        {step === 'preview' && (
-          <div className="flex justify-center mt-8">
-            <MobileButton onClick={form.handleSubmit(handleFormSubmit)} className="bg-primary hover:bg-primary/90">
-              Publish Job
-            </MobileButton>
-          </div>
-        )}
-      </FormProvider>
+      {renderCurrentStep()}
+
+      {isMobile && !expressMode && (
+        <div className="sticky bottom-0 bg-white p-4 flex justify-between items-center border-t">
+          <Button 
+            variant="outline" 
+            onClick={handlePreviousStep} 
+            disabled={currentStep === 0}
+          >
+            {t({ english: 'Previous', vietnamese: 'Trước' })}
+          </Button>
+          <Button 
+            onClick={handleNextStep} 
+            disabled={currentStep === steps.length - 1}
+          >
+            {currentStep === steps.length - 1 ? 
+              t({ english: 'Submit', vietnamese: 'Gửi' }) : 
+              t({ english: 'Next', vietnamese: 'Tiếp theo' })
+            }
+          </Button>
+        </div>
+      )}
     </PostWizardLayout>
   );
 };

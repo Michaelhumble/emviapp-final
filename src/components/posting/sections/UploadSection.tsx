@@ -1,4 +1,3 @@
-
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, X, ImageIcon } from 'lucide-react';
@@ -9,12 +8,18 @@ interface UploadSectionProps {
   uploads: File[];
   setUploads: React.Dispatch<React.SetStateAction<File[]>>;
   maxPhotos?: number;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isLastStep?: boolean;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({ 
   uploads, 
   setUploads, 
-  maxPhotos = 5
+  maxPhotos = 5,
+  onNext,
+  onPrevious,
+  isLastStep = false
 }) => {
   const { t } = useTranslation();
 
@@ -127,6 +132,43 @@ const UploadSection: React.FC<UploadSectionProps> = ({
               <ImageIcon className="h-8 w-8 text-gray-300" />
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Navigation buttons */}
+      {(onPrevious || onNext) && (
+        <div className="flex justify-between mt-8">
+          {onPrevious && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onPrevious}
+            >
+              {t({
+                english: 'Previous',
+                vietnamese: 'Trước'
+              })}
+            </Button>
+          )}
+          
+          {onNext && (
+            <Button
+              type="button"
+              onClick={onNext}
+              className="ml-auto"
+            >
+              {isLastStep ? 
+                t({
+                  english: 'Submit',
+                  vietnamese: 'Gửi'
+                }) : 
+                t({
+                  english: 'Next',
+                  vietnamese: 'Tiếp theo'
+                })
+              }
+            </Button>
+          )}
         </div>
       )}
     </div>

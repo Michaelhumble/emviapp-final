@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, X, Info } from "lucide-react";
@@ -9,12 +8,18 @@ interface SalonPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
   salonCategory?: SalonCategory;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isLastStep?: boolean;
 }
 
 export const SalonPostPhotoUpload = ({ 
   photoUploads, 
   setPhotoUploads,
-  salonCategory = 'beauty'
+  salonCategory = 'beauty',
+  onNext,
+  onPrevious,
+  isLastStep = false
 }: SalonPostPhotoUploadProps) => {
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -103,6 +108,31 @@ export const SalonPostPhotoUpload = ({
               <p className="mt-1">High-quality images of your salon will be needed to create your listing. You'll need to upload your own photos as we no longer provide sample images.</p>
             </AlertDescription>
           </Alert>
+        </div>
+      )}
+
+      {/* Navigation buttons */}
+      {(onPrevious || onNext) && (
+        <div className="flex justify-between mt-8">
+          {onPrevious && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onPrevious}
+            >
+              Previous
+            </Button>
+          )}
+          
+          {onNext && (
+            <Button
+              type="button"
+              onClick={onNext}
+              className="ml-auto"
+            >
+              {isLastStep ? 'Submit' : 'Next'}
+            </Button>
+          )}
         </div>
       )}
     </div>
