@@ -1,54 +1,49 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { PRICING_PLANS, DURATION_OPTIONS, calculateTotalPrice } from '@/utils/posting/pricingConfig';
-import { formatCurrency } from '@/lib/utils';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { useTranslation } from '@/hooks/useTranslation';
 import { PricingGrid } from '@/components/pricing/PricingGrid';
+import { PricingOptions } from '@/utils/posting/types';
+import { DURATION_OPTIONS } from '@/utils/posting/pricingConfig';
+import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
+import { SummaryTotals } from '@/components/posting/pricing/SummaryTotals';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobPostPricingProps {
   onContinue: (options: PricingOptions) => void;
   isFirstPost?: boolean;
 }
 
-export const JobPostPricing: React.FC<JobPostPricingProps> = ({
+export const JobPostPricing: React.FC<JobPostPricingProps> = ({ 
   onContinue,
   isFirstPost = false
 }) => {
   const { t } = useTranslation();
-  const [selectedPricingTier, setSelectedPricingTier] = useState<JobPricingTier>('standard');
+  const [selectedPricingTier, setSelectedPricingTier] = useState<string>('standard');
   const [durationMonths, setDurationMonths] = useState<number>(1);
   const [autoRenew, setAutoRenew] = useState<boolean>(true);
-  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [isNationwide, setIsNationwide] = useState<boolean>(false);
   
-  // Calculate price based on selections
-  const priceInfo = calculateTotalPrice(selectedPricingTier, durationMonths, autoRenew);
-  
-  const handleSelectPlan = (tier: string, duration: number, renewOption: boolean) => {
-    setSelectedPricingTier(tier as JobPricingTier);
-    setDurationMonths(duration);
-    setAutoRenew(renewOption);
-    setShowConfirm(true);
-    
-    // If it's the diamond tier, handle specially
-    if (tier === 'diamond') {
-      // You could redirect to a special Diamond application page or show a modal
-      console.log("Diamond tier selected - show application form");
-      return;
-    }
+  const handleDurationChange = (months: number) => {
+    setDurationMonths(months);
   };
   
-  const handleConfirmPlan = () => {
-    // For regular tiers, continue with the selected options
+  const handleSelectPlan = (tier: string) => {
+    setSelectedPricingTier(tier);
+    
+    // User has selected a plan, now we show duration options
+    // This could scroll to the duration section or otherwise highlight it
+  };
+  
+  const handleContinue = () => {
+    // Create the options object to pass to the parent component
     const options: PricingOptions = {
-      selectedPricingTier,
+      selectedPricingTier: selectedPricingTier as any,
       durationMonths,
       autoRenew,
-      isFirstPost
+      isFirstPost,
+      isNationwide
     };
     
     onContinue(options);
@@ -56,152 +51,83 @@ export const JobPostPricing: React.FC<JobPostPricingProps> = ({
   
   return (
     <div className="space-y-8">
+      {/* Plan Selection */}
       <div>
-        <h2 className="text-2xl font-medium mb-2">
-          {t({
-            english: "Choose Your Job Posting Plan",
-            vietnamese: "Chọn Gói Đăng Tin Tuyển Dụng"
-          })}
-        </h2>
-        <p className="text-gray-600">
-          {t({
-            english: "Select the plan that best fits your hiring needs. All plans include visibility to qualified candidates.",
-            vietnamese: "Chọn gói phù hợp nhất với nhu cầu tuyển dụng của bạn. Tất cả các gói đều hiển thị cho các ứng viên đủ điều kiện."
-          })}
-        </p>
+        <h3 className="text-lg font-medium mb-4">Choose a Plan</h3>
+        <PricingGrid onSelectPlan={handleSelectPlan} />
       </div>
       
-      {/* First post notification */}
-      {isFirstPost && (
-        <Card className="bg-green-50 border-green-200">
-          <CardContent className="p-4">
-            <h3 className="font-medium text-green-800">
-              {t({
-                english: "Special Offer: First Post Free!",
-                vietnamese: "Ưu đãi đặc biệt: Bài đăng đầu tiên miễn phí!"
-              })}
-            </h3>
-            <p className="text-sm text-green-700 mt-1">
-              {t({
-                english: "Your first job posting is on us. Choose any standard, premium or gold plan at no cost.",
-                vietnamese: "Bài đăng đầu tiên của bạn là miễn phí. Chọn bất kỳ gói tiêu chuẩn, cao cấp hoặc vàng nào mà không mất phí."
-              })}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {!showConfirm ? (
-        <>
-          {/* Grid of pricing options */}
-          <PricingGrid onSelectPlan={handleSelectPlan} />
-
-          {/* Special note about Diamond tier */}
-          <div className="text-center text-sm text-gray-500 mt-4">
-            {t({
-              english: "Need a comprehensive recruiting solution? Contact us about our Diamond tier for enterprise-level service.",
-              vietnamese: "Cần giải pháp tuyển dụng toàn diện? Liên hệ với chúng tôi về gói Kim Cương dành cho dịch vụ cấp doanh nghiệp."
-            })}
-          </div>
-        </>
-      ) : (
-        <Card className="border-green-200">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-medium mb-3">
-              {t({
-                english: "Selected Plan",
-                vietnamese: "Gói Đã Chọn"
-              })}
-            </h3>
-            
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Plan:</span>
-                <span className="font-medium">
-                  {PRICING_PLANS.find(p => p.tier === selectedPricingTier)?.name || selectedPricingTier}
-                </span>
-              </div>
-              
-              <div className="flex justify-between">
-                <span className="text-gray-600">Duration:</span>
-                <span>
-                  {durationMonths} {t({
-                    english: durationMonths > 1 ? "months" : "month",
-                    vietnamese: "tháng"
-                  })}
-                </span>
-              </div>
-              
-              {/* Price info */}
-              <div className="border-t pt-2 mt-2 flex justify-between">
-                <span className="text-gray-600">
-                  {t({
-                    english: "Total Price:",
-                    vietnamese: "Tổng tiền:"
-                  })}
-                </span>
-                <div>
-                  {priceInfo.discountPercentage > 0 && (
-                    <span className="line-through text-gray-400 mr-2">
-                      {formatCurrency(priceInfo.originalPrice)}
-                    </span>
-                  )}
-                  <span className="font-medium">
-                    {formatCurrency(priceInfo.finalPrice)}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Auto-renew toggle */}
-              <div className="flex items-center justify-between pt-4 pb-2">
-                <div>
-                  <Label htmlFor="auto-renew-toggle" className="font-medium">
-                    {t({
-                      english: "Auto-renew subscription",
-                      vietnamese: "Tự động gia hạn"
-                    })}
-                  </Label>
-                  <p className="text-xs text-gray-500">
-                    {t({
-                      english: "Get an additional 5% discount",
-                      vietnamese: "Nhận thêm 5% giảm giá"
-                    })}
-                  </p>
-                </div>
-                <Switch 
-                  id="auto-renew-toggle"
-                  checked={autoRenew}
-                  onCheckedChange={setAutoRenew}
-                />
-              </div>
-            </div>
-            
-            <div className="flex justify-between mt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowConfirm(false)}
-              >
+      {/* Duration Selection */}
+      <div className="mt-8">
+        <DurationSelector
+          durationMonths={durationMonths}
+          onDurationChange={handleDurationChange}
+          selectedPricingTier={selectedPricingTier}
+          isDiamondPlan={selectedPricingTier === 'diamond'}
+        />
+      </div>
+      
+      {/* Additional Options */}
+      <Card className="mt-6">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label htmlFor="auto-renew" className="cursor-pointer">Auto-renew subscription</Label>
+              <p className="text-xs text-muted-foreground">
                 {t({
-                  english: "Change Plan",
-                  vietnamese: "Đổi Gói"
+                  english: "Get an additional 5% discount",
+                  vietnamese: "Nhận thêm 5% giảm giá"
                 })}
-              </Button>
-              
-              <Button 
-                onClick={handleConfirmPlan}
-              >
-                {priceInfo.finalPrice > 0 ? t({
-                  english: "Continue to Payment",
-                  vietnamese: "Tiếp tục đến Thanh toán"
-                }) : t({
-                  english: "Post for Free",
-                  vietnamese: "Đăng Miễn phí"
-                })}
-              </Button>
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <Switch 
+              id="auto-renew"
+              checked={autoRenew}
+              onCheckedChange={setAutoRenew}
+            />
+          </div>
+          
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div className="space-y-1">
+              <Label htmlFor="nationwide" className="cursor-pointer">
+                {t({
+                  english: "Show nationwide (all states)",
+                  vietnamese: "Hiển thị toàn quốc (tất cả các tiểu bang)"
+                })}
+              </Label>
+              <p className="text-xs text-muted-foreground">+$5.00 (one-time fee)</p>
+            </div>
+            <Switch 
+              id="nationwide"
+              checked={isNationwide}
+              onCheckedChange={setIsNationwide}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Summary & Continue */}
+      <div>
+        <SummaryTotals 
+          selectedTier={selectedPricingTier}
+          durationMonths={durationMonths}
+          autoRenew={autoRenew}
+          isFirstPost={isFirstPost}
+        />
+        
+        <button
+          className="w-full mt-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90 font-medium"
+          onClick={handleContinue}
+        >
+          {isFirstPost && selectedPricingTier !== 'diamond' ? (
+            "Post for Free"
+          ) : (
+            "Continue to Payment"
+          )}
+        </button>
+      </div>
     </div>
   );
 };
+
+export default JobPostPricing;

@@ -4,10 +4,11 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { JobPostPricing } from './JobPostPricing';
 import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import PostWizardLayout from '@/components/layout/PostWizardLayout';
 
 // Define the posting steps for a clearer workflow
 enum PostingStep {
@@ -70,29 +71,23 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
   };
 
   const handleGoBack = () => {
-    if (currentStep === PostingStep.PRICING) {
-      // Go back to job details
-      onBack();
-    } else {
-      // If in processing or any other step, go back to pricing
-      setCurrentStep(PostingStep.PRICING);
-    }
+    // Go back to job details
+    onBack();
   };
   
+  // Calculate total steps based on the enum
+  const totalSteps = Object.keys(PostingStep).length / 2; // Division by 2 because enums have both key/value pairs
+  
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Post Your Job</h1>
-        {isLoading && (
-          <div className="flex items-center space-x-2 text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Processing...</span>
-          </div>
-        )}
-      </div>
-      
+    <PostWizardLayout
+      currentStep={currentStep + 1} // Add 1 to make it 1-indexed for display
+      totalSteps={totalSteps}
+    >
       {currentStep === PostingStep.PRICING && (
-        <>
+        <div className="space-y-8">
+          <h2 className="text-2xl font-semibold">Select Your Plan</h2>
+          <p className="text-gray-600">Choose a pricing plan that fits your needs</p>
+          
           <JobPostPricing
             onContinue={handleSelectPlan}
             isFirstPost={isFirstPost}
@@ -103,7 +98,7 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
               Back to Details
             </Button>
           </div>
-        </>
+        </div>
       )}
       
       {currentStep === PostingStep.PROCESSING && (
@@ -113,7 +108,7 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({
           <p className="text-muted-foreground">Please wait while we prepare your listing...</p>
         </div>
       )}
-    </div>
+    </PostWizardLayout>
   );
 };
 
