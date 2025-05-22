@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions } from '@/utils/posting/types';
 import JobPostPricing from '@/components/posting/job/JobPostPricing';
@@ -13,12 +14,32 @@ interface JobPostWrapperProps {
   onBack: () => void;
 }
 
+// Helper function to validate job details
+const validateJobDetails = (details: JobDetailsSubmission): boolean => {
+  const requiredFields: (keyof JobDetailsSubmission)[] = [
+    'title', 'description', 'location', 'company', 'jobType'
+  ];
+  
+  return requiredFields.every(field => {
+    const value = details[field];
+    return value !== undefined && value !== null && value !== '';
+  });
+};
+
 export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({ jobDetails, onBack }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState<'pricing' | 'payment'>('pricing');
   const [pricingOptions, setPricingOptions] = useState<PricingOptions | null>(null);
   const { initiatePayment, isLoading } = usePostPayment();
   const isFirstPost = true; // This would ideally be determined from user data
+  
+  // Validate job details when component mounts
+  useEffect(() => {
+    if (!validateJobDetails(jobDetails)) {
+      toast.error("Missing required job details. Please complete the form.");
+      onBack(); // Return to form if validation fails
+    }
+  }, [jobDetails, onBack]);
 
   const handleSelectPricingOptions = (options: PricingOptions) => {
     setPricingOptions(options);

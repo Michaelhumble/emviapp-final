@@ -80,11 +80,18 @@ export interface Job {
   hidden?: boolean;
 }
 
-// Add missing exported interfaces
+// Update JobDetailsSubmission to clearly indicate required vs. optional fields
 export type JobDetailsSubmission = {
+  // Required fields
   title: string;
-  description?: string;
+  description: string;
   location: string;
+  company: string;
+  jobType: string;
+  
+  // Optional fields
+  salary?: string;
+  photos?: File[];
   compensation_type?: string;
   compensation_details?: string;
   employment_type?: string;
@@ -113,12 +120,8 @@ export type JobDetailsSubmission = {
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
-  salonName?: string; // Ensure salonName property is here
-  photos?: File[]; // Add photos property to fix the TypeScript error
-  jobType?: string; // Add jobType property
-  salary?: string; // Add salary property
-  company?: string; // Add company property
-}
+  salonName?: string;
+};
 
 // Import the PricingOptions from the canonical source
 import { PricingOptions } from '@/utils/posting/types';

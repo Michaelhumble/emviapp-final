@@ -8,16 +8,20 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from '@/components/ui/separator';
 import UploadSection from '@/components/posting/sections/UploadSection';
+import { toast } from 'sonner';
 
-// Update the job form schema to match JobDetailsSubmission required fields
+// Define a schema that matches the required fields in JobDetailsSubmission
 const jobFormSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(20, "Description must be at least 20 characters"),
   location: z.string().min(3, "Location is required"),
+  company: z.string().min(2, "Company name is required"),
+  jobType: z.string().min(1, "Job type is required"),
   salary: z.string().optional(),
-  jobType: z.string(),
-  company: z.string().min(2, "Company name is required")
 });
+
+// Define the type for our form values based on the schema
+type JobFormValues = z.infer<typeof jobFormSchema>;
 
 interface JobDetailsFormProps {
   onSubmit: (data: JobDetailsSubmission) => void;
@@ -25,32 +29,57 @@ interface JobDetailsFormProps {
 
 const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const form = useForm<z.infer<typeof jobFormSchema>>({
+  const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
       title: '',
       description: '',
       location: '',
-      salary: '',
+      company: '',
       jobType: 'full-time',
-      company: ''
+      salary: '',
     }
   });
 
-  const handleFormSubmit = (values: z.infer<typeof jobFormSchema>) => {
-    // Ensure all required fields from JobDetailsSubmission are included
-    const jobDetails: JobDetailsSubmission = {
-      title: values.title, // Explicitly include required fields
-      description: values.description,
-      location: values.location, 
-      jobType: values.jobType,
-      company: values.company,
-      salary: values.salary,
-      photos: photoUploads // Include photos as it's expected by the type
-    };
+  const handleFormSubmit = (values: JobFormValues) => {
+    setIsSubmitting(true);
     
-    onSubmit(jobDetails);
+    try {
+      // Create a properly typed JobDetailsSubmission object with explicit field mapping
+      const jobDetails: JobDetailsSubmission = {
+        // Required fields
+        title: values.title,
+        description: values.description,
+        location: values.location,
+        company: values.company,
+        jobType: values.jobType,
+        
+        // Optional fields
+        salary: values.salary || undefined,
+        photos: photoUploads.length > 0 ? photoUploads : undefined,
+      };
+      
+      // Type assertion to ensure our object matches JobDetailsSubmission
+      const isValidSubmission = (submission: JobDetailsSubmission): submission is JobDetailsSubmission => {
+        const requiredFields = ['title', 'description', 'location', 'company', 'jobType'];
+        return requiredFields.every(field => field in submission && !!submission[field as keyof JobDetailsSubmission]);
+      };
+      
+      if (!isValidSubmission(jobDetails)) {
+        toast.error("Missing required fields in job submission");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Submit the validated job details
+      onSubmit(jobDetails);
+    } catch (error) {
+      console.error("Error processing form submission:", error);
+      toast.error("There was an issue submitting your job posting");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -73,6 +102,9 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
                   {...form.register('title')}
                   placeholder="e.g. Nail Technician"
                 />
+                {form.formState.errors.title && (
+                  <p className="text-sm text-red-500">{form.formState.errors.title.message}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -83,6 +115,9 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
                   {...form.register('company')}
                   placeholder="Your salon name"
                 />
+                {form.formState.errors.company && (
+                  <p className="text-sm text-red-500">{form.formState.errors.company.message}</p>
+                )}
               </div>
             </div>
             
@@ -93,6 +128,9 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
                 {...form.register('description')}
                 placeholder="Describe the position, requirements, and benefits"
               />
+              {form.formState.errors.description && (
+                <p className="text-sm text-red-500">{form.formState.errors.description.message}</p>
+              )}
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
@@ -104,6 +142,9 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
                   {...form.register('location')}
                   placeholder="City, State"
                 />
+                {form.formState.errors.location && (
+                  <p className="text-sm text-red-500">{form.formState.errors.location.message}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -114,6 +155,9 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
                   {...form.register('salary')}
                   placeholder="e.g. $20-25/hr or Competitive"
                 />
+                {form.formState.errors.salary && (
+                  <p className="text-sm text-red-500">{form.formState.errors.salary.message}</p>
+                )}
               </div>
             </div>
             
@@ -128,6 +172,9 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
                 <option value="contract">Contract</option>
                 <option value="temporary">Temporary</option>
               </select>
+              {form.formState.errors.jobType && (
+                <p className="text-sm text-red-500">{form.formState.errors.jobType.message}</p>
+              )}
             </div>
           </div>
           
@@ -140,8 +187,8 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
           />
           
           <div className="flex justify-end">
-            <Button type="submit" size="lg">
-              Continue to Pricing
+            <Button type="submit" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : 'Continue to Pricing'}
             </Button>
           </div>
         </form>

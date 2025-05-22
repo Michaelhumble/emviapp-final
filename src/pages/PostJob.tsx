@@ -6,6 +6,7 @@ import { JobDetailsSubmission } from '@/types/job';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 // This is the main job posting page component
 const PostJob = () => {
@@ -16,8 +17,19 @@ const PostJob = () => {
   
   // Handle form submission
   const handleJobDetailsSubmitted = (details: JobDetailsSubmission) => {
+    // Validate required fields before proceeding
+    if (!details.title || !details.description || !details.location || 
+        !details.company || !details.jobType) {
+      toast.error("Please fill out all required fields");
+      return;
+    }
+    
+    // Set job details and proceed to next step
     setJobDetails(details);
     setStep(1); // Move to pricing step
+    
+    // Log successful form submission
+    console.log("Job details submitted successfully:", details);
   };
   
   // Go back to details form
