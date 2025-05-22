@@ -4,6 +4,12 @@ import { z } from 'zod';
 // Define industry types
 export type IndustryType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'spa' | 'receptionist' | 'manager' | 'massage' | 'tattoo' | 'makeup' | 'booth' | 'beauty' | 'custom';
 
+// Define job types
+export type JobType = 'full-time' | 'part-time' | 'contract' | 'temporary';
+
+// Define compensation types
+export type CompensationType = 'hourly' | 'commission' | 'salary' | 'hybrid';
+
 // Define job templates
 export type JobTemplateType = IndustryType;
 
@@ -35,3 +41,30 @@ export const jobFormSchema = z.object({
 
 // Infer TypeScript type from schema
 export type JobFormValues = z.infer<typeof jobFormSchema>;
+
+// Define the job template interface to match the actual templates structure
+export interface JobTemplate {
+  id: string;
+  title: string;
+  industry: string;
+  salonName: string;
+  description: string;
+  vietnameseDescription: string;
+  location: string;
+  jobType: JobType;
+  compensation_type: CompensationType;
+  compensation_details: string;
+  weekly_pay: boolean;
+  has_housing: boolean;
+  has_wax_room: boolean;
+  owner_will_train: boolean;
+  no_supply_deduction: boolean;
+  salary_range: string;
+  experience_level: string;
+  requirements: string[];
+  specialties: string[];
+  thumbnailUrl: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+}

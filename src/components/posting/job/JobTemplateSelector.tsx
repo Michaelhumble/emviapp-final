@@ -50,7 +50,34 @@ interface JobTemplateSelectorProps {
 const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({ onTemplateSelect }) => {
   const handleTemplateSelect = (templateType: JobTemplateType) => {
     const template = getJobTemplate(templateType);
-    onTemplateSelect(template, templateType);
+    
+    // Convert template object to match the form values format
+    const formValues: JobFormValues = {
+      salonName: template.salonName,
+      title: template.title,
+      description: template.description,
+      vietnameseDescription: template.vietnameseDescription,
+      location: template.location,
+      jobType: template.jobType as "full-time" | "part-time" | "contract" | "temporary",
+      specialties: template.specialties || [],
+      requirements: template.requirements || [],
+      contactName: template.contactName,
+      contactEmail: template.contactEmail,
+      contactPhone: template.contactPhone,
+      compensation_type: template.compensation_type as "hourly" | "commission" | "salary" | "hybrid",
+      compensation_details: template.compensation_details,
+      weekly_pay: template.weekly_pay,
+      has_housing: template.has_housing,
+      has_wax_room: template.has_wax_room,
+      owner_will_train: template.owner_will_train,
+      no_supply_deduction: template.no_supply_deduction,
+      salary_range: template.salary_range,
+      experience_level: template.experience_level,
+      industry: template.industry,
+      templateType: templateType
+    };
+    
+    onTemplateSelect(formValues, templateType);
   };
 
   const templates = [

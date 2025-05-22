@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues, IndustryType } from './jobFormSchema';
+import { jobFormSchema, JobFormValues, IndustryType, JobType, CompensationType, JobTemplate } from './jobFormSchema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import ContactInfoSection from '../sections/ContactInfoSection';
@@ -44,32 +44,58 @@ const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProp
     const template = getJobTemplate(templateType);
     
     if (onTemplateSelect) {
-      // Pass only the JobFormValues fields to the parent component
-      const { 
-        salonName, title, description, vietnameseDescription, location, jobType,
-        specialties, requirements, contactName, contactEmail, contactPhone,
-        compensation_type, compensation_details, weekly_pay, has_housing,
-        has_wax_room, owner_will_train, no_supply_deduction, salary_range,
-        experience_level
-      } = template;
-      
-      const templateValues: JobFormValues = {
-        salonName, title, description, vietnameseDescription, location, jobType,
-        specialties: specialties || [],
-        requirements: requirements || [],
-        contactName, contactEmail, contactPhone,
-        compensation_type, compensation_details, weekly_pay, has_housing,
-        has_wax_room, owner_will_train, no_supply_deduction, salary_range,
-        experience_level
+      // Convert template to match JobFormValues interface
+      const formValues: JobFormValues = {
+        salonName: template.salonName,
+        title: template.title,
+        description: template.description,
+        vietnameseDescription: template.vietnameseDescription,
+        location: template.location,
+        jobType: template.jobType as JobType,
+        specialties: template.specialties || [],
+        requirements: template.requirements || [],
+        contactName: template.contactName,
+        contactEmail: template.contactEmail,
+        contactPhone: template.contactPhone,
+        compensation_type: template.compensation_type as CompensationType,
+        compensation_details: template.compensation_details,
+        weekly_pay: template.weekly_pay,
+        has_housing: template.has_housing,
+        has_wax_room: template.has_wax_room,
+        owner_will_train: template.owner_will_train,
+        no_supply_deduction: template.no_supply_deduction,
+        salary_range: template.salary_range,
+        experience_level: template.experience_level,
+        industry: template.industry,
+        templateType: templateType
       };
       
-      onTemplateSelect(templateValues, templateType);
+      onTemplateSelect(formValues, templateType);
     } else {
-      // Only set the form values if we're not forwarding to the parent
+      // Convert template object to match the form values format
       form.reset({
-        ...template,
+        salonName: template.salonName,
+        title: template.title,
+        description: template.description,
+        vietnameseDescription: template.vietnameseDescription,
+        location: template.location,
+        jobType: template.jobType as JobType,
         specialties: template.specialties || [],
-        requirements: template.requirements || []
+        requirements: template.requirements || [],
+        contactName: template.contactName,
+        contactEmail: template.contactEmail,
+        contactPhone: template.contactPhone,
+        compensation_type: template.compensation_type as CompensationType,
+        compensation_details: template.compensation_details,
+        weekly_pay: template.weekly_pay,
+        has_housing: template.has_housing,
+        has_wax_room: template.has_wax_room,
+        owner_will_train: template.owner_will_train,
+        no_supply_deduction: template.no_supply_deduction,
+        salary_range: template.salary_range,
+        experience_level: template.experience_level,
+        industry: template.industry,
+        templateType: templateType
       });
     }
   };

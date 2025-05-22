@@ -10,9 +10,10 @@ import { JobFormValues } from '../job/jobFormSchema';
 interface JobDetailsSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
+  onNext?: () => void;
 }
 
-const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control, form }) => {
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control, form, onNext }) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
@@ -166,6 +167,18 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control, form }) 
           </FormItem>
         )}
       />
+      
+      {onNext && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={onNext}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
