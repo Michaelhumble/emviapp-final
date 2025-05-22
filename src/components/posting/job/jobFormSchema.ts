@@ -1,69 +1,70 @@
 
 import { z } from 'zod';
 
-// Define types for the job form
-export type JobType = 'full-time' | 'part-time' | 'contract' | 'temporary';
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
-export type CompensationType = 'hourly' | 'salary' | 'commission' | 'hybrid';
+// Define industry types
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'spa' | 'receptionist' | 'manager' | 'massage' | 'tattoo' | 'makeup' | 'booth' | 'beauty' | 'custom';
 
-// Export the job template types that include all fields
-export type JobTemplate = {
-  salonName: string;
+// Define job types
+export type JobType = 'full-time' | 'part-time' | 'contract' | 'temporary';
+
+// Define compensation types
+export type CompensationType = 'hourly' | 'commission' | 'salary' | 'hybrid';
+
+// Define job templates
+export type JobTemplateType = IndustryType;
+
+// Define the schema for job form validation
+export const jobFormSchema = z.object({
+  title: z.string().min(1, { message: 'Job title is required' }),
+  salonName: z.string().min(1, { message: 'Salon name is required' }),
+  description: z.string().min(1, { message: 'Job description is required' }),
+  vietnameseDescription: z.string().optional(),
+  location: z.string().min(1, { message: 'Location is required' }),
+  jobType: z.enum(['full-time', 'part-time', 'contract', 'temporary']).default('full-time'),
+  compensation_type: z.enum(['hourly', 'commission', 'salary', 'hybrid']).default('hourly'),
+  compensation_details: z.string().optional(),
+  weekly_pay: z.boolean().default(false),
+  has_housing: z.boolean().default(false),
+  has_wax_room: z.boolean().default(false),
+  owner_will_train: z.boolean().default(false),
+  no_supply_deduction: z.boolean().default(false),
+  contactName: z.string().min(1, { message: 'Contact name is required' }),
+  contactEmail: z.string().email({ message: 'Must be a valid email' }),
+  contactPhone: z.string().min(1, { message: 'Phone number is required' }),
+  requirements: z.array(z.string()).or(z.string()).optional(),
+  specialties: z.array(z.string()).optional(),
+  salary_range: z.string().optional(),
+  experience_level: z.string().optional(),
+  industry: z.string().optional(), // Store the selected template industry
+  templateType: z.string().optional(), // Store the selected template type
+});
+
+// Infer TypeScript type from schema
+export type JobFormValues = z.infer<typeof jobFormSchema>;
+
+// Define the job template interface to match the actual templates structure
+export interface JobTemplate {
+  id: string;
   title: string;
+  industry: string;
+  salonName: string;
   description: string;
-  vietnameseDescription?: string;
+  vietnameseDescription: string;
   location: string;
-  jobType: string;
-  specialties?: string[];
-  requirements?: string[];
+  jobType: JobType;
+  compensation_type: CompensationType;
+  compensation_details: string;
+  weekly_pay: boolean;
+  has_housing: boolean;
+  has_wax_room: boolean;
+  owner_will_train: boolean;
+  no_supply_deduction: boolean;
+  salary_range: string;
+  experience_level: string;
+  requirements: string[];
+  specialties: string[];
+  thumbnailUrl: string;
   contactName: string;
   contactEmail: string;
   contactPhone: string;
-  compensation_type: string;
-  compensation_details?: string;
-  weekly_pay?: boolean;
-  has_housing?: boolean;
-  has_wax_room?: boolean;
-  owner_will_train?: boolean;
-  no_supply_deduction?: boolean;
-  salary_range?: string;
-  experience_level?: string;
-  industry: IndustryType;
-  compensationMin?: string | number;
-  compensationMax?: string | number;
-  isNationwide?: boolean;
-  isRemote?: boolean;
-  templateType?: string;
-};
-
-// Define the schema for the job form
-export const jobFormSchema = z.object({
-  title: z.string().optional(),
-  salonName: z.string().optional(),
-  description: z.string().optional(),
-  vietnameseDescription: z.string().optional(),
-  location: z.string().optional(),
-  jobType: z.string().optional(),
-  specialties: z.array(z.string()).optional(),
-  requirements: z.array(z.string()).optional(),
-  contactName: z.string().optional(),
-  contactEmail: z.string().email().optional(),
-  contactPhone: z.string().optional(),
-  compensation_type: z.string().optional(),
-  compensation_details: z.string().optional(),
-  weekly_pay: z.boolean().optional().default(false),
-  has_housing: z.boolean().optional().default(false),
-  has_wax_room: z.boolean().optional().default(false),
-  owner_will_train: z.boolean().optional().default(false),
-  no_supply_deduction: z.boolean().optional().default(false),
-  salary_range: z.string().optional(),
-  experience_level: z.string().optional(),
-  industry: z.string().optional(),
-  compensationMin: z.union([z.string(), z.number()]).optional(),
-  compensationMax: z.union([z.string(), z.number()]).optional(),
-  isNationwide: z.boolean().optional().default(false),
-  isRemote: z.boolean().optional().default(false),
-  templateType: z.string().optional(),
-});
-
-export type JobFormValues = z.infer<typeof jobFormSchema>;
+}
