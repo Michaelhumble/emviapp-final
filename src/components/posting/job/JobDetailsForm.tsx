@@ -43,8 +43,7 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
     const jobDetails: JobDetailsSubmission = {
       ...values,
       photos: photoUploads,
-      // Remove the status property since it's not in the JobDetailsSubmission type
-      createdAt: new Date().toISOString()
+      // Note: removed createdAt as it's not in the JobDetailsSubmission type
     };
     
     onSubmit(jobDetails);
