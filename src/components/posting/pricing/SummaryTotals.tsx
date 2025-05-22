@@ -12,6 +12,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrency } from '@/lib/utils';
+import { DURATION_DISCOUNTS, AUTO_RENEW_DISCOUNT } from '@/utils/posting/pricingConfig';
 
 interface SummaryTotalsProps {
   originalPrice: number;
@@ -51,7 +53,12 @@ export function SummaryTotals({
     setShowAutoRenewDialog(false);
   };
 
+  // Extract discount components
+  const durationDiscount = DURATION_DISCOUNTS[durationMonths as keyof typeof DURATION_DISCOUNTS] || 0;
+  const autoRenewDiscount = autoRenew ? AUTO_RENEW_DISCOUNT : 0;
+  
   const isFreeplan = finalPrice === 0;
+  const savings = originalPrice - finalPrice;
 
   return (
     <div className="space-y-3 border-t pt-4">
@@ -60,20 +67,33 @@ export function SummaryTotals({
       <div className="space-y-2">
         <div className="flex justify-between">
           <span className="text-gray-500">Original Price</span>
-          <span className="text-gray-500">${originalPrice.toFixed(2)}</span>
+          <span className="text-gray-500">{formatCurrency(originalPrice)}</span>
         </div>
         
-        {discountPercentage > 0 && (
+        {durationDiscount > 0 && (
           <div className="flex justify-between text-green-600">
-            <span>Duration Discount ({discountPercentage}% OFF)</span>
-            <span>-${(originalPrice - finalPrice).toFixed(2)}</span>
+            <span>{durationMonths}-month discount ({durationDiscount}% OFF)</span>
+            <span>-{formatCurrency((originalPrice * durationDiscount) / 100)}</span>
+          </div>
+        )}
+        
+        {autoRenewDiscount > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Auto-renew discount ({autoRenewDiscount}% OFF)</span>
+            <span>-{formatCurrency((originalPrice * autoRenewDiscount) / 100)}</span>
           </div>
         )}
         
         <div className="flex justify-between font-medium text-lg pt-2 border-t">
           <span>Total</span>
-          <span>${finalPrice.toFixed(2)}</span>
+          <span>{formatCurrency(finalPrice)}</span>
         </div>
+        
+        {savings > 0 && (
+          <div className="text-sm text-green-600 font-medium">
+            You save: {formatCurrency(savings)}
+          </div>
+        )}
         
         {finalPrice > 0 && onAutoRenewChange && (
           <div className="flex items-center justify-between mt-2 bg-gray-50 p-2 rounded">
@@ -94,7 +114,7 @@ export function SummaryTotals({
         
         <div className="text-sm text-gray-500">
           {autoRenew 
-            ? <span>Your subscription will automatically renew every {durationMonths} month{durationMonths > 1 ? 's' : ''} at ${(finalPrice / durationMonths).toFixed(2)}/month.</span>
+            ? <span>Your subscription will automatically renew every {durationMonths} month{durationMonths > 1 ? 's' : ''} at {formatCurrency(finalPrice / durationMonths)}/month.</span>
             : <span>Your post will expire after {durationMonths} month{durationMonths > 1 ? 's' : ''}. <span className="text-amber-600 font-medium">You'll lose your current pricing!</span></span>
           }
         </div>
@@ -102,8 +122,7 @@ export function SummaryTotals({
         {/* Free plan messaging */}
         {isFreeplan && (
           <div className="mt-3 text-xs bg-yellow-50 p-3 rounded-md text-amber-800">
-            <p className="font-medium">Credit card required for free trial. Cancel anytime, no risk.</p>
-            <p className="mt-1">After your 30-day free trial, plan will automatically convert to paid unless canceled.</p>
+            <p className="font-medium">First post is completely free with no credit card required.</p>
           </div>
         )}
 

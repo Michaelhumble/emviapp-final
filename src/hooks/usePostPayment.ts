@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useTranslation } from '@/hooks/useTranslation';
 import { JobDetailsSubmission } from '@/types/job';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { getJobPrice, validatePricingOptions } from '@/utils/posting/jobPricing';
+import { calculatePricing } from '@/utils/posting/pricing';
 import { v4 as uuidv4 } from 'uuid';
 
 export const usePostPayment = () => {
@@ -22,13 +22,15 @@ export const usePostPayment = () => {
         throw new Error("Missing pricing options");
       }
 
-      // Validate pricing options
-      if (!validatePricingOptions(pricingOptions)) {
-        throw new Error("Invalid pricing options");
-      }
-
       // Calculate price using our centralized pricing function
-      const priceData = getJobPrice(pricingOptions);
+      const priceData = calculatePricing(
+        pricingOptions.selectedPricingTier,
+        pricingOptions.durationMonths,
+        pricingOptions.autoRenew,
+        pricingOptions.isFirstPost,
+        pricingOptions.isNationwide
+      );
+      
       console.log("Calculated price:", priceData);
 
       // Check for the $0.00 bug - Only allow $0 for free tier or first post
@@ -120,7 +122,8 @@ export const usePostPayment = () => {
           postDetails,
           pricingOptions,
           priceData, // Pass the calculated price data
-          idempotencyKey // Include idempotency key
+          idempotencyKey, // Include idempotency key
+          autoRenew: pricingOptions.autoRenew // Explicitly include auto-renew setting
         }
       });
 
