@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from '@/components/ui/separator';
 import UploadSection from '@/components/posting/sections/UploadSection';
 
-// Simple job submission schema
+// Update the job form schema to match JobDetailsSubmission required fields
 const jobFormSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(20, "Description must be at least 20 characters"),
@@ -39,11 +39,15 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit }) => {
   });
 
   const handleFormSubmit = (values: z.infer<typeof jobFormSchema>) => {
-    // Convert form data to JobDetailsSubmission format
+    // Ensure all required fields from JobDetailsSubmission are included
     const jobDetails: JobDetailsSubmission = {
-      ...values,
-      photos: photoUploads,
-      // Note: removed createdAt as it's not in the JobDetailsSubmission type
+      title: values.title, // Explicitly include required fields
+      description: values.description,
+      location: values.location, 
+      jobType: values.jobType,
+      company: values.company,
+      salary: values.salary,
+      photos: photoUploads // Include photos as it's expected by the type
     };
     
     onSubmit(jobDetails);
