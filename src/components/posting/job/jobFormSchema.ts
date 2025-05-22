@@ -1,6 +1,8 @@
 
 import { z } from 'zod';
 
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup' | 'custom';
+
 export const jobFormSchema = z.object({
   salonName: z.string().min(2, { message: 'Salon name is required' }),
   title: z.string().min(2, { message: 'Job title is required' }),
@@ -19,7 +21,7 @@ export const jobFormSchema = z.object({
   contactPhone: z.string().optional(),
   
   // Compensation details
-  compensation_type: z.enum(['hourly', 'commission', 'salary', 'booth-rental']).optional(),
+  compensation_type: z.enum(['hourly', 'commission', 'salary', 'booth-rental', 'per-service']).optional(),
   compensation_details: z.string().optional(),
   weekly_pay: z.string().optional(),
   

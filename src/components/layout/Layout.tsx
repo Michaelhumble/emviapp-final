@@ -20,7 +20,8 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
   const isJobsPage = location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
   
   // Don't show mobile navbar on post-job page as it has its own navigation
-  const showMobileNav = isMobile && !location.pathname.includes('/post-job');
+  const isPostJobPage = location.pathname === '/post-job';
+  const showMobileNav = isMobile && !isPostJobPage;
 
   return (
     <div className="min-h-screen flex flex-col">
