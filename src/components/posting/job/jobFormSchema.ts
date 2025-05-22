@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 // Define types for specific fields
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'microblading' | 'makeup' | 'custom' | string;
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'microblading' | 'makeup' | 'custom' | 'massage' | string;
 
 // Define the overall form schema
 export const jobFormSchema = z.object({

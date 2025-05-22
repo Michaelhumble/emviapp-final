@@ -14,7 +14,7 @@ import { PricingOptions } from '@/utils/posting/types';
 const JobPost = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
-  const [currentStep, setCurrentStep] = React.useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const handleSubmit = async (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => {
     try {

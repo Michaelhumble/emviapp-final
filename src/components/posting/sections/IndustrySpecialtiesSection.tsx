@@ -1,280 +1,181 @@
 
 import React from 'react';
-import { Control, Controller } from 'react-hook-form';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Control } from 'react-hook-form';
+import { Grid } from '@/components/ui/grid';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { JobFormValues, IndustryType } from '../job/jobFormSchema';
-import { Badge } from '@/components/ui/badge';
-import { X, Scissors, Razor, Eye, Palette, FileHeart } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { motion } from 'framer-motion';
+import { beautySpecialties } from '@/data/specialties';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useTranslation } from '@/hooks/useTranslation';
+import IndustryCard from '../job/IndustryCard';
+import { Scissors, Fingerprint, Fan, UserRound, Heart } from 'lucide-react';
 
-// Define the industry options
-const INDUSTRY_OPTIONS = [
-  { 
-    value: 'nails', 
-    label: 'Nails',
-    icon: Palette, 
-    description: 'Nail technicians, manicurists, and specialists in nail art and extensions'
+// Industry data with icons and descriptions
+const industries = [
+  {
+    id: 'nails',
+    title: 'Nail Technician',
+    description: 'For nail salons looking for experienced technicians with skills in manicures, pedicures, and nail art.',
+    icon: 'Fingerprint'
   },
-  { 
-    value: 'hair', 
-    label: 'Hair',
-    icon: Scissors,
-    description: 'Hair stylists, colorists, and hair specialists'
+  {
+    id: 'hair',
+    title: 'Hair Stylist',
+    description: 'For salons seeking professionals skilled in cutting, coloring, and styling services.',
+    icon: 'Scissors'
   },
-  { 
-    value: 'lashes', 
-    label: 'Lashes & Brows',
-    icon: Eye,
-    description: 'Lash technicians, brow artists, and extension specialists'
+  {
+    id: 'lashes',
+    title: 'Lash Technician',
+    description: 'For beauty businesses seeking specialists in eyelash extensions and lash services.',
+    icon: 'Fan'
   },
-  { 
-    value: 'barber', 
-    label: 'Barber',
-    icon: Razor,
-    description: 'Barbers, men\'s grooming specialists, and beard care experts'
+  {
+    id: 'barber',
+    title: 'Barber',
+    description: 'For barbershops looking for skilled professionals in men\'s grooming and styling.',
+    icon: 'Scissors'
   },
-  { 
-    value: 'skincare', 
-    label: 'Skincare & Esthetics',
-    icon: FileHeart,
-    description: 'Estheticians, facial specialists, and skincare experts'
+  {
+    id: 'skincare',
+    title: 'Esthetician',
+    description: 'For spas and salons seeking skincare specialists for facials and treatments.',
+    icon: 'UserRound'
   },
-  { 
-    value: 'microblading', 
-    label: 'Microblading & PMU',
-    icon: Palette,
-    description: 'Permanent makeup artists and microblading specialists'
+  {
+    id: 'massage',
+    title: 'Massage Therapist',
+    description: 'For spas and wellness centers seeking licensed therapists for massage and bodywork services.',
+    icon: 'Heart'
   },
-  { 
-    value: 'makeup', 
-    label: 'Makeup',
-    icon: Palette,
-    description: 'Makeup artists, bridal specialists, and beauty professionals'
+  {
+    id: 'microblading',
+    title: 'PMU Artist',
+    description: 'For businesses seeking specialists in permanent makeup and microblading services.',
+    icon: 'Fingerprint'
   },
-  { 
-    value: 'custom', 
-    label: 'Other Beauty Specialties',
-    icon: Palette,
-    description: 'Other beauty professionals and specialties'
+  {
+    id: 'makeup',
+    title: 'Makeup Artist',
+    description: 'For salons and studios seeking professionals skilled in makeup application for various occasions.',
+    icon: 'Fan'
+  },
+  {
+    id: 'custom',
+    title: 'Other / Custom',
+    description: 'Create a custom job posting for any beauty industry position with your own details.',
+    icon: 'UserRound'
   }
 ];
 
-// Define specialties by industry
-const SPECIALTIES_BY_INDUSTRY: Record<string, string[]> = {
-  nails: [
-    'Manicures',
-    'Pedicures',
-    'Gel Polish',
-    'Acrylic Extensions',
-    'Dip Powder',
-    'Nail Art',
-    'Nail Repairs'
-  ],
-  hair: [
-    'Haircuts',
-    'Color',
-    'Highlights',
-    'Balayage',
-    'Extensions',
-    'Blowouts',
-    'Keratin Treatments',
-    'Bridal'
-  ],
-  lashes: [
-    'Classic Lash Extensions',
-    'Volume Lash Extensions',
-    'Lash Lifts',
-    'Brow Lamination',
-    'Brow Tinting',
-    'Brow Shaping',
-    'Brow Henna'
-  ],
-  barber: [
-    'Men\'s Haircuts',
-    'Beard Trims',
-    'Hot Towel Shaves',
-    'Fades',
-    'Line-ups',
-    'Hair Design'
-  ],
-  skincare: [
-    'Facials',
-    'Chemical Peels',
-    'Microdermabrasion',
-    'Waxing',
-    'Microneedling',
-    'LED Therapy'
-  ],
-  microblading: [
-    'Microblading',
-    'Powder Brows',
-    'Combination Brows',
-    'Lip Blushing',
-    'Eyeliner',
-    'Scalp Micropigmentation'
-  ],
-  makeup: [
-    'Bridal Makeup',
-    'Special Event Makeup',
-    'Airbrush Makeup',
-    'Makeup Lessons',
-    'Editorial Makeup'
-  ],
-  custom: [
-    'Massage',
-    'Body Treatments',
-    'Spray Tanning',
-    'Teeth Whitening'
-  ]
-};
-
 interface IndustrySpecialtiesSectionProps {
-  control: Control<JobFormValues>;
+  control: Control<any>;
   industry?: string;
 }
 
-const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
+const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ 
   control,
-  industry: initialIndustry
+  industry
 }) => {
-  // Get the specialties based on the selected industry
-  const [selectedIndustry, setSelectedIndustry] = React.useState(initialIndustry || '');
+  const { t } = useTranslation();
+  const [selectedIndustry, setSelectedIndustry] = React.useState<string>(industry || '');
   
   // Get specialties for the selected industry
-  const specialties = SPECIALTIES_BY_INDUSTRY[selectedIndustry] || [];
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  const specialties = selectedIndustry && beautySpecialties[selectedIndustry as keyof typeof beautySpecialties] 
+    ? beautySpecialties[selectedIndustry as keyof typeof beautySpecialties] 
+    : [];
 
   return (
     <div className="space-y-6">
-      <div className="border-b pb-4">
-        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Choose Your Industry Template</h2>
-        <p className="text-sm text-muted-foreground mt-1">Select the industry for this job to get started with a tailored template</p>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-center">
+          {t({
+            english: "Choose a Job Template",
+            vietnamese: "Chọn Mẫu Công Việc"
+          })}
+        </h2>
+        <p className="text-center text-gray-600">
+          {t({
+            english: "Select a template to start with pre-filled industry-specific details",
+            vietnamese: "Chọn một mẫu để bắt đầu với các chi tiết đặc thù cho ngành"
+          })}
+        </p>
+
+        <FormField
+          control={control}
+          name="industryType"
+          render={({ field }) => (
+            <FormItem className="space-y-4">
+              <FormControl>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {industries.map((ind) => (
+                    <IndustryCard
+                      key={ind.id}
+                      id={ind.id}
+                      title={ind.title}
+                      description={ind.description}
+                      icon={ind.icon as keyof typeof import('lucide-react')}
+                      selected={field.value === ind.id}
+                      onClick={(id) => {
+                        field.onChange(id);
+                        setSelectedIndustry(id);
+                      }}
+                    />
+                  ))}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
 
-      <FormField
-        control={control}
-        name="industryType"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="sr-only">Industry</FormLabel>
-            <FormControl>
-              <motion.div 
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                variants={container}
-                initial="hidden"
-                animate="show"
-              >
-                {INDUSTRY_OPTIONS.map((industry) => (
-                  <motion.div key={industry.value} variants={item}>
-                    <Card 
-                      className={`p-4 cursor-pointer transition-all hover:shadow-md ${field.value === industry.value ? 'border-2 border-primary ring-2 ring-primary/20' : 'border hover:border-primary/50'}`}
-                      onClick={() => {
-                        field.onChange(industry.value);
-                        setSelectedIndustry(industry.value);
-                      }}
-                    >
-                      <div className="flex flex-col items-center text-center h-full">
-                        <div className={`p-3 rounded-full mb-3 ${field.value === industry.value ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                          <industry.icon className="h-6 w-6" />
-                        </div>
-                        <h3 className="font-semibold mb-1">{industry.label}</h3>
-                        <p className="text-sm text-muted-foreground">{industry.description}</p>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {selectedIndustry && (
-        <Controller
+      {selectedIndustry && specialties.length > 0 && (
+        <FormField
           control={control}
           name="specialties"
-          defaultValue={[]}
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Specialties</FormLabel>
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {field.value && field.value.map((specialty, index) => (
-                    <Badge key={index} variant="secondary" className="px-2 py-1 h-8">
-                      {specialty}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updatedSpecialties = field.value?.filter(
-                            (s) => s !== specialty
-                          );
-                          field.onChange(updatedSpecialties);
-                        }}
-                        className="ml-2 text-muted-foreground hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {specialties.map((specialty) => (
-                    <div
-                      key={specialty}
-                      className="flex items-center space-x-2 py-1"
-                    >
-                      <Checkbox
-                        id={`specialty-${specialty}`}
-                        checked={field.value?.includes(specialty)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            field.onChange([...(field.value || []), specialty]);
-                          } else {
-                            field.onChange(
-                              field.value?.filter((s) => s !== specialty)
-                            );
-                          }
-                        }}
-                      />
-                      <Label htmlFor={`specialty-${specialty}`} className="text-sm">
-                        {specialty}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
+            <FormItem className="space-y-4">
+              <div>
+                <FormLabel>
+                  {t({
+                    english: "Specialties",
+                    vietnamese: "Chuyên môn"
+                  })}
+                </FormLabel>
+                <p className="text-sm text-gray-500">
+                  {t({
+                    english: "Select all specialties that apply to this job",
+                    vietnamese: "Chọn tất cả các chuyên môn áp dụng cho công việc này"
+                  })}
+                </p>
               </div>
+              
+              <ScrollArea className="h-60">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {specialties.map((specialty) => (
+                    <FormItem
+                      key={specialty}
+                      className="flex flex-row items-start space-x-3 space-y-0"
+                    >
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value?.includes(specialty)}
+                          onCheckedChange={(checked) => {
+                            const updatedValue = checked
+                              ? [...(field.value || []), specialty]
+                              : (field.value || []).filter((val: string) => val !== specialty);
+                            field.onChange(updatedValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="cursor-pointer font-normal">
+                        {specialty}
+                      </FormLabel>
+                    </FormItem>
+                  ))}
+                </div>
+              </ScrollArea>
               <FormMessage />
             </FormItem>
           )}
