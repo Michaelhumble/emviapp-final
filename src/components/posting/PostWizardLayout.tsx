@@ -18,7 +18,7 @@ interface PostWizardLayoutProps {
 const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ 
   children, 
   currentStep = 1, 
-  totalSteps = 4 // Updated to 4 steps
+  totalSteps = 3 // Updated to 3 steps
 }) => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();

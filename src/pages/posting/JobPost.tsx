@@ -42,7 +42,9 @@ const JobPost = () => {
           phone: formData.contactPhone,
           email: formData.contactEmail,
         },
-        post_type: 'job'
+        post_type: 'job',
+        industry: formData.industryType,
+        specialties: formData.specialties
       };
       
       // Initiate payment with our consolidated hook
@@ -77,7 +79,7 @@ const JobPost = () => {
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={4}>
+    <PostWizardLayout currentStep={currentStep} totalSteps={3}>
       <Helmet>
         <title>Create Job Listing | EmviApp</title>
         <meta 

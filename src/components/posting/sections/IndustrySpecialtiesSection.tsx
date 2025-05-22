@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 import {
   FormControl,
@@ -19,18 +19,60 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { JobFormValues, IndustryType } from '../job/jobFormSchema';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { X, Scissors, Razor, Eye, Palette, FileHeart } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { motion } from 'framer-motion';
 
 // Define the industry options
 const INDUSTRY_OPTIONS = [
-  { value: 'nails', label: 'Nails' },
-  { value: 'hair', label: 'Hair' },
-  { value: 'lashes', label: 'Lashes & Brows' },
-  { value: 'barber', label: 'Barber' },
-  { value: 'skincare', label: 'Skincare & Esthetics' },
-  { value: 'microblading', label: 'Microblading & PMU' },
-  { value: 'makeup', label: 'Makeup' },
-  { value: 'custom', label: 'Other Beauty Specialties' }
+  { 
+    value: 'nails', 
+    label: 'Nails',
+    icon: Palette, 
+    description: 'Nail technicians, manicurists, and specialists in nail art and extensions'
+  },
+  { 
+    value: 'hair', 
+    label: 'Hair',
+    icon: Scissors,
+    description: 'Hair stylists, colorists, and hair specialists'
+  },
+  { 
+    value: 'lashes', 
+    label: 'Lashes & Brows',
+    icon: Eye,
+    description: 'Lash technicians, brow artists, and extension specialists'
+  },
+  { 
+    value: 'barber', 
+    label: 'Barber',
+    icon: Razor,
+    description: 'Barbers, men\'s grooming specialists, and beard care experts'
+  },
+  { 
+    value: 'skincare', 
+    label: 'Skincare & Esthetics',
+    icon: FileHeart,
+    description: 'Estheticians, facial specialists, and skincare experts'
+  },
+  { 
+    value: 'microblading', 
+    label: 'Microblading & PMU',
+    icon: Palette,
+    description: 'Permanent makeup artists and microblading specialists'
+  },
+  { 
+    value: 'makeup', 
+    label: 'Makeup',
+    icon: Palette,
+    description: 'Makeup artists, bridal specialists, and beauty professionals'
+  },
+  { 
+    value: 'custom', 
+    label: 'Other Beauty Specialties',
+    icon: Palette,
+    description: 'Other beauty professionals and specialties'
+  }
 ];
 
 // Define specialties by industry
@@ -112,16 +154,31 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
   industry: initialIndustry
 }) => {
   // Get the specialties based on the selected industry
-  const [selectedIndustry, setSelectedIndustry] = useState(initialIndustry || 'nails');
+  const [selectedIndustry, setSelectedIndustry] = React.useState(initialIndustry || '');
   
   // Get specialties for the selected industry
   const specialties = SPECIALTIES_BY_INDUSTRY[selectedIndustry] || [];
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
-        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Industry & Specialties</h2>
-        <p className="text-sm text-muted-foreground mt-1">Select the industry and specialties for this job</p>
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Choose Your Industry Template</h2>
+        <p className="text-sm text-muted-foreground mt-1">Select the industry for this job to get started with a tailored template</p>
       </div>
 
       <FormField
@@ -129,90 +186,100 @@ const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
         name="industryType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Industry</FormLabel>
-            <Select
-              value={field.value}
-              onValueChange={(value) => {
-                field.onChange(value);
-                setSelectedIndustry(value);
-              }}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select an industry" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {INDUSTRY_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
+            <FormLabel className="sr-only">Industry</FormLabel>
+            <FormControl>
+              <motion.div 
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                {INDUSTRY_OPTIONS.map((industry) => (
+                  <motion.div key={industry.value} variants={item}>
+                    <Card 
+                      className={`p-4 cursor-pointer transition-all hover:shadow-md ${field.value === industry.value ? 'border-2 border-primary ring-2 ring-primary/20' : 'border hover:border-primary/50'}`}
+                      onClick={() => {
+                        field.onChange(industry.value);
+                        setSelectedIndustry(industry.value);
+                      }}
+                    >
+                      <div className="flex flex-col items-center text-center h-full">
+                        <div className={`p-3 rounded-full mb-3 ${field.value === industry.value ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                          <industry.icon className="h-6 w-6" />
+                        </div>
+                        <h3 className="font-semibold mb-1">{industry.label}</h3>
+                        <p className="text-sm text-muted-foreground">{industry.description}</p>
+                      </div>
+                    </Card>
+                  </motion.div>
                 ))}
-              </SelectContent>
-            </Select>
+              </motion.div>
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
 
-      <Controller
-        control={control}
-        name="specialties"
-        defaultValue={[]}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Specialties</FormLabel>
-            <div className="space-y-2">
-              <div className="flex flex-wrap gap-2 mb-3">
-                {field.value && field.value.map((specialty, index) => (
-                  <Badge key={index} variant="secondary" className="px-2 py-1 h-8">
-                    {specialty}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const updatedSpecialties = field.value?.filter(
-                          (s) => s !== specialty
-                        );
-                        field.onChange(updatedSpecialties);
-                      }}
-                      className="ml-2 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {specialties.map((specialty) => (
-                  <div
-                    key={specialty}
-                    className="flex items-center space-x-2 py-1"
-                  >
-                    <Checkbox
-                      id={`specialty-${specialty}`}
-                      checked={field.value?.includes(specialty)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          field.onChange([...(field.value || []), specialty]);
-                        } else {
-                          field.onChange(
-                            field.value?.filter((s) => s !== specialty)
-                          );
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`specialty-${specialty}`} className="text-sm">
+      {selectedIndustry && (
+        <Controller
+          control={control}
+          name="specialties"
+          defaultValue={[]}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Specialties</FormLabel>
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {field.value && field.value.map((specialty, index) => (
+                    <Badge key={index} variant="secondary" className="px-2 py-1 h-8">
                       {specialty}
-                    </Label>
-                  </div>
-                ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedSpecialties = field.value?.filter(
+                            (s) => s !== specialty
+                          );
+                          field.onChange(updatedSpecialties);
+                        }}
+                        className="ml-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {specialties.map((specialty) => (
+                    <div
+                      key={specialty}
+                      className="flex items-center space-x-2 py-1"
+                    >
+                      <Checkbox
+                        id={`specialty-${specialty}`}
+                        checked={field.value?.includes(specialty)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            field.onChange([...(field.value || []), specialty]);
+                          } else {
+                            field.onChange(
+                              field.value?.filter((s) => s !== specialty)
+                            );
+                          }
+                        }}
+                      />
+                      <Label htmlFor={`specialty-${specialty}`} className="text-sm">
+                        {specialty}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
     </div>
   );
 };

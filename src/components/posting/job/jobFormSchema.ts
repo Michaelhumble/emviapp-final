@@ -13,7 +13,7 @@ export const jobFormSchema = z.object({
   location: z.string().min(2, "Location must be at least 2 characters"),
   
   // Industry & specialties
-  industryType: z.string().optional(),
+  industryType: z.string().min(1, "Please select an industry"),
   specialties: z.array(z.string()).optional(),
   
   // Job type & compensation

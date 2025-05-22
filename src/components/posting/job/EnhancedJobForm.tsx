@@ -41,7 +41,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       contactEmail: '',
       contactName: '',
       contactPhone: '',
-      industryType: 'nails',
+      industryType: '',
       ...defaultValues, // Override with any provided defaultValues
     },
   });
@@ -56,14 +56,21 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     let isValid = false;
     
     if (step === 1) {
-      // Industry Specialties step - no validation needed
-      setStep(step + 1);
-      onStepChange(step + 1);
+      // Industry selection step validation
+      form.trigger(['industryType'])
+        .then(valid => {
+          if (valid && form.getValues('industryType')) {
+            setStep(step + 1);
+            onStepChange(step + 1);
+          } else {
+            toast.error("Please select an industry to continue");
+          }
+        });
       return;
     }
     
     if (step === 2) {
-      // Validate contact info and job details
+      // Contact info and job details validation
       form.trigger(['salonName', 'contactEmail', 'title', 'description', 'location', 'jobType'])
         .then(valid => {
           if (valid) {
@@ -110,11 +117,11 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Step 1: Industry Specialties */}
+        {/* Step 1: Industry Selection */}
         {step === 1 && (
           <IndustrySpecialtiesSection 
             control={form.control} 
-            industry={form.getValues('industryType') || 'nails'} 
+            industry={form.getValues('industryType')}
           />
         )}
 
@@ -122,7 +129,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
         {step === 2 && (
           <div className="space-y-8">
             <ContactInfoSection form={form} />
-            <JobDetailsSection form={form} />
+            <JobDetailsSection 
+              form={form} 
+              showVietnameseByDefault={form.getValues('industryType') === 'nails'} 
+            />
             <RequirementsSection control={form.control} />
             <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
           </div>
@@ -142,7 +152,12 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
           )}
 
           {step < 3 ? (
-            <Button type="button" onClick={handleNext} className="ml-auto">
+            <Button 
+              type="button" 
+              onClick={handleNext} 
+              className="ml-auto"
+              disabled={step === 1 && !form.getValues('industryType')}
+            >
               Next
             </Button>
           ) : (

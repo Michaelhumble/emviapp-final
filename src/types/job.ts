@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   role?: string;
@@ -113,7 +114,8 @@ export type JobDetailsSubmission = {
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
-  salonName?: string; // Ensure salonName property is here
+  salonName?: string;
+  industry?: string;
 }
 
 // Import the PricingOptions from the canonical source
