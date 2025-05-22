@@ -56,7 +56,7 @@ const MobileMenu: React.FC = () => {
           </Button>
         </SheetTrigger>
         
-        <SheetContent side="left" className="w-[280px] sm:w-[350px] p-0 border-r shadow-lg">
+        <SheetContent side="right" className="w-[280px] sm:w-[350px] p-0 border-l shadow-lg">
           <div className="flex flex-col h-full">
             {/* Header with Logo */}
             <div className="flex items-center justify-between border-b p-4">

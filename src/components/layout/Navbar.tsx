@@ -16,6 +16,7 @@ import {
 import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
+import MobileMenu from "@/components/layout/MobileMenu";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -38,7 +39,7 @@ const Navbar = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-      <div className="container flex items-center justify-between mx-auto h-20 px-4">
+      <div className="container flex items-center justify-between mx-auto h-16 px-4">
         {/* Logo - using large size to match the footer */}
         <Link to="/" className="flex items-center">
           <Logo size="large" showText={true} />
@@ -108,6 +109,11 @@ const Navbar = () => {
             ) : (
               <AuthButtons />
             )}
+          </div>
+          
+          {/* Mobile menu hamburger button - always visible on mobile */}
+          <div className="md:hidden">
+            <MobileMenu />
           </div>
         </div>
       </div>

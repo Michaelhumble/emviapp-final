@@ -5,7 +5,6 @@ import Footer from './Footer';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
-import MobileMenu from '@/components/layout/MobileMenu';
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,19 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!hideNavbar && (
-        <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b">
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-            {/* Mobile menu hamburger is always present */}
-            <div className="md:hidden flex items-center">
-              <MobileMenu />
-            </div>
-            
-            {/* Regular navbar when not hidden */}
-            <Navbar />
-          </div>
-        </header>
-      )}
+      {!hideNavbar && <Navbar />}
       
       <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
         {children}
