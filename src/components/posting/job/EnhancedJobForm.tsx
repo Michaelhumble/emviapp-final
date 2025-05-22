@@ -14,9 +14,7 @@ import { toast } from 'sonner';
 // Import sections
 import UploadSection from '../sections/UploadSection';
 import PricingSection from '../sections/PricingSection';
-import JobTemplateSelector from './JobTemplateSelector';
 import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { PricingOptions } from '@/utils/posting/types';
 
 interface EnhancedJobFormProps {
@@ -51,7 +49,6 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   const [step, setStep] = useState(1);
   const [uploads, setUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<JobTemplateType | null>(null);
   const navigate = useNavigate();
 
   const handleNext = () => {
@@ -59,21 +56,13 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     let isValid = false;
     
     if (step === 1) {
-      // Template selection step - no validation needed
+      // Industry Specialties step - no validation needed
       setStep(step + 1);
       onStepChange(step + 1);
       return;
     }
     
     if (step === 2) {
-      // Only validate the fields in Industry Specialties section
-      // Since this is mostly checkboxes, we can just proceed
-      setStep(step + 1);
-      onStepChange(step + 1);
-      return;
-    }
-    
-    if (step === 3) {
       // Validate contact info and job details
       form.trigger(['salonName', 'contactEmail', 'title', 'description', 'location', 'jobType'])
         .then(valid => {
@@ -118,38 +107,19 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     setPricingOptions(options);
   };
 
-  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
-    // When a template is selected, update the form with the template values
-    form.reset({
-      ...template,
-      // Always preserve the salon name from the current form if it exists
-      salonName: form.getValues('salonName') || template.salonName,
-      // Set the industryType based on the template
-      industryType: templateType
-    });
-    setSelectedTemplate(templateType);
-    // Move to the next step
-    handleNext();
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Step 1: Job Template Selection */}
+        {/* Step 1: Industry Specialties */}
         {step === 1 && (
-          <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-        )}
-
-        {/* Step 2: Industry Specialties */}
-        {step === 2 && (
           <IndustrySpecialtiesSection 
             control={form.control} 
-            industry={form.getValues('industryType') || selectedTemplate || 'nails'} 
+            industry={form.getValues('industryType') || 'nails'} 
           />
         )}
 
-        {/* Step 3: Contact Info & Job Details */}
-        {step === 3 && (
+        {/* Step 2: Contact Info & Job Details */}
+        {step === 2 && (
           <div className="space-y-8">
             <ContactInfoSection form={form} />
             <JobDetailsSection form={form} />
@@ -158,8 +128,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
           </div>
         )}
 
-        {/* Step 4: Pricing */}
-        {step === 4 && (
+        {/* Step 3: Pricing */}
+        {step === 3 && (
           <PricingSection onPricingChange={handlePricingOptionsChange} />
         )}
 
@@ -171,7 +141,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
             </Button>
           )}
 
-          {step < 4 ? (
+          {step < 3 ? (
             <Button type="button" onClick={handleNext} className="ml-auto">
               Next
             </Button>

@@ -14,7 +14,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IndustryType } from '@/components/posting/job/jobFormSchema';
 import { useForm, UseFormReturn } from 'react-hook-form';
-import AIPolishButton from '@/components/posting/job/AIPolishButton';
 
 interface JobDetailsSectionProps {
   form: UseFormReturn<any>;
@@ -30,14 +29,6 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
   
   // Get the industry type from the form if available
   const industryType = form.watch('industryType') || 'nails';
-
-  const handlePolishDescription = (polishedText: string, vietnameseText?: string) => {
-    form.setValue('description', polishedText, { shouldValidate: true });
-    
-    if (vietnameseText) {
-      form.setValue('vietnameseDescription', vietnameseText, { shouldValidate: true });
-    }
-  };
 
   return (
     <>
@@ -63,13 +54,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, showVietnam
         name="description"
         render={({ field }) => (
           <FormItem>
-            <div className="flex items-center justify-between">
-              <FormLabel>Description</FormLabel>
-              <AIPolishButton 
-                onPolish={handlePolishDescription}
-                industryType={industryType}
-              />
-            </div>
+            <FormLabel>Description</FormLabel>
             <FormControl>
               <Textarea placeholder="Describe the job requirements and responsibilities" className="resize-none min-h-[150px]" {...field} />
             </FormControl>
