@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { mainNavigationItems } from "./navbar/config/navigationItems";
+import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();

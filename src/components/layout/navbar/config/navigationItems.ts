@@ -1,69 +1,55 @@
 
-export type NavigationItem = {
-  label: string;
+import { LucideIcon, Users, Briefcase, Store, Scissors, Home, Info, Phone } from "lucide-react";
+
+export interface NavigationItem {
+  title: string;
   path: string;
-  vietnameseLabel?: string;
-  visibleFor?: 'all' | 'guest' | 'user';
-};
+  icon?: LucideIcon;
+  highlight?: boolean;
+  vietnameseTitle?: string;
+}
 
-export const mainNavigation: NavigationItem[] = [
+export const mainNavigationItems: NavigationItem[] = [
   {
-    label: 'Home',
-    path: '/',
-    vietnameseLabel: 'Trang chủ',
-    visibleFor: 'all',
+    title: "Home",
+    path: "/",
+    icon: Home,
+    vietnameseTitle: "Trang chủ"
   },
   {
-    label: 'Jobs',
-    path: '/jobs',
-    vietnameseLabel: 'Công việc',
-    visibleFor: 'all',
+    title: "Artists",
+    path: "/artists",
+    icon: Scissors,
+    vietnameseTitle: "Nghệ sĩ"
   },
   {
-    label: 'Salons',
-    path: '/salons',
-    vietnameseLabel: 'Tiệm Nail',
-    visibleFor: 'all',
+    title: "Salons",
+    path: "/salons",
+    icon: Store,
+    vietnameseTitle: "Tiệm Nail"
   },
   {
-    label: 'Artists',
-    path: '/artists',
-    vietnameseLabel: 'Nghệ sĩ',
-    visibleFor: 'all',
+    title: "Jobs",
+    path: "/jobs",
+    icon: Briefcase,
+    vietnameseTitle: "Công việc"
   },
   {
-    label: 'About',
-    path: '/about',
-    vietnameseLabel: 'Giới thiệu',
-    visibleFor: 'all',
+    title: "Community",
+    path: "/freelancers",
+    icon: Users,
+    vietnameseTitle: "Cộng đồng"
   },
   {
-    label: 'Contact',
-    path: '/contact',
-    vietnameseLabel: 'Liên hệ',
-    visibleFor: 'all',
-  },
-];
-
-export const userNavigation: NavigationItem[] = [
-  {
-    label: 'Dashboard',
-    path: '/dashboard',
-    vietnameseLabel: 'Bảng điều khiển',
+    title: "About",
+    path: "/about",
+    icon: Info,
+    vietnameseTitle: "Giới thiệu"
   },
   {
-    label: 'Profile',
-    path: '/profile',
-    vietnameseLabel: 'Hồ sơ',
-  },
-  {
-    label: 'Messages',
-    path: '/messages',
-    vietnameseLabel: 'Tin nhắn',
-  },
-  {
-    label: 'Settings',
-    path: '/settings',
-    vietnameseLabel: 'Cài đặt',
-  },
+    title: "Contact",
+    path: "/contact",
+    icon: Phone,
+    vietnameseTitle: "Liên hệ"
+  }
 ];
