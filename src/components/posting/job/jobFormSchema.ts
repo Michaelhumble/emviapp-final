@@ -25,8 +25,8 @@ export const jobFormSchema = z.object({
   has_wax_room: z.boolean().optional(),
   owner_will_train: z.boolean().optional(),
   no_supply_deduction: z.boolean().optional(),
-  requirements: z.array(z.string()).optional(),
-  specialties: z.array(z.string()).optional(),
+  requirements: z.array(z.string()).default([]),
+  specialties: z.array(z.string()).default([]),
   templateType: z.string().optional(),
   salonName: z.string().min(2, 'Salon name is required')
 });

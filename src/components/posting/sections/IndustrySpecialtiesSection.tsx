@@ -1,228 +1,210 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Control } from 'react-hook-form';
-import { JobFormValues } from '../job/jobFormSchema';
+import { Card, CardContent } from '@/components/ui/card';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Control, ControllerRenderProps } from 'react-hook-form';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
-import { useTranslation } from '@/hooks/useTranslation';
-
-// Define specialties and requirements for different industries
-const industryOptions = {
-  nails: {
-    specialties: [
-      'Manicure', 'Pedicure', 'Gel', 'Acrylic', 'Dipping Powder', 
-      'Nail Art', 'Pink & White', 'Shellac', 'Polish Change'
-    ],
-    requirements: [
-      'Nail License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Bilingual Vietnamese', 'Customer Service Skills', 'Nail Art Skills', 'Full-time Available'
-    ]
-  },
-  hair: {
-    specialties: [
-      'Cutting', 'Coloring', 'Highlights', 'Balayage', 'Extensions', 
-      'Blowouts', 'Styling', 'Men\'s Cuts', 'Women\'s Cuts', 'Children\'s Cuts'
-    ],
-    requirements: [
-      'Cosmetology License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Color Certification', 'Full-time Available'
-    ]
-  },
-  lashes: {
-    specialties: [
-      'Classic Lashes', 'Volume Lashes', 'Hybrid Lashes', 'Mega Volume', 'Lash Lifts',
-      'Lash Tinting', 'Brow Lamination', 'Brow Tinting'
-    ],
-    requirements: [
-      'Esthetician License', 'Lash Certification', '1+ Year Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Attention to Detail', 'Full-time Available'
-    ]
-  },
-  barber: {
-    specialties: [
-      'Fades', 'Tapers', 'Hot Towel Shaves', 'Beard Trims', 'Line-ups',
-      'Hair Design', 'Hair Tattoos', 'Straight Razor'
-    ],
-    requirements: [
-      'Barber License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Own Tools Required', 'Full-time Available'
-    ]
-  },
-  skincare: {
-    specialties: [
-      'Facials', 'Chemical Peels', 'Microdermabrasion', 'Waxing', 'Microblading',
-      'LED Therapy', 'Dermaplaning', 'Skin Analysis'
-    ],
-    requirements: [
-      'Esthetician License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Product Knowledge', 'Customer Service Skills', 'Skincare Certification', 'Full-time Available'
-    ]
-  },
-  spa: {
-    specialties: [
-      'Body Treatments', 'Body Scrubs', 'Body Wraps', 'Hot Stone Therapy', 'Aromatherapy',
-      'Hydrotherapy', 'Wellness Counseling', 'Foot Treatments'
-    ],
-    requirements: [
-      'Massage License', 'Spa Certification', '1+ Year Experience', 'Speaks English',
-      'Treatment Knowledge', 'Customer Service Skills', 'Wellness Knowledge', 'Full-time Available'
-    ]
-  },
-  massage: {
-    specialties: [
-      'Swedish', 'Deep Tissue', 'Sports Massage', 'Hot Stone', 'Prenatal',
-      'Reflexology', 'Thai Massage', 'Shiatsu'
-    ],
-    requirements: [
-      'Massage License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Multiple Modalities', 'Customer Service Skills', 'Physical Stamina', 'Full-time Available'
-    ]
-  },
-  makeup: {
-    specialties: [
-      'Bridal', 'Special Event', 'Editorial', 'Airbrush', 'HD Makeup',
-      'Natural Makeup', 'Halloween/SFX', 'Contouring'
-    ],
-    requirements: [
-      'Cosmetology License', 'Makeup Certification', '1+ Year Experience', 'Speaks English',
-      'Portfolio Required', 'Customer Service Skills', 'Own Kit Required', 'Weekend Availability'
-    ]
-  },
-  custom: {
-    specialties: [
-      'Hair Services', 'Nail Services', 'Skincare', 'Massage', 'Makeup',
-      'Waxing', 'Lash & Brow', 'Spa Treatments', 'Barbering', 'Administrative'
-    ],
-    requirements: [
-      'Professional License', '1+ Year Experience', '2+ Years Experience', 'Speaks English',
-      'Bilingual Vietnamese', 'Customer Service Skills', 'Technical Skills', 'Full-time Available'
-    ]
-  }
-};
-
-// For any industry not specifically defined, use the custom options
-const getIndustryOptions = (industry: string) => {
-  return industryOptions[industry as keyof typeof industryOptions] || industryOptions.custom;
-};
 
 interface IndustrySpecialtiesSectionProps {
   control: Control<JobFormValues>;
-  industry: JobTemplateType | 'custom';
+  industry: JobTemplateType;
 }
 
-const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({ 
+const IndustrySpecialtiesSection: React.FC<IndustrySpecialtiesSectionProps> = ({
   control,
-  industry
+  industry = 'nail',
 }) => {
-  const { t } = useTranslation();
-  const options = getIndustryOptions(industry);
-  
-  // Default to the current industry tab
-  const [activeTab, setActiveTab] = React.useState('specialties');
+  // Define industry-specific specialties
+  const industrySpecialties = {
+    nail: [
+      { id: 'manicure', label: 'Manicure' },
+      { id: 'pedicure', label: 'Pedicure' },
+      { id: 'gel', label: 'Gel Polish' },
+      { id: 'acrylic', label: 'Acrylic' },
+      { id: 'dip', label: 'Dip Powder' },
+      { id: 'nail-art', label: 'Nail Art' },
+      { id: 'extensions', label: 'Extensions' },
+      { id: 'paraffin', label: 'Paraffin Treatment' },
+      { id: 'polish-change', label: 'Polish Change' },
+      { id: 'silk-wrap', label: 'Silk Wrap' },
+    ],
+    hair: [
+      { id: 'haircuts', label: 'Haircuts' },
+      { id: 'coloring', label: 'Hair Coloring' },
+      { id: 'highlights', label: 'Highlights' },
+      { id: 'balayage', label: 'Balayage' },
+      { id: 'blowouts', label: 'Blowouts' },
+      { id: 'styling', label: 'Styling' },
+      { id: 'extensions', label: 'Extensions' },
+      { id: 'perms', label: 'Perms' },
+      { id: 'treatments', label: 'Treatments' },
+      { id: 'updos', label: 'Updos' },
+    ],
+    spa: [
+      { id: 'facials', label: 'Facials' },
+      { id: 'body-treatments', label: 'Body Treatments' },
+      { id: 'waxing', label: 'Waxing' },
+      { id: 'threading', label: 'Threading' },
+      { id: 'chemical-peels', label: 'Chemical Peels' },
+      { id: 'microdermabrasion', label: 'Microdermabrasion' },
+      { id: 'led-therapy', label: 'LED Therapy' },
+      { id: 'anti-aging', label: 'Anti-Aging' },
+    ],
+    barber: [
+      { id: 'haircuts', label: 'Haircuts' },
+      { id: 'fades', label: 'Fades' },
+      { id: 'beard-trims', label: 'Beard Trims' },
+      { id: 'shaves', label: 'Shaves' },
+      { id: 'lineups', label: 'Line Ups' },
+      { id: 'hair-design', label: 'Hair Design' },
+      { id: 'scalp-treatments', label: 'Scalp Treatments' },
+    ],
+    massage: [
+      { id: 'swedish', label: 'Swedish Massage' },
+      { id: 'deep-tissue', label: 'Deep Tissue' },
+      { id: 'sports', label: 'Sports Massage' },
+      { id: 'hot-stone', label: 'Hot Stone' },
+      { id: 'prenatal', label: 'Prenatal' },
+      { id: 'reflexology', label: 'Reflexology' },
+      { id: 'thai', label: 'Thai Massage' },
+      { id: 'shiatsu', label: 'Shiatsu' },
+    ],
+    tattoo: [
+      { id: 'traditional', label: 'Traditional' },
+      { id: 'neo-traditional', label: 'Neo-Traditional' },
+      { id: 'realism', label: 'Realism' },
+      { id: 'blackwork', label: 'Blackwork' },
+      { id: 'japanese', label: 'Japanese' },
+      { id: 'watercolor', label: 'Watercolor' },
+      { id: 'tribal', label: 'Tribal' },
+      { id: 'dotwork', label: 'Dotwork' },
+    ],
+    makeup: [
+      { id: 'bridal', label: 'Bridal' },
+      { id: 'special-occasion', label: 'Special Occasion' },
+      { id: 'natural', label: 'Natural Looks' },
+      { id: 'dramatic', label: 'Dramatic Looks' },
+      { id: 'airbrush', label: 'Airbrush' },
+      { id: 'editorial', label: 'Editorial' },
+      { id: 'fx-makeup', label: 'FX Makeup' },
+    ],
+    booth: [
+      { id: 'hair-station', label: 'Hair Station' },
+      { id: 'nail-table', label: 'Nail Table' },
+      { id: 'spa-room', label: 'Spa Room' },
+      { id: 'esthetician-room', label: 'Esthetician Room' },
+      { id: 'massage-room', label: 'Massage Room' },
+      { id: 'barber-chair', label: 'Barber Chair' },
+      { id: 'private-suite', label: 'Private Suite' },
+    ],
+    custom: [], // For custom selection
+  };
+
+  // Define common job requirements
+  const commonRequirements = [
+    { id: 'license', label: 'Professional License Required' },
+    { id: 'experience', label: 'Experience Required' },
+    { id: 'client-base', label: 'Existing Client Base Preferred' },
+    { id: 'english', label: 'English Communication Skills' },
+    { id: 'vietnamese', label: 'Vietnamese/Other Language Skills' },
+    { id: 'weekends', label: 'Weekend Availability' },
+    { id: 'equipment', label: 'Must Provide Own Equipment' },
+    { id: 'tools', label: 'Must Provide Own Tools' },
+    { id: 'certification', label: 'Certifications Required' },
+  ];
+
+  // Get specialties for the selected industry
+  const specialties = industrySpecialties[industry] || industrySpecialties.custom;
+
+  const renderCheckboxes = (field: ControllerRenderProps<JobFormValues, "specialties" | "requirements">, items: Array<{id: string, label: string}>, name: string) => {
+    return items.map((item) => (
+      <div key={`${name}-${item.id}`} className="flex items-start space-x-2">
+        <Checkbox
+          id={`${name}-${item.id}`}
+          checked={Array.isArray(field.value) && field.value.includes(item.label)}
+          onCheckedChange={(checked) => {
+            const newValue = Array.isArray(field.value) ? [...field.value] : [];
+            
+            if (checked) {
+              if (!newValue.includes(item.label)) {
+                newValue.push(item.label);
+              }
+            } else {
+              const index = newValue.indexOf(item.label);
+              if (index !== -1) {
+                newValue.splice(index, 1);
+              }
+            }
+            
+            field.onChange(newValue);
+          }}
+        />
+        <label
+          htmlFor={`${name}-${item.id}`}
+          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+        >
+          {item.label}
+        </label>
+      </div>
+    ));
+  };
 
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
-        <h2 className="font-playfair text-2xl font-semibold text-gray-900">
-          {t({
-            english: 'Job Specialties & Requirements',
-            vietnamese: 'Chuyên Môn & Yêu Cầu Công Việc'
-          })}
-        </h2>
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Specialties & Requirements</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          {t({
-            english: 'Select the skills and requirements for this position',
-            vietnamese: 'Chọn kỹ năng và yêu cầu cho vị trí này'
-          })}
+          Select the specialties and requirements for this position
         </p>
       </div>
 
-      <Tabs defaultValue="specialties" className="w-full">
-        <TabsList className="w-full mb-6">
-          <TabsTrigger 
-            value="specialties" 
-            className="flex-1"
-            onClick={() => setActiveTab('specialties')}
-          >
-            {t({
-              english: 'Specialties',
-              vietnamese: 'Chuyên Môn'
-            })}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="requirements" 
-            className="flex-1"
-            onClick={() => setActiveTab('requirements')}
-          >
-            {t({
-              english: 'Requirements',
-              vietnamese: 'Yêu Cầu'
-            })}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="specialties" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardContent className="pt-6">
             <FormField
               control={control}
               name="specialties"
-              render={({ field }) => {
-                return options.specialties.map((specialty, index) => (
-                  <FormItem
-                    key={`specialty-${index}`}
-                    className="flex flex-row items-start space-x-3 space-y-0 py-1"
-                  >
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value?.includes(specialty)}
-                        onCheckedChange={(checked) => {
-                          const updatedValue = checked
-                            ? [...(field.value || []), specialty]
-                            : (field.value || []).filter((val) => val !== specialty);
-                          field.onChange(updatedValue);
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">{specialty}</FormLabel>
-                  </FormItem>
-                ));
-              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium mb-4 block">
+                    Job Specialties
+                  </FormLabel>
+                  <FormControl>
+                    <div className="grid grid-cols-1 gap-3">
+                      {renderCheckboxes(field, specialties, "specialties")}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </TabsContent>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="requirements" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+        <Card>
+          <CardContent className="pt-6">
             <FormField
               control={control}
               name="requirements"
-              render={({ field }) => {
-                return options.requirements.map((requirement, index) => (
-                  <FormItem
-                    key={`requirement-${index}`}
-                    className="flex flex-row items-start space-x-3 space-y-0 py-1"
-                  >
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value?.includes(requirement)}
-                        onCheckedChange={(checked) => {
-                          const updatedValue = checked
-                            ? [...(field.value || []), requirement]
-                            : (field.value || []).filter((val) => val !== requirement);
-                          field.onChange(updatedValue);
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="font-normal cursor-pointer">{requirement}</FormLabel>
-                  </FormItem>
-                ));
-              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium mb-4 block">
+                    Job Requirements
+                  </FormLabel>
+                  <FormControl>
+                    <div className="grid grid-cols-1 gap-3">
+                      {renderCheckboxes(field, commonRequirements, "requirements")}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </TabsContent>
-      </Tabs>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
