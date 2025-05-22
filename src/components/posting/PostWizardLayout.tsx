@@ -7,6 +7,8 @@ import EmviLogo from '@/components/branding/EmviLogo';
 import { Progress } from '@/components/ui/progress';
 import MobileMenu from '@/components/layout/MobileMenu';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsMobile } from '@/hooks/use-mobile';
+import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
 
 interface PostWizardLayoutProps {
   children: React.ReactNode;
@@ -21,6 +23,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   
   const progress = (currentStep / totalSteps) * 100;
   
@@ -66,7 +69,7 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
       
       {/* Main content */}
       <div className="flex-grow">
-        <div className="container max-w-6xl mx-auto py-6 px-4 md:py-8">
+        <div className="container max-w-6xl mx-auto py-6 px-4 md:py-8 pb-20">
           <div className="mb-6">
             <h1 className="text-2xl font-medium mb-1">
               {t({
@@ -85,6 +88,9 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
           {children}
         </div>
       </div>
+
+      {/* Add mobile bottom navbar to the PostWizardLayout */}
+      {isMobile && <MobileBottomNavBar />}
     </div>
   );
 };

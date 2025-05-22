@@ -1,8 +1,7 @@
 
-// Define navigation item types
 export interface NavigationItem {
-  label: string;
+  title: string;
+  vietnameseTitle?: string;
   path: string;
-  vietnameseLabel?: string;
-  visibleFor?: 'all' | 'guest' | 'user';
+  icon?: React.ComponentType<{ className?: string }>;
 }

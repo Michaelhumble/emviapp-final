@@ -15,12 +15,8 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
-  // Check if we're on a job page
-  const isJobsPage = location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
-  
-  // Always show mobile bottom navbar on all pages except post-job that will use its own PostWizardLayout
-  const isPostJobPage = location.pathname === '/post-job';
-  const showMobileNav = isMobile && !isPostJobPage;
+  // Always show mobile bottom navbar on all pages 
+  const showMobileNav = isMobile;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -32,7 +28,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
       
       <Footer />
       
-      {/* Show the bottom navbar on all pages except post-job */}
+      {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}
     </div>
   );
