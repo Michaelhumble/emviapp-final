@@ -17,19 +17,22 @@ import PricingSection from '../sections/PricingSection';
 import JobTemplateSelector from './JobTemplateSelector';
 import SpecialtiesRequirementsSection from '../sections/SpecialtiesRequirementsSection';
 import { PricingOptions } from '@/utils/posting/types';
+import { ProgressBar } from './ProgressBar';
 
 interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange: (step: number) => void;
   maxPhotos?: number;
   defaultFormValues?: Partial<JobFormValues>;
+  expressMode?: boolean;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
   onSubmit, 
   onStepChange, 
   maxPhotos = 5,
-  defaultFormValues = {}
+  defaultFormValues = {},
+  expressMode = false,
 }) => {
   // Initialize the form with default values including salonName
   const form = useForm<JobFormValues>({
@@ -112,8 +115,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
 
     const success = await onSubmit(data, uploads, pricingOptions);
     if (success) {
-      toast.success('Job post created successfully!');
-      navigate('/dashboard');
+      // Success handled in the parent component
     } else {
       toast.error('Failed to create job post.');
     }
@@ -134,13 +136,61 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       specialties: Array.isArray(template.specialties) ? template.specialties : [],
     });
     setSelectedTemplate(templateType);
-    // Move to the next step
-    handleNext();
+    // Move to the next step in guided mode, or stay on the same page in express mode
+    if (!expressMode) {
+      handleNext();
+    }
   };
 
+  // In express mode, we render all sections at once
+  if (expressMode) {
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 className="text-lg font-medium mb-4">Step 1: Choose a Template</h2>
+            <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
+          </div>
+
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 className="text-lg font-medium mb-4">Step 2: Specialties & Requirements</h2>
+            <SpecialtiesRequirementsSection 
+              control={form.control} 
+              industry={selectedTemplate || 'custom'} 
+            />
+          </div>
+
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 className="text-lg font-medium mb-4">Step 3: Job Details</h2>
+            <div className="space-y-6">
+              <ContactInfoSection form={form} />
+              <JobDetailsSection form={form} />
+              <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
+            </div>
+          </div>
+
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 className="text-lg font-medium mb-4">Step 4: Pricing & Publish</h2>
+            <PricingSection onPricingChange={handlePricingOptionsChange} />
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit" disabled={!pricingOptions} className="ml-auto">
+              Publish Job Post
+            </Button>
+          </div>
+        </form>
+      </Form>
+    );
+  }
+
+  // Standard step-by-step wizard mode
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+        {/* Progress bar for step tracking */}
+        <ProgressBar currentStep={step} totalSteps={4} />
+        
         {/* Step 1: Job Template Selection */}
         {step === 1 && (
           <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
 import { Card } from '@/components/ui/card';
@@ -8,13 +8,15 @@ import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { useNavigate } from 'react-router-dom';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
-import { useState } from 'react';
 import { PricingOptions } from '@/utils/posting/types';
+import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
-  const [currentStep, setCurrentStep] = React.useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [expressMode, setExpressMode] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const handleSubmit = async (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => {
     try {
@@ -51,8 +53,14 @@ const JobPost = () => {
       const result = await initiatePayment('job', jobDetails, pricingOptions);
       
       if (result.success) {
+        setShowConfetti(true);
         toast.success('Job post created successfully!');
-        navigate('/dashboard');
+        
+        // Add a slight delay before navigating to give users a moment to see the success message
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 3000);
+        
         return true;
       } else {
         toast.error('Error processing your job posting. Please try again.');
@@ -70,6 +78,10 @@ const JobPost = () => {
     setCurrentStep(step);
   };
 
+  const handleToggleExpressMode = () => {
+    setExpressMode(!expressMode);
+  };
+
   // Define default values for the form, ensuring salonName is included
   const defaultFormValues: Partial<JobFormValues> = {
     salonName: '',
@@ -81,7 +93,12 @@ const JobPost = () => {
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={4}>
+    <PostWizardLayout 
+      currentStep={currentStep} 
+      totalSteps={4} 
+      expressMode={expressMode} 
+      onToggleExpressMode={handleToggleExpressMode}
+    >
       <Helmet>
         <title>Create Job Listing | EmviApp</title>
         <meta 
@@ -96,8 +113,12 @@ const JobPost = () => {
           onStepChange={handleStepChange}
           maxPhotos={5}
           defaultFormValues={defaultFormValues}
+          expressMode={expressMode}
         />
       </Card>
+      
+      {/* Celebration confetti effect on successful job post */}
+      {showConfetti && <ConfettiExplosion duration={3000} particleCount={100} />}
     </PostWizardLayout>
   );
 };

@@ -14,12 +14,16 @@ interface PostWizardLayoutProps {
   children: React.ReactNode;
   currentStep: number;
   totalSteps: number;
+  expressMode?: boolean;
+  onToggleExpressMode?: () => void;
 }
 
 const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
   children,
   currentStep,
   totalSteps,
+  expressMode = false,
+  onToggleExpressMode,
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -71,17 +75,47 @@ const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
       <div className="flex-grow">
         <div className="container max-w-6xl mx-auto py-6 px-4 md:py-8 pb-20">
           <div className="mb-6">
-            <h1 className="text-2xl font-medium mb-1">
-              {t({
-                english: 'Post a Job',
-                vietnamese: 'Đăng tin tuyển dụng'
-              })}
-            </h1>
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-medium mb-1">
+                {t({
+                  english: 'Post a Job',
+                  vietnamese: 'Đăng tin tuyển dụng'
+                })}
+              </h1>
+              
+              {onToggleExpressMode && currentStep === 1 && (
+                <Button
+                  onClick={onToggleExpressMode}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs md:text-sm"
+                >
+                  {expressMode ? (
+                    t({
+                      english: 'Switch to Guided Mode',
+                      vietnamese: 'Chuyển sang Chế độ Hướng dẫn'
+                    })
+                  ) : (
+                    t({
+                      english: 'Express Posting Mode',
+                      vietnamese: 'Chế độ Đăng nhanh'
+                    })
+                  )}
+                </Button>
+              )}
+            </div>
             <p className="text-gray-600">
-              {t({
-                english: `Step ${currentStep} of ${totalSteps}`,
-                vietnamese: `Bước ${currentStep} của ${totalSteps}`
-              })}
+              {expressMode ? (
+                t({
+                  english: 'Express Mode: All information on one page',
+                  vietnamese: 'Chế độ nhanh: Tất cả thông tin trên một trang'
+                })
+              ) : (
+                t({
+                  english: `Step ${currentStep} of ${totalSteps}`,
+                  vietnamese: `Bước ${currentStep} của ${totalSteps}`
+                })
+              )}
             </p>
           </div>
           
