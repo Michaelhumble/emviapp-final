@@ -1,243 +1,251 @@
-
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
+import JobForm from './JobForm';
+import { PricingOptions } from '@/utils/posting/types';
+import { useTranslation } from '@/hooks/useTranslation';
+import { ArrowLeft, ArrowRight, PenLine, DollarSign, Image, CheckCircle } from 'lucide-react';
+import { MobileButton } from '@/components/ui/mobile-button';
+import PhotoUpload from '../sections/PhotoUpload';
+import PricingSection from '../sections/PricingSection';
+import RequirementsSection from '../sections/RequirementsSection';
+import SpecialtiesSection from '../sections/SpecialtiesSection';
 import ContactInfoSection from '../sections/ContactInfoSection';
 import JobDetailsSection from '../sections/JobDetailsSection';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
-
-// Import sections
-import UploadSection from '../sections/UploadSection';
-import PricingSection from '../sections/PricingSection';
-import JobTemplateSelector from './JobTemplateSelector';
-import SpecialtiesRequirementsSection from '../sections/SpecialtiesRequirementsSection';
-import { PricingOptions } from '@/utils/posting/types';
-import { ProgressBar } from './ProgressBar';
 
 interface EnhancedJobFormProps {
-  onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
+  onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange: (step: number) => void;
   maxPhotos?: number;
   defaultFormValues?: Partial<JobFormValues>;
   expressMode?: boolean;
 }
 
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
-  onSubmit, 
-  onStepChange, 
+const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
+  onSubmit,
+  onStepChange,
   maxPhotos = 5,
   defaultFormValues = {},
   expressMode = false,
 }) => {
-  // Initialize the form with default values including salonName
+  const { t } = useTranslation();
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    tier: 'standard',
+    duration: 30,
+    featured: false,
+  });
+
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      salonName: '',
-      title: '',
-      description: '',
-      location: '',
-      contactEmail: '',
-      contactName: '',
-      contactPhone: '',
-      requirements: [],
-      specialties: [],
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-      salary_range: '',
-      experience_level: '',
-      ...defaultFormValues, // Override with any provided defaultValues
-    },
+      ...defaultFormValues
+    }
   });
-
-  const [step, setStep] = useState(1);
-  const [uploads, setUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<JobTemplateType | null>(null);
-  const navigate = useNavigate();
-
-  const handleNext = () => {
-    // Get the current step validation status
-    let isValid = false;
+  
+  // Determine if form is ready to submit
+  const isFormValid = () => {
+    if (expressMode) {
+      // In express mode, we require all fields to be valid
+      return Object.keys(form.formState.errors).length === 0;
+    }
     
-    if (step === 1) {
-      // Template selection step - no validation needed
+    // In regular mode, we validate per step
+    switch (step) {
+      case 1:
+        return !form.formState.errors.title && !form.formState.errors.description && !form.formState.errors.location;
+      case 2:
+        return !form.formState.errors.specialties && !form.formState.errors.jobType;
+      case 3:
+        return !form.formState.errors.contactName && !form.formState.errors.contactEmail;
+      default:
+        return true;
+    }
+  };
+  
+  const handleContinue = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    
+    // If we're in express mode, submit the whole form
+    if (expressMode) {
+      await handleFinalSubmit();
+      return;
+    }
+    
+    // In regular mode, advance to the next step
+    if (step < 4) {
       setStep(step + 1);
       onStepChange(step + 1);
-      return;
-    }
-    
-    if (step === 2) {
-      // Specialties & Requirements step
-      setStep(step + 1);
-      onStepChange(step + 1);
-      return;
-    }
-    
-    if (step === 3) {
-      // Validate contact info and job details
-      form.trigger(['salonName', 'contactEmail', 'title', 'description', 'location', 'jobType'])
-        .then(valid => {
-          if (valid) {
-            setStep(step + 1);
-            onStepChange(step + 1);
-          }
-        });
-      return;
-    }
-    
-    // Default case - just go to next step
-    setStep(step + 1);
-    onStepChange(step + 1);
-  };
-
-  const handlePrev = () => {
-    setStep(step - 1);
-    onStepChange(step - 1);
-  };
-
-  const handleFormSubmit = async (data: JobFormValues) => {
-    console.log('Submitting form with data:', data);
-    console.log('Current uploads:', uploads);
-    console.log('Pricing options at submit:', pricingOptions);
-
-    if (!pricingOptions) {
-      toast.error('Please select pricing options');
-      return;
-    }
-
-    const success = await onSubmit(data, uploads, pricingOptions);
-    if (success) {
-      // Success handled in the parent component
     } else {
-      toast.error('Failed to create job post.');
+      await handleFinalSubmit();
+    }
+  };
+  
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(step - 1);
+      onStepChange(step - 1);
+    }
+  };
+  
+  const handleFinalSubmit = async () => {
+    try {
+      setSubmitting(true);
+      // Get all form values
+      const formValues = form.getValues();
+      
+      // Submit the form to parent component
+      const success = await onSubmit(formValues, photoUploads, pricingOptions);
+      
+      if (success && !expressMode) {
+        // In regular mode, advance to the last step after successful submission
+        setStep(4);
+        onStepChange(4);
+      }
+      
+      return success;
+    } catch (error) {
+      console.error('Error submitting job form:', error);
+      return false;
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handlePricingOptionsChange = (options: PricingOptions) => {
-    setPricingOptions(options);
-  };
-
-  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
-    // When a template is selected, update the form with the template values
-    form.reset({
-      ...template,
-      // Always preserve the salon name from the current form if it exists
-      salonName: form.getValues('salonName') || template.salonName,
-      // Ensure requirements and specialties are arrays
-      requirements: Array.isArray(template.requirements) ? template.requirements : [],
-      specialties: Array.isArray(template.specialties) ? template.specialties : [],
-    });
-    setSelectedTemplate(templateType);
-    // Move to the next step in guided mode, or stay on the same page in express mode
-    if (!expressMode) {
-      handleNext();
-    }
-  };
-
-  // In express mode, we render all sections at once
+  // Change the tab UI based on express mode
   if (expressMode) {
     return (
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h2 className="text-lg font-medium mb-4">Step 1: Choose a Template</h2>
-            <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-          </div>
-
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h2 className="text-lg font-medium mb-4">Step 2: Specialties & Requirements</h2>
-            <SpecialtiesRequirementsSection 
-              control={form.control} 
-              industry={selectedTemplate || 'custom'} 
-            />
-          </div>
-
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h2 className="text-lg font-medium mb-4">Step 3: Job Details</h2>
-            <div className="space-y-6">
-              <ContactInfoSection form={form} />
-              <JobDetailsSection form={form} />
-              <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
-            </div>
-          </div>
-
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h2 className="text-lg font-medium mb-4">Step 4: Pricing & Publish</h2>
-            <PricingSection onPricingChange={handlePricingOptionsChange} />
-          </div>
-
-          <div className="flex justify-end">
-            <Button type="submit" disabled={!pricingOptions} className="ml-auto">
-              Publish Job Post
-            </Button>
-          </div>
-        </form>
-      </Form>
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-6 border border-purple-100">
+          <h2 className="text-lg font-medium text-purple-900">Express Posting Mode</h2>
+          <p className="text-sm text-purple-700">
+            Complete all fields below to preview your job post. All fields available on one page for speed.
+          </p>
+        </div>
+        
+        <JobForm
+          onSubmit={async (data) => {
+            const success = await onSubmit(data, photoUploads, pricingOptions);
+            return success;
+          }}
+          defaultValues={defaultFormValues}
+        />
+        
+        <div className="flex justify-end gap-4 mt-8">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onStepChange(1)}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Guided Mode
+          </Button>
+          
+          <MobileButton
+            type="button"
+            onClick={() => form.handleSubmit(handleContinue)()}
+            disabled={submitting || Object.keys(form.formState.errors).length > 0}
+            className="bg-gradient-to-r from-primary to-indigo-600 text-white font-medium"
+          >
+            {submitting ? 'Processing...' : (
+              <>
+                <PenLine className="h-4 w-4" /> Preview Job Post
+              </>
+            )}
+          </MobileButton>
+        </div>
+      </div>
     );
   }
 
-  // Standard step-by-step wizard mode
+  // Regular step-by-step wizard UI
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Progress bar for step tracking */}
-        <ProgressBar currentStep={step} totalSteps={4} />
+    <div className="space-y-6">
+      <Tabs value={`step-${step}`} className="w-full">
+        <TabsList className="grid grid-cols-4 h-auto mb-6">
+          <TabsTrigger value="step-1" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
+            Job Details
+          </TabsTrigger>
+          <TabsTrigger value="step-2" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
+            Specialties
+          </TabsTrigger>
+          <TabsTrigger value="step-3" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
+            Contact
+          </TabsTrigger>
+          <TabsTrigger value="step-4" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
+            Review
+          </TabsTrigger>
+        </TabsList>
         
-        {/* Step 1: Job Template Selection */}
-        {step === 1 && (
-          <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-        )}
-
-        {/* Step 2: Specialties & Requirements */}
-        {step === 2 && (
-          <SpecialtiesRequirementsSection 
-            control={form.control} 
-            industry={selectedTemplate || 'custom'} 
-          />
-        )}
-
-        {/* Step 3: Contact Info & Job Details */}
-        {step === 3 && (
-          <div className="space-y-8">
-            <ContactInfoSection form={form} />
-            <JobDetailsSection form={form} />
-            <UploadSection uploads={uploads} setUploads={setUploads} maxPhotos={maxPhotos} />
-          </div>
-        )}
-
-        {/* Step 4: Pricing */}
-        {step === 4 && (
-          <PricingSection onPricingChange={handlePricingOptionsChange} />
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between">
-          {step > 1 && (
-            <Button type="button" variant="secondary" onClick={handlePrev}>
-              Previous
-            </Button>
+        {/* Content for each step */}
+        <TabsContent value={`step-${step}`} className="space-y-4">
+          {step === 1 && (
+            <Card className="p-4 border-none shadow-none">
+              <JobForm
+                onSubmit={async (data) => {
+                  const success = await onSubmit(data, photoUploads, pricingOptions);
+                  return success;
+                }}
+                defaultValues={defaultFormValues}
+              />
+            </Card>
           )}
-
-          {step < 4 ? (
-            <Button type="button" onClick={handleNext} className="ml-auto">
-              Next
-            </Button>
-          ) : (
-            <Button type="submit" disabled={!pricingOptions} className="ml-auto">
-              Submit
-            </Button>
+          
+          {step === 2 && (
+            <Card className="p-4 border-none shadow-none">
+              <SpecialtiesSection form={form} />
+              <RequirementsSection form={form} />
+            </Card>
           )}
-        </div>
-      </form>
-    </Form>
+          
+          {step === 3 && (
+            <Card className="p-4 border-none shadow-none">
+              <ContactInfoSection form={form} />
+            </Card>
+          )}
+          
+          {step === 4 && (
+            <Card className="p-4 border-none shadow-none">
+              <PricingSection 
+                pricingOptions={pricingOptions}
+                setPricingOptions={setPricingOptions}
+              />
+              <PhotoUpload 
+                maxPhotos={maxPhotos}
+                photoUploads={photoUploads}
+                setPhotoUploads={setPhotoUploads}
+              />
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
+      
+      {/* Navigation buttons */}
+      <div className="flex justify-between pt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleBack}
+          disabled={step === 1}
+        >
+          Back
+        </Button>
+        
+        <Button
+          type="button"
+          onClick={() => form.handleSubmit(handleContinue)()}
+          disabled={submitting || !isFormValid()}
+        >
+          {step === 4 ? (submitting ? 'Submitting...' : 'Submit') : 'Continue'}
+        </Button>
+      </div>
+    </div>
   );
 };
 

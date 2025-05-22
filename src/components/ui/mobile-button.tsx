@@ -15,7 +15,7 @@ const MobileButton = ({
   return (
     <Button
       className={cn(
-        "h-11 min-h-[44px] rounded-lg transition-all shadow-md hover:shadow-lg",  // Added rounded-lg, shadow, and transition
+        "h-11 min-h-[44px] rounded-lg transition-all shadow-md hover:shadow-lg",
         mobileFullWidth && "w-full sm:w-auto",
         className
       )}

@@ -10,6 +10,8 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { PricingOptions } from '@/utils/posting/types';
 import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
+import JobPreview from '@/components/posting/JobPreview';
+import ThankYouModal from '@/components/posting/ThankYouModal';
 
 const JobPost = () => {
   const navigate = useNavigate();
@@ -17,12 +19,25 @@ const JobPost = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [expressMode, setExpressMode] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [previewData, setPreviewData] = useState<JobFormValues | null>(null);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({});
 
-  const handleSubmit = async (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => {
+  const handleSubmit = async (formData: JobFormValues, uploads: File[], pricing: PricingOptions) => {
+    if (expressMode && currentStep === 1) {
+      // In Express Mode, first submission moves to preview
+      setPreviewData(formData);
+      setPhotoUploads(uploads);
+      setPricingOptions(pricing);
+      setCurrentStep(2);
+      return true; // Return true to prevent form reset
+    }
+    
     try {
       console.log('Form submitted with data:', formData);
       console.log('Salon name in data:', formData.salonName);
-      console.log('Pricing options:', pricingOptions);
+      console.log('Pricing options:', pricing);
       
       // Convert form data to the expected format for the API
       const jobDetails = {
@@ -50,16 +65,11 @@ const JobPost = () => {
       };
       
       // Initiate payment with our consolidated hook
-      const result = await initiatePayment('job', jobDetails, pricingOptions);
+      const result = await initiatePayment('job', jobDetails, pricing);
       
       if (result.success) {
         setShowConfetti(true);
-        toast.success('Job post created successfully!');
-        
-        // Add a slight delay before navigating to give users a moment to see the success message
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 3000);
+        setShowThankYouModal(true);
         
         return true;
       } else {
@@ -80,6 +90,27 @@ const JobPost = () => {
 
   const handleToggleExpressMode = () => {
     setExpressMode(!expressMode);
+    // Reset to step 1 when toggling mode
+    setCurrentStep(1);
+    setPreviewData(null);
+  };
+  
+  const handleEditFromPreview = (section?: string) => {
+    setCurrentStep(1);
+    // Optional: Pass the section to focus on when returning to the form
+    console.log(`Editing section: ${section}`);
+  };
+  
+  const handlePublishFromPreview = async () => {
+    if (previewData) {
+      await handleSubmit(previewData, photoUploads, pricingOptions);
+    }
+  };
+  
+  const handleBoostPost = () => {
+    setShowThankYouModal(false);
+    // Navigate to boost page or show boost options
+    navigate('/dashboard');
   };
 
   // Define default values for the form, ensuring salonName is included
@@ -95,7 +126,7 @@ const JobPost = () => {
   return (
     <PostWizardLayout 
       currentStep={currentStep} 
-      totalSteps={4} 
+      totalSteps={expressMode ? 2 : 4} 
       expressMode={expressMode} 
       onToggleExpressMode={handleToggleExpressMode}
     >
@@ -107,18 +138,37 @@ const JobPost = () => {
         />
       </Helmet>
 
-      <Card className="bg-white shadow-md rounded-lg p-6">
-        <EnhancedJobForm 
-          onSubmit={handleSubmit}
-          onStepChange={handleStepChange}
-          maxPhotos={5}
-          defaultFormValues={defaultFormValues}
-          expressMode={expressMode}
+      {currentStep === 1 && (
+        <Card className="bg-white shadow-md rounded-lg p-6">
+          <EnhancedJobForm 
+            onSubmit={handleSubmit}
+            onStepChange={handleStepChange}
+            maxPhotos={5}
+            defaultFormValues={defaultFormValues}
+            expressMode={expressMode}
+          />
+        </Card>
+      )}
+      
+      {currentStep === 2 && expressMode && previewData && (
+        <JobPreview 
+          jobData={previewData}
+          onEdit={handleEditFromPreview}
+          onPublish={handlePublishFromPreview}
+          isPublishing={isLoading}
         />
-      </Card>
+      )}
       
       {/* Celebration confetti effect on successful job post */}
       {showConfetti && <ConfettiExplosion duration={3000} particleCount={100} />}
+      
+      {/* Thank you modal after successful submission */}
+      <ThankYouModal
+        open={showThankYouModal}
+        onOpenChange={setShowThankYouModal}
+        postType="job"
+        onBoostClick={handleBoostPost}
+      />
     </PostWizardLayout>
   );
 };
