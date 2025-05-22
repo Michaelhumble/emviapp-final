@@ -48,6 +48,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       has_wax_room: false,
       owner_will_train: false,
       no_supply_deduction: false,
+      salary_range: '',
+      experience_level: '',
       ...defaultValues, // Override with any provided defaultValues
     },
   });

@@ -36,6 +36,8 @@ const PostJob = () => {
         has_wax_room: data.has_wax_room,
         owner_will_train: data.owner_will_train,
         no_supply_deduction: data.no_supply_deduction,
+        salary_range: data.salary_range,
+        experience_level: data.experience_level,
         salonName: data.salonName,
         contact_info: {
           owner_name: data.contactName,
@@ -73,7 +75,9 @@ const PostJob = () => {
     salonName: '',
     contactEmail: '',
     contactName: '',
-    contactPhone: ''
+    contactPhone: '',
+    salary_range: '',
+    experience_level: ''
   };
 
   return (

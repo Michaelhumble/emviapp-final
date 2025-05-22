@@ -1,237 +1,284 @@
 
-import React, { useState } from 'react';
-import { Control } from 'react-hook-form';
-import { beautySpecialties, commonRequirements } from '@/data/specialties';
-import { FormField, FormItem, FormControl, FormLabel } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { JobTemplateType } from '@/utils/jobs/jobTemplates';
+import React from 'react';
+import { Control, useWatch } from 'react-hook-form';
 import { JobFormValues } from '../job/jobFormSchema';
+import { FormField, FormItem, FormControl, FormDescription } from '@/components/ui/form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 
 interface SpecialtiesRequirementsSectionProps {
   control: Control<JobFormValues>;
-  industry: JobTemplateType | string;
+  industry?: string;
 }
 
-type IndustryTab = {
-  id: string;
-  label: string;
-  specialties: string[];
+// Common industry options
+const industrySpecialties: Record<string, string[]> = {
+  nails: [
+    'Acrylic Nails', 'Gel Nails', 'Manicure', 'Pedicure', 'Nail Art', 'Nail Design',
+    'Dip Powder', 'Extensions', 'Gel-X', 'Gel Polish', 'Regular Polish', 'Paraffin'
+  ],
+  hair: [
+    'Cuts & Styling', 'Color', 'Balayage', 'Highlights', 'Extensions', 'Perms',
+    'Relaxers', 'Blowouts', 'Updo', 'Brazilian Blowout', 'Keratin', 'Men\'s Cuts'
+  ],
+  lashes: [
+    'Classic Lashes', 'Volume Lashes', 'Hybrid Lashes', 'Mega Volume', 'Lash Lifts',
+    'Extensions', 'Strip Lashes', 'Lash Tinting', 'Russian Volume', 'Bottom Lashes'
+  ],
+  brows: [
+    'Microblading', 'Powder Brows', 'Combo Brows', 'Brow Lamination', 'Brow Tinting',
+    'Waxing', 'Threading', 'Shaping', 'Tweezing', 'HD Brows'
+  ],
+  skincare: [
+    'Facials', 'Microdermabrasion', 'Chemical Peels', 'Dermaplaning', 'Microneedling',
+    'Face Massage', 'Acne Treatment', 'Anti-Aging', 'Extractions', 'LED Therapy'
+  ],
+  massage: [
+    'Swedish', 'Deep Tissue', 'Hot Stone', 'Thai', 'Reflexology',
+    'Sports', 'Prenatal', 'Aromatherapy', 'Couples Massage', 'Foot Massage'
+  ],
+  tattoo: [
+    'Traditional', 'Realism', 'Blackwork', 'Watercolor', 'Japanese',
+    'Neo-Traditional', 'American Traditional', 'Lettering', 'Geometric', 'Cover-ups'
+  ],
+  barber: [
+    'Haircuts', 'Fades', 'Shaves', 'Beard Trims', 'Hot Towel Treatment',
+    'Line-ups', 'Designs', 'Color', 'Skin Fades', 'Pompadours'
+  ],
+  makeup: [
+    'Bridal', 'Special Event', 'Editorial', 'Natural Looks', 'Glam',
+    'Airbrush', 'HD Makeup', 'Contouring', 'Halloween/SFX', 'Lessons'
+  ],
+  custom: [
+    'Customize Your Own', 'Other Skills', 'Specialty Services'
+  ]
 };
 
-const industryTabs: IndustryTab[] = [
-  { id: 'nails', label: 'Nails', specialties: beautySpecialties.nails },
-  { id: 'hair', label: 'Hair', specialties: beautySpecialties.hair },
-  { id: 'lashes', label: 'Lashes', specialties: beautySpecialties.lashes },
-  { id: 'barber', label: 'Barber', specialties: beautySpecialties.barber },
-  { id: 'skincare', label: 'Skincare', specialties: beautySpecialties.skincare },
-  { id: 'pmu', label: 'PMU', specialties: [] },
-  { id: 'makeup', label: 'Makeup', specialties: beautySpecialties.makeup },
-  { id: 'other', label: 'Other', specialties: [] },
+// Common requirements across industries
+const commonRequirements = [
+  'License Required', 'Experience Required', 'English Speaking', 'Vietnamese Speaking',
+  'Weekend Availability', 'Flexible Schedule', 'Transportation Required', 'Full-Time Available',
+  'Part-Time Available', 'Commission Based'
 ];
 
-// Additional specialties for receptionists and managers
-const adminSpecialties = [
-  'Reception', 'Client Service', 'Education', 
-  'Cleaning', 'Retail', 'Product Knowledge', 
-  'Scheduling', 'Management', 'Social Media'
-];
+const SpecialtiesRequirementsSection: React.FC<SpecialtiesRequirementsSectionProps> = ({ control, industry = 'custom' }) => {
+  const currentSpecialties = useWatch({ control, name: 'specialties' }) || [];
+  const currentRequirements = useWatch({ control, name: 'requirements' }) || [];
+  const [activeTab, setActiveTab] = React.useState(industry !== 'custom' ? industry : 'nails');
 
-const SpecialtiesRequirementsSection: React.FC<SpecialtiesRequirementsSectionProps> = ({ 
-  control, 
-  industry 
-}) => {
-  const [activeTab, setActiveTab] = useState<string>(
-    industry && industryTabs.some(tab => tab.id === industry) ? industry.toString() : 'nails'
-  );
-
-  const isAdminRole = industry === 'receptionist' || industry === 'manager' || industry === 'booth';
-
-  const getDisplaySpecialties = () => {
-    if (isAdminRole) {
-      return adminSpecialties;
-    }
-    
-    const currentTab = industryTabs.find(tab => tab.id === activeTab);
-    return currentTab?.specialties || [];
+  // Get the appropriate specialties based on the industry
+  const getSpecialties = () => {
+    return industrySpecialties[activeTab] || industrySpecialties.custom;
   };
-
-  const specialtiesList = getDisplaySpecialties();
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold font-playfair bg-gradient-to-r from-purple-700 to-indigo-600 bg-clip-text text-transparent">
-          Job Specialties & Requirements
-        </h2>
-        <p className="text-gray-600 mt-2">
-          Select the specific skills and requirements for this position
+      <div className="border-b pb-4">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Specialties & Requirements</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Select the specialties and requirements for this position
         </p>
       </div>
-      
-      <div className="bg-gray-50 rounded-lg p-2">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-4 md:grid-cols-8 gap-1 bg-transparent">
-            {industryTabs.map((tab) => (
-              <TabsTrigger 
-                key={tab.id} 
-                value={tab.id}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                  activeTab === tab.id 
-                    ? 'bg-white shadow-sm text-purple-700' 
-                    : 'bg-transparent text-gray-600 hover:text-purple-600'
-                }`}
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      </div>
-      
-      <div className="bg-white rounded-lg border p-6 shadow-sm">
-        <h3 className="text-lg font-medium mb-4">Specialties Required</h3>
-        
-        <FormField
-          control={control}
-          name="specialties"
-          render={({ field }) => (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {specialtiesList.map((specialty) => (
-                <FormItem key={specialty} className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value?.includes(specialty)}
-                      onCheckedChange={(checked) => {
-                        const updatedValue = checked
-                          ? [...(field.value || []), specialty]
-                          : (field.value || []).filter((val) => val !== specialty);
-                        field.onChange(updatedValue);
-                      }}
-                      className="border-purple-200 text-purple-600 data-[state=checked]:bg-purple-600"
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal cursor-pointer">{specialty}</FormLabel>
-                </FormItem>
-              ))}
+
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 mb-4">
+          <TabsTrigger value="nails">Nails</TabsTrigger>
+          <TabsTrigger value="hair">Hair</TabsTrigger>
+          <TabsTrigger value="lashes">Lashes</TabsTrigger>
+          <TabsTrigger value="brows">Brows</TabsTrigger>
+          <TabsTrigger value="skincare">Skincare</TabsTrigger>
+          <TabsTrigger value="massage">Massage</TabsTrigger>
+          <TabsTrigger value="tattoo">Tattoo</TabsTrigger>
+          <TabsTrigger value="barber">Barber</TabsTrigger>
+          <TabsTrigger value="makeup">Makeup</TabsTrigger>
+        </TabsList>
+
+        {/* Each tab has the same structure but different values */}
+        {Object.keys(industrySpecialties).map((tabKey) => (
+          <TabsContent key={tabKey} value={tabKey} className="space-y-6">
+            {/* Specialties Section */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-semibold text-purple-700 mb-4">Specialties</h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {industrySpecialties[tabKey].map((specialty) => (
+                  <FormField
+                    key={specialty}
+                    control={control}
+                    name="specialties"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(specialty)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange([...field.value || [], specialty]);
+                              } else {
+                                field.onChange(field.value?.filter((value: string) => value !== specialty));
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <label className="text-sm cursor-pointer">{specialty}</label>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
-          )}
-        />
-        
-        <Separator className="my-6" />
-        
-        <h3 className="text-lg font-medium mb-4">Job Requirements</h3>
-        
-        <FormField
-          control={control}
-          name="requirements"
-          render={({ field }) => (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {commonRequirements.map((requirement) => (
-                <FormItem key={requirement} className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value?.includes(requirement)}
-                      onCheckedChange={(checked) => {
-                        const updatedValue = checked
-                          ? [...(field.value || []), requirement]
-                          : (field.value || []).filter((val) => val !== requirement);
-                        field.onChange(updatedValue);
-                      }}
-                      className="border-purple-200 text-purple-600 data-[state=checked]:bg-purple-600"
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal cursor-pointer">{requirement}</FormLabel>
-                </FormItem>
-              ))}
+
+            {/* Requirements Section */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-semibold text-purple-700 mb-4">Job Requirements</h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {commonRequirements.map((requirement) => (
+                  <FormField
+                    key={requirement}
+                    control={control}
+                    name="requirements"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(requirement)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange([...field.value || [], requirement]);
+                              } else {
+                                field.onChange(field.value?.filter((value: string) => value !== requirement));
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <label className="text-sm cursor-pointer">{requirement}</label>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
-          )}
-        />
-        
-        {industry !== 'custom' && (
-          <>
-            <Separator className="my-6" />
-            
-            <h3 className="text-lg font-medium mb-4">Benefits Offered</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 p-5 rounded-lg flex justify-between items-center">
-                <span className="font-medium">Housing Provided</span>
+
+            {/* Benefits Section */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-semibold text-purple-700 mb-4">Position Benefits</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={control}
                   name="has_housing"
                   render={({ field }) => (
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-purple-600"
-                      />
-                    </FormControl>
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <label className="text-sm font-medium cursor-pointer">Housing Available</label>
+                        <FormDescription className="text-xs">
+                          Housing is provided for this position
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
                   )}
                 />
-              </div>
-              
-              <div className="bg-gray-50 p-5 rounded-lg flex justify-between items-center">
-                <span className="font-medium">Wax Room Available</span>
-                <FormField
-                  control={control}
-                  name="has_wax_room"
-                  render={({ field }) => (
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-purple-600"
-                      />
-                    </FormControl>
-                  )}
-                />
-              </div>
-              
-              <div className="bg-gray-50 p-5 rounded-lg flex justify-between items-center">
-                <span className="font-medium">Owner Will Train</span>
+
                 <FormField
                   control={control}
                   name="owner_will_train"
                   render={({ field }) => (
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-purple-600"
-                      />
-                    </FormControl>
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <label className="text-sm font-medium cursor-pointer">Will Train</label>
+                        <FormDescription className="text-xs">
+                          Owner will provide training
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
                   )}
                 />
-              </div>
-              
-              <div className="bg-gray-50 p-5 rounded-lg flex justify-between items-center">
-                <span className="font-medium">No Supply Deduction</span>
+
+                <FormField
+                  control={control}
+                  name="has_wax_room"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <label className="text-sm font-medium cursor-pointer">Wax Room Available</label>
+                        <FormDescription className="text-xs">
+                          Dedicated waxing room is available
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={control}
                   name="no_supply_deduction"
                   render={({ field }) => (
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-purple-600"
-                      />
-                    </FormControl>
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <label className="text-sm font-medium cursor-pointer">No Supply Deduction</label>
+                        <FormDescription className="text-xs">
+                          Supplies provided without fee deduction
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={control}
+                  name="weekly_pay"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <label className="text-sm font-medium cursor-pointer">Weekly Pay</label>
+                        <FormDescription className="text-xs">
+                          Pay is distributed weekly
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value === 'true'}
+                          onCheckedChange={(checked) => field.onChange(checked ? 'true' : 'false')}
+                        />
+                      </FormControl>
+                    </FormItem>
                   )}
                 />
               </div>
             </div>
-          </>
-        )}
-      </div>
-      
-      <div className="text-sm text-gray-600 mt-2">
-        Select all that apply to this position. Choose specialties and requirements to match your ideal candidate.
-      </div>
+
+            <div className="py-2 px-4 bg-blue-50 rounded-md border border-blue-100 text-sm text-blue-700">
+              <p>Select all that apply to this position. Choose specialties and requirements to match your ideal candidate.</p>
+            </div>
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 };

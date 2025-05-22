@@ -36,6 +36,8 @@ const JobPost = () => {
         has_wax_room: formData.has_wax_room,
         owner_will_train: formData.owner_will_train,
         no_supply_deduction: formData.no_supply_deduction,
+        salary_range: formData.salary_range,
+        experience_level: formData.experience_level,
         salonName: formData.salonName,
         contact_info: {
           owner_name: formData.contactName,
@@ -73,7 +75,9 @@ const JobPost = () => {
     salonName: '',
     contactEmail: '',
     contactName: '',
-    contactPhone: ''
+    contactPhone: '',
+    salary_range: '',
+    experience_level: ''
   };
 
   return (
