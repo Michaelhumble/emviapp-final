@@ -59,5 +59,4 @@ export interface UserPostingStats {
   supplyPostCount: number;
 }
 
-// IndustryType must match exactly with jobFormSchema.ts
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup' | 'custom';
+export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';

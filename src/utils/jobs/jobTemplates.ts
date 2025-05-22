@@ -1,428 +1,466 @@
+import { JobTemplate, JobTemplateType } from "@/components/posting/job/jobFormSchema";
 
-import { JobTemplate } from '@/components/posting/job/jobFormSchema';
-import { IndustryType } from '@/utils/posting/types';
-
-const nailsTemplate: JobTemplate = {
-  id: 'nails-1',
-  title: 'Nail Technician Needed',
-  industry: 'nails',
-  salonName: 'Glamour Nails & Spa',
-  description: `We're looking for talented nail technicians to join our busy salon. Great opportunity in a friendly environment with consistent client flow.
-
-Our salon is well-established with loyal clients and is located in a high-traffic area.`,
-  vietnameseDescription: `Chúng tôi đang tìm kiếm thợ nail tài năng để tham gia vào tiệm salon bận rộn của chúng tôi. Cơ hội tuyệt vời trong môi trường thân thiện với lượng khách hàng ổn định.
-
-Salon của chúng tôi đã được thành lập với nhiều khách hàng trung thành và nằm ở khu vực có lưu lượng khách cao.`,
-  location: 'Houston, TX',
-  jobType: 'full-time',
-  compensation_type: 'commission',
-  compensation_details: '60% commission',
-  weekly_pay: true,
-  has_housing: false,
-  has_wax_room: true,
-  owner_will_train: false,
-  no_supply_deduction: true,
-  salary_range: '$800-1200/week',
-  experience_level: '2+ years preferred',
-  requirements: [
-    '2+ years experience preferred',
-    'Client-friendly attitude',
-    'Reliable transportation',
-    'Clean and organized',
-    'Team player'
-  ],
-  specialties: [
-    'Gel Manicures',
-    'Pedicures',
-    'Acrylic Nails',
-    'Nail Art',
-    'Dipping Powder'
-  ],
-  thumbnailUrl: '/assets/thumbnails/nails.jpg',
-  contactName: 'Kim Nguyen',
-  contactEmail: 'salon@example.com',
-  contactPhone: '(123) 456-7890'
-};
-
-const hairTemplate: JobTemplate = {
-  id: 'hair-1',
-  title: 'Experienced Hair Stylist',
-  industry: 'hair',
-  salonName: 'Elite Hair Studio',
-  description: `Join our upscale salon as a skilled hair stylist. We're looking for someone with a passion for creating beautiful styles and building a loyal client base.
-
-Our team focuses on continual education and staying current with the latest trends and techniques.`,
-  vietnameseDescription: '',
-  location: 'Dallas, TX',
-  jobType: 'full-time',
-  compensation_type: 'hybrid',
-  compensation_details: 'Base + Commission',
-  weekly_pay: false,
-  has_housing: false,
-  has_wax_room: false,
-  owner_will_train: false,
-  no_supply_deduction: true,
-  salary_range: '$50,000-70,000/year',
-  experience_level: '3+ years required',
-  requirements: [
-    'Cosmetology license required',
-    'Portfolio of work',
-    'Color expertise',
-    'Cutting techniques',
-    'Customer service skills'
-  ],
-  specialties: [
-    'Hair Coloring',
-    'Balayage',
-    'Haircuts',
-    'Bridal Styling',
-    'Extensions'
-  ],
-  thumbnailUrl: '/assets/thumbnails/hair.jpg',
-  contactName: 'Jessica Smith',
-  contactEmail: 'elite@example.com',
-  contactPhone: '(123) 555-7890'
-};
-
-const lashesTemplate: JobTemplate = {
-  id: 'lashes-1',
-  title: 'Lash Artist / Technician',
-  industry: 'lashes',
-  salonName: 'Flutter Beauty Bar',
-  description: `We are seeking a detail-oriented lash artist to provide exceptional lash extension services to our growing clientele. Join our luxury beauty bar and grow your career in a supportive environment.
-
-Perfect opportunity for someone who takes pride in their precision and artistry.`,
-  vietnameseDescription: '',
-  location: 'Austin, TX',
-  jobType: 'full-time',
-  compensation_type: 'commission',
-  compensation_details: '50-60% commission',
-  weekly_pay: false,
-  has_housing: false,
-  has_wax_room: false,
-  owner_will_train: true,
-  no_supply_deduction: false,
-  salary_range: '$700-1000/week',
-  experience_level: '1+ year preferred',
-  requirements: [
-    'Lash certification required',
-    'Attention to detail',
-    'Professional demeanor',
-    'Comfortable with social media',
-    'Punctual and reliable'
-  ],
-  specialties: [
-    'Classic Lashes',
-    'Volume Lashes',
-    'Hybrid Lashes',
-    'Lash Lifts',
-    'Lash Tinting'
-  ],
-  thumbnailUrl: '/assets/thumbnails/lashes.jpg',
-  contactName: 'Maria Lopez',
-  contactEmail: 'flutter@example.com',
-  contactPhone: '(123) 789-4560'
-};
-
-const massageTemplate: JobTemplate = {
-  id: 'massage-1',
-  title: 'Licensed Massage Therapist',
-  industry: 'massage',
-  salonName: 'Serenity Wellness Spa',
-  description: `Serenity Wellness Spa is looking for a licensed massage therapist to join our peaceful, client-focused spa. We offer various modalities to meet our clients' needs in a serene environment.
-
-Flexible scheduling available with growing client base and competitive compensation.`,
-  vietnameseDescription: '',
-  location: 'San Antonio, TX',
-  jobType: 'part-time',
-  compensation_type: 'hourly',
-  compensation_details: '$20-25/hr + tips',
-  weekly_pay: true,
-  has_housing: false,
-  has_wax_room: false,
-  owner_will_train: false,
-  no_supply_deduction: true,
-  salary_range: '$30-45/hour with tips',
-  experience_level: 'Licensed with 2+ years experience',
-  requirements: [
-    'Licensed massage therapist',
-    'Multiple modality knowledge',
-    'Professional demeanor',
-    'Physically capable',
-    'Customer-focused'
-  ],
-  specialties: [
-    'Deep Tissue',
-    'Swedish Massage',
-    'Hot Stone',
-    'Sports Massage',
-    'Aromatherapy'
-  ],
-  thumbnailUrl: '/assets/thumbnails/massage.jpg',
-  contactName: 'David Johnson',
-  contactEmail: 'serenity@example.com',
-  contactPhone: '(123) 456-7890'
-};
-
-const tattooTemplate: JobTemplate = {
-  id: 'tattoo-1',
-  title: 'Experienced Tattoo Artist',
-  industry: 'tattoo',
-  salonName: 'Ink & Art Collective',
-  description: `Looking for a passionate tattoo artist to join our creative studio. We provide a clean, professional environment with a steady stream of clients and freedom for artistic expression.
-
-The ideal candidate has a strong portfolio and can create custom designs while maintaining the highest standards of safety and sanitation.`,
-  vietnameseDescription: '',
-  location: 'Austin, TX',
-  jobType: 'full-time',
-  compensation_type: 'commission',
-  compensation_details: '60% commission',
-  weekly_pay: false,
-  has_housing: false,
-  has_wax_room: false,
-  owner_will_train: false,
-  no_supply_deduction: true,
-  salary_range: 'Based on experience and clientele',
-  experience_level: '3+ years required',
-  requirements: [
-    'Professional portfolio required',
-    'Licensed/certified',
-    'Clean and precise work',
-    'Knowledge of sanitation practices',
-    'Client communication skills'
-  ],
-  specialties: [
-    'Traditional',
-    'Realism',
-    'Watercolor',
-    'Japanese',
-    'Blackwork'
-  ],
-  thumbnailUrl: '/assets/thumbnails/tattoo.jpg',
-  contactName: 'Alex Rivera',
-  contactEmail: 'inkartstudio@example.com',
-  contactPhone: '(123) 456-7890'
-};
-
-const browsTemplate: JobTemplate = {
-  id: 'brows-1',
-  title: 'Brow Specialist/Microblading Artist',
-  industry: 'brows',
-  salonName: 'Arch Beauty Studio',
-  description: `We are expanding our team and looking for a talented brow specialist with microblading experience. Join our modern, Instagram-worthy studio with a focus on brow artistry and client satisfaction.
-
-Training opportunities available for the right candidate with basic experience wanting to enhance their skills.`,
-  vietnameseDescription: '',
-  location: 'Houston, TX',
-  jobType: 'full-time',
-  compensation_type: 'commission',
-  compensation_details: '50% commission with bonus structure',
-  weekly_pay: false,
-  has_housing: false,
-  has_wax_room: false,
-  owner_will_train: true,
-  no_supply_deduction: true,
-  salary_range: '$800-1500/week depending on clientele',
-  experience_level: '1+ year preferred',
-  requirements: [
-    'Microblading certification',
-    'Brow shaping expertise',
-    'Portfolio of work',
-    'Social media savvy',
-    'Excellent customer service'
-  ],
-  specialties: [
-    'Microblading',
-    'Brow Tinting',
-    'Brow Lamination',
-    'Henna Brows',
-    'Eyebrow Design'
-  ],
-  thumbnailUrl: '/assets/thumbnails/brows.jpg',
-  contactName: 'Sarah Chen',
-  contactEmail: 'arch@example.com',
-  contactPhone: '(123) 456-7890'
-};
-
-const skincareTemplate: JobTemplate = {
-  id: 'skincare-1',
-  title: 'Licensed Esthetician',
-  industry: 'skincare',
-  salonName: 'Glow Skincare & Wellness',
-  description: `Join our results-driven skincare studio as a licensed esthetician. We focus on delivering transformative skincare treatments in a serene, upscale environment.
-
-Great opportunity to work with premium products and advanced treatments while building a loyal client base.`,
-  vietnameseDescription: '',
-  location: 'Dallas, TX',
-  jobType: 'full-time',
-  compensation_type: 'hybrid',
-  compensation_details: 'Hourly + Commission',
-  weekly_pay: true,
-  has_housing: false,
-  has_wax_room: true,
-  owner_will_train: false,
-  no_supply_deduction: true,
-  salary_range: '$40,000-60,000/year',
-  experience_level: '2+ years preferred',
-  requirements: [
-    'Licensed esthetician',
-    'Knowledge of advanced treatments',
-    'Retail sales experience',
-    'Professional appearance',
-    'Excellent communication skills'
-  ],
-  specialties: [
-    'Chemical Peels',
-    'Microdermabrasion',
-    'Hydrafacial',
-    'LED Therapy',
-    'Acne Treatments'
-  ],
-  thumbnailUrl: '/assets/thumbnails/skincare.jpg',
-  contactName: 'Emily Taylor',
-  contactEmail: 'glow@example.com',
-  contactPhone: '(123) 456-7890'
-};
-
-const barberTemplate: JobTemplate = {
-  id: 'barber-1',
-  title: 'Experienced Barber',
-  industry: 'barber',
-  salonName: 'Legacy Barber Lounge',
-  description: `Legacy Barber Lounge is seeking a skilled barber to join our premium men's grooming establishment. We offer a sophisticated environment where clients receive exceptional grooming services and enjoy the classic barbershop experience.
-
-Strong technical skills and client rapport are essential for this position.`,
-  vietnameseDescription: '',
-  location: 'Houston, TX',
-  jobType: 'full-time',
-  compensation_type: 'commission',
-  compensation_details: '65% commission',
-  weekly_pay: true,
-  has_housing: false,
-  has_wax_room: false,
-  owner_will_train: false,
-  no_supply_deduction: true,
-  salary_range: '$1,000-1,500/week',
-  experience_level: '3+ years required',
-  requirements: [
-    'Barber license required',
-    'Fades and traditional cutting techniques',
-    'Straight razor shave experience',
-    'Professional appearance',
-    'Punctuality and reliability'
-  ],
-  specialties: [
-    'Classic Cuts',
-    'Fades',
-    'Beard Trims',
-    'Hot Towel Shaves',
-    'Hair Design'
-  ],
-  thumbnailUrl: '/assets/thumbnails/barber.jpg',
-  contactName: 'James Wilson',
-  contactEmail: 'legacy@example.com',
-  contactPhone: '(123) 456-7890'
-};
-
-const makeupTemplate: JobTemplate = {
-  id: 'makeup-1',
-  title: 'Makeup Artist',
-  industry: 'makeup',
-  salonName: 'Glamour Studio',
-  description: `Seeking a versatile makeup artist for our beauty studio specializing in events, photoshoots, and personal clients. Join our team of creative professionals in a collaborative environment.
-
-Opportunity to work on diverse clientele and various makeup styles from natural to dramatic looks.`,
-  vietnameseDescription: '',
-  location: 'Austin, TX',
-  jobType: 'part-time',
-  compensation_type: 'commission',
-  compensation_details: '50% commission + retail commission',
-  weekly_pay: false,
-  has_housing: false,
-  has_wax_room: false,
-  owner_will_train: true,
-  no_supply_deduction: true,
-  salary_range: 'Based on bookings and experience',
-  experience_level: '1+ year preferred',
-  requirements: [
-    'Professional makeup kit',
-    'Knowledge of different skin types',
-    'Excellent color theory understanding',
-    'Portfolio of work',
-    'Availability for weekend events'
-  ],
-  specialties: [
-    'Bridal Makeup',
-    'Special Event Makeup',
-    'Natural Looks',
-    'Dramatic Evening Looks',
-    'Airbrush Makeup'
-  ],
-  thumbnailUrl: '/assets/thumbnails/makeup.jpg',
-  contactName: 'Nicole Adams',
-  contactEmail: 'glamourstudio@example.com',
-  contactPhone: '(123) 456-7890'
-};
-
-const customTemplate: JobTemplate = {
-  id: 'custom-1',
-  title: 'Beauty Professional',
-  industry: 'custom',
-  salonName: 'Your Salon Name',
-  description: `Describe the position and what makes your salon special. Include information about the work environment, client base, and any unique benefits of working with your team.
-
-Add details about scheduling, responsibilities, and growth opportunities.`,
-  vietnameseDescription: '',
-  location: 'Your City, State',
-  jobType: 'full-time',
-  compensation_type: 'commission',
-  compensation_details: '',
+// Basic template that all other templates extend from
+const baseTemplate: JobTemplate = {
+  id: "base-template",
+  title: "Job Title",
+  industry: "custom",
+  salonName: "Your Salon Name",
+  description: "Describe the job responsibilities and requirements here.",
+  vietnameseDescription: "",
+  location: "City, State",
+  jobType: "full-time",
+  compensation_type: "hourly",
+  compensation_details: "Competitive pay based on experience",
   weekly_pay: false,
   has_housing: false,
   has_wax_room: false,
   owner_will_train: false,
   no_supply_deduction: false,
-  salary_range: '',
-  experience_level: '',
-  requirements: [
-    'Add your requirements here',
-    'Such as experience level',
-    'Certifications needed',
-    'Specific skills'
-  ],
-  specialties: [
-    'Add specialties here',
-    'Services you offer',
-    'Techniques needed'
-  ],
-  thumbnailUrl: '/assets/thumbnails/custom.jpg',
-  contactName: 'Your Name',
-  contactEmail: 'your.email@example.com',
-  contactPhone: '(XXX) XXX-XXXX'
+  salary_range: "$15-25 per hour",
+  experience_level: "1+ years",
+  requirements: ["Valid cosmetology license", "Experience with customer service"],
+  specialties: [],
+  thumbnailUrl: "/images/templates/default.jpg",
+  contactName: "Salon Manager",
+  contactEmail: "contact@example.com",
+  contactPhone: "555-123-4567"
 };
 
-const templates: Record<IndustryType, JobTemplate> = {
-  nails: nailsTemplate,
-  hair: hairTemplate,
-  lashes: lashesTemplate,
-  massage: massageTemplate,
-  tattoo: tattooTemplate,
-  brows: browsTemplate,
-  skincare: skincareTemplate,
-  barber: barberTemplate,
-  makeup: makeupTemplate,
-  custom: customTemplate
+// Define templates for each job type
+const jobTemplates: Record<JobTemplateType, JobTemplate> = {
+  nails: {
+    ...baseTemplate,
+    id: "nails-template",
+    title: "Nail Technician",
+    industry: "nails",
+    salonName: "Perfect Nails Salon",
+    description: "We are looking for an experienced nail technician to join our team. The ideal candidate should have experience with manicures, pedicures, acrylic, and gel applications.",
+    vietnameseDescription: "Chúng tôi đang tìm kiếm một kỹ thuật viên làm móng có kinh nghiệm để tham gia vào đội ngũ của chúng tôi. Ứng viên lý tưởng nên có kinh nghiệm làm móng tay, móng chân, đắp bột, và làm gel.",
+    location: "Dallas, TX",
+    jobType: "full-time",
+    compensation_type: "commission",
+    compensation_details: "60% commission with guaranteed hourly minimum",
+    weekly_pay: true,
+    has_housing: true,
+    has_wax_room: true,
+    owner_will_train: false,
+    no_supply_deduction: true,
+    salary_range: "$800-1500 weekly depending on performance",
+    experience_level: "2+ years",
+    requirements: [
+      "Valid nail technician license",
+      "Experience with acrylics, gel, dip powder, and nail art",
+      "Excellent customer service skills",
+      "Ability to work weekends"
+    ],
+    specialties: ["Acrylics", "Gel", "Pedicure", "Nail Art", "Dip Powder"],
+    thumbnailUrl: "/images/templates/nails.jpg",
+    contactName: "Salon Manager",
+    contactEmail: "contact@perfectnails.com",
+    contactPhone: "555-123-4567"
+  },
+  hair: {
+    ...baseTemplate,
+    id: "hair-template",
+    title: "Hair Stylist",
+    industry: "hair",
+    salonName: "Salon de Paris",
+    description: "Seeking a talented hair stylist with a passion for creating beautiful hairstyles and providing excellent customer service.",
+    vietnameseDescription: "Tìm kiếm một nhà tạo mẫu tóc tài năng, đam mê tạo ra những kiểu tóc đẹp và cung cấp dịch vụ khách hàng xuất sắc.",
+    location: "Houston, TX",
+    jobType: "full-time",
+    compensation_type: "commission",
+    compensation_details: "50% commission plus tips",
+    weekly_pay: true,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: true,
+    no_supply_deduction: false,
+    salary_range: "$700-1400 weekly",
+    experience_level: "3+ years",
+    requirements: [
+      "Valid cosmetology license",
+      "Proficiency in cutting, coloring, and styling",
+      "Strong communication skills",
+      "Ability to build and maintain client relationships"
+    ],
+    specialties: ["Hair Cutting", "Hair Coloring", "Balayage", "Highlights", "Styling"],
+    thumbnailUrl: "/images/templates/hair.jpg",
+    contactName: "Sophie Dubois",
+    contactEmail: "sophie@salondeparis.com",
+    contactPhone: "555-987-6543"
+  },
+  lashes: {
+    ...baseTemplate,
+    id: "lashes-template",
+    title: "Lash Technician",
+    industry: "lashes",
+    salonName: "Luxe Lashes Studio",
+    description: "We are hiring a skilled lash technician to provide eyelash extensions and lash services in a luxurious studio environment.",
+    vietnameseDescription: "Chúng tôi đang tuyển dụng một kỹ thuật viên làm mi lành nghề để cung cấp dịch vụ nối mi và các dịch vụ liên quan đến mi trong một môi trường studio sang trọng.",
+    location: "Austin, TX",
+    jobType: "part-time",
+    compensation_type: "hourly",
+    compensation_details: "$18-25 per hour plus tips",
+    weekly_pay: false,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: true,
+    salary_range: "$600-1200 bi-weekly",
+    experience_level: "1+ years",
+    requirements: [
+      "Valid esthetician or cosmetology license",
+      "Certification in eyelash extensions",
+      "Knowledge of different lash styles and application techniques",
+      "Excellent attention to detail"
+    ],
+    specialties: ["Classic Lashes", "Volume Lashes", "Hybrid Lashes", "Lash Lift", "Lash Tint"],
+    thumbnailUrl: "/images/templates/lashes.jpg",
+    contactName: "Ava Johnson",
+    contactEmail: "ava@luxelashes.com",
+    contactPhone: "555-246-8013"
+  },
+  barber: {
+    ...baseTemplate,
+    id: "barber-template",
+    title: "Barber",
+    industry: "barber",
+    salonName: "The Gents Barbershop",
+    description: "Looking for a professional barber to provide haircuts, shaves, and grooming services in a classic barbershop setting.",
+    vietnameseDescription: "Tìm kiếm một thợ cắt tóc chuyên nghiệp để cung cấp dịch vụ cắt tóc, cạo râu và chăm sóc râu tóc trong một tiệm cắt tóc cổ điển.",
+    location: "San Antonio, TX",
+    jobType: "full-time",
+    compensation_type: "commission",
+    compensation_details: "55% commission plus tips",
+    weekly_pay: true,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: false,
+    salary_range: "$750-1500 weekly",
+    experience_level: "2+ years",
+    requirements: [
+      "Valid barber license",
+      "Proficiency in various haircutting techniques",
+      "Experience with straight razor shaves",
+      "Excellent customer service skills"
+    ],
+    specialties: ["Fades", "Tapers", "Straight Razor Shaves", "Beard Trims", "Men's Grooming"],
+    thumbnailUrl: "/images/templates/barber.jpg",
+    contactName: "Ethan Carter",
+    contactEmail: "ethan@gentsbarbershop.com",
+    contactPhone: "555-135-7924"
+  },
+  skincare: {
+    ...baseTemplate,
+    id: "skincare-template",
+    title: "Esthetician",
+    industry: "skincare",
+    salonName: "Radiant Skin Spa",
+    description: "Hiring a licensed esthetician to provide facials, waxing, and skincare treatments in a relaxing spa environment.",
+    vietnameseDescription: "Tuyển dụng một chuyên viên thẩm mỹ có giấy phép để cung cấp dịch vụ chăm sóc da mặt, tẩy lông và các liệu pháp chăm sóc da trong một môi trường spa thư giãn.",
+    location: "Fort Worth, TX",
+    jobType: "part-time",
+    compensation_type: "hourly",
+    compensation_details: "$20-30 per hour plus commission on product sales",
+    weekly_pay: false,
+    has_housing: false,
+    has_wax_room: true,
+    owner_will_train: false,
+    no_supply_deduction: true,
+    salary_range: "$800-1600 bi-weekly",
+    experience_level: "1+ years",
+    requirements: [
+      "Valid esthetician license",
+      "Experience with facials, waxing, and skincare analysis",
+      "Knowledge of skincare products and ingredients",
+      "Excellent communication and sales skills"
+    ],
+    specialties: ["Facials", "Waxing", "Microdermabrasion", "Chemical Peels", "Skincare Consultations"],
+    thumbnailUrl: "/images/templates/skincare.jpg",
+    contactName: "Olivia Bennett",
+    contactEmail: "olivia@radiantspa.com",
+    contactPhone: "555-864-2075"
+  },
+  spa: {
+    ...baseTemplate,
+    id: "spa-template",
+    title: "Spa Technician",
+    industry: "spa",
+    salonName: "Serenity Wellness Center",
+    description: "Seeking a skilled spa technician to provide massage, body treatments, and hydrotherapy services in a holistic wellness center.",
+    vietnameseDescription: "Tìm kiếm một kỹ thuật viên spa lành nghề để cung cấp dịch vụ massage, trị liệu toàn thân và các dịch vụ thủy liệu pháp trong một trung tâm chăm sóc sức khỏe toàn diện.",
+    location: "Oklahoma City, OK",
+    jobType: "full-time",
+    compensation_type: "hourly",
+    compensation_details: "$17-27 per hour plus tips",
+    weekly_pay: true,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: true,
+    no_supply_deduction: false,
+    salary_range: "$700-1400 weekly",
+    experience_level: "2+ years",
+    requirements: [
+      "Certification in massage therapy or related field",
+      "Experience with various massage techniques",
+      "Knowledge of body treatments and hydrotherapy",
+      "Excellent communication and interpersonal skills"
+    ],
+    specialties: ["Swedish Massage", "Deep Tissue Massage", "Hot Stone Massage", "Body Wraps", "Hydrotherapy"],
+    thumbnailUrl: "/images/templates/spa.jpg",
+    contactName: "Liam Mitchell",
+    contactEmail: "liam@serenitywellness.com",
+    contactPhone: "555-318-9652"
+  },
+  receptionist: {
+    ...baseTemplate,
+    id: "receptionist-template",
+    title: "Salon Receptionist",
+    industry: "receptionist",
+    salonName: "Glamour Beauty Salon",
+    description: "Hiring a friendly and organized salon receptionist to manage appointments, greet clients, and handle administrative tasks.",
+    vietnameseDescription: "Tuyển dụng một lễ tân salon thân thiện và có tổ chức để quản lý lịch hẹn, chào đón khách hàng và xử lý các công việc hành chính.",
+    location: "Tulsa, OK",
+    jobType: "full-time",
+    compensation_type: "hourly",
+    compensation_details: "$14-18 per hour",
+    weekly_pay: true,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: true,
+    no_supply_deduction: false,
+    salary_range: "$560-720 weekly",
+    experience_level: "Entry-level",
+    requirements: [
+      "High school diploma or equivalent",
+      "Excellent communication and customer service skills",
+      "Proficiency in computer skills",
+      "Ability to multitask and work in a fast-paced environment"
+    ],
+    specialties: [],
+    thumbnailUrl: "/images/templates/receptionist.jpg",
+    contactName: "Chloe Davis",
+    contactEmail: "chloe@glamourbeauty.com",
+    contactPhone: "555-741-2589"
+  },
+  manager: {
+    ...baseTemplate,
+    id: "manager-template",
+    title: "Salon Manager",
+    industry: "manager",
+    salonName: "Elite Beauty Lounge",
+    description: "Seeking an experienced salon manager to oversee daily operations, manage staff, and ensure excellent customer service.",
+    vietnameseDescription: "Tìm kiếm một quản lý salon có kinh nghiệm để giám sát các hoạt động hàng ngày, quản lý nhân viên và đảm bảo dịch vụ khách hàng xuất sắc.",
+    location: "Denver, CO",
+    jobType: "full-time",
+    compensation_type: "salary",
+    compensation_details: "$45,000-60,000 per year plus bonuses",
+    weekly_pay: false,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: false,
+    salary_range: "$45,000-60,000 yearly",
+    experience_level: "3+ years",
+    requirements: [
+      "Proven experience in salon management",
+      "Strong leadership and organizational skills",
+      "Excellent communication and customer service skills",
+      "Knowledge of salon operations and industry trends"
+    ],
+    specialties: [],
+    thumbnailUrl: "/images/templates/manager.jpg",
+    contactName: "Ryan Thompson",
+    contactEmail: "ryan@elitebeauty.com",
+    contactPhone: "555-963-1470"
+  },
+  massage: {
+    ...baseTemplate,
+    id: "massage-template",
+    title: "Massage Therapist",
+    industry: "massage",
+    salonName: "Tranquility Massage Studio",
+    description: "Hiring a licensed massage therapist to provide therapeutic massage services to clients in a peaceful studio environment.",
+    vietnameseDescription: "Tuyển dụng một chuyên viên massage có giấy phép để cung cấp dịch vụ massage trị liệu cho khách hàng trong một môi trường studio yên bình.",
+    location: "Colorado Springs, CO",
+    jobType: "part-time",
+    compensation_type: "hourly",
+    compensation_details: "$25-35 per hour plus tips",
+    weekly_pay: false,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: true,
+    salary_range: "$1000-2000 bi-weekly",
+    experience_level: "1+ years",
+    requirements: [
+      "Valid massage therapy license",
+      "Proficiency in various massage techniques",
+      "Excellent communication and interpersonal skills",
+      "Ability to create a relaxing and therapeutic environment"
+    ],
+    specialties: ["Swedish Massage", "Deep Tissue Massage", "Sports Massage", "Prenatal Massage", "Hot Stone Massage"],
+    thumbnailUrl: "/images/templates/massage.jpg",
+    contactName: "Megan Foster",
+    contactEmail: "megan@tranquilitymassage.com",
+    contactPhone: "555-654-3210"
+  },
+  tattoo: {
+    ...baseTemplate,
+    id: "tattoo-template",
+    title: "Tattoo Artist",
+    industry: "tattoo",
+    salonName: "Ink Master Tattoo Studio",
+    description: "Looking for a talented tattoo artist with a strong portfolio and a passion for creating unique and artistic tattoos.",
+    vietnameseDescription: "Tìm kiếm một nghệ sĩ xăm hình tài năng với một danh mục đầu tư mạnh mẽ và đam mê tạo ra những hình xăm độc đáo và nghệ thuật.",
+    location: "Albuquerque, NM",
+    jobType: "full-time",
+    compensation_type: "commission",
+    compensation_details: "50% commission on all tattoos",
+    weekly_pay: true,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: false,
+    salary_range: "$800-2000 weekly",
+    experience_level: "2+ years",
+    requirements: [
+      "Proven experience as a tattoo artist",
+      "Strong portfolio showcasing artistic skills",
+      "Knowledge of tattoo equipment and safety procedures",
+      "Excellent communication and customer service skills"
+    ],
+    specialties: ["Black and Gray Tattoos", "Color Tattoos", "Realism Tattoos", "Traditional Tattoos", "Custom Designs"],
+    thumbnailUrl: "/images/templates/tattoo.jpg",
+    contactName: "Jesse Rodriguez",
+    contactEmail: "jesse@inkmastertattoo.com",
+    contactPhone: "555-109-8765"
+  },
+  makeup: {
+    ...baseTemplate,
+    id: "makeup-template",
+    title: "Makeup Artist",
+    industry: "makeup",
+    salonName: "Flawless Faces Makeup Studio",
+    description: "Hiring a skilled makeup artist to provide makeup services for weddings, events, and photoshoots.",
+    vietnameseDescription: "Tuyển dụng một chuyên viên trang điểm lành nghề để cung cấp dịch vụ trang điểm cho đám cưới, sự kiện và buổi chụp ảnh.",
+    location: "Santa Fe, NM",
+    jobType: "part-time",
+    compensation_type: "hourly",
+    compensation_details: "$22-32 per hour plus tips",
+    weekly_pay: false,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: true,
+    salary_range: "$880-1280 bi-weekly",
+    experience_level: "1+ years",
+    requirements: [
+      "Proven experience as a makeup artist",
+      "Knowledge of makeup techniques and products",
+      "Excellent communication and customer service skills",
+      "Ability to create a variety of makeup looks"
+    ],
+    specialties: ["Bridal Makeup", "Event Makeup", "Photoshoot Makeup", "Special Effects Makeup", "Airbrush Makeup"],
+    thumbnailUrl: "/images/templates/makeup.jpg",
+    contactName: "Isabella Martinez",
+    contactEmail: "isabella@flawlessfaces.com",
+    contactPhone: "555-210-9876"
+  },
+  booth: {
+    ...baseTemplate,
+    id: "booth-rental-template",
+    title: "Booth Rental Available",
+    industry: "booth",
+    salonName: "Creative Styles Salon",
+    description: "Booth rental opportunity for licensed beauty professionals in a modern and upscale salon.",
+    vietnameseDescription: "Cơ hội thuê ghế làm việc cho các chuyên gia làm đẹp có giấy phép trong một salon hiện đại và cao cấp.",
+    location: "Phoenix, AZ",
+    jobType: "contract",
+    compensation_type: "hourly",
+    compensation_details: "$200-300 weekly booth rental fee",
+    weekly_pay: true,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: false,
+    salary_range: "$200-300 weekly",
+    experience_level: "All levels considered",
+    requirements: [
+      "Valid cosmetology or barber license",
+      "Own clientele",
+      "Professional attitude and work ethic",
+      "Ability to maintain a clean and organized workspace"
+    ],
+    specialties: [],
+    thumbnailUrl: "/images/templates/booth.jpg",
+    contactName: "David Garcia",
+    contactEmail: "david@creativestyles.com",
+    contactPhone: "555-876-5432"
+  },
+  beauty: {
+    ...baseTemplate,
+    id: "other-beauty-template",
+    title: "Other Beauty Professional",
+    industry: "beauty",
+    salonName: "Unique Beauty Services",
+    description: "Seeking a skilled beauty professional specializing in microblading, threading, or waxing services.",
+    vietnameseDescription: "Tìm kiếm một chuyên gia làm đẹp lành nghề, chuyên về các dịch vụ microblading, threading hoặc waxing.",
+    location: "Las Vegas, NV",
+    jobType: "contract",
+    compensation_type: "commission",
+    compensation_details: "60% commission plus tips",
+    weekly_pay: true,
+    has_housing: false,
+    has_wax_room: true,
+    owner_will_train: false,
+    no_supply_deduction: true,
+    salary_range: "$700-1500 weekly",
+    experience_level: "1+ years",
+    requirements: [
+      "Valid license or certification in relevant field",
+      "Proven experience in providing specialized beauty services",
+      "Excellent customer service skills",
+      "Knowledge of safety and sanitation procedures"
+    ],
+    specialties: ["Microblading", "Threading", "Waxing", "Eyelash Extensions", "Permanent Makeup"],
+    thumbnailUrl: "/images/templates/beauty.jpg",
+    contactName: "Linda Nguyen",
+    contactEmail: "linda@uniquebeauty.com",
+    contactPhone: "555-345-6789"
+  },
+  custom: {
+    ...baseTemplate,
+    id: "custom-template",
+    title: "Beauty Professional",
+    industry: "custom",
+    salonName: "Your Salon Name",
+    description: "Customize this template to fit any beauty position in your salon or business.",
+    vietnameseDescription: "",
+    location: "Your City, State",
+    jobType: "full-time",
+    compensation_type: "hourly",
+    compensation_details: "Competitive pay based on experience and skills",
+    weekly_pay: false,
+    has_housing: false,
+    has_wax_room: false,
+    owner_will_train: false,
+    no_supply_deduction: false,
+    salary_range: "Competitive pay",
+    experience_level: "All levels considered",
+    requirements: ["Customize requirements here"],
+    specialties: [],
+    thumbnailUrl: "/images/templates/custom.jpg",
+    contactName: "Salon Owner",
+    contactEmail: "your@email.com",
+    contactPhone: "Your phone number"
+  }
 };
 
-export const getJobTemplate = (type: IndustryType): JobTemplate => {
-  return templates[type] || customTemplate;
-};
-
-export const getAllTemplates = (): Record<IndustryType, JobTemplate> => {
-  return templates;
-};
-
-export default {
-  getJobTemplate,
-  getAllTemplates
+// Function to get a job template by type
+export const getJobTemplate = (type: JobTemplateType): JobTemplate => {
+  return jobTemplates[type] || jobTemplates.custom;
 };
