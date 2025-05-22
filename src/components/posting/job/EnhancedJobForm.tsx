@@ -40,14 +40,16 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
     contactName: defaultValues.contactName || '',
     contactPhone: defaultValues.contactPhone || '',
     industryType: defaultValues.industryType || initialIndustryType || '',
-    jobType: defaultValues.jobType || '',
+    // Use undefined instead of empty string for jobType to match Enum type
+    jobType: defaultValues.jobType || undefined,
     compensation_type: defaultValues.compensation_type || '',
     compensation_details: defaultValues.compensation_details || '',
-    weekly_pay: defaultValues.weekly_pay || '',
-    has_housing: defaultValues.has_housing || false,
-    has_wax_room: defaultValues.has_wax_room || false,
-    owner_will_train: defaultValues.owner_will_train || false,
-    no_supply_deduction: defaultValues.no_supply_deduction || false,
+    weekly_pay: defaultValues.weekly_pay || false,
+    // Ensure boolean values are properly typed
+    has_housing: Boolean(defaultValues.has_housing),
+    has_wax_room: Boolean(defaultValues.has_wax_room),
+    owner_will_train: Boolean(defaultValues.owner_will_train),
+    no_supply_deduction: Boolean(defaultValues.no_supply_deduction),
     specialties: defaultValues.specialties || [],
   };
 
