@@ -10,7 +10,6 @@ import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { PricingOptions } from '@/utils/posting/types';
-import MobileMenu from '@/components/layout/navbar/MobileMenu';
 
 const JobPost = () => {
   const navigate = useNavigate();
@@ -96,7 +95,7 @@ const JobPost = () => {
           onSubmit={handleSubmit}
           onStepChange={handleStepChange}
           maxPhotos={5}
-          defaultValues={defaultFormValues}
+          defaultFormValues={defaultFormValues}
         />
       </Card>
     </PostWizardLayout>

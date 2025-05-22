@@ -47,6 +47,7 @@ function App() {
                 <RouteLogger />
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
+                    {/* All routes now use the Layout component with unified mobile navigation */}
                     {/* Add our custom fallback for the checkout route */}
                     <Route path="/checkout" element={<CheckoutFallback />} />
                     

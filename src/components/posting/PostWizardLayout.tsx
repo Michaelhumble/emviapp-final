@@ -1,55 +1,89 @@
 
-import React, { ReactNode } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import MobilePostMenu from '@/components/posting/MobilePostMenu';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import EmviLogo from '@/components/branding/EmviLogo';
+import { Progress } from '@/components/ui/progress';
+import MobileMenu from '@/components/layout/MobileMenu';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PostWizardLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
   currentStep: number;
   totalSteps: number;
 }
 
-const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({ children, currentStep, totalSteps }) => {
+const PostWizardLayout: React.FC<PostWizardLayoutProps> = ({
+  children,
+  currentStep,
+  totalSteps,
+}) => {
   const navigate = useNavigate();
-
-  const handleGoBack = () => {
-    navigate(-1);
+  const { t } = useTranslation();
+  
+  const progress = (currentStep / totalSteps) * 100;
+  
+  const handleBack = () => {
+    if (currentStep === 1) {
+      navigate('/dashboard');
+    } else {
+      // Navigate back handled by the form component
+      window.history.back();
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50/30 to-white">
-      <div className="px-4 py-3 border-b bg-white fixed top-0 left-0 right-0 z-50 flex items-center justify-between shadow-sm">
-        <button 
-          onClick={handleGoBack}
-          className="text-gray-700 flex items-center text-sm"
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back
-        </button>
-        <div className="text-center font-medium text-sm">
-          Step {currentStep} of {totalSteps}
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b sticky top-0 z-10">
+        <div className="container max-w-6xl mx-auto">
+          <div className="flex items-center justify-between h-16 px-4">
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="mr-2 lg:mr-4" 
+                onClick={handleBack} 
+                aria-label="Back"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              
+              <EmviLogo size="small" showText={true} />
+            </div>
+            
+            <div className="flex items-center gap-2">
+              {/* Always show mobile menu hamburger */}
+              <MobileMenu />
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <Progress value={progress} className="h-1 rounded-none" />
         </div>
-        <div className="flex items-center">
-          <MobilePostMenu />
-        </div>
-      </div>
+      </header>
       
-      <div className="container max-w-3xl mx-auto pt-20 pb-16 px-4">
-        <div className="my-4">
-          <h1 className="text-2xl font-playfair font-semibold text-gray-900 mb-2">Create Job Posting</h1>
-          <p className="text-gray-600">Fill out the details of your job posting.</p>
+      {/* Main content */}
+      <div className="flex-grow">
+        <div className="container max-w-6xl mx-auto py-6 px-4 md:py-8">
+          <div className="mb-6">
+            <h1 className="text-2xl font-medium mb-1">
+              {t({
+                english: 'Post a Job',
+                vietnamese: 'Đăng tin tuyển dụng'
+              })}
+            </h1>
+            <p className="text-gray-600">
+              {t({
+                english: `Step ${currentStep} of ${totalSteps}`,
+                vietnamese: `Bước ${currentStep} của ${totalSteps}`
+              })}
+            </p>
+          </div>
+          
+          {children}
         </div>
-        
-        {/* Progress indicator */}
-        <div className="w-full bg-gray-200 h-1.5 rounded-full mb-8 overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-purple-600 to-pink-500" 
-            style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-          ></div>
-        </div>
-        
-        {children}
       </div>
     </div>
   );

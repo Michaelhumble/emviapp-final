@@ -22,14 +22,14 @@ interface EnhancedJobFormProps {
   onSubmit: (data: JobFormValues, uploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
   onStepChange: (step: number) => void;
   maxPhotos?: number;
-  defaultValues?: Partial<JobFormValues>;
+  defaultFormValues?: Partial<JobFormValues>;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ 
   onSubmit, 
   onStepChange, 
   maxPhotos = 5,
-  defaultValues = {}
+  defaultFormValues = {}
 }) => {
   // Initialize the form with default values including salonName
   const form = useForm<JobFormValues>({
@@ -50,7 +50,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       no_supply_deduction: false,
       salary_range: '',
       experience_level: '',
-      ...defaultValues, // Override with any provided defaultValues
+      ...defaultFormValues, // Override with any provided defaultValues
     },
   });
 
