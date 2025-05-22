@@ -3,32 +3,32 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { jobFormSchema, JobFormValues, IndustryType } from './jobFormSchema';
+import { PricingOptions } from '@/utils/posting/types';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import JobTemplateSelector from './JobTemplateSelector';
 import JobDetailsSection from '../sections/JobDetailsSection';
 import ContactInfoSection from '../sections/ContactInfoSection';
 import RequirementsSection from '../sections/RequirementsSection';
 import SpecialtiesSection from '../sections/SpecialtiesSection';
-import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
 import PhotoUpload from '../sections/PhotoUpload';
 import PricingSection from '../sections/PricingSection';
-import JobSummary from '../JobSummary';
-import JobTemplateSelector from './JobTemplateSelector';
+import JobSummary from './JobSummary';
+import { useToast } from '@/hooks/use-toast';
 import { getJobTemplate } from '@/utils/jobs/jobTemplates';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
 
 interface EnhancedJobFormProps {
-  onSubmit: (data: JobFormValues, photos: File[], pricing: PricingOptions) => void;
+  onSubmit: (data: JobFormValues, photos: File[], pricingOptions: PricingOptions) => void;
+  defaultValues?: Partial<JobFormValues>;
 }
 
-const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
-  const [selectedTab, setSelectedTab] = useState<string>('template');
+const EnhancedJobForm = ({ onSubmit, defaultValues = {} }: EnhancedJobFormProps) => {
+  const { toast } = useToast();
+  const [step, setStep] = useState<number>(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [expressMode, setExpressMode] = useState<boolean>(true);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'standard' as JobPricingTier,
+    selectedPricingTier: 'standard',
     durationMonths: 1,
     autoRenew: false,
   });
@@ -36,197 +36,203 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ onSubmit }) => {
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      title: '',
       salonName: '',
+      title: '',
       description: '',
       vietnameseDescription: '',
       location: '',
+      specialties: [],
+      requirements: [],
       jobType: 'full-time',
-      compensation_type: 'hourly',
-      compensation_details: '',
-      weekly_pay: false,
+      contactName: '',
+      contactEmail: '',
+      contactPhone: '',
       has_housing: false,
       has_wax_room: false,
       owner_will_train: false,
       no_supply_deduction: false,
-      contactName: '',
-      contactEmail: '',
-      contactPhone: '',
-      specialties: [],
-      requirements: [],
-    }
+      salary_range: '',
+      experience_level: '',
+      ...defaultValues,
+    },
   });
 
   const handleTemplateSelect = (template: JobFormValues, templateType: IndustryType) => {
-    // Get the full template data
-    const fullTemplate = getJobTemplate(templateType);
-    
-    // Pre-populate the form with the template data
-    form.reset({
-      title: fullTemplate.title,
-      salonName: fullTemplate.salonName,
-      description: fullTemplate.description,
-      vietnameseDescription: fullTemplate.vietnameseDescription,
-      location: fullTemplate.location,
-      jobType: fullTemplate.jobType,
-      compensation_type: fullTemplate.compensation_type,
-      compensation_details: fullTemplate.compensation_details,
-      weekly_pay: fullTemplate.weekly_pay,
-      has_housing: fullTemplate.has_housing,
-      has_wax_room: fullTemplate.has_wax_room,
-      owner_will_train: fullTemplate.owner_will_train,
-      no_supply_deduction: fullTemplate.no_supply_deduction,
-      salary_range: fullTemplate.salary_range,
-      experience_level: fullTemplate.experience_level,
-      contactName: fullTemplate.contactName,
-      contactEmail: fullTemplate.contactEmail,
-      contactPhone: fullTemplate.contactPhone,
-      requirements: fullTemplate.requirements,
-      specialties: fullTemplate.specialties,
-      industry: templateType,
-      templateType: templateType
-    });
-    
-    // Move to the details tab
-    setSelectedTab('details');
+    console.log('Template selected:', templateType);
+    form.reset(template);
+    setStep(2);
   };
 
-  const onPricingChange = (options: PricingOptions) => {
+  const handlePricingChange = (options: PricingOptions) => {
     setPricingOptions(options);
   };
-  
-  const handleFormSubmit = (data: JobFormValues) => {
-    setShowConfetti(true);
-    onSubmit(data, photoUploads, pricingOptions);
-    
-    // Reset confetti after animation
-    setTimeout(() => {
-      setShowConfetti(false);
-    }, 3000);
+
+  const handleToggleExpressMode = () => {
+    setExpressMode(!expressMode);
   };
 
-  return (
-    <div className="w-full">
-      {showConfetti && <ConfettiExplosion duration={3000} />}
-      
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid grid-cols-5 mb-8">
-          <TabsTrigger value="template">Template</TabsTrigger>
-          <TabsTrigger value="details">Job Details</TabsTrigger>
-          <TabsTrigger value="requirements">Requirements</TabsTrigger>
-          <TabsTrigger value="photos">Photos</TabsTrigger>
-          <TabsTrigger value="preview">Preview & Publish</TabsTrigger>
-        </TabsList>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-            <TabsContent value="template" className="mt-0">
-              <JobTemplateSelector onSelect={handleTemplateSelect} />
-            </TabsContent>
-            
-            <TabsContent value="details" className="mt-0 space-y-8">
+  const goToStep = (nextStep: number) => {
+    setStep(nextStep);
+    window.scrollTo(0, 0);
+  };
+
+  const handleSubmit = (data: JobFormValues) => {
+    console.log('Form data submitted:', data);
+    console.log('Photos:', photoUploads);
+    console.log('Pricing options:', pricingOptions);
+    
+    toast({
+      title: "Success!",
+      description: "Your job posting has been created and is now live.",
+    });
+    
+    onSubmit(data, photoUploads, pricingOptions);
+  };
+
+  // Define the steps for the form
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return <JobTemplateSelector onSelect={handleTemplateSelect} />;
+      case 2:
+        if (expressMode) {
+          // Express mode - all sections in one page
+          return (
+            <div className="space-y-10">
               <JobDetailsSection 
-                form={form} 
-                onNext={() => setSelectedTab('requirements')} 
-                onPrevious={() => setSelectedTab('template')} 
+                form={form}
               />
-              
-              <ContactInfoSection 
-                form={form} 
-                onNext={() => setSelectedTab('requirements')} 
-                onPrevious={() => setSelectedTab('template')} 
-              />
-            </TabsContent>
-            
-            <TabsContent value="requirements" className="mt-0 space-y-8">
               <RequirementsSection 
-                form={form} 
-                onNext={() => setSelectedTab('photos')} 
-                onPrevious={() => setSelectedTab('details')} 
+                form={form}
               />
-              
               <SpecialtiesSection 
-                form={form} 
-                onNext={() => setSelectedTab('photos')} 
-                onPrevious={() => setSelectedTab('details')} 
+                form={form}
               />
-              
-              <IndustrySpecialtiesSection 
-                form={form} 
-                onNext={() => setSelectedTab('photos')} 
-                onPrevious={() => setSelectedTab('details')} 
+              <ContactInfoSection 
+                form={form}
               />
-              
-              <div className="flex justify-between">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setSelectedTab('details')}
-                >
-                  Previous
-                </Button>
-                <Button 
-                  type="button"
-                  onClick={() => setSelectedTab('photos')}
-                >
-                  Next
-                </Button>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="photos" className="mt-0">
               <PhotoUpload 
                 photoUploads={photoUploads} 
                 setPhotoUploads={setPhotoUploads} 
-                maxPhotos={5} 
+                onNext={() => goToStep(3)}
+                onPrevious={() => goToStep(1)}
               />
-              
-              <div className="flex justify-between mt-8">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setSelectedTab('requirements')}
-                >
-                  Previous
-                </Button>
-                <Button 
-                  type="button"
-                  onClick={() => setSelectedTab('preview')}
-                >
-                  Next
-                </Button>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="preview" className="mt-0 space-y-8">
               <PricingSection 
-                onPricingChange={onPricingChange} 
-                pricingOptions={pricingOptions}
+                onPricingChange={handlePricingChange} 
+                pricingOptions={pricingOptions} 
                 setPricingOptions={setPricingOptions}
               />
               
-              <JobSummary 
-                formValues={form.getValues()} 
-                photos={photoUploads} 
-              />
-              
-              <div className="flex justify-between">
+              <div className="flex justify-between pt-6 border-t">
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={() => setSelectedTab('photos')}
+                  onClick={() => goToStep(1)}
                 >
-                  Previous
+                  Back to Templates
                 </Button>
-                <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                  Publish Job Post
+                <Button 
+                  type="button" 
+                  onClick={() => goToStep(3)}
+                >
+                  Preview Post
                 </Button>
               </div>
-            </TabsContent>
-          </form>
-        </Form>
-      </Tabs>
-    </div>
+            </div>
+          );
+        } else {
+          // Step by step mode - job details
+          return (
+            <JobDetailsSection 
+              form={form} 
+              onNext={() => goToStep(3)} 
+              onPrevious={() => goToStep(1)}
+            />
+          );
+        }
+      case 3:
+        if (expressMode) {
+          // Express mode - preview job post
+          return (
+            <JobSummary 
+              formData={form.getValues()}
+              photos={photoUploads}
+              pricingOptions={pricingOptions}
+              onEdit={() => goToStep(2)}
+              onSubmit={handleSubmit}
+            />
+          );
+        } else {
+          // Step by step mode - requirements
+          return (
+            <RequirementsSection 
+              form={form} 
+              onNext={() => goToStep(4)} 
+              onPrevious={() => goToStep(2)}
+            />
+          );
+        }
+      case 4:
+        // Step by step mode - specialties
+        return (
+          <SpecialtiesSection 
+            form={form} 
+            onNext={() => goToStep(5)} 
+            onPrevious={() => goToStep(3)}
+          />
+        );
+      case 5:
+        // Step by step mode - contact info
+        return (
+          <ContactInfoSection 
+            form={form} 
+            onNext={() => goToStep(6)} 
+            onPrevious={() => goToStep(4)}
+          />
+        );
+      case 6:
+        // Step by step mode - photo upload
+        return (
+          <PhotoUpload 
+            photoUploads={photoUploads} 
+            setPhotoUploads={setPhotoUploads} 
+            onNext={() => goToStep(7)}
+            onPrevious={() => goToStep(5)}
+          />
+        );
+      case 7:
+        // Step by step mode - pricing
+        return (
+          <PricingSection 
+            onPricingChange={handlePricingChange} 
+            pricingOptions={pricingOptions} 
+            setPricingOptions={setPricingOptions}
+            onNext={() => goToStep(8)}
+            onPrevious={() => goToStep(6)}
+          />
+        );
+      case 8:
+        // Step by step mode - preview job post
+        return (
+          <JobSummary 
+            formData={form.getValues()}
+            photos={photoUploads}
+            pricingOptions={pricingOptions}
+            onEdit={() => goToStep(2)}
+            onSubmit={handleSubmit}
+          />
+        );
+      default:
+        return <JobTemplateSelector onSelect={handleTemplateSelect} />;
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        {renderStep()}
+      </form>
+    </Form>
   );
 };
 

@@ -3,10 +3,9 @@ import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Control, UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { JobFormValues } from '../job/jobFormSchema';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { JobFormValues } from '../job/jobFormSchema';
 
 export interface JobDetailsSectionProps {
   control?: Control<JobFormValues>;
@@ -15,12 +14,7 @@ export interface JobDetailsSectionProps {
   onPrevious?: () => void;
 }
 
-const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ 
-  control, 
-  form,
-  onNext,
-  onPrevious 
-}) => {
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control, form, onNext, onPrevious }) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
@@ -33,27 +27,8 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
     <div className="space-y-6">
       <div className="border-b pb-4">
         <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Details</h2>
-        <p className="text-sm text-muted-foreground mt-1">Tell us about the position</p>
+        <p className="text-sm text-muted-foreground mt-1">Tell us about the position you're posting</p>
       </div>
-      
-      {/* Job Title */}
-      <FormField
-        control={formControl}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-gray-900 font-medium">Job Title <span className="text-red-500">*</span></FormLabel>
-            <FormControl>
-              <Input
-                placeholder="e.g. Nail Technician, Hair Stylist, Manager"
-                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
       
       {/* Salon Name */}
       <FormField
@@ -64,7 +39,26 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
             <FormLabel className="text-gray-900 font-medium">Salon Name <span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <Input
-                placeholder="Name of your salon or business"
+                placeholder="Enter the name of your salon or business"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Job Title */}
+      <FormField
+        control={formControl}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Job Title <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input
+                placeholder="e.g. Nail Technician, Hair Stylist, etc."
                 className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
                 {...field}
               />
@@ -100,10 +94,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Job Type</FormLabel>
-            <Select
-              defaultValue={field.value}
-              onValueChange={field.onChange}
-            >
+            <Select defaultValue={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500">
                   <SelectValue placeholder="Select job type" />
@@ -128,8 +119,8 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Compensation Type</FormLabel>
-            <Select
-              defaultValue={field.value}
+            <Select 
+              defaultValue={field.value} 
               onValueChange={field.onChange}
             >
               <FormControl>
@@ -138,12 +129,31 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="hourly">Hourly</SelectItem>
+                <SelectItem value="hourly">Hourly Rate</SelectItem>
                 <SelectItem value="commission">Commission</SelectItem>
                 <SelectItem value="salary">Salary</SelectItem>
-                <SelectItem value="hybrid">Hybrid</SelectItem>
+                <SelectItem value="hybrid">Hybrid (Hourly + Commission)</SelectItem>
               </SelectContent>
             </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Salary Range */}
+      <FormField
+        control={formControl}
+        name="salary_range"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Salary/Pay Range</FormLabel>
+            <FormControl>
+              <Input
+                placeholder="e.g. $800-1200/week, $20-25/hour, etc."
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
@@ -157,9 +167,9 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Compensation Details</FormLabel>
             <FormControl>
-              <Textarea
-                placeholder="Provide details about pay, commission structure, benefits, etc."
-                className="min-h-[100px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+              <Input
+                placeholder="e.g. 60% commission, Base + Commission, etc."
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
                 {...field}
               />
             </FormControl>
@@ -168,7 +178,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
         )}
       />
       
-      {/* Job Description */}
+      {/* Description */}
       <FormField
         control={formControl}
         name="description"
@@ -177,7 +187,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
             <FormLabel className="text-gray-900 font-medium">Job Description <span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Describe the job responsibilities, expectations, and qualifications"
+                placeholder="Describe the position, responsibilities, requirements, and what makes your salon special"
                 className="min-h-[150px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
                 {...field}
               />
@@ -196,7 +206,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
             <FormLabel className="text-gray-900 font-medium">Vietnamese Description (Optional)</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Mô tả công việc bằng tiếng Việt"
+                placeholder="Mô tả công việc bằng tiếng Việt (tùy chọn)"
                 className="min-h-[150px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
                 {...field}
               />
@@ -206,24 +216,25 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
         )}
       />
       
-      {/* Perks/Benefits Checkboxes */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-gray-800">Additional Benefits</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Benefits Checkboxes */}
+      <div className="space-y-4 border-t pt-6">
+        <h3 className="font-medium text-gray-900">Benefits & Features</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={formControl}
             name="weekly_pay"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onChange={field.onChange}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Weekly Pay</FormLabel>
-                </div>
+                <FormLabel className="text-sm font-normal">Weekly Pay</FormLabel>
               </FormItem>
             )}
           />
@@ -232,16 +243,16 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
             control={formControl}
             name="has_housing"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onChange={field.onChange}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Housing Provided</FormLabel>
-                </div>
+                <FormLabel className="text-sm font-normal">Housing Available</FormLabel>
               </FormItem>
             )}
           />
@@ -250,16 +261,16 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
             control={formControl}
             name="has_wax_room"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onChange={field.onChange}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Wax Room Available</FormLabel>
-                </div>
+                <FormLabel className="text-sm font-normal">Wax Room Available</FormLabel>
               </FormItem>
             )}
           />
@@ -268,16 +279,16 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
             control={formControl}
             name="owner_will_train"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onChange={field.onChange}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Owner Will Train</FormLabel>
-                </div>
+                <FormLabel className="text-sm font-normal">Owner Will Train</FormLabel>
               </FormItem>
             )}
           />
@@ -286,22 +297,23 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({
             control={formControl}
             name="no_supply_deduction"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onChange={field.onChange}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>No Supply Deduction</FormLabel>
-                </div>
+                <FormLabel className="text-sm font-normal">No Supply Deduction</FormLabel>
               </FormItem>
             )}
           />
         </div>
       </div>
       
+      {/* Navigation buttons */}
       <div className="flex justify-between">
         {onPrevious && (
           <button
