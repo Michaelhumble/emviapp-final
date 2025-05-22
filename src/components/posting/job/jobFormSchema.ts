@@ -1,35 +1,33 @@
 
 import { z } from 'zod';
 
-// Define the experience level options as a union type to ensure type safety
-export type ExperienceLevelType = 'entry' | 'intermediate' | 'experienced' | 'senior';
-export type JobTypeOption = 'full-time' | 'part-time' | 'contract' | 'temporary' | 'commission';
-export type IndustryType = "nail" | "hair" | "spa" | "barber" | "massage" | "tattoo" | "makeup" | "booth" | "other";
-
-// Define the job form schema using Zod
 export const jobFormSchema = z.object({
-  title: z.string().min(5, 'Title must be at least 5 characters'),
-  description: z.string().min(20, 'Description must be at least 20 characters').optional(),
+  salonName: z.string().min(2, { message: 'Salon name is required' }),
+  title: z.string().min(2, { message: 'Job title is required' }),
+  description: z.string().min(10, { message: 'Description must be at least 10 characters' }),
   vietnameseDescription: z.string().optional(),
-  location: z.string().min(2, 'Location is required'),
-  compensation_details: z.string().optional(),
-  salary_range: z.string().optional(),
-  jobType: z.enum(['full-time', 'part-time', 'contract', 'temporary', 'commission']).optional(),
-  compensation_type: z.string().optional(),
-  experience_level: z.enum(['entry', 'intermediate', 'experienced', 'senior']).optional(),
-  contactEmail: z.string().email('Please enter a valid email address'),
-  contactName: z.string().optional(),
-  contactPhone: z.string().optional(),
-  weekly_pay: z.boolean().optional(),
-  has_housing: z.boolean().optional(),
-  has_wax_room: z.boolean().optional(),
-  owner_will_train: z.boolean().optional(),
-  no_supply_deduction: z.boolean().optional(),
-  requirements: z.array(z.string()).default([]),
+  location: z.string().min(2, { message: 'Location is required' }),
+  jobType: z.enum(['full-time', 'part-time', 'contract', 'temporary']).optional(),
+  
+  // Ensure these are always arrays
   specialties: z.array(z.string()).default([]),
-  templateType: z.string().optional(),
-  salonName: z.string().min(2, 'Salon name is required')
+  requirements: z.array(z.string()).default([]),
+  
+  // Contact information
+  contactName: z.string().min(2, { message: 'Contact name is required' }),
+  contactEmail: z.string().email({ message: 'Valid email is required' }),
+  contactPhone: z.string().optional(),
+  
+  // Compensation details
+  compensation_type: z.enum(['hourly', 'commission', 'salary', 'booth-rental']).optional(),
+  compensation_details: z.string().optional(),
+  weekly_pay: z.string().optional(),
+  
+  // Additional job features
+  has_housing: z.boolean().default(false),
+  has_wax_room: z.boolean().default(false),
+  owner_will_train: z.boolean().default(false),
+  no_supply_deduction: z.boolean().default(false),
 });
 
-// Define the type for the form values based on the schema
 export type JobFormValues = z.infer<typeof jobFormSchema>;

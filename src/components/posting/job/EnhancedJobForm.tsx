@@ -7,7 +7,6 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import ContactInfoSection from '../sections/ContactInfoSection';
 import JobDetailsSection from '../sections/JobDetailsSection';
-import RequirementsSection from '../sections/RequirementsSection';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -15,7 +14,6 @@ import { toast } from 'sonner';
 import UploadSection from '../sections/UploadSection';
 import PricingSection from '../sections/PricingSection';
 import JobTemplateSelector from './JobTemplateSelector';
-import IndustrySpecialtiesSection from '../sections/IndustrySpecialtiesSection';
 import SpecialtiesRequirementsSection from '../sections/SpecialtiesRequirementsSection';
 import { JobTemplateType } from '@/utils/jobs/jobTemplates';
 import { PricingOptions } from '@/utils/posting/types';
@@ -46,6 +44,10 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
       contactPhone: '',
       requirements: [],
       specialties: [],
+      has_housing: false,
+      has_wax_room: false,
+      owner_will_train: false,
+      no_supply_deduction: false,
       ...defaultValues, // Override with any provided defaultValues
     },
   });
