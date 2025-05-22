@@ -14,16 +14,36 @@ interface JobPostWrapperProps {
   onBack: () => void;
 }
 
-// Helper function to validate job details
-const validateJobDetails = (details: JobDetailsSubmission): boolean => {
-  const requiredFields: (keyof JobDetailsSubmission)[] = [
-    'title', 'description', 'location', 'company', 'jobType'
-  ];
+// Validate required fields in job details
+const validateJobDetails = (details: JobDetailsSubmission): { valid: boolean; errors: string[] } => {
+  const errors: string[] = [];
   
-  return requiredFields.every(field => {
-    const value = details[field];
-    return value !== undefined && value !== null && value !== '';
-  });
+  // Check required fields
+  if (!details.title || details.title.trim() === '') errors.push('Job title is required');
+  if (!details.description || details.description.trim() === '') errors.push('Job description is required');
+  if (!details.location || details.location.trim() === '') errors.push('Location is required');
+  if ((!details.company && !details.salonName) || 
+      ((details.company?.trim() === '') && (details.salonName?.trim() === ''))) {
+    errors.push('Salon name is required');
+  }
+  if (!details.jobType) errors.push('Job type is required');
+  
+  // Check contact info
+  if (!details.contact_info) {
+    errors.push('Contact information is required');
+  } else {
+    if (!details.contact_info.owner_name || details.contact_info.owner_name.trim() === '') 
+      errors.push('Contact name is required');
+    if (!details.contact_info.phone || details.contact_info.phone.trim() === '') 
+      errors.push('Contact phone is required');
+    if (!details.contact_info.email || details.contact_info.email.trim() === '') 
+      errors.push('Contact email is required');
+  }
+  
+  return { 
+    valid: errors.length === 0,
+    errors 
+  };
 };
 
 export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({ jobDetails, onBack }) => {
@@ -35,8 +55,9 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({ jobDetails, onBa
   
   // Validate job details when component mounts
   useEffect(() => {
-    if (!validateJobDetails(jobDetails)) {
-      toast.error("Missing required job details. Please complete the form.");
+    const { valid, errors } = validateJobDetails(jobDetails);
+    if (!valid) {
+      toast.error("Please fix the following issues: " + errors.join(", "));
       onBack(); // Return to form if validation fails
     }
   }, [jobDetails, onBack]);
@@ -53,6 +74,14 @@ export const JobPostWrapper: React.FC<JobPostWrapperProps> = ({ jobDetails, onBa
   const handleProceedToPayment = async () => {
     if (!pricingOptions) {
       toast.error("Please select a pricing option first");
+      return;
+    }
+
+    // Final validation check before payment
+    const { valid, errors } = validateJobDetails(jobDetails);
+    if (!valid) {
+      toast.error("Please fix the following issues: " + errors.join(", "));
+      onBack();
       return;
     }
 
