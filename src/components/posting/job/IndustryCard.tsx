@@ -2,13 +2,13 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
-import * as LucideIcons from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 export interface IndustryCardProps {
   id: string;
   title: string;
   description: string;
-  icon: keyof typeof LucideIcons;
+  icon: LucideIcon; // Now accepting a Lucide icon component directly
   selected?: boolean;
   onClick: (id: string) => void;
 }
@@ -17,12 +17,10 @@ const IndustryCard: React.FC<IndustryCardProps> = ({
   id, 
   title, 
   description, 
-  icon,
+  icon: IconComponent, // Renamed for clarity
   selected = false,
   onClick
 }) => {
-  const Icon = LucideIcons[icon] || LucideIcons.CircleDashed;
-  
   return (
     <Card 
       onClick={() => onClick(id)}
@@ -38,7 +36,7 @@ const IndustryCard: React.FC<IndustryCardProps> = ({
           "w-12 h-12 rounded-full flex items-center justify-center",
           selected ? "bg-primary/20" : "bg-primary/10"
         )}>
-          <Icon size={24} className={cn("text-primary")} />
+          <IconComponent size={24} className={cn("text-primary")} />
         </div>
         
         <h3 className="text-lg font-semibold">{title}</h3>
