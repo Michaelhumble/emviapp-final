@@ -1,14 +1,10 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { Badge } from '@/components/ui/badge';
-import { Share2, PenLine, CheckCircle, MapPin, Briefcase, DollarSign, User, Mail, Phone, TrendingUp } from 'lucide-react';
+import { JobFormValues } from './job/jobFormSchema';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MobileButton } from '@/components/ui/mobile-button';
-import { JobSpecialties } from '@/components/jobs/card-sections/JobSpecialties';
-import { JobFeatures } from '@/components/jobs/card-sections/JobFeatures';
-import { cn } from '@/lib/utils';
+import { Edit, Share2, MapPin, FileText, Briefcase, Phone, Mail, Calendar } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JobPreviewProps {
   jobData: JobFormValues;
@@ -21,180 +17,191 @@ const JobPreview: React.FC<JobPreviewProps> = ({
   jobData,
   onEdit,
   onPublish,
-  isPublishing = false,
+  isPublishing = false
 }) => {
-  // Define sections for quick editing
+  const { t } = useTranslation();
+  
   const sections = [
-    { id: 'title', label: 'Job Title & Description', icon: <PenLine className="h-4 w-4 mr-2" /> },
-    { id: 'location', label: 'Location', icon: <MapPin className="h-4 w-4 mr-2" /> },
-    { id: 'compensation', label: 'Compensation', icon: <DollarSign className="h-4 w-4 mr-2" /> },
-    { id: 'contact', label: 'Contact Info', icon: <Mail className="h-4 w-4 mr-2" /> },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <Card className="bg-white shadow-md rounded-lg overflow-hidden border-t-4 border-t-primary">
-        <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 pb-2">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-lg font-semibold text-gray-700">Preview Your Job Post</h2>
-            <Badge className="bg-blue-100 text-blue-700">Preview</Badge>
-          </div>
-          <p className="text-sm text-gray-600">
-            This is how your job post will appear to potential applicants.
-            Tap any section to edit.
-          </p>
-        </CardHeader>
-        
-        <CardContent className="p-0">
-          {/* The job preview */}
-          <div className="p-5 border-b">
-            <div 
-              className="mb-5 hover:bg-gray-50 p-2 rounded-md cursor-pointer transition-colors"
-              onClick={() => onEdit('title')}
-            >
-              <div className="flex justify-between">
-                <h3 className="text-xl font-semibold text-gray-800">{jobData.title || "Job Title"}</h3>
-                <PenLine className="h-4 w-4 text-gray-400" />
-              </div>
-              <div className="flex items-center gap-2 mt-1 mb-3">
-                <Briefcase className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">{jobData.jobType || "Full-time"}</span>
-              </div>
-              <p className="text-gray-700">
-                {jobData.description || "No description provided."}
-              </p>
-            </div>
-            
-            <div 
-              className="mb-5 hover:bg-gray-50 p-2 rounded-md cursor-pointer transition-colors"
-              onClick={() => onEdit('location')}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <MapPin className="h-4 w-4 text-gray-500 mr-2" />
-                  <span className="text-gray-700">{jobData.location || "Location"}</span>
-                </div>
-                <PenLine className="h-4 w-4 text-gray-400" />
-              </div>
-            </div>
-            
-            {/* Job Features */}
-            <div 
-              className="mb-5 hover:bg-gray-50 p-2 rounded-md cursor-pointer transition-colors"
-              onClick={() => onEdit('features')}
-            >
-              <JobFeatures 
-                weeklyPay={!!jobData.weekly_pay} 
-                ownerWillTrain={!!jobData.owner_will_train}
-                hasHousing={!!jobData.has_housing}
-                noSupplyDeduction={!!jobData.no_supply_deduction}
-              />
-            </div>
-            
-            {/* Specialties */}
-            {jobData.specialties && jobData.specialties.length > 0 && (
-              <div 
-                className="mb-5 hover:bg-gray-50 p-2 rounded-md cursor-pointer transition-colors"
-                onClick={() => onEdit('specialties')}
-              >
-                <JobSpecialties specialties={jobData.specialties} />
-              </div>
-            )}
-            
-            {/* Compensation */}
-            <div 
-              className="mb-5 hover:bg-gray-50 p-2 rounded-md cursor-pointer transition-colors"
-              onClick={() => onEdit('compensation')}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <h4 className="font-medium text-gray-700">Compensation</h4>
-                <PenLine className="h-4 w-4 text-gray-400" />
-              </div>
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-green-500" />
-                <span className="text-gray-700">
-                  {jobData.compensation_details || jobData.salary_range || "Not specified"}
-                </span>
-              </div>
-            </div>
-            
-            {/* Contact Info */}
-            <div 
-              className="mb-2 hover:bg-gray-50 p-2 rounded-md cursor-pointer transition-colors"
-              onClick={() => onEdit('contact')}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <h4 className="font-medium text-gray-700">Contact Information</h4>
-                <PenLine className="h-4 w-4 text-gray-400" />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700">{jobData.contactName || "No name provided"}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700">{jobData.contactEmail || "No email provided"}</span>
-                </div>
-                {jobData.contactPhone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-gray-500" />
-                    <span className="text-gray-700">{jobData.contactPhone}</span>
-                  </div>
-                )}
-              </div>
+    {
+      id: 'basics',
+      title: t({ english: 'Basic Information', vietnamese: 'Thông tin cơ bản' }),
+      content: (
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="mt-1 text-gray-500"><Briefcase size={18} /></div>
+            <div>
+              <h4 className="font-medium text-gray-900">
+                {t({ english: 'Job Type', vietnamese: 'Loại công việc' })}
+              </h4>
+              <p>{jobData.jobType || '-'}</p>
             </div>
           </div>
           
-          {/* Quick Edit Sections */}
-          <div className="bg-gray-50 p-4 space-y-3">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Quick Edit</h4>
-            <div className="grid grid-cols-2 gap-2">
-              {sections.map((section) => (
-                <Button
-                  key={section.id}
-                  variant="outline"
-                  className="h-auto py-2 px-3 text-left flex items-center justify-start"
-                  onClick={() => onEdit(section.id)}
+          <div className="flex items-start gap-3">
+            <div className="mt-1 text-gray-500"><MapPin size={18} /></div>
+            <div>
+              <h4 className="font-medium text-gray-900">
+                {t({ english: 'Location', vietnamese: 'Địa điểm' })}
+              </h4>
+              <p>{jobData.location || '-'}</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start gap-3">
+            <div className="mt-1 text-gray-500"><Calendar size={18} /></div>
+            <div>
+              <h4 className="font-medium text-gray-900">
+                {t({ english: 'Experience Level', vietnamese: 'Cấp độ kinh nghiệm' })}
+              </h4>
+              <p>{jobData.experience_level || '-'}</p>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'description',
+      title: t({ english: 'Job Description', vietnamese: 'Mô tả công việc' }),
+      content: (
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="mt-1 text-gray-500"><FileText size={18} /></div>
+            <div>
+              <h4 className="font-medium text-gray-900">
+                {t({ english: 'Description', vietnamese: 'Mô tả' })}
+              </h4>
+              <p className="whitespace-pre-wrap">{jobData.description || '-'}</p>
+            </div>
+          </div>
+          
+          {jobData.vietnameseDescription && (
+            <div className="flex items-start gap-3 mt-6 pt-6 border-t">
+              <div className="mt-1 text-gray-500"><FileText size={18} /></div>
+              <div>
+                <h4 className="font-medium text-gray-900">
+                  {t({ english: 'Vietnamese Description', vietnamese: 'Mô tả Tiếng Việt' })}
+                </h4>
+                <p className="whitespace-pre-wrap">{jobData.vietnameseDescription}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'contact',
+      title: t({ english: 'Contact Information', vietnamese: 'Thông tin liên hệ' }),
+      content: (
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="mt-1 text-gray-500"><Briefcase size={18} /></div>
+            <div>
+              <h4 className="font-medium text-gray-900">
+                {t({ english: 'Salon Name', vietnamese: 'Tên Salon' })}
+              </h4>
+              <p>{jobData.salonName || '-'}</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start gap-3">
+            <div className="mt-1 text-gray-500"><Phone size={18} /></div>
+            <div>
+              <h4 className="font-medium text-gray-900">
+                {t({ english: 'Phone', vietnamese: 'Số điện thoại' })}
+              </h4>
+              <p>{jobData.contactPhone || '-'}</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start gap-3">
+            <div className="mt-1 text-gray-500"><Mail size={18} /></div>
+            <div>
+              <h4 className="font-medium text-gray-900">
+                {t({ english: 'Email', vietnamese: 'Email' })}
+              </h4>
+              <p>{jobData.contactEmail || '-'}</p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle>
+            {t({ english: 'Job Post Preview', vietnamese: 'Xem trước tin tuyển dụng' })}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {t({
+              english: 'Review your job posting before publishing',
+              vietnamese: 'Xem lại tin tuyển dụng trước khi đăng'
+            })}
+          </p>
+        </CardHeader>
+        
+        <CardContent>
+          <div className="space-y-6">
+            <div className="border-b pb-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{jobData.title}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{jobData.salonName}</p>
+                </div>
+                <button 
+                  onClick={() => onEdit('title')} 
+                  className="text-primary hover:text-primary/80"
                 >
-                  {section.icon}
-                  <span className="text-xs">{section.label}</span>
-                </Button>
-              ))}
+                  <Edit size={18} />
+                </button>
+              </div>
+            </div>
+            
+            {sections.map((section) => (
+              <div key={section.id} className="border-b pb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium text-lg">{section.title}</h3>
+                  <button 
+                    onClick={() => onEdit(section.id)} 
+                    className="text-primary hover:text-primary/80"
+                  >
+                    <Edit size={18} />
+                  </button>
+                </div>
+                {section.content}
+              </div>
+            ))}
+
+            <div className="pt-4">
+              <div className="flex flex-col gap-4">
+                <MobileButton 
+                  onClick={onPublish} 
+                  disabled={isPublishing}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  {isPublishing ? 
+                    t({ english: 'Publishing...', vietnamese: 'Đang đăng...' }) : 
+                    t({ english: 'Publish Job', vietnamese: 'Đăng tin' })
+                  }
+                </MobileButton>
+                
+                <MobileButton 
+                  onClick={() => onEdit()} 
+                  variant="outline"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  {t({
+                    english: 'Edit Job Details',
+                    vietnamese: 'Chỉnh sửa chi tiết công việc'
+                  })}
+                </MobileButton>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
-      
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 gap-4 mt-6 mb-8">
-        <MobileButton 
-          onClick={onPublish} 
-          disabled={isPublishing}
-          className={cn(
-            "w-full bg-gradient-to-r from-primary to-indigo-600 text-white font-medium",
-            "h-12 flex items-center justify-center gap-2"
-          )}
-        >
-          {isPublishing ? (
-            <>Processing...</>
-          ) : (
-            <>
-              <CheckCircle className="h-5 w-5" />
-              Publish Job
-            </>
-          )}
-        </MobileButton>
-        
-        <Button 
-          variant="outline" 
-          className="w-full flex items-center justify-center gap-2"
-          onClick={() => onEdit()}
-        >
-          <PenLine className="h-4 w-4" />
-          Edit Job Details
-        </Button>
-      </div>
     </div>
   );
 };

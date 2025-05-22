@@ -1,106 +1,80 @@
 
 import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Control } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { UseFormReturn } from 'react-hook-form';
+import { JobFormValues } from '../job/jobFormSchema';
 
 interface ContactInfoSectionProps {
-  form: UseFormReturn<any>;
+  control: Control<JobFormValues>;
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ form }) => {
-  // Make sure we have a valid form context
-  if (!form) {
-    console.error("ContactInfoSection requires a valid form from react-hook-form");
-    return null;
-  }
-
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control }) => {
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
         <h2 className="font-playfair text-2xl font-semibold text-gray-900">Contact Information</h2>
-        <p className="text-sm text-muted-foreground mt-1">How candidates can reach you about this position</p>
+        <p className="text-sm text-muted-foreground mt-1">How candidates can reach you</p>
       </div>
       
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* SALON NAME FIELD - First field in the section */}
-        <FormField
-          control={form.control}
-          name="salonName"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormLabel className="text-gray-900 font-medium">Salon Name *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Enter your salon name" 
-                  {...field}
-                  required
-                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
-                />
-              </FormControl>
-              <p className="text-sm text-gray-500 mt-1">The name of your salon or business</p>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="contactEmail"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormLabel className="text-gray-900 font-medium">Email Address *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="your-email@example.com" 
-                  type="email"
-                  required
-                  {...field}
-                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="contactName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-gray-900 font-medium">Contact Name</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Who candidates should ask for" 
-                  {...field}
-                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="contactPhone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-gray-900 font-medium">Phone Number</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="(555) 123-4567" 
-                  type="tel"
-                  {...field}
-                  className="rounded-xl h-12 border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all duration-200"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      {/* Contact Name */}
+      <FormField
+        control={control}
+        name="contactName"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Contact Name <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input
+                placeholder="Full name of contact person"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Contact Phone */}
+      <FormField
+        control={control}
+        name="contactPhone"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Contact Phone <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input
+                type="tel"
+                placeholder="Phone number"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      {/* Contact Email */}
+      <FormField
+        control={control}
+        name="contactEmail"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Contact Email <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input
+                type="email"
+                placeholder="Email address"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 };

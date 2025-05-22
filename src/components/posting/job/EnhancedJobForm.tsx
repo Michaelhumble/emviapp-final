@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useForm } from 'react-hook-form';
+
+import React, { useState, useEffect } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues } from './jobFormSchema';
-import JobForm from './JobForm';
-import { PricingOptions } from '@/utils/posting/types';
-import { useTranslation } from '@/hooks/useTranslation';
-import { ArrowLeft, ArrowRight, PenLine, DollarSign, Image, CheckCircle } from 'lucide-react';
+import { Form } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 import { MobileButton } from '@/components/ui/mobile-button';
-import PhotoUpload from '../sections/PhotoUpload';
-import PricingSection from '../sections/PricingSection';
-import RequirementsSection from '../sections/RequirementsSection';
-import SpecialtiesSection from '../sections/SpecialtiesSection';
-import ContactInfoSection from '../sections/ContactInfoSection';
+import { ArrowRight } from 'lucide-react';
+import { JobFormValues, jobFormSchema } from './jobFormSchema';
+import { useTranslation } from '@/hooks/useTranslation';
+import SalonNameInput from '../wrappers/SalonNameInput';
 import JobDetailsSection from '../sections/JobDetailsSection';
+import ContactInfoSection from '../sections/ContactInfoSection';
+import RequirementsSection from '../sections/RequirementsSection';
+import PricingSection from '../sections/PricingSection';
+import PhotoUpload from '../sections/PhotoUpload';
+import SpecialtiesSection from '../sections/SpecialtiesSection';
+import UploadSection from '../sections/UploadSection';
+import { PricingOptions } from '@/utils/posting/types';
 
 interface EnhancedJobFormProps {
-  onSubmit: (formData: JobFormValues, photoUploads: File[], pricingOptions: PricingOptions) => Promise<boolean>;
-  onStepChange: (step: number) => void;
+  onSubmit: (formData: JobFormValues, uploads: File[], pricing: PricingOptions) => Promise<boolean>;
+  onStepChange?: (step: number) => void;
   maxPhotos?: number;
   defaultFormValues?: Partial<JobFormValues>;
   expressMode?: boolean;
@@ -30,222 +31,314 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({
   onStepChange,
   maxPhotos = 5,
   defaultFormValues = {},
-  expressMode = false,
+  expressMode = false
 }) => {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
-  const [submitting, setSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    tier: 'standard',
-    duration: 30,
-    featured: false,
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      ...defaultFormValues
+      title: '',
+      salonName: '',
+      description: '',
+      vietnameseDescription: '',
+      location: '',
+      jobType: 'full-time',
+      compensation_type: 'hourly',
+      has_housing: false,
+      has_wax_room: false,
+      weekly_pay: false,
+      owner_will_train: false,
+      no_supply_deduction: false,
+      contactName: '',
+      contactEmail: '',
+      contactPhone: '',
+      requirements: [],
+      specialties: [],
+      ...defaultFormValues,
     }
   });
+
+  // Get salonName from form state for display
+  const salonName = form.watch('salonName');
   
-  // Determine if form is ready to submit
-  const isFormValid = () => {
-    if (expressMode) {
-      // In express mode, we require all fields to be valid
-      return Object.keys(form.formState.errors).length === 0;
+  const steps = expressMode ? 1 : 4;
+
+  useEffect(() => {
+    if (onStepChange) {
+      onStepChange(step);
     }
-    
-    // In regular mode, we validate per step
-    switch (step) {
-      case 1:
-        return !form.formState.errors.title && !form.formState.errors.description && !form.formState.errors.location;
-      case 2:
-        return !form.formState.errors.specialties && !form.formState.errors.jobType;
-      case 3:
-        return !form.formState.errors.contactName && !form.formState.errors.contactEmail;
-      default:
-        return true;
-    }
-  };
-  
-  const handleContinue = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    
-    // If we're in express mode, submit the whole form
-    if (expressMode) {
-      await handleFinalSubmit();
-      return;
-    }
-    
-    // In regular mode, advance to the next step
-    if (step < 4) {
+  }, [step, onStepChange]);
+
+  const nextStep = () => {
+    if (step < steps) {
       setStep(step + 1);
-      onStepChange(step + 1);
-    } else {
-      await handleFinalSubmit();
-    }
-  };
-  
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      onStepChange(step - 1);
-    }
-  };
-  
-  const handleFinalSubmit = async () => {
-    try {
-      setSubmitting(true);
-      // Get all form values
-      const formValues = form.getValues();
-      
-      // Submit the form to parent component
-      const success = await onSubmit(formValues, photoUploads, pricingOptions);
-      
-      if (success && !expressMode) {
-        // In regular mode, advance to the last step after successful submission
-        setStep(4);
-        onStepChange(4);
-      }
-      
-      return success;
-    } catch (error) {
-      console.error('Error submitting job form:', error);
-      return false;
-    } finally {
-      setSubmitting(false);
+      window.scrollTo(0, 0);
     }
   };
 
-  // Change the tab UI based on express mode
+  const prevStep = () => {
+    if (step > 1) {
+      setStep(step - 1);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const handleFormSubmit: SubmitHandler<JobFormValues> = async (data) => {
+    try {
+      setIsSubmitting(true);
+      console.log('Form data before submit:', data);
+      console.log('Pricing options:', pricingOptions);
+      
+      const success = await onSubmit(data, photoUploads, pricingOptions);
+      
+      if (success) {
+        // If we're in express mode, don't reset the form
+        if (!expressMode) {
+          form.reset();
+          setPhotoUploads([]);
+          setStep(1);
+        }
+      }
+      
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePricingChange = (options: PricingOptions) => {
+    setPricingOptions(prev => ({ ...prev, ...options }));
+  };
+
+  // Handle SalonName change directly (convenience for this field)
+  const handleSalonNameChange = (value: string) => {
+    form.setValue('salonName', value);
+  };
+
+  // For express mode, we show all sections in one page
   if (expressMode) {
     return (
-      <div className="space-y-6">
-        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-6 border border-purple-100">
-          <h2 className="text-lg font-medium text-purple-900">Express Posting Mode</h2>
-          <p className="text-sm text-purple-700">
-            Complete all fields below to preview your job post. All fields available on one page for speed.
-          </p>
-        </div>
-        
-        <JobForm
-          onSubmit={async (data) => {
-            const success = await onSubmit(data, photoUploads, pricingOptions);
-            return success;
-          }}
-          defaultValues={defaultFormValues}
-        />
-        
-        <div className="flex justify-end gap-4 mt-8">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onStepChange(1)}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to Guided Mode
-          </Button>
-          
-          <MobileButton
-            type="button"
-            onClick={() => form.handleSubmit(handleContinue)()}
-            disabled={submitting || Object.keys(form.formState.errors).length > 0}
-            className="bg-gradient-to-r from-primary to-indigo-600 text-white font-medium"
-          >
-            {submitting ? 'Processing...' : (
-              <>
-                <PenLine className="h-4 w-4" /> Preview Job Post
-              </>
-            )}
-          </MobileButton>
-        </div>
-      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+          <div className="space-y-8">
+            {/* Salon Name Input */}
+            <div className="border-b pb-4 mb-6">
+              <h2 className="font-playfair text-2xl font-semibold text-gray-900">
+                {t({
+                  english: 'Express Job Posting',
+                  vietnamese: 'Đăng tin nhanh'
+                })}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t({
+                  english: 'Fill in all job details on one page',
+                  vietnamese: 'Điền tất cả thông tin công việc trong một trang'
+                })}
+              </p>
+            </div>
+
+            <SalonNameInput
+              value={salonName}
+              onChange={handleSalonNameChange}
+            />
+            
+            {/* Job Details Section */}
+            <JobDetailsSection control={form.control} />
+            
+            {/* Specialties Section */}
+            <SpecialtiesSection control={form.control} />
+            
+            {/* Requirements Section */}
+            <RequirementsSection form={form} />
+            
+            {/* Contact Info Section */}
+            <ContactInfoSection control={form.control} />
+            
+            {/* Upload Section */}
+            <PhotoUpload
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              maxPhotos={maxPhotos}
+            />
+            
+            {/* Pricing Section */}
+            <PricingSection 
+              onPricingChange={handlePricingChange} 
+              pricingOptions={pricingOptions}
+              setPricingOptions={setPricingOptions}
+            />
+            
+            <div className="flex justify-end pt-4">
+              <MobileButton 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full sm:w-auto"
+              >
+                {isSubmitting ? 
+                  t({
+                    english: 'Creating...',
+                    vietnamese: 'Đang tạo...'
+                  }) :
+                  t({
+                    english: 'Continue to Preview',
+                    vietnamese: 'Tiếp tục đến Xem trước'
+                  })
+                }
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </MobileButton>
+            </div>
+          </div>
+        </form>
+      </Form>
     );
   }
 
-  // Regular step-by-step wizard UI
+  // Step-by-step wizard for regular mode
   return (
-    <div className="space-y-6">
-      <Tabs value={`step-${step}`} className="w-full">
-        <TabsList className="grid grid-cols-4 h-auto mb-6">
-          <TabsTrigger value="step-1" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
-            Job Details
-          </TabsTrigger>
-          <TabsTrigger value="step-2" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
-            Specialties
-          </TabsTrigger>
-          <TabsTrigger value="step-3" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
-            Contact
-          </TabsTrigger>
-          <TabsTrigger value="step-4" className={`data-[state=active]:border-b-2 data-[state=active]:border-primary py-2 text-sm`}>
-            Review
-          </TabsTrigger>
-        </TabsList>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+        {/* Step 1: Salon & Job Details */}
+        {step === 1 && (
+          <div className="space-y-8">
+            <SalonNameInput
+              value={salonName}
+              onChange={handleSalonNameChange}
+            />
+            <JobDetailsSection control={form.control} />
+            
+            <div className="flex justify-end pt-4">
+              <Button 
+                type="button" 
+                onClick={nextStep}
+                className="w-full sm:w-auto"
+              >
+                {t({
+                  english: 'Next: Specialties & Requirements',
+                  vietnamese: 'Tiếp: Chuyên môn & Yêu cầu'
+                })}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
         
-        {/* Content for each step */}
-        <TabsContent value={`step-${step}`} className="space-y-4">
-          {step === 1 && (
-            <Card className="p-4 border-none shadow-none">
-              <JobForm
-                onSubmit={async (data) => {
-                  const success = await onSubmit(data, photoUploads, pricingOptions);
-                  return success;
-                }}
-                defaultValues={defaultFormValues}
-              />
-            </Card>
-          )}
-          
-          {step === 2 && (
-            <Card className="p-4 border-none shadow-none">
-              <SpecialtiesSection form={form} />
-              <RequirementsSection form={form} />
-            </Card>
-          )}
-          
-          {step === 3 && (
-            <Card className="p-4 border-none shadow-none">
-              <ContactInfoSection form={form} />
-            </Card>
-          )}
-          
-          {step === 4 && (
-            <Card className="p-4 border-none shadow-none">
-              <PricingSection 
-                pricingOptions={pricingOptions}
-                setPricingOptions={setPricingOptions}
-              />
-              <PhotoUpload 
-                maxPhotos={maxPhotos}
-                photoUploads={photoUploads}
-                setPhotoUploads={setPhotoUploads}
-              />
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
-      
-      {/* Navigation buttons */}
-      <div className="flex justify-between pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleBack}
-          disabled={step === 1}
-        >
-          Back
-        </Button>
+        {/* Step 2: Specialties & Requirements */}
+        {step === 2 && (
+          <div className="space-y-8">
+            <SpecialtiesSection control={form.control} />
+            <RequirementsSection control={form.control} />
+            
+            <div className="flex justify-between pt-4">
+              <Button 
+                type="button" 
+                onClick={prevStep} 
+                variant="outline"
+              >
+                {t({
+                  english: 'Back',
+                  vietnamese: 'Quay lại'
+                })}
+              </Button>
+              <Button 
+                type="button" 
+                onClick={nextStep}
+              >
+                {t({
+                  english: 'Next: Contact & Photos',
+                  vietnamese: 'Tiếp: Liên hệ & Hình ảnh'
+                })}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
         
-        <Button
-          type="button"
-          onClick={() => form.handleSubmit(handleContinue)()}
-          disabled={submitting || !isFormValid()}
-        >
-          {step === 4 ? (submitting ? 'Submitting...' : 'Submit') : 'Continue'}
-        </Button>
-      </div>
-    </div>
+        {/* Step 3: Contact Info & Photos */}
+        {step === 3 && (
+          <div className="space-y-8">
+            <ContactInfoSection control={form.control} />
+            <PhotoUpload
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              maxPhotos={maxPhotos}
+            />
+            
+            <div className="flex justify-between pt-4">
+              <Button 
+                type="button" 
+                onClick={prevStep} 
+                variant="outline"
+              >
+                {t({
+                  english: 'Back',
+                  vietnamese: 'Quay lại'
+                })}
+              </Button>
+              <Button 
+                type="button" 
+                onClick={nextStep}
+              >
+                {t({
+                  english: 'Next: Pricing & Promotion',
+                  vietnamese: 'Tiếp: Định giá & Quảng bá'
+                })}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Step 4: Pricing & Promotion */}
+        {step === 4 && (
+          <div className="space-y-8">
+            <PricingSection 
+              onPricingChange={handlePricingChange} 
+              pricingOptions={pricingOptions}
+              setPricingOptions={setPricingOptions}
+            />
+            
+            <div className="flex justify-between pt-4">
+              <Button 
+                type="button" 
+                onClick={prevStep} 
+                variant="outline"
+              >
+                {t({
+                  english: 'Back',
+                  vietnamese: 'Quay lại'
+                })}
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ?
+                  t({
+                    english: 'Creating Job...',
+                    vietnamese: 'Đang tạo công việc...'
+                  }) :
+                  t({
+                    english: 'Create Job Listing',
+                    vietnamese: 'Tạo tin tuyển dụng'
+                  })
+                }
+              </Button>
+            </div>
+          </div>
+        )}
+      </form>
+    </Form>
   );
 };
 

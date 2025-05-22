@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { CheckCircle2, CircleDollarSign, Trophy } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 
 interface PricingOption {
   id: string;
@@ -15,16 +16,28 @@ interface PricingOption {
   recommended?: boolean;
 }
 
-interface PricingSectionProps {
-  onPricingChange: (options: any) => void;
+export interface PricingSectionProps {
+  onPricingChange: (options: PricingOptions) => void;
+  pricingOptions: PricingOptions;
+  setPricingOptions: React.Dispatch<React.SetStateAction<PricingOptions>>;
 }
 
-const PricingSection: React.FC<PricingSectionProps> = ({ onPricingChange }) => {
-  const [selectedTier, setSelectedTier] = useState<string>('premium');
-  const [autoRenew, setAutoRenew] = useState<boolean>(true);
-  const [durationMonths, setDurationMonths] = useState<number>(1);
+const PricingSection: React.FC<PricingSectionProps> = ({ 
+  onPricingChange,
+  pricingOptions,
+  setPricingOptions
+}) => {
+  const [selectedTier, setSelectedTier] = useState<JobPricingTier>(
+    pricingOptions?.selectedPricingTier || 'premium'
+  );
+  const [autoRenew, setAutoRenew] = useState<boolean>(
+    pricingOptions?.autoRenew !== undefined ? pricingOptions.autoRenew : true
+  );
+  const [durationMonths, setDurationMonths] = useState<number>(
+    pricingOptions?.durationMonths || 1
+  );
 
-  const pricingOptions: PricingOption[] = [
+  const pricingOptionsList: PricingOption[] = [
     {
       id: 'standard',
       name: 'Standard',
@@ -50,15 +63,17 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onPricingChange }) => {
   ];
 
   useEffect(() => {
-    // Notify parent component when pricing selection changes
-    onPricingChange({
-      selectedPricingTier: selectedTier,
+    // Update pricing options when any selection changes
+    const updatedOptions: PricingOptions = {
+      ...pricingOptions,
+      selectedPricingTier: selectedTier as JobPricingTier,
       durationMonths,
-      autoRenew,
-      isFirstPost: true,
-      isNationwide: false
-    });
-  }, [selectedTier, durationMonths, autoRenew, onPricingChange]);
+      autoRenew
+    };
+    
+    setPricingOptions(updatedOptions);
+    onPricingChange(updatedOptions);
+  }, [selectedTier, durationMonths, autoRenew, onPricingChange, setPricingOptions, pricingOptions]);
 
   return (
     <div className="space-y-6">
@@ -69,10 +84,10 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onPricingChange }) => {
 
       <RadioGroup 
         value={selectedTier} 
-        onValueChange={setSelectedTier}
+        onValueChange={(value) => setSelectedTier(value as JobPricingTier)}
         className="grid grid-cols-1 md:grid-cols-3 gap-4"
       >
-        {pricingOptions.map((option) => (
+        {pricingOptionsList.map((option) => (
           <div key={option.id} className={`relative`}>
             <RadioGroupItem 
               value={option.id} 

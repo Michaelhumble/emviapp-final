@@ -22,7 +22,12 @@ const JobPost = () => {
   const [previewData, setPreviewData] = useState<JobFormValues | null>(null);
   const [showThankYouModal, setShowThankYouModal] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({});
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'premium',
+    durationMonths: 1,
+    autoRenew: true,
+    isFirstPost: true
+  });
 
   const handleSubmit = async (formData: JobFormValues, uploads: File[], pricing: PricingOptions) => {
     if (expressMode && currentStep === 1) {
