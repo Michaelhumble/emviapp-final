@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import JobDetailsForm from './JobDetailsForm';
+import BasicJobDetailsForm from './BasicJobDetailsForm';
 
-interface JobFormData {
+interface BasicJobFormData {
   salonName: string;
   jobTitle: string;
   location: string;
@@ -13,12 +13,11 @@ interface JobFormData {
 }
 
 const JobPostingWizard = () => {
-  const [jobData, setJobData] = useState<JobFormData | null>(null);
+  const [jobData, setJobData] = useState<BasicJobFormData | null>(null);
 
-  const handleJobDetailsSubmit = (data: JobFormData) => {
+  const handleJobDetailsSubmit = (data: BasicJobFormData) => {
     setJobData(data);
     console.log('Job details submitted:', data);
-    // For now, just log the data. Later steps will handle further processing.
   };
 
   return (
@@ -31,7 +30,7 @@ const JobPostingWizard = () => {
         
         <CardContent>
           {!jobData ? (
-            <JobDetailsForm onSubmit={handleJobDetailsSubmit} />
+            <BasicJobDetailsForm onSubmit={handleJobDetailsSubmit} />
           ) : (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Job Details Submitted Successfully!</h3>
