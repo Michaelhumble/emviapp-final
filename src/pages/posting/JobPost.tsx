@@ -12,6 +12,15 @@ const JobPost = () => {
 
   const handleTemplateSelect = async (template: any) => {
     console.log('Legacy template selected:', template);
+    
+    // Validate required fields
+    if (!template.title || !template.salonName && !template.company) {
+      toast.error('Missing required fields', {
+        description: 'Please ensure job title and company name are provided.'
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
