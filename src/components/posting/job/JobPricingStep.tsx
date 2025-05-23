@@ -1,213 +1,184 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Crown, Star, Zap, Diamond, CheckCircle2 } from 'lucide-react';
-import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
+import { CheckedState } from '@radix-ui/react-checkbox';
 
-interface JobPricingStepProps {
-  onNext: (pricingData: PricingOptions) => void;
-  onBack: () => void;
-  initialData?: Partial<PricingOptions>;
+export interface PricingOptions {
+  tier: 'free' | 'standard' | 'premium' | 'gold';
+  duration: number;
+  autoRenew: boolean;
 }
 
-const JobPricingStep: React.FC<JobPricingStepProps> = ({ onNext, onBack, initialData }) => {
-  const [selectedTier, setSelectedTier] = useState<JobPricingTier>(initialData?.selectedPricingTier || 'standard');
-  const [durationMonths, setDurationMonths] = useState(initialData?.durationMonths || 1);
-  const [autoRenew, setAutoRenew] = useState(initialData?.autoRenew || false);
-  const [isNationwide, setIsNationwide] = useState(initialData?.isNationwide || false);
+interface JobPricingStepProps {
+  onNext: (pricingOptions: PricingOptions) => void;
+  isLoading?: boolean;
+}
+
+const JobPricingStep: React.FC<JobPricingStepProps> = ({ onNext, isLoading = false }) => {
+  const [selectedTier, setSelectedTier] = useState<'free' | 'standard' | 'premium' | 'gold'>('free');
+  const [duration, setDuration] = useState(1);
+  const [autoRenew, setAutoRenew] = useState(false);
 
   const pricingTiers = [
     {
-      id: 'free' as JobPricingTier,
+      id: 'free',
       name: 'Free',
       price: 0,
-      description: 'Basic listing for 7 days',
-      features: ['7-day listing', 'Basic visibility', 'Standard support'],
-      icon: <CheckCircle2 className="h-5 w-5" />,
-      color: 'text-gray-600'
+      features: ['Basic listing', '7-day duration', 'Limited visibility']
     },
     {
-      id: 'standard' as JobPricingTier,
+      id: 'standard',
       name: 'Standard',
-      price: 49,
-      description: 'Enhanced visibility for 30 days',
-      features: ['30-day listing', 'Enhanced visibility', 'Email support', 'Social media promotion'],
-      icon: <Star className="h-5 w-5" />,
-      color: 'text-blue-600',
-      popular: true
+      price: 29,
+      features: ['Enhanced listing', '30-day duration', 'Priority support']
     },
     {
-      id: 'premium' as JobPricingTier,
+      id: 'premium',
       name: 'Premium',
-      price: 99,
-      description: 'Priority placement for 30 days',
-      features: ['Priority placement', 'Featured listing badge', 'Priority support', 'Analytics dashboard'],
-      icon: <Crown className="h-5 w-5" />,
-      color: 'text-purple-600'
+      price: 59,
+      features: ['Premium listing', '60-day duration', 'Featured placement', 'Analytics']
     },
     {
-      id: 'gold' as JobPricingTier,
+      id: 'gold',
       name: 'Gold',
-      price: 199,
-      description: 'Maximum exposure for 60 days',
-      features: ['Top placement', 'Highlighted listing', 'Dedicated support', 'Advanced analytics'],
-      icon: <Zap className="h-5 w-5" />,
-      color: 'text-yellow-600'
+      price: 99,
+      features: ['Gold listing', '90-day duration', 'Top placement', 'Advanced analytics', 'Dedicated support']
     }
   ];
 
+  const durationOptions = [
+    { months: 1, label: '1 Month', discount: 0 },
+    { months: 3, label: '3 Months', discount: 10 },
+    { months: 6, label: '6 Months', discount: 15 },
+    { months: 12, label: '12 Months', discount: 20 }
+  ];
+
   const calculatePrice = () => {
-    const tier = pricingTiers.find(t => t.id === selectedTier);
-    if (!tier || tier.price === 0) return 0;
+    const baseTier = pricingTiers.find(tier => tier.id === selectedTier);
+    if (!baseTier || baseTier.price === 0) return 0;
+
+    let price = baseTier.price * duration;
     
-    let basePrice = tier.price;
-    
-    // Duration discounts
-    if (durationMonths >= 12) basePrice *= 0.8; // 20% off
-    else if (durationMonths >= 6) basePrice *= 0.85; // 15% off
-    else if (durationMonths >= 3) basePrice *= 0.9; // 10% off
-    
-    // Auto-renew discount
-    if (autoRenew) basePrice *= 0.95; // 5% off
-    
-    // Nationwide posting
-    if (isNationwide) basePrice += 5;
-    
-    return Math.round(basePrice * 100) / 100;
+    // Apply duration discount
+    const durationOption = durationOptions.find(option => option.months === duration);
+    if (durationOption && durationOption.discount > 0) {
+      price = price * (1 - durationOption.discount / 100);
+    }
+
+    // Apply auto-renew discount
+    if (autoRenew) {
+      price = price * 0.95; // 5% discount
+    }
+
+    return Math.round(price * 100) / 100;
   };
 
-  const handleProceed = () => {
-    const pricingData: PricingOptions = {
-      selectedPricingTier: selectedTier,
-      durationMonths,
-      autoRenew,
-      isNationwide
+  const handleSubmit = () => {
+    const pricingOptions: PricingOptions = {
+      tier: selectedTier,
+      duration,
+      autoRenew
     };
-    onNext(pricingData);
+    onNext(pricingOptions);
   };
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Choose Your Job Posting Plan</h2>
-        <p className="text-gray-600">Select the plan that best fits your hiring needs</p>
+      <div>
+        <h2 className="text-2xl font-bold mb-2">Choose Your Plan</h2>
+        <p className="text-gray-600">Select the best plan for your job posting</p>
       </div>
 
-      <RadioGroup value={selectedTier} onValueChange={(value) => setSelectedTier(value as JobPricingTier)}>
-        <div className="grid gap-4">
+      <div className="grid gap-4">
+        <RadioGroup value={selectedTier} onValueChange={(value) => setSelectedTier(value as typeof selectedTier)}>
           {pricingTiers.map((tier) => (
-            <Card key={tier.id} className={`relative cursor-pointer transition-all ${
-              selectedTier === tier.id ? 'ring-2 ring-primary' : 'hover:shadow-md'
-            }`}>
-              {tier.popular && (
-                <Badge className="absolute -top-2 left-4 bg-primary">Most Popular</Badge>
-              )}
+            <Card key={tier.id} className={`cursor-pointer transition-colors ${selectedTier === tier.id ? 'ring-2 ring-primary' : ''}`}>
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <RadioGroupItem value={tier.id} id={tier.id} />
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <div className={tier.color}>{tier.icon}</div>
-                      <Label htmlFor={tier.id} className="font-semibold cursor-pointer">
-                        {tier.name}
-                      </Label>
-                      <span className="font-bold text-lg">
-                        {tier.price === 0 ? 'Free' : `$${tier.price}`}
-                      </span>
+                  <Label htmlFor={tier.id} className="flex-1 cursor-pointer">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-semibold">{tier.name}</h3>
+                        <ul className="text-sm text-gray-600 mt-1">
+                          {tier.features.map((feature, index) => (
+                            <li key={index}>• {feature}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold">${tier.price}</span>
+                        {tier.price > 0 && <span className="text-sm text-gray-500">/month</span>}
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{tier.description}</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {tier.features.map((feature, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {feature}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
+                  </Label>
                 </div>
               </CardContent>
             </Card>
           ))}
-        </div>
-      </RadioGroup>
+        </RadioGroup>
+      </div>
 
       {selectedTier !== 'free' && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Additional Options</CardTitle>
+            <CardTitle>Duration & Options</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label className="text-sm font-medium">Duration</Label>
-              <RadioGroup value={durationMonths.toString()} onValueChange={(value) => setDurationMonths(parseInt(value))}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="1" id="1month" />
-                  <Label htmlFor="1month">1 Month</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="3" id="3months" />
-                  <Label htmlFor="3months">3 Months (10% off)</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="6" id="6months" />
-                  <Label htmlFor="6months">6 Months (15% off)</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="12" id="12months" />
-                  <Label htmlFor="12months">12 Months (20% off)</Label>
-                </div>
+              <RadioGroup value={duration.toString()} onValueChange={(value) => setDuration(parseInt(value))}>
+                {durationOptions.map((option) => (
+                  <div key={option.months} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option.months.toString()} id={`duration-${option.months}`} />
+                    <Label htmlFor={`duration-${option.months}`} className="flex-1">
+                      {option.label}
+                      {option.discount > 0 && (
+                        <span className="ml-2 text-green-600 font-medium">
+                          ({option.discount}% off)
+                        </span>
+                      )}
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
             </div>
 
             <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="autoRenew" 
+              <Checkbox
+                id="auto-renew"
                 checked={autoRenew}
-                onCheckedChange={(checked) => setAutoRenew(checked as boolean)}
+                onCheckedChange={(checked: CheckedState) => setAutoRenew(checked === true)}
               />
-              <Label htmlFor="autoRenew" className="text-sm">
-                Auto-renew (5% additional discount)
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="nationwide" 
-                checked={isNationwide}
-                onCheckedChange={(checked) => setIsNationwide(checked as boolean)}
-              />
-              <Label htmlFor="nationwide" className="text-sm">
-                Nationwide posting (+$5)
+              <Label htmlFor="auto-renew">
+                Auto-renew (save 5% monthly)
               </Label>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <Card className="bg-gray-50">
+      <Card>
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
-            <span className="font-semibold">Total:</span>
-            <span className="text-2xl font-bold">
-              {calculatePrice() === 0 ? 'Free' : `$${calculatePrice()}`}
-            </span>
+            <span className="text-lg font-medium">Total Price:</span>
+            <span className="text-2xl font-bold">${calculatePrice()}</span>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex space-x-3">
-        <Button variant="outline" onClick={onBack} className="flex-1">
-          Back
-        </Button>
-        <Button onClick={handleProceed} className="flex-1">
-          Proceed to Payment
-        </Button>
-      </div>
+      <Button 
+        onClick={handleSubmit} 
+        className="w-full" 
+        size="lg"
+        disabled={isLoading}
+      >
+        {isLoading ? 'Processing...' : 'Proceed to Payment'}
+      </Button>
     </div>
   );
 };
