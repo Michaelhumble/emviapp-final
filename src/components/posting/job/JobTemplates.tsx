@@ -2,11 +2,10 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { JobFormValues, JobType } from './jobFormSchema';
 import { useForm } from 'react-hook-form';
 
 interface JobTemplateProps {
-  onTemplateSelect: (template: Partial<JobFormValues>) => void;
+  onTemplateSelect: (template: Partial<any>) => void;
   expressMode?: boolean;
 }
 
@@ -34,7 +33,7 @@ const JobTemplates: React.FC<JobTemplateProps> = ({ onTemplateSelect, expressMod
       description: "Looking for an experienced nail technician to join our busy salon. Must have at least 2 years experience with acrylics, gels, and nail art. Great earning potential with commission-based pay structure. Friendly team environment with regular clients.",
       vietnameseDescription: "Cần thợ nail có kinh nghiệm tham gia salon của chúng tôi. Phải có ít nhất 2 năm kinh nghiệm với bột, gel, và vẽ móng. Tiềm năng thu nhập tốt với cơ cấu trả lương theo hoa hồng. Môi trường làm việc thân thiện với khách hàng thường xuyên.",
       location: "Boston, MA",
-      jobType: "full-time" as JobType,
+      jobType: "full-time",
       compensation_type: "commission",
       compensation_details: "$800-1200/week potential earnings",
       weekly_pay: true,
@@ -51,7 +50,7 @@ const JobTemplates: React.FC<JobTemplateProps> = ({ onTemplateSelect, expressMod
       description: "Seeking a skilled hair stylist to join our upscale salon. Must be proficient in cutting, coloring, and styling various hair types. Strong customer service skills required. Commission-based compensation with potential for growth.",
       vietnameseDescription: "Đang tìm một thợ tóc có kỹ năng để tham gia vào salon cao cấp của chúng tôi. Phải thành thạo cắt, nhuộm và tạo kiểu các loại tóc khác nhau. Yêu cầu kỹ năng chăm sóc khách hàng tốt. Thù lao dựa trên hoa hồng với tiềm năng tăng trưởng.",
       location: "Chicago, IL",
-      jobType: "part-time" as JobType,
+      jobType: "part-time",
       compensation_type: "commission",
       compensation_details: "30-50% commission on services",
       weekly_pay: false,
@@ -67,7 +66,7 @@ const JobTemplates: React.FC<JobTemplateProps> = ({ onTemplateSelect, expressMod
       description: "Now hiring a friendly, organized receptionist for our busy salon and spa. Duties include scheduling appointments, answering phones, greeting clients, and processing payments. Must have excellent customer service skills and be detail-oriented.",
       vietnameseDescription: "Đang tuyển một lễ tân thân thiện, có tổ chức cho salon và spa bận rộn của chúng tôi. Nhiệm vụ bao gồm lên lịch hẹn, trả lời điện thoại, chào đón khách hàng và xử lý thanh toán. Phải có kỹ năng chăm sóc khách hàng tốt và chú ý đến chi tiết.",
       location: "Miami, FL",
-      jobType: "full-time" as JobType,
+      jobType: "full-time",
       compensation_type: "hourly",
       compensation_details: "$15-18/hour based on experience",
       weekly_pay: true,

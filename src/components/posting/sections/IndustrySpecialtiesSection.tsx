@@ -2,13 +2,12 @@
 import React from 'react';
 import { FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Control, UseFormReturn } from 'react-hook-form';
-import { JobFormValues } from '../job/jobFormSchema';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { beautySpecialties } from '@/data/specialties';
 
 interface IndustrySpecialtiesSectionProps {
-  control?: Control<JobFormValues>;
-  form?: UseFormReturn<JobFormValues>;
+  control?: Control<any>;
+  form?: UseFormReturn<any>;
   onIndustryChange?: (industry: string) => void;
 }
 

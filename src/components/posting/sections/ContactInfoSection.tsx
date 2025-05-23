@@ -3,13 +3,12 @@ import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Control, UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { JobFormValues } from '../job/jobFormSchema';
 
 interface ContactInfoSectionProps {
-  control?: Control<JobFormValues>;
-  form?: UseFormReturn<JobFormValues>;
+  control?: Control<any>;
+  form?: UseFormReturn<any>;
   onNext?: () => void;
-  onPrevious?: () => void; // Ensure this prop is properly declared
+  onPrevious?: () => void;
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext, onPrevious }) => {

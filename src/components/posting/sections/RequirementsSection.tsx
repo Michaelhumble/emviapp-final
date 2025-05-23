@@ -2,14 +2,13 @@
 import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Control, UseFormReturn } from 'react-hook-form';
-import { JobFormValues } from '../job/jobFormSchema';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 
 interface RequirementsSectionProps {
-  control?: Control<JobFormValues>;
-  form?: UseFormReturn<JobFormValues>;
+  control?: Control<any>;
+  form?: UseFormReturn<any>;
 }
 
 const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control, form }) => {
