@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { jobPricingOptions } from '@/utils/posting/jobPricing';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { Crown, Star, Zap } from 'lucide-react';
+import { Crown, Star, Zap, Gift, MapPin } from 'lucide-react';
 
 interface JobPricingStepProps {
   onSubmit: (pricingOptions: PricingOptions) => void;
@@ -18,15 +19,38 @@ const JobPricingStep = ({ onSubmit, isLoading = false }: JobPricingStepProps) =>
   const [selectedTier, setSelectedTier] = useState<JobPricingTier>('standard');
   const [durationMonths, setDurationMonths] = useState(1);
   const [autoRenew, setAutoRenew] = useState(false);
+  const [nationwidePosting, setNationwidePosting] = useState(false);
+
+  const calculatePrice = () => {
+    const baseOption = jobPricingOptions.find(option => option.tier === selectedTier);
+    if (!baseOption) return 0;
+
+    let price = baseOption.price;
+    
+    // Apply duration discounts
+    if (durationMonths === 3) price *= 0.9; // 10% off
+    else if (durationMonths === 6) price *= 0.85; // 15% off
+    else if (durationMonths === 12) price *= 0.8; // 20% off
+    
+    // Apply auto-renewal discount (5% off monthly)
+    if (autoRenew && durationMonths === 1) price *= 0.95;
+    
+    // Add nationwide posting fee
+    if (nationwidePosting) price += 5;
+    
+    return Math.round(price * 100) / 100; // Round to 2 decimal places
+  };
 
   const handleSubmit = () => {
     const pricingOptions: PricingOptions = {
       selectedPricingTier: selectedTier,
       durationMonths,
       autoRenew,
-      isFirstPost: false // You can add logic to detect first post
+      isFirstPost: false,
+      nationwidePosting
     };
     
+    console.log('Submitting pricing options:', pricingOptions);
     onSubmit(pricingOptions);
   };
 
@@ -38,18 +62,18 @@ const JobPricingStep = ({ onSubmit, isLoading = false }: JobPricingStepProps) =>
         return <Star className="w-5 h-5 text-yellow-600" />;
       case 'premium':
         return <Zap className="w-5 h-5 text-blue-600" />;
+      case 'free':
+        return <Gift className="w-5 h-5 text-green-600" />;
       default:
         return null;
     }
   };
 
+  const finalPrice = calculatePrice();
+
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Choose Your Pricing Plan</h2>
-        <p className="text-gray-600">Select the plan that best fits your hiring needs</p>
-      </div>
-
+      {/* Pricing Tiers */}
       <RadioGroup value={selectedTier} onValueChange={(value) => setSelectedTier(value as JobPricingTier)}>
         <div className="grid gap-4">
           {jobPricingOptions.map((option) => (
@@ -61,7 +85,7 @@ const JobPricingStep = ({ onSubmit, isLoading = false }: JobPricingStepProps) =>
                   selectedTier === option.tier
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
-                }`}
+                } ${option.tier === 'diamond' ? 'opacity-60' : ''}`}
               >
                 <Card className="shadow-none border-none">
                   <CardHeader className="pb-2">
@@ -74,9 +98,17 @@ const JobPricingStep = ({ onSubmit, isLoading = false }: JobPricingStepProps) =>
                             Most Popular
                           </Badge>
                         )}
+                        {option.tier === 'diamond' && (
+                          <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">
+                            Invitation Only
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold">${option.price}</div>
+                        <div className="text-2xl font-bold">
+                          ${option.price}
+                          {option.tier !== 'free' && <span className="text-sm text-gray-500">/month</span>}
+                        </div>
                         {option.wasPrice && (
                           <div className="text-sm text-gray-500 line-through">
                             ${option.wasPrice}
@@ -105,14 +137,107 @@ const JobPricingStep = ({ onSubmit, isLoading = false }: JobPricingStepProps) =>
         </div>
       </RadioGroup>
 
+      {/* Duration Selection */}
+      {selectedTier !== 'free' && selectedTier !== 'diamond' && (
+        <div className="space-y-3">
+          <h4 className="font-medium">Duration (Save with longer commitments)</h4>
+          <RadioGroup value={durationMonths.toString()} onValueChange={(value) => setDurationMonths(parseInt(value))}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="1" id="duration-1" />
+                <Label htmlFor="duration-1" className="cursor-pointer">1 Month</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="3" id="duration-3" />
+                <Label htmlFor="duration-3" className="cursor-pointer">
+                  3 Months <Badge variant="outline" className="ml-1 text-xs">10% off</Badge>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="6" id="duration-6" />
+                <Label htmlFor="duration-6" className="cursor-pointer">
+                  6 Months <Badge variant="outline" className="ml-1 text-xs">15% off</Badge>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="12" id="duration-12" />
+                <Label htmlFor="duration-12" className="cursor-pointer">
+                  12 Months <Badge variant="outline" className="ml-1 text-xs">20% off</Badge>
+                </Label>
+              </div>
+            </div>
+          </RadioGroup>
+        </div>
+      )}
+
+      {/* Additional Options */}
+      {selectedTier !== 'free' && selectedTier !== 'diamond' && (
+        <div className="space-y-4">
+          <h4 className="font-medium">Additional Options</h4>
+          
+          {/* Auto-renewal option (only for monthly) */}
+          {durationMonths === 1 && (
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="auto-renew" 
+                checked={autoRenew}
+                onCheckedChange={setAutoRenew}
+              />
+              <Label htmlFor="auto-renew" className="cursor-pointer flex items-center gap-2">
+                Auto-renewal (5% monthly discount)
+                <Badge variant="outline" className="text-xs">Save 5%</Badge>
+              </Label>
+            </div>
+          )}
+          
+          {/* Nationwide posting */}
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="nationwide" 
+              checked={nationwidePosting}
+              onCheckedChange={setNationwidePosting}
+            />
+            <Label htmlFor="nationwide" className="cursor-pointer flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Nationwide posting (+$5)
+            </Label>
+          </div>
+        </div>
+      )}
+
+      {/* Price Summary */}
+      {selectedTier !== 'free' && selectedTier !== 'diamond' && (
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="flex justify-between items-center">
+            <span className="font-medium">Total Price:</span>
+            <span className="text-2xl font-bold text-blue-600">${finalPrice}</span>
+          </div>
+          {durationMonths > 1 && (
+            <p className="text-sm text-gray-600 mt-1">
+              For {durationMonths} months (${(finalPrice / durationMonths).toFixed(2)}/month)
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Submit Button */}
       <div className="mt-8 pt-6 border-t">
         <Button
           onClick={handleSubmit}
-          disabled={isLoading}
+          disabled={isLoading || selectedTier === 'diamond'}
           className="w-full py-3 text-lg"
         >
-          {isLoading ? 'Processing...' : 'Continue to Payment'}
+          {isLoading ? 'Processing...' : 
+           selectedTier === 'diamond' ? 'Invitation Required' :
+           selectedTier === 'free' ? 'Post Job for Free' : 
+           'Proceed to Payment'}
         </Button>
+        
+        {selectedTier === 'diamond' && (
+          <p className="text-center text-sm text-gray-500 mt-2">
+            Diamond tier is available by invitation only. Contact us for more information.
+          </p>
+        )}
       </div>
     </div>
   );
