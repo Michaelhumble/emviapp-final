@@ -1,18 +1,15 @@
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Star, Crown, Zap } from 'lucide-react';
-import { billionDollarJobFormSchema } from './billionDollarJobFormSchema';
-import { useTranslation } from '@/hooks/useTranslation';
+import { ArrowLeft, ArrowRight, Upload, X, ImageIcon } from 'lucide-react';
+import PhotoUploader from '@/components/posting/PhotoUploader';
+import { specialtyOptions, requirementOptions } from '@/utils/posting/options';
 
 interface BillionDollarJobFormProps {
   initialData?: any;
@@ -27,52 +24,58 @@ const BillionDollarJobForm: React.FC<BillionDollarJobFormProps> = ({
   onBack,
   isSubmitting = false
 }) => {
-  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 3;
-
-  const form = useForm({
-    resolver: zodResolver(billionDollarJobFormSchema),
-    defaultValues: {
-      title: initialData?.title || '',
-      salonName: initialData?.salonName || initialData?.company || '',
-      location: initialData?.location || '',
-      employmentType: initialData?.employmentType || 'full-time',
-      compensationType: initialData?.compensationType || 'commission',
-      compensationDetails: initialData?.compensationDetails || '',
-      description: initialData?.description || getDefaultDescription(initialData?.title || ''),
-      vietnameseDescription: initialData?.vietnameseDescription || getDefaultVietnameseDescription(initialData?.title || ''),
-      requirements: initialData?.requirements || [],
-      specialties: initialData?.specialties || [],
-      benefits: initialData?.benefits || [],
-      weeklyPay: initialData?.weeklyPay || false,
-      hasHousing: initialData?.hasHousing || false,
-      hasWaxRoom: initialData?.hasWaxRoom || false,
-      noSupplyDeduction: initialData?.noSupplyDeduction || false,
-      ownerWillTrain: initialData?.ownerWillTrain || false,
-      isUrgent: false,
-      contactInfo: {
-        ownerName: '',
-        phone: '',
-        email: '',
-        notes: ''
-      }
-    }
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [formData, setFormData] = useState({
+    // Job Details
+    title: initialData?.title || '',
+    salonName: initialData?.salonName || initialData?.company || '',
+    location: initialData?.location || '',
+    employmentType: initialData?.employmentType || 'full-time',
+    description: initialData?.description || '',
+    requirements: initialData?.requirements || [],
+    specialties: initialData?.specialties || [],
+    
+    // Compensation
+    compensationType: 'hourly',
+    hourlyRate: '',
+    salaryMin: '',
+    salaryMax: '',
+    commissionRate: '',
+    benefits: [],
+    
+    // Contact
+    contactName: '',
+    contactPhone: '',
+    contactEmail: '',
+    preferredContact: 'phone',
+    
+    // Photos will be handled separately
+    photos: []
   });
 
-  const handleFormSubmit = (data: any) => {
-    onSubmit(data);
+  const totalSteps = 5; // Added photo upload step
+
+  const updateFormData = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const nextStep = () => {
+  const handleNext = () => {
+    // Validate current step before proceeding
+    if (currentStep === 4 && photoUploads.length === 0) {
+      alert('Please upload at least one photo before proceeding.');
+      return;
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
-    } else {
-      form.handleSubmit(handleFormSubmit)();
     }
   };
 
-  const prevStep = () => {
+  const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     } else {
@@ -80,287 +83,462 @@ const BillionDollarJobForm: React.FC<BillionDollarJobFormProps> = ({
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" size="icon" onClick={prevStep}>
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold flex items-center space-x-2">
-              <Crown className="w-8 h-8 text-yellow-500" />
-              <span>Premium Job Posting</span>
-              <Badge variant="outline" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
-                <Star className="w-3 h-3 mr-1" />
-                Billion Dollar Experience
-              </Badge>
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Step {currentStep} of {totalSteps} • {initialData?.title || 'Job Position'}
-            </p>
+  const handleSubmit = () => {
+    // Combine form data with photos
+    const finalData = {
+      ...formData,
+      photos: photoUploads
+    };
+    onSubmit(finalData);
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div className="border-b pb-4">
+              <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Details</h2>
+              <p className="text-sm text-muted-foreground mt-1">Tell us about the position</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Job Title *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => updateFormData('title', e.target.value)}
+                  placeholder="e.g., Nail Technician"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="salonName">Salon/Business Name *</Label>
+                <Input
+                  id="salonName"
+                  value={formData.salonName}
+                  onChange={(e) => updateFormData('salonName', e.target.value)}
+                  placeholder="e.g., Beautiful Nails Spa"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location *</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => updateFormData('location', e.target.value)}
+                  placeholder="City, State"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="employmentType">Employment Type</Label>
+                <Select value={formData.employmentType} onValueChange={(value) => updateFormData('employmentType', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="full-time">Full Time</SelectItem>
+                    <SelectItem value="part-time">Part Time</SelectItem>
+                    <SelectItem value="contract">Contract</SelectItem>
+                    <SelectItem value="booth-rental">Booth Rental</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Job Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => updateFormData('description', e.target.value)}
+                placeholder="Describe the role, responsibilities, and what makes your salon special..."
+                rows={6}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label>Specialties</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                  {specialtyOptions.map((specialty) => (
+                    <div key={specialty.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={specialty.value}
+                        checked={formData.specialties.includes(specialty.value)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            updateFormData('specialties', [...formData.specialties, specialty.value]);
+                          } else {
+                            updateFormData('specialties', formData.specialties.filter((s: string) => s !== specialty.value));
+                          }
+                        }}
+                      />
+                      <Label htmlFor={specialty.value} className="text-sm">{specialty.label}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="flex space-x-2">
-          {Array.from({ length: totalSteps }, (_, i) => (
-            <div
-              key={i}
-              className={`w-3 h-3 rounded-full ${
-                i + 1 <= currentStep ? 'bg-purple-500' : 'bg-gray-200'
-              }`}
+        );
+
+      case 2:
+        return (
+          <div className="space-y-6">
+            <div className="border-b pb-4">
+              <h2 className="font-playfair text-2xl font-semibold text-gray-900">Compensation & Benefits</h2>
+              <p className="text-sm text-muted-foreground mt-1">Set competitive compensation</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Compensation Type</Label>
+                <Select value={formData.compensationType} onValueChange={(value) => updateFormData('compensationType', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select compensation type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hourly">Hourly Rate</SelectItem>
+                    <SelectItem value="salary">Annual Salary</SelectItem>
+                    <SelectItem value="commission">Commission Based</SelectItem>
+                    <SelectItem value="booth-rental">Booth Rental</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {formData.compensationType === 'hourly' && (
+                <div className="space-y-2">
+                  <Label htmlFor="hourlyRate">Hourly Rate ($)</Label>
+                  <Input
+                    id="hourlyRate"
+                    type="number"
+                    value={formData.hourlyRate}
+                    onChange={(e) => updateFormData('hourlyRate', e.target.value)}
+                    placeholder="25.00"
+                  />
+                </div>
+              )}
+
+              {formData.compensationType === 'salary' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="salaryMin">Minimum Salary ($)</Label>
+                    <Input
+                      id="salaryMin"
+                      type="number"
+                      value={formData.salaryMin}
+                      onChange={(e) => updateFormData('salaryMin', e.target.value)}
+                      placeholder="40000"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="salaryMax">Maximum Salary ($)</Label>
+                    <Input
+                      id="salaryMax"
+                      type="number"
+                      value={formData.salaryMax}
+                      onChange={(e) => updateFormData('salaryMax', e.target.value)}
+                      placeholder="60000"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.compensationType === 'commission' && (
+                <div className="space-y-2">
+                  <Label htmlFor="commissionRate">Commission Rate (%)</Label>
+                  <Input
+                    id="commissionRate"
+                    type="number"
+                    value={formData.commissionRate}
+                    onChange={(e) => updateFormData('commissionRate', e.target.value)}
+                    placeholder="50"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <Label>Benefits & Perks</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {requirementOptions.filter(req => ['benefits', 'tips', 'housing'].includes(req.value)).map((benefit) => (
+                  <div key={benefit.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={benefit.value}
+                      checked={formData.benefits.includes(benefit.value)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          updateFormData('benefits', [...formData.benefits, benefit.value]);
+                        } else {
+                          updateFormData('benefits', formData.benefits.filter((b: string) => b !== benefit.value));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={benefit.value} className="text-sm">{benefit.label}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="border-b pb-4">
+              <h2 className="font-playfair text-2xl font-semibold text-gray-900">Contact Information</h2>
+              <p className="text-sm text-muted-foreground mt-1">How candidates can reach you</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="contactName">Contact Name *</Label>
+                <Input
+                  id="contactName"
+                  value={formData.contactName}
+                  onChange={(e) => updateFormData('contactName', e.target.value)}
+                  placeholder="Your name or hiring manager"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contactPhone">Phone Number *</Label>
+                <Input
+                  id="contactPhone"
+                  type="tel"
+                  value={formData.contactPhone}
+                  onChange={(e) => updateFormData('contactPhone', e.target.value)}
+                  placeholder="(555) 123-4567"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="contactEmail">Email Address</Label>
+                <Input
+                  id="contactEmail"
+                  type="email"
+                  value={formData.contactEmail}
+                  onChange={(e) => updateFormData('contactEmail', e.target.value)}
+                  placeholder="hiring@yourSalon.com"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="preferredContact">Preferred Contact Method</Label>
+                <Select value={formData.preferredContact} onValueChange={(value) => updateFormData('preferredContact', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select preference" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="phone">Phone Call</SelectItem>
+                    <SelectItem value="text">Text Message</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Label>Job Requirements</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {requirementOptions.filter(req => !['benefits', 'tips', 'housing'].includes(req.value)).map((requirement) => (
+                  <div key={requirement.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={requirement.value}
+                      checked={formData.requirements.includes(requirement.value)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          updateFormData('requirements', [...formData.requirements, requirement.value]);
+                        } else {
+                          updateFormData('requirements', formData.requirements.filter((r: string) => r !== requirement.value));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={requirement.value} className="text-sm">{requirement.label}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div className="border-b pb-4">
+              <h2 className="font-playfair text-2xl font-semibold text-gray-900">Upload Salon/Job Photos</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Add photos to showcase your salon and attract top talent (1-5 photos required)
+              </p>
+            </div>
+            
+            <PhotoUploader
+              files={photoUploads}
+              onChange={setPhotoUploads}
+              maxFiles={5}
+              accept="image/*"
             />
-          ))}
+
+            {photoUploads.length === 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <ImageIcon className="w-5 h-5 text-blue-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-blue-900">Why add photos?</h4>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Job posts with photos get 3x more applications. Show off your salon's atmosphere, 
+                      equipment, and workspace to attract the best candidates.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="space-y-6">
+            <div className="border-b pb-4">
+              <h2 className="font-playfair text-2xl font-semibold text-gray-900">Review & Confirm</h2>
+              <p className="text-sm text-muted-foreground mt-1">Review your job posting before publishing</p>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">{formData.title}</CardTitle>
+                <p className="text-gray-600">{formData.salonName} • {formData.location}</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Employment Type</h4>
+                  <p className="text-gray-600 capitalize">{formData.employmentType.replace('-', ' ')}</p>
+                </div>
+
+                {formData.description && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Description</h4>
+                    <p className="text-gray-600">{formData.description}</p>
+                  </div>
+                )}
+
+                <div>
+                  <h4 className="font-semibold mb-2">Compensation</h4>
+                  <p className="text-gray-600 capitalize">
+                    {formData.compensationType === 'hourly' && formData.hourlyRate && `$${formData.hourlyRate}/hour`}
+                    {formData.compensationType === 'salary' && formData.salaryMin && formData.salaryMax && 
+                      `$${formData.salaryMin} - $${formData.salaryMax}/year`}
+                    {formData.compensationType === 'commission' && formData.commissionRate && 
+                      `${formData.commissionRate}% commission`}
+                    {formData.compensationType === 'booth-rental' && 'Booth Rental'}
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-2">Contact</h4>
+                  <p className="text-gray-600">{formData.contactName} • {formData.contactPhone}</p>
+                </div>
+
+                {photoUploads.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Photos ({photoUploads.length})</h4>
+                    <div className="grid grid-cols-4 gap-2">
+                      {photoUploads.slice(0, 4).map((file, index) => (
+                        <img
+                          key={index}
+                          src={URL.createObjectURL(file)}
+                          alt={`Photo ${index + 1}`}
+                          className="w-full h-20 object-cover rounded-md"
+                        />
+                      ))}
+                      {photoUploads.length > 4 && (
+                        <div className="w-full h-20 bg-gray-100 rounded-md flex items-center justify-center">
+                          <span className="text-sm text-gray-500">+{photoUploads.length - 4} more</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Progress indicator */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-3xl font-bold">Create Premium Job Post</h1>
+          <span className="text-sm text-gray-500">Step {currentStep} of {totalSteps}</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+          />
         </div>
       </div>
 
-      {/* Form Content */}
-      <Card className="border-2 border-purple-100 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
-          <CardTitle className="flex items-center space-x-2">
-            <Zap className="w-5 h-5 text-purple-600" />
-            <span>
-              {currentStep === 1 && 'Job Details'}
-              {currentStep === 2 && 'Compensation & Benefits'}
-              {currentStep === 3 && 'Contact Information'}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <form className="space-y-6">
-            {currentStep === 1 && (
-              <div className="space-y-6">
-                {/* Job Title */}
-                <div className="space-y-2">
-                  <Label htmlFor="title">Job Title *</Label>
-                  <Input
-                    id="title"
-                    {...form.register('title')}
-                    className="border-purple-200 focus:border-purple-500"
-                  />
-                </div>
-
-                {/* Salon Name */}
-                <div className="space-y-2">
-                  <Label htmlFor="salonName">Salon/Company Name *</Label>
-                  <Input
-                    id="salonName"
-                    {...form.register('salonName')}
-                    className="border-purple-200 focus:border-purple-500"
-                  />
-                </div>
-
-                {/* Location */}
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location *</Label>
-                  <Input
-                    id="location"
-                    {...form.register('location')}
-                    placeholder="City, State"
-                    className="border-purple-200 focus:border-purple-500"
-                  />
-                </div>
-
-                {/* Employment Type */}
-                <div className="space-y-2">
-                  <Label htmlFor="employmentType">Employment Type</Label>
-                  <Select defaultValue={form.getValues('employmentType')}>
-                    <SelectTrigger className="border-purple-200 focus:border-purple-500">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full-time">Full-time</SelectItem>
-                      <SelectItem value="part-time">Part-time</SelectItem>
-                      <SelectItem value="contract">Contract</SelectItem>
-                      <SelectItem value="booth-rental">Booth Rental</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Job Description - English */}
-                <div className="space-y-2">
-                  <Label htmlFor="description">Job Description (English) *</Label>
-                  <Textarea
-                    id="description"
-                    {...form.register('description')}
-                    rows={6}
-                    className="border-purple-200 focus:border-purple-500"
-                  />
-                </div>
-
-                {/* Job Description - Vietnamese */}
-                <div className="space-y-2">
-                  <Label htmlFor="vietnameseDescription">Job Description (Vietnamese)</Label>
-                  <Textarea
-                    id="vietnameseDescription"
-                    {...form.register('vietnameseDescription')}
-                    rows={6}
-                    className="border-purple-200 focus:border-purple-500"
-                  />
-                </div>
-              </div>
-            )}
-
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                {/* Compensation Type */}
-                <div className="space-y-2">
-                  <Label htmlFor="compensationType">Compensation Type</Label>
-                  <Select defaultValue={form.getValues('compensationType')}>
-                    <SelectTrigger className="border-purple-200 focus:border-purple-500">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="commission">Commission</SelectItem>
-                      <SelectItem value="hourly">Hourly</SelectItem>
-                      <SelectItem value="salary">Salary</SelectItem>
-                      <SelectItem value="booth-rental">Booth Rental</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Compensation Details */}
-                <div className="space-y-2">
-                  <Label htmlFor="compensationDetails">Compensation Details</Label>
-                  <Input
-                    id="compensationDetails"
-                    {...form.register('compensationDetails')}
-                    placeholder="e.g., $15-25/hour, 50-60% commission"
-                    className="border-purple-200 focus:border-purple-500"
-                  />
-                </div>
-
-                {/* Benefits Checkboxes */}
-                <div className="space-y-4">
-                  <Label>Benefits & Perks</Label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="weeklyPay" {...form.register('weeklyPay')} />
-                      <Label htmlFor="weeklyPay">Weekly Pay</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="hasHousing" {...form.register('hasHousing')} />
-                      <Label htmlFor="hasHousing">Housing Provided</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="hasWaxRoom" {...form.register('hasWaxRoom')} />
-                      <Label htmlFor="hasWaxRoom">Wax Room Available</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="noSupplyDeduction" {...form.register('noSupplyDeduction')} />
-                      <Label htmlFor="noSupplyDeduction">No Supply Deduction</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="ownerWillTrain" {...form.register('ownerWillTrain')} />
-                      <Label htmlFor="ownerWillTrain">Owner Will Train</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="isUrgent" {...form.register('isUrgent')} />
-                      <Label htmlFor="isUrgent">Urgent Hiring</Label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {currentStep === 3 && (
-              <div className="space-y-6">
-                {/* Contact Information */}
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="ownerName">Contact Name *</Label>
-                    <Input
-                      id="ownerName"
-                      {...form.register('contactInfo.ownerName')}
-                      className="border-purple-200 focus:border-purple-500"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
-                    <Input
-                      id="phone"
-                      {...form.register('contactInfo.phone')}
-                      type="tel"
-                      className="border-purple-200 focus:border-purple-500"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      {...form.register('contactInfo.email')}
-                      type="email"
-                      className="border-purple-200 focus:border-purple-500"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea
-                      id="notes"
-                      {...form.register('contactInfo.notes')}
-                      rows={4}
-                      className="border-purple-200 focus:border-purple-500"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </form>
+      {/* Form content */}
+      <Card className="mb-8">
+        <CardContent className="p-8">
+          {renderStepContent()}
         </CardContent>
       </Card>
 
-      {/* Navigation */}
+      {/* Navigation buttons */}
       <div className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={prevStep}
-          className="border-purple-200 text-purple-600 hover:bg-purple-50"
+        <Button
+          variant="outline"
+          onClick={handleBack}
+          className="flex items-center space-x-2"
         >
-          {currentStep === 1 ? 'Back to Templates' : 'Previous'}
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
         </Button>
-        <Button 
-          onClick={nextStep}
-          disabled={isSubmitting}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-        >
-          {isSubmitting 
-            ? 'Creating...' 
-            : currentStep === totalSteps 
-              ? 'Create Premium Job Post' 
-              : 'Next'
-          }
-        </Button>
+
+        <div className="flex space-x-4">
+          {currentStep < totalSteps ? (
+            <Button
+              onClick={handleNext}
+              className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              <span>Next</span>
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting || photoUploads.length === 0}
+              className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+            >
+              <span>{isSubmitting ? 'Publishing...' : 'Create Premium Job Post'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
 };
-
-// Helper functions for default descriptions
-function getDefaultDescription(title: string): string {
-  const descriptions: Record<string, string> = {
-    'Nail Technician': 'We are seeking an experienced and passionate Nail Technician to join our team. The ideal candidate will have expertise in manicures, pedicures, nail art, and gel applications. You should be detail-oriented, creative, and committed to providing exceptional customer service.',
-    'Hair Stylist': 'Join our dynamic salon team as a skilled Hair Stylist! We are looking for a creative professional with experience in cutting, coloring, styling, and hair treatments. The perfect candidate will stay current with trends and provide outstanding client experiences.',
-    'Lash Technician': 'We are hiring a talented Lash Technician specializing in eyelash extensions, lash lifts, and brow services. The ideal candidate will have certification in lash application techniques and a passion for enhancing natural beauty.',
-    'Barber': 'Seeking an experienced Barber to provide high-quality men\'s grooming services including haircuts, beard trims, and traditional barbering techniques. Must have strong attention to detail and excellent customer service skills.',
-    'Esthetician': 'Join our spa team as a licensed Esthetician! We need someone skilled in facial treatments, skincare analysis, and various spa services. The ideal candidate will be knowledgeable about skincare products and treatments.'
-  };
-  
-  return descriptions[title] || 'We are seeking a qualified beauty professional to join our team. The ideal candidate will be passionate, skilled, and committed to providing excellent service to our clients.';
-}
-
-function getDefaultVietnameseDescription(title: string): string {
-  const descriptions: Record<string, string> = {
-    'Nail Technician': 'Chúng tôi đang tìm kiếm một Kỹ thuật viên Nail có kinh nghiệm và đam mê để gia nhập đội ngũ của chúng tôi. Ứng viên lý tưởng sẽ có chuyên môn về manicure, pedicure, nail art và ứng dụng gel.',
-    'Hair Stylist': 'Hãy tham gia đội ngũ salon năng động của chúng tôi với tư cách là một Hair Stylist có kỹ năng! Chúng tôi đang tìm kiếm một chuyên gia sáng tạo có kinh nghiệm về cắt, nhuộm, tạo kiểu và các liệu pháp chăm sóc tóc.',
-    'Lash Technician': 'Chúng tôi đang tuyển dụng một Kỹ thuật viên Mi có tài năng chuyên về nối mi, uốn mi và các dịch vụ chân mày. Ứng viên lý tưởng sẽ có chứng chỉ về kỹ thuật ứng dụng mi.',
-    'Barber': 'Tìm kiếm một Thợ cắt tóc có kinh nghiệm để cung cấp các dịch vụ chăm sóc nam giới chất lượng cao bao gồm cắt tóc, cắt râu và các kỹ thuật cắt tóc truyền thống.',
-    'Esthetician': 'Tham gia đội ngũ spa của chúng tôi với tư cách là một Chuyên viên Thẩm mỹ được cấp phép! Chúng tôi cần một người có kỹ năng trong các liệu pháp chăm sóc da mặt, phân tích da và các dịch vụ spa khác nhau.'
-  };
-  
-  return descriptions[title] || 'Chúng tôi đang tìm kiếm một chuyên gia làm đẹp có trình độ để gia nhập đội ngũ của chúng tôi. Ứng viên lý tưởng sẽ đầy đam mê, có kỹ năng và cam kết cung cấp dịch vụ xuất sắc cho khách hàng của chúng tôi.';
-}
 
 export default BillionDollarJobForm;
