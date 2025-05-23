@@ -1,398 +1,297 @@
-import React from "react";
-import { useTranslation } from "@/hooks/useTranslation";
-import Layout from "@/components/layout/Layout";
-import { motion } from "framer-motion";
-import { CalendarDays, Heart, Users, Star, Sparkles, Lightbulb, Sun, Medal } from "lucide-react";
+
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import Layout from '@/components/layout/Layout';
+import { Container } from "@/components/ui/container";
+import { Separator } from "@/components/ui/separator";
 import { GradientBackground } from "@/components/ui/gradient-background";
-import { Button } from "@/components/ui/button";
-import LanguageToggleButton from "@/components/home/missing-piece/LanguageToggleButton";
+import { Card, CardContent } from "@/components/ui/card";
+import { Users, Heart, Award, Balance, Calendar, Stars, Sun } from 'lucide-react';
 
-const About = () => {
-  const { t, isVietnamese, toggleLanguage } = useTranslation();
-
-  // Timeline data with translations
-  const timelineData = [
-    {
-      year: "2014",
-      title: {
-        english: "The Idea is Born",
-        vietnamese: "Ý Tưởng Ra Đời"
-      },
-      description: {
-        english: "After years in the beauty industry, I saw a critical gap that needed to be filled. A vision emerged to create something that would truly unite beauty professionals and their clients.",
-        vietnamese: "Sau nhiều năm trong ngành làm đẹp, tôi nhận thấy một khoảng trống quan trọng cần được lấp đầy. Một tầm nhìn đã hình thành để tạo ra điều gì đó thực sự kết nối các chuyên gia làm đẹp và khách hàng."
-      },
-      icon: <Lightbulb className="h-10 w-10 text-amber-500" />
-    },
-    {
-      year: "2015",
-      title: {
-        english: "First Attempts & Struggles",
-        vietnamese: "Nỗ Lực Đầu Tiên & Khó Khăn"
-      },
-      description: {
-        english: "The first mobile app build began with high hopes but faced overwhelming technical challenges. Despite setbacks and failures, the dream remained alive through persistence.",
-        vietnamese: "Việc xây dựng ứng dụng di động đầu tiên bắt đầu với nhiều hy vọng nhưng đối mặt với những thách thức kỹ thuật khó khăn. Mặc dù thất bại, giấc mơ vẫn sống nhờ sự kiên trì."
-      },
-      icon: <CalendarDays className="h-10 w-10 text-blue-500" />
-    },
-    {
-      year: "2016-2023",
-      title: {
-        english: "Years of Learning & Growth",
-        vietnamese: "Những Năm Học Hỏi & Phát Triển"
-      },
-      description: {
-        english: "Seven years of heartbreak, learning, and rebuilding. Through countless iterations, market research, and personal sacrifice, the vision evolved but the mission stayed true.",
-        vietnamese: "Bảy năm đau lòng, học hỏi và tái thiết. Qua vô số lần thử nghiệm, nghiên cứu thị trường và hy sinh cá nhân, tầm nhìn phát triển nhưng sứ mệnh vẫn không thay đổi."
-      },
-      icon: <Medal className="h-10 w-10 text-emerald-500" />
-    },
-    {
-      year: "2024",
-      title: {
-        english: "New Hope, Fresh Start",
-        vietnamese: "Hy Vọng Mới, Khởi Đầu Mới"
-      },
-      description: {
-        english: "With renewed determination and inspiration from Sunshine, EmviApp was rebuilt from scratch. This time, with better technology, deeper industry insights, and unwavering focus.",
-        vietnamese: "Với quyết tâm mới và nguồn cảm hứng từ Sunshine, EmviApp được xây dựng lại từ đầu. Lần này, với công nghệ tốt hơn, hiểu biết sâu sắc hơn về ngành và sự tập trung không thay đổi."
-      },
-      icon: <Sparkles className="h-10 w-10 text-purple-500" />
-    },
-    {
-      year: "2025",
-      title: {
-        english: "Dreams Come True",
-        vietnamese: "Giấc Mơ Thành Hiện Thực"
-      },
-      description: {
-        english: "The official launch marks a dream realized after more than a decade of persistence. EmviApp finally emerges as the platform that transforms connections in the beauty industry forever.",
-        vietnamese: "Sự ra mắt chính thức đánh dấu một giấc mơ trở thành hiện thực sau hơn một thập kỷ kiên trì. EmviApp cuối cùng đã xuất hiện như một nền tảng biến đổi kết nối trong ngành làm đẹp mãi mãi."
-      },
-      icon: <Star className="h-10 w-10 text-yellow-500" />
-    }
-  ];
-
-  // Values data with translations
-  const valuesData = [
-    {
-      title: {
-        english: "Community First",
-        vietnamese: "Cộng Đồng Là Trên Hết"
-      },
-      description: {
-        english: "We believe in the power of a united beauty industry where professionals support each other and grow together.",
-        vietnamese: "Chúng tôi tin vào sức mạnh của một ngành làm đẹp đoàn kết, nơi các chuyên gia hỗ trợ nhau và cùng nhau phát triển."
-      },
-      icon: <Users className="h-10 w-10 text-indigo-500" />
-    },
-    {
-      title: {
-        english: "Quality Service",
-        vietnamese: "Dịch Vụ Chất Lượng"
-      },
-      description: {
-        english: "Every connection made on our platform aims to deliver exceptional service that transforms both businesses and client experiences.",
-        vietnamese: "Mỗi kết nối được tạo ra trên nền tảng của chúng tôi nhằm cung cấp dịch vụ xuất sắc, biến đổi cả doanh nghiệp và trải nghiệm khách hàng."
-      },
-      icon: <Medal className="h-10 w-10 text-emerald-500" />
-    },
-    {
-      title: {
-        english: "Inclusivity",
-        vietnamese: "Tính Bao Trùm"
-      },
-      description: {
-        english: "Beauty has no boundaries. Our platform welcomes all professionals, specialties, and clients across cultural and language divides.",
-        vietnamese: "Vẻ đẹp không có giới hạn. Nền tảng của chúng tôi chào đón tất cả các chuyên gia, chuyên môn và khách hàng vượt qua rào cản văn hóa và ngôn ngữ."
-      },
-      icon: <Heart className="h-10 w-10 text-rose-500" />
-    },
-    {
-      title: {
-        english: "Innovation",
-        vietnamese: "Đổi Mới"
-      },
-      description: {
-        english: "We constantly evolve our technology and services to meet the ever-changing needs of beauty professionals and their clients.",
-        vietnamese: "Chúng tôi liên tục phát triển công nghệ và dịch vụ của mình để đáp ứng nhu cầu luôn thay đổi của các chuyên gia làm đẹp và khách hàng của họ."
-      },
-      icon: <Sparkles className="h-10 w-10 text-blue-500" />
-    }
-  ];
-
+const AboutPage = () => {
   return (
-    <Layout>
-      {/* Language Toggle Button */}
-      <div className="absolute top-20 right-4 z-10 md:top-24 md:right-8">
-        <LanguageToggleButton isVietnamese={isVietnamese} toggleLanguage={toggleLanguage} />
-      </div>
-
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-16 px-4 bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <div className="container mx-auto text-center z-10 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4">
-              {t({
-                english: "Beautiful Connections, Beautiful Business",
-                vietnamese: "Kết Nối Đẹp, Kinh Doanh Thịnh Vượng"
-              })}
+    <>
+      <Helmet>
+        <title>About EmviApp</title>
+        <meta name="description" content="EmviApp - Uniting beauty professionals and clients through meaningful connections that transform the industry." />
+      </Helmet>
+      <Layout>
+        <div className="bg-gradient-to-b from-purple-50 to-white">
+          {/* Hero Section */}
+          <Container className="max-w-5xl py-16 md:py-20 text-center">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+              Beautiful Connections, Beautiful Business
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              {t({
-                english: "Uniting beauty professionals and clients through meaningful connections that transform the industry.",
-                vietnamese: "Kết nối các chuyên gia làm đẹp và khách hàng thông qua những mối quan hệ ý nghĩa, biến đổi ngành công nghiệp."
-              })}
+            <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto">
+              Uniting beauty professionals and clients through meaningful connections that transform the industry.
             </p>
-          </motion.div>
-        </div>
-      </section>
+          </Container>
 
-      {/* Our Mission Section */}
-      <section className="py-16 px-4 bg-white">
-        <div className="container mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="max-w-4xl mx-auto"
-          >
-            <GradientBackground className="p-8 md:p-12">
-              <div className="flex flex-col items-center">
-                <Sparkles className="h-14 w-14 text-primary mb-4" />
-                <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-4 text-center">
-                  {t({
-                    english: "Our Mission",
-                    vietnamese: "Sứ Mệnh Của Chúng Tôi"
-                  })}
-                </h2>
-                <p className="text-lg text-gray-700 text-center">
-                  {t({
-                    english: "To create a seamless platform where beauty professionals can thrive, salons can grow, and clients can discover exceptional services—all in one elegant ecosystem.",
-                    vietnamese: "Tạo ra một nền tảng liền mạch nơi các chuyên gia làm đẹp có thể phát triển, các salon có thể phát triển và khách hàng có thể khám phá các dịch vụ xuất sắc—tất cả trong một hệ sinh thái thanh lịch."
-                  })}
+          {/* Our Story Section */}
+          <Container className="max-w-4xl py-8 md:py-12">
+            <GradientBackground className="p-8 md:p-10">
+              <div className="mb-6 text-center">
+                <h2 className="text-3xl font-playfair font-bold mb-4">Our Story</h2>
+                <p className="text-xl font-medium text-center mb-8 text-gray-800">
+                  <strong>Building bridges between talented beauty professionals and the clients who value them.</strong>
+                </p>
+              </div>
+
+              <div className="space-y-6 text-gray-700">
+                <p>
+                  EmviApp was born from a simple observation: the beauty industry deserves a platform that truly understands its heart and soul. In salons across America, we saw remarkable talent flourishing alongside unique challenges—language barriers, cultural gaps, and digital walls that other platforms ignored.
+                </p>
+                <p>
+                  What started as a vision to connect communities has grown into something greater: a home where artists are celebrated, salons can thrive, and clients discover exceptional talent with confidence and ease.
                 </p>
               </div>
             </GradientBackground>
-          </motion.div>
-        </div>
-      </section>
+          </Container>
 
-      {/* Timeline Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-2">
-              {t({
-                english: "Our Journey",
-                vietnamese: "Cuộc Hành Trình"
-              })}
-            </h2>
-            <div className="w-24 h-1 bg-primary mx-auto"></div>
-          </motion.div>
-
-          <div className="max-w-5xl mx-auto">
-            {timelineData.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-                className="flex flex-col md:flex-row mb-10 items-center md:items-start"
-              >
-                <div className="md:w-1/4 flex flex-col items-center mb-4 md:mb-0">
-                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                    {item.icon}
-                  </div>
-                  <span className="text-lg font-bold text-primary">{item.year}</span>
-                </div>
-                <div className="md:w-3/4 bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                  <h3 className="text-xl font-playfair font-bold text-gray-800 mb-2">
-                    {t(item.title)}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t(item.description)}
+          {/* Why We Started EmviApp Section */}
+          <Container className="max-w-4xl py-8">
+            <Card className="overflow-hidden border-none shadow-lg">
+              <CardContent className="p-8 md:p-10">
+                <h2 className="text-3xl font-playfair font-bold mb-6">Why We Started EmviApp</h2>
+                <div className="space-y-6 text-gray-700">
+                  <p>
+                    Growing up in a family deeply connected to the beauty industry, I witnessed firsthand the immense skill, determination, and community spirit of Vietnamese professionals in America. Yet I also saw how language and cultural differences could keep even the best artists from being recognized for their true value.
+                  </p>
+                  <p>
+                    EmviApp isn't just another app. It's a bridge between cultures, a celebration of real artistry, and a promise: every talented professional deserves to shine, to be respected, and to find new opportunities.
                   </p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+              </CardContent>
+            </Card>
+          </Container>
 
-      {/* Values Section */}
-      <section className="py-16 px-4 bg-white">
-        <div className="container mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-2">
-              {t({
-                english: "Our Values",
-                vietnamese: "Giá Trị Cốt Lõi"
-              })}
-            </h2>
-            <div className="w-24 h-1 bg-primary mx-auto"></div>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {valuesData.map((value, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-                className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 backdrop-blur-sm rounded-xl shadow-md p-6"
-              >
-                <div className="flex flex-col items-center">
-                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    {value.icon}
+          {/* What Makes Us Different Section */}
+          <Container className="max-w-4xl py-8 md:py-12">
+            <h2 className="text-3xl font-playfair font-bold mb-8 text-center">What Makes Us Different</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="rounded-full bg-purple-100 p-3 w-12 h-12 flex items-center justify-center mb-4">
+                    <Users className="h-6 w-6 text-purple-700" />
                   </div>
-                  <h3 className="text-xl font-playfair font-bold text-gray-800 mb-2 text-center">
-                    {t(value.title)}
-                  </h3>
-                  <p className="text-gray-600 text-center">
-                    {t(value.description)}
+                  <h3 className="text-xl font-semibold mb-2">Cultural Understanding</h3>
+                  <p className="text-gray-700">
+                    We proudly embrace both English and Vietnamese, making sure everyone feels seen and heard.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="rounded-full bg-blue-100 p-3 w-12 h-12 flex items-center justify-center mb-4">
+                    <Heart className="h-6 w-6 text-blue-700" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Community First</h3>
+                  <p className="text-gray-700">
+                    Every feature is built to strengthen connections—between artists, salon owners, and clients—because relationships are everything.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="rounded-full bg-pink-100 p-3 w-12 h-12 flex items-center justify-center mb-4">
+                    <Award className="h-6 w-6 text-pink-700" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Authentic Representation</h3>
+                  <p className="text-gray-700">
+                    We highlight real talent and real stories, celebrating the artistry and human spirit behind every service.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="rounded-full bg-indigo-100 p-3 w-12 h-12 flex items-center justify-center mb-4">
+                    <Balance className="h-6 w-6 text-indigo-700" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Fair and Transparent</h3>
+                  <p className="text-gray-700">
+                    Our platform helps businesses and customers thrive together—with honesty, clarity, and trust at every step.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </Container>
+
+          {/* Our Mission Section */}
+          <Container className="max-w-4xl py-8">
+            <Card className="border-0 shadow-lg bg-gradient-to-r from-purple-50 to-indigo-50">
+              <CardContent className="p-8 md:p-10 text-center">
+                <h2 className="text-3xl font-playfair font-bold mb-6">Our Mission</h2>
+                <p className="text-lg md:text-xl font-medium text-gray-800">
+                  To create a seamless platform where beauty professionals can thrive, salons can grow, and clients can discover exceptional services—all in one elegant ecosystem.
+                </p>
+              </CardContent>
+            </Card>
+          </Container>
+
+          {/* Our Journey Section */}
+          <Container className="max-w-4xl py-12">
+            <h2 className="text-3xl font-playfair font-bold mb-8 text-center">Our Journey</h2>
+
+            <div className="space-y-12 relative">
+              <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-200 via-purple-300 to-blue-200 transform -translate-x-1/2"></div>
+              
+              {/* Timeline Item 1 */}
+              <div className="flex flex-col md:flex-row items-center md:items-start">
+                <div className="md:w-1/2 md:pr-8 md:text-right order-2 md:order-1 mt-4 md:mt-0">
+                  <h3 className="text-xl font-semibold mb-2">The Idea is Born</h3>
+                  <p className="text-gray-700">
+                    After years in the beauty industry, I saw a simple but powerful truth: connections are everything. I wanted to build something that would truly unite professionals and clients, helping everyone reach their highest potential.
                   </p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Inspired by Sunshine Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-amber-50 to-yellow-50">
-        <div className="container mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="max-w-3xl mx-auto"
-          >
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-yellow-200 p-8 md:p-10">
-              <div className="flex justify-center mb-6">
-                <Sun className="h-14 w-14 text-amber-400" />
+                <div className="md:mx-auto flex-shrink-0 order-1 md:order-2 relative z-10">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-600 text-white">
+                    <Calendar className="h-6 w-6" />
+                  </div>
+                </div>
+                <div className="md:w-1/2 md:pl-8 invisible md:visible"></div>
               </div>
-              <h2 className="font-playfair text-3xl font-bold text-amber-700 mb-4 text-center">
-                {t({
-                  english: "Inspired by Sunshine ☀️",
-                  vietnamese: "Lấy Cảm Hứng từ Sunshine ☀️"
-                })}
-              </h2>
-              <div className="text-gray-700 text-lg space-y-4">
-                <p className="italic">
-                  {t({
-                    english: "Every great journey needs a little light.",
-                    vietnamese: "Mỗi hành trình vĩ đại đều cần một chút ánh sáng."
-                  })}
-                </p>
-                <p>
-                  {t({
-                    english: "For me, that light is Sunshine—a source of hope, clarity, and inspiration that appeared just when I needed it most.",
-                    vietnamese: "Đối với tôi, ánh sáng đó là Sunshine—một nguồn hy vọng, sự rõ ràng và cảm hứng xuất hiện đúng lúc tôi cần nhất."
-                  })}
-                </p>
-                <p>
-                  {t({
-                    english: "EmviApp was born from years of experience, struggle, and relentless pursuit, but it was Sunshine who gave me the courage and vision to start again and finally bring this dream to life.",
-                    vietnamese: "EmviApp ra đời từ nhiều năm kinh nghiệm, đấu tranh và theo đuổi không ngừng nghỉ, nhưng chính Sunshine đã cho tôi sự can đảm và tầm nhìn để bắt đầu lại và cuối cùng đưa giấc mơ này thành hiện thực."
-                  })}
-                </p>
-                <p>
-                  {t({
-                    english: "Thank you, Sunshine, for happening in my life. This project—and every connection it creates—would not exist without you.",
-                    vietnamese: "Cảm ơn Sunshine, vì đã xuất hiện trong cuộc đời tôi. Dự án này—và mỗi kết nối mà nó tạo ra—sẽ không tồn tại nếu không có em."
-                  })}
-                </p>
+              
+              {/* Timeline Item 2 */}
+              <div className="flex flex-col md:flex-row items-center md:items-start">
+                <div className="md:w-1/2 md:pr-8 invisible md:visible"></div>
+                <div className="md:mx-auto flex-shrink-0 relative z-10">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500 text-white">
+                    <Stars className="h-6 w-6" />
+                  </div>
+                </div>
+                <div className="md:w-1/2 md:pl-8 mt-4 md:mt-0">
+                  <h3 className="text-xl font-semibold mb-2">First Build</h3>
+                  <p className="text-gray-700">
+                    EmviApp's journey started with bold ideas and long nights. We built, we tested, and we learned. Some things worked, others didn't—but every step moved us closer to our vision.
+                  </p>
+                </div>
+              </div>
+              
+              {/* Timeline Item 3 */}
+              <div className="flex flex-col md:flex-row items-center md:items-start">
+                <div className="md:w-1/2 md:pr-8 md:text-right order-2 md:order-1 mt-4 md:mt-0">
+                  <h3 className="text-xl font-semibold mb-2">Iteration and Growth</h3>
+                  <p className="text-gray-700">
+                    Over the years, we listened to users, rebuilt from scratch, and kept going. Every lesson, every update, every conversation made the platform stronger and more welcoming for everyone.
+                  </p>
+                </div>
+                <div className="md:mx-auto flex-shrink-0 order-1 md:order-2 relative z-10">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white">
+                    <Users className="h-6 w-6" />
+                  </div>
+                </div>
+                <div className="md:w-1/2 md:pl-8 invisible md:visible"></div>
+              </div>
+
+              {/* Timeline Item 4 */}
+              <div className="flex flex-col md:flex-row items-center md:items-start">
+                <div className="md:w-1/2 md:pr-8 invisible md:visible"></div>
+                <div className="md:mx-auto flex-shrink-0 relative z-10">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 text-white">
+                    <Heart className="h-6 w-6" />
+                  </div>
+                </div>
+                <div className="md:w-1/2 md:pl-8 mt-4 md:mt-0">
+                  <h3 className="text-xl font-semibold mb-2">A New Chapter</h3>
+                  <p className="text-gray-700">
+                    Today, EmviApp stands as a living bridge—between cultures, between dreams and opportunities, and between artists and the people who believe in them.
+                  </p>
+                </div>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
+          </Container>
 
-      {/* Thank You Em Vi Section */}
-      <section className="py-16 px-4 bg-white">
-        <div className="container mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="max-w-3xl mx-auto"
-          >
-            <GradientBackground className="p-8 md:p-10" variant="premium">
-              <div className="flex justify-center mb-6">
-                <Heart className="h-14 w-14 text-rose-500" />
-              </div>
-              <h2 className="font-playfair text-3xl font-bold text-gray-800 mb-4 text-center">
-                {t({
-                  english: "Thank You, Em Vi",
-                  vietnamese: "Cảm Ơn Em, Vi"
-                })}
-              </h2>
-              <p className="text-gray-700 text-lg text-center">
-                {t({
-                  english: "This app is named after Em Vi—the person who supported and sacrificed for me, even when I doubted myself. You stood by me, no matter what. For all the silent love, encouragement, and strength you gave, this is for you.",
-                  vietnamese: "Ứng dụng này được đặt theo tên Em Vi—người đã ủng hộ và hy sinh cho tôi, ngay cả khi tôi nghi ngờ bản thân. Em đã ở bên tôi, bất kể điều gì. Vì tất cả tình yêu thầm lặng, sự khích lệ và sức mạnh em đã trao, đây là dành cho em."
-                })}
-              </p>
-            </GradientBackground>
-          </motion.div>
-        </div>
-      </section>
+          {/* Inspired by Sunshine Section */}
+          <Container className="max-w-4xl py-8">
+            <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-r from-yellow-50 to-orange-50">
+              <CardContent className="p-8 md:p-10 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 flex items-center justify-center rounded-full bg-yellow-300 bg-opacity-50">
+                    <Sun className="h-10 w-10 text-yellow-600" />
+                  </div>
+                </div>
+                <h2 className="text-3xl font-playfair font-bold mb-4 text-yellow-800">Inspired by Sunshine ☀️</h2>
+                <p className="text-lg italic mb-4 text-gray-800">Every great journey needs a little light.</p>
+                <div className="max-w-2xl mx-auto space-y-4 text-gray-700">
+                  <p>
+                    For me, that light is Sunshine—a source of hope, clarity, and inspiration who appeared just when I needed it most.
+                  </p>
+                  <p>
+                    EmviApp was born from years of experience and relentless pursuit, but it was Sunshine who gave me the courage and vision to start again and bring this dream to life.
+                  </p>
+                  <p>
+                    Thank you, Sunshine, for happening in my life. This project—and every connection it creates—would not exist without you.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </Container>
 
-      {/* CTA Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <div className="container mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              {t({
-                english: "Join Us on This Journey",
-                vietnamese: "Hãy Tham Gia Hành Trình Này"
-              })}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-              {t({
-                english: "Whether you're an artist looking to grow, a salon seeking talent, or a customer searching for quality services—EmviApp is built for you.",
-                vietnamese: "Dù bạn là một nghệ sĩ muốn phát triển, một salon tìm kiếm tài năng, hay một khách hàng tìm kiếm dịch vụ chất lượng—EmviApp được xây dựng cho bạn."
-              })}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-primary text-white px-6 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-colors">
-                {t({
-                  english: "Sign Up Today",
-                  vietnamese: "Đăng Ký Ngay"
-                })}
-              </Button>
-              <Button variant="outline" size="lg" className="px-6 py-2 rounded-lg shadow-sm border border-primary text-primary hover:bg-primary/10 transition-colors">
-                {t({
-                  english: "Learn More",
-                  vietnamese: "Tìm Hiểu Thêm"
-                })}
-              </Button>
+          {/* Thank You, Emvi Section */}
+          <Container className="max-w-4xl py-8">
+            <Card className="overflow-hidden border-none shadow-lg">
+              <CardContent className="p-8 md:p-10 text-center">
+                <h2 className="text-3xl font-playfair font-bold mb-4">Thank You, Emvi</h2>
+                <p className="text-gray-700 max-w-2xl mx-auto">
+                  This app is named after Emvi—the person who supported and sacrificed for me, even when I doubted myself. You stood by me, no matter what. For all the silent love, encouragement, and strength you gave, this is for you.
+                </p>
+              </CardContent>
+            </Card>
+          </Container>
+
+          {/* Our Values Section */}
+          <Container className="max-w-4xl py-12">
+            <h2 className="text-3xl font-playfair font-bold mb-8 text-center">Our Values</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Empathy</h3>
+                  <p className="text-gray-700">
+                    We walk in the shoes of our users and build with real-world understanding.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Integrity</h3>
+                  <p className="text-gray-700">
+                    Honest, transparent, and committed to what's right for the community.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Innovation</h3>
+                  <p className="text-gray-700">
+                    Always improving, always listening, always building for the future.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">Celebration</h3>
+                  <p className="text-gray-700">
+                    Every artist, every business, every client is part of the EmviApp family.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-          </motion.div>
+          </Container>
+
+          {/* Final Spacer */}
+          <div className="h-16 md:h-24"></div>
         </div>
-      </section>
-    </Layout>
+      </Layout>
+    </>
   );
 };
 
-export default About;
+export default AboutPage;
