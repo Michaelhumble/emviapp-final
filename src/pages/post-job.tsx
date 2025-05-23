@@ -2,7 +2,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import CleanJobForm from '@/components/posting/job/CleanJobForm';
+import CleanJobPostingForm from '@/components/job-posting/CleanJobPostingForm';
 
 const PostJob = () => {
   return (
@@ -12,7 +12,9 @@ const PostJob = () => {
         <meta name="description" content="Post a job listing to find qualified beauty professionals" />
       </Helmet>
       
-      <CleanJobForm />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+        <CleanJobPostingForm />
+      </div>
     </Layout>
   );
 };

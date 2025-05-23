@@ -1,174 +1,54 @@
 
 import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Timer } from 'lucide-react';
-import { JobFormValues } from '@/components/posting/job/jobFormSchema';
-import { JobPostPreview } from '@/components/posting/job/JobPostPreview';
-import JobPostOptions from '@/components/posting/job/JobPostOptions';
-import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
-import { PaymentSummary } from '@/components/posting/PaymentSummary';
-import { Separator } from '@/components/ui/separator';
-import PricingCard from '@/components/posting/pricing/PricingCard';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { JobPricingTier } from '@/utils/posting/types';
-import { useTranslation } from '@/hooks/useTranslation';
-import { usePricing } from '@/context/pricing/PricingProvider';
-import { Badge } from '@/components/ui/badge';
 
-export interface ReviewAndPaymentSectionProps {
-  formData: JobFormValues | null;
-  photoUploads: File[];
-  onBack: () => void;
+interface ReviewAndPaymentSectionProps {
+  formData: any;
   onSubmit: () => void;
-  isSubmitting: boolean;
+  isSubmitting?: boolean;
 }
 
-export const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({
-  formData,
-  photoUploads,
-  onBack,
-  onSubmit,
-  isSubmitting
+const ReviewAndPaymentSection: React.FC<ReviewAndPaymentSectionProps> = ({ 
+  formData, 
+  onSubmit, 
+  isSubmitting = false 
 }) => {
-  const { t } = useTranslation();
-  const { pricingOptions, setPricingOptions, priceData } = usePricing();
-
-  const handleDurationChange = (months: number) => {
-    setPricingOptions({
-      ...pricingOptions,
-      durationMonths: months
-    });
-  };
-
-  const handleTierChange = (tier: JobPricingTier) => {
-    setPricingOptions({
-      ...pricingOptions,
-      selectedPricingTier: tier
-    });
-  };
-
-  const selectedTierOption = jobPricingOptions.find(option => 
-    option.tier === pricingOptions.selectedPricingTier
-  );
-
-  const isDiamondPlan = pricingOptions.selectedPricingTier === 'diamond';
-  const isFreePost = pricingOptions.selectedPricingTier === 'free' || pricingOptions.isFirstPost;
-
-  // Format price for display
-  const formattedPrice = priceData.finalPrice > 0 
-    ? `$${priceData.finalPrice.toFixed(2)}` 
-    : "Free";
-
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <Button 
-          variant="ghost" 
-          onClick={onBack} 
-          className="px-0 hover:bg-transparent hover:text-primary"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          <span>{t({english: "Back to Edit", vietnamese: "Quay lại chỉnh sửa"})}</span>
-        </Button>
+      <div className="border-b pb-4">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">Review & Payment</h2>
+        <p className="text-sm text-muted-foreground mt-1">Review your job posting and complete payment</p>
       </div>
-      
-      {/* Limited time offer banner */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-md p-3 flex items-center gap-2">
-        <Timer className="h-4 w-4 text-amber-500" />
-        <p className="text-sm text-amber-800">
-          <span className="font-medium">Nail Industry Founders Pricing:</span> Special discounted rates for the first 1,000 users. Already 783 claimed!
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Preview column - Job details and photos */}
-        <div className="lg:col-span-2">
-          <h3 className="text-lg font-medium mb-4">{t({english: "Review Your Job Post", vietnamese: "Xem xét tin của bạn"})}</h3>
-          <JobPostPreview jobData={formData} photoUploads={photoUploads} onBack={onBack} />
-        </div>
-        
-        {/* Pricing column - Plan selection, options, and payment */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-medium">{t({english: "Choose Your Plan", vietnamese: "Chọn gói của bạn"})}</h3>
-          
-          {pricingOptions.isFirstPost && (
-            <Badge className="bg-green-100 text-green-800 border-green-200 mb-2">
-              First Post Free
-            </Badge>
-          )}
-          
-          {/* Plans selection grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-            {jobPricingOptions
-              .filter(option => !option.hidden)
-              .map(option => (
-                <PricingCard
-                  key={option.id}
-                  tier={option.tier}
-                  pricingInfo={option}
-                  isSelected={pricingOptions.selectedPricingTier === option.tier}
-                  onSelect={() => handleTierChange(option.tier as JobPricingTier)}
-                />
-              ))
-            }
-          </div>
-          
-          <Separator />
-          
-          {/* Duration selection */}
-          <DurationSelector
-            durationMonths={pricingOptions.durationMonths}
-            onDurationChange={handleDurationChange}
-            isDiamondPlan={isDiamondPlan}
-          />
-          
-          {/* Additional options */}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Job Posting Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="space-y-4">
-            <JobPostOptions
-              options={pricingOptions}
-              onOptionsChange={(updatedOptions) => setPricingOptions(updatedOptions)}
-              isFirstPost={pricingOptions.isFirstPost}
-            />
-          </div>
-          
-          {/* Payment summary */}
-          <PaymentSummary
-            priceData={priceData}
-          />
-          
-          {/* Validation to prevent $0 paid plans */}
-          {pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0 && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
-              Error: Invalid price calculation. Please try different options or contact support.
+            <div>
+              <h3 className="font-semibold text-lg">{formData?.title || 'Job Title'}</h3>
+              <p className="text-gray-600">{formData?.salonName || 'Salon Name'}</p>
             </div>
-          )}
-          
-          {/* Submission button */}
-          <Button 
-            onClick={onSubmit}
-            disabled={
-              isSubmitting || 
-              !formData || 
-              (pricingOptions.selectedPricingTier !== 'free' && !pricingOptions.isFirstPost && priceData.finalPrice <= 0)
-            }
-            className="w-full py-6 text-lg shadow-md sticky bottom-4 mt-8"
-          >
-            {isSubmitting ? (
-              <span>{t({english: "Processing...", vietnamese: "Đang xử lý..."})}</span>
-            ) : (
-              <span>
-                {isFreePost 
-                  ? t({english: "Post Free Job", vietnamese: "Đăng tin miễn phí"})
-                  : t({
-                      english: `Pay ${formattedPrice} & Post Job`,
-                      vietnamese: `Thanh toán ${formattedPrice} & Đăng tin`
-                    })
-                }
-              </span>
-            )}
-          </Button>
-        </div>
-      </div>
+            <div className="text-sm text-gray-500">
+              <p>{formData?.location || 'Location'}</p>
+              <p>{formData?.employmentType || 'Employment Type'}</p>
+              <p>{formData?.compensationType || 'Compensation Type'}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Button 
+        onClick={onSubmit} 
+        disabled={isSubmitting}
+        className="w-full"
+      >
+        {isSubmitting ? 'Processing...' : 'Submit Job Posting'}
+      </Button>
     </div>
   );
 };
+
+export default ReviewAndPaymentSection;
