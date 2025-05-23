@@ -9,7 +9,7 @@ import PostJob from "./pages/PostJob";
 import PostSuccessPage from "./pages/post-success";
 import PostWaitlistPage from "./pages/post-waitlist";
 
-function AppRouter() {
+function App() {
   return (
     <AuthProvider>
       <SubscriptionProvider>
@@ -30,4 +30,4 @@ function AppRouter() {
   );
 }
 
-export default AppRouter;
+export default App;
