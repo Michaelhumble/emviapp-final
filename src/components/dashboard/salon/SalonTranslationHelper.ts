@@ -13,3 +13,11 @@ export const createTranslation = (english: string, vietnamese: string): Translat
 export const toTranslatableText = (text: string): Translation => {
   return { english: text, vietnamese: text };
 };
+
+// Helper function to safely handle both string and Translation inputs
+export const safeTranslation = (input: string | Translation): Translation => {
+  if (typeof input === 'string') {
+    return { english: input, vietnamese: input };
+  }
+  return input;
+};
