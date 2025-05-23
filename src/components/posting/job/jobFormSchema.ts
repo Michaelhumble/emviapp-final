@@ -10,7 +10,10 @@ export type JobType = 'full-time' | 'part-time' | 'contract' | 'temporary';
 // Define compensation types
 export type CompensationType = 'hourly' | 'commission' | 'salary' | 'hybrid';
 
-// Define job templates
+// Define template category
+export type TemplateCategory = 'nails' | 'hair' | 'lashes' | 'barber' | 'skincare' | 'spa' | 'massage' | 'tattoo' | 'makeup' | 'reception' | 'management' | 'custom';
+
+// Define job template type
 export type JobTemplateType = IndustryType;
 
 // Define contact info schema to match JobDetailsSubmission
@@ -77,7 +80,7 @@ export type JobFormValues = z.infer<typeof jobFormSchema>;
 export interface JobTemplate {
   id: string;
   title: string;
-  industry: string;
+  industry: TemplateCategory;
   salonName: string;
   description: string;
   vietnamese_description: string;
@@ -90,11 +93,11 @@ export interface JobTemplate {
   has_wax_room: boolean;
   owner_will_train: boolean;
   no_supply_deduction: boolean;
-  salary_range: string;
-  experience_level: string;
+  salary_range?: string;
+  experience_level?: string;
   requirements: string[];
   specialties: string[];
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
   contactName: string;
   contactEmail: string;
   contactPhone: string;

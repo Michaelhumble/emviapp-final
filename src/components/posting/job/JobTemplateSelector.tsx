@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { jobTemplates, mapTemplateToFormValues } from './jobTemplates';
+import { jobTemplates, mapTemplateToFormValues } from '@/utils/jobs/jobTemplates';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { JobFormValues } from './jobFormSchema';
-import { JobTemplate } from './jobFormSchema';
+import { JobTemplate, TemplateCategory } from './jobFormSchema';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface JobTemplateSelectorProps {
@@ -20,7 +20,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
   onOpenChange, 
   onTemplateSelect 
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | null>(null);
   
   // Filter templates by category
   const filteredTemplates = selectedCategory 
@@ -33,12 +33,9 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
   );
 
   // Handle template selection
-  const handleSelectTemplate = (template: JobTemplate) => {
+  const handleSelectTemplate = (template: typeof jobTemplates[0]) => {
     const formValues = mapTemplateToFormValues(template);
-    onTemplateSelect({
-      ...formValues,
-      vietnamese_description: template.vietnamese_description
-    });
+    onTemplateSelect(formValues);
     onOpenChange(false);
   };
 
@@ -62,7 +59,7 @@ const JobTemplateSelector: React.FC<JobTemplateSelectorProps> = ({
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => setSelectedCategory(category as TemplateCategory)}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
             </Button>

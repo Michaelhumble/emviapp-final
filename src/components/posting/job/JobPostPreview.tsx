@@ -1,172 +1,124 @@
 
 import React from 'react';
-import { JobDetailsSubmission } from '@/types/job';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/lib/utils';
+import { JobDetailsSubmission } from '@/types/job';
 
 interface JobPostPreviewProps {
   jobDetails: JobDetailsSubmission;
 }
 
-export const JobPostPreview: React.FC<JobPostPreviewProps> = ({ jobDetails }) => {
-  // Format job type for display
-  const formatJobType = (type: string): string => {
-    return type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('-');
-  };
-
+const JobPostPreview: React.FC<JobPostPreviewProps> = ({ jobDetails }) => {
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <h1 className="text-2xl font-bold">{jobDetails.title}</h1>
-        
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="text-xs bg-gray-100 text-gray-800">
-            {formatJobType(jobDetails.jobType)}
+    <Card className="border rounded-md">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-xl font-semibold">{jobDetails.title}</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {jobDetails.salonName} • {jobDetails.location}
+            </p>
+          </div>
+          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            {jobDetails.jobType}
           </Badge>
-          {jobDetails.is_urgent && (
-            <Badge className="text-xs bg-red-500 text-white">
-              Urgent
-            </Badge>
-          )}
-          {jobDetails.has_housing && (
-            <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">
-              Housing Available
-            </Badge>
-          )}
+        </div>
+      </CardHeader>
+      
+      <CardContent className="pt-0 space-y-4">
+        <div>
+          <p className="text-sm text-muted-foreground">Posted {formatDate(new Date())}</p>
         </div>
         
-        <div className="text-sm text-gray-600">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium">{jobDetails.salonName || jobDetails.company}</span>
-          </div>
-          <div>
-            {jobDetails.location}
-          </div>
-          <div className="mt-1">
-            Posted: {formatDate(new Date())}
-          </div>
+        <div className="space-y-2">
+          <h3 className="font-medium">Description</h3>
+          <p className="whitespace-pre-wrap text-sm">{jobDetails.description}</p>
         </div>
-      </div>
-
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Job Description</h2>
-          <div className="whitespace-pre-wrap">{jobDetails.description}</div>
-        </div>
-
+        
         {jobDetails.vietnamese_description && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Vietnamese Description</h2>
-            <div className="whitespace-pre-wrap">{jobDetails.vietnamese_description}</div>
+          <div className="space-y-2">
+            <h3 className="font-medium">Vietnamese Description</h3>
+            <p className="whitespace-pre-wrap text-sm">{jobDetails.vietnamese_description}</p>
           </div>
         )}
-
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Compensation</h2>
-          <div className="space-y-1">
-            {jobDetails.compensation_type && (
-              <div>
-                <span className="font-medium">Type: </span>
-                {jobDetails.compensation_type.charAt(0).toUpperCase() + jobDetails.compensation_type.slice(1)}
-              </div>
-            )}
-            {jobDetails.compensation_details && (
-              <div>
-                <span className="font-medium">Details: </span>
-                {jobDetails.compensation_details}
-              </div>
-            )}
-            {jobDetails.salary_range && (
-              <div>
-                <span className="font-medium">Salary Range: </span>
-                {jobDetails.salary_range}
-              </div>
-            )}
+        
+        {jobDetails.compensation_type && (
+          <div className="space-y-2">
+            <h3 className="font-medium">Compensation</h3>
+            <p className="text-sm">
+              <span className="font-medium">{jobDetails.compensation_type.charAt(0).toUpperCase() + jobDetails.compensation_type.slice(1)}</span>
+              {jobDetails.compensation_details && `: ${jobDetails.compensation_details}`}
+            </p>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {(jobDetails.requirements && jobDetails.requirements.length > 0) && (
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Requirements</h2>
-              <ul className="list-disc pl-5 space-y-1">
-                {Array.isArray(jobDetails.requirements) ? (
-                  jobDetails.requirements.map((req, i) => <li key={i}>{req}</li>)
-                ) : (
-                  <li>{jobDetails.requirements}</li>
-                )}
-              </ul>
+        )}
+        
+        {(jobDetails.weekly_pay || jobDetails.has_housing || jobDetails.has_wax_room || 
+          jobDetails.owner_will_train || jobDetails.no_supply_deduction) && (
+          <div className="space-y-2">
+            <h3 className="font-medium">Benefits</h3>
+            <div className="flex flex-wrap gap-2">
+              {jobDetails.weekly_pay && <Badge variant="secondary">Weekly Pay</Badge>}
+              {jobDetails.has_housing && <Badge variant="secondary">Housing Provided</Badge>}
+              {jobDetails.has_wax_room && <Badge variant="secondary">Wax Room Available</Badge>}
+              {jobDetails.owner_will_train && <Badge variant="secondary">Owner Will Train</Badge>}
+              {jobDetails.no_supply_deduction && <Badge variant="secondary">No Supply Deduction</Badge>}
             </div>
-          )}
-
-          {(jobDetails.specialties && jobDetails.specialties.length > 0) && (
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Specialties</h2>
-              <div className="flex flex-wrap gap-1">
-                {jobDetails.specialties.map((specialty, i) => (
-                  <Badge key={i} variant="secondary" className="text-xs">
-                    {specialty}
-                  </Badge>
+          </div>
+        )}
+        
+        {jobDetails.specialties && jobDetails.specialties.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="font-medium">Specialties</h3>
+            <div className="flex flex-wrap gap-2">
+              {jobDetails.specialties.map((specialty, index) => (
+                <Badge key={index} variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                  {specialty}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {jobDetails.requirements && (
+          Array.isArray(jobDetails.requirements) ? jobDetails.requirements.length > 0 : jobDetails.requirements
+        ) && (
+          <div className="space-y-2">
+            <h3 className="font-medium">Requirements</h3>
+            {Array.isArray(jobDetails.requirements) ? (
+              <ul className="list-disc pl-5 text-sm space-y-1">
+                {jobDetails.requirements.map((req, index) => (
+                  <li key={index}>{req}</li>
                 ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Benefits</h2>
-          <div className="grid grid-cols-2 gap-2">
-            {jobDetails.weekly_pay && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Weekly Pay</span>
-              </div>
-            )}
-            {jobDetails.has_housing && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Housing Available</span>
-              </div>
-            )}
-            {jobDetails.has_wax_room && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Wax Room</span>
-              </div>
-            )}
-            {jobDetails.owner_will_train && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Owner Will Train</span>
-              </div>
-            )}
-            {jobDetails.no_supply_deduction && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>No Supply Deduction</span>
-              </div>
+              </ul>
+            ) : (
+              <p className="text-sm">{jobDetails.requirements}</p>
             )}
           </div>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Contact Information</h2>
+        )}
+        
+        <div className="space-y-2 border-t pt-3">
+          <h3 className="font-medium">Contact Information</h3>
           <div className="space-y-1">
-            <div>
-              <span className="font-medium">Name: </span>
-              {jobDetails.contact_info.owner_name}
-            </div>
-            <div>
-              <span className="font-medium">Phone: </span>
-              {jobDetails.contact_info.phone}
-            </div>
-            <div>
-              <span className="font-medium">Email: </span>
-              {jobDetails.contact_info.email}
-            </div>
+            <p className="text-sm">
+              <span className="font-medium">Name:</span> {jobDetails.contact_info.owner_name}
+            </p>
+            <p className="text-sm">
+              <span className="font-medium">Email:</span> {jobDetails.contact_info.email}
+            </p>
+            <p className="text-sm">
+              <span className="font-medium">Phone:</span> {jobDetails.contact_info.phone}
+            </p>
+            {jobDetails.contact_info.notes && (
+              <p className="text-sm">
+                <span className="font-medium">Notes:</span> {jobDetails.contact_info.notes}
+              </p>
+            )}
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
+
+export default JobPostPreview;

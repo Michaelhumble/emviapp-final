@@ -1,196 +1,117 @@
 
 import React, { useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { jobFormSchema, JobFormValues, JobTemplateType } from '@/components/posting/job/jobFormSchema';
-import PostWizardLayout from '@/components/posting/PostWizardLayout';
-import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
-import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
-import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
-import { MobileButton } from '@/components/ui/mobile-button';
-import SpecialtiesRequirementsSection from '@/components/posting/sections/SpecialtiesRequirementsSection';
-import PhotoUpload from '@/components/posting/sections/PhotoUpload';
-import JobPreview from '@/components/posting/JobPreview';
-import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { getJobTemplate } from '@/utils/jobs/jobTemplates';
-import { useJobPosting } from '@/hooks/jobs/useJobPosting';
-import { toast } from 'sonner';
-
-// Define the possible steps in the job posting process
-type JobPostStep = 'template' | 'details' | 'specialties' | 'contact' | 'photos' | 'preview' | 'payment';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ChevronLeft } from 'lucide-react';
+import JobDetailsForm from '@/components/posting/job/JobDetailsForm';
+import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
+import { JobFormValues, JobTemplateType } from '@/components/posting/job/jobFormSchema';
+import { JobDetailsSubmission } from '@/types/job';
+import { JobPreview } from '@/components/posting/JobPreview';
 
 const JobPost = () => {
-  // Define state variables
-  const [step, setStep] = useState<JobPostStep>('template');
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [expressMode, setExpressMode] = useState<boolean>(true);
-  
-  const { handleJobPost } = useJobPosting();
   const navigate = useNavigate();
+  const [jobDetails, setJobDetails] = useState<JobDetailsSubmission | null>(null);
+  const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
 
-  // Initialize form with zod resolver
-  const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      title: '',
-      salonName: '',
-      description: '',
-      location: '',
-      jobType: 'full-time',
-      compensation_type: 'hourly',
-      contactName: '',
-      contactEmail: '',
-      contactPhone: '',
-      weekly_pay: false,
-      has_housing: false,
-      has_wax_room: false,
-      owner_will_train: false,
-      no_supply_deduction: false,
-      requirements: [],
-      specialties: [],
-    },
-  });
-
-  // Navigation functions between steps
-  const goToNextStep = () => {
-    switch (step) {
-      case 'template': setStep('details'); break;
-      case 'details': setStep('specialties'); break;
-      case 'specialties': setStep('contact'); break;
-      case 'contact': setStep('photos'); break;
-      case 'photos': setStep('preview'); break;
-      case 'preview': setStep('payment'); break;
-      default: break;
-    }
-  };
-
-  const goToPreviousStep = () => {
-    switch (step) {
-      case 'details': setStep('template'); break;
-      case 'specialties': setStep('details'); break;
-      case 'contact': setStep('specialties'); break;
-      case 'photos': setStep('contact'); break;
-      case 'preview': setStep('photos'); break;
-      case 'payment': setStep('preview'); break;
-      default: break;
-    }
-  };
-
-  const handleFormSubmit = async (data: JobFormValues) => {
-    console.log('Form submitted with data:', data);
-
-    try {
-      const success = await handleJobPost({
-        ...data,
-        // Add any additional fields needed for job post
-        user_id: 'user_123', // Replace with actual user ID from auth context
-        status: 'active',
-        created_at: new Date().toISOString(),
-      });
-
-      if (success) {
-        toast.success('Job posted successfully!');
-        navigate('/dashboard');
-      } else {
-        toast.error('Failed to post job');
-      }
-    } catch (error) {
-      console.error('Error posting job:', error);
-      toast.error('Error posting job');
-    }
+  // Handle job details form submission
+  const handleJobSubmit = (details: JobDetailsSubmission) => {
+    console.log('Job details submitted:', details);
+    setJobDetails(details);
+    // Navigate to the next step or show preview
   };
 
   // Handle template selection
-  const handleTemplateSelect = (template: JobFormValues, templateType: JobTemplateType) => {
-    form.reset({
-      ...template,
-      industry: templateType,
-    });
-    goToNextStep();
+  const handleTemplateSelect = (values: Partial<JobFormValues>) => {
+    // Convert JobFormValues to JobDetailsSubmission structure
+    const templateDetails: Partial<JobDetailsSubmission> = {
+      title: values.title,
+      description: values.description,
+      vietnamese_description: values.vietnamese_description,
+      salonName: values.salonName,
+      location: values.location,
+      jobType: values.jobType,
+      compensation_type: values.compensation_type,
+      compensation_details: values.compensation_details,
+      weekly_pay: values.weekly_pay,
+      has_housing: values.has_housing,
+      has_wax_room: values.has_wax_room,
+      owner_will_train: values.owner_will_train,
+      no_supply_deduction: values.no_supply_deduction,
+      requirements: values.requirements,
+      specialties: values.specialties,
+      contact_info: {
+        owner_name: values.contactName || '',
+        phone: values.contactPhone || '',
+        email: values.contactEmail || '',
+        notes: values.contactNotes || '',
+        zalo: values.contactZalo || '',
+      }
+    };
+    
+    console.log('Template selected, converted to:', templateDetails);
   };
-
-  // Get the current step based on the state
-  const renderCurrentStep = () => {
-    switch (step) {
-      case 'template':
-        return <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />;
-      case 'details':
-        return <JobDetailsSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} expressMode={expressMode} />;
-      case 'specialties':
-        return <SpecialtiesRequirementsSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} expressMode={expressMode} />;
-      case 'contact':
-        return <ContactInfoSection form={form} onNext={goToNextStep} onPrevious={goToPreviousStep} />;
-      case 'photos':
-        return <PhotoUpload photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />;
-      case 'preview':
-        return <JobPreview formData={form.getValues()} photoUploads={photoUploads} onEdit={(section) => {
-          switch (section) {
-            case 'details': setStep('details'); break;
-            case 'specialties': setStep('specialties'); break;
-            case 'contact': setStep('contact'); break;
-            case 'photos': setStep('photos'); break;
-            default: break;
-          }
-        }} />;
-      default:
-        return <JobTemplateSelector onTemplateSelect={handleTemplateSelect} />;
-    }
-  };
-
-  // Toggle between express and guided modes
-  const toggleExpressMode = () => {
-    setExpressMode(!expressMode);
-  };
-
-  // Define the current step number and total steps for the progress bar
-  const getCurrentStepNumber = () => {
-    switch (step) {
-      case 'template': return 1;
-      case 'details': return 2;
-      case 'specialties': return 3;
-      case 'contact': return 4;
-      case 'photos': return 5;
-      case 'preview': return 6;
-      case 'payment': return 7;
-      default: return 1;
-    }
-  };
-
-  const totalSteps = 7;
 
   return (
-    <PostWizardLayout 
-      currentStep={getCurrentStepNumber()} 
-      totalSteps={totalSteps}
-      expressMode={expressMode}
-      onToggleExpressMode={toggleExpressMode}
-    >
-      <FormProvider {...form}>
-        {renderCurrentStep()}
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => navigate(-1)}
+          className="mb-4 flex items-center gap-1 text-gray-600"
+        >
+          <ChevronLeft size={16} />
+          Back
+        </Button>
+
+        <h1 className="text-3xl font-bold mb-6">Post a Job</h1>
         
-        {/* Navigation buttons for express mode */}
-        {expressMode && step !== 'template' && step !== 'preview' && (
-          <div className="flex justify-between mt-6">
-            <Button variant="outline" type="button" onClick={goToPreviousStep}>
-              Previous
-            </Button>
-            <Button type="button" onClick={goToNextStep}>
-              Next
-            </Button>
-          </div>
-        )}
+        <Tabs defaultValue="details" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="details">Job Details</TabsTrigger>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="details">
+            <Card className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Job Details</h2>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsTemplateSelectorOpen(true)}
+                >
+                  Use Template
+                </Button>
+              </div>
+              
+              <JobDetailsForm 
+                onSubmit={handleJobSubmit} 
+                initialValues={jobDetails || undefined}
+              />
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="preview">
+            {jobDetails ? (
+              <JobPreview jobDetails={jobDetails} />
+            ) : (
+              <Card className="p-6 text-center">
+                <p>Complete the job details to see a preview</p>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
         
-        {/* Submit button for preview step */}
-        {step === 'preview' && (
-          <div className="flex justify-center mt-8">
-            <MobileButton onClick={form.handleSubmit(handleFormSubmit)} className="bg-primary hover:bg-primary/90">
-              Publish Job
-            </MobileButton>
-          </div>
-        )}
-      </FormProvider>
-    </PostWizardLayout>
+        <JobTemplateSelector 
+          open={isTemplateSelectorOpen}
+          onOpenChange={setIsTemplateSelectorOpen}
+          onTemplateSelect={handleTemplateSelect}
+        />
+      </div>
+    </div>
   );
 };
 
