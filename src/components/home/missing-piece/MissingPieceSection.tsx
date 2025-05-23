@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
 import LanguageToggleButton from "./LanguageToggleButton";
-import EnglishContent from "./EnglishContent";
-import VietnameseContent from "./VietnameseContent";
+import ContentCard from "./ContentCard";
 import SectionTitle from "./SectionTitle";
 
 const MissingPieceSection = () => {
@@ -38,10 +37,10 @@ const MissingPieceSection = () => {
           >
             <div className="absolute inset-0 bg-black opacity-60"></div>
             <div className="relative py-12 px-6 md:px-12 lg:px-24 text-white">
-              {isVietnamese ? 
-                <VietnameseContent itemVariants={itemVariants} /> : 
-                <EnglishContent itemVariants={itemVariants} />
-              }
+              <ContentCard 
+                language={isVietnamese ? "vi" : "en"} 
+                itemVariants={itemVariants} 
+              />
             </div>
           </motion.div>
           <div className="absolute bottom-4 right-4">

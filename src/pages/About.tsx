@@ -1,296 +1,187 @@
 
-import React from "react";
-import { 
-  Calendar, 
-  Users, 
-  Heart, 
-  Award, 
-  Star, 
-  Sun, 
-  Lightbulb,
-  Clock,
-  ArrowRight
-} from "lucide-react";
+import React from 'react';
+import { motion } from "framer-motion";
 import { GradientBackground } from "@/components/ui/gradient-background";
-import LanguageToggle from "@/components/layout/LanguageToggle";
-import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { useTranslation } from "@/hooks/useTranslation";
 
-const About = () => {
-  const { isVietnamese, t } = useTranslation();
-
-  // Timeline data
-  const timelineSteps = [
-    {
-      year: "2014",
-      icon: <Lightbulb className="h-8 w-8 text-amber-500" />,
-      title: "The Idea is Born",
-      description: "A vision to create meaningful connections within the beauty community begins to take shape."
-    },
-    {
-      year: "2015",
-      icon: <Calendar className="h-8 w-8 text-blue-500" />,
-      title: "First Build",
-      description: "Initial platform development focusing on understanding the unique needs of artists and salon owners."
-    },
-    {
-      year: "2016-2023",
-      icon: <Clock className="h-8 w-8 text-purple-500" />,
-      title: "Iteration and Growth",
-      description: "Years of learning, adjusting, and evolving to better serve our community through continuous improvement."
-    },
-    {
-      year: "2025",
-      icon: <Star className="h-8 w-8 text-emerald-500" />,
-      title: "A New Chapter",
-      description: "Expanding our vision with enhanced features, deeper connections, and a renewed commitment to our community."
-    }
-  ];
-
+const AboutPage: React.FC = () => {
+  const { t, isVietnamese } = useTranslation();
+  
   return (
-    <div className="bg-gradient-to-b from-white to-gray-50 min-h-screen pb-20">
-      {/* Hero Section */}
-      <div className="pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex justify-end mb-8">
-          <LanguageToggle />
-        </div>
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold text-gray-900 mb-6">
-            Beautiful Connections, Beautiful Business
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
-            Uniting beauty professionals and clients through meaningful connections that transform the industry.
-          </p>
-        </div>
-      </div>
-
-      {/* Our Story Section */}
-      <GradientBackground
-        variant="premium"
-        className="max-w-4xl mx-auto mb-16 p-8 md:p-12 rounded-2xl shadow-lg"
-      >
-        <div className="space-y-6">
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 text-center mb-8">
-            Our Story
-          </h2>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            <span className="font-medium">
-              Building bridges between talented beauty professionals and the clients who value them.
-            </span>
-          </p>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            We started EmviApp with a simple observation: there was a disconnect between how beauty professionals found work and clients, especially in communities where language and cultural barriers existed. We saw talented artists struggling to showcase their skills and salon owners unable to find reliable team members. What began as a solution for a small community has evolved into an ecosystem where beauty professionals can thrive and be celebrated.
-          </p>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Our personal connection to the beauty industry comes from seeing firsthand the challenges faced by those who dedicate their lives to bringing beauty and confidence to others. We believe every beauty professional deserves a platform that understands their unique journey, values their craft, and helps them build sustainable careers. This belief drives everything we do.
-          </p>
-        </div>
-      </GradientBackground>
-
-      {/* What Makes Us Different */}
-      <div className="max-w-7xl mx-auto mb-16 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 text-center mb-12">
-          What Makes Us Different
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <div className="flex flex-col h-full">
-              <div className="mb-4">
-                <Users className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold mb-4">Cultural Understanding</h3>
-              <p className="text-gray-700 flex-grow">
-                We bridge language and cultural gaps, creating an inclusive platform where everyone feels welcome and understood.
-              </p>
-            </div>
-          </GradientBackground>
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <motion.h1 
+            className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-800"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            {isVietnamese ? "Kết Nối Đẹp, Doanh Nghiệp Đẹp" : "Beautiful Connections, Beautiful Business"}
+          </motion.h1>
           
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <div className="flex flex-col h-full">
-              <div className="mb-4">
-                <Heart className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold mb-4">Community First</h3>
-              <p className="text-gray-700 flex-grow">
-                Every feature and decision is guided by what truly helps our community of beauty professionals and clients thrive together.
-              </p>
-            </div>
-          </GradientBackground>
-          
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <div className="flex flex-col h-full">
-              <div className="mb-4">
-                <Award className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold mb-4">Authentic Representation</h3>
-              <p className="text-gray-700 flex-grow">
-                We showcase beauty professionals honestly and authentically, celebrating their unique skills and perspectives.
-              </p>
-            </div>
-          </GradientBackground>
-          
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <div className="flex flex-col h-full">
-              <div className="mb-4">
-                <Star className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold mb-4">Fair and Transparent</h3>
-              <p className="text-gray-700 flex-grow">
-                We believe in transparent practices, fair opportunities, and creating value for everyone in our ecosystem.
-              </p>
-            </div>
-          </GradientBackground>
+          <motion.p 
+            className="text-lg text-gray-600 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            {isVietnamese 
+              ? "EmviApp tạo ra không gian nơi các chuyên gia ngành làm đẹp và khách hàng của họ có thể kết nối một cách tự nhiên, dễ dàng và hiệu quả hơn. Chúng tôi đang thay đổi cách các tiệm nail, salon tóc và spa hoạt động, giúp họ phát triển và đáp ứng nhu cầu của khách hàng hiện đại."
+              : "EmviApp creates a space where beauty professionals and their clients can connect more naturally, easily, and efficiently. We're changing how nail salons, hair studios, and spas operate, helping them grow and meet the needs of modern clients."
+            }
+          </motion.p>
         </div>
-      </div>
-
-      {/* Our Mission */}
-      <GradientBackground
-        variant="premium"
-        className="max-w-4xl mx-auto mb-16 p-8 md:p-12 text-center rounded-2xl shadow-lg"
-      >
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-8">
-          Our Mission
-        </h2>
-        <p className="text-xl md:text-2xl text-gray-700 italic">
-          "To empower beauty professionals with the tools, visibility, and community they need to build thriving, sustainable careers they love."
-        </p>
-      </GradientBackground>
-
-      {/* Our Journey (Timeline) */}
-      <div className="max-w-5xl mx-auto mb-16 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 text-center mb-12">
-          Our Journey
-        </h2>
         
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-primary/40 to-primary/80"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
+          <GradientBackground className="p-6 md:p-10">
+            <h2 className="text-2xl md:text-3xl font-playfair font-bold mb-4 text-gray-800">
+              {isVietnamese ? "Sứ Mệnh Của Chúng Tôi" : "Our Mission"}
+            </h2>
+            <p className="text-gray-600">
+              {isVietnamese 
+                ? "Sứ mệnh của chúng tôi là đơn giản hóa và nâng cao trải nghiệm làm đẹp cho tất cả mọi người. Chúng tôi tin rằng mọi nghệ sĩ làm đẹp xứng đáng có công cụ tốt nhất để phát triển, và mỗi khách hàng xứng đáng có trải nghiệm dịch vụ tuyệt vời."
+                : "Our mission is to simplify and elevate the beauty experience for everyone. We believe every beauty artist deserves the best tools to grow, and every client deserves an exceptional service experience."
+              }
+            </p>
+          </GradientBackground>
           
-          {/* Timeline items */}
-          <div className="space-y-16">
-            {timelineSteps.map((step, index) => (
-              <div 
-                key={index} 
-                className={`relative flex items-center ${
-                  index % 2 === 0 ? "flex-row" : "flex-row-reverse md:flex-row-reverse"
-                }`}
-              >
-                {/* Timeline icon */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-                  <div className="bg-white rounded-full p-2 shadow-md border border-gray-100">
-                    {step.icon}
-                  </div>
+          <GradientBackground className="p-6 md:p-10">
+            <h2 className="text-2xl md:text-3xl font-playfair font-bold mb-4 text-gray-800">
+              {isVietnamese ? "Giá Trị Cốt Lõi" : "Our Values"}
+            </h2>
+            <ul className="space-y-3 text-gray-600">
+              <li>• {isVietnamese ? "Minh bạch trong mọi tương tác" : "Transparency in every interaction"}</li>
+              <li>• {isVietnamese ? "Tôn trọng thời gian của mọi người" : "Respecting everyone's time"}</li>
+              <li>• {isVietnamese ? "Trao quyền cho các doanh nghiệp nhỏ" : "Empowering small businesses"}</li>
+              <li>• {isVietnamese ? "Đổi mới không ngừng" : "Continuous innovation"}</li>
+              <li>• {isVietnamese ? "Trải nghiệm khách hàng xuất sắc" : "Outstanding client experiences"}</li>
+            </ul>
+          </GradientBackground>
+        </div>
+        
+        <div className="mb-16">
+          <h2 className="text-2xl md:text-3xl font-playfair font-bold mb-6 text-center text-gray-800">
+            {isVietnamese ? "Hành Trình Của Chúng Tôi" : "Our Journey"}
+          </h2>
+          
+          <div className="relative">
+            <div className="hidden md:block absolute left-1/2 h-full w-0.5 bg-gray-200 transform -translate-x-1/2"></div>
+            
+            <div className="space-y-12">
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="md:w-1/2 md:pr-12 md:text-right">
+                  <h3 className="text-xl font-bold text-gray-700">{isVietnamese ? "2022" : "2022"}</h3>
+                  <p className="text-gray-600">{isVietnamese ? "Ý tưởng về EmviApp ra đời" : "The idea for EmviApp was born"}</p>
                 </div>
-                
-                {/* Timeline content */}
-                <div className={`w-5/12 ${index % 2 === 0 ? "pr-8 text-right" : "pl-8 md:pl-8"}`}>
-                  <div className="mb-1 text-primary font-bold">{step.year}</div>
-                  <h3 className="text-xl font-playfair font-bold mb-2">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
+                <div className="mx-auto md:mx-0 my-4 md:my-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                  <span className="text-white text-lg">💡</span>
                 </div>
-                
-                {/* Empty space */}
-                <div className="w-5/12"></div>
+                <div className="md:w-1/2 md:pl-12">
+                  <p className="text-gray-600">
+                    {isVietnamese 
+                      ? "Sau khi thấy các salon đấu tranh với việc quản lý lịch hẹn và tiếp cận khách hàng trực tuyến."
+                      : "After seeing salons struggle with appointment management and online client reach."
+                    }
+                  </p>
+                </div>
               </div>
-            ))}
+              
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="md:w-1/2 md:pr-12 md:text-right order-1 md:order-1">
+                  <p className="text-gray-600">
+                    {isVietnamese 
+                      ? "Chúng tôi tiến hành nghiên cứu thị trường và phỏng vấn hơn 100 chủ salon và nghệ sĩ làm đẹp."
+                      : "We conducted market research and interviewed over 100 salon owners and beauty artists."
+                    }
+                  </p>
+                </div>
+                <div className="mx-auto md:mx-0 my-4 md:my-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center order-2 md:order-2">
+                  <span className="text-white text-lg">📊</span>
+                </div>
+                <div className="md:w-1/2 md:pl-12 order-3 md:order-3">
+                  <h3 className="text-xl font-bold text-gray-700">{isVietnamese ? "2023" : "2023"}</h3>
+                  <p className="text-gray-600">{isVietnamese ? "Nghiên cứu và phát triển" : "Research and development"}</p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="md:w-1/2 md:pr-12 md:text-right">
+                  <h3 className="text-xl font-bold text-gray-700">{isVietnamese ? "2024" : "2024"}</h3>
+                  <p className="text-gray-600">{isVietnamese ? "Ra mắt EmviApp" : "EmviApp launch"}</p>
+                </div>
+                <div className="mx-auto md:mx-0 my-4 md:my-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                  <span className="text-white text-lg">🚀</span>
+                </div>
+                <div className="md:w-1/2 md:pl-12">
+                  <p className="text-gray-600">
+                    {isVietnamese 
+                      ? "Chúng tôi chính thức ra mắt nền tảng, kết nối các nghệ sĩ làm đẹp với khách hàng và giúp các salon phát triển."
+                      : "We officially launched the platform, connecting beauty artists with clients and helping salons grow."
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="md:w-1/2 md:pr-12 md:text-right order-1 md:order-1">
+                  <p className="text-gray-600">
+                    {isVietnamese 
+                      ? "Mục tiêu của chúng tôi là trở thành nền tảng hàng đầu kết nối các chuyên gia làm đẹp và khách hàng trên toàn quốc."
+                      : "Our goal is to become the leading platform connecting beauty professionals and clients nationwide."
+                    }
+                  </p>
+                </div>
+                <div className="mx-auto md:mx-0 my-4 md:my-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center order-2 md:order-2">
+                  <span className="text-white text-lg">🌟</span>
+                </div>
+                <div className="md:w-1/2 md:pl-12 order-3 md:order-3">
+                  <h3 className="text-xl font-bold text-gray-700">{isVietnamese ? "Tương lai" : "Future"}</h3>
+                  <p className="text-gray-600">{isVietnamese ? "Mở rộng toàn quốc" : "Nationwide expansion"}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Inspired by Sunshine */}
-      <GradientBackground
-        className="max-w-4xl mx-auto mb-16 p-8 md:p-12 rounded-2xl shadow-lg bg-gradient-to-br from-yellow-50 to-amber-100"
-      >
-        <div className="flex flex-col items-center text-center">
-          <Sun className="h-16 w-16 text-amber-400 mb-6" />
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-6">
-            Inspired by Sunshine ☀️
+        
+        <div className="mb-16 text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-playfair font-bold mb-4 text-gray-800">
+            {isVietnamese ? "Lấy cảm hứng từ Sunshine ☀️" : "Inspired by Sunshine ☀️"}
           </h2>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            EmviApp was born from a desire to bring more light into the beauty industry—to illuminate talent that deserves recognition, to brighten the path for businesses seeking growth, and to spotlight connections that transform careers. Like sunshine, we aim to nurture growth, reveal beauty, and bring warmth to every interaction on our platform.
+          <p className="text-gray-600">
+            {isVietnamese 
+              ? "EmviApp được truyền cảm hứng từ ánh nắng mặt trời—sự ấm áp, tỏa sáng và khả năng làm cho mọi thứ trở nên tươi đẹp hơn. Chúng tôi tin rằng mỗi doanh nghiệp làm đẹp xứng đáng có cơ hội tỏa sáng và thành công."
+              : "EmviApp is inspired by sunshine—warmth, brightness, and the ability to make everything more beautiful. We believe every beauty business deserves the chance to shine and succeed."
+            }
           </p>
         </div>
-      </GradientBackground>
-
-      {/* Thank You, Emvi */}
-      <GradientBackground
-        variant="premium"
-        className="max-w-4xl mx-auto mb-16 p-8 md:p-12 rounded-2xl shadow-lg"
-      >
+        
+        <div className="mb-16 text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-playfair font-bold mb-4 text-gray-800">
+            {isVietnamese ? "Cảm Ơn, EmVi" : "Thank You, EmVi"}
+          </h2>
+          <p className="text-gray-600">
+            {isVietnamese 
+              ? "Ứng dụng này được đặt tên theo EmVi—người đã hỗ trợ và hy sinh cho tôi, ngay cả khi tôi tự nghi ngờ bản thân. Bạn đã luôn bên cạnh tôi, bất kể điều gì. Vì tất cả tình yêu thương, sự khích lệ, và sức mạnh âm thầm bạn đã cho tôi, đây là dành cho bạn."
+              : "This app is named after EmVi—the person who supported and sacrificed for me, even when I doubted myself. You stood by me, no matter what. For all the silent love, encouragement, and strength you gave, this is for you."
+            }
+          </p>
+        </div>
+        
         <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-8">
-            Thank You, Emvi
-          </h2>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Our name comes from a place of gratitude. Emvi represents the endless possibilities that emerge when talented beauty professionals connect with appreciative clients. It stands for the empowerment that comes from being seen, valued, and supported. Most importantly, it's our way of saying thank you to every artist, salon owner, and client who makes this community what it is. Thank you for trusting us with your journeys, your businesses, and your visions of beauty.
-          </p>
-        </div>
-      </GradientBackground>
-
-      {/* Our Values */}
-      <div className="max-w-7xl mx-auto mb-16 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 text-center mb-12">
-          Our Values
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <h3 className="text-xl font-playfair font-bold mb-4">Community</h3>
-            <p className="text-gray-700">
-              We believe in the power of coming together. Success is sweeter when shared, and challenges are lighter when faced together.
-            </p>
-          </GradientBackground>
-          
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <h3 className="text-xl font-playfair font-bold mb-4">Excellence</h3>
-            <p className="text-gray-700">
-              We strive for excellence in everything we do, honoring the dedication our beauty professionals bring to their craft.
-            </p>
-          </GradientBackground>
-          
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <h3 className="text-xl font-playfair font-bold mb-4">Trust</h3>
-            <p className="text-gray-700">
-              We build relationships based on trust, transparency, and reliability, creating a platform everyone can depend on.
-            </p>
-          </GradientBackground>
-          
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <h3 className="text-xl font-playfair font-bold mb-4">Innovation</h3>
-            <p className="text-gray-700">
-              We embrace progress and continuously seek new ways to solve problems and enhance experiences for our community.
-            </p>
-          </GradientBackground>
-          
-          <GradientBackground className="p-8 rounded-2xl shadow-md">
-            <h3 className="text-xl font-playfair font-bold mb-4">Celebration</h3>
-            <p className="text-gray-700">
-              We celebrate beauty in all its forms, the artistry behind it, and the confidence it inspires in everyone it touches.
-            </p>
-          </GradientBackground>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 py-16 px-4 sm:px-6 lg:px-8 rounded-2xl max-w-7xl mx-auto shadow-xl">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-6">
-            Ready to be part of something beautiful? Join our community today.
-          </h2>
-          <Button 
-            asChild
-            size="lg" 
-            className="rounded-full px-8 py-6 text-lg font-medium bg-white text-primary hover:bg-gray-100 hover:text-primary/90 transition-all shadow-lg"
-          >
-            <Link to="/">
-              Start Your Journey with EmviApp
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+          <Link to="/contact">
+            <Button size="lg" className="group">
+              {isVietnamese ? "Liên Hệ Với Chúng Tôi" : "Contact Us"}
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default About;
+export default AboutPage;
