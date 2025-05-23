@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -25,6 +26,7 @@ import Cookies from "@/pages/Cookies";
 import CheckoutFallback from "@/pages/CheckoutFallback";
 import PostSuccess from "@/pages/post-success";
 import PostCanceled from "@/pages/post-canceled";
+import PostJobBillion from "@/pages/PostJobBillion";
 
 function App() {
   const location = useLocation();
@@ -48,6 +50,7 @@ function App() {
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
                     <Route path="/post-job" element={<JobPost />} />
+                    <Route path="/post-job-billion" element={<PostJobBillion />} />
                     <Route path="/checkout" element={<CheckoutFallback />} />
                     <Route path="/post-success" element={<PostSuccess />} />
                     <Route path="/post-canceled" element={<PostCanceled />} />
