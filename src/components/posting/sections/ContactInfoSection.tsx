@@ -9,17 +9,10 @@ interface ContactInfoSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
   onNext?: () => void;
-  onPrevious?: () => void; 
-  expressMode?: boolean;
+  onPrevious?: () => void; // Ensure this prop is properly declared
 }
 
-const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ 
-  control, 
-  form, 
-  onNext, 
-  onPrevious,
-  expressMode = false
-}) => {
+const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({ control, form, onNext, onPrevious }) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   
@@ -108,13 +101,7 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
         {onNext && (
           <button
             type="button"
-            onClick={() => {
-              // Validate contact fields before proceeding
-              const isValid = form?.trigger(['contactName', 'contactPhone', 'contactEmail']);
-              if (isValid) {
-                onNext();
-              }
-            }}
+            onClick={onNext}
             className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 ml-auto"
           >
             Next

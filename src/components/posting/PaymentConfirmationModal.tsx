@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils';
 import { PricingOptions } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { ShieldCheck } from 'lucide-react';
 
 export interface PaymentConfirmationModalProps {
   open: boolean;
@@ -29,7 +28,6 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
   discountPercentage
 }) => {
   const { t } = useTranslation();
-  const savings = originalPrice - amount;
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) onClose();
@@ -66,41 +64,25 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
                 })}: </span>
                 <span className="font-medium">
                   {options.selectedPricingTier === 'standard' ? t({
-                    english: 'Basic', 
-                    vietnamese: 'Cơ bản'
+                    english: 'Standard', 
+                    vietnamese: 'Tiêu chuẩn'
                   }) :
                    options.selectedPricingTier === 'gold' ? t({
-                     english: 'Elite', 
-                     vietnamese: 'Cao cấp'
+                     english: 'Gold Featured', 
+                     vietnamese: 'Nổi bật Vàng'
                    }) :
                    options.selectedPricingTier === 'premium' ? t({
-                     english: 'Professional', 
-                     vietnamese: 'Chuyên nghiệp'
+                     english: 'Premium', 
+                     vietnamese: 'Cao cấp'
                    }) : 
                    options.selectedPricingTier === 'diamond' ? t({
-                     english: 'Diamond', 
-                     vietnamese: 'Kim cương'
+                     english: 'Diamond Featured', 
+                     vietnamese: 'Nổi bật Kim cương'
                    }) : 
                    t({
                      english: 'Free', 
                      vietnamese: 'Miễn phí'
                    })}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-sm">
-                <span>{t({
-                  english: 'Duration', 
-                  vietnamese: 'Thời hạn'
-                })}: </span>
-                <span>
-                  {options.durationMonths === 1 ? t({
-                    english: '1 Month', 
-                    vietnamese: '1 Tháng'
-                  }) : t({
-                    english: `${options.durationMonths} Months`, 
-                    vietnamese: `${options.durationMonths} Tháng`
-                  })}
                 </span>
               </div>
               
@@ -137,16 +119,6 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
                 </div>
               )}
               
-              {savings > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span>{t({
-                    english: 'You save', 
-                    vietnamese: 'Bạn tiết kiệm'
-                  })}: </span>
-                  <span className="text-green-600">{formatCurrency(savings)}</span>
-                </div>
-              )}
-              
               <div className="flex justify-between font-bold border-t pt-2 mt-2">
                 <span>{t({
                   english: 'Total', 
@@ -155,14 +127,6 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
                 <span>{formatCurrency(amount)}</span>
               </div>
             </div>
-          </div>
-          
-          <div className="flex items-center justify-center text-xs text-gray-500 gap-1.5 py-2">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            <span>{t({
-              english: 'Secure payment powered by Stripe', 
-              vietnamese: 'Thanh toán an toàn được cung cấp bởi Stripe'
-            })}</span>
           </div>
           
           <div className="flex justify-end space-x-2 pt-2">

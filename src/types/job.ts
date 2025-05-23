@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   role?: string;
@@ -81,36 +80,29 @@ export interface Job {
   hidden?: boolean;
 }
 
-// Update JobDetailsSubmission to clearly indicate required vs. optional fields
+// Add missing exported interfaces
 export type JobDetailsSubmission = {
-  // Required fields
   title: string;
-  description: string;
+  description?: string;
   location: string;
-  company?: string; // For backward compatibility
-  salonName: string; // Making salonName the standard field for salon/company name
-  jobType: string;
-  
-  // Contact information (required)
-  contact_info: {
-    owner_name: string;
-    phone: string;
-    email: string;
-    notes?: string;
-    zalo?: string;
-  };
-  
-  // Optional fields
   compensation_type?: string;
   compensation_details?: string;
   employment_type?: string;
   requirements?: string[] | string;
-  specialties?: string[];
+  contact_info?: {
+    owner_name?: string;
+    phone?: string;
+    email?: string;
+    notes?: string;
+    zalo?: string;
+  };
+  image?: string;
   vietnamese_description?: string;
   preferred_languages?: string[];
   benefits?: string[];
   features?: string[];
   salon_type?: string;
+  specialties?: string[];
   weekly_pay?: boolean;
   has_housing?: boolean;
   has_wax_room?: boolean;
@@ -121,9 +113,8 @@ export type JobDetailsSubmission = {
   is_urgent?: boolean;
   user_id?: string;
   post_type?: string;
-  photos?: File[];
-  image?: string;
-};
+  salonName?: string; // Ensure salonName property is here
+}
 
 // Import the PricingOptions from the canonical source
 import { PricingOptions } from '@/utils/posting/types';

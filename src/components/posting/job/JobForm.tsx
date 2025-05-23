@@ -2,82 +2,113 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { jobFormSchema, JobFormValues, IndustryType, JobType, CompensationType, JobTemplate } from './jobFormSchema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import JobDetailsSection from './JobDetailsSection';
 import ContactInfoSection from '../sections/ContactInfoSection';
+import JobDetailsSection from '../sections/JobDetailsSection';
+import { getJobTemplate } from '@/utils/jobs/jobTemplates';
 
 interface JobFormProps {
   onSubmit: (data: JobFormValues) => void;
   defaultValues?: Partial<JobFormValues>;
-  expressMode?: boolean;
-  isSubmitting?: boolean;
+  onTemplateSelect?: (template: JobFormValues, templateType: IndustryType) => void;
 }
 
-const JobForm: React.FC<JobFormProps> = ({ 
-  onSubmit, 
-  defaultValues, 
-  expressMode = false,
-  isSubmitting = false 
-}) => {
+const JobForm = ({ onSubmit, defaultValues = {}, onTemplateSelect }: JobFormProps) => {
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      title: '',
       salonName: '',
+      title: '',
       description: '',
-      vietnamese_description: '',
+      vietnameseDescription: '',
       location: '',
+      specialties: [],
+      requirements: [],
       jobType: 'full-time',
-      compensation_type: undefined,
-      compensation_details: '',
-      weekly_pay: false,
+      contactName: '',
+      contactEmail: '',
+      contactPhone: '',
       has_housing: false,
       has_wax_room: false,
       owner_will_train: false,
       no_supply_deduction: false,
-      contactName: '',
-      contactEmail: '',
-      contactPhone: '',
-      contactNotes: '',
-      contactZalo: '',
-      requirements: [],
-      specialties: [],
-      ...defaultValues
-    }
+      salary_range: '',
+      experience_level: '',
+      ...defaultValues,
+    },
   });
-  
-  const [currentStep, setCurrentStep] = useState(0);
-  
-  const handleSubmit = (data: JobFormValues) => {
-    onSubmit(data);
+
+  const handleTemplateSelect = (templateType: IndustryType) => {
+    const template = getJobTemplate(templateType);
+    
+    if (onTemplateSelect) {
+      // Convert template to match JobFormValues interface
+      const formValues: JobFormValues = {
+        salonName: template.salonName,
+        title: template.title,
+        description: template.description,
+        vietnameseDescription: template.vietnameseDescription,
+        location: template.location,
+        jobType: template.jobType as JobType,
+        specialties: template.specialties || [],
+        requirements: template.requirements || [],
+        contactName: template.contactName,
+        contactEmail: template.contactEmail,
+        contactPhone: template.contactPhone,
+        compensation_type: template.compensation_type as CompensationType,
+        compensation_details: template.compensation_details,
+        weekly_pay: template.weekly_pay,
+        has_housing: template.has_housing,
+        has_wax_room: template.has_wax_room,
+        owner_will_train: template.owner_will_train,
+        no_supply_deduction: template.no_supply_deduction,
+        salary_range: template.salary_range,
+        experience_level: template.experience_level,
+        industry: template.industry,
+        templateType: templateType
+      };
+      
+      onTemplateSelect(formValues, templateType);
+    } else {
+      // Convert template object to match the form values format
+      form.reset({
+        salonName: template.salonName,
+        title: template.title,
+        description: template.description,
+        vietnameseDescription: template.vietnameseDescription,
+        location: template.location,
+        jobType: template.jobType as JobType,
+        specialties: template.specialties || [],
+        requirements: template.requirements || [],
+        contactName: template.contactName,
+        contactEmail: template.contactEmail,
+        contactPhone: template.contactPhone,
+        compensation_type: template.compensation_type as CompensationType,
+        compensation_details: template.compensation_details,
+        weekly_pay: template.weekly_pay,
+        has_housing: template.has_housing,
+        has_wax_room: template.has_wax_room,
+        owner_will_train: template.owner_will_train,
+        no_supply_deduction: template.no_supply_deduction,
+        salary_range: template.salary_range,
+        experience_level: template.experience_level,
+        industry: template.industry,
+        templateType: templateType
+      });
+    }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-        {currentStep === 0 ? (
-          <JobDetailsSection 
-            form={form} 
-            onNext={() => setCurrentStep(1)}
-            expressMode={expressMode}
-          />
-        ) : (
-          <ContactInfoSection 
-            form={form} 
-            onPrevious={() => setCurrentStep(0)}
-            expressMode={expressMode}
-          />
-        )}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <JobDetailsSection form={form} />
+        <ContactInfoSection form={form} />
 
-        {currentStep === 1 && (
-          <div className="flex justify-end mt-6">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Continue'}
-            </Button>
-          </div>
-        )}
+        <div className="flex justify-end">
+          <Button type="submit">Submit</Button>
+        </div>
       </form>
     </Form>
   );

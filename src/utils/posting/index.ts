@@ -1,6 +1,28 @@
 
-// Re-export all pricing utilities for easy access
-export * from './pricing';
-export * from './pricingConfig';
-export * from './types';
-export * from './promotionalText';
+export type { 
+  UserPostingStats,
+  PricingOptions,
+  PostType,
+  JobPricingTier,
+  IndustryType,
+  JobPricingOption
+} from './types';
+
+export { 
+  jobPricingOptions,
+  calculateFinalPrice,
+  calculateJobPostPrice,
+  getJobPostPricingSummary,
+  validatePricingOptions,
+  getStripePriceId,
+  getAmountInCents,
+  isSubscriptionPlan,
+  getJobPrice
+} from './jobPricing';
+
+export {
+  calculateSalonPostPrice,
+  getSalonPostPricingSummary,
+  validateSalonPricingOptions,
+  getStripeSalonPriceId
+} from './salonPricing';

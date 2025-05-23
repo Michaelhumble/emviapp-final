@@ -1,93 +1,54 @@
 
 import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Control, UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { UseFormReturn } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { JobFormValues } from '../job/jobFormSchema';
+import { JOB_TYPES, COMPENSATION_TYPES, EXPERIENCE_LEVELS } from '../job/jobConstants';
 
-interface JobDetailsSectionProps {
-  form: UseFormReturn<JobFormValues>;
+export interface JobDetailsSectionProps {
+  control?: Control<JobFormValues>;
+  form?: UseFormReturn<JobFormValues>;
   onNext?: () => void;
-  expressMode?: boolean;
+  onPrevious?: () => void;
+  expressMode?: boolean; // Added expressMode prop
 }
 
-const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, expressMode = false }) => {
-  const jobTypeOptions = [
-    { value: 'full-time', label: 'Full-time' },
-    { value: 'part-time', label: 'Part-time' },
-    { value: 'contract', label: 'Contract' },
-    { value: 'temporary', label: 'Temporary' },
-  ];
-
-  const compensationOptions = [
-    { value: 'hourly', label: 'Hourly' },
-    { value: 'commission', label: 'Commission' },
-    { value: 'salary', label: 'Salary' },
-    { value: 'hybrid', label: 'Hybrid' },
-  ];
-
-  // Field validation and navigation
-  const handleNext = async () => {
-    // Define fields to validate - typesafe by using only form fields
-    const fieldsToValidate = [
-      'title', 
-      'salonName', 
-      'location', 
-      'description', 
-      'jobType'
-    ] as const; // This creates a readonly tuple type that TypeScript can validate
-    
-    // Trigger validation
-    const result = await form.trigger(fieldsToValidate);
-    
-    if (result && onNext) {
-      onNext();
-    }
-  };
+const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ 
+  control, 
+  form, 
+  onNext, 
+  onPrevious, 
+  expressMode
+}) => {
+  // Use either control directly or from form object
+  const formControl = control || form?.control;
+  
+  if (!formControl) {
+    console.error("JobDetailsSection requires either control or form prop");
+    return null;
+  }
 
   return (
-    <div className="space-y-8">
-      {/* Job Details Section */}
+    <div className="space-y-6">
       <div className="border-b pb-4">
         <h2 className="font-playfair text-2xl font-semibold text-gray-900">Job Details</h2>
-        <p className="text-sm text-muted-foreground mt-1">Tell us about the position you're hiring for</p>
+        <p className="text-sm text-muted-foreground mt-1">Basic information about the position</p>
       </div>
-
-      {/* Job Title */}
-      <FormField
-        control={form.control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-gray-900 font-medium">Job Title <span className="text-red-500">*</span></FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="e.g. Nail Technician, Hair Stylist, etc."
-                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                {...field} 
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
+      
       {/* Salon Name */}
       <FormField
-        control={form.control}
+        control={formControl}
         name="salonName"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Salon Name <span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <Input 
-                placeholder="Name of your salon or business"
-                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                placeholder="Enter your salon or business name"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500" 
                 {...field} 
               />
             </FormControl>
@@ -95,18 +56,37 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, exp
           </FormItem>
         )}
       />
-
+      
+      {/* Job Title */}
+      <FormField
+        control={formControl}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-gray-900 font-medium">Job Title <span className="text-red-500">*</span></FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="e.g., Nail Technician, Hair Stylist"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500" 
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
       {/* Location */}
       <FormField
-        control={form.control}
+        control={formControl}
         name="location"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Location <span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <Input 
-                placeholder="City, State (e.g. Los Angeles, CA)"
-                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
+                placeholder="City, State or Full Address"
+                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500" 
                 {...field} 
               />
             </FormControl>
@@ -114,23 +94,25 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, exp
           </FormItem>
         )}
       />
-
+      
       {/* Job Type */}
       <FormField
-        control={form.control}
+        control={formControl}
         name="jobType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-900 font-medium">Job Type <span className="text-red-500">*</span></FormLabel>
+            <FormLabel className="text-gray-900 font-medium">Employment Type</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500">
-                  <SelectValue placeholder="Select job type" />
+                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500">
+                  <SelectValue placeholder="Select employment type" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {jobTypeOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                {JOB_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -138,23 +120,25 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, exp
           </FormItem>
         )}
       />
-
+      
       {/* Compensation Type */}
       <FormField
-        control={form.control}
+        control={formControl}
         name="compensation_type"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Compensation Type</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || ""}>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500">
+                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500">
                   <SelectValue placeholder="Select compensation type" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {compensationOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                {COMPENSATION_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -162,194 +146,91 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ form, onNext, exp
           </FormItem>
         )}
       />
-
-      {/* Compensation Details */}
+      
+      {/* Experience Level */}
       <FormField
-        control={form.control}
-        name="compensation_details"
+        control={formControl}
+        name="experience_level"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-900 font-medium">Compensation Details</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="e.g. $20/hr or 60% commission + tips"
-                className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                {...field} 
-              />
-            </FormControl>
+            <FormLabel className="text-gray-900 font-medium">Experience Level</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger className="border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500">
+                  <SelectValue placeholder="Select experience level" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {EXPERIENCE_LEVELS.map((level) => (
+                  <SelectItem key={level.value} value={level.value}>
+                    {level.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}
       />
-
-      {/* Benefits Checkboxes */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-gray-900">Benefits</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Weekly Pay */}
-          <FormField
-            control={form.control}
-            name="weekly_pay"
-            render={({ field }) => (
-              <FormItem className="flex items-start space-x-2 space-y-0">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    id="weekly_pay"
-                  />
-                </FormControl>
-                <Label 
-                  htmlFor="weekly_pay" 
-                  className="font-normal text-base leading-6 text-gray-700"
-                >
-                  Weekly Pay
-                </Label>
-              </FormItem>
-            )}
-          />
-          
-          {/* Housing Provided */}
-          <FormField
-            control={form.control}
-            name="has_housing"
-            render={({ field }) => (
-              <FormItem className="flex items-start space-x-2 space-y-0">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    id="has_housing"
-                  />
-                </FormControl>
-                <Label 
-                  htmlFor="has_housing" 
-                  className="font-normal text-base leading-6 text-gray-700"
-                >
-                  Housing Provided
-                </Label>
-              </FormItem>
-            )}
-          />
-          
-          {/* Wax Room Available */}
-          <FormField
-            control={form.control}
-            name="has_wax_room"
-            render={({ field }) => (
-              <FormItem className="flex items-start space-x-2 space-y-0">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    id="has_wax_room"
-                  />
-                </FormControl>
-                <Label 
-                  htmlFor="has_wax_room" 
-                  className="font-normal text-base leading-6 text-gray-700"
-                >
-                  Wax Room Available
-                </Label>
-              </FormItem>
-            )}
-          />
-          
-          {/* Owner Will Train */}
-          <FormField
-            control={form.control}
-            name="owner_will_train"
-            render={({ field }) => (
-              <FormItem className="flex items-start space-x-2 space-y-0">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    id="owner_will_train"
-                  />
-                </FormControl>
-                <Label 
-                  htmlFor="owner_will_train" 
-                  className="font-normal text-base leading-6 text-gray-700"
-                >
-                  Owner Will Train
-                </Label>
-              </FormItem>
-            )}
-          />
-          
-          {/* No Supply Deduction */}
-          <FormField
-            control={form.control}
-            name="no_supply_deduction"
-            render={({ field }) => (
-              <FormItem className="flex items-start space-x-2 space-y-0">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    id="no_supply_deduction"
-                  />
-                </FormControl>
-                <Label 
-                  htmlFor="no_supply_deduction" 
-                  className="font-normal text-base leading-6 text-gray-700"
-                >
-                  No Supply Deduction
-                </Label>
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
-
-      {/* Job Description */}
+      
+      {/* Description */}
       <FormField
-        control={form.control}
+        control={formControl}
         name="description"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Job Description <span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <Textarea 
-                placeholder="Describe the job responsibilities, required skills, and experience"
-                className="min-h-[150px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                {...field}
+                placeholder="Describe the position, responsibilities, and any other relevant details"
+                className="min-h-[120px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500" 
+                {...field} 
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
-      {/* Vietnamese Description (Optional) */}
+      
+      {/* Vietnamese Description */}
       <FormField
-        control={form.control}
-        name="vietnamese_description"
+        control={formControl}
+        name="vietnameseDescription"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Vietnamese Description (Optional)</FormLabel>
             <FormControl>
               <Textarea 
-                placeholder="Mô tả công việc bằng tiếng Việt"
-                className="min-h-[150px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                {...field}
+                placeholder="Mô tả công việc bằng tiếng Việt (nếu có)"
+                className="min-h-[120px] border-gray-300 bg-white hover:border-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500" 
+                {...field} 
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
+      
       {/* Navigation buttons */}
-      <div className="flex justify-end pt-2">
-        <Button
-          type="button"
-          onClick={handleNext}
-          className="px-6"
-        >
-          Next: Contact Information
-        </Button>
+      <div className="flex justify-between">
+        {onPrevious && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 text-primary hover:underline"
+          >
+            Previous
+          </button>
+        )}
+        {onNext && (
+          <button
+            type="button"
+            onClick={onNext}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 ml-auto"
+          >
+            Next
+          </button>
+        )}
       </div>
     </div>
   );
