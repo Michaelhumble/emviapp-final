@@ -32,7 +32,7 @@ const Navbar = () => {
   };
 
   const onPostJobClick = () => {
-    navigate("/post-job");
+    navigate("/post-job-billion");
   };
 
   const tooltipText = t("Was $29.99 – Free for a limited time!");
