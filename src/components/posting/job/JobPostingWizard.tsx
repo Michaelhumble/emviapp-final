@@ -1,45 +1,53 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { JobFormValues } from './jobFormSchema';
-import { usePostPayment } from '@/hooks/usePostPayment';
-import { PricingOptions } from '@/utils/posting/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { JobFormValues, jobFormSchema } from './jobFormSchema';
 import JobTemplates from './JobTemplates';
-import JobPricingStep from './JobPricingStep';
-
-// Import existing components
 import JobDetailsSection from './JobDetailsSection';
 import JobRequirementsSection from './JobRequirementsSection';
 import JobDescriptionSection from './JobDescriptionSection';
 import JobContactSection from './JobContactSection';
+import JobPricingStep from './JobPricingStep';
 
 const JobPostingWizard = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<Partial<JobFormValues>>({});
-  const [selectedPricingOptions, setSelectedPricingOptions] = useState<PricingOptions | null>(null);
-  const { initiatePayment, isLoading } = usePostPayment();
+  const [selectedPricing, setSelectedPricing] = useState<any>(null);
+  
+  const form = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: {
+      title: '',
+      salonName: '',
+      location: '',
+      jobType: 'full-time',
+      compensation_type: 'hourly',
+      compensation_min: 0,
+      compensation_max: 0,
+      description: '',
+      vietnameseDescription: '',
+      requirements: [],
+      contactEmail: '',
+      contactPhone: '',
+      applicationInstructions: '',
+    },
+  });
 
   const steps = [
-    'Template Selection',
-    'Job Details',
-    'Requirements',
-    'Description',
-    'Contact Info',
-    'Photos',
-    'Pricing',
-    'Payment'
+    { title: 'Template Selection', component: 'template' },
+    { title: 'Job Details', component: 'details' },
+    { title: 'Requirements', component: 'requirements' },
+    { title: 'Description', component: 'description' },
+    { title: 'Contact Info', component: 'contact' },
+    { title: 'Pricing', component: 'pricing' },
   ];
 
-  const handleTemplateSelect = (templateData: Partial<JobFormValues>) => {
-    setFormData(templateData);
-    setCurrentStep(1);
-  };
-
-  const handleFormUpdate = (data: Partial<JobFormValues>) => {
-    setFormData(prev => ({ ...prev, ...data }));
-  };
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -47,168 +55,115 @@ const JobPostingWizard = () => {
     }
   };
 
-  const handleBack = () => {
+  const handlePrev = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handlePricingSelect = (pricingOptions: PricingOptions) => {
-    setSelectedPricingOptions(pricingOptions);
-    setCurrentStep(7); // Move to payment step
+  const handleTemplateSelect = (template: any) => {
+    form.reset({
+      ...form.getValues(),
+      title: template.title,
+      description: template.description,
+      vietnameseDescription: template.vietnameseDescription,
+      requirements: template.requirements || [],
+    });
+    handleNext();
   };
 
-  const handlePayment = async () => {
-    if (!selectedPricingOptions) return;
-    
-    try {
-      await initiatePayment('job', formData, selectedPricingOptions);
-    } catch (error) {
-      console.error('Payment failed:', error);
-    }
+  const handlePricingSelect = (pricing: any) => {
+    setSelectedPricing(pricing);
+    // Here you would typically proceed to payment
+    console.log('Selected pricing:', pricing);
   };
 
   const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
+    const step = steps[currentStep];
+    
+    switch (step.component) {
+      case 'template':
         return <JobTemplates onTemplateSelect={handleTemplateSelect} />;
       
-      case 1:
-        return (
-          <JobDetailsSection
-            formData={formData}
-            onUpdate={handleFormUpdate}
-          />
-        );
+      case 'details':
+        return <JobDetailsSection control={form.control} />;
       
-      case 2:
-        return (
-          <JobRequirementsSection
-            formData={formData}
-            onUpdate={handleFormUpdate}
-          />
-        );
+      case 'requirements':
+        return <JobRequirementsSection control={form.control} />;
       
-      case 3:
-        return (
-          <JobDescriptionSection
-            formData={formData}
-            onUpdate={handleFormUpdate}
-          />
-        );
+      case 'description':
+        return <JobDescriptionSection control={form.control} />;
       
-      case 4:
-        return (
-          <JobContactSection
-            formData={formData}
-            onUpdate={handleFormUpdate}
-          />
-        );
+      case 'contact':
+        return <JobContactSection control={form.control} />;
       
-      case 5:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Photos (Optional)</h3>
-            <p className="text-gray-600">Add photos to make your job listing more attractive</p>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <p className="text-gray-500">Photo upload coming soon</p>
-            </div>
-          </div>
-        );
-      
-      case 6:
+      case 'pricing':
         return (
           <JobPricingStep
-            formData={formData}
+            formData={form.getValues()}
             onPricingSelect={handlePricingSelect}
-            isLoading={isLoading}
+            isLoading={false}
           />
-        );
-      
-      case 7:
-        return (
-          <div className="space-y-6">
-            <h3 className="text-xl font-semibold">Complete Payment</h3>
-            {selectedPricingOptions && (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="font-medium">Selected Plan: {selectedPricingOptions.selectedPricingTier}</p>
-                <p className="text-sm text-gray-600">Duration: {selectedPricingOptions.durationMonths} months</p>
-              </div>
-            )}
-            <Button 
-              onClick={handlePayment}
-              disabled={isLoading || !selectedPricingOptions}
-              className="w-full"
-            >
-              {isLoading ? 'Processing...' : 'Complete Payment'}
-            </Button>
-          </div>
         );
       
       default:
-        return null;
+        return <div>Step content not found</div>;
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Post a Job</CardTitle>
-          
-          {/* Progress indicator */}
-          <div className="flex items-center space-x-2 mt-4">
-            {steps.map((step, index) => (
-              <React.Fragment key={step}>
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
-                    index <= currentStep
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}
-                >
-                  {index + 1}
-                </div>
-                {index < steps.length - 1 && (
-                  <div
-                    className={`h-1 w-8 ${
-                      index < currentStep ? 'bg-primary' : 'bg-gray-200'
-                    }`}
-                  />
-                )}
-              </React.Fragment>
-            ))}
+          <CardTitle className="text-2xl font-serif">Post a Job</CardTitle>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>Step {currentStep + 1} of {steps.length}</span>
+              <span>{Math.round(progress)}% Complete</span>
+            </div>
+            <Progress value={progress} className="h-2" />
           </div>
-          
-          <p className="text-sm text-gray-600 mt-2">
-            Step {currentStep + 1} of {steps.length}: {steps[currentStep]}
-          </p>
         </CardHeader>
         
         <CardContent>
-          {renderStepContent()}
-          
-          {/* Navigation buttons */}
-          {currentStep > 0 && currentStep < 7 && (
-            <div className="flex justify-between mt-8">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={currentStep === 0}
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
+          <Form {...form}>
+            <form className="space-y-6">
+              {renderStepContent()}
               
-              <Button
-                onClick={handleNext}
-                disabled={currentStep === steps.length - 1}
-              >
-                Next
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          )}
+              <div className="flex justify-between pt-6 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrev}
+                  disabled={currentStep === 0}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                
+                {currentStep < steps.length - 1 ? (
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    className="flex items-center gap-2"
+                  >
+                    Next
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="flex items-center gap-2"
+                    disabled={!selectedPricing}
+                  >
+                    Complete Posting
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
