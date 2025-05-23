@@ -1,243 +1,212 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { jobPricingOptions } from '@/utils/posting/jobPricing';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { Crown, Star, Zap, Gift, MapPin } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Crown, Star, Zap, Diamond, CheckCircle2 } from 'lucide-react';
+import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
 
 interface JobPricingStepProps {
-  onSubmit: (pricingOptions: PricingOptions) => void;
-  isLoading?: boolean;
+  onNext: (pricingData: PricingOptions) => void;
+  onBack: () => void;
+  initialData?: Partial<PricingOptions>;
 }
 
-const JobPricingStep = ({ onSubmit, isLoading = false }: JobPricingStepProps) => {
-  const [selectedTier, setSelectedTier] = useState<JobPricingTier>('standard');
-  const [durationMonths, setDurationMonths] = useState(1);
-  const [autoRenew, setAutoRenew] = useState(false);
-  const [nationwidePosting, setNationwidePosting] = useState(false);
+const JobPricingStep: React.FC<JobPricingStepProps> = ({ onNext, onBack, initialData }) => {
+  const [selectedTier, setSelectedTier] = useState<JobPricingTier>(initialData?.selectedPricingTier || 'standard');
+  const [durationMonths, setDurationMonths] = useState(initialData?.durationMonths || 1);
+  const [autoRenew, setAutoRenew] = useState(initialData?.autoRenew || false);
+  const [isNationwide, setIsNationwide] = useState(initialData?.isNationwide || false);
+
+  const pricingTiers = [
+    {
+      id: 'free' as JobPricingTier,
+      name: 'Free',
+      price: 0,
+      description: 'Basic listing for 7 days',
+      features: ['7-day listing', 'Basic visibility', 'Standard support'],
+      icon: <CheckCircle2 className="h-5 w-5" />,
+      color: 'text-gray-600'
+    },
+    {
+      id: 'standard' as JobPricingTier,
+      name: 'Standard',
+      price: 49,
+      description: 'Enhanced visibility for 30 days',
+      features: ['30-day listing', 'Enhanced visibility', 'Email support', 'Social media promotion'],
+      icon: <Star className="h-5 w-5" />,
+      color: 'text-blue-600',
+      popular: true
+    },
+    {
+      id: 'premium' as JobPricingTier,
+      name: 'Premium',
+      price: 99,
+      description: 'Priority placement for 30 days',
+      features: ['Priority placement', 'Featured listing badge', 'Priority support', 'Analytics dashboard'],
+      icon: <Crown className="h-5 w-5" />,
+      color: 'text-purple-600'
+    },
+    {
+      id: 'gold' as JobPricingTier,
+      name: 'Gold',
+      price: 199,
+      description: 'Maximum exposure for 60 days',
+      features: ['Top placement', 'Highlighted listing', 'Dedicated support', 'Advanced analytics'],
+      icon: <Zap className="h-5 w-5" />,
+      color: 'text-yellow-600'
+    }
+  ];
 
   const calculatePrice = () => {
-    const baseOption = jobPricingOptions.find(option => option.tier === selectedTier);
-    if (!baseOption) return 0;
-
-    let price = baseOption.price;
+    const tier = pricingTiers.find(t => t.id === selectedTier);
+    if (!tier || tier.price === 0) return 0;
     
-    // Apply duration discounts
-    if (durationMonths === 3) price *= 0.9; // 10% off
-    else if (durationMonths === 6) price *= 0.85; // 15% off
-    else if (durationMonths === 12) price *= 0.8; // 20% off
+    let basePrice = tier.price;
     
-    // Apply auto-renewal discount (5% off monthly)
-    if (autoRenew && durationMonths === 1) price *= 0.95;
+    // Duration discounts
+    if (durationMonths >= 12) basePrice *= 0.8; // 20% off
+    else if (durationMonths >= 6) basePrice *= 0.85; // 15% off
+    else if (durationMonths >= 3) basePrice *= 0.9; // 10% off
     
-    // Add nationwide posting fee
-    if (nationwidePosting) price += 5;
+    // Auto-renew discount
+    if (autoRenew) basePrice *= 0.95; // 5% off
     
-    return Math.round(price * 100) / 100; // Round to 2 decimal places
+    // Nationwide posting
+    if (isNationwide) basePrice += 5;
+    
+    return Math.round(basePrice * 100) / 100;
   };
 
-  const handleSubmit = () => {
-    const pricingOptions: PricingOptions = {
+  const handleProceed = () => {
+    const pricingData: PricingOptions = {
       selectedPricingTier: selectedTier,
       durationMonths,
       autoRenew,
-      isFirstPost: false,
-      nationwidePosting
+      isNationwide
     };
-    
-    console.log('Submitting pricing options:', pricingOptions);
-    onSubmit(pricingOptions);
+    onNext(pricingData);
   };
-
-  const getTierIcon = (tier: JobPricingTier) => {
-    switch (tier) {
-      case 'diamond':
-        return <Crown className="w-5 h-5 text-purple-600" />;
-      case 'gold':
-        return <Star className="w-5 h-5 text-yellow-600" />;
-      case 'premium':
-        return <Zap className="w-5 h-5 text-blue-600" />;
-      case 'free':
-        return <Gift className="w-5 h-5 text-green-600" />;
-      default:
-        return null;
-    }
-  };
-
-  const finalPrice = calculatePrice();
 
   return (
     <div className="space-y-6">
-      {/* Pricing Tiers */}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-2">Choose Your Job Posting Plan</h2>
+        <p className="text-gray-600">Select the plan that best fits your hiring needs</p>
+      </div>
+
       <RadioGroup value={selectedTier} onValueChange={(value) => setSelectedTier(value as JobPricingTier)}>
         <div className="grid gap-4">
-          {jobPricingOptions.map((option) => (
-            <div key={option.id} className="relative">
-              <RadioGroupItem value={option.tier} id={option.id} className="sr-only" />
-              <Label
-                htmlFor={option.id}
-                className={`block cursor-pointer p-4 border-2 rounded-lg transition-all ${
-                  selectedTier === option.tier
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                } ${option.tier === 'diamond' ? 'opacity-60' : ''}`}
-              >
-                <Card className="shadow-none border-none">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {getTierIcon(option.tier)}
-                        <span className="text-lg">{option.name}</span>
-                        {option.popular && (
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                            Most Popular
-                          </Badge>
-                        )}
-                        {option.tier === 'diamond' && (
-                          <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">
-                            Invitation Only
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold">
-                          ${option.price}
-                          {option.tier !== 'free' && <span className="text-sm text-gray-500">/month</span>}
-                        </div>
-                        {option.wasPrice && (
-                          <div className="text-sm text-gray-500 line-through">
-                            ${option.wasPrice}
-                          </div>
-                        )}
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-gray-600 mb-3">{option.description}</p>
-                    {option.features && (
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        {option.features.map((feature, index) => (
-                          <li key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </CardContent>
-                </Card>
-              </Label>
-            </div>
+          {pricingTiers.map((tier) => (
+            <Card key={tier.id} className={`relative cursor-pointer transition-all ${
+              selectedTier === tier.id ? 'ring-2 ring-primary' : 'hover:shadow-md'
+            }`}>
+              {tier.popular && (
+                <Badge className="absolute -top-2 left-4 bg-primary">Most Popular</Badge>
+              )}
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <RadioGroupItem value={tier.id} id={tier.id} />
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <div className={tier.color}>{tier.icon}</div>
+                      <Label htmlFor={tier.id} className="font-semibold cursor-pointer">
+                        {tier.name}
+                      </Label>
+                      <span className="font-bold text-lg">
+                        {tier.price === 0 ? 'Free' : `$${tier.price}`}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{tier.description}</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {tier.features.map((feature, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </RadioGroup>
 
-      {/* Duration Selection */}
-      {selectedTier !== 'free' && selectedTier !== 'diamond' && (
-        <div className="space-y-3">
-          <h4 className="font-medium">Duration (Save with longer commitments)</h4>
-          <RadioGroup value={durationMonths.toString()} onValueChange={(value) => setDurationMonths(parseInt(value))}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="1" id="duration-1" />
-                <Label htmlFor="duration-1" className="cursor-pointer">1 Month</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="3" id="duration-3" />
-                <Label htmlFor="duration-3" className="cursor-pointer">
-                  3 Months <Badge variant="outline" className="ml-1 text-xs">10% off</Badge>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="6" id="duration-6" />
-                <Label htmlFor="duration-6" className="cursor-pointer">
-                  6 Months <Badge variant="outline" className="ml-1 text-xs">15% off</Badge>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="12" id="duration-12" />
-                <Label htmlFor="duration-12" className="cursor-pointer">
-                  12 Months <Badge variant="outline" className="ml-1 text-xs">20% off</Badge>
-                </Label>
-              </div>
+      {selectedTier !== 'free' && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Additional Options</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium">Duration</Label>
+              <RadioGroup value={durationMonths.toString()} onValueChange={(value) => setDurationMonths(parseInt(value))}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="1" id="1month" />
+                  <Label htmlFor="1month">1 Month</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="3" id="3months" />
+                  <Label htmlFor="3months">3 Months (10% off)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="6" id="6months" />
+                  <Label htmlFor="6months">6 Months (15% off)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="12" id="12months" />
+                  <Label htmlFor="12months">12 Months (20% off)</Label>
+                </div>
+              </RadioGroup>
             </div>
-          </RadioGroup>
-        </div>
-      )}
 
-      {/* Additional Options */}
-      {selectedTier !== 'free' && selectedTier !== 'diamond' && (
-        <div className="space-y-4">
-          <h4 className="font-medium">Additional Options</h4>
-          
-          {/* Auto-renewal option (only for monthly) */}
-          {durationMonths === 1 && (
             <div className="flex items-center space-x-2">
               <Checkbox 
-                id="auto-renew" 
+                id="autoRenew" 
                 checked={autoRenew}
-                onCheckedChange={setAutoRenew}
+                onCheckedChange={(checked) => setAutoRenew(checked as boolean)}
               />
-              <Label htmlFor="auto-renew" className="cursor-pointer flex items-center gap-2">
-                Auto-renewal (5% monthly discount)
-                <Badge variant="outline" className="text-xs">Save 5%</Badge>
+              <Label htmlFor="autoRenew" className="text-sm">
+                Auto-renew (5% additional discount)
               </Label>
             </div>
-          )}
-          
-          {/* Nationwide posting */}
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="nationwide" 
-              checked={nationwidePosting}
-              onCheckedChange={setNationwidePosting}
-            />
-            <Label htmlFor="nationwide" className="cursor-pointer flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              Nationwide posting (+$5)
-            </Label>
-          </div>
-        </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="nationwide" 
+                checked={isNationwide}
+                onCheckedChange={(checked) => setIsNationwide(checked as boolean)}
+              />
+              <Label htmlFor="nationwide" className="text-sm">
+                Nationwide posting (+$5)
+              </Label>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Price Summary */}
-      {selectedTier !== 'free' && selectedTier !== 'diamond' && (
-        <div className="bg-gray-50 p-4 rounded-lg">
+      <Card className="bg-gray-50">
+        <CardContent className="p-4">
           <div className="flex justify-between items-center">
-            <span className="font-medium">Total Price:</span>
-            <span className="text-2xl font-bold text-blue-600">${finalPrice}</span>
+            <span className="font-semibold">Total:</span>
+            <span className="text-2xl font-bold">
+              {calculatePrice() === 0 ? 'Free' : `$${calculatePrice()}`}
+            </span>
           </div>
-          {durationMonths > 1 && (
-            <p className="text-sm text-gray-600 mt-1">
-              For {durationMonths} months (${(finalPrice / durationMonths).toFixed(2)}/month)
-            </p>
-          )}
-        </div>
-      )}
+        </CardContent>
+      </Card>
 
-      {/* Submit Button */}
-      <div className="mt-8 pt-6 border-t">
-        <Button
-          onClick={handleSubmit}
-          disabled={isLoading || selectedTier === 'diamond'}
-          className="w-full py-3 text-lg"
-        >
-          {isLoading ? 'Processing...' : 
-           selectedTier === 'diamond' ? 'Invitation Required' :
-           selectedTier === 'free' ? 'Post Job for Free' : 
-           'Proceed to Payment'}
+      <div className="flex space-x-3">
+        <Button variant="outline" onClick={onBack} className="flex-1">
+          Back
         </Button>
-        
-        {selectedTier === 'diamond' && (
-          <p className="text-center text-sm text-gray-500 mt-2">
-            Diamond tier is available by invitation only. Contact us for more information.
-          </p>
-        )}
+        <Button onClick={handleProceed} className="flex-1">
+          Proceed to Payment
+        </Button>
       </div>
     </div>
   );
