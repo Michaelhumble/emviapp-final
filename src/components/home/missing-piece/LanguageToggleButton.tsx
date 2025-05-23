@@ -2,25 +2,44 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Globe } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle";
 
 interface LanguageToggleButtonProps {
   isVietnamese: boolean;
   toggleLanguage: () => void;
+  className?: string;
 }
 
-const LanguageToggleButton = ({ isVietnamese, toggleLanguage }: LanguageToggleButtonProps) => {
+const LanguageToggleButton = ({ isVietnamese, toggleLanguage, className = "" }: LanguageToggleButtonProps) => {
   return (
-    <motion.button
-      onClick={toggleLanguage}
-      className="flex items-center justify-center space-x-2 px-4 py-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+    <motion.div
+      className={`flex items-center bg-white rounded-full shadow-md ${className}`}
+      whileHover={{ scale: 1.03 }}
     >
-      <Globe className="h-4 w-4 text-gray-600" />
-      <span className={isVietnamese ? "opacity-50" : "font-medium"}>English</span>
-      <span className="w-px h-4 bg-gray-300 mx-2"></span>
-      <span className={isVietnamese ? "font-medium" : "opacity-50"}>Tiếng Việt</span>
-    </motion.button>
+      <Toggle
+        pressed={!isVietnamese}
+        onPressedChange={() => isVietnamese && toggleLanguage()}
+        className={`px-3 py-1 h-9 rounded-l-full ${!isVietnamese ? "bg-primary/10 font-medium" : "opacity-70"}`}
+      >
+        <span className="text-sm flex items-center gap-1">
+          {!isVietnamese && <Globe className="h-3.5 w-3.5 text-primary" />}
+          English
+        </span>
+      </Toggle>
+      
+      <div className="w-px h-4 bg-gray-300"></div>
+      
+      <Toggle
+        pressed={isVietnamese}
+        onPressedChange={() => !isVietnamese && toggleLanguage()}
+        className={`px-3 py-1 h-9 rounded-r-full ${isVietnamese ? "bg-primary/10 font-medium" : "opacity-70"}`}
+      >
+        <span className="text-sm flex items-center gap-1">
+          {isVietnamese && <Globe className="h-3.5 w-3.5 text-primary" />}
+          Tiếng Việt
+        </span>
+      </Toggle>
+    </motion.div>
   );
 };
 
