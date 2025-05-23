@@ -11,7 +11,11 @@ interface JobDetailsFormProps {
   expressMode?: boolean;
 }
 
-const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit, initialValues, expressMode = false }) => {
+const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ 
+  onSubmit, 
+  initialValues, 
+  expressMode = false 
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Map JobDetailsSubmission to JobFormValues for the form
@@ -132,6 +136,7 @@ const JobDetailsForm: React.FC<JobDetailsFormProps> = ({ onSubmit, initialValues
         onSubmit={handleFormSubmit}
         defaultValues={mapInitialValues()}
         expressMode={expressMode}
+        isSubmitting={isSubmitting}
       />
     </div>
   );

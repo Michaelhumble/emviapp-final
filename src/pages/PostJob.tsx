@@ -115,6 +115,7 @@ const PostJob = () => {
           <JobDetailsForm 
             onSubmit={handleJobDetailsSubmitted}
             initialValues={jobDetails || undefined}
+            expressMode={false}
           />
         </div>
       )}

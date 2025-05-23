@@ -10,9 +10,14 @@ import { X } from 'lucide-react';
 interface RequirementsSectionProps {
   control?: Control<JobFormValues>;
   form?: UseFormReturn<JobFormValues>;
+  expressMode?: boolean;
 }
 
-const RequirementsSection: React.FC<RequirementsSectionProps> = ({ control, form }) => {
+const RequirementsSection: React.FC<RequirementsSectionProps> = ({ 
+  control, 
+  form,
+  expressMode = false
+}) => {
   // Use either control directly or from form object
   const formControl = control || form?.control;
   

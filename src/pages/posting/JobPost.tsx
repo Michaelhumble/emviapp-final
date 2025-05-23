@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronLeft } from 'lucide-react';
 import JobDetailsForm from '@/components/posting/job/JobDetailsForm';
 import JobTemplateSelector from '@/components/posting/job/JobTemplateSelector';
-import { JobFormValues, JobTemplateType } from '@/components/posting/job/jobFormSchema';
+import { JobFormValues } from '@/components/posting/job/jobFormSchema';
 import { JobDetailsSubmission } from '@/types/job';
 import { JobPreview } from '@/components/posting/JobPreview';
 
@@ -90,6 +90,7 @@ const JobPost = () => {
               <JobDetailsForm 
                 onSubmit={handleJobSubmit} 
                 initialValues={jobDetails || undefined}
+                expressMode={false}
               />
             </Card>
           </TabsContent>
