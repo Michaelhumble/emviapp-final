@@ -1,6 +1,6 @@
 
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from "./context/auth";
 import { SubscriptionProvider } from "./context/subscription";
 import { PricingProvider } from "./context/pricing/PricingProvider";
@@ -13,7 +13,7 @@ function App() {
   return (
     <AuthProvider>
       <SubscriptionProvider>
-        <Router>
+        <PricingProvider>
           <Routes>
             {/* Add minimal routes for job posting flow */}
             <Route path="/post-job" element={<PostJob />} />
@@ -24,7 +24,7 @@ function App() {
             <Route path="*" element={<div>Page not found</div>} />
           </Routes>
           <Toaster />
-        </Router>
+        </PricingProvider>
       </SubscriptionProvider>
     </AuthProvider>
   );
