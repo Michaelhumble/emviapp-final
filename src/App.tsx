@@ -1,34 +1,88 @@
-
-import React from "react";
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from "./context/auth";
-import { SubscriptionProvider } from "./context/subscription";
-import { PricingProvider } from "./context/pricing/PricingProvider";
-import { Toaster } from 'sonner';
-import PostJob from "./pages/PostJob";
-import PostSuccessPage from "./pages/post-success";
-import PostWaitlistPage from "./pages/post-waitlist";
+import React, { useEffect, Suspense } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider } from '@/context/auth';
+import { SalonProvider } from '@/context/salon';
+import { SubscriptionProvider } from '@/context/subscription';
+import { NotificationProvider } from '@/context/notification';
+import { HelmetProvider } from 'react-helmet-async';
+import routes from './routes';
+import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
+import ArtistInbox from "@/pages/dashboard/artist/Inbox";
+import { Toaster } from "@/components/ui/toaster";
+import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
+import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
+import RouteLogger from '@/components/common/RouteLogger';
+import StableSalonPage from "@/pages/salons/StableSalonPage";
+import Layout from "@/components/layout/Layout";
+import JobPost from "@/pages/posting/JobPost";
+import Jobs from "@/pages/Jobs";
+import About from "@/pages/About"; 
+import Contact from "@/pages/Contact";
+import Terms from "@/pages/Terms";
+import Refund from "@/pages/Refund";
+import Privacy from "@/pages/Privacy";
+import Cookies from "@/pages/Cookies";
+import CheckoutFallback from "@/pages/CheckoutFallback";
+import PostSuccess from "@/pages/post-success";
+import PostCanceled from "@/pages/post-canceled";
 
 function App() {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        <SubscriptionProvider>
-          <PricingProvider>
-            <Routes>
-              {/* Add minimal routes for job posting flow */}
-              <Route path="/post-job" element={<PostJob />} />
-              <Route path="/post-success" element={<PostSuccessPage />} />
-              <Route path="/post-waitlist" element={<PostWaitlistPage />} />
+  const location = useLocation();
 
-              {/* Fallback route */}
-              <Route path="*" element={<div>Page not found</div>} />
-            </Routes>
-            <Toaster />
-          </PricingProvider>
-        </SubscriptionProvider>
-      </AuthProvider>
-    </BrowserRouter>
+  useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
+    
+    // Log route for debugging
+    console.log('Current route:', location.pathname);
+  }, [location.pathname]);
+
+  return (
+    <HelmetProvider>
+      <GeneralErrorBoundary>
+        <AuthProvider>
+          <SalonProvider>
+            <SubscriptionProvider>
+              <NotificationProvider>
+                <RouteLogger />
+                <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                  <Routes>
+                    <Route path="/post-job" element={<JobPost />} />
+                    <Route path="/checkout" element={<CheckoutFallback />} />
+                    <Route path="/post-success" element={<PostSuccess />} />
+                    <Route path="/post-canceled" element={<PostCanceled />} />
+                    <Route path="/salons" element={<Layout><StableSalonPage /></Layout>} />
+                    <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+                    <Route path="/about" element={<Layout><About /></Layout>} />
+                    <Route path="/contact" element={<Layout><Contact /></Layout>} />
+                    <Route path="/terms" element={<Layout><Terms /></Layout>} />
+                    <Route path="/refund" element={<Layout><Refund /></Layout>} />
+                    <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+                    <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+                    
+                    {/* Keep existing routes */}
+                    {routes.map((route, index) => (
+                      (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
+                       route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
+                       route.path !== "/privacy" && route.path !== "/cookies") && (
+                        <Route 
+                          key={index}
+                          path={route.path}
+                          element={<Layout>{route.element}</Layout>}
+                        />
+                      )
+                    ))}
+                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
+                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
+                  </Routes>
+                </Suspense>
+                <Toaster />
+              </NotificationProvider>
+            </SubscriptionProvider>
+          </SalonProvider>
+        </AuthProvider>
+      </GeneralErrorBoundary>
+    </HelmetProvider>
   );
 }
 
