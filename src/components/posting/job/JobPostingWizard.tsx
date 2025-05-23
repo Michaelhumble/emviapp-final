@@ -1,112 +1,24 @@
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { JobFormValues, jobFormSchema } from './jobFormSchema';
-import JobTemplates from './JobTemplates';
-import JobDetailsSection from './JobDetailsSection';
-import JobRequirementsSection from './JobRequirementsSection';
-import JobDescriptionSection from './JobDescriptionSection';
-import JobContactSection from './JobContactSection';
-import JobPricingStep from './JobPricingStep';
+import JobDetailsForm from './JobDetailsForm';
+
+interface JobFormData {
+  salonName: string;
+  jobTitle: string;
+  location: string;
+  employmentType: 'full-time' | 'part-time' | 'contract' | 'temporary';
+  compensationType: 'hourly' | 'weekly' | 'monthly';
+  salary: string;
+}
 
 const JobPostingWizard = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [selectedPricing, setSelectedPricing] = useState<any>(null);
-  
-  const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      title: '',
-      salonName: '',
-      location: '',
-      jobType: 'full-time',
-      compensation_type: 'hourly',
-      description: '',
-      vietnameseDescription: '',
-      requirements: [],
-      contactEmail: '',
-      contactPhone: '',
-      contactInfo: '',
-    },
-  });
+  const [jobData, setJobData] = useState<JobFormData | null>(null);
 
-  const steps = [
-    { title: 'Template Selection', component: 'template' },
-    { title: 'Job Details', component: 'details' },
-    { title: 'Requirements', component: 'requirements' },
-    { title: 'Description', component: 'description' },
-    { title: 'Contact Info', component: 'contact' },
-    { title: 'Pricing', component: 'pricing' },
-  ];
-
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleTemplateSelect = (template: any) => {
-    form.reset({
-      ...form.getValues(),
-      title: template.title,
-      description: template.description,
-      vietnameseDescription: template.vietnameseDescription,
-      requirements: template.requirements || [],
-    });
-    handleNext();
-  };
-
-  const handlePricingSelect = (pricing: any) => {
-    setSelectedPricing(pricing);
-    // Here you would typically proceed to payment
-    console.log('Selected pricing:', pricing);
-  };
-
-  const renderStepContent = () => {
-    const step = steps[currentStep];
-    
-    switch (step.component) {
-      case 'template':
-        return <JobTemplates onTemplateSelect={handleTemplateSelect} />;
-      
-      case 'details':
-        return <JobDetailsSection />;
-      
-      case 'requirements':
-        return <JobRequirementsSection control={form.control} />;
-      
-      case 'description':
-        return <JobDescriptionSection control={form.control} />;
-      
-      case 'contact':
-        return <JobContactSection control={form.control} />;
-      
-      case 'pricing':
-        return (
-          <JobPricingStep
-            formData={form.getValues()}
-            onPricingSelect={handlePricingSelect}
-            isLoading={false}
-          />
-        );
-      
-      default:
-        return <div>Step content not found</div>;
-    }
+  const handleJobDetailsSubmit = (data: JobFormData) => {
+    setJobData(data);
+    console.log('Job details submitted:', data);
+    // For now, just log the data. Later steps will handle further processing.
   };
 
   return (
@@ -114,54 +26,25 @@ const JobPostingWizard = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-serif">Post a Job</CardTitle>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Step {currentStep + 1} of {steps.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
+          <p className="text-sm text-muted-foreground">Create your job posting</p>
         </CardHeader>
         
         <CardContent>
-          <Form {...form}>
-            <form className="space-y-6">
-              {renderStepContent()}
-              
-              <div className="flex justify-between pt-6 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrev}
-                  disabled={currentStep === 0}
-                  className="flex items-center gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                
-                {currentStep < steps.length - 1 ? (
-                  <Button
-                    type="button"
-                    onClick={handleNext}
-                    className="flex items-center gap-2"
-                  >
-                    Next
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    className="flex items-center gap-2"
-                    disabled={!selectedPricing}
-                  >
-                    Complete Posting
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                )}
+          {!jobData ? (
+            <JobDetailsForm onSubmit={handleJobDetailsSubmit} />
+          ) : (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Job Details Submitted Successfully!</h3>
+              <div className="bg-green-50 p-4 rounded-lg">
+                <p><strong>Salon:</strong> {jobData.salonName}</p>
+                <p><strong>Job Title:</strong> {jobData.jobTitle}</p>
+                <p><strong>Location:</strong> {jobData.location}</p>
+                <p><strong>Employment Type:</strong> {jobData.employmentType}</p>
+                <p><strong>Compensation Type:</strong> {jobData.compensationType}</p>
+                <p><strong>Salary:</strong> {jobData.salary}</p>
               </div>
-            </form>
-          </Form>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
