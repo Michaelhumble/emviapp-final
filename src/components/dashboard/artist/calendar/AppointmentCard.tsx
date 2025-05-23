@@ -2,7 +2,6 @@
 import { format, parseISO } from "date-fns";
 import { Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "@/hooks/useTranslation";
 
 interface Appointment {
   id: string;
@@ -24,7 +23,6 @@ interface AppointmentCardProps {
 export const AppointmentCard = ({ appointment, onClick }: AppointmentCardProps) => {
   const isManual = appointment.is_manual;
   const startTime = parseISO(appointment.start_time);
-  const { t } = useTranslation();
   
   return (
     <div
@@ -46,11 +44,11 @@ export const AppointmentCard = ({ appointment, onClick }: AppointmentCardProps) 
         {format(startTime, "h:mm a")}
       </div>
       <div className="text-xs font-medium truncate">
-        {appointment.services?.title || t({english: "Service", vietnamese: "Dịch vụ"})}
+        {appointment.services?.title || "Service"}
       </div>
       <div className="text-xs truncate flex items-center gap-1">
         {isManual && <Phone className="h-3 w-3 text-purple-500" />}
-        {appointment.customer_name || t({english: "Client", vietnamese: "Khách hàng"})}
+        {appointment.customer_name || "Client"}
       </div>
     </div>
   );

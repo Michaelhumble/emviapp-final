@@ -3,15 +3,13 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import EnglishContent from "./EnglishContent";
 import VietnameseContent from "./VietnameseContent";
-import { useTranslation } from "@/hooks/useTranslation";
 
 interface ContentCardProps {
+  language: "en" | "vi";
   itemVariants: any;
 }
 
-const ContentCard = ({ itemVariants }: ContentCardProps) => {
-  const { isVietnamese } = useTranslation();
-  
+const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
   return (
     <motion.div 
       className="bg-white backdrop-blur-sm rounded-3xl shadow-2xl p-4 sm:p-6 md:p-10 mb-6 sm:mb-12 border border-indigo-100/50 relative overflow-hidden"
@@ -26,14 +24,18 @@ const ContentCard = ({ itemVariants }: ContentCardProps) => {
       
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={isVietnamese ? "vi" : "en"}
+          key={language}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
           className="w-full"
         >
-          <EnglishContent itemVariants={itemVariants} />
+          {language === "en" ? (
+            <EnglishContent itemVariants={itemVariants} />
+          ) : (
+            <VietnameseContent itemVariants={itemVariants} />
+          )}
         </motion.div>
       </AnimatePresence>
     </motion.div>

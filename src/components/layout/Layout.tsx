@@ -5,7 +5,6 @@ import Footer from './Footer';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
-import LanguagePreference from '@/components/common/LanguagePreference';
 
 interface LayoutProps {
   children: ReactNode;
@@ -28,9 +27,6 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
       </main>
       
       <Footer />
-      
-      {/* Language preference prompt for new users */}
-      <LanguagePreference />
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}

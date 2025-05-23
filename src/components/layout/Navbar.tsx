@@ -28,20 +28,14 @@ const Navbar = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
-    toast.success(t({
-      english: "You've been signed out successfully",
-      vietnamese: "Bạn đã đăng xuất thành công"
-    }));
+    toast.success("You've been signed out successfully");
   };
 
   const onPostJobClick = () => {
     navigate("/post-job");
   };
 
-  const tooltipText = t({
-    english: "Was $29.99 – Free for a limited time!",
-    vietnamese: "Đã từng là $29.99 – Miễn phí trong thời gian giới hạn!"
-  });
+  const tooltipText = t("Was $29.99 – Free for a limited time!");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
@@ -85,20 +79,14 @@ const Navbar = () => {
                       onClick={onPostJobClick} 
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      {t({
-                        english: "Post a Job for Free",
-                        vietnamese: "Đăng việc miễn phí"
-                      })}
+                      {t("Post a Job for Free")}
                     </Button>
                   ) : (
                     <Button 
                       onClick={() => navigate("/sign-in")}
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      {t({
-                        english: "Post a Job for Free",
-                        vietnamese: "Đăng việc miễn phí"
-                      })}
+                      {t("Post a Job for Free")}
                     </Button>
                   )}
                 </TooltipTrigger>
