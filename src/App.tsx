@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -27,6 +26,7 @@ import CheckoutFallback from "@/pages/CheckoutFallback";
 import PostSuccess from "@/pages/post-success";
 import PostCanceled from "@/pages/post-canceled";
 import PostJobBillion from "@/pages/PostJobBillion";
+import PostJobExperimental from "@/pages/PostJobExperimental";
 
 function App() {
   const location = useLocation();
@@ -51,6 +51,7 @@ function App() {
                   <Routes>
                     <Route path="/post-job" element={<JobPost />} />
                     <Route path="/post-job-billion" element={<PostJobBillion />} />
+                    <Route path="/post-job-experimental" element={<PostJobExperimental />} />
                     <Route path="/checkout" element={<CheckoutFallback />} />
                     <Route path="/post-success" element={<PostSuccess />} />
                     <Route path="/post-canceled" element={<PostCanceled />} />

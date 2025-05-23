@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -32,7 +31,7 @@ const Navbar = () => {
   };
 
   const onPostJobClick = () => {
-    navigate("/post-job-billion");
+    navigate("/post-job");
   };
 
   const tooltipText = t("Was $29.99 – Free for a limited time!");

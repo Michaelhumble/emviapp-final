@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -67,13 +66,13 @@ const JobPostCTA = () => {
               </div>
               
               {isSignedIn ? (
-                <Link to="/post-job-billion">
+                <Link to="/post-job">
                   <Button className="bg-purple-600 hover:bg-purple-700">
                     Post a Job
                   </Button>
                 </Link>
               ) : (
-                <Link to="/auth/signin?redirect=/post-job-billion">
+                <Link to="/auth/signin?redirect=/post-job">
                   <Button className="bg-purple-600 hover:bg-purple-700">
                     Sign In to Post
                   </Button>

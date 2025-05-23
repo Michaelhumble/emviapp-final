@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -80,7 +79,7 @@ const MobileMenu: React.FC = () => {
                 <div className="px-2 mb-6">
                   <Button 
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
-                    onClick={() => handleNavigation('/post-job-billion')}
+                    onClick={() => handleNavigation('/post-job')}
                   >
                     <PlusSquare size={18} />
                     {t({

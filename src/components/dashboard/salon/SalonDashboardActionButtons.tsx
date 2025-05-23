@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Store, TrendingUp, RefreshCw } from "lucide-react";
@@ -42,7 +41,7 @@ const SalonDashboardActionButtons = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Button 
           className="bg-blue-600 hover:bg-blue-700 h-auto py-4 px-4 flex flex-col items-center justify-center gap-2 relative transition-colors"
-          onClick={() => handleButtonClick("/post-job-billion", "Post a Job")}
+          onClick={() => handleButtonClick("/post-job", "Post a Job")}
         >
           <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
             {isVietnamese ? "HOT" : t("Hot")}
