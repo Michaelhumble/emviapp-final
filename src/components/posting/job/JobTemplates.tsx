@@ -29,7 +29,6 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ title, description, onSelec
 const JobTemplates: React.FC<JobTemplateProps> = ({ onTemplateSelect, expressMode = false }) => {
   const populateNailTechTemplate = () => {
     onTemplateSelect({
-      id: 'nail-tech-template',
       title: "Nail Technician Needed",
       salonName: "Beautiful Nails Salon",
       description: "Looking for an experienced nail technician to join our busy salon. Must have at least 2 years experience with acrylics, gels, and nail art. Great earning potential with commission-based pay structure. Friendly team environment with regular clients.",
@@ -47,7 +46,6 @@ const JobTemplates: React.FC<JobTemplateProps> = ({ onTemplateSelect, expressMod
 
   const populateHairStylistTemplate = () => {
     onTemplateSelect({
-      id: 'hair-stylist-template',
       title: "Hair Stylist Position Available",
       salonName: "Chic Cuts Salon",
       description: "Seeking a skilled hair stylist to join our upscale salon. Must be proficient in cutting, coloring, and styling various hair types. Strong customer service skills required. Commission-based compensation with potential for growth.",
@@ -64,7 +62,6 @@ const JobTemplates: React.FC<JobTemplateProps> = ({ onTemplateSelect, expressMod
 
   const populateReceptionistTemplate = () => {
     onTemplateSelect({
-      id: 'receptionist-template',
       title: "Salon Receptionist/Front Desk",
       salonName: "Glamour Salon & Spa",
       description: "Now hiring a friendly, organized receptionist for our busy salon and spa. Duties include scheduling appointments, answering phones, greeting clients, and processing payments. Must have excellent customer service skills and be detail-oriented.",
