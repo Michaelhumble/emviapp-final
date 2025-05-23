@@ -1,31 +1,22 @@
 
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import JobTemplates from '@/components/legacy-job-templates/JobTemplates';
-import BillionDollarJobForm from '@/components/job-posting-new/BillionDollarJobForm';
+import SinglePageJobForm from '@/components/job-posting-new/SinglePageJobForm';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 
 const JobPost = () => {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const { initiatePayment } = usePostPayment();
 
   const handleTemplateSelect = async (template: any) => {
     console.log('Template selected:', template);
-    
-    // Validate required fields
-    if (!template.title || !template.salonName && !template.company) {
-      toast.error('Missing required fields', {
-        description: 'Please ensure job title and company name are provided.'
-      });
-      return;
-    }
-    
-    // Set the selected template and show the form
-    setSelectedTemplate(template);
+    // Just proceed to the form - no pre-filling
     setShowForm(true);
   };
 
@@ -33,10 +24,30 @@ const JobPost = () => {
     setIsSubmitting(true);
     
     try {
-      // Combine template data with form data
+      console.log('Submitting job form data:', formData);
+
+      // Transform the form data to match expected format
       const jobData = {
-        ...selectedTemplate,
-        ...formData
+        title: `${formData.profession.replace('-', ' ')} Position`,
+        salonName: formData.salonName,
+        company: formData.salonName,
+        location: formData.location,
+        employment_type: formData.employmentType,
+        compensation_type: formData.compensationType,
+        compensation_details: formData.compensationDetails,
+        jobDescription: formData.jobDescriptionEnglish,
+        vietnameseDescription: formData.jobDescriptionVietnamese,
+        description: formData.jobDescriptionEnglish,
+        vietnamese_description: formData.jobDescriptionVietnamese,
+        contact_info: {
+          owner_name: formData.contactName,
+          phone: formData.contactPhone,
+          email: formData.contactEmail
+        },
+        benefits: formData.benefits || [],
+        profession: formData.profession,
+        // Photo uploads will be handled separately in a real implementation
+        photos: formData.photoUploads || []
       };
 
       // Default pricing options for job posting
@@ -54,10 +65,12 @@ const JobPost = () => {
         toast.success('Job posting initiated successfully!', {
           description: 'You will be redirected to complete payment.'
         });
+        navigate('/dashboard');
       } else if (result.waitlisted) {
         toast.info('Added to Diamond tier waitlist', {
           description: 'Our team will contact you soon.'
         });
+        navigate('/dashboard');
       } else {
         toast.error('Failed to submit job posting', {
           description: 'Please try again or contact support.'
@@ -75,40 +88,36 @@ const JobPost = () => {
 
   const handleBackToTemplates = () => {
     setShowForm(false);
-    setSelectedTemplate(null);
   };
 
   return (
     <Layout>
       <Helmet>
-        <title>Post a Job - Billion Dollar Experience | EmviApp</title>
-        <meta name="description" content="Post your job with our premium billion-dollar job posting experience" />
+        <title>Post a Job - Premium Job Posting | EmviApp</title>
+        <meta name="description" content="Post your job with our premium job posting experience - find the perfect beauty professional" />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {!showForm ? (
-            <>
-              <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold mb-4">Post Your Job</h1>
-                <p className="text-xl text-gray-600">Find the perfect beauty professional with our premium job posting system</p>
-              </div>
-              
-              <JobTemplates 
-                onTemplateSelect={handleTemplateSelect} 
-                isSubmitting={isSubmitting}
-              />
-            </>
-          ) : (
-            <BillionDollarJobForm 
-              initialData={selectedTemplate}
-              onSubmit={handleFormSubmit}
-              onBack={handleBackToTemplates}
+      {!showForm ? (
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold mb-4">Post Your Job</h1>
+              <p className="text-xl text-gray-600">Find the perfect beauty professional with our premium job posting system</p>
+            </div>
+            
+            <JobTemplates 
+              onTemplateSelect={handleTemplateSelect} 
               isSubmitting={isSubmitting}
             />
-          )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <SinglePageJobForm 
+          onSubmit={handleFormSubmit}
+          onBack={handleBackToTemplates}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </Layout>
   );
 };
