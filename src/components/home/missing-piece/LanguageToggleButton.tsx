@@ -2,13 +2,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Globe } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
-interface LanguageToggleButtonProps {
-  isVietnamese: boolean;
-  toggleLanguage: () => void;
-}
-
-const LanguageToggleButton = ({ isVietnamese, toggleLanguage }: LanguageToggleButtonProps) => {
+const LanguageToggleButton = () => {
+  const { isVietnamese, toggleLanguage } = useTranslation();
+  
   return (
     <motion.button
       onClick={toggleLanguage}
