@@ -60,7 +60,7 @@ const JobContactSection: React.FC<JobContactSectionProps> = ({ control }) => {
 
       <FormField
         control={control}
-        name="applicationInstructions"
+        name="contactInfo"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-gray-900 font-medium">Application Instructions</FormLabel>

@@ -27,14 +27,12 @@ const JobPostingWizard = () => {
       location: '',
       jobType: 'full-time',
       compensation_type: 'hourly',
-      compensation_min: 0,
-      compensation_max: 0,
       description: '',
       vietnameseDescription: '',
       requirements: [],
       contactEmail: '',
       contactPhone: '',
-      applicationInstructions: '',
+      contactInfo: '',
     },
   });
 
@@ -86,7 +84,7 @@ const JobPostingWizard = () => {
         return <JobTemplates onTemplateSelect={handleTemplateSelect} />;
       
       case 'details':
-        return <JobDetailsSection control={form.control} />;
+        return <JobDetailsSection />;
       
       case 'requirements':
         return <JobRequirementsSection control={form.control} />;
