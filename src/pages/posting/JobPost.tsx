@@ -3,21 +3,20 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import JobTemplates from '@/components/legacy-job-templates/JobTemplates';
-import SinglePageJobForm from '@/components/job-posting-new/SinglePageJobForm';
+import ConsolidatedJobTemplateSelector from '@/components/job-posting-new/ConsolidatedJobTemplateSelector';
+import ConsolidatedJobForm from '@/components/job-posting-new/ConsolidatedJobForm';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { toast } from 'sonner';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
   const { initiatePayment } = usePostPayment();
 
-  const handleTemplateSelect = async (template: any) => {
-    console.log('Template selected:', template);
-    // Just proceed to the form - no pre-filling
-    setShowForm(true);
+  const handleTemplateSelect = (profession: string) => {
+    console.log('Profession selected:', profession);
+    setSelectedProfession(profession);
   };
 
   const handleFormSubmit = async (formData: any) => {
@@ -46,7 +45,6 @@ const JobPost = () => {
         },
         benefits: formData.benefits || [],
         profession: formData.profession,
-        // Photo uploads will be handled separately in a real implementation
         photos: formData.photoUploads || []
       };
 
@@ -62,15 +60,15 @@ const JobPost = () => {
       const result = await initiatePayment('job', jobData, pricingOptions);
       
       if (result.success) {
-        toast.success('Job posting initiated successfully!', {
-          description: 'You will be redirected to complete payment.'
+        toast.success('Job posting created successfully!', {
+          description: 'Redirecting to listings page...'
         });
-        navigate('/dashboard');
+        navigate('/listings');
       } else if (result.waitlisted) {
         toast.info('Added to Diamond tier waitlist', {
           description: 'Our team will contact you soon.'
         });
-        navigate('/dashboard');
+        navigate('/listings');
       } else {
         toast.error('Failed to submit job posting', {
           description: 'Please try again or contact support.'
@@ -87,7 +85,7 @@ const JobPost = () => {
   };
 
   const handleBackToTemplates = () => {
-    setShowForm(false);
+    setSelectedProfession(null);
   };
 
   return (
@@ -97,7 +95,7 @@ const JobPost = () => {
         <meta name="description" content="Post your job with our premium job posting experience - find the perfect beauty professional" />
       </Helmet>
       
-      {!showForm ? (
+      {!selectedProfession ? (
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8">
@@ -105,14 +103,15 @@ const JobPost = () => {
               <p className="text-xl text-gray-600">Find the perfect beauty professional with our premium job posting system</p>
             </div>
             
-            <JobTemplates 
+            <ConsolidatedJobTemplateSelector 
               onTemplateSelect={handleTemplateSelect} 
               isSubmitting={isSubmitting}
             />
           </div>
         </div>
       ) : (
-        <SinglePageJobForm 
+        <ConsolidatedJobForm 
+          selectedProfession={selectedProfession}
           onSubmit={handleFormSubmit}
           onBack={handleBackToTemplates}
           isSubmitting={isSubmitting}
