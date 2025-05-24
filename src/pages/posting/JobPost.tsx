@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
@@ -98,9 +97,19 @@ const JobPost = () => {
       {!selectedProfession ? (
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold mb-4">Post Your Job</h1>
-              <p className="text-xl text-gray-600">Find the perfect beauty professional with our premium job posting system</p>
+            <div className="text-center mb-12">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 bg-clip-text text-transparent leading-tight">
+                Build Your Beauty Empire: Start with the Perfect Hire.
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-700 mb-6 max-w-4xl mx-auto leading-relaxed">
+                Unlock the most beautiful job posting experience ever built for the beauty industry. Select your profession below to begin.
+              </p>
+              <div className="flex items-center justify-center gap-2 text-purple-600 font-medium">
+                <span className="text-2xl">🚀</span>
+                <p className="text-lg">
+                  1,000+ salons have found top talent on Emvi.App — be the next success story.
+                </p>
+              </div>
             </div>
             
             <ConsolidatedJobTemplateSelector 
