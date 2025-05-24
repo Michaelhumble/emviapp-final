@@ -1,225 +1,287 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import ConsolidatedJobTemplateSelector from '@/components/posting/job/ConsolidatedJobTemplateSelector';
-import ConsolidatedJobForm from '@/components/posting/job/ConsolidatedJobForm';
-import PremiumPricingTable from '@/components/posting/PremiumPricingTable';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { CheckCircle, Crown, Star, Zap, Users, Clock, Shield, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import JobTemplateSelector from '@/components/legacy-job-templates/JobTemplateSelector';
+import JobForm from '@/components/posting/job/JobForm';
 import { useStripe } from '@/hooks/useStripe';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { supabase } from '@/integrations/supabase/client';
+import { jobPricingOptions, calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import { PricingOptions, JobPricingOption } from '@/utils/posting/types';
 
-const formSchema = z.object({
-  profession: z.string().nonempty('Please select a profession'),
-  salonName: z.string().nonempty('Please enter your salon name'),
-  location: z.string().nonempty('Please enter your location'),
-  employmentType: z.string().nonempty('Please select employment type'),
-  compensationType: z.string().nonempty('Please select compensation type'),
-  compensationDetails: z.string().nonempty('Please enter compensation details'),
-  jobDescriptionEnglish: z.string().nonempty('Please enter job description in English'),
-  jobDescriptionVietnamese: z.string().nonempty('Please enter job description in Vietnamese'),
-  contactName: z.string().nonempty('Please enter contact name'),
-  contactPhone: z.string().nonempty('Please enter contact phone'),
-  contactEmail: z.string().nonempty('Please enter contact email'),
-  benefits: z.array(z.string()).optional(),
-  photoUploads: z.array(z.string()).optional()
-});
+interface FeatureItemProps {
+  icon: React.ReactNode;
+  text: string;
+}
 
-type FormValues = z.infer<typeof formSchema>;
+const FeatureItem: React.FC<FeatureItemProps> = ({ icon, text }) => (
+  <li className="flex items-center space-x-2">
+    {icon}
+    <span>{text}</span>
+  </li>
+);
 
-const JobPost = () => {
-  const { user } = useAuth();
+const PricingCard: React.FC<{ option: JobPricingOption; isSelected: boolean; onSelect: (tier: string) => void }> = ({ option, isSelected, onSelect }) => {
+  return (
+    <Card
+      className={`p-4 border-2 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-200 ${isSelected ? 'border-purple-500' : 'border-gray-200'}`}
+      onClick={() => onSelect(option.tier)}
+    >
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">{option.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-4">
+          <span className="text-2xl font-bold">${option.price}</span>/month
+        </div>
+        <ul className="list-disc pl-5 space-y-2">
+          {option.features?.map((feature, index) => (
+            <li key={index}>{feature}</li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+};
+
+const PremiumPricingTable: React.FC = () => {
+  const [selectedTier, setSelectedTier] = useState<string>('standard');
+  const [durationMonths, setDurationMonths] = useState<number>(1);
+  const [autoRenew, setAutoRenew] = useState<boolean>(false);
+  const [isNationwide, setIsNationwide] = useState<boolean>(false);
+  const [jobData, setJobData] = useState<any>(null); // Placeholder for job data
+
+  const handleTierSelect = (tier: string) => {
+    setSelectedTier(tier);
+  };
+
+  const handleDurationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setDurationMonths(parseInt(event.target.value));
+  };
+
+  const handleAutoRenewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAutoRenew(event.target.checked);
+  };
+
+  const handleNationwideChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsNationwide(event.target.checked);
+  };
+
+  const pricingOptions: PricingOptions = {
+    selectedPricingTier: selectedTier as any,
+    durationMonths: durationMonths,
+    autoRenew: autoRenew,
+    isNationwide: isNationwide,
+    jobData: jobData
+  };
+
+  const { originalPrice, finalPrice, discountPercentage } = calculateJobPostPrice(pricingOptions);
+  const { isLoading, initiatePayment } = useStripe();
   const navigate = useNavigate();
-  const { initiatePayment, isLoading: isPaymentLoading } = useStripe();
-  
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'standard',
-    durationMonths: 1,
-    autoRenew: true,
-    isFirstPost: false,
-    isNationwide: false
-  });
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      profession: '',
-      salonName: '',
-      location: '',
-      employmentType: '',
-      compensationType: '',
-      compensationDetails: '',
-      jobDescriptionEnglish: '',
-      jobDescriptionVietnamese: '',
-      contactName: '',
-      contactPhone: '',
-      contactEmail: '',
-      benefits: [],
-      photoUploads: []
-    }
-  });
-
-  const handleTemplateSelect = (template: string) => {
-    setSelectedTemplate(template);
-    setCurrentStep(2);
-  };
-
-  const handleFormComplete = (data: any) => {
-    form.reset(data);
-    setCurrentStep(3); // Move to pricing step
-  };
-
-  const handlePricingOptionsChange = (options: PricingOptions) => {
-    setPricingOptions(options);
-  };
-
-  const handleProceedToPayment = async () => {
-    if (!user) {
-      toast.error('Please log in to continue');
-      navigate('/login?redirect=' + encodeURIComponent('/post-job'));
-      return;
-    }
-
-    try {
-      const formData = form.getValues();
-      
-      // For Diamond tier, redirect to waitlist/contact
-      if (pricingOptions.selectedPricingTier === 'diamond') {
-        window.open('mailto:support@emviapp.com?subject=Diamond Plan Interest', '_blank');
-        return;
-      }
-
-      // Initiate Stripe payment
-      const success = await initiatePayment({
-        ...pricingOptions,
-        jobData: formData,
-        postType: 'job'
-      });
-
-      if (success) {
-        toast.success('Payment initiated successfully!');
-        // Payment will redirect to success page
-      } else {
-        toast.error('Payment initiation failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Something went wrong. Please try again.');
-    }
-  };
-
-  const handleBackStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+  const handlePayment = async () => {
+    const success = await initiatePayment(pricingOptions);
+    if (success) {
+      // Optionally, navigate or show a success message
+      toast.success('Payment initiated successfully!');
+      navigate('/post-success');
+    } else {
+      toast.error('Payment failed. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Progress indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  currentStep >= step 
-                    ? 'bg-purple-600 text-white' 
-                    : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {step}
-                </div>
-                {step < 3 && (
-                  <div className={`w-16 h-1 mx-2 ${
-                    currentStep > step ? 'bg-purple-600' : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
+    <div className="max-w-4xl mx-auto">
+      <Card className="shadow-lg rounded-md">
+        <CardHeader className="p-6">
+          <CardTitle className="text-2xl font-bold">Choose Your Premium Plan</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {jobPricingOptions.map((option) => (
+              <PricingCard
+                key={option.id}
+                option={option}
+                isSelected={selectedTier === option.tier}
+                onSelect={handleTierSelect}
+              />
             ))}
           </div>
-          <div className="flex justify-center mt-2">
-            <span className="text-sm text-gray-600">
-              {currentStep === 1 && 'Choose Template'}
-              {currentStep === 2 && 'Job Details'}
-              {currentStep === 3 && 'Select Plan'}
-            </span>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Duration (Months)</label>
+            <select
+              value={durationMonths}
+              onChange={handleDurationChange}
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="1">1 Month</option>
+              <option value="3">3 Months</option>
+              <option value="6">6 Months</option>
+              <option value="12">12 Months</option>
+            </select>
           </div>
-        </div>
 
-        {/* Step 1: Template Selection */}
-        {currentStep === 1 && (
-          <Card className="max-w-4xl mx-auto">
-            <CardHeader>
-              <CardTitle className="text-center text-2xl font-bold">
-                Choose Your Job Template
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ConsolidatedJobTemplateSelector onTemplateSelect={handleTemplateSelect} />
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 2: Job Form */}
-        {currentStep === 2 && (
-          <Card className="max-w-4xl mx-auto">
-            <CardHeader className="flex flex-row items-center space-y-0">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleBackStep}
-                className="mr-4"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <CardTitle className="text-2xl font-bold">
-                Job Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <ConsolidatedJobForm 
-                  onComplete={handleFormComplete}
-                  selectedTemplate={selectedTemplate}
-                />
-              </Form>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 3: Premium Pricing Table */}
-        {currentStep === 3 && (
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-center mb-6">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleBackStep}
-                className="mr-4"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Job Details
-              </Button>
-            </div>
-            
-            <PremiumPricingTable
-              pricingOptions={pricingOptions}
-              onOptionsChange={handlePricingOptionsChange}
-              onProceedToPayment={handleProceedToPayment}
-              isLoading={isPaymentLoading}
+          <div className="flex items-center mb-4">
+            <input
+              id="autoRenew"
+              type="checkbox"
+              checked={autoRenew}
+              onChange={handleAutoRenewChange}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
             />
+            <label htmlFor="autoRenew" className="ml-2 block text-sm text-gray-900">
+              Auto-Renew
+            </label>
           </div>
-        )}
+
+          <div className="flex items-center mb-6">
+            <input
+              id="isNationwide"
+              type="checkbox"
+              checked={isNationwide}
+              onChange={handleNationwideChange}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="isNationwide" className="ml-2 block text-sm text-gray-900">
+              Nationwide
+            </label>
+          </div>
+
+          <div className="mb-6">
+            <Separator />
+          </div>
+
+          <div className="mb-4">
+            <div className="flex justify-between">
+              <span className="text-sm font-medium text-gray-700">Original Price:</span>
+              <span className="text-sm font-medium text-gray-700">${originalPrice.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm font-medium text-gray-700">Discount:</span>
+              <span className="text-sm font-medium text-green-500">-{discountPercentage}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-lg font-bold text-gray-900">Final Price:</span>
+              <span className="text-lg font-bold text-gray-900">${finalPrice.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <Button
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-md shadow-md transition-colors duration-200"
+            onClick={handlePayment}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : 'Proceed to Payment'}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const JobPost: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState<'template' | 'form' | 'pricing'>('template');
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const navigate = useNavigate();
+  const { isLoading, initiatePayment } = useStripe();
+
+  const handleTemplateSelect = (template: any) => {
+    console.log('Template selected:', template);
+    setSelectedTemplate(template);
+    setCurrentStep('form');
+  };
+
+  const renderTemplateSelector = () => (
+    <div className="max-w-4xl mx-auto">
+      <JobTemplateSelector 
+        onTemplateSelect={handleTemplateSelect}
+        isSubmitting={false}
+      />
+    </div>
+  );
+
+  const renderJobForm = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-6">
+        <Button 
+          variant="outline" 
+          onClick={() => setCurrentStep('template')}
+          className="mb-4"
+        >
+          ← Back to Templates
+        </Button>
+        <h2 className="text-2xl font-bold mb-2">Complete Your Job Details</h2>
+        <p className="text-gray-600">Fill out the information below to create your job posting</p>
       </div>
+      
+      <JobForm />
+      
+      <div className="mt-8 flex justify-between">
+        <Button 
+          variant="outline" 
+          onClick={() => setCurrentStep('template')}
+        >
+          Back
+        </Button>
+        <Button 
+          onClick={() => setCurrentStep('pricing')}
+          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+        >
+          Continue to Pricing
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderPricingTable = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-6">
+        <Button 
+          variant="outline" 
+          onClick={() => setCurrentStep('form')}
+          className="mb-4"
+        >
+          ← Back to Job Form
+        </Button>
+        <h2 className="text-2xl font-bold mb-2">Choose Your Premium Plan</h2>
+        <p className="text-gray-600">Select a pricing tier and options to enhance your job posting</p>
+      </div>
+      
+      <PremiumPricingTable />
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (currentStep) {
+      case 'template':
+        return renderTemplateSelector();
+      case 'form':
+        return renderJobForm();
+      case 'pricing':
+        return renderPricingTable();
+      default:
+        return <div>Unknown step</div>;
+    }
+  };
+
+  return (
+    <div className="container mx-auto py-8">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 50 }}
+          transition={{ duration: 0.3 }}
+        >
+          {renderContent()}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
