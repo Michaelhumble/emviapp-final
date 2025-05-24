@@ -1,8 +1,4 @@
 
-// @ts-nocheck
-// ^ This comment disables TypeScript checking for this file since it uses Deno types
-// that aren't available in the browser/Node.js environment
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
@@ -21,6 +17,10 @@ serve(async (req) => {
   try {
     // Parse request body
     const { sessionId } = await req.json();
+
+    if (!sessionId) {
+      throw new Error("Session ID is required");
+    }
 
     // Authentication check
     const authHeader = req.headers.get("Authorization");
@@ -112,6 +112,13 @@ serve(async (req) => {
         
       if (updateJobError) {
         console.error("Error updating job status:", updateJobError);
+        return new Response(JSON.stringify({ 
+          error: "Failed to activate job post",
+          details: updateJobError.message
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
     }
     
@@ -142,7 +149,10 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error verifying checkout session:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message || "Failed to verify payment",
+      details: error.stack
+    }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
