@@ -86,56 +86,16 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control }) => {
         )}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          control={control}
-          name="compensationType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Compensation Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select compensation type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="hourly">Hourly</SelectItem>
-                  <SelectItem value="salary">Salary</SelectItem>
-                  <SelectItem value="commission">Commission</SelectItem>
-                  <SelectItem value="hourly-plus-commission">Hourly + Commission</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="compensationDetails"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Compensation Details</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., $15-20/hour, $40K-50K/year" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-
       <FormField
         control={control}
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Job Description (English)</FormLabel>
+            <FormLabel>Job Description</FormLabel>
             <FormControl>
               <Textarea 
-                placeholder="Describe the position, responsibilities, requirements, and benefits..."
-                className="min-h-[120px]"
+                placeholder="Describe the position, responsibilities, and requirements..."
+                className="min-h-[100px]"
                 {...field} 
               />
             </FormControl>
@@ -143,71 +103,6 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control }) => {
           </FormItem>
         )}
       />
-
-      <FormField
-        control={control}
-        name="vietnameseDescription"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Job Description (Vietnamese) - Optional</FormLabel>
-            <FormControl>
-              <Textarea 
-                placeholder="Mô tả công việc, trách nhiệm, yêu cầu và quyền lợi..."
-                className="min-h-[120px]"
-                {...field} 
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <div className="border-t pt-6">
-        <h3 className="font-medium text-lg mb-4">Contact Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FormField
-            control={control}
-            name="contactName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="contactPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="(555) 123-4567" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="contactEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="your@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
     </div>
   );
 };
