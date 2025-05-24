@@ -6,40 +6,45 @@ interface PremiumPricingConfig {
   testMode: boolean;
   diamondSpotsLeft: number;
   firstPostFree: boolean;
-  visualReview: boolean; // New flag for design review
+  visualReview: boolean;
 }
 
 export const usePremiumPricingFlag = () => {
   const [config, setConfig] = useState<PremiumPricingConfig>({
-    enabled: true, // Changed to true for visual review
+    enabled: true, // Enable by default to show new pricing
     testMode: true,
     diamondSpotsLeft: 2,
     firstPostFree: true,
-    visualReview: true // Enable visual review mode
+    visualReview: true
   });
 
   useEffect(() => {
-    // Check for URL parameter to enable premium pricing for testing
+    // Check for URL parameter to disable premium pricing for testing
     const urlParams = new URLSearchParams(window.location.search);
-    const enablePremium = urlParams.get('premium_pricing') === 'true';
+    const disablePremium = urlParams.get('disable_premium') === 'true';
     const visualReview = urlParams.get('pricing_review') === 'true';
     
     // Check localStorage for persistent testing flag
     const storedFlag = localStorage.getItem('emvi_premium_pricing_test');
     const storedReview = localStorage.getItem('emvi_pricing_visual_review');
     
-    if (enablePremium || storedFlag === 'true' || visualReview || storedReview === 'true') {
+    // Default to enabled unless explicitly disabled
+    if (disablePremium) {
+      setConfig(prev => ({
+        ...prev,
+        enabled: false,
+        visualReview: false
+      }));
+    } else {
       setConfig(prev => ({
         ...prev,
         enabled: true,
-        visualReview: visualReview || storedReview === 'true'
+        visualReview: visualReview || storedReview === 'true' || true // Default visual review on
       }));
       
-      // Store in localStorage for persistence during testing
+      // Store in localStorage for persistence
       localStorage.setItem('emvi_premium_pricing_test', 'true');
-      if (visualReview) {
-        localStorage.setItem('emvi_pricing_visual_review', 'true');
-      }
+      localStorage.setItem('emvi_pricing_visual_review', 'true');
     }
   }, []);
 

@@ -11,7 +11,10 @@ interface TestScenario {
 export const enablePremiumPricingTest = () => {
   localStorage.setItem('emvi_premium_pricing_test', 'true');
   console.log('✅ Premium pricing test mode enabled');
-  window.location.search = '?premium_pricing=true';
+  const url = new URL(window.location.href);
+  url.searchParams.delete('disable_premium');
+  window.history.replaceState({}, '', url.toString());
+  window.location.reload();
 };
 
 export const enableVisualReview = () => {
@@ -20,32 +23,44 @@ export const enableVisualReview = () => {
   console.log('🎨 Visual review mode enabled - Premium pricing display active');
   const url = new URL(window.location.href);
   url.searchParams.set('pricing_review', 'true');
+  url.searchParams.delete('disable_premium');
   window.history.replaceState({}, '', url.toString());
+  window.location.reload();
 };
 
 export const disablePremiumPricingTest = () => {
   localStorage.removeItem('emvi_premium_pricing_test');
   localStorage.removeItem('emvi_pricing_visual_review');
   console.log('❌ Premium pricing test mode disabled');
-  // Remove query parameter
   const url = new URL(window.location.href);
-  url.searchParams.delete('premium_pricing');
+  url.searchParams.set('disable_premium', 'true');
+  url.searchParams.delete('pricing_review');
+  window.history.replaceState({}, '', url.toString());
+  window.location.reload();
+};
+
+export const rollbackToOriginalPricing = () => {
+  console.log('🔄 Rolling back to original pricing display');
+  disablePremiumPricingTest();
+};
+
+export const showNewPricingInRealApp = () => {
+  localStorage.setItem('emvi_premium_pricing_test', 'true');
+  localStorage.setItem('emvi_pricing_visual_review', 'true');
+  console.log('🚀 New premium pricing now visible in real app job posting flow');
+  console.log('Navigate to /post-job to see the new pricing table');
+  const url = new URL(window.location.href);
+  url.searchParams.delete('disable_premium');
   url.searchParams.delete('pricing_review');
   window.history.replaceState({}, '', url.toString());
 };
 
-export const rollbackToOriginalPricing = () => {
-  disablePremiumPricingTest();
-  console.log('🔄 Rolled back to original pricing display');
-  window.location.reload();
-};
-
 export const testScenarios: TestScenario[] = [
   {
-    name: 'Visual Review Mode',
-    description: 'Enable premium pricing display for design review only',
+    name: 'Real App Integration',
+    description: 'Show new premium pricing in the actual job posting flow',
     setup: () => {
-      enableVisualReview();
+      showNewPricingInRealApp();
     },
     verify: () => {
       return document.querySelector('[data-testid="premium-pricing-table"]') !== null;
@@ -65,7 +80,7 @@ export const testScenarios: TestScenario[] = [
     name: 'Diamond Scarcity',
     description: 'Verify Diamond plan shows "Only 2 left" messaging',
     setup: () => {
-      // This would typically involve setting up test data
+      showNewPricingInRealApp();
     },
     verify: () => {
       return document.querySelector('[data-testid="diamond-scarcity"]')?.textContent?.includes('Only 2') || false;
@@ -74,7 +89,9 @@ export const testScenarios: TestScenario[] = [
   {
     name: 'FOMO Elements',
     description: 'Verify FOMO badges and messaging appear correctly',
-    setup: () => {},
+    setup: () => {
+      showNewPricingInRealApp();
+    },
     verify: () => {
       const bestValue = document.querySelector('[data-testid="best-value-badge"]');
       const vipBadge = document.querySelector('[data-testid="vip-badge"]');
@@ -83,8 +100,10 @@ export const testScenarios: TestScenario[] = [
   },
   {
     name: 'Price Display',
-    description: 'Verify pricing displays match specifications',
-    setup: () => {},
+    description: 'Verify pricing displays match new specifications',
+    setup: () => {
+      showNewPricingInRealApp();
+    },
     verify: () => {
       const standardPrice = document.querySelector('[data-testid="standard-price"]');
       const goldPrice = document.querySelector('[data-testid="gold-price"]');
@@ -126,11 +145,18 @@ export const runAllTests = () => {
 if (typeof window !== 'undefined') {
   (window as any).EmviPricingTests = {
     enable: enablePremiumPricingTest,
-    visualReview: enableVisualReview,
     disable: disablePremiumPricingTest,
+    visualReview: enableVisualReview,
     rollback: rollbackToOriginalPricing,
+    showInRealApp: showNewPricingInRealApp,
     runTest: runTestScenario,
     runAll: runAllTests,
     scenarios: testScenarios.map(s => s.name)
   };
+  
+  console.log('🎯 EmviPricingTests utilities loaded. Available commands:');
+  console.log('- EmviPricingTests.showInRealApp() - Show new pricing in real app');
+  console.log('- EmviPricingTests.disable() - Switch back to old pricing');
+  console.log('- EmviPricingTests.runAll() - Run all test scenarios');
+  console.log('Navigate to /post-job to see the pricing table');
 }
