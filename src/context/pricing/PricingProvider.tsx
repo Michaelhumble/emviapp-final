@@ -42,7 +42,7 @@ export const PricingProvider: React.FC<PricingProviderProps> = ({
       // Ensure all required properties are present for PaymentSummary
       return {
         ...calculatedPrice,
-        discountedPrice: calculatedPrice.originalPrice - calculatedPrice.discountAmount,
+        discountedPrice: calculatedPrice.finalPrice,
         discountLabel: calculatedPrice.discountPercentage > 0 ? 
           `${calculatedPrice.discountPercentage}% Discount` : '',
         isFoundersDiscount: true // Adjust this based on your business logic
