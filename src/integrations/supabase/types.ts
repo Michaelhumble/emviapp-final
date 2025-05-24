@@ -754,7 +754,6 @@ export type Database = {
         Row: {
           compensation_details: string | null
           compensation_type: string | null
-          contact_info: Json | null
           created_at: string | null
           description: string | null
           expires_at: string | null
@@ -769,7 +768,6 @@ export type Database = {
         Insert: {
           compensation_details?: string | null
           compensation_type?: string | null
-          contact_info?: Json | null
           created_at?: string | null
           description?: string | null
           expires_at?: string | null
@@ -784,7 +782,6 @@ export type Database = {
         Update: {
           compensation_details?: string | null
           compensation_type?: string | null
-          contact_info?: Json | null
           created_at?: string | null
           description?: string | null
           expires_at?: string | null

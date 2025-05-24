@@ -1,260 +1,298 @@
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { billionDollarJobFormSchema, BillionDollarJobFormData } from './billionDollarJobFormSchema';
+import PhotoUploader from '@/components/posting/PhotoUploader';
+import { 
+  Scissors, 
+  Fingerprint, 
+  Sparkles, 
+  Heart, 
+  Palette, 
+  Building,
+  Users,
+  Home,
+  Brush,
+  Zap,
+  ArrowLeft,
+  MapPin,
+  Briefcase,
+  DollarSign,
+  Phone,
+  Mail,
+  User,
+  Camera
+} from 'lucide-react';
 
 interface BillionDollarJobFormProps {
-  onSubmit: (formData: any) => void;
+  initialData?: any;
+  onSubmit: (data: BillionDollarJobFormData & { photos: File[] }) => void;
   onBack: () => void;
   isSubmitting?: boolean;
 }
 
+const professionOptions = [
+  { value: 'nail-technician', label: 'Nail Technician', icon: Fingerprint },
+  { value: 'hair-stylist', label: 'Hair Stylist', icon: Scissors },
+  { value: 'barber', label: 'Barber', icon: Scissors },
+  { value: 'lash-technician', label: 'Lash Technician', icon: Sparkles },
+  { value: 'esthetician', label: 'Esthetician', icon: Heart },
+  { value: 'massage-therapist', label: 'Massage Therapist', icon: Heart },
+  { value: 'makeup-artist', label: 'Makeup Artist', icon: Palette },
+  { value: 'tattoo-artist', label: 'Tattoo Artist', icon: Zap },
+  { value: 'receptionist', label: 'Receptionist', icon: Users },
+  { value: 'salon-manager', label: 'Salon Manager', icon: Building },
+  { value: 'booth-rental', label: 'Booth Rental', icon: Home },
+  { value: 'other', label: 'Other Beauty Professional', icon: Brush }
+];
+
 const BillionDollarJobForm: React.FC<BillionDollarJobFormProps> = ({
+  initialData,
   onSubmit,
   onBack,
   isSubmitting = false
 }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    salonName: '',
-    location: '',
-    description: '',
-    compensationType: 'hourly',
-    compensationDetails: '',
-    contactName: '',
-    contactPhone: '',
-    contactEmail: '',
-    employmentType: 'full-time'
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [selectedProfession, setSelectedProfession] = useState<string>('');
+
+  const form = useForm<BillionDollarJobFormData>({
+    resolver: zodResolver(billionDollarJobFormSchema),
+    defaultValues: {
+      salonName: '',
+      jobTitle: '',
+      location: '',
+      jobDescription: '',
+      vietnameseDescription: '',
+      employmentType: undefined,
+      ...initialData
+    }
   });
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleFormSubmit = (data: BillionDollarJobFormData) => {
+    onSubmit({ ...data, photos: photoUploads });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  const isFormValid = formData.title && formData.salonName && formData.location && formData.contactName;
+  const isNailJob = selectedProfession === 'nail-technician';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="h-8 w-8 text-purple-600" />
-            <h1 className="font-playfair text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Billion Dollar Job Posting
+        <div className="mb-8">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onBack}
+            className="mb-4 text-purple-600 hover:text-purple-700"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Templates
+          </Button>
+          
+          <div className="text-center">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              Create Your Premium Job Post
             </h1>
+            <p className="text-lg text-gray-600">Fill out all details in one simple form</p>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Create a premium job posting that stands out and attracts the best talent in the beauty industry.
-          </p>
         </div>
 
-        {/* Back Button */}
-        <Button
-          onClick={onBack}
-          variant="outline"
-          className="mb-6 flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Templates
-        </Button>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+          {/* Profession Selection */}
+          <Card className="border-0 shadow-lg bg-gradient-to-r from-white to-purple-25">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center text-xl">
+                <Briefcase className="w-5 h-5 mr-2 text-purple-600" />
+                Job Profession
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Select onValueChange={setSelectedProfession} value={selectedProfession}>
+                <SelectTrigger className="h-12 text-base">
+                  <SelectValue placeholder="Select the beauty profession" />
+                </SelectTrigger>
+                <SelectContent>
+                  {professionOptions.map((option) => {
+                    const IconComponent = option.icon;
+                    return (
+                      <SelectItem key={option.value} value={option.value}>
+                        <div className="flex items-center">
+                          <IconComponent className="w-4 h-4 mr-2 text-purple-600" />
+                          {option.label}
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
 
-        {/* Form Card */}
-        <Card className="shadow-xl border-0 bg-white/70 backdrop-blur-sm">
-          <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl font-semibold text-gray-800">
-              Job Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Job Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Job Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  placeholder="e.g., Senior Nail Technician"
-                  required
-                />
-              </div>
+          {/* Basic Job Information */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center text-xl">
+                <Building className="w-5 h-5 mr-2 text-purple-600" />
+                Basic Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="salonName" className="text-sm font-medium text-gray-700">
+                    Salon/Business Name *
+                  </Label>
+                  <Input
+                    id="salonName"
+                    placeholder="e.g., Sunshine Nails Spa"
+                    className="mt-1 h-11"
+                    {...form.register('salonName')}
+                  />
+                  {form.formState.errors.salonName && (
+                    <p className="text-red-500 text-sm mt-1">{form.formState.errors.salonName.message}</p>
+                  )}
+                </div>
 
-              {/* Salon Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Salon/Business Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.salonName}
-                  onChange={(e) => handleInputChange('salonName', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  placeholder="Your salon or business name"
-                  required
-                />
-              </div>
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location *
-                </label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  placeholder="City, State"
-                  required
-                />
-              </div>
-
-              {/* Employment Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Employment Type
-                </label>
-                <select
-                  value={formData.employmentType}
-                  onChange={(e) => handleInputChange('employmentType', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                >
-                  <option value="full-time">Full-time</option>
-                  <option value="part-time">Part-time</option>
-                  <option value="contract">Contract</option>
-                  <option value="temporary">Temporary</option>
-                </select>
-              </div>
-
-              {/* Compensation */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Compensation Type
-                </label>
-                <select
-                  value={formData.compensationType}
-                  onChange={(e) => handleInputChange('compensationType', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                >
-                  <option value="hourly">Hourly</option>
-                  <option value="salary">Salary</option>
-                  <option value="commission">Commission</option>
-                  <option value="negotiable">Negotiable</option>
-                </select>
-              </div>
-
-              {/* Compensation Details */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Compensation Details
-                </label>
-                <input
-                  type="text"
-                  value={formData.compensationDetails}
-                  onChange={(e) => handleInputChange('compensationDetails', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  placeholder="e.g., $20-25/hour, $45,000/year, 50% commission"
-                />
-              </div>
-
-              {/* Job Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Job Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  placeholder="Describe the role, responsibilities, and requirements..."
-                />
-              </div>
-
-              {/* Contact Information */}
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Contact Information</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.contactName}
-                      onChange={(e) => handleInputChange('contactName', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                      placeholder="Hiring manager or contact person"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Phone
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.contactPhone}
-                      onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Email
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.contactEmail}
-                      onChange={(e) => handleInputChange('contactEmail', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                      placeholder="contact@yoursalon.com"
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="jobTitle" className="text-sm font-medium text-gray-700">
+                    Job Title *
+                  </Label>
+                  <Input
+                    id="jobTitle"
+                    placeholder="e.g., Senior Nail Technician"
+                    className="mt-1 h-11"
+                    {...form.register('jobTitle')}
+                  />
+                  {form.formState.errors.jobTitle && (
+                    <p className="text-red-500 text-sm mt-1">{form.formState.errors.jobTitle.message}</p>
+                  )}
                 </div>
               </div>
 
-              {/* Submit Button */}
-              <div className="flex justify-end pt-6">
-                <Button
-                  type="submit"
-                  disabled={!isFormValid || isSubmitting}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium flex items-center gap-2 transition-all"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="h-4 w-4" />
-                      Post Job
-                      <ArrowRight className="h-4 w-4" />
-                    </>
-                  )}
-                </Button>
+              <div>
+                <Label htmlFor="location" className="text-sm font-medium text-gray-700 flex items-center">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  Location *
+                </Label>
+                <Input
+                  id="location"
+                  placeholder="e.g., San Jose, CA"
+                  className="mt-1 h-11"
+                  {...form.register('location')}
+                />
+                {form.formState.errors.location && (
+                  <p className="text-red-500 text-sm mt-1">{form.formState.errors.location.message}</p>
+                )}
               </div>
-            </form>
-          </CardContent>
-        </Card>
+
+              <div>
+                <Label htmlFor="employmentType" className="text-sm font-medium text-gray-700">
+                  Employment Type *
+                </Label>
+                <Select onValueChange={(value) => form.setValue('employmentType', value as any)}>
+                  <SelectTrigger className="mt-1 h-11">
+                    <SelectValue placeholder="Select employment type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Full-time">Full-time</SelectItem>
+                    <SelectItem value="Part-time">Part-time</SelectItem>
+                    <SelectItem value="Contract">Contract</SelectItem>
+                    <SelectItem value="Temporary">Temporary</SelectItem>
+                  </SelectContent>
+                </Select>
+                {form.formState.errors.employmentType && (
+                  <p className="text-red-500 text-sm mt-1">{form.formState.errors.employmentType.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Job Descriptions */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center text-xl">
+                <Brush className="w-5 h-5 mr-2 text-purple-600" />
+                Job Description
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="jobDescription" className="text-sm font-medium text-gray-700">
+                  English Description *
+                </Label>
+                <Textarea
+                  id="jobDescription"
+                  placeholder="Describe the job responsibilities, requirements, and what makes this opportunity special..."
+                  className="mt-1 min-h-[120px] resize-y"
+                  {...form.register('jobDescription')}
+                />
+                {form.formState.errors.jobDescription && (
+                  <p className="text-red-500 text-sm mt-1">{form.formState.errors.jobDescription.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="vietnameseDescription" className="text-sm font-medium text-gray-700">
+                  Vietnamese Description {isNailJob ? '*' : '(Optional)'}
+                </Label>
+                <Textarea
+                  id="vietnameseDescription"
+                  placeholder={isNailJob ? 
+                    "Mô tả chi tiết về công việc, yêu cầu và những gì làm cho cơ hội này đặc biệt..." :
+                    "Mô tả công việc bằng tiếng Việt (tùy chọn)..."
+                  }
+                  className="mt-1 min-h-[120px] resize-y"
+                  {...form.register('vietnameseDescription')}
+                />
+                {form.formState.errors.vietnameseDescription && (
+                  <p className="text-red-500 text-sm mt-1">{form.formState.errors.vietnameseDescription.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Photo Upload */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center text-xl">
+                <Camera className="w-5 h-5 mr-2 text-purple-600" />
+                Salon/Workspace Photos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600 mb-4">
+                Upload photos of your salon, workspace, or team to attract more candidates
+              </p>
+              <PhotoUploader
+                files={photoUploads}
+                onChange={setPhotoUploads}
+                maxFiles={5}
+                accept="image/*"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Submit Button */}
+          <div className="text-center pt-6">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+            >
+              {isSubmitting ? 'Creating Job Post...' : 'Create Premium Job Post'}
+            </Button>
+            <p className="text-sm text-gray-500 mt-3">
+              Your job will be featured prominently on EmviApp
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );
