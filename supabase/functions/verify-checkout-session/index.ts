@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0";
+import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +17,10 @@ serve(async (req) => {
   try {
     // Parse request body
     const { sessionId } = await req.json();
+
+    if (!sessionId) {
+      throw new Error("Session ID is required");
+    }
 
     // Authentication check
     const authHeader = req.headers.get("Authorization");
@@ -96,78 +100,69 @@ serve(async (req) => {
       console.error("Error fetching payment log:", paymentLogError);
     }
 
-    // Get post ID from metadata or payment log
-    let postId = metadata.post_id || paymentLog?.listing_id;
-    let job: any = null;
-    
-    // Check if post exists
-    if (postId) {
-      const { data: existingJob } = await supabaseAdmin
+    // If we have metadata, create the job post
+    if (metadata.post_type === 'job' && metadata.user_id) {
+      // Create job posting with payment confirmed
+      const jobData = {
+        title: `Job Posting - ${metadata.pricing_tier}`,
+        description: "Job posting created via payment",
+        location: "Location TBD",
+        compensation_type: "negotiable",
+        compensation_details: "",
+        contact_info: { email: user.email },
+        status: 'active',
+        expires_at: new Date(Date.now() + (parseInt(metadata.duration_months || "1") * 30 * 24 * 60 * 60 * 1000)).toISOString(),
+        pricing_tier: metadata.pricing_tier
+      };
+
+      const { data: jobResult, error: jobError } = await supabaseAdmin
         .from('jobs')
-        .select('*')
-        .eq('id', postId)
+        .insert(jobData)
+        .select()
         .single();
-        
-      job = existingJob;
-    }
-    
-    // If there's no job record yet, create one from the stored details
-    if (!job && metadata.post_type === 'job') {
-      try {
-        // Get details from payment log metadata if available
-        const postDetails = paymentLog?.metadata?.post_details || {};
-        
-        const { data: newJob, error: createError } = await supabaseAdmin
-          .from('jobs')
-          .insert({
-            // Use available details or defaults
-            title: postDetails.title || 'Job Posting',
-            description: postDetails.description || '',
-            location: postDetails.location || '',
-            user_id: user.id,
-            pricing_tier: metadata.pricing_tier,
-            status: 'active',
-            expires_at: metadata.expires_at,
-            post_type: metadata.post_type,
-            contact_info: postDetails.contact_info || { email: user.email }
+
+      if (jobError) {
+        console.error("Error creating job post:", jobError);
+        return new Response(JSON.stringify({ 
+          error: "Failed to create job post",
+          details: jobError.message
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Update payment log status
+      if (paymentLog?.id) {
+        const { error: updateLogError } = await supabaseAdmin
+          .from('payment_logs')
+          .update({ 
+            payment_status: 'success',
+            listing_id: jobResult.id
           })
-          .select('id')
-          .single();
+          .eq('id', paymentLog.id);
           
-        if (createError) {
-          console.error("Error creating job record:", createError);
-        } else {
-          postId = newJob.id;
-          
-          // Update payment log with job ID if it exists
-          if (paymentLog?.id) {
-            await supabaseAdmin
-              .from('payment_logs')
-              .update({ listing_id: postId })
-              .eq('id', paymentLog.id);
-          }
+        if (updateLogError) {
+          console.error("Error updating payment log:", updateLogError);
         }
-      } catch (error) {
-        console.error("Error creating job record:", error);
       }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          post_id: jobResult.id,
+          expires_at: jobData.expires_at,
+          post_type: metadata.post_type,
+          pricing_tier: metadata.pricing_tier,
+          payment_log_id: paymentLog?.id
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
     
-    // If we have a post_id, update the job status
-    if (postId) {
-      const { error: updateJobError } = await supabaseAdmin
-        .from('jobs')
-        .update({ 
-          status: 'active',
-          expires_at: metadata.expires_at
-        })
-        .eq('id', postId);
-        
-      if (updateJobError) {
-        console.error("Error updating job status:", updateJobError);
-      }
-    }
-    
-    // Update payment log status
+    // Update payment log status for other cases
     if (paymentLog?.id) {
       const { error: updateLogError } = await supabaseAdmin
         .from('payment_logs')
@@ -182,9 +177,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        post_id: postId,
-        expires_at: metadata.expires_at || paymentLog?.expires_at,
-        post_type: metadata.post_type || paymentLog?.plan_type,
+        post_id: paymentLog?.listing_id,
+        expires_at: paymentLog?.expires_at,
+        post_type: metadata.post_type,
         pricing_tier: metadata.pricing_tier,
         payment_log_id: paymentLog?.id
       }),
@@ -194,7 +189,10 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error verifying checkout session:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message || "Failed to verify payment",
+      details: error.stack
+    }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

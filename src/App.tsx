@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/context/auth';
-import { BookingNotificationProvider } from '@/context/bookingNotification';
 import AppModifier from '@/App-Modifier';
 import Home from '@/pages/Home';
 import Pricing from '@/pages/Pricing';
@@ -40,37 +40,35 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <AppModifier />
-            <BookingNotificationProvider>
-              <div className="min-h-screen bg-background">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/salons" element={<Salons />} />
-                  <Route path="/artists" element={<Artists />} />
-                  <Route path="/jobs" element={<Jobs />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/profile/:id" element={<Profile />} />
-                  <Route path="/edit-profile" element={<EditProfile />} />
-                  <Route path="/post-job" element={<JobPost />} />
-                  <Route path="/post-salon" element={<SalonPost />} />
-                  <Route path="/job/:id" element={<JobDetails />} />
-                  <Route path="/salon/:id" element={<SalonDetails />} />
-                  <Route path="/artist/:id" element={<ArtistDetails />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/terms" element={<TermsOfService />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="*" element={<NotFound />} />
-                  <Route path="/post-success" element={<PostSuccess />} />
-                </Routes>
-              </div>
-            </BookingNotificationProvider>
+            <div className="min-h-screen bg-background">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/salons" element={<Salons />} />
+                <Route path="/artists" element={<Artists />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/profile/:id" element={<Profile />} />
+                <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/post-job" element={<JobPost />} />
+                <Route path="/post-salon" element={<SalonPost />} />
+                <Route path="/job/:id" element={<JobDetails />} />
+                <Route path="/salon/:id" element={<SalonDetails />} />
+                <Route path="/artist/:id" element={<ArtistDetails />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/post-success" element={<PostSuccess />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
           </AuthProvider>
         </QueryClientProvider>
       </HelmetProvider>
