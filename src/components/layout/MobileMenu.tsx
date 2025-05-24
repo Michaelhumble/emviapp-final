@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, X, PlusSquare, User } from 'lucide-react';
+import { Menu, X, PlusSquare, User, LogIn, UserPlus, LogOut } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import { cn } from '@/lib/utils';
 import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
@@ -13,12 +15,22 @@ const MobileMenu: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isSignedIn, signOut } = useAuth();
   const [open, setOpen] = React.useState(false);
   
   // Close menu when navigating to a new route
   const handleNavigation = (path: string) => {
     navigate(path);
     setOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setOpen(false);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
   
   // Additional navigation items not in the main nav
@@ -75,19 +87,48 @@ const MobileMenu: React.FC = () => {
             {/* Nav Links */}
             <div className="flex-1 overflow-y-auto py-4">
               <nav className="space-y-1 px-2">
-                {/* Post Job button (highlighted) */}
-                <div className="px-2 mb-6">
-                  <Button 
-                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
-                    onClick={() => handleNavigation('/post-job')}
-                  >
-                    <PlusSquare size={18} />
-                    {t({
-                      english: 'Post a Job',
-                      vietnamese: 'Đăng việc làm'
-                    })}
-                  </Button>
-                </div>
+                {/* Authentication buttons - only show if not signed in */}
+                {!isSignedIn && (
+                  <div className="px-2 mb-6 space-y-3">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
+                      onClick={() => handleNavigation('/register')}
+                    >
+                      <UserPlus size={18} />
+                      {t({
+                        english: 'Sign Up',
+                        vietnamese: 'Đăng ký'
+                      })}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="w-full flex gap-2"
+                      onClick={() => handleNavigation('/login')}
+                    >
+                      <LogIn size={18} />
+                      {t({
+                        english: 'Sign In',
+                        vietnamese: 'Đăng nhập'
+                      })}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Post Job button (highlighted) - only for signed in users */}
+                {isSignedIn && (
+                  <div className="px-2 mb-6">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
+                      onClick={() => handleNavigation('/post-job')}
+                    >
+                      <PlusSquare size={18} />
+                      {t({
+                        english: 'Post a Job',
+                        vietnamese: 'Đăng việc làm'
+                      })}
+                    </Button>
+                  </div>
+                )}
                 
                 {/* Navigation Items */}
                 {allNavItems.map((item) => (
@@ -113,6 +154,20 @@ const MobileMenu: React.FC = () => {
             
             {/* Footer section */}
             <div className="border-t p-4 space-y-4">
+              {/* Sign Out button - only show if signed in */}
+              {isSignedIn && (
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors text-red-600 hover:bg-red-50"
+                >
+                  <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
+                  {t({
+                    english: 'Sign Out',
+                    vietnamese: 'Đăng xuất'
+                  })}
+                </button>
+              )}
+
               {/* Language Toggle */}
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-gray-500">
