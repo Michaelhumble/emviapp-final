@@ -115,30 +115,25 @@ const ConsolidatedJobTemplateSelector: React.FC<ConsolidatedJobTemplateSelectorP
 
   return (
     <div className="space-y-8">
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">Choose a Job Template</h2>
-        <p className="text-lg text-gray-600">Select a template to start with pre-filled industry-specific details</p>
-      </div>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {jobTemplates.map((template) => {
           const IconComponent = template.icon;
           return (
             <Card 
               key={template.id} 
-              className="cursor-pointer hover:shadow-lg transition-all duration-200 border border-gray-100 bg-gradient-to-br from-purple-25 to-white hover:from-purple-50 hover:to-purple-25 rounded-xl"
+              className="group cursor-pointer transition-all duration-300 border border-gray-200/50 bg-white/70 backdrop-blur-sm rounded-2xl hover:shadow-xl hover:shadow-purple-500/20 hover:-translate-y-1"
               onClick={() => handleTemplateSelect(template.id)}
             >
               <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                    <IconComponent className="w-6 h-6 text-purple-600" />
+                <div className="flex items-start space-x-5">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                    <IconComponent className="w-7 h-7 text-purple-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h3 className="font-playfair text-lg font-medium text-purple-600 mb-3 group-hover:text-purple-700 transition-colors">
                       {template.title}
                     </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
+                    <p className="font-inter text-gray-600 text-sm leading-relaxed opacity-90">
                       {template.description}
                     </p>
                   </div>
@@ -150,7 +145,7 @@ const ConsolidatedJobTemplateSelector: React.FC<ConsolidatedJobTemplateSelectorP
       </div>
       
       <div className="text-center mt-8">
-        <p className="text-sm text-gray-500 italic">
+        <p className="font-inter text-sm text-gray-500 italic">
           You'll be able to customize all details after selecting a template
         </p>
       </div>
