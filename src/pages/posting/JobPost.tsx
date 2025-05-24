@@ -6,6 +6,7 @@ import Layout from '@/components/layout/Layout';
 import ConsolidatedJobTemplateSelector from '@/components/job-posting-new/ConsolidatedJobTemplateSelector';
 import ConsolidatedJobForm from '@/components/job-posting-new/ConsolidatedJobForm';
 import { usePostPayment } from '@/hooks/usePostPayment';
+import { usePremiumPricingFlag } from '@/hooks/usePremiumPricingFlag';
 import { toast } from 'sonner';
 
 const JobPost = () => {
@@ -13,6 +14,7 @@ const JobPost = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
   const { initiatePayment } = usePostPayment();
+  const { config: pricingConfig, togglePremiumPricing } = usePremiumPricingFlag();
 
   const handleTemplateSelect = (profession: string) => {
     console.log('Profession selected:', profession);
@@ -94,6 +96,30 @@ const JobPost = () => {
         <title>Post a Job - Premium Job Posting | EmviApp</title>
         <meta name="description" content="Post your job with our premium job posting experience - find the perfect beauty professional" />
       </Helmet>
+      
+      {/* Development Testing Controls */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-20 right-4 z-50">
+          <div className="bg-white border border-gray-300 rounded-lg p-3 shadow-lg">
+            <div className="text-sm font-semibold text-gray-700 mb-2">
+              Pricing Test Controls
+            </div>
+            <button
+              onClick={togglePremiumPricing}
+              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                pricingConfig.enabled
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {pricingConfig.enabled ? 'Disable Premium' : 'Enable Premium'}
+            </button>
+            <div className="text-xs text-gray-500 mt-1">
+              URL: ?premium_pricing=true
+            </div>
+          </div>
+        </div>
+      )}
       
       {!selectedProfession ? (
         <div className="container mx-auto px-4 py-8">
