@@ -5,13 +5,28 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import ConsolidatedJobTemplateSelector from '@/components/job-posting-new/ConsolidatedJobTemplateSelector';
 import ConsolidatedJobForm from '@/components/job-posting-new/ConsolidatedJobForm';
+import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { PaymentSummary } from '@/components/posting/PaymentSummary';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePostPayment } from '@/hooks/usePostPayment';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { calculatePricing } from '@/utils/posting/pricing';
 import { toast } from 'sonner';
+import { ArrowLeft } from 'lucide-react';
 
 const JobPost = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
+  const [jobFormData, setJobFormData] = useState<any>(null);
+  const [showPricing, setShowPricing] = useState(false);
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    selectedPricingTier: 'standard',
+    durationMonths: 1,
+    autoRenew: false,
+    isFirstPost: false
+  });
   const { initiatePayment } = usePostPayment();
 
   const handleTemplateSelect = (profession: string) => {
@@ -20,40 +35,54 @@ const JobPost = () => {
   };
 
   const handleFormSubmit = async (formData: any) => {
+    console.log('Job form completed:', formData);
+    setJobFormData(formData);
+    setShowPricing(true);
+  };
+
+  const handlePricingOptionsChange = (options: PricingOptions) => {
+    setPricingOptions(options);
+  };
+
+  const handleBackToForm = () => {
+    setShowPricing(false);
+  };
+
+  const handleBackToTemplates = () => {
+    setSelectedProfession(null);
+    setShowPricing(false);
+    setJobFormData(null);
+  };
+
+  const handleProceedToPayment = async () => {
+    if (!jobFormData) return;
+    
     setIsSubmitting(true);
     
     try {
-      console.log('Submitting job form data:', formData);
+      console.log('Proceeding to payment with:', { jobFormData, pricingOptions });
 
       // Transform the form data to match expected format
       const jobData = {
-        title: `${formData.profession.replace('-', ' ')} Position`,
-        salonName: formData.salonName,
-        company: formData.salonName,
-        location: formData.location,
-        employment_type: formData.employmentType,
-        compensation_type: formData.compensationType,
-        compensation_details: formData.compensationDetails,
-        jobDescription: formData.jobDescriptionEnglish,
-        vietnameseDescription: formData.jobDescriptionVietnamese,
-        description: formData.jobDescriptionEnglish,
-        vietnamese_description: formData.jobDescriptionVietnamese,
+        title: `${jobFormData.profession.replace('-', ' ')} Position`,
+        salonName: jobFormData.salonName,
+        company: jobFormData.salonName,
+        location: jobFormData.location,
+        employment_type: jobFormData.employmentType,
+        compensation_type: jobFormData.compensationType,
+        compensation_details: jobFormData.compensationDetails,
+        jobDescription: jobFormData.jobDescriptionEnglish,
+        vietnameseDescription: jobFormData.jobDescriptionVietnamese,
+        description: jobFormData.jobDescriptionEnglish,
+        vietnamese_description: jobFormData.jobDescriptionVietnamese,
         contact_info: {
-          owner_name: formData.contactName,
-          phone: formData.contactPhone,
-          email: formData.contactEmail
+          owner_name: jobFormData.contactName,
+          phone: jobFormData.contactPhone,
+          email: jobFormData.contactEmail
         },
-        benefits: formData.benefits || [],
-        profession: formData.profession,
-        photos: formData.photoUploads || []
-      };
-
-      // Default pricing options for job posting
-      const pricingOptions = {
-        selectedPricingTier: 'standard' as const,
-        durationMonths: 1,
-        autoRenew: false,
-        isFirstPost: false
+        benefits: jobFormData.benefits || [],
+        profession: jobFormData.profession,
+        photos: jobFormData.photoUploads || []
       };
 
       // Initiate payment and job posting
@@ -84,9 +113,29 @@ const JobPost = () => {
     }
   };
 
-  const handleBackToTemplates = () => {
-    setSelectedProfession(null);
-  };
+  // Calculate pricing data for display
+  const pricingData = React.useMemo(() => {
+    const pricing = calculatePricing(
+      pricingOptions.selectedPricingTier,
+      pricingOptions.durationMonths,
+      pricingOptions.autoRenew || false,
+      pricingOptions.isFirstPost || false,
+      pricingOptions.isNationwide || false
+    );
+    
+    return {
+      basePrice: pricing.originalPrice,
+      originalPrice: pricing.originalPrice,
+      finalPrice: pricing.finalPrice,
+      discountedPrice: pricing.finalPrice,
+      discountPercentage: pricing.discountPercentage,
+      discountAmount: pricing.originalPrice - pricing.finalPrice,
+      discountLabel: pricing.discountPercentage > 0 ? `${pricing.discountPercentage}% Discount` : '',
+      isFoundersDiscount: false,
+      durationMonths: pricingOptions.durationMonths,
+      selectedTier: pricingOptions.selectedPricingTier
+    };
+  }, [pricingOptions]);
 
   return (
     <Layout>
@@ -120,13 +169,73 @@ const JobPost = () => {
             />
           </div>
         </div>
-      ) : (
+      ) : !showPricing ? (
         <ConsolidatedJobForm 
           selectedProfession={selectedProfession}
           onSubmit={handleFormSubmit}
           onBack={handleBackToTemplates}
           isSubmitting={isSubmitting}
         />
+      ) : (
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6">
+              <Button 
+                variant="ghost" 
+                onClick={handleBackToForm}
+                className="mb-4"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Job Form
+              </Button>
+              
+              <h1 className="font-playfair text-3xl font-bold mb-2">Choose Your Plan</h1>
+              <p className="text-gray-600">Select the best plan for your job posting needs</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Job Posting Options</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <JobPostOptions
+                      options={pricingOptions}
+                      onOptionsChange={handlePricingOptionsChange}
+                      isFirstPost={pricingOptions.isFirstPost}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="lg:col-span-1">
+                <PaymentSummary priceData={pricingData} />
+                
+                <div className="mt-6 space-y-3">
+                  <Button 
+                    onClick={handleProceedToPayment}
+                    disabled={isSubmitting}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {isSubmitting ? 'Processing...' : 
+                     pricingData.finalPrice === 0 ? 'Post Job for Free' : 
+                     `Proceed to Payment - $${pricingData.finalPrice.toFixed(2)}`}
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={handleBackToForm}
+                    className="w-full"
+                  >
+                    Back to Edit Job
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </Layout>
   );
