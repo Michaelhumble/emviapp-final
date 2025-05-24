@@ -85,6 +85,16 @@ export const usePostPayment = () => {
 
         if (postError) {
           console.error("Free post creation error:", postError);
+          // Provide more detailed error information
+          toast.error(t({
+            english: "Failed to create free post",
+            vietnamese: "Không thể tạo bài đăng miễn phí"
+          }), {
+            description: postError.message || t({
+              english: "Please try again or contact support",
+              vietnamese: "Vui lòng thử lại hoặc liên hệ hỗ trợ"
+            })
+          });
           throw postError;
         }
 
@@ -126,6 +136,16 @@ export const usePostPayment = () => {
 
       if (error) {
         console.error("Edge function error:", error);
+        // Provide more detailed error information
+        toast.error(t({
+          english: "Payment processing failed",
+          vietnamese: "Xử lý thanh toán thất bại"
+        }), {
+          description: error.message || t({
+            english: "Please check your details and try again",
+            vietnamese: "Vui lòng kiểm tra thông tin và thử lại"
+          })
+        });
         throw error;
       }
       
@@ -151,7 +171,7 @@ export const usePostPayment = () => {
           vietnamese: "Vui lòng thử lại."
         })
       });
-      return { success: false };
+      return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
     }

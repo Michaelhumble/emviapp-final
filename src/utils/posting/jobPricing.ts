@@ -1,281 +1,242 @@
 
-import { JobPricingTier, PricingOptions, JobPricingOption } from './types';
+import { PricingOptions, UserPostingStats, JobPricingTier, JobPricingOption } from "./types";
 
-// Pricing tiers for job listings
+// Updated Stripe price IDs - THESE MUST MATCH YOUR ACTUAL STRIPE DASHBOARD
+export const jobPriceMap = {
+  free: null,
+  standard_1mo: "price_1QOBxsJBvWVB2d16QqYw1234", // $9.99 - REPLACE WITH REAL PRICE ID
+  standard_3mo: "price_1QOBxsJBvWVB2d16QqYw5678", // $27.99 - REPLACE WITH REAL PRICE ID  
+  standard_6mo: "price_1QOBxsJBvWVB2d16QqYw9012", // $49.99 - REPLACE WITH REAL PRICE ID
+  premium_1mo: "price_1QOBxsJBvWVB2d16QqYw3456", // $19.99 - REPLACE WITH REAL PRICE ID
+  gold_1mo: "price_1QOBxsJBvWVB2d16QqYw7890", // $49.99 - REPLACE WITH REAL PRICE ID
+  // NOTE: Diamond tier intentionally has no price ID - it goes to waitlist
+};
+
 export const jobPricingOptions: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Free',
+    name: 'Free Post',
     price: 0,
-    description: 'Basic listing for your first post',
+    description: 'Perfect for your first job posting',
+    vietnameseDescription: 'Hoàn hảo cho tin tuyển dụng đầu tiên của bạn',
     tier: 'free',
-    features: [
-      'Basic job listing',
-      'Live for 30 days',
-      'First-time users only'
-    ]
+    isFirstPost: true,
+    popular: false,
+    features: ['30-day listing', 'Basic visibility'],
   },
   {
     id: 'standard',
     name: 'Standard',
     price: 9.99,
-    wasPrice: 14.99,
-    description: 'Great for small businesses',
+    description: 'Great for most job postings',
+    vietnameseDescription: 'Tuyệt vời cho hầu hết các tin tuyển dụng',
     tier: 'standard',
-    features: [
-      'Standard job listing',
-      'Live for 30 days',
-      'Email applications',
-      'Basic analytics'
-    ]
+    popular: true,
+    features: ['30-day listing', 'Standard visibility', 'Email support'],
   },
   {
     id: 'premium',
     name: 'Premium',
     price: 19.99,
-    wasPrice: 29.99,
-    description: 'Our most popular option',
+    description: 'Enhanced visibility and priority placement',
+    vietnameseDescription: 'Tăng khả năng hiển thị và ưu tiên vị trí',
     tier: 'premium',
-    primaryBenefit: 'Featured Listing',
-    recommended: true,
-    features: [
-      'Featured in search results',
-      'Highlighted with premium badge',
-      'Live for 45 days',
-      'Email applications',
-      'Enhanced analytics',
-      'Priority support'
-    ],
-    color: 'purple'
+    features: ['30-day listing', 'Premium visibility', 'Priority support', 'Featured badge'],
   },
   {
     id: 'gold',
     name: 'Gold',
-    price: 39.99,
-    wasPrice: 59.99,
-    description: 'Maximum visibility',
+    price: 49.99,
+    description: 'Maximum exposure for urgent hiring',
+    vietnameseDescription: 'Phơi bày tối đa cho việc tuyển dụng khẩn cấp',
     tier: 'gold',
-    primaryBenefit: 'Top Visibility',
-    features: [
-      'Top of search results',
-      'Gold badge highlighting',
-      'Live for 60 days',
-      'Social media promotion',
-      'Email applications',
-      'Full analytics dashboard',
-      'Dedicated support',
-      'Boosted visibility'
-    ],
-    color: 'amber'
+    features: ['30-day listing', 'Top placement', 'Urgent badge', 'Priority support', 'Social media promotion'],
   },
   {
     id: 'diamond',
     name: 'Diamond',
-    price: 999.99,
-    description: 'By invitation only',
+    price: 0, // Special pricing - invitation only
+    description: 'Invitation only - Contact us for pricing',
+    vietnameseDescription: 'Chỉ theo lời mời - Liên hệ để biết giá',
     tier: 'diamond',
-    primaryBenefit: 'Enterprise Visibility',
-    features: [
-      'Top of search results',
-      'Diamond badge highlighting',
-      'Professional design',
-      'Custom URL',
-      'Nationwide visibility',
-      'Social media campaign',
-      'Featured in newsletter',
-      'Custom recruitment package',
-      'Dedicated account manager'
-    ],
-    color: 'sky',
-    limitedSpots: '2 spots available'
-  }
+    hidden: true, // Don't show in normal pricing
+    features: ['Premium everything', 'Personal account manager', 'Custom placement'],
+  },
 ];
 
-/**
- * Validates pricing options to ensure they contain required fields
- */
+export const getStripePriceId = (
+  pricingTier: JobPricingTier,
+  options: PricingOptions
+): string | null => {
+  if (pricingTier === 'free') {
+    return null; // Free tier doesn't need a Stripe price ID
+  }
+  
+  // Diamond tier always goes to waitlist
+  if (pricingTier === 'diamond') {
+    return null;
+  }
+  
+  // Duration-based pricing for standard tier
+  const durationMonths = options.durationMonths || 1;
+  
+  if (pricingTier === 'standard') {
+    if (durationMonths === 3) return jobPriceMap.standard_3mo;
+    if (durationMonths === 6) return jobPriceMap.standard_6mo;
+    return jobPriceMap.standard_1mo; // Default to 1 month
+  }
+  
+  if (pricingTier === 'premium') {
+    return jobPriceMap.premium_1mo;
+  }
+  
+  if (pricingTier === 'gold') {
+    return jobPriceMap.gold_1mo;
+  }
+  
+  // Default fallback
+  return jobPriceMap.standard_1mo;
+};
+
 export const validatePricingOptions = (options: PricingOptions): boolean => {
-  if (!options) return false;
+  // Free plan is always valid
+  if (options.selectedPricingTier === 'free') {
+    return true;
+  }
   
-  // Check required fields
-  if (options.selectedPricingTier === undefined || options.durationMonths === undefined) {
+  // Diamond tier is valid (goes to waitlist)
+  if (options.selectedPricingTier === 'diamond') {
+    return true;
+  }
+  
+  // Ensure we have a valid pricing tier
+  if (!options.selectedPricingTier) {
+    console.error("No pricing tier selected");
     return false;
   }
   
-  // Validate tier
-  const validTiers: JobPricingTier[] = ['free', 'standard', 'premium', 'gold', 'diamond'];
-  if (!validTiers.includes(options.selectedPricingTier)) {
+  // Ensure we have a duration for non-free plans
+  if (options.selectedPricingTier !== 'free' && !options.durationMonths) {
+    console.error("No duration selected for paid plan");
     return false;
   }
   
-  // Validate duration
-  if (options.durationMonths < 1) {
-    return false;
+  // Ensure we have a valid Stripe price ID for paid plans (except diamond)
+  if (options.selectedPricingTier !== 'free' && options.selectedPricingTier !== 'diamond') {
+    const stripePriceId = getStripePriceId(options.selectedPricingTier, options);
+    if (!stripePriceId) {
+      console.error("Failed to get valid Stripe price ID", { 
+        pricingTier: options.selectedPricingTier, 
+        options 
+      });
+      return false;
+    }
   }
   
   return true;
 };
 
-/**
- * Calculate final price with all discounts applied
- */
-export const calculateFinalPrice = (
-  basePrice: number,
-  durationMonths: number,
-  discounts: { durationDiscount: number; autoRenewDiscount: number }
-): number => {
-  // Calculate duration multiplier
-  const durationMultiplier = durationMonths;
-  
-  // Calculate subtotal before discounts
-  const subtotal = basePrice * durationMultiplier;
-  
-  // Apply duration discount
-  const durationDiscountAmount = subtotal * (discounts.durationDiscount / 100);
-  
-  // Apply auto-renew discount
-  const autoRenewDiscountAmount = subtotal * (discounts.autoRenewDiscount / 100);
-  
-  // Calculate final price
-  const finalPrice = subtotal - durationDiscountAmount - autoRenewDiscountAmount;
-  
-  // Return final price, ensuring it's not negative
-  return Math.max(0, finalPrice);
-};
-
-/**
- * Calculate job post price based on pricing options
- */
-export const calculateJobPostPrice = (options: PricingOptions) => {
-  // Find the pricing tier
-  const tierOption = jobPricingOptions.find(option => option.tier === options.selectedPricingTier);
-  if (!tierOption) {
-    throw new Error(`Invalid pricing tier: ${options.selectedPricingTier}`);
+export const calculateJobPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
+  // Check if this is a free post
+  if (options.selectedPricingTier === 'free' || options.isFirstPost) {
+    return 0;
   }
   
-  // Get the base price from the tier
-  let basePrice = tierOption.price;
-  
-  // Check if this is the first post and eligible for free tier
-  if (options.isFirstPost && options.selectedPricingTier === 'free') {
-    basePrice = 0;
+  // Diamond tier pricing is handled separately (invitation only)
+  if (options.selectedPricingTier === 'diamond') {
+    return 0; // No payment processing
   }
   
-  // Calculate discounts
-  let durationDiscount = 0;
-  // Apply duration discounts
-  if (options.durationMonths === 3) {
-    durationDiscount = 10; // 10% discount for 3 months
-  } else if (options.durationMonths === 6) {
-    durationDiscount = 15; // 15% discount for 6 months
-  } else if (options.durationMonths >= 12) {
-    durationDiscount = 20; // 20% discount for 12+ months
+  // Get base pricing
+  const pricingOption = jobPricingOptions.find(opt => opt.tier === options.selectedPricingTier);
+  if (!pricingOption) {
+    return 0;
   }
   
-  // Auto-renew discount is applied only if enabled and for monthly plans
-  const autoRenewDiscount = (options.autoRenew && options.durationMonths === 1) ? 5 : 0;
+  let basePrice = pricingOption.price;
   
-  // Calculate the final price
-  const finalPrice = calculateFinalPrice(
-    basePrice,
-    options.durationMonths,
-    { durationDiscount, autoRenewDiscount }
-  );
-  
-  // Calculate nationwide fee if applicable
-  const nationwideFee = (options.isNationwide && basePrice > 0) ? 5 : 0;
-  
-  // Return price breakdown
-  return {
-    basePrice,
-    finalPrice: finalPrice + nationwideFee,
-    durationDiscount,
-    autoRenewDiscount,
-    nationwideFee,
-    originalPrice: basePrice * options.durationMonths,
-    discountAmount: (basePrice * options.durationMonths) - finalPrice
-  };
-};
-
-/**
- * Get a job post pricing summary with all details needed for display
- */
-export const getJobPostPricingSummary = (options: PricingOptions) => {
-  const priceDetails = calculateJobPostPrice(options);
-  
-  // Calculate discount percentage
-  const discountPercentage = Math.round(
-    (priceDetails.durationDiscount + priceDetails.autoRenewDiscount)
-  );
-  
-  return {
-    ...priceDetails,
-    discountPercentage,
-    durationMonths: options.durationMonths,
-    selectedTier: options.selectedPricingTier
-  };
-};
-
-/**
- * Get the Stripe price ID based on pricing options
- */
-export const getStripePriceId = (options: PricingOptions): string => {
-  // In a real implementation, you would map your pricing tiers to Stripe product/price IDs
-  // This is a placeholder implementation
-  const tierMap: Record<JobPricingTier, string> = {
-    'free': 'price_free_tier',
-    'standard': 'price_standard_tier',
-    'premium': 'price_premium_tier',
-    'gold': 'price_gold_tier',
-    'diamond': 'price_diamond_tier'
-  };
-  
-  return tierMap[options.selectedPricingTier] || '';
-};
-
-/**
- * Convert price to cents for Stripe
- */
-export const getAmountInCents = (price: number): number => {
-  return Math.round(price * 100);
-};
-
-/**
- * Check if pricing option should be treated as subscription
- */
-export const isSubscriptionPlan = (options: PricingOptions): boolean => {
-  // Plans with autoRenew enabled are treated as subscriptions
-  return !!options.autoRenew;
-};
-
-/**
- * Main function to get job price with all calculations
- */
-export const getJobPrice = (options: PricingOptions) => {
-  if (!validatePricingOptions(options)) {
-    throw new Error('Invalid pricing options');
+  // Apply duration discounts for standard tier
+  if (options.selectedPricingTier === 'standard') {
+    const durationMonths = options.durationMonths || 1;
+    if (durationMonths === 3) {
+      basePrice = 27.99; // 3-month discount
+    } else if (durationMonths === 6) {
+      basePrice = 49.99; // 6-month discount
+    }
   }
   
-  // Calculate price
-  const priceDetails = calculateJobPostPrice(options);
+  // Apply auto-renewal discount (5% off)
+  if (options.autoRenew) {
+    basePrice = basePrice * 0.95;
+  }
   
-  // Add additional fields needed for payment summary
-  const discountPercentage = priceDetails.durationDiscount + priceDetails.autoRenewDiscount;
+  return Math.round(basePrice * 100) / 100; // Round to 2 decimal places
+};
+
+export interface PriceData {
+  basePrice: number;
+  discountedPrice: number;
+  finalPrice: number;
+  discountPercentage: number;
+  discountLabel: string;
+  discountAmount: number;
+  isFoundersDiscount: boolean;
+  durationMonths?: number;
+  selectedTier?: string;
+}
+
+export const getJobPrice = (options: PricingOptions, stats?: UserPostingStats): PriceData => {
+  const finalPrice = calculateJobPostPrice(options, stats);
+  const pricingOption = jobPricingOptions.find(opt => opt.tier === options.selectedPricingTier);
+  const basePrice = pricingOption?.price || 0;
   
-  // Format discount label
+  const discountAmount = Math.max(0, basePrice - finalPrice);
+  const discountPercentage = basePrice > 0 ? Math.round((discountAmount / basePrice) * 100) : 0;
+  
   let discountLabel = '';
-  if (discountPercentage > 0) {
-    discountLabel = `${discountPercentage}% Discount`;
+  if (options.autoRenew && discountPercentage > 0) {
+    discountLabel = 'Auto-renewal discount';
+  } else if (options.durationMonths && options.durationMonths > 1) {
+    discountLabel = `${options.durationMonths}-month discount`;
   }
   
-  // Return final price details
   return {
-    basePrice: priceDetails.basePrice,
-    originalPrice: priceDetails.originalPrice,
-    finalPrice: priceDetails.finalPrice,
-    discountAmount: priceDetails.discountAmount,
+    basePrice,
+    discountedPrice: finalPrice,
+    finalPrice,
     discountPercentage,
     discountLabel,
-    isFoundersDiscount: false // Can be set based on other criteria
+    discountAmount,
+    isFoundersDiscount: false,
+    durationMonths: options.durationMonths,
+    selectedTier: options.selectedPricingTier,
   };
 };
+
+export const getJobPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
+  const summary: string[] = [];
+  const priceData = getJobPrice(options, stats);
+  
+  if (priceData.finalPrice === 0) {
+    if (options.isFirstPost) {
+      summary.push("First Job Post: FREE");
+    } else {
+      summary.push("Free Job Post: $0.00");
+    }
+  } else {
+    const pricingOption = jobPricingOptions.find(opt => opt.tier === options.selectedPricingTier);
+    summary.push(`${pricingOption?.name || 'Job Post'}: $${priceData.basePrice.toFixed(2)}`);
+    
+    if (priceData.discountAmount > 0) {
+      summary.push(`${priceData.discountLabel}: -$${priceData.discountAmount.toFixed(2)}`);
+    }
+    
+    summary.push(`Total: $${priceData.finalPrice.toFixed(2)}`);
+  }
+  
+  return summary;
+};
+
+export const calculateFinalPrice = calculateJobPostPrice;
+export const getAmountInCents = (price: number): number => Math.round(price * 100);
+export const isSubscriptionPlan = (tier: JobPricingTier): boolean => false; // We use one-time payments, not subscriptions

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Sparkle } from 'lucide-react';
+import { Sparkle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Badge } from '@/components/ui/badge';
 
@@ -13,21 +13,40 @@ export interface PriceData {
   discountLabel: string;
   discountAmount: number;
   isFoundersDiscount: boolean;
-  // Additional properties to handle other components
-  originalPrice?: number;
-  autoRenewDiscount?: number;
   durationMonths?: number;
   isFirstPost?: boolean;
-  isNationwide?: boolean;
   selectedTier?: string;
 }
 
 export interface PaymentSummaryProps {
   priceData: PriceData;
+  showErrorDetails?: boolean;
+  error?: string;
 }
 
-export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => {
+export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ 
+  priceData, 
+  showErrorDetails = false,
+  error 
+}) => {
   const { t } = useTranslation();
+  
+  // Show error details if admin mode is enabled
+  if (showErrorDetails && error) {
+    return (
+      <Card className="mt-4 border-red-200">
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle className="h-5 w-5 text-red-500" />
+            <h3 className="text-lg font-medium text-red-700">Payment Error</h3>
+          </div>
+          <div className="bg-red-50 p-3 rounded text-sm text-red-800">
+            <strong>Error Details:</strong> {error}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   
   // Skip rendering for free plans
   if (priceData.finalPrice <= 0) {
@@ -42,11 +61,42 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
             })}</h3>
           </div>
           <p className="text-sm text-gray-600">
-            {t({
+            {priceData.isFirstPost ? t({
               english: "Your first post is completely free. No payment required.",
               vietnamese: "Bài đăng đầu tiên của bạn hoàn toàn miễn phí. Không cần thanh toán."
+            }) : t({
+              english: "This post is free. No payment required.",
+              vietnamese: "Bài đăng này miễn phí. Không cần thanh toán."
             })}
           </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Special handling for Diamond tier
+  if (priceData.selectedTier === 'diamond') {
+    return (
+      <Card className="mt-4 border-purple-200">
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkle className="h-5 w-5 text-purple-500" />
+            <h3 className="text-lg font-medium">{t({
+              english: "Diamond Tier - Invitation Only",
+              vietnamese: "Gói Kim cương - Chỉ theo lời mời"
+            })}</h3>
+          </div>
+          <div className="space-y-3">
+            <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+              Premium Access Required
+            </Badge>
+            <p className="text-sm text-gray-600">
+              {t({
+                english: "Diamond tier access is by invitation only. Our team will contact you to discuss premium placement options and custom pricing.",
+                vietnamese: "Quyền truy cập gói Kim cương chỉ theo lời mời. Đội ngũ của chúng tôi sẽ liên hệ để thảo luận về các tùy chọn vị trí cao cấp và giá tùy chỉnh."
+              })}
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -67,71 +117,28 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ priceData }) => 
           {/* Base price */}
           <div className="flex justify-between">
             <span className="text-gray-600">{t({
-              english: "Base price",
-              vietnamese: "Giá cơ bản"
+              english: `${priceData.selectedTier?.charAt(0).toUpperCase()}${priceData.selectedTier?.slice(1)} Plan`,
+              vietnamese: `Gói ${priceData.selectedTier}`
             })}</span>
             <span>${priceData.basePrice.toFixed(2)}</span>
           </div>
           
           {/* Duration display if available */}
-          {priceData.durationMonths && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">{t({
-                english: `Duration (${priceData.durationMonths} ${priceData.durationMonths === 1 ? 'month' : 'months'})`,
-                vietnamese: `Thời hạn (${priceData.durationMonths} ${priceData.durationMonths === 1 ? 'tháng' : 'tháng'})`
-              })}</span>
-              <span>x{priceData.durationMonths}</span>
-            </div>
-          )}
-          
-          {/* Subtotal before discounts */}
-          {priceData.originalPrice && priceData.originalPrice !== priceData.basePrice && (
-            <div className="flex justify-between font-medium">
+          {priceData.durationMonths && priceData.durationMonths > 1 && (
+            <div className="flex justify-between text-gray-500">
               <span>{t({
-                english: "Subtotal",
-                vietnamese: "Tạm tính"
+                english: `Duration: ${priceData.durationMonths} months`,
+                vietnamese: `Thời hạn: ${priceData.durationMonths} tháng`
               })}</span>
-              <span>${priceData.originalPrice.toFixed(2)}</span>
+              <span>✓</span>
             </div>
           )}
           
-          {/* Founders discount if applicable */}
-          {priceData.isFoundersDiscount && (
+          {/* Discount if applicable */}
+          {priceData.discountAmount > 0 && (
             <div className="flex justify-between text-green-600">
-              <div className="flex items-center">
-                <span>{t({
-                  english: "Nail Industry Founders Discount",
-                  vietnamese: "Giảm giá người sáng lập ngành nail"
-                })}</span>
-                <Badge className="ml-2 bg-green-100 text-green-800 border-green-200">
-                  Limited Time
-                </Badge>
-              </div>
-              <span>-${(priceData.originalPrice && priceData.discountedPrice ? 
-                (priceData.originalPrice - priceData.discountedPrice) : 0).toFixed(2)}</span>
-            </div>
-          )}
-          
-          {/* Duration discount if applicable */}
-          {priceData.discountPercentage > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span>{t({
-                english: priceData.discountLabel || `${priceData.discountPercentage}% Discount`,
-                vietnamese: priceData.discountLabel || `Giảm giá ${priceData.discountPercentage}%`
-              })}</span>
+              <span>{priceData.discountLabel}</span>
               <span>-${priceData.discountAmount.toFixed(2)}</span>
-            </div>
-          )}
-          
-          {/* Add any additional fees */}
-          {priceData.finalPrice > ((priceData.discountedPrice || priceData.originalPrice || 0) - priceData.discountAmount) && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">{t({
-                english: "Additional services",
-                vietnamese: "Dịch vụ bổ sung"
-              })}</span>
-              <span>${(priceData.finalPrice - 
-                ((priceData.discountedPrice || priceData.originalPrice || 0) - priceData.discountAmount)).toFixed(2)}</span>
             </div>
           )}
           

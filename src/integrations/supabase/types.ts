@@ -754,10 +754,12 @@ export type Database = {
         Row: {
           compensation_details: string | null
           compensation_type: string | null
+          contact_info: Json | null
           created_at: string | null
           description: string | null
           expires_at: string | null
           id: string
+          location: string | null
           pricing_tier: string | null
           requirements: string | null
           salon_id: string | null
@@ -768,10 +770,12 @@ export type Database = {
         Insert: {
           compensation_details?: string | null
           compensation_type?: string | null
+          contact_info?: Json | null
           created_at?: string | null
           description?: string | null
           expires_at?: string | null
           id?: string
+          location?: string | null
           pricing_tier?: string | null
           requirements?: string | null
           salon_id?: string | null
@@ -782,10 +786,12 @@ export type Database = {
         Update: {
           compensation_details?: string | null
           compensation_type?: string | null
+          contact_info?: Json | null
           created_at?: string | null
           description?: string | null
           expires_at?: string | null
           id?: string
+          location?: string | null
           pricing_tier?: string | null
           requirements?: string | null
           salon_id?: string | null
@@ -1091,6 +1097,7 @@ export type Database = {
           payment_date: string
           payment_status: string
           plan_type: string
+          pricing_tier: string | null
           stripe_payment_id: string | null
           user_id: string
         }
@@ -1103,6 +1110,7 @@ export type Database = {
           payment_date?: string
           payment_status?: string
           plan_type: string
+          pricing_tier?: string | null
           stripe_payment_id?: string | null
           user_id: string
         }
@@ -1115,6 +1123,7 @@ export type Database = {
           payment_date?: string
           payment_status?: string
           plan_type?: string
+          pricing_tier?: string | null
           stripe_payment_id?: string | null
           user_id?: string
         }
