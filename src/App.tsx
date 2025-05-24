@@ -27,6 +27,8 @@ import PostSuccess from "@/pages/post-success";
 import PostCanceled from "@/pages/post-canceled";
 import PostJobBillion from "@/pages/PostJobBillion";
 import PostJobExperimental from "@/pages/PostJobExperimental";
+import SignIn from "@/pages/auth/SignIn";
+import SignUp from "@/pages/auth/SignUp";
 
 function App() {
   const location = useLocation();
@@ -49,12 +51,22 @@ function App() {
                 <RouteLogger />
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
+                    {/* Auth routes */}
+                    <Route path="/login" element={<SignIn />} />
+                    <Route path="/sign-up" element={<SignUp />} />
+                    <Route path="/register" element={<SignUp />} />
+                    
+                    {/* Job posting routes */}
                     <Route path="/post-job" element={<JobPost />} />
                     <Route path="/post-job-billion" element={<PostJobBillion />} />
                     <Route path="/post-job-experimental" element={<PostJobExperimental />} />
+                    
+                    {/* Payment routes */}
                     <Route path="/checkout" element={<CheckoutFallback />} />
                     <Route path="/post-success" element={<PostSuccess />} />
                     <Route path="/post-canceled" element={<PostCanceled />} />
+                    
+                    {/* Other pages */}
                     <Route path="/salons" element={<Layout><StableSalonPage /></Layout>} />
                     <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
                     <Route path="/about" element={<Layout><About /></Layout>} />
@@ -64,7 +76,6 @@ function App() {
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
-                    {/* Keep existing routes */}
                     {routes.map((route, index) => (
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
