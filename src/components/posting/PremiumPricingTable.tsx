@@ -1,295 +1,354 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Check, Star, Crown, Diamond, Zap } from 'lucide-react';
+import { Check, Crown, Sparkles, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { jobPricingOptions, getJobPrice } from '@/utils/posting/jobPricing';
+import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
 
 interface PremiumPricingTableProps {
-  pricingOptions: PricingOptions;
-  onOptionsChange: (options: PricingOptions) => void;
+  selectedTier: JobPricingTier;
+  durationMonths: number;
+  autoRenew: boolean;
+  isNationwide: boolean;
+  onPricingChange: (options: PricingOptions) => void;
   onProceedToPayment: () => void;
-  isLoading?: boolean;
+  onBack: () => void;
+  isLoading: boolean;
+  totalPrice: number;
+  originalPrice: number;
+  discountPercentage: number;
 }
 
+const pricingPlans = [
+  {
+    id: 'standard',
+    name: 'Standard',
+    price: 9.99,
+    description: 'Perfect for getting started',
+    features: [
+      'Active for 30 days',
+      'Email notifications',
+      'Basic support',
+      'Standard visibility'
+    ],
+    color: 'border-gray-200',
+    textColor: 'text-gray-900'
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    price: 19.99,
+    description: 'Enhanced visibility',
+    features: [
+      'Active for 30 days',
+      'Priority placement',
+      'Featured badge',
+      'Premium support',
+      'Enhanced visibility'
+    ],
+    popular: true,
+    color: 'border-purple-500',
+    textColor: 'text-purple-900'
+  },
+  {
+    id: 'gold',
+    name: 'Gold',
+    price: 39.99,
+    description: 'Maximum exposure',
+    features: [
+      'Active for 45 days',
+      'Top placement guarantee',
+      'Gold badge',
+      'Priority support',
+      'Maximum visibility',
+      'Featured in newsletters'
+    ],
+    color: 'border-amber-500',
+    textColor: 'text-amber-900'
+  },
+  {
+    id: 'diamond',
+    name: 'Diamond',
+    price: 999,
+    description: 'Exclusive tier',
+    features: [
+      'Active for 60 days',
+      'Guaranteed top placement',
+      'Diamond badge',
+      'Dedicated support',
+      'Personal account manager',
+      'Custom promotion'
+    ],
+    waitlist: true,
+    spotsLeft: '2 spots left',
+    color: 'border-indigo-500',
+    textColor: 'text-indigo-900'
+  }
+];
+
+const durationOptions = [
+  { months: 1, label: '1 Month', discount: 0 },
+  { months: 3, label: '3 Months', discount: 17, popular: true, specialPrice: 49.99 },
+  { months: 6, label: '6 Months', discount: 25 },
+  { months: 12, label: '12 Months', discount: 30 }
+];
+
 const PremiumPricingTable: React.FC<PremiumPricingTableProps> = ({
-  pricingOptions,
-  onOptionsChange,
+  selectedTier,
+  durationMonths,
+  autoRenew,
+  isNationwide,
+  onPricingChange,
   onProceedToPayment,
-  isLoading = false
+  onBack,
+  isLoading,
+  totalPrice,
+  originalPrice,
+  discountPercentage
 }) => {
-  const [selectedDuration, setSelectedDuration] = useState(pricingOptions.durationMonths);
+  const [selectedPlan, setSelectedPlan] = useState(selectedTier);
+  const [selectedDuration, setSelectedDuration] = useState(durationMonths);
+  const [autoRenewEnabled, setAutoRenewEnabled] = useState(autoRenew);
+  const [nationwideEnabled, setNationwideEnabled] = useState(isNationwide);
 
-  const handleTierChange = (tier: JobPricingTier) => {
-    onOptionsChange({
-      ...pricingOptions,
-      selectedPricingTier: tier
-    });
+  const handlePlanSelect = (planId: string) => {
+    setSelectedPlan(planId as JobPricingTier);
+    updatePricingOptions(planId as JobPricingTier, selectedDuration, autoRenewEnabled, nationwideEnabled);
   };
 
-  const handleDurationChange = (months: number) => {
+  const handleDurationSelect = (months: number) => {
     setSelectedDuration(months);
-    onOptionsChange({
-      ...pricingOptions,
-      durationMonths: months
+    updatePricingOptions(selectedPlan, months, autoRenewEnabled, nationwideEnabled);
+  };
+
+  const handleAutoRenewToggle = (enabled: boolean) => {
+    setAutoRenewEnabled(enabled);
+    updatePricingOptions(selectedPlan, selectedDuration, enabled, nationwideEnabled);
+  };
+
+  const handleNationwideToggle = (enabled: boolean) => {
+    setNationwideEnabled(enabled);
+    updatePricingOptions(selectedPlan, selectedDuration, autoRenewEnabled, enabled);
+  };
+
+  const updatePricingOptions = (tier: JobPricingTier, duration: number, autoRenew: boolean, nationwide: boolean) => {
+    onPricingChange({
+      selectedPricingTier: tier,
+      durationMonths: duration,
+      autoRenew,
+      isNationwide: nationwide
     });
   };
-
-  const handleToggleChange = (key: keyof PricingOptions, value: boolean) => {
-    onOptionsChange({
-      ...pricingOptions,
-      [key]: value
-    });
-  };
-
-  const getIcon = (tier: JobPricingTier) => {
-    switch (tier) {
-      case 'standard': return <Zap className="h-5 w-5" />;
-      case 'premium': return <Star className="h-5 w-5" />;
-      case 'gold': return <Crown className="h-5 w-5" />;
-      case 'diamond': return <Diamond className="h-5 w-5" />;
-      default: return <Zap className="h-5 w-5" />;
-    }
-  };
-
-  const getPriceForDuration = (basePlan: any, duration: number) => {
-    const tempOptions = { ...pricingOptions, selectedPricingTier: basePlan.tier, durationMonths: duration };
-    const pricing = getJobPrice(tempOptions);
-    return pricing;
-  };
-
-  const finalPricing = getJobPrice(pricingOptions);
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          Choose Your Plan
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Get your job in front of the right candidates with our premium placement options
-        </p>
+        <h2 className="text-3xl font-bold text-gray-900">Choose Your Plan</h2>
+        <p className="text-lg text-gray-600">Select the perfect plan to reach the right candidates</p>
       </div>
 
-      {/* Duration Selector */}
-      <div className="flex justify-center mb-6">
-        <div className="bg-gray-50 p-1 rounded-lg inline-flex space-x-1">
-          {[1, 3, 6].map((months) => (
-            <button
-              key={months}
-              onClick={() => handleDurationChange(months)}
-              className={cn(
-                "px-4 py-2 rounded-md text-sm font-medium transition-all",
-                selectedDuration === months
-                  ? "bg-white shadow-sm text-purple-600"
-                  : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              {months} Month{months > 1 ? 's' : ''}
-              {months === 3 && (
-                <Badge className="ml-1 bg-green-100 text-green-800 text-xs">Best Value</Badge>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-        {jobPricingOptions.map((plan) => {
-          const isSelected = pricingOptions.selectedPricingTier === plan.tier;
-          const pricing = getPriceForDuration(plan, selectedDuration);
-          const isDiamond = plan.tier === 'diamond';
-          
-          return (
-            <Card 
-              key={plan.id}
-              className={cn(
-                "relative overflow-hidden transition-all duration-300 hover:scale-105 cursor-pointer",
-                isSelected && "ring-2 ring-purple-500 shadow-xl",
-                plan.popular && "border-purple-200 shadow-lg",
-                isDiamond && "border-gradient-to-r from-indigo-500 to-purple-600"
-              )}
-              onClick={() => !isDiamond && handleTierChange(plan.tier)}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-purple-600 text-white px-3 py-1">Most Popular</Badge>
+      {/* Pricing Plans */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {pricingPlans.map((plan) => (
+          <Card 
+            key={plan.id}
+            className={cn(
+              "relative cursor-pointer transition-all duration-200 hover:shadow-lg",
+              plan.color,
+              selectedPlan === plan.id ? 'ring-2 ring-purple-500 shadow-lg' : '',
+              plan.popular ? 'scale-105' : ''
+            )}
+            onClick={() => !plan.waitlist && handlePlanSelect(plan.id)}
+          >
+            {plan.popular && (
+              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-purple-600">
+                Most Popular
+              </Badge>
+            )}
+            {plan.waitlist && (
+              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-indigo-600">
+                {plan.spotsLeft}
+              </Badge>
+            )}
+            
+            <CardHeader className="text-center">
+              <CardTitle className={cn("text-xl", plan.textColor)}>
+                <div className="flex items-center justify-center gap-2">
+                  {plan.id === 'diamond' && <Crown className="h-5 w-5" />}
+                  {plan.id === 'gold' && <Sparkles className="h-5 w-5" />}
+                  {plan.name}
                 </div>
-              )}
+              </CardTitle>
+              <div className="text-3xl font-bold">
+                {plan.waitlist ? (
+                  <span className="text-lg">Waitlist Only</span>
+                ) : (
+                  <>
+                    ${plan.price}
+                    <span className="text-base font-normal text-gray-500">/month</span>
+                  </>
+                )}
+              </div>
+              <p className="text-gray-600">{plan.description}</p>
+            </CardHeader>
+            
+            <CardContent>
+              <ul className="space-y-2 mb-6">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
               
-              {isDiamond && plan.limitedSpots && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-red-500 text-white px-3 py-1 animate-pulse">
-                    {plan.limitedSpots}
-                  </Badge>
-                </div>
-              )}
-
-              <CardContent className="p-6 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <div className={cn("p-2 rounded-lg", 
-                      plan.color === 'blue' && "bg-blue-100 text-blue-600",
-                      plan.color === 'purple' && "bg-purple-100 text-purple-600",
-                      plan.color === 'amber' && "bg-amber-100 text-amber-600",
-                      plan.color === 'indigo' && "bg-indigo-100 text-indigo-600"
-                    )}>
-                      {getIcon(plan.tier)}
-                    </div>
-                    <h3 className="text-lg font-semibold">{plan.name}</h3>
-                  </div>
-                  {isSelected && !isDiamond && (
-                    <div className="w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center">
-                      <Check className="h-3 w-3 text-white" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-4">
-                  {!isDiamond ? (
-                    <div className="space-y-1">
-                      <div className="flex items-baseline space-x-1">
-                        <span className="text-3xl font-bold">${pricing.finalPrice.toFixed(2)}</span>
-                        {selectedDuration > 1 && (
-                          <span className="text-sm text-gray-500">
-                            (~${(pricing.finalPrice / selectedDuration).toFixed(2)}/mo)
-                          </span>
-                        )}
-                      </div>
-                      {pricing.discountPercentage > 0 && (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm line-through text-gray-400">
-                            ${pricing.originalPrice.toFixed(2)}
-                          </span>
-                          <Badge className="bg-green-100 text-green-800 text-xs">
-                            Save {pricing.discountPercentage}%
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <div className="text-2xl font-bold text-indigo-600">Invitation Only</div>
-                      <p className="text-sm text-gray-500">Contact for custom pricing</p>
-                    </div>
-                  )}
-                </div>
-
-                <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
-
-                <div className="space-y-2 flex-1">
-                  {plan.features?.map((feature, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-4">
-                  {isDiamond ? (
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-indigo-200 text-indigo-600 hover:bg-indigo-50"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // Handle waitlist/contact logic
-                        window.open('mailto:support@emviapp.com?subject=Diamond Plan Interest', '_blank');
-                      }}
-                    >
-                      Join Waitlist
-                    </Button>
-                  ) : (
-                    <Button 
-                      variant={isSelected ? "default" : "outline"}
-                      className={cn(
-                        "w-full",
-                        isSelected && "bg-purple-600 hover:bg-purple-700",
-                        plan.popular && !isSelected && "border-purple-200 text-purple-600 hover:bg-purple-50"
-                      )}
-                    >
-                      {isSelected ? 'Selected' : 'Select Plan'}
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+              <Button 
+                className={cn(
+                  "w-full",
+                  selectedPlan === plan.id && !plan.waitlist ? 'bg-purple-600 hover:bg-purple-700' : '',
+                  plan.waitlist ? 'bg-indigo-600 hover:bg-indigo-700' : ''
+                )}
+                variant={selectedPlan === plan.id && !plan.waitlist ? 'default' : 'outline'}
+                disabled={plan.waitlist}
+              >
+                {plan.waitlist ? 'Join Waitlist' : selectedPlan === plan.id ? 'Selected' : 'Select Plan'}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+
+      {/* Duration Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Duration</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {durationOptions.map((option) => (
+              <Button
+                key={option.months}
+                variant={selectedDuration === option.months ? 'default' : 'outline'}
+                className="relative h-auto p-4 flex flex-col items-center"
+                onClick={() => handleDurationSelect(option.months)}
+              >
+                {option.popular && (
+                  <Badge className="absolute -top-2 bg-green-600 text-xs">
+                    Best Value
+                  </Badge>
+                )}
+                <span className="font-medium">{option.label}</span>
+                {option.discount > 0 && (
+                  <span className="text-xs text-green-600 mt-1">
+                    Save {option.discount}%
+                  </span>
+                )}
+                {option.specialPrice && selectedPlan === 'premium' && (
+                  <span className="text-xs text-gray-500 mt-1">
+                    ${option.specialPrice} total
+                  </span>
+                )}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Additional Options */}
-      <div className="max-w-md mx-auto space-y-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-          <div className="space-y-1">
-            <Label className="text-sm font-medium">Auto-renew</Label>
-            <p className="text-xs text-gray-500">Save 5% with automatic renewal</p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Additional Options</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="auto-renew" className="text-base font-medium">
+                Auto-renew subscription
+              </Label>
+              <p className="text-sm text-gray-500">Save 5% with auto-renewal</p>
+            </div>
+            <Switch
+              id="auto-renew"
+              checked={autoRenewEnabled}
+              onCheckedChange={handleAutoRenewToggle}
+            />
           </div>
-          <Switch
-            checked={pricingOptions.autoRenew || false}
-            onCheckedChange={(checked) => handleToggleChange('autoRenew', checked)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-          <div className="space-y-1">
-            <Label className="text-sm font-medium">Nationwide visibility</Label>
-            <p className="text-xs text-gray-500">+$5 - Show to candidates across the country</p>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="nationwide" className="text-base font-medium">
+                Nationwide visibility
+              </Label>
+              <p className="text-sm text-gray-500">Show to candidates across the country (+$5)</p>
+            </div>
+            <Switch
+              id="nationwide"
+              checked={nationwideEnabled}
+              onCheckedChange={handleNationwideToggle}
+            />
           </div>
-          <Switch
-            checked={pricingOptions.isNationwide || false}
-            onCheckedChange={(checked) => handleToggleChange('isNationwide', checked)}
-          />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Final Summary & CTA */}
-      <div className="max-w-md mx-auto">
-        <Card className="border-2 border-purple-100">
-          <CardContent className="p-6 text-center space-y-4">
-            <h3 className="text-lg font-semibold">Order Summary</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Plan:</span>
-                <span className="font-medium">{jobPricingOptions.find(p => p.tier === pricingOptions.selectedPricingTier)?.name}</span>
+      {/* Pricing Summary */}
+      <Card className="bg-gray-50">
+        <CardHeader>
+          <CardTitle>Order Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>Plan</span>
+              <span>{pricingPlans.find(p => p.id === selectedPlan)?.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Duration</span>
+              <span>{selectedDuration} month{selectedDuration > 1 ? 's' : ''}</span>
+            </div>
+            {discountPercentage > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount</span>
+                <span>-{discountPercentage}%</span>
               </div>
+            )}
+            {nationwideEnabled && (
               <div className="flex justify-between">
-                <span>Duration:</span>
-                <span>{selectedDuration} month{selectedDuration > 1 ? 's' : ''}</span>
+                <span>Nationwide visibility</span>
+                <span>+$5.00</span>
               </div>
-              {finalPricing.discountPercentage > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>Discount:</span>
-                  <span>-{finalPricing.discountPercentage}%</span>
-                </div>
-              )}
-              <div className="border-t pt-2 flex justify-between font-bold">
-                <span>Total:</span>
-                <span>${finalPricing.finalPrice.toFixed(2)}</span>
+            )}
+            <div className="border-t pt-2 flex justify-between font-bold text-lg">
+              <span>Total</span>
+              <div>
+                {originalPrice !== totalPrice && (
+                  <span className="line-through text-gray-500 text-sm mr-2">
+                    ${originalPrice.toFixed(2)}
+                  </span>
+                )}
+                <span>${totalPrice.toFixed(2)}</span>
               </div>
             </div>
-            
-            <Button 
-              onClick={onProceedToPayment}
-              disabled={isLoading || pricingOptions.selectedPricingTier === 'diamond'}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              size="lg"
-            >
-              {isLoading ? 'Processing...' : 'Proceed to Payment'}
-            </Button>
-            
-            <p className="text-xs text-gray-500">
-              Secure payment powered by Stripe
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Action Buttons */}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Job Details
+        </Button>
+        <Button 
+          onClick={onProceedToPayment}
+          disabled={isLoading || selectedPlan === 'diamond'}
+          className="bg-purple-600 hover:bg-purple-700"
+        >
+          {isLoading ? 'Processing...' : selectedPlan === 'diamond' ? 'Join Waitlist' : 'Proceed to Payment'}
+        </Button>
       </div>
     </div>
   );
