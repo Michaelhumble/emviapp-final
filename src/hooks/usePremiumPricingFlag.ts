@@ -11,66 +11,46 @@ interface PremiumPricingConfig {
 
 export const usePremiumPricingFlag = () => {
   const [config, setConfig] = useState<PremiumPricingConfig>({
-    enabled: true, // Enable by default to show new pricing
-    testMode: true,
-    diamondSpotsLeft: 2,
+    enabled: false, // Disabled for production
+    testMode: false,
+    diamondSpotsLeft: 0,
     firstPostFree: true,
-    visualReview: true
+    visualReview: false
   });
 
   useEffect(() => {
-    // Check for URL parameter to disable premium pricing for testing
-    const urlParams = new URLSearchParams(window.location.search);
-    const disablePremium = urlParams.get('disable_premium') === 'true';
-    const visualReview = urlParams.get('pricing_review') === 'true';
+    // Production mode - always disabled
+    setConfig({
+      enabled: false,
+      testMode: false,
+      diamondSpotsLeft: 0,
+      firstPostFree: true,
+      visualReview: false
+    });
     
-    // Check localStorage for persistent testing flag
-    const storedFlag = localStorage.getItem('emvi_premium_pricing_test');
-    const storedReview = localStorage.getItem('emvi_pricing_visual_review');
-    
-    // Default to enabled unless explicitly disabled
-    if (disablePremium) {
-      setConfig(prev => ({
-        ...prev,
-        enabled: false,
-        visualReview: false
-      }));
-    } else {
-      setConfig(prev => ({
-        ...prev,
-        enabled: true,
-        visualReview: visualReview || storedReview === 'true' || true // Default visual review on
-      }));
-      
-      // Store in localStorage for persistence
-      localStorage.setItem('emvi_premium_pricing_test', 'true');
-      localStorage.setItem('emvi_pricing_visual_review', 'true');
-    }
+    // Clear any test flags from localStorage
+    localStorage.removeItem('emvi_premium_pricing_test');
+    localStorage.removeItem('emvi_pricing_visual_review');
   }, []);
 
   const enablePremiumPricing = () => {
-    setConfig(prev => ({ ...prev, enabled: true }));
-    localStorage.setItem('emvi_premium_pricing_test', 'true');
+    // Disabled in production
+    console.log('Premium pricing disabled in production mode');
   };
 
   const disablePremiumPricing = () => {
-    setConfig(prev => ({ ...prev, enabled: false, visualReview: false }));
-    localStorage.removeItem('emvi_premium_pricing_test');
-    localStorage.removeItem('emvi_pricing_visual_review');
+    // Already disabled
+    console.log('Premium pricing already disabled');
   };
 
   const enableVisualReview = () => {
-    setConfig(prev => ({ ...prev, enabled: true, visualReview: true }));
-    localStorage.setItem('emvi_premium_pricing_test', 'true');
-    localStorage.setItem('emvi_pricing_visual_review', 'true');
+    // Disabled in production
+    console.log('Visual review disabled in production mode');
   };
 
   const togglePremiumPricing = () => {
-    if (config.enabled) {
-      disablePremiumPricing();
-    } else {
-      enablePremiumPricing();
-    }
+    // Disabled in production
+    console.log('Premium pricing toggle disabled in production mode');
   };
 
   return {

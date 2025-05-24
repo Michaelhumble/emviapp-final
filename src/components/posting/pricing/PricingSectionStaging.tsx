@@ -1,8 +1,7 @@
 
-import React, { useState } from 'react';
-import PremiumPricingTable from './PremiumPricingTable';
+import React from 'react';
 import JobPostOptions from '../job/JobPostOptions';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { PricingOptions } from '@/utils/posting/types';
 
 interface PricingSectionStagingProps {
   options: PricingOptions;
@@ -11,70 +10,13 @@ interface PricingSectionStagingProps {
   usePremiumPricing?: boolean;
 }
 
-interface PricingPlan {
-  id: string;
-  name: string;
-  price: number;
-  duration: string;
-  description: string;
-  features: string[];
-}
-
 const PricingSectionStaging: React.FC<PricingSectionStagingProps> = ({
   options,
   onOptionsChange,
   isFirstPost = false,
-  usePremiumPricing = true // Default to true to show new pricing
+  usePremiumPricing = false // Disabled premium pricing for production
 }) => {
-  const [showPremiumPricing] = useState(usePremiumPricing);
-
-  const handlePlanSelect = (plan: PricingPlan) => {
-    console.log('Plan selected:', plan);
-    
-    // Map the new plan structure to existing PricingOptions
-    let tier: JobPricingTier = 'standard';
-    let durationMonths = 1;
-    
-    switch (plan.id) {
-      case 'standard':
-        tier = 'standard';
-        durationMonths = 1;
-        break;
-      case 'gold':
-        tier = 'gold';
-        durationMonths = 3;
-        break;
-      case 'diamond':
-        tier = 'diamond';
-        durationMonths = 12;
-        break;
-    }
-
-    const updatedOptions: PricingOptions = {
-      ...options,
-      selectedPricingTier: tier,
-      durationMonths,
-      autoRenew: plan.id !== 'diamond', // Diamond doesn't auto-renew
-      isFirstPost
-    };
-
-    onOptionsChange(updatedOptions);
-  };
-
-  // Show new premium pricing by default
-  if (showPremiumPricing) {
-    return (
-      <div className="space-y-6">
-        <PremiumPricingTable
-          onPlanSelect={handlePlanSelect}
-          selectedPlan={options.selectedPricingTier}
-          isFirstPost={isFirstPost}
-        />
-      </div>
-    );
-  }
-
-  // Fallback to existing pricing component
+  // Always use legacy pricing in production mode
   return (
     <JobPostOptions
       options={options}
