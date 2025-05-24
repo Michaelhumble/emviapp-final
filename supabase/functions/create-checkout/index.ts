@@ -66,17 +66,17 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Validate contact_info structure
+    // Validate and prepare contact_info structure
     const contactInfo = postDetails.contact_info || postDetails.contactInfo || {};
     if (!contactInfo.owner_name && !contactInfo.phone && !contactInfo.email) {
       // Provide defaults if contact info is missing
-      contactInfo.owner_name = postDetails.contactName || "Contact Owner";
-      contactInfo.phone = postDetails.contactPhone || "";
-      contactInfo.email = postDetails.contactEmail || user.email || "";
+      contactInfo.owner_name = postDetails.contactName || postDetails.salonName || "Contact Owner";
+      contactInfo.phone = postDetails.contactPhone || postDetails.phone || "";
+      contactInfo.email = postDetails.contactEmail || postDetails.email || user.email || "";
     }
 
     // Calculate final price
-    const finalPrice = priceData?.finalPrice || pricingOptions.selectedPricingTier === 'free' ? 0 : 999; // Default price if missing
+    const finalPrice = priceData?.finalPrice || (pricingOptions.selectedPricingTier === 'free' ? 0 : 999);
 
     // Create Stripe checkout session for paid plans
     if (finalPrice > 0) {
@@ -103,7 +103,7 @@ serve(async (req) => {
           pricing_tier: pricingOptions.selectedPricingTier,
           duration_months: pricingOptions.durationMonths.toString(),
           user_id: user.id,
-          idempotency_key: idempotencyKey,
+          idempotency_key: idempotencyKey || '',
         },
       });
 
@@ -116,7 +116,6 @@ serve(async (req) => {
           plan_type: pricingOptions.selectedPricingTier,
           payment_status: 'pending',
           expires_at: new Date(Date.now() + (pricingOptions.durationMonths * 30 * 24 * 60 * 60 * 1000)).toISOString(),
-          pricing_tier: pricingOptions.selectedPricingTier
         });
 
       if (logError) {
