@@ -1,218 +1,243 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '@/context/auth';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { useStripe } from '@/hooks/useStripe';
-import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { calculateJobPostPrice } from '@/utils/posting/jobPricing';
+import Layout from '@/components/layout/Layout';
 import ConsolidatedJobTemplateSelector from '@/components/job-posting-new/ConsolidatedJobTemplateSelector';
-import PremiumPricingTable from '@/components/posting/PremiumPricingTable';
+import ConsolidatedJobForm from '@/components/job-posting-new/ConsolidatedJobForm';
+import JobPostOptions from '@/components/posting/job/JobPostOptions';
+import { PaymentSummary } from '@/components/posting/PaymentSummary';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePostPayment } from '@/hooks/usePostPayment';
+import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
+import { calculatePricing } from '@/utils/posting/pricing';
+import { toast } from 'sonner';
+import { ArrowLeft } from 'lucide-react';
 
 const JobPost = () => {
-  const { userProfile } = useAuth();
   const navigate = useNavigate();
-  const { initiatePayment, isLoading } = useStripe();
-  
-  const [currentStep, setCurrentStep] = useState<'template' | 'form' | 'pricing' | 'payment'>('template');
-  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
-  const [formData, setFormData] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
+  const [jobFormData, setJobFormData] = useState<any>(null);
+  const [showPricing, setShowPricing] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
-    selectedPricingTier: 'standard' as JobPricingTier,
+    selectedPricingTier: 'standard',
     durationMonths: 1,
     autoRenew: false,
-    isNationwide: false
+    isFirstPost: false
   });
+  const { initiatePayment } = usePostPayment();
 
-  const handleTemplateSelect = (template: any) => {
-    console.log('Template selected:', template);
-    setSelectedTemplate(template);
-    setCurrentStep('form');
+  const handleTemplateSelect = (profession: string) => {
+    console.log('Profession selected:', profession);
+    setSelectedProfession(profession);
   };
 
-  const handleFormSubmit = (data: any) => {
-    console.log('Form submitted:', data);
-    setFormData(data);
-    setCurrentStep('pricing');
+  const handleFormSubmit = async (formData: any) => {
+    console.log('Job form completed:', formData);
+    setJobFormData(formData);
+    setShowPricing(true);
   };
 
-  const handlePricingSelect = (options: PricingOptions) => {
-    console.log('Pricing selected:', options);
+  const handlePricingOptionsChange = (options: PricingOptions) => {
     setPricingOptions(options);
   };
 
-  const handlePayment = async () => {
-    if (!userProfile) {
-      toast.error('Please sign in to continue');
-      navigate(`/login?redirect=${encodeURIComponent('/post-job')}`);
-      return;
-    }
+  const handleBackToForm = () => {
+    setShowPricing(false);
+  };
 
-    // Handle Diamond tier waitlist
-    if (pricingOptions.selectedPricingTier === 'diamond') {
-      toast.success('Added to Diamond tier waitlist! We\'ll contact you soon.');
-      navigate('/dashboard');
-      return;
-    }
+  const handleBackToTemplates = () => {
+    setSelectedProfession(null);
+    setShowPricing(false);
+    setJobFormData(null);
+  };
 
+  const handleProceedToPayment = async () => {
+    if (!jobFormData) return;
+    
+    setIsSubmitting(true);
+    
     try {
-      const success = await initiatePayment({
-        ...pricingOptions,
-        jobFormData: formData
-      });
+      console.log('Proceeding to payment with:', { jobFormData, pricingOptions });
+
+      // Transform the form data to match expected format
+      const jobData = {
+        title: `${jobFormData.profession.replace('-', ' ')} Position`,
+        salonName: jobFormData.salonName,
+        company: jobFormData.salonName,
+        location: jobFormData.location,
+        employment_type: jobFormData.employmentType,
+        compensation_type: jobFormData.compensationType,
+        compensation_details: jobFormData.compensationDetails,
+        jobDescription: jobFormData.jobDescriptionEnglish,
+        vietnameseDescription: jobFormData.jobDescriptionVietnamese,
+        description: jobFormData.jobDescriptionEnglish,
+        vietnamese_description: jobFormData.jobDescriptionVietnamese,
+        contact_info: {
+          owner_name: jobFormData.contactName,
+          phone: jobFormData.contactPhone,
+          email: jobFormData.contactEmail
+        },
+        benefits: jobFormData.benefits || [],
+        profession: jobFormData.profession,
+        photos: jobFormData.photoUploads || []
+      };
+
+      // Initiate payment and job posting
+      const result = await initiatePayment('job', jobData, pricingOptions);
       
-      if (success) {
-        toast.success('Redirecting to payment...');
+      if (result.success) {
+        toast.success('Job posting created successfully!', {
+          description: 'Redirecting to listings page...'
+        });
+        navigate('/listings');
+      } else if (result.waitlisted) {
+        toast.info('Added to Diamond tier waitlist', {
+          description: 'Our team will contact you soon.'
+        });
+        navigate('/listings');
+      } else {
+        toast.error('Failed to submit job posting', {
+          description: 'Please try again or contact support.'
+        });
       }
     } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Payment failed. Please try again.');
+      console.error('Job posting error:', error);
+      toast.error('An error occurred', {
+        description: 'Please try again later.'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const pricing = calculateJobPostPrice(pricingOptions);
+  // Calculate pricing data for display
+  const pricingData = React.useMemo(() => {
+    const pricing = calculatePricing(
+      pricingOptions.selectedPricingTier,
+      pricingOptions.durationMonths,
+      pricingOptions.autoRenew || false,
+      pricingOptions.isFirstPost || false,
+      pricingOptions.isNationwide || false
+    );
+    
+    return {
+      basePrice: pricing.originalPrice,
+      originalPrice: pricing.originalPrice,
+      finalPrice: pricing.finalPrice,
+      discountedPrice: pricing.finalPrice,
+      discountPercentage: pricing.discountPercentage,
+      discountAmount: pricing.originalPrice - pricing.finalPrice,
+      discountLabel: pricing.discountPercentage > 0 ? `${pricing.discountPercentage}% Discount` : '',
+      isFoundersDiscount: false,
+      durationMonths: pricingOptions.durationMonths,
+      selectedTier: pricingOptions.selectedPricingTier
+    };
+  }, [pricingOptions]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {currentStep === 'template' && (
-            <div className="space-y-8">
-              <div className="text-center space-y-4">
-                <h1 className="text-4xl font-bold text-gray-900">Post a Job</h1>
-                <p className="text-lg text-gray-600">Choose a template to get started with your job posting</p>
+    <Layout>
+      <Helmet>
+        <title>Post a Job - Premium Job Posting | EmviApp</title>
+        <meta name="description" content="Post your job with our premium job posting experience - find the perfect beauty professional" />
+      </Helmet>
+      
+      {!selectedProfession ? (
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="font-playfair text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 bg-clip-text text-transparent leading-tight" 
+                  style={{ textShadow: '0 2px 4px rgba(147, 51, 234, 0.1)' }}>
+                Build Your Beauty Empire: Start with the Perfect Hire.
+              </h1>
+              <p className="font-inter text-lg md:text-xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed">
+                Unlock the most beautiful job posting experience ever built for the beauty industry. Select your profession below to begin.
+              </p>
+              <div className="flex items-center justify-center gap-2 text-purple-600 font-medium animate-pulse">
+                <span className="text-2xl">🚀</span>
+                <p className="text-base md:text-lg bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent font-semibold">
+                  1,000+ salons have found top talent on Emvi.App — be the next success story.
+                </p>
               </div>
-              <ConsolidatedJobTemplateSelector 
-                onTemplateSelect={handleTemplateSelect}
-                isSubmitting={false}
-              />
             </div>
-          )}
-
-          {currentStep === 'form' && selectedTemplate && (
-            <div className="space-y-8">
-              <div className="text-center space-y-4">
-                <h2 className="text-3xl font-bold text-gray-900">Job Details</h2>
-                <p className="text-lg text-gray-600">Fill in the details for your job posting</p>
-              </div>
+            
+            <ConsolidatedJobTemplateSelector 
+              onTemplateSelect={handleTemplateSelect} 
+              isSubmitting={isSubmitting}
+            />
+          </div>
+        </div>
+      ) : !showPricing ? (
+        <ConsolidatedJobForm 
+          selectedProfession={selectedProfession}
+          onSubmit={handleFormSubmit}
+          onBack={handleBackToTemplates}
+          isSubmitting={isSubmitting}
+        />
+      ) : (
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6">
+              <Button 
+                variant="ghost" 
+                onClick={handleBackToForm}
+                className="mb-4"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Job Form
+              </Button>
               
-              {/* Enhanced Job Form Section */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
-                      <input 
-                        type="text" 
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        placeholder="Enter job title"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Salon Name</label>
-                      <input 
-                        type="text" 
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        placeholder="Your salon name"
-                      />
-                    </div>
-                  </div>
+              <h1 className="font-playfair text-3xl font-bold mb-2">Choose Your Plan</h1>
+              <p className="text-gray-600">Select the best plan for your job posting needs</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Job Posting Options</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <JobPostOptions
+                      options={pricingOptions}
+                      onOptionsChange={handlePricingOptionsChange}
+                      isFirstPost={pricingOptions.isFirstPost}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="lg:col-span-1">
+                <PaymentSummary priceData={pricingData} />
+                
+                <div className="mt-6 space-y-3">
+                  <Button 
+                    onClick={handleProceedToPayment}
+                    disabled={isSubmitting}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {isSubmitting ? 'Processing...' : 
+                     pricingData.finalPrice === 0 ? 'Post Job for Free' : 
+                     `Proceed to Payment - $${pricingData.finalPrice.toFixed(2)}`}
+                  </Button>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                      <input 
-                        type="text" 
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        placeholder="City, State"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Employment Type</label>
-                      <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option>Full-time</option>
-                        <option>Part-time</option>
-                        <option>Contract</option>
-                        <option>Temporary</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Job Description</label>
-                    <textarea 
-                      rows={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Describe the role, responsibilities, and requirements..."
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Salary Range</label>
-                      <input 
-                        type="text" 
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        placeholder="e.g. $40,000 - $60,000"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
-                      <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option>Entry Level</option>
-                        <option>Mid Level</option>
-                        <option>Senior Level</option>
-                        <option>Expert Level</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Benefits & Perks</label>
-                    <textarea 
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Health insurance, paid time off, commission opportunities..."
-                    />
-                  </div>
-
-                  <div className="flex justify-between pt-6">
-                    <button 
-                      onClick={() => setCurrentStep('template')}
-                      className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Back to Templates
-                    </button>
-                    <button 
-                      onClick={handleFormSubmit}
-                      className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
-                    >
-                      Continue to Pricing
-                    </button>
-                  </div>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleBackToForm}
+                    className="w-full"
+                  >
+                    Back to Edit Job
+                  </Button>
                 </div>
               </div>
             </div>
-          )}
-
-          {currentStep === 'pricing' && (
-            <PremiumPricingTable
-              selectedTier={pricingOptions.selectedPricingTier}
-              durationMonths={pricingOptions.durationMonths}
-              autoRenew={pricingOptions.autoRenew}
-              isNationwide={pricingOptions.isNationwide}
-              onPricingChange={handlePricingSelect}
-              onProceedToPayment={handlePayment}
-              onBack={() => setCurrentStep('form')}
-              isLoading={isLoading}
-              totalPrice={pricing.finalPrice}
-              originalPrice={pricing.originalPrice}
-              discountPercentage={pricing.discountPercentage}
-            />
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </Layout>
   );
 };
 
