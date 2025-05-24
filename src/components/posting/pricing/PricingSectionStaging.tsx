@@ -24,14 +24,14 @@ const PricingSectionStaging: React.FC<PricingSectionStagingProps> = ({
   options,
   onOptionsChange,
   isFirstPost = false,
-  usePremiumPricing = false // Default to false to preserve existing behavior
+  usePremiumPricing = true // Changed default to true for visual review
 }) => {
   const [showPremiumPricing] = useState(usePremiumPricing);
 
   const handlePlanSelect = (plan: PricingPlan) => {
-    console.log('Plan selected for testing:', plan);
+    console.log('Plan selected for visual review:', plan);
     
-    // Map the new plan structure to existing PricingOptions
+    // Map the new plan structure to existing PricingOptions (for future integration)
     let tier: JobPricingTier = 'standard';
     let durationMonths = 1;
     
@@ -61,16 +61,16 @@ const PricingSectionStaging: React.FC<PricingSectionStagingProps> = ({
     onOptionsChange(updatedOptions);
   };
 
-  // For staging/testing purposes, we can toggle between old and new pricing
+  // Show new premium pricing for visual review
   if (showPremiumPricing) {
     return (
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4 mb-6">
-          <div className="text-center text-purple-700 font-medium">
-            🚀 STAGING: Premium Pricing Display
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6">
+          <div className="text-center text-blue-700 font-medium">
+            🎨 DESIGN REVIEW: Premium Pricing Display
           </div>
-          <div className="text-center text-sm text-purple-600 mt-1">
-            This is the new AdCreative.ai-style pricing table for testing
+          <div className="text-center text-sm text-blue-600 mt-1">
+            Visual preview only — No payment integration yet
           </div>
         </div>
         

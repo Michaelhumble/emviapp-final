@@ -1,32 +1,27 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Check, Crown, Zap, Star, Clock, Shield } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-
-interface PremiumPricingTableProps {
-  onPlanSelect: (plan: PricingPlan) => void;
-  selectedPlan?: string;
-  isFirstPost?: boolean;
-}
+import { Button } from '@/components/ui/button';
+import { Check, Star, Crown, Zap } from 'lucide-react';
 
 interface PricingPlan {
   id: string;
   name: string;
   price: number;
-  originalPrice?: number;
   duration: string;
   description: string;
   features: string[];
-  badge?: string;
-  badgeColor?: string;
+  tag?: string;
   popular?: boolean;
   exclusive?: boolean;
   spotsLeft?: number;
-  savings?: string;
+}
+
+interface PremiumPricingTableProps {
+  onPlanSelect?: (plan: PricingPlan) => void;
+  selectedPlan?: string;
+  isFirstPost?: boolean;
 }
 
 const PremiumPricingTable: React.FC<PremiumPricingTableProps> = ({
@@ -34,8 +29,6 @@ const PremiumPricingTable: React.FC<PremiumPricingTableProps> = ({
   selectedPlan,
   isFirstPost = false
 }) => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | '3months' | 'diamond'>('monthly');
-
   const plans: PricingPlan[] = [
     {
       id: 'standard',
@@ -44,32 +37,28 @@ const PremiumPricingTable: React.FC<PremiumPricingTableProps> = ({
       duration: 'month',
       description: 'Great for short-term posts',
       features: [
-        'Active for 30 days',
-        'Basic listing visibility',
-        'Contact form included',
-        'Mobile optimized',
-        'Basic support'
+        '30-day active listing',
+        'Basic visibility',
+        'Standard support',
+        'Mobile-optimized display'
       ]
     },
     {
       id: 'gold',
       name: 'Gold',
       price: 49.99,
-      originalPrice: 74.97,
       duration: '3 months',
       description: 'Save $25 — Most popular!',
-      features: [
-        'Active for 90 days',
-        'Priority listing placement',
-        'Enhanced visibility boost',
-        'Verified badge included',
-        'Premium support',
-        'Auto-renewal available'
-      ],
-      badge: 'Best Value',
-      badgeColor: 'bg-amber-500',
+      tag: 'Best Value',
       popular: true,
-      savings: 'Save $25'
+      features: [
+        '90-day active listing',
+        'Priority placement',
+        'Enhanced visibility',
+        'Priority support',
+        'Featured badge',
+        'Mobile + desktop optimization'
+      ]
     },
     {
       id: 'diamond',
@@ -77,245 +66,156 @@ const PremiumPricingTable: React.FC<PremiumPricingTableProps> = ({
       price: 999.99,
       duration: 'year',
       description: 'Only 2 left. Exclusive, bid or apply only.',
-      features: [
-        'Active for 365 days',
-        'Top placement guarantee',
-        'Exclusive Diamond badge',
-        'Priority customer matching',
-        'Dedicated account manager',
-        'Custom styling options',
-        'Advanced analytics'
-      ],
-      badge: 'Only 2 Left',
-      badgeColor: 'bg-purple-600',
+      tag: 'VIP',
       exclusive: true,
-      spotsLeft: 2
+      spotsLeft: 2,
+      features: [
+        '12-month premium listing',
+        'Top placement guaranteed',
+        'Exclusive VIP badge',
+        'Dedicated account manager',
+        'Priority customer support',
+        'Advanced analytics',
+        'Custom branding options',
+        'Invite/Bid only access'
+      ]
     }
   ];
 
-  const currentPlans = billingCycle === 'diamond' 
-    ? plans.filter(p => p.id === 'diamond')
-    : plans.filter(p => p.id !== 'diamond');
+  const handlePlanClick = (plan: PricingPlan) => {
+    if (onPlanSelect) {
+      onPlanSelect(plan);
+    }
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-8">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8">
       {/* Header Section */}
-      <div className="text-center mb-12">
-        <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-5xl font-bold font-playfair mb-4 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 bg-clip-text text-transparent"
-        >
-          Fast-Track Your Salon's Success
-        </motion.h2>
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-xl text-gray-600 mb-8"
-        >
-          Premium Listings That Overdeliver
-        </motion.p>
-
-        {/* Billing Toggle */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex justify-center mb-8"
-        >
-          <div className="bg-gray-100 p-1 rounded-full flex">
-            <button
-              onClick={() => setBillingCycle('monthly')}
-              className={cn(
-                'px-6 py-2 rounded-full font-medium transition-all',
-                billingCycle === 'monthly' 
-                  ? 'bg-white text-purple-600 shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-800'
-              )}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle('3months')}
-              className={cn(
-                'px-6 py-2 rounded-full font-medium transition-all relative',
-                billingCycle === '3months' 
-                  ? 'bg-white text-purple-600 shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-800'
-              )}
-            >
-              3 Months
-              <Badge className="absolute -top-2 -right-2 bg-green-500 text-white text-xs">
-                Save 33%
-              </Badge>
-            </button>
-            <button
-              onClick={() => setBillingCycle('diamond')}
-              className={cn(
-                'px-6 py-2 rounded-full font-medium transition-all relative',
-                billingCycle === 'diamond' 
-                  ? 'bg-white text-purple-600 shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-800'
-              )}
-            >
-              Diamond
-              <Badge className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs">
-                Exclusive
-              </Badge>
-            </button>
-          </div>
-        </motion.div>
+      <div className="text-center mb-8">
+        <h2 className="font-playfair text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Fast-Track Your Salon's Success — Premium Listings That Overdeliver
+        </h2>
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          Choose the perfect plan to showcase your opportunity and attract top talent faster
+        </p>
       </div>
 
       {/* First Post Free Banner */}
       {isFirstPost && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mb-8 text-center"
-        >
-          <div className="flex items-center justify-center gap-2 text-green-700">
-            <Star className="w-5 h-5 fill-current" />
-            <span className="font-semibold">First post is free (with card/business info required)</span>
-            <Star className="w-5 h-5 fill-current" />
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mb-8 text-center">
+          <div className="flex items-center justify-center mb-2">
+            <Star className="w-5 h-5 text-green-600 mr-2" />
+            <span className="font-semibold text-green-800">Your First Job Post is FREE!</span>
           </div>
-        </motion.div>
+          <p className="text-sm text-green-700">
+            Experience our premium features at no cost. Card required for verification only.
+          </p>
+        </div>
       )}
 
       {/* Pricing Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-        {currentPlans.map((plan, index) => (
-          <motion.div
+      <div className="grid md:grid-cols-3 gap-6 mb-8">
+        {plans.map((plan) => (
+          <Card 
             key={plan.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * index + 0.4 }}
-            className={cn(
-              'relative',
-              plan.popular && 'lg:scale-105'
-            )}
+            className={`relative cursor-pointer transition-all duration-300 hover:shadow-xl ${
+              plan.popular 
+                ? 'ring-2 ring-purple-500 shadow-lg scale-105' 
+                : plan.exclusive
+                ? 'ring-2 ring-amber-500 shadow-lg'
+                : 'hover:shadow-md'
+            } ${selectedPlan === plan.id ? 'ring-2 ring-blue-500' : ''}`}
+            onClick={() => handlePlanClick(plan)}
           >
-            <Card className={cn(
-              'relative overflow-hidden border-2 transition-all duration-300 hover:shadow-xl',
-              selectedPlan === plan.id 
-                ? 'border-purple-500 shadow-lg' 
-                : 'border-gray-200 hover:border-purple-300',
-              plan.popular && 'border-amber-400 shadow-lg',
-              plan.exclusive && 'border-purple-500 bg-gradient-to-br from-purple-50 to-indigo-50'
-            )}>
-              {/* Badge */}
-              {plan.badge && (
-                <div className={cn(
-                  'absolute top-0 right-0 px-3 py-1 text-white text-sm font-bold rounded-bl-lg',
-                  plan.badgeColor || 'bg-purple-600'
-                )}>
-                  {plan.badge}
+            {/* Popular/Tag Badge */}
+            {plan.tag && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                <Badge 
+                  className={`px-3 py-1 text-xs font-semibold ${
+                    plan.popular 
+                      ? 'bg-purple-600 text-white' 
+                      : plan.exclusive
+                      ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white'
+                      : 'bg-gray-600 text-white'
+                  }`}
+                >
+                  {plan.tag}
+                </Badge>
+              </div>
+            )}
+
+            <CardHeader className="text-center pb-4">
+              <div className="flex items-center justify-center mb-2">
+                {plan.exclusive && <Crown className="w-6 h-6 text-amber-500 mr-2" />}
+                {plan.popular && <Zap className="w-6 h-6 text-purple-500 mr-2" />}
+                <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
+              </div>
+              
+              <div className="mb-2">
+                <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                  ${plan.price}
+                </span>
+                <span className="text-gray-600 ml-1">/{plan.duration}</span>
+              </div>
+              
+              <p className="text-sm text-gray-600 font-medium">
+                {plan.description}
+              </p>
+
+              {/* Spots Left Indicator for Diamond */}
+              {plan.exclusive && plan.spotsLeft && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-2 mt-3">
+                  <p className="text-xs text-red-700 font-semibold">
+                    🔥 Only {plan.spotsLeft} spots remaining
+                  </p>
+                  <p className="text-xs text-red-600">
+                    1 spot reserved • High demand
+                  </p>
                 </div>
               )}
+            </CardHeader>
 
-              <CardHeader className="text-center pb-4">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  {plan.exclusive && <Crown className="w-6 h-6 text-purple-600" />}
-                  {plan.popular && <Zap className="w-6 h-6 text-amber-500" />}
-                  <h3 className="text-2xl font-bold font-playfair">{plan.name}</h3>
-                </div>
-                
-                <div className="mb-2">
-                  <div className="flex items-center justify-center gap-2">
-                    {plan.originalPrice && (
-                      <span className="text-2xl text-gray-400 line-through">
-                        ${plan.originalPrice}
-                      </span>
-                    )}
-                    <span className="text-4xl font-bold text-gray-900">
-                      ${plan.price}
-                    </span>
-                  </div>
-                  <span className="text-gray-600">/{plan.duration}</span>
-                </div>
+            <CardContent>
+              <ul className="space-y-3 mb-6">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start">
+                    <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
 
-                <p className="text-gray-600 font-medium">{plan.description}</p>
-
-                {plan.savings && (
-                  <Badge className="bg-green-100 text-green-800 border-green-200">
-                    {plan.savings}
-                  </Badge>
-                )}
-
-                {plan.spotsLeft && (
-                  <div className="flex items-center justify-center gap-1 text-red-600 font-semibold">
-                    <Clock className="w-4 h-4" />
-                    <span>Only {plan.spotsLeft} spots left</span>
-                  </div>
-                )}
-              </CardHeader>
-
-              <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  onClick={() => onPlanSelect(plan)}
-                  className={cn(
-                    'w-full py-3 font-semibold transition-all',
-                    plan.exclusive 
-                      ? 'bg-purple-600 hover:bg-purple-700' 
-                      : plan.popular
-                      ? 'bg-amber-500 hover:bg-amber-600'
-                      : 'bg-purple-600 hover:bg-purple-700'
-                  )}
-                  disabled={plan.exclusive && !plan.spotsLeft}
-                >
-                  {plan.exclusive 
-                    ? (plan.spotsLeft ? 'Apply for Diamond' : 'Waitlist Only')
-                    : 'Choose Plan'
-                  }
-                </Button>
-
-                {!plan.exclusive && (
-                  <p className="text-xs text-gray-500 text-center mt-2">
-                    Auto-renew enabled • Cancel anytime
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+              <Button 
+                className={`w-full ${
+                  plan.popular 
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                    : plan.exclusive
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white'
+                    : 'bg-gray-900 hover:bg-gray-800 text-white'
+                }`}
+                disabled={plan.exclusive} // Diamond is invite/bid only for now
+              >
+                {plan.exclusive ? 'Apply for Invitation' : `Select ${plan.name}`}
+              </Button>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {/* Bottom Notice */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="text-center"
-      >
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <div className="flex items-center justify-center gap-2 text-blue-700 mb-2">
-            <Shield className="w-5 h-5" />
-            <span className="font-semibold">All paid listings include auto-verification</span>
-          </div>
-          <p className="text-sm text-blue-600">
-            Get verified badge, priority placement, and enhanced visibility instantly
-          </p>
+      {/* Footer Information */}
+      <div className="text-center text-sm text-gray-600 space-y-2">
+        <p className="font-medium">
+          First job post is always <span className="text-green-600 font-semibold">FREE</span> (requires card/business info).
+        </p>
+        <p>
+          All paid plans renew automatically, cancel anytime. 
+          <span className="font-medium text-amber-600 ml-1">Diamond: Invite/Bid only.</span>
+        </p>
+        <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
+          <Check className="w-4 h-4 text-green-500 mr-1" />
+          <span>Secure payment • Cancel anytime • 30-day guarantee</span>
         </div>
-      </motion.div>
-
-      {/* Test Environment Notice */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 bg-yellow-100 border border-yellow-300 rounded-lg p-3 text-sm">
-          <div className="font-semibold text-yellow-800">TEST MODE</div>
-          <div className="text-yellow-700">Pricing display in staging</div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

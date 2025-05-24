@@ -14,12 +14,23 @@ export const enablePremiumPricingTest = () => {
   window.location.search = '?premium_pricing=true';
 };
 
+export const enableVisualReview = () => {
+  localStorage.setItem('emvi_premium_pricing_test', 'true');
+  localStorage.setItem('emvi_pricing_visual_review', 'true');
+  console.log('🎨 Visual review mode enabled - Premium pricing display active');
+  const url = new URL(window.location.href);
+  url.searchParams.set('pricing_review', 'true');
+  window.history.replaceState({}, '', url.toString());
+};
+
 export const disablePremiumPricingTest = () => {
   localStorage.removeItem('emvi_premium_pricing_test');
+  localStorage.removeItem('emvi_pricing_visual_review');
   console.log('❌ Premium pricing test mode disabled');
   // Remove query parameter
   const url = new URL(window.location.href);
   url.searchParams.delete('premium_pricing');
+  url.searchParams.delete('pricing_review');
   window.history.replaceState({}, '', url.toString());
 };
 
@@ -30,6 +41,16 @@ export const rollbackToOriginalPricing = () => {
 };
 
 export const testScenarios: TestScenario[] = [
+  {
+    name: 'Visual Review Mode',
+    description: 'Enable premium pricing display for design review only',
+    setup: () => {
+      enableVisualReview();
+    },
+    verify: () => {
+      return document.querySelector('[data-testid="premium-pricing-table"]') !== null;
+    }
+  },
   {
     name: 'First Post Free',
     description: 'Verify first post shows free banner and appropriate messaging',
@@ -47,17 +68,31 @@ export const testScenarios: TestScenario[] = [
       // This would typically involve setting up test data
     },
     verify: () => {
-      return document.querySelector('[data-testid="diamond-scarcity"]')?.textContent?.includes('Only 2 left') || false;
+      return document.querySelector('[data-testid="diamond-scarcity"]')?.textContent?.includes('Only 2') || false;
     }
   },
   {
-    name: 'Price Calculation',
-    description: 'Verify pricing calculations match expected values',
+    name: 'FOMO Elements',
+    description: 'Verify FOMO badges and messaging appear correctly',
     setup: () => {},
     verify: () => {
-      // Check if standard plan shows $24.99
+      const bestValue = document.querySelector('[data-testid="best-value-badge"]');
+      const vipBadge = document.querySelector('[data-testid="vip-badge"]');
+      return (bestValue !== null) && (vipBadge !== null);
+    }
+  },
+  {
+    name: 'Price Display',
+    description: 'Verify pricing displays match specifications',
+    setup: () => {},
+    verify: () => {
       const standardPrice = document.querySelector('[data-testid="standard-price"]');
-      return standardPrice?.textContent?.includes('24.99') || false;
+      const goldPrice = document.querySelector('[data-testid="gold-price"]');
+      const diamondPrice = document.querySelector('[data-testid="diamond-price"]');
+      
+      return standardPrice?.textContent?.includes('24.99') && 
+             goldPrice?.textContent?.includes('49.99') && 
+             diamondPrice?.textContent?.includes('999.99') || false;
     }
   }
 ];
@@ -91,6 +126,7 @@ export const runAllTests = () => {
 if (typeof window !== 'undefined') {
   (window as any).EmviPricingTests = {
     enable: enablePremiumPricingTest,
+    visualReview: enableVisualReview,
     disable: disablePremiumPricingTest,
     rollback: rollbackToOriginalPricing,
     runTest: runTestScenario,
