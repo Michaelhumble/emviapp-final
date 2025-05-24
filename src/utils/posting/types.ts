@@ -26,7 +26,7 @@ export interface PricingOptions {
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
-export type JobPricingTier = 'standard' | 'premium' | 'gold' | 'diamond' | 'free';
+export type JobPricingTier = 'standard' | 'premium' | 'gold' | 'diamond' | 'free' | 'featured' | 'starter' | 'expired';
 
 export interface JobPricingOption {
   id: string;
