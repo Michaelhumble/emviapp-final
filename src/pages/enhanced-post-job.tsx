@@ -25,6 +25,9 @@ const EnhancedPostJob = () => {
     setSelectedTemplate(template);
     setFormInitialValues(prefillData);
     
+    // Log the prefill data for debugging
+    console.log('Prefill data for industry:', prefillData);
+    
     setCurrentStep('form');
   };
 
@@ -68,10 +71,7 @@ const EnhancedPostJob = () => {
               </button>
             </div>
             
-            <EnhancedJobForm 
-              onSubmit={handleFormSubmit}
-              initialValues={formInitialValues}
-            />
+            <EnhancedJobForm />
           </div>
         )}
         
