@@ -68,7 +68,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control }) => {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Employment Type</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Select employment type" />
@@ -96,6 +96,24 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = ({ control }) => {
               <Textarea 
                 placeholder="Describe the position, responsibilities, and requirements..."
                 className="min-h-[100px]"
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="vietnameseDescription"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Job Description (Vietnamese)</FormLabel>
+            <FormControl>
+              <Textarea 
+                placeholder="Mô tả công việc bằng tiếng Việt..."
+                className="min-h-[80px]"
                 {...field} 
               />
             </FormControl>

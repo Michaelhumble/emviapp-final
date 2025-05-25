@@ -1,235 +1,111 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
+import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
+import RequirementsSection from '@/components/posting/sections/RequirementsSection';
+import CompensationSection from '@/components/posting/sections/CompensationSection';
+import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
 
-const jobFormSchema = z.object({
-  title: z.string().min(1, 'Job title is required'),
-  company: z.string().min(1, 'Company name is required'),
-  location: z.string().min(1, 'Location is required'),
-  employmentType: z.string().min(1, 'Employment type is required'),
-  description: z.string().min(1, 'Job description is required'),
-  requirements: z.array(z.string()).optional(),
-  benefits: z.array(z.string()).optional(),
-  salary: z.string().optional(),
-  compensationType: z.string().optional(),
+const enhancedJobFormSchema = z.object({
+  title: z.string().min(1, "Job title is required"),
+  salonName: z.string().min(1, "Salon name is required"),
+  location: z.string().min(1, "Location is required"),
+  employmentType: z.string().min(1, "Employment type is required"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  vietnameseDescription: z.string().optional(),
+  requirements: z.array(z.string()).default([]),
+  benefits: z.array(z.string()).default([]),
+  compensationType: z.string().default("hourly"),
+  compensationDetails: z.string().optional(),
+  contactName: z.string().optional(),
+  contactPhone: z.string().optional(),
+  contactEmail: z.string().optional(),
+  contactNotes: z.string().optional(),
 });
 
-type JobFormData = z.infer<typeof jobFormSchema>;
+type EnhancedJobFormValues = z.infer<typeof enhancedJobFormSchema>;
 
 interface EnhancedJobFormProps {
-  initialValues?: Partial<JobFormData>;
-  onSubmit: (data: JobFormData) => void;
+  initialValues?: Partial<EnhancedJobFormValues>;
+  onSubmit: (data: EnhancedJobFormValues) => void;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubmit }) => {
-  console.log('🎯 EnhancedJobForm rendered with initialValues:', initialValues);
-  console.log('📋 Initial values keys:', initialValues ? Object.keys(initialValues) : 'No initial values');
+  console.log('🎯 EnhancedJobForm received initialValues:', initialValues);
   
-  const form = useForm<JobFormData>({
-    resolver: zodResolver(jobFormSchema),
+  const form = useForm<EnhancedJobFormValues>({
+    resolver: zodResolver(enhancedJobFormSchema),
     defaultValues: {
-      title: initialValues?.title || '',
-      company: initialValues?.company || '',
-      location: initialValues?.location || '',
-      employmentType: initialValues?.employmentType || 'full-time',
-      description: initialValues?.description || '',
-      salary: initialValues?.salary || '',
+      title: '',
+      salonName: '',
+      location: '',
+      employmentType: '',
+      description: '',
+      vietnameseDescription: '',
+      requirements: [],
+      benefits: [],
       compensationType: 'hourly',
-      requirements: initialValues?.requirements || [],
-      benefits: initialValues?.benefits || [],
-    },
+      compensationDetails: '',
+      contactName: '',
+      contactPhone: '',
+      contactEmail: '',
+      contactNotes: '',
+      ...initialValues
+    }
   });
 
-  console.log('✅ Form default values set:', form.getValues());
+  // Update form values when initialValues change
+  useEffect(() => {
+    if (initialValues) {
+      console.log('🔄 Updating form with initialValues:', initialValues);
+      
+      // Reset form with new values
+      form.reset({
+        title: initialValues.title || '',
+        salonName: initialValues.company || initialValues.salonName || '',
+        location: initialValues.location || '',
+        employmentType: initialValues.employmentType || '',
+        description: initialValues.description || '',
+        vietnameseDescription: initialValues.vietnameseDescription || '',
+        requirements: Array.isArray(initialValues.requirements) ? initialValues.requirements : [],
+        benefits: Array.isArray(initialValues.benefits) ? initialValues.benefits : [],
+        compensationType: initialValues.compensationType || 'hourly',
+        compensationDetails: initialValues.salary || initialValues.compensationDetails || '',
+        contactName: initialValues.contactName || '',
+        contactPhone: initialValues.contactPhone || '',
+        contactEmail: initialValues.contactEmail || '',
+        contactNotes: initialValues.contactNotes || '',
+      });
+      
+      console.log('✅ Form reset complete. Current values:', form.getValues());
+    }
+  }, [initialValues, form]);
 
-  const handleSubmit = (data: JobFormData) => {
-    console.log('📤 Form submission data:', data);
+  const handleSubmit = (data: EnhancedJobFormValues) => {
+    console.log('📤 Form submitted with data:', data);
     onSubmit(data);
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-playfair">Job Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Job Title</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="e.g., Senior Nail Technician" 
-                          {...field}
-                          className="bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="company"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company/Salon Name</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Your salon name" 
-                          {...field}
-                          className="bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Location</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="City, State" 
-                          {...field}
-                          className="bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="employmentType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Employment Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="bg-white">
-                            <SelectValue placeholder="Select employment type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="full-time">Full-time</SelectItem>
-                          <SelectItem value="part-time">Part-time</SelectItem>
-                          <SelectItem value="contract">Contract</SelectItem>
-                          <SelectItem value="temporary">Temporary</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="compensationType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Compensation Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="bg-white">
-                            <SelectValue placeholder="Select compensation type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="hourly">Hourly</SelectItem>
-                          <SelectItem value="salary">Salary</SelectItem>
-                          <SelectItem value="commission">Commission</SelectItem>
-                          <SelectItem value="hourly-commission">Hourly + Commission</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="salary"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Compensation Details</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="e.g., $15-20/hour, 40-60% commission" 
-                          {...field}
-                          className="bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Description (English)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe the position, responsibilities, requirements, and what makes your salon special..."
-                        className="min-h-[150px] bg-white"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Benefits & Perks</h3>
-                <div className="border rounded-lg p-4 bg-gray-50">
-                  <Input 
-                    placeholder="Add a benefit (e.g. Health insurance, Paid vacation)"
-                    className="bg-white"
-                  />
-                  <Button type="button" variant="outline" className="mt-2">
-                    Add
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-                  Continue to Pricing
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+    <div className="max-w-4xl mx-auto p-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <JobDetailsSection control={form.control} />
+          <RequirementsSection form={form} />
+          <CompensationSection control={form.control} />
+          <ContactInfoSection control={form.control} />
+          
+          <div className="flex justify-end pt-6">
+            <Button type="submit" className="px-8">
+              Continue to Pricing
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 };
