@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,6 +29,18 @@ interface EnhancedJobFormProps {
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubmit }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Debug logging for initialValues
+  useEffect(() => {
+    console.log('🟢 EnhancedJobForm received initialValues:', initialValues);
+    console.log('🟢 initialValues type:', typeof initialValues);
+    console.log('🟢 initialValues keys:', initialValues ? Object.keys(initialValues) : 'none');
+    if (initialValues) {
+      Object.entries(initialValues).forEach(([key, value]) => {
+        console.log(`🟢 ${key}:`, value);
+      });
+    }
+  }, [initialValues]);
+  
   const form = useForm<EnhancedJobFormData>({
     resolver: zodResolver(enhancedJobSchema),
     defaultValues: {
@@ -41,6 +53,15 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       salary: initialValues?.salary || '',
     },
   });
+
+  // Debug logging for form default values
+  useEffect(() => {
+    const defaultValues = form.getValues();
+    console.log('🟡 Form defaultValues after initialization:', defaultValues);
+    Object.entries(defaultValues).forEach(([key, value]) => {
+      console.log(`🟡 Form ${key}:`, value);
+    });
+  }, [form]);
 
   const handleSubmit = async (data: EnhancedJobFormData) => {
     setIsSubmitting(true);

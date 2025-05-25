@@ -16,17 +16,25 @@ const EnhancedPostJob = () => {
   const [formInitialValues, setFormInitialValues] = useState<any>(null);
 
   const handleTemplateSelect = (template: any) => {
-    console.log('Template selected:', template);
+    console.log('🎯 Template selected in handleTemplateSelect:', template);
+    
+    // Get the template ID - it could be the template itself if it's a string, or template.id
+    const templateId = typeof template === 'string' ? template : (template.id || template.title || '');
+    console.log('🔍 Template ID extracted:', templateId);
     
     // Get prefill data based on template selection
-    const prefillData = getJobPrefillByIndustry(template.id || template.title || '');
+    const prefillData = getJobPrefillByIndustry(templateId);
+    console.log('📋 Prefill data retrieved:', prefillData);
+    console.log('📋 Prefill data keys:', Object.keys(prefillData));
+    console.log('📋 Prefill data values:', Object.values(prefillData));
     
     // Store the selected template and prefill data
     setSelectedTemplate(template);
     setFormInitialValues(prefillData);
     
-    // Log the prefill data for debugging
-    console.log('Prefill data for industry:', prefillData);
+    // Additional verification logs
+    console.log('✅ formInitialValues will be set to:', prefillData);
+    console.log('✅ Moving to form step with prefill data');
     
     setCurrentStep('form');
   };
@@ -77,6 +85,17 @@ const EnhancedPostJob = () => {
               >
                 ← Back to Templates
               </button>
+            </div>
+            
+            <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                🔍 Debug: initialValues passed to form: {formInitialValues ? 'YES' : 'NO'}
+              </p>
+              {formInitialValues && (
+                <pre className="text-xs mt-2 overflow-auto">
+                  {JSON.stringify(formInitialValues, null, 2)}
+                </pre>
+              )}
             </div>
             
             <EnhancedJobForm 
