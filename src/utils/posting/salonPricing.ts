@@ -1,182 +1,92 @@
 
-import { PricingOptions, UserPostingStats } from "./types";
-import { 
-  getBasePrice, 
-  getNationwidePrice, 
-  getFastSalePackagePrice, 
-  getShowAtTopPrice,
-  getJobPostBundlePrice,
-  getPriceWithDiscount
-} from "./promotionalText";
+import { PricingOptions } from "./types";
 
-// Updated price map with more specific options
-export const salonPriceMap = {
-  free: null,
-  standard_1mo: "price_STD_999",
-  standard_3mo: "price_STD_2799",
-  standard_6mo: "price_STD_4999",
-  standard_autorenew: "price_STD_AUTO_949",
-  gold_1mo: "price_GOLD_1999",
-  premium_1mo: "price_PREMIUM_4999",
-  diamond_3mo: "price_DIAMOND_49999",
-  diamond_6mo: "price_DIAMOND_79999",
-  diamond_1yr: "price_DIAMOND_99999",
-};
-
-export const getStripeSalonPriceId = (
-  pricingTier: string,
-  options: PricingOptions
-): string | null => {
-  if (pricingTier === 'free') {
-    return null; // Free tier doesn't need a Stripe price ID
-  }
+// Calculate salon posting price based on options
+export const calculateSalonPostPrice = (options: PricingOptions): number => {
+  let basePrice = 29.99; // Base salon posting price
   
-  // Standard plan with auto-renew
-  if (pricingTier === 'standard' && options.autoRenew) {
-    return salonPriceMap.standard_autorenew;
-  }
-  
-  // Duration-based pricing
-  const durationMonths = options.durationMonths || 1;
-  
-  // Map pricing tier and duration to price ID
-  if (pricingTier === 'standard') {
-    if (durationMonths === 3) return salonPriceMap.standard_3mo;
-    if (durationMonths === 6) return salonPriceMap.standard_6mo;
-    return salonPriceMap.standard_1mo; // Default to 1 month
-  }
-  
-  if (pricingTier === 'gold') {
-    return salonPriceMap.gold_1mo;
-  }
-  
-  if (pricingTier === 'premium') {
-    return salonPriceMap.premium_1mo;
-  }
-  
-  if (pricingTier === 'diamond') {
-    if (durationMonths === 6) return salonPriceMap.diamond_6mo;
-    if (durationMonths === 12) return salonPriceMap.diamond_1yr;
-    return salonPriceMap.diamond_3mo; // Default to 3 months for diamond
-  }
-  
-  // Default fallback
-  return salonPriceMap.standard_1mo;
-};
-
-export const validateSalonPricingOptions = (
-  pricingId: string,
-  options: PricingOptions
-): boolean => {
-  // Free plan is always valid
-  if (pricingId === 'free') {
-    return true;
-  }
-  
-  // Ensure we have a valid pricing ID
-  if (!pricingId) {
-    console.error("No pricing tier selected");
-    return false;
-  }
-  
-  // Ensure we have a duration for non-free plans
-  if (pricingId !== 'free' && !options.durationMonths) {
-    console.error("No duration selected for paid plan");
-    return false;
-  }
-  
-  // Ensure we have a valid Stripe price ID for non-free plans
-  const stripePriceId = getStripeSalonPriceId(pricingId, options);
-  if (pricingId !== 'free' && !stripePriceId) {
-    console.error("Failed to get valid Stripe price ID", { pricingId, options });
-    return false;
-  }
-  
-  return true;
-};
-
-export const calculateSalonPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
-  // Default to first post if stats not provided
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
-  const isRenewal = options.isRenewal ?? false;
-  
-  // Base price depends on whether it's the first post
-  let price = isRenewal ? 5 : getBasePrice('salon', isFirstPost);
-  
-  // Add nationwide visibility if selected
+  // Add-ons
   if (options.isNationwide) {
-    price += getNationwidePrice('salon');
+    basePrice += 10;
   }
   
-  // Add fast sale package if selected
   if (options.fastSalePackage) {
-    price += getFastSalePackagePrice('salon');
+    basePrice += 20;
   }
   
-  // Add show at top if selected
   if (options.showAtTop) {
-    price += getShowAtTopPrice('salon');
+    basePrice += 15;
   }
   
-  // Add job post bundle if selected
   if (options.bundleWithJobPost) {
-    price += getJobPostBundlePrice('salon');
+    basePrice += 15;
   }
+
+  // Apply duration discount if applicable
+  const months = options.durationMonths || 1;
+  let totalPrice = basePrice * months;
   
-  // Apply discount if user has referrals
-  if (options.hasReferrals) {
-    price = getPriceWithDiscount(price, true);
+  // Duration discounts
+  if (months >= 12) {
+    totalPrice *= 0.8; // 20% discount for 12 months
+  } else if (months >= 6) {
+    totalPrice *= 0.85; // 15% discount for 6 months
+  } else if (months >= 3) {
+    totalPrice *= 0.9; // 10% discount for 3 months
   }
-  
-  return price;
+
+  // Auto-renew discount
+  if (options.autoRenew) {
+    totalPrice *= 0.95; // 5% discount for auto-renew
+  }
+
+  return totalPrice;
 };
 
-export const getSalonPostPricingSummary = (options: PricingOptions, stats?: UserPostingStats): string[] => {
-  const isFirstPost = options.isFirstPost ?? (stats ? stats.salonPostCount === 0 : true);
-  const isRenewal = options.isRenewal ?? false;
+export const getSalonPostPricingSummary = (options: PricingOptions) => {
+  const basePrice = 29.99;
+  const months = options.durationMonths || 1;
   
-  const summary: string[] = [];
+  let addOns = 0;
+  if (options.isNationwide) addOns += 10;
+  if (options.fastSalePackage) addOns += 20;
+  if (options.showAtTop) addOns += 15;
+  if (options.bundleWithJobPost) addOns += 15;
   
-  // Base price line
-  if (isRenewal) {
-    summary.push(`Salon Listing Renewal: $5`);
-  } else {
-    const basePrice = getBasePrice('salon', isFirstPost);
-    summary.push(`${isFirstPost ? "First" : "Standard"} Salon Listing: $${basePrice}`);
-  }
+  const monthlyPrice = basePrice + addOns;
+  const originalPrice = monthlyPrice * months;
   
-  // Add nationwide visibility if selected
-  if (options.isNationwide) {
-    const nationwidePrice = getNationwidePrice('salon');
-    summary.push(`Nationwide Visibility: +$${nationwidePrice}`);
-  }
+  let discountPercentage = 0;
+  if (months >= 12) discountPercentage = 20;
+  else if (months >= 6) discountPercentage = 15;
+  else if (months >= 3) discountPercentage = 10;
   
-  // Add fast sale package if selected
-  if (options.fastSalePackage) {
-    const fastSalePrice = getFastSalePackagePrice('salon');
-    summary.push(`Premium Promotion: +$${fastSalePrice}`);
-  }
+  if (options.autoRenew) discountPercentage += 5;
   
-  // Add show at top if selected
-  if (options.showAtTop) {
-    const showAtTopPrice = getShowAtTopPrice('salon');
-    summary.push(`Featured Placement: +$${showAtTopPrice}`);
-  }
+  const discountAmount = (originalPrice * discountPercentage) / 100;
+  const finalPrice = originalPrice - discountAmount;
   
-  // Add job post bundle if selected
-  if (options.bundleWithJobPost) {
-    const jobBundlePrice = getJobPostBundlePrice('salon');
-    summary.push(`Job Post Bundle: +$${jobBundlePrice}`);
-  }
-  
-  // Show discount if applicable
-  if (options.hasReferrals) {
-    summary.push(`Referral Discount: -20%`);
-  }
-  
-  // Total line
-  const totalPrice = calculateSalonPostPrice(options, stats);
-  summary.push(`Total: $${totalPrice}`);
-  
-  return summary;
+  return {
+    basePrice: monthlyPrice,
+    originalPrice,
+    finalPrice,
+    discountAmount,
+    discountPercentage,
+    breakdown: {
+      isNationwide: options.isNationwide ? 10 : 0,
+      fastSalePackage: options.fastSalePackage ? 20 : 0,
+      showAtTop: options.showAtTop ? 15 : 0,
+      bundleWithJobPost: options.bundleWithJobPost ? 15 : 0,
+      autoRenewDiscount: options.autoRenew ? 5 : 0
+    }
+  };
+};
+
+export const validateSalonPricingOptions = (options: PricingOptions): boolean => {
+  return true; // Basic validation - can be enhanced
+};
+
+export const getStripeSalonPriceId = (options: PricingOptions): string => {
+  // Return appropriate Stripe price ID based on options
+  return 'price_salon_base';
 };

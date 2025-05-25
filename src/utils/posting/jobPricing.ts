@@ -1,5 +1,5 @@
 
-import { JobPricingOption } from './types';
+import { JobPricingOption, PricingOptions, UserPostingStats } from './types';
 
 export const jobPricingOptions: JobPricingOption[] = [
   {
@@ -129,4 +129,71 @@ export const calculateDiscountedPrice = (basePrice: number, months: number): { o
     finalPrice, 
     discountPercentage
   };
+};
+
+// Export all required functions for compatibility
+export const calculateFinalPrice = (basePrice: number, options: PricingOptions): number => {
+  const months = options.durationMonths || 1;
+  const { finalPrice } = calculateDiscountedPrice(basePrice, months);
+  return finalPrice;
+};
+
+export const calculateJobPostPrice = (options: PricingOptions, stats?: UserPostingStats): number => {
+  const tierOption = jobPricingOptions.find(opt => opt.tier === options.selectedPricingTier);
+  if (!tierOption) return 0;
+  
+  const months = options.durationMonths || 1;
+  const { finalPrice } = calculateDiscountedPrice(tierOption.price, months);
+  return finalPrice;
+};
+
+export const getJobPrice = (options: PricingOptions): any => {
+  const tierOption = jobPricingOptions.find(opt => opt.tier === options.selectedPricingTier);
+  if (!tierOption) {
+    return {
+      basePrice: 0,
+      originalPrice: 0,
+      finalPrice: 0,
+      discountAmount: 0,
+      discountPercentage: 0
+    };
+  }
+  
+  const months = options.durationMonths || 1;
+  const { originalPrice, finalPrice, discountPercentage } = calculateDiscountedPrice(tierOption.price, months);
+  
+  return {
+    basePrice: tierOption.price,
+    originalPrice,
+    finalPrice,
+    discountAmount: originalPrice - finalPrice,
+    discountPercentage
+  };
+};
+
+export const getJobPostPricingSummary = (options: PricingOptions): any => {
+  return getJobPrice(options);
+};
+
+export const validatePricingOptions = (options: PricingOptions): boolean => {
+  return !!options.selectedPricingTier && jobPricingOptions.some(opt => opt.tier === options.selectedPricingTier);
+};
+
+export const getStripePriceId = (tier: string): string => {
+  // Return mock price IDs for now
+  const priceIds: Record<string, string> = {
+    free: 'price_free',
+    gold: 'price_gold',
+    premium: 'price_premium',
+    diamond: 'price_diamond'
+  };
+  return priceIds[tier] || '';
+};
+
+export const getAmountInCents = (amount: number): number => {
+  return Math.round(amount * 100);
+};
+
+export const isSubscriptionPlan = (tier: string): boolean => {
+  return tier !== 'free';
 };

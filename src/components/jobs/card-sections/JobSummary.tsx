@@ -55,10 +55,6 @@ export const JobSummary = ({
         badgeClass = "bg-gray-100 text-gray-800";
         badgeText = "Free";
         break;
-      case "standard":
-        badgeClass = "bg-blue-100 text-blue-800";
-        badgeText = "Standard";
-        break;
       case "premium":
         badgeClass = "bg-purple-100 text-purple-800";
         badgeText = "Premium";

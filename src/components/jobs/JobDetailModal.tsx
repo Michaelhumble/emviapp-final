@@ -21,7 +21,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, isOpen, onC
   // Create default pricing options based on the job's pricing tier
   // Ensure all required fields are defined with fallbacks
   const defaultPricingOptions: PricingOptions = {
-    selectedPricingTier: job.pricingTier as JobPricingTier || 'standard',
+    selectedPricingTier: (job.pricingTier as JobPricingTier) || 'free',
     durationMonths: job.durationMonths || 1,
     autoRenew: job.autoRenew !== undefined ? job.autoRenew : true,
     isFirstPost: job.isFirstPost !== undefined ? job.isFirstPost : false,

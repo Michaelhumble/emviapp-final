@@ -1,11 +1,11 @@
 
 export type { 
-  UserPostingStats,
   PricingOptions,
   PostType,
   JobPricingTier,
   IndustryType,
-  JobPricingOption
+  JobPricingOption,
+  UserPostingStats
 } from './types';
 
 export { 
