@@ -102,23 +102,6 @@ const EnhancedPostJob = () => {
               </button>
             </div>
             
-            <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
-                🔍 Debug: initialValues passed to form: {formInitialValues ? 'YES' : 'NO'}
-              </p>
-              {formInitialValues && (
-                <div className="text-xs mt-2">
-                  <p><strong>Title:</strong> {formInitialValues.title || 'EMPTY'}</p>
-                  <p><strong>Company:</strong> {formInitialValues.company || 'EMPTY'}</p>
-                  <p><strong>Description:</strong> {formInitialValues.description ? `${formInitialValues.description.substring(0, 100)}...` : 'EMPTY'}</p>
-                  <p><strong>Requirements:</strong> {formInitialValues.requirements?.length || 0} items</p>
-                  <p><strong>Benefits:</strong> {formInitialValues.benefits?.length || 0} items</p>
-                  <p><strong>Salary:</strong> {formInitialValues.salary || 'EMPTY'}</p>
-                  <p><strong>Location:</strong> {formInitialValues.location || 'EMPTY'}</p>
-                </div>
-              )}
-            </div>
-            
             <EnhancedJobForm 
               initialValues={formInitialValues}
               onSubmit={handleFormSubmit}
