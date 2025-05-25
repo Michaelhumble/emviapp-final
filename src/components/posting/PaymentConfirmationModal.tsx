@@ -63,9 +63,9 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
                   vietnamese: 'Gói'
                 })}: </span>
                 <span className="font-medium">
-                  {options.selectedPricingTier === 'standard' ? t({
-                    english: 'Standard', 
-                    vietnamese: 'Tiêu chuẩn'
+                  {options.selectedPricingTier === 'free' ? t({
+                    english: 'Free', 
+                    vietnamese: 'Miễn phí'
                   }) :
                    options.selectedPricingTier === 'gold' ? t({
                      english: 'Gold Featured', 
@@ -80,8 +80,8 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
                      vietnamese: 'Nổi bật Kim cương'
                    }) : 
                    t({
-                     english: 'Free', 
-                     vietnamese: 'Miễn phí'
+                     english: 'Unknown Plan', 
+                     vietnamese: 'Gói không xác định'
                    })}
                 </span>
               </div>

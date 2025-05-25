@@ -1,238 +1,188 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Check, Star, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { JobPricingOption, JobPricingTier, PricingOptions } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { JobPricingOption, JobPricingTier } from '@/utils/posting/types';
-import { usePricing } from '@/context/pricing/PricingProvider';
+import { Check, Crown, Star, Diamond } from 'lucide-react';
 
-// Include a jobPricingOptions array if it doesn't exist elsewhere
-const jobPricingOptions: JobPricingOption[] = [
+const pricingTiers: JobPricingOption[] = [
   {
     id: 'free',
-    name: 'Free',
+    name: 'Free Listing',
     price: 0,
-    description: 'Basic listing for first-time users',
-    vietnameseDescription: 'Đăng tin cơ bản miễn phí cho người dùng lần đầu',
+    duration: 30,
+    description: 'Basic visibility in search results',
+    vietnameseDescription: 'Hiển thị cơ bản trong kết quả tìm kiếm',
     tier: 'free',
-    features: ['1 month visibility', 'Basic listing'],
+    features: [
+      '30-day listing duration',
+      'Basic search visibility',
+      'Standard listing placement',
+      'Contact information display'
+    ],
     hidden: false,
     isFirstPost: true,
-    tag: 'First Post Only'
-  },
-  {
-    id: 'standard',
-    name: 'Standard',
-    price: 20,
-    description: 'Essential visibility for your job post',
-    vietnameseDescription: 'Khả năng hiển thị cần thiết cho bài đăng việc làm của bạn',
-    tier: 'standard',
-    features: ['30-day listing', 'Email support', 'Appears in search results'],
-    popular: false,
-    hidden: false
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: 30,
-    wasPrice: 35,
-    description: 'Stand out with premium placement and visibility',
-    vietnameseDescription: 'Nổi bật với vị trí và khả năng hiển thị cao cấp',
-    tier: 'premium',
-    features: ['Featured in search results', 'Priority customer support', 'Analytics dashboard', 'Social media boost'],
-    popular: true,
-    hidden: false,
-    tag: 'Most Popular',
-    upsellText: 'Get up to 5× more applicants!',
-    limitedSpots: '7 spots left today'
+    tag: 'Always Free'
   },
   {
     id: 'gold',
-    name: 'Gold',
-    price: 50,
-    wasPrice: 60,
-    description: 'Maximum visibility with premium placement',
-    vietnameseDescription: 'Khả năng hiển thị tối đa với vị trí cao cấp',
+    name: 'Gold Featured Listing',
+    price: 19.99,
+    wasPrice: 24.99,
+    duration: 30,
+    description: 'Enhanced visibility with featured placement',
+    vietnameseDescription: 'Tăng khả năng hiển thị với vị trí nổi bật',
     tier: 'gold',
-    features: ['Top-of-page listing', 'Featured badge', 'Urgent hiring badge', 'SMS notifications', 'Dedicated account manager'],
+    features: [
+      '30-day featured placement',
+      'Priority in search results',
+      'Gold badge highlight',
+      'Enhanced listing display',
+      'Featured section placement'
+    ],
+    popular: true,
+    hidden: false,
+    tag: 'Early Adopter',
+    upsellText: 'Most Popular',
+    limitedSpots: 'Limited to 5 spots per industry'
+  },
+  {
+    id: 'premium',
+    name: 'Premium Listing',
+    price: 39.99,
+    wasPrice: 49.99,
+    duration: 30,
+    description: 'Maximum exposure with premium features',
+    vietnameseDescription: 'Tiếp xúc tối đa với các tính năng cao cấp',
+    tier: 'premium',
+    features: [
+      '30-day premium placement',
+      'Top placement above Gold',
+      'Premium badge & styling',
+      'Priority customer support',
+      'Advanced analytics',
+      'Social media promotion'
+    ],
     popular: false,
     hidden: false,
-    tag: 'Best Value',
-    upsellText: 'Preferred by top salons',
-    limitedSpots: '3 spots left today'
+    tag: 'Recommended',
+    upsellText: 'Best Value',
+    limitedSpots: 'Limited to 5 spots per industry'
   },
   {
     id: 'diamond',
-    name: 'Diamond',
-    price: 75,
-    description: 'Elite placement for urgent hiring needs',
-    vietnameseDescription: 'Vị trí ưu tiên cao nhất cho nhu cầu tuyển dụng khẩn cấp',
+    name: 'Diamond Exclusive',
+    price: 99.99,
+    duration: 30,
+    description: 'Top Diamond Featured - Invite/Bid Only',
+    vietnameseDescription: 'Top Diamond Featured - Chỉ theo lời mời/đấu giá',
     tier: 'diamond',
-    features: ['Premium design', 'Top of all listings', 'Highlighted listing', 'Social media promotion', 'Homepage feature'],
+    features: [
+      '30-day top diamond placement',
+      'Highest priority placement',
+      'Diamond exclusive badge',
+      'Personal account manager',
+      'Custom listing design',
+      'Industry spotlight feature'
+    ],
     popular: false,
     hidden: false,
-    tag: 'Elite',
-    upsellText: 'Guaranteed results'
+    tag: 'Invite Only',
+    upsellText: 'Exclusive Access'
   }
 ];
 
 interface PricingTierSelectorProps {
-  onSelected?: (tier: JobPricingTier) => void;
-  showFree?: boolean;
-  isFirstPost?: boolean;
+  selectedTier: JobPricingTier;
+  onTierSelect: (tier: JobPricingTier) => void;
+  options: PricingOptions;
 }
 
-const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({ 
-  onSelected, 
-  showFree = true,
-  isFirstPost = true
+const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
+  selectedTier,
+  onTierSelect,
+  options
 }) => {
   const { t } = useTranslation();
-  const { pricingOptions, setPricingOptions } = usePricing();
-  
-  // Filter options based on the showFree prop and isFirstPost
-  const displayOptions = jobPricingOptions.filter(option => {
-    // Hide the free tier unless showFree is true AND isFirstPost is true
-    if (option.tier === 'free') {
-      return showFree && isFirstPost;
-    }
-    // Hide options that are marked as hidden
-    return !option.hidden;
-  });
 
-  const handleOptionChange = (value: string) => {
-    const selectedTier = value as JobPricingTier;
-    setPricingOptions(prev => ({
-      ...prev,
-      selectedPricingTier: selectedTier
-    }));
-    
-    if (onSelected) {
-      onSelected(selectedTier);
+  const getTierIcon = (tier: JobPricingTier) => {
+    switch (tier) {
+      case 'diamond': return <Diamond className="h-5 w-5 text-cyan-500" />;
+      case 'premium': return <Crown className="h-5 w-5 text-purple-500" />;
+      case 'gold': return <Star className="h-5 w-5 text-amber-500" />;
+      default: return <Check className="h-5 w-5 text-gray-500" />;
     }
   };
 
   return (
-    <div className="space-y-4">
-      <div className="mb-6">
-        <h3 className="text-lg font-medium mb-2">
-          {t({
-            english: "Select Your Visibility Level",
-            vietnamese: "Chọn Cấp Độ Hiển Thị Của Bạn"
-          })}
-        </h3>
-        <p className="text-gray-600 text-sm">
-          {t({
-            english: "Choose how prominently your job listing will appear to potential candidates",
-            vietnamese: "Chọn mức độ nổi bật của tin đăng việc làm của bạn đối với các ứng viên tiềm năng"
-          })}
-        </p>
-      </div>
-      
-      <RadioGroup 
-        value={pricingOptions.selectedPricingTier}
-        onValueChange={handleOptionChange}
-        className="space-y-3"
-      >
-        {displayOptions.map((option) => (
-          <div key={option.id} className="relative">
-            {option.tag && (
-              <Badge className="absolute -top-2 right-4 z-10 bg-purple-100 text-purple-800 border-purple-200">
-                {option.tag}
-              </Badge>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {pricingTiers.map((tier) => (
+        <Card
+          key={tier.id}
+          className={`cursor-pointer transition-all ${
+            selectedTier === tier.tier
+              ? 'ring-2 ring-purple-500 border-purple-500'
+              : 'hover:border-purple-300'
+          }`}
+          onClick={() => onTierSelect(tier.tier)}
+        >
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-3">
+              {getTierIcon(tier.tier)}
+              {tier.popular && (
+                <Badge className="bg-orange-100 text-orange-800">Most Popular</Badge>
+              )}
+              {tier.recommended && (
+                <Badge className="bg-purple-100 text-purple-800">Recommended</Badge>
+              )}
+            </div>
+            
+            <h3 className="font-semibold text-lg mb-2">{tier.name}</h3>
+            
+            <div className="flex items-end mb-3">
+              <span className="text-2xl font-bold">${tier.price}</span>
+              {tier.wasPrice && (
+                <span className="text-sm text-gray-500 line-through ml-2">
+                  ${tier.wasPrice}
+                </span>
+              )}
+            </div>
+            
+            <p className="text-sm text-gray-600 mb-4">
+              {t({ english: tier.description, vietnamese: tier.vietnameseDescription })}
+            </p>
+            
+            <ul className="space-y-2 mb-4">
+              {tier.features.map((feature, index) => (
+                <li key={index} className="flex items-start text-sm">
+                  <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+            
+            {tier.limitedSpots && (
+              <p className="text-xs text-orange-600 mb-3">{tier.limitedSpots}</p>
             )}
             
-            {option.limitedSpots && (
-              <div className="absolute -bottom-2 right-4 z-10">
-                <Badge variant="outline" className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px]">
-                  <Star className="h-3 w-3 fill-amber-500 mr-1" /> {option.limitedSpots}
-                </Badge>
-              </div>
-            )}
-            
-            <Card className={`
-              border overflow-hidden transition-all duration-200 hover:shadow-md
-              ${pricingOptions.selectedPricingTier === option.tier ? 'ring-2 ring-purple-500 bg-purple-50/30' : 'bg-white'}
-              ${option.popular ? 'border-purple-200' : 'border-gray-200'}
-            `}>
-              <div className={`${option.popular ? 'bg-purple-500 text-white text-xs py-1 text-center' : 'hidden'}`}>
-                {t({ english: "MOST POPULAR", vietnamese: "PHỔ BIẾN NHẤT" })}
-              </div>
-              <CardContent className={`p-0`}>
-                <Label
-                  htmlFor={option.id}
-                  className={`flex cursor-pointer items-start p-4 gap-4 ${pricingOptions.selectedPricingTier === option.tier ? 'bg-purple-50/30' : 'hover:bg-gray-50'}`}
-                >
-                  <RadioGroupItem value={option.tier} id={option.id} className="mt-1" />
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="font-medium text-base">{option.name}</h3>
-                      <div className="text-right">
-                        {option.wasPrice && (
-                          <span className="text-sm text-gray-500 line-through mr-2">${option.wasPrice}</span>
-                        )}
-                        <span className="font-bold text-lg">${option.price}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Description with language support */}
-                    <p className="text-sm text-gray-600 mb-3">
-                      {t({ 
-                        english: option.description,
-                        vietnamese: option.vietnameseDescription || option.description
-                      })}
-                    </p>
-                    
-                    {/* Features list */}
-                    <ul className="space-y-2">
-                      {option.features?.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2 text-sm">
-                          <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span>{t({ english: feature, vietnamese: feature })}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    {option.upsellText && (
-                      <div className="mt-3 text-sm text-purple-700 flex items-center">
-                        <Info className="h-4 w-4 mr-1" />
-                        {option.upsellText}
-                      </div>
-                    )}
-                  </div>
-                </Label>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
-      </RadioGroup>
-      
-      <TooltipProvider>
-        <div className="mt-6 text-center">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="text-xs text-gray-500 cursor-help underline underline-offset-2">
-                {t({
-                  english: "How are visibility levels determined?",
-                  vietnamese: "Làm thế nào các cấp độ hiển thị được xác định?"
-                })}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs text-xs">
-              <p>
-                {t({
-                  english: "Visibility levels determine how prominently your listing appears in search results and browse pages. Higher visibility increases your chances of finding the right candidate quickly.",
-                  vietnamese: "Cấp độ hiển thị xác định mức độ nổi bật của bài đăng của bạn trong kết quả tìm kiếm và trang duyệt. Khả năng hiển thị cao hơn sẽ tăng cơ hội tìm được ứng viên phù hợp nhanh chóng."
-                })}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </TooltipProvider>
+            <Button
+              className={`w-full ${
+                selectedTier === tier.tier
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTierSelect(tier.tier);
+              }}
+            >
+              {selectedTier === tier.tier ? 'Selected' : 'Select Plan'}
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };

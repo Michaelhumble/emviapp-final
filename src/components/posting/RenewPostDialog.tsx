@@ -29,7 +29,7 @@ const RenewPostDialog = ({
   bundleWithJobPost = false,
   onRenewed
 }: RenewPostDialogProps) => {
-  const [selectedPlan, setSelectedPlan] = useState<JobPricingTier>('standard');
+  const [selectedPlan, setSelectedPlan] = useState<JobPricingTier>('premium');
   const { initiatePayment, isLoading } = usePostPayment();
 
   const handlePlanChange = (newPricing: JobPricingTier) => {
@@ -78,15 +78,15 @@ const RenewPostDialog = ({
             <label className="text-sm font-medium">Select Renewal Plan</label>
             <div className="grid grid-cols-1 gap-2">
               <div 
-                className={`border rounded-lg p-3 cursor-pointer ${selectedPlan === 'standard' ? 'border-primary bg-primary/5' : 'border-gray-200'}`}
-                onClick={() => handlePlanChange('standard')}
+                className={`border rounded-lg p-3 cursor-pointer ${selectedPlan === 'premium' ? 'border-primary bg-primary/5' : 'border-gray-200'}`}
+                onClick={() => handlePlanChange('premium')}
               >
                 <div className="flex justify-between">
                   <div>
-                    <p className="font-medium">Standard</p>
+                    <p className="font-medium">Premium</p>
                     <p className="text-sm text-gray-500">30 days visibility</p>
                   </div>
-                  <p className="font-semibold">$9.99</p>
+                  <p className="font-semibold">$39.99</p>
                 </div>
               </div>
             </div>

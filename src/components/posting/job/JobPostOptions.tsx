@@ -61,24 +61,13 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
         className="space-y-2"
       >
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="standard" id="standard" />
-          <Label htmlFor="standard" className="text-sm font-medium">
+          <RadioGroupItem value="free" id="free" />
+          <Label htmlFor="free" className="text-sm font-medium">
             {t({
-              english: 'Standard',
-              vietnamese: 'Tiêu chuẩn'
+              english: 'Free',
+              vietnamese: 'Miễn phí'
             })}
-            <span className="ml-2 text-sm font-normal text-gray-500">$9.99/month</span>
-          </Label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="premium" id="premium" />
-          <Label htmlFor="premium" className="text-sm font-medium">
-            {t({
-              english: 'Premium',
-              vietnamese: 'Cao cấp'
-            })}
-            <span className="ml-2 text-sm font-normal text-gray-500">$19.99/month</span>
+            <span className="ml-2 text-sm font-normal text-gray-500">$0.00</span>
           </Label>
         </div>
 
@@ -89,7 +78,29 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({
               english: 'Gold',
               vietnamese: 'Vàng'
             })}
+            <span className="ml-2 text-sm font-normal text-gray-500">$19.99/month</span>
+          </Label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="premium" id="premium" />
+          <Label htmlFor="premium" className="text-sm font-medium">
+            {t({
+              english: 'Premium',
+              vietnamese: 'Cao cấp'
+            })}
             <span className="ml-2 text-sm font-normal text-gray-500">$39.99/month</span>
+          </Label>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="diamond" id="diamond" />
+          <Label htmlFor="diamond" className="text-sm font-medium">
+            {t({
+              english: 'Diamond',
+              vietnamese: 'Kim cương'
+            })}
+            <span className="ml-2 text-sm font-normal text-gray-500">$99.99/month</span>
           </Label>
         </div>
       </RadioGroup>

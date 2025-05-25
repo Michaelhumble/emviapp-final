@@ -1,6 +1,5 @@
 
-// Temporary stub file for posting pricing utilities
-// To be completed with actual pricing logic later
+import { JobPricingTier } from './types';
 
 /**
  * Format a number as currency (USD)
@@ -17,7 +16,7 @@ export const formatCurrency = (amount: number): string => {
  * Calculate pricing based on selected tier, duration, and options
  */
 export const calculatePricing = (
-  selectedPricingTier: string,
+  selectedPricingTier: JobPricingTier,
   durationMonths: number,
   autoRenew: boolean = true,
   isFirstPost: boolean = false,
@@ -30,20 +29,17 @@ export const calculatePricing = (
     case 'free':
       basePrice = 0;
       break;
-    case 'standard':
-      basePrice = 9.99;
-      break;
-    case 'premium':
+    case 'gold':
       basePrice = 19.99;
       break;
-    case 'gold':
+    case 'premium':
       basePrice = 39.99;
       break;
     case 'diamond':
-      basePrice = 999.99;
+      basePrice = 99.99;
       break;
     default:
-      basePrice = 9.99; // Default to standard
+      basePrice = 19.99; // Default to gold
   }
   
   // Free for first post if specified
@@ -95,4 +91,3 @@ export const getNationwidePrice = (postType: 'job' | 'salon' | 'booth' | 'supply
     default: return '';
   }
 };
-

@@ -1,226 +1,117 @@
 
 import React from 'react';
-import { usePricing } from '@/context/pricing/PricingProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Check, Sparkles } from 'lucide-react';
-import { JobPricingTier } from '@/utils/posting/types';
+import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Check, Crown, Star, Diamond } from 'lucide-react';
 
 interface PricingSectionProps {
-  onContinue: () => void;
+  selectedTier: JobPricingTier;
+  onTierSelect: (tier: JobPricingTier) => void;
+  options: PricingOptions;
+  onProceed: () => void;
 }
 
-const PricingSection: React.FC<PricingSectionProps> = ({ onContinue }) => {
-  const { pricingOptions, setPricingOptions, priceData } = usePricing();
+const PricingSection: React.FC<PricingSectionProps> = ({
+  selectedTier,
+  onTierSelect,
+  options,
+  onProceed
+}) => {
+  const { t } = useTranslation();
 
-  const handlePricingTierChange = (tier: JobPricingTier) => {
-    setPricingOptions(prev => ({
-      ...prev,
-      selectedPricingTier: tier
-    }));
-  };
-
-  const handleDurationChange = (months: number) => {
-    setPricingOptions(prev => ({
-      ...prev,
-      durationMonths: months
-    }));
-  };
+  const pricingPlans = [
+    {
+      tier: 'free' as JobPricingTier,
+      name: 'Free Listing',
+      price: 0,
+      duration: 30,
+      features: ['Basic visibility', '30-day duration', 'Standard placement'],
+      icon: <Check className="h-5 w-5 text-gray-500" />
+    },
+    {
+      tier: 'gold' as JobPricingTier,
+      name: 'Gold Featured',
+      price: 19.99,
+      duration: 30,
+      features: ['Featured placement', 'Gold badge', 'Priority listing'],
+      icon: <Star className="h-5 w-5 text-amber-500" />
+    },
+    {
+      tier: 'premium' as JobPricingTier,
+      name: 'Premium Listing',
+      price: 39.99,
+      duration: 30,
+      features: ['Top placement', 'Premium badge', 'Analytics'],
+      icon: <Crown className="h-5 w-5 text-purple-500" />
+    },
+    {
+      tier: 'diamond' as JobPricingTier,
+      name: 'Diamond Exclusive',
+      price: 99.99,
+      duration: 30,
+      features: ['Highest placement', 'Diamond badge', 'Personal manager'],
+      icon: <Diamond className="h-5 w-5 text-cyan-500" />
+    }
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-playfair font-medium mb-2">Select Your Pricing Plan</h2>
-        <p className="text-gray-600">Choose the plan that works best for your business needs.</p>
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-2">Choose Your Plan</h2>
+        <p className="text-gray-600">All plans include 30-day duration</p>
       </div>
-
-      <RadioGroup 
-        value={pricingOptions.selectedPricingTier} 
-        onValueChange={(value: string) => handlePricingTierChange(value as JobPricingTier)}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-      >
-        <div className="relative">
-          <RadioGroupItem 
-            value="standard" 
-            id="standard" 
-            className="sr-only" 
-          />
-          <Label 
-            htmlFor="standard" 
-            className={`flex flex-col h-full border rounded-lg p-4 cursor-pointer hover:border-primary transition-all ${pricingOptions.selectedPricingTier === 'standard' ? 'border-2 border-primary bg-primary/5' : 'border-gray-200'}`}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {pricingPlans.map((plan) => (
+          <Card
+            key={plan.tier}
+            className={`cursor-pointer transition-all ${
+              selectedTier === plan.tier
+                ? 'ring-2 ring-purple-500 border-purple-500'
+                : 'hover:border-purple-300'
+            }`}
+            onClick={() => onTierSelect(plan.tier)}
           >
-            {pricingOptions.selectedPricingTier === 'standard' && (
-              <div className="absolute -top-2 -right-2">
-                <div className="bg-primary text-white rounded-full p-1">
-                  <Check className="h-4 w-4" />
-                </div>
-              </div>
-            )}
-            <div className="font-medium text-lg">Standard</div>
-            <div className="text-2xl font-semibold mt-2">$9.99</div>
-            <div className="text-sm text-gray-500 mt-1">per post</div>
-            <div className="mt-4 text-sm">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-2">{plan.icon}</div>
+              <CardTitle className="text-lg">{plan.name}</CardTitle>
+              <div className="text-2xl font-bold">${plan.price}</div>
+              <p className="text-sm text-gray-500">{plan.duration} days</p>
+            </CardHeader>
+            <CardContent>
               <ul className="space-y-2">
-                <li className="flex items-start">
-                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-                  <span>Basic job listing</span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-                  <span>7 days visibility</span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-                  <span>Email support</span>
-                </li>
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start text-sm">
+                    <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
               </ul>
-            </div>
-          </Label>
-        </div>
-
-        <div className="relative">
-          <RadioGroupItem 
-            value="premium" 
-            id="premium" 
-            className="sr-only" 
-          />
-          <Label 
-            htmlFor="premium" 
-            className={`flex flex-col h-full border rounded-lg p-4 cursor-pointer hover:border-primary transition-all ${pricingOptions.selectedPricingTier === 'premium' ? 'border-2 border-primary bg-primary/5' : 'border-gray-200'}`}
-          >
-            {pricingOptions.selectedPricingTier === 'premium' && (
-              <div className="absolute -top-2 -right-2">
-                <div className="bg-primary text-white rounded-full p-1">
-                  <Check className="h-4 w-4" />
-                </div>
-              </div>
-            )}
-            <div className="absolute -top-3 left-4 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-              Popular
-            </div>
-            <div className="font-medium text-lg mt-2">Premium</div>
-            <div className="text-2xl font-semibold mt-2">$19.99</div>
-            <div className="text-sm text-gray-500 mt-1">per post</div>
-            <div className="mt-4 text-sm">
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-                  <span>Enhanced visibility</span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-                  <span>14 days visibility</span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-                  <span>Featured in search results</span>
-                </li>
-                <li className="flex items-start">
-                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-                  <span>Priority customer support</span>
-                </li>
-              </ul>
-            </div>
-          </Label>
-        </div>
-
-        <div className="relative">
-          <RadioGroupItem 
-            value="gold" 
-            id="gold" 
-            className="sr-only" 
-          />
-          <Label 
-            htmlFor="gold" 
-            className={`flex flex-col h-full border rounded-lg p-4 cursor-pointer hover:border-primary transition-all ${pricingOptions.selectedPricingTier === 'gold' ? 'border-2 border-primary bg-primary/5' : 'border-gray-200'}`}
-          >
-            {pricingOptions.selectedPricingTier === 'gold' && (
-              <div className="absolute -top-2 -right-2">
-                <div className="bg-primary text-white rounded-full p-1">
-                  <Check className="h-4 w-4" />
-                </div>
-              </div>
-            )}
-            <div className="font-medium text-lg">Gold</div>
-            <div className="text-2xl font-semibold mt-2">$29.99</div>
-            <div className="text-sm text-gray-500 mt-1">per post</div>
-            <div className="mt-4 text-sm">
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <Sparkles className="h-4 w-4 mr-2 text-amber-500 mt-0.5" />
-                  <span>Maximum visibility</span>
-                </li>
-                <li className="flex items-start">
-                  <Sparkles className="h-4 w-4 mr-2 text-amber-500 mt-0.5" />
-                  <span>30 days visibility</span>
-                </li>
-                <li className="flex items-start">
-                  <Sparkles className="h-4 w-4 mr-2 text-amber-500 mt-0.5" />
-                  <span>Featured on homepage</span>
-                </li>
-                <li className="flex items-start">
-                  <Sparkles className="h-4 w-4 mr-2 text-amber-500 mt-0.5" />
-                  <span>Email blast to candidates</span>
-                </li>
-                <li className="flex items-start">
-                  <Sparkles className="h-4 w-4 mr-2 text-amber-500 mt-0.5" />
-                  <span>VIP support</span>
-                </li>
-              </ul>
-            </div>
-          </Label>
-        </div>
-      </RadioGroup>
-
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Select Duration</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup 
-            value={pricingOptions.durationMonths.toString()} 
-            onValueChange={(value) => handleDurationChange(parseInt(value, 10))}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
-          >
-            {[1, 2, 3].map((months) => (
-              <div key={months} className="relative">
-                <RadioGroupItem 
-                  value={months.toString()} 
-                  id={`duration-${months}`} 
-                  className="sr-only" 
-                />
-                <Label 
-                  htmlFor={`duration-${months}`} 
-                  className={`flex flex-col border rounded-lg p-4 cursor-pointer hover:border-primary transition-all ${pricingOptions.durationMonths === months ? 'border-2 border-primary bg-primary/5' : 'border-gray-200'}`}
-                >
-                  {pricingOptions.durationMonths === months && (
-                    <div className="absolute -top-2 -right-2">
-                      <div className="bg-primary text-white rounded-full p-1">
-                        <Check className="h-4 w-4" />
-                      </div>
-                    </div>
-                  )}
-                  <div className="font-medium">
-                    {months} {months === 1 ? 'Month' : 'Months'}
-                  </div>
-                  <div className="text-sm text-gray-500 mt-2">
-                    {months === 1 ? 'Standard duration' : months === 2 ? 'Extended visibility' : 'Maximum exposure'}
-                  </div>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </CardContent>
-      </Card>
-
-      <div className="mt-8">
-        <Button 
-          onClick={onContinue} 
-          className="w-full"
-        >
-          Continue to Payment
+              <Button
+                className={`w-full mt-4 ${
+                  selectedTier === plan.tier
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTierSelect(plan.tier);
+                }}
+              >
+                {selectedTier === plan.tier ? 'Selected' : 'Select'}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      
+      <div className="text-center">
+        <Button onClick={onProceed} className="px-8 py-2">
+          Continue with {selectedTier === 'free' ? 'Free' : 
+                       selectedTier === 'gold' ? 'Gold' :
+                       selectedTier === 'premium' ? 'Premium' : 'Diamond'} Plan
         </Button>
       </div>
     </div>
@@ -228,4 +119,3 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onContinue }) => {
 };
 
 export default PricingSection;
-export { PricingSection };

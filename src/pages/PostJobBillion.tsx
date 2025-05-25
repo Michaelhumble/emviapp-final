@@ -20,7 +20,7 @@ const PostJobBillion = () => {
 
       // Default pricing options for job posting
       const pricingOptions = {
-        selectedPricingTier: 'standard' as const,
+        selectedPricingTier: 'premium' as const,
         durationMonths: 1,
         autoRenew: false,
         isFirstPost: false
