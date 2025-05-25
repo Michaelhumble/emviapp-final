@@ -44,18 +44,32 @@ const CompensationSection: React.FC<CompensationSectionProps> = ({ control }) =>
 
         <FormField
           control={control}
-          name="compensationDetails"
+          name="salary"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Compensation Details</FormLabel>
+              <FormLabel>Salary/Pay Range</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. $15-20/hour, 40-60% commission" {...field} />
+                <Input placeholder="e.g. $50,000-60,000/year or $15-20/hour" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
       </div>
+
+      <FormField
+        control={control}
+        name="compensationDetails"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Additional Compensation Details</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g. Plus tips, commission structure, benefits" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 };

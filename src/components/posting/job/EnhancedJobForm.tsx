@@ -12,6 +12,7 @@ import ContactInfoSection from '@/components/posting/sections/ContactInfoSection
 
 const enhancedJobFormSchema = z.object({
   title: z.string().min(1, "Job title is required"),
+  company: z.string().optional(),
   salonName: z.string().min(1, "Salon name is required"),
   location: z.string().min(1, "Location is required"),
   employmentType: z.string().min(1, "Employment type is required"),
@@ -21,6 +22,7 @@ const enhancedJobFormSchema = z.object({
   benefits: z.array(z.string()).default([]),
   compensationType: z.string().default("hourly"),
   compensationDetails: z.string().optional(),
+  salary: z.string().optional(),
   contactName: z.string().optional(),
   contactPhone: z.string().optional(),
   contactEmail: z.string().optional(),
@@ -41,6 +43,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
     resolver: zodResolver(enhancedJobFormSchema),
     defaultValues: {
       title: '',
+      company: '',
       salonName: '',
       location: '',
       employmentType: '',
@@ -50,6 +53,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       benefits: [],
       compensationType: 'hourly',
       compensationDetails: '',
+      salary: '',
       contactName: '',
       contactPhone: '',
       contactEmail: '',
@@ -66,6 +70,7 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
       // Reset form with new values
       form.reset({
         title: initialValues.title || '',
+        company: initialValues.company || '',
         salonName: initialValues.company || initialValues.salonName || '',
         location: initialValues.location || '',
         employmentType: initialValues.employmentType || '',
@@ -74,7 +79,8 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
         requirements: Array.isArray(initialValues.requirements) ? initialValues.requirements : [],
         benefits: Array.isArray(initialValues.benefits) ? initialValues.benefits : [],
         compensationType: initialValues.compensationType || 'hourly',
-        compensationDetails: initialValues.salary || initialValues.compensationDetails || '',
+        compensationDetails: initialValues.compensationDetails || '',
+        salary: initialValues.salary || '',
         contactName: initialValues.contactName || '',
         contactPhone: initialValues.contactPhone || '',
         contactEmail: initialValues.contactEmail || '',

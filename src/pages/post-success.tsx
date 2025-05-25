@@ -1,35 +1,61 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import { useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import JobPostingSuccess from '@/components/posting/job/JobPostingSuccess';
 import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
-import { Job } from '@/types/job';
+import { toast } from 'sonner';
 
 const PostSuccess = () => {
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const jobId = searchParams.get('id');
-  
-  const { data: job, isLoading, error } = useQuery({
-    queryKey: ['job', jobId],
-    queryFn: async () => {
-      if (!jobId) return null;
-      
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('id', jobId)
-        .single();
-        
-      if (error) throw error;
-      return data as Job;
-    },
-    enabled: !!jobId,
-  });
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session_id');
+  const [jobDetails, setJobDetails] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const verifyPayment = async () => {
+      if (!sessionId) {
+        // No session ID, show generic success
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Verify the Stripe session and get job details
+        const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
+          body: { sessionId }
+        });
+
+        if (error) {
+          console.error('Payment verification error:', error);
+          toast.error('Payment verification failed');
+          setIsLoading(false);
+          return;
+        }
+
+        if (data?.success) {
+          setJobDetails({
+            jobId: data.post_id || 'job-' + Math.random().toString(36).substr(2, 9),
+            jobTitle: data.jobTitle || 'Job Posting',
+            planType: data.pricing_tier || 'Standard'
+          });
+          toast.success('Payment successful! Your job posting is now live.');
+        } else {
+          toast.error('Payment verification failed');
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        toast.error('Failed to verify payment');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    verifyPayment();
+  }, [sessionId]);
 
   if (isLoading) {
     return (
@@ -37,21 +63,9 @@ const PostSuccess = () => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading job details...</p>
+            <p className="text-gray-600">Verifying payment...</p>
           </div>
         </div>
-      </Layout>
-    );
-  }
-
-  if (error || !job) {
-    return (
-      <Layout>
-        <JobPostingSuccess
-          jobId={jobId || undefined}
-          jobTitle="Job Posting"
-          planType="Standard"
-        />
       </Layout>
     );
   }
@@ -65,9 +79,9 @@ const PostSuccess = () => {
       <ConfettiExplosion />
       
       <JobPostingSuccess
-        jobId={jobId || undefined}
-        jobTitle={job.title}
-        planType={job.pricingTier || job.pricing_tier || 'Standard'}
+        jobId={jobDetails?.jobId}
+        jobTitle={jobDetails?.jobTitle || 'Job Posting'}
+        planType={jobDetails?.planType || 'Standard'}
       />
     </Layout>
   );

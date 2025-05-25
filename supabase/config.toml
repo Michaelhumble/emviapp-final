@@ -1,14 +1,31 @@
 
-project_id = "wwhqbjrhbajpabfdwnip"
+project_id = "lklqotqxdvdrhtxkwysi"
 
-[functions.create-checkout]
-verify_jwt = true
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
 
-[functions.create-free-post]
-verify_jwt = true
+[auth]
+enabled = true
+port = 54324
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+enable_email_confirmations = false
 
-[functions.toggle-auto-renew]
+[db]
+port = 54322
+major_version = 15
+
+[functions.create-job-checkout]
 verify_jwt = true
 
 [functions.verify-checkout-session]
 verify_jwt = true
+
+[functions.webhook-credit-purchase]
+verify_jwt = false
