@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -14,7 +15,6 @@ import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFall
 import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import Layout from "@/components/layout/Layout";
-import JobPost from "@/pages/posting/JobPost";
 import Jobs from "@/pages/Jobs";
 import About from "@/pages/About"; 
 import Contact from "@/pages/Contact";
@@ -29,6 +29,7 @@ import PostJobBillion from "@/pages/PostJobBillion";
 import PostJobExperimental from "@/pages/PostJobExperimental";
 import SignIn from "@/pages/auth/SignIn";
 import SignUp from "@/pages/auth/SignUp";
+import EnhancedPostJob from "@/pages/enhanced-post-job";
 
 function App() {
   const location = useLocation();
@@ -56,8 +57,8 @@ function App() {
                     <Route path="/sign-up" element={<SignUp />} />
                     <Route path="/register" element={<SignUp />} />
                     
-                    {/* Job posting routes */}
-                    <Route path="/post-job" element={<JobPost />} />
+                    {/* Job posting routes - USE ENHANCED VERSION */}
+                    <Route path="/post-job" element={<EnhancedPostJob />} />
                     <Route path="/post-job-billion" element={<PostJobBillion />} />
                     <Route path="/post-job-experimental" element={<PostJobExperimental />} />
                     
@@ -79,7 +80,7 @@ function App() {
                     {routes.map((route, index) => (
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
-                       route.path !== "/privacy" && route.path !== "/cookies") && (
+                       route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job") && (
                         <Route 
                           key={index}
                           path={route.path}
