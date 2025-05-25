@@ -1,158 +1,131 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Job } from "@/types/job";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Diamond, Lock } from "lucide-react";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { Button } from "@/components/ui/button";
+import { MapPin, DollarSign, Diamond, Crown } from "lucide-react";
 import { motion } from "framer-motion";
-import JobCardContact from "./JobCardContact";
-import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { Badge } from "@/components/ui/badge";
 
 interface TopDiamondFeaturedSectionProps {
   featuredJobs: Job[];
   onViewDetails: (job: Job) => void;
+  maxSpots?: number;
 }
 
-const TopDiamondFeaturedSection = ({ featuredJobs, onViewDetails }: TopDiamondFeaturedSectionProps) => {
-  const { user } = useAuth();
-  const [isHovered, setIsHovered] = useState(false);
-  
-  // Get the first real job (Magic Nails)
-  const mainJob = featuredJobs[0];
+const TopDiamondFeaturedSection = ({ 
+  featuredJobs, 
+  onViewDetails, 
+  maxSpots = 5 
+}: TopDiamondFeaturedSectionProps) => {
+  const diamondJobs = featuredJobs.filter(job => 
+    job.pricingTier === 'diamond' || job.pricing_tier === 'diamond'
+  ).slice(0, maxSpots);
 
-  // Define fallback images for verification
-  const mainJobImagePath = "/lovable-uploads/583cdb14-9991-4d8f-8d00-711aa760fdeb.png";
-  const secondaryImagePath = "/lovable-uploads/d98977ed-9565-4629-b2e7-fc4cf3f93a7f.png";
-  
-  // Supabase fallback if the lovable uploads are not available
-  const supabaseFallback = "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A%20long%2C%20luxurious%20nail%20salon-10.png";
-  
+  const availableSpots = maxSpots - diamondJobs.length;
+
+  if (diamondJobs.length === 0 && availableSpots === 0) return null;
+
   return (
-    <motion.section
+    <motion.section 
       className="mb-12"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center mb-6">
-        <Diamond className="h-6 w-6 text-amber-500 mr-2" />
-        <h2 className="text-2xl lg:text-3xl font-playfair font-semibold text-amber-800">Exclusive Diamond Featured</h2>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Diamond className="h-6 w-6 text-cyan-500 mr-2" />
+          <h2 className="text-2xl lg:text-3xl font-playfair font-semibold">
+            Diamond Exclusive
+          </h2>
+          <Badge className="ml-3 bg-cyan-100 text-cyan-800 border-cyan-200">
+            Limited to {maxSpots} spots
+          </Badge>
+        </div>
+        
+        {availableSpots > 0 && (
+          <div className="text-sm text-gray-500">
+            {availableSpots} spot{availableSpots !== 1 ? 's' : ''} available
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Card #1 - Magic Nails - PAID */}
-        <Card
-          key={mainJob.id}
-          className="overflow-hidden border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
-          style={{
-            background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(253,248,232,1) 100%)",
-            boxShadow: "0 10px 25px -5px rgba(251, 191, 36, 0.4)"
-          }}
-        >
-          <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Diamond Job Listings */}
+        {diamondJobs.map((job) => (
+          <Card key={job.id} className="overflow-hidden border-2 border-cyan-200 bg-gradient-to-br from-cyan-50 to-blue-50">
+            <div className="h-2 bg-gradient-to-r from-cyan-400 to-blue-500"></div>
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="font-playfair font-bold text-xl text-gray-900">{job.title}</h3>
+                  <p className="text-gray-700 mt-1 font-medium">
+                    {job.company}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <Badge className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-none">
+                    <Diamond className="h-3 w-3 mr-1" />
+                    Diamond
+                  </Badge>
+                </div>
+              </div>
 
-          <div className="aspect-video relative">
-            <ImageWithFallback
-              src={mainJobImagePath}
-              alt="Magic Nails"
-              className="w-full h-full object-cover"
-              fallbackImage={supabaseFallback}
-            />
-            <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-medium">
-              ✨ Top Diamond Exclusive
-            </Badge>
-          </div>
+              <div className="flex items-center text-base text-gray-700 mb-2">
+                <MapPin className="h-4 w-4 mr-2" /> {job.location}
+              </div>
 
-          <CardContent className="p-6">
-            <div className="mb-3">
-              <h3 className="font-playfair font-semibold text-xl text-amber-900">Tìm Thợ Nails – Magic Nails, Great Falls, MT</h3>
-              <p className="text-amber-800 font-medium text-lg">$1,200–$1,500/tuần</p>
-            </div>
-
-            <div className="flex items-center text-base text-gray-600 mb-2">
-              <MapPin className="h-4 w-4 mr-1" /> {mainJob.location}
-            </div>
-
-            <div className="flex items-center text-base text-gray-600 mb-4">
-              <Calendar className="h-4 w-4 mr-1" /> {new Date(mainJob.created_at).toLocaleDateString()}
-            </div>
-
-            <p className="text-gray-700 mb-4">Magic Nails cần thợ biết làm bột và tay chân nước.</p>
-
-            <div className="border-t border-amber-100 pt-3 mb-4">
-              {user ? (
-                mainJob.contact_info?.phone && (
-                  <JobCardContact phoneNumber={mainJob.contact_info.phone} />
-                )
-              ) : (
-                <div className="flex items-center text-amber-700 font-medium">
-                  <Lock size={16} className="mr-2" /> Contact details hidden (sign in to view)
+              {job.salary_range && (
+                <div className="flex items-center text-base text-gray-700 mb-3">
+                  <DollarSign className="h-4 w-4 mr-2" /> {job.salary_range}
                 </div>
               )}
-            </div>
 
-            <Button
-              className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700"
-              onClick={() => onViewDetails(mainJob)}
-            >
-              Xem Chi Tiết
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Card #2 - EmviApp Internal Ad - FREE */}
-        <Card
-          className="overflow-hidden border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg flex flex-col"
-          style={{
-            background: "linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(253,248,232,1) 100%)",
-            boxShadow: "0 10px 25px -5px rgba(251, 191, 36, 0.4)"
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
-
-          <div className="aspect-video relative">
-            <ImageWithFallback
-              src={secondaryImagePath}
-              alt="Premium Listing Opportunity"
-              className="w-full h-full object-cover transition-transform duration-700"
-              style={{
-                transform: isHovered ? 'scale(1.05)' : 'scale(1)'
-              }}
-              fallbackImage={supabaseFallback}
-            />
-            <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-medium">
-              ✨ Be Seen by Thousands
-            </Badge>
-          </div>
-
-          <CardContent className="p-6 flex flex-col flex-grow">
-            <div className="flex-grow">
-              <h3 className="font-playfair font-bold text-xl text-amber-900 mb-3">Claim the Most Powerful Spot on EmviApp</h3>
-              
-              <p className="text-amber-700 font-semibold text-lg mb-2 text-center">✨ $999.99/year ✨</p>
-              
-              <p className="text-base text-gray-700 mb-6 font-medium">
-                Reach Unlimited Employees and Customers Every Day.<br />
-                First Come, First Served – Unmatched Visibility.
+              <p className="text-base text-gray-700 mb-4 line-clamp-2">
+                {job.description}
               </p>
-            </div>
 
-            <Link to="/post-job" className="block w-full mt-auto">
-              <Button
-                className="w-full font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 py-6"
-                size="lg"
+              <Button 
+                className="w-full font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                onClick={() => onViewDetails(job)}
               >
-                Claim Your Premium Spot
+                View Exclusive Details
               </Button>
-            </Link>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ))}
+
+        {/* Available Spots Placeholder */}
+        {availableSpots > 0 && (
+          <Card className="overflow-hidden border-2 border-dashed border-cyan-300 bg-gradient-to-br from-cyan-50/50 to-blue-50/50">
+            <CardContent className="p-6 text-center">
+              <Diamond className="h-12 w-12 text-cyan-400 mx-auto mb-4" />
+              <h3 className="font-playfair font-semibold text-lg text-gray-700 mb-2">
+                Diamond Spot Available
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Premium placement for exceptional opportunities
+              </p>
+              <Button 
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                onClick={() => window.location.href = '/post-job'}
+              >
+                Apply for Diamond
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
+
+      {diamondJobs.length === maxSpots && (
+        <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <p className="text-orange-800 text-center">
+            <Crown className="h-4 w-4 inline mr-1" />
+            All Diamond spots are filled. Join the waitlist to be notified when a spot opens.
+          </p>
+        </div>
+      )}
     </motion.section>
   );
 };

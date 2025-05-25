@@ -1,62 +1,49 @@
 
-export interface PricingOptions {
-  selectedPricingTier: JobPricingTier;
-  durationMonths: number;
-  isFirstPost?: boolean;
-  autoRenew?: boolean;
-  // Additional properties
-  isRenewal?: boolean;
-  isNationwide?: boolean;
-  fastSalePackage?: boolean;
-  showAtTop?: boolean;
-  bundleWithJobPost?: boolean;
-  bundleWithSalonPost?: boolean;
-  hasReferrals?: boolean;
-  // Upsell properties
-  expertReview?: boolean;
-  priorityPlacement?: boolean;
-  extendedReach?: boolean;
-  // For UI indicators
-  isUrgent?: boolean;
-  isHotListing?: boolean;
-  featuredListing?: boolean;
-  extendedDuration?: boolean;
-  boostVisibility?: boolean;
-}
+export type JobPricingTier = 'free' | 'gold' | 'premium' | 'diamond';
 
 export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
-export type JobPricingTier = 'standard' | 'premium' | 'gold' | 'diamond' | 'free' | 'featured' | 'starter' | 'expired';
-
 export interface JobPricingOption {
   id: string;
+  tier: JobPricingTier;
   name: string;
   price: number;
   wasPrice?: number;
+  duration: number; // Always 30 days
   description: string;
-  vietnameseDescription?: string;
-  tag?: string;          // Added for UI displays
-  features?: string[];
+  vietnameseDescription: string;
+  features: string[];
   popular?: boolean;
-  isFirstPost?: boolean;
-  tier: JobPricingTier;
-  // Properties for FOMO and UI
-  primaryBenefit?: string;
-  upsellText?: string;   // Added for upsell displays
-  color?: string;
   recommended?: boolean;
-  hidden?: boolean;      // Adding the missing 'hidden' property
-  annual?: boolean;
-  limitedSpots?: string; // Added for limited spots displays
-  // Adding the priceMonthly property that is used in the config
-  priceMonthly?: number;
+  limitedSpots?: string;
 }
 
-export interface UserPostingStats {
-  jobPostCount: number;
-  salonPostCount: number;
-  boothPostCount: number;
-  supplyPostCount: number;
+export interface PricingOptions {
+  selectedPricingTier: JobPricingTier;
+  autoRenew?: boolean;
+  isNationwide?: boolean;
+  isFirstPost?: boolean;
+  showAtTop?: boolean;
+  fastSalePackage?: boolean;
+  jobPostBundle?: boolean;
 }
 
-export type IndustryType = 'nails' | 'hair' | 'lashes' | 'massage' | 'tattoo' | 'brows' | 'skincare' | 'barber' | 'makeup';
+export interface DurationOption {
+  months: number;
+  label: string;
+  vietnameseLabel: string;
+  discount: number;
+  description: string;
+}
+
+// Waitlist functionality for Diamond tier
+export interface DiamondWaitlistEntry {
+  id: string;
+  userId: string;
+  industry: string;
+  jobTitle: string;
+  contactEmail: string;
+  submittedAt: string;
+  status: 'pending' | 'approved' | 'activated';
+  estimatedWaitTime?: string;
+}
