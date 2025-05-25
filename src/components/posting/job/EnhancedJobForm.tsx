@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,6 +9,7 @@ import JobDetailsSection from '@/components/posting/sections/JobDetailsSection';
 import RequirementsSection from '@/components/posting/sections/RequirementsSection';
 import CompensationSection from '@/components/posting/sections/CompensationSection';
 import ContactInfoSection from '@/components/posting/sections/ContactInfoSection';
+import PhotoUploadSection from '@/components/posting/sections/PhotoUploadSection';
 
 const enhancedJobFormSchema = z.object({
   title: z.string().min(1, "Job title is required"),
@@ -33,10 +34,12 @@ type EnhancedJobFormValues = z.infer<typeof enhancedJobFormSchema>;
 
 interface EnhancedJobFormProps {
   initialValues?: Partial<EnhancedJobFormValues>;
-  onSubmit: (data: EnhancedJobFormValues) => void;
+  onSubmit: (data: EnhancedJobFormValues & { photoUploads: File[] }) => void;
 }
 
 const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubmit }) => {
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  
   console.log('🎯 EnhancedJobForm received initialValues:', initialValues);
   
   const form = useForm<EnhancedJobFormValues>({
@@ -93,25 +96,36 @@ const EnhancedJobForm: React.FC<EnhancedJobFormProps> = ({ initialValues, onSubm
 
   const handleSubmit = (data: EnhancedJobFormValues) => {
     console.log('📤 Form submitted with data:', data);
-    onSubmit(data);
+    console.log('📷 Photos attached:', photoUploads.length);
+    onSubmit({ ...data, photoUploads });
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          <JobDetailsSection control={form.control} />
-          <RequirementsSection form={form} />
-          <CompensationSection control={form.control} />
-          <ContactInfoSection control={form.control} />
-          
-          <div className="flex justify-end pt-6">
-            <Button type="submit" className="px-8">
-              Continue to Pricing
-            </Button>
-          </div>
-        </form>
-      </Form>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+      <div className="max-w-4xl mx-auto p-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-12">
+            <JobDetailsSection control={form.control} />
+            <RequirementsSection form={form} />
+            <CompensationSection control={form.control} />
+            <PhotoUploadSection 
+              photoUploads={photoUploads}
+              setPhotoUploads={setPhotoUploads}
+              maxPhotos={5}
+            />
+            <ContactInfoSection control={form.control} />
+            
+            <div className="flex justify-end pt-8">
+              <Button 
+                type="submit" 
+                className="px-12 py-4 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl shadow-lg"
+              >
+                Continue to Pricing ✨
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };
