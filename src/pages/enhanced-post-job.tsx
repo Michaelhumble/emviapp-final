@@ -13,6 +13,7 @@ const EnhancedPostJob = () => {
   const [currentStep, setCurrentStep] = useState<PostingStep>('template');
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [jobFormData, setJobFormData] = useState<any>(null);
+  const [formInitialValues, setFormInitialValues] = useState<any>(null);
 
   const handleTemplateSelect = (template: any) => {
     console.log('Template selected:', template);
@@ -20,11 +21,9 @@ const EnhancedPostJob = () => {
     // Get prefill data based on template selection
     const prefillData = getJobPrefillByIndustry(template.id || template.title || '');
     
-    // Set the selected template with prefill data
-    setSelectedTemplate({
-      ...template,
-      prefillData
-    });
+    // Set the selected template and initial values separately
+    setSelectedTemplate(template);
+    setFormInitialValues(prefillData);
     
     setCurrentStep('form');
   };
@@ -38,6 +37,7 @@ const EnhancedPostJob = () => {
   const handleBackToTemplate = () => {
     setCurrentStep('template');
     setSelectedTemplate(null);
+    setFormInitialValues(null);
   };
 
   const handleBackToForm = () => {
@@ -69,9 +69,8 @@ const EnhancedPostJob = () => {
             </div>
             
             <EnhancedJobForm 
-              selectedTemplate={selectedTemplate}
               onSubmit={handleFormSubmit}
-              initialValues={selectedTemplate.prefillData}
+              initialValues={formInitialValues}
             />
           </div>
         )}
