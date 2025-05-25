@@ -34,6 +34,21 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
     if (onOpenChange) onOpenChange(isOpen);
   };
 
+  const getDurationDisplay = (months: number) => {
+    switch (months) {
+      case 1:
+        return '30 days';
+      case 3:
+        return '90 days';
+      case 6:
+        return '180 days';
+      case 12:
+        return '1 year';
+      default:
+        return `${months * 30} days`;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -83,6 +98,16 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
                      english: 'Unknown Plan', 
                      vietnamese: 'Gói không xác định'
                    })}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm">
+                <span>{t({
+                  english: 'Duration', 
+                  vietnamese: 'Thời hạn'
+                })}: </span>
+                <span className="font-medium">
+                  {getDurationDisplay(options.durationMonths || 1)}
                 </span>
               </div>
               

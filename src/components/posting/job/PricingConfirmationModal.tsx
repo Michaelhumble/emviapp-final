@@ -16,6 +16,7 @@ interface PricingConfirmationModalProps {
   onClose: () => void;
   selectedTier: string;
   finalPrice: number;
+  durationMonths?: number;
   onConfirmPayment: () => void;
 }
 
@@ -24,6 +25,7 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
   onClose,
   selectedTier,
   finalPrice,
+  durationMonths = 1,
   onConfirmPayment,
 }) => {
   const getTierDetails = () => {
@@ -63,6 +65,21 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
     }
   };
 
+  const getDurationDisplay = (months: number) => {
+    switch (months) {
+      case 1:
+        return '30 days';
+      case 3:
+        return '90 days';
+      case 6:
+        return '180 days';
+      case 12:
+        return '1 year';
+      default:
+        return `${months * 30} days`;
+    }
+  };
+
   const tierDetails = getTierDetails();
 
   return (
@@ -88,7 +105,7 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
           
           <div className="flex justify-between items-center mb-3">
             <span className="font-medium">Duration:</span>
-            <span>30 days</span>
+            <span>{getDurationDisplay(durationMonths)}</span>
           </div>
           
           <div className="flex justify-between items-center mb-4">

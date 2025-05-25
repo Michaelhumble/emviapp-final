@@ -31,6 +31,21 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
 }) => {
   const { t } = useTranslation();
   
+  const getDurationDisplay = (months: number) => {
+    switch (months) {
+      case 1:
+        return '30 days';
+      case 3:
+        return '90 days';
+      case 6:
+        return '180 days';
+      case 12:
+        return '1 year';
+      default:
+        return `${months * 30} days`;
+    }
+  };
+  
   // Show error details if admin mode is enabled
   if (showErrorDetails && error) {
     return (
@@ -69,6 +84,14 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
               vietnamese: "Bài đăng này miễn phí. Không cần thanh toán."
             })}
           </p>
+          {priceData.durationMonths && (
+            <p className="text-sm text-gray-500 mt-2">
+              {t({
+                english: `Duration: ${getDurationDisplay(priceData.durationMonths)}`,
+                vietnamese: `Thời hạn: ${getDurationDisplay(priceData.durationMonths)}`
+              })}
+            </p>
+          )}
         </CardContent>
       </Card>
     );
@@ -96,6 +119,14 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
                 vietnamese: "Quyền truy cập gói Kim cương chỉ theo lời mời. Đội ngũ của chúng tôi sẽ liên hệ để thảo luận về các tùy chọn vị trí cao cấp và giá tùy chỉnh."
               })}
             </p>
+            {priceData.durationMonths && (
+              <p className="text-sm text-gray-500">
+                {t({
+                  english: `Requested duration: ${getDurationDisplay(priceData.durationMonths)}`,
+                  vietnamese: `Thời hạn yêu cầu: ${getDurationDisplay(priceData.durationMonths)}`
+                })}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -123,14 +154,14 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
             <span>${priceData.basePrice.toFixed(2)}</span>
           </div>
           
-          {/* Duration display if available */}
-          {priceData.durationMonths && priceData.durationMonths > 1 && (
+          {/* Duration display */}
+          {priceData.durationMonths && (
             <div className="flex justify-between text-gray-500">
               <span>{t({
-                english: `Duration: ${priceData.durationMonths} months`,
-                vietnamese: `Thời hạn: ${priceData.durationMonths} tháng`
-              })}</span>
-              <span>✓</span>
+                english: 'Duration',
+                vietnamese: 'Thời hạn'
+              })}: </span>
+              <span>{getDurationDisplay(priceData.durationMonths)}</span>
             </div>
           )}
           
