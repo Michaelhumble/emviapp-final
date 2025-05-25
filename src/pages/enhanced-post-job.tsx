@@ -26,7 +26,13 @@ const EnhancedPostJob = () => {
     const prefillData = getJobPrefillByIndustry(templateId);
     console.log('📋 Prefill data retrieved:', prefillData);
     console.log('📋 Prefill data keys:', Object.keys(prefillData));
-    console.log('📋 Prefill data values:', Object.values(prefillData));
+    console.log('🏷️ Title field:', prefillData.title);
+    console.log('🏢 Company field:', prefillData.company);
+    console.log('📝 Description field preview:', prefillData.description.substring(0, 100) + '...');
+    console.log('📋 Requirements array length:', prefillData.requirements?.length || 0);
+    console.log('🎁 Benefits array length:', prefillData.benefits?.length || 0);
+    console.log('💰 Salary field:', prefillData.salary);
+    console.log('📍 Location field:', prefillData.location);
     
     // Store the selected template and prefill data
     setSelectedTemplate(template);
@@ -35,6 +41,15 @@ const EnhancedPostJob = () => {
     // Additional verification logs
     console.log('✅ formInitialValues will be set to:', prefillData);
     console.log('✅ Moving to form step with prefill data');
+    console.log('🚀 About to render EnhancedJobForm with initialValues:', {
+      hasTitle: !!prefillData.title,
+      hasCompany: !!prefillData.company,
+      hasDescription: !!prefillData.description,
+      requirementsCount: prefillData.requirements?.length || 0,
+      benefitsCount: prefillData.benefits?.length || 0,
+      hasSalary: !!prefillData.salary,
+      hasLocation: !!prefillData.location
+    });
     
     setCurrentStep('form');
   };
@@ -92,9 +107,15 @@ const EnhancedPostJob = () => {
                 🔍 Debug: initialValues passed to form: {formInitialValues ? 'YES' : 'NO'}
               </p>
               {formInitialValues && (
-                <pre className="text-xs mt-2 overflow-auto">
-                  {JSON.stringify(formInitialValues, null, 2)}
-                </pre>
+                <div className="text-xs mt-2">
+                  <p><strong>Title:</strong> {formInitialValues.title || 'EMPTY'}</p>
+                  <p><strong>Company:</strong> {formInitialValues.company || 'EMPTY'}</p>
+                  <p><strong>Description:</strong> {formInitialValues.description ? `${formInitialValues.description.substring(0, 100)}...` : 'EMPTY'}</p>
+                  <p><strong>Requirements:</strong> {formInitialValues.requirements?.length || 0} items</p>
+                  <p><strong>Benefits:</strong> {formInitialValues.benefits?.length || 0} items</p>
+                  <p><strong>Salary:</strong> {formInitialValues.salary || 'EMPTY'}</p>
+                  <p><strong>Location:</strong> {formInitialValues.location || 'EMPTY'}</p>
+                </div>
               )}
             </div>
             
