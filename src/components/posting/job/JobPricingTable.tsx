@@ -1,205 +1,134 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Sparkles, Crown, Diamond } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
-import { SummaryTotals } from '@/components/posting/pricing/SummaryTotals';
-import { calculatePricing } from '@/utils/posting/pricing';
+import { Check, Star, Zap } from 'lucide-react';
 
 interface JobPricingTableProps {
-  onPricingSelect: (selectedTier: string, finalPrice: number, durationMonths: number) => void;
-  jobData?: any;
+  onPricingSelect: (tier: string, finalPrice: number, durationMonths: number) => void;
+  jobData: any;
 }
 
-const pricingTiers = [
-  {
-    id: 'free',
-    name: 'Basic',
-    price: 0,
-    description: 'Get started with basic job posting',
-    features: [
-      'Basic job listing',
-      '30-day visibility',
-      'Standard support',
-      'Basic applicant tracking'
-    ],
-    icon: Check,
-    bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200'
-  },
-  {
-    id: 'standard',
-    name: 'Standard',
-    price: 29,
-    popular: true,
-    description: 'Enhanced visibility and features',
-    features: [
-      'Priority placement',
-      'Featured badge',
-      'Extended 60-day visibility',
-      'Advanced applicant filtering',
-      'Email notifications'
-    ],
-    icon: Sparkles,
-    bgColor: 'bg-purple-50',
-    borderColor: 'border-purple-200'
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: 59,
-    description: 'Maximum exposure and premium features',
-    features: [
-      'Top placement guarantee',
-      'Premium badge',
-      '90-day visibility',
-      'Unlimited applicant access',
-      'Priority support',
-      'Analytics dashboard'
-    ],
-    icon: Crown,
-    bgColor: 'bg-amber-50',
-    borderColor: 'border-amber-200'
-  },
-  {
-    id: 'diamond',
-    name: 'Diamond',
-    price: 199,
-    description: 'Ultimate package for serious hiring',
-    features: [
-      'Exclusive top position',
-      'Diamond badge',
-      '120-day visibility',
-      'Dedicated account manager',
-      'Custom branding',
-      'Advanced analytics',
-      'Social media promotion'
-    ],
-    icon: Diamond,
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200'
-  }
-];
-
 const JobPricingTable: React.FC<JobPricingTableProps> = ({ onPricingSelect, jobData }) => {
-  const [selectedTier, setSelectedTier] = useState<string>('standard');
-  const [durationMonths, setDurationMonths] = useState<number>(1);
-  const [autoRenew, setAutoRenew] = useState<boolean>(true);
-
-  const { originalPrice, finalPrice, discountPercentage } = calculatePricing(
-    selectedTier,
-    durationMonths,
-    autoRenew,
-    false, // isFirstPost
-    false  // isNationwide
-  );
-
-  const handleContinue = () => {
-    onPricingSelect(selectedTier, finalPrice, durationMonths);
-  };
+  const pricingPlans = [
+    {
+      tier: 'basic',
+      name: 'Basic',
+      price: 49,
+      duration: 1,
+      icon: <Check className="h-5 w-5" />,
+      description: 'Standard job posting',
+      features: [
+        '30-day listing',
+        'Basic job visibility',
+        'Email support',
+        'Standard applicant filtering'
+      ],
+      buttonText: 'Select Basic',
+      popular: false
+    },
+    {
+      tier: 'premium',
+      name: 'Premium',
+      price: 99,
+      duration: 2,
+      icon: <Star className="h-5 w-5" />,
+      description: 'Enhanced visibility and features',
+      features: [
+        '60-day listing',
+        'Featured placement',
+        'Priority support',
+        'Advanced applicant filtering',
+        'Social media promotion',
+        'Analytics dashboard'
+      ],
+      buttonText: 'Select Premium',
+      popular: true
+    },
+    {
+      tier: 'pro',
+      name: 'Pro',
+      price: 149,
+      duration: 3,
+      icon: <Zap className="h-5 w-5" />,
+      description: 'Maximum exposure and priority',
+      features: [
+        '90-day listing',
+        'Top placement guaranteed',
+        'Dedicated support',
+        'Advanced analytics',
+        'Social media boost',
+        'Urgent hiring badge',
+        'Multiple platform posting',
+        'Candidate screening assistance'
+      ],
+      buttonText: 'Select Pro',
+      popular: false
+    }
+  ];
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-4">Choose Your Job Posting Plan</h2>
-        <p className="text-gray-600 text-lg">
-          Get your job in front of qualified candidates with our flexible pricing options
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {pricingTiers.map((tier) => {
-          const Icon = tier.icon;
-          const isSelected = selectedTier === tier.id;
-          
-          return (
-            <Card
-              key={tier.id}
-              className={cn(
-                'relative cursor-pointer transition-all duration-200 hover:shadow-lg',
-                tier.bgColor,
-                tier.borderColor,
-                isSelected ? 'ring-2 ring-purple-500 shadow-lg transform scale-105' : 'hover:border-purple-300'
-              )}
-              onClick={() => setSelectedTier(tier.id)}
-            >
-              {tier.popular && (
-                <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white">
-                  Most Popular
-                </Badge>
-              )}
-              
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-2">
-                  <Icon className="h-8 w-8 text-purple-600" />
-                </div>
-                <CardTitle className="text-xl">{tier.name}</CardTitle>
-                <div className="text-3xl font-bold text-gray-900">
-                  ${tier.price}
-                  <span className="text-sm font-normal text-gray-500">/month</span>
-                </div>
-                <p className="text-sm text-gray-600">{tier.description}</p>
-              </CardHeader>
-              
-              <CardContent>
-                <ul className="space-y-3">
-                  {tier.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <Check className="h-4 w-4 text-green-500 mr-2 mt-1 flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Button
-                  className={cn(
-                    'w-full mt-6',
-                    isSelected 
-                      ? 'bg-purple-600 hover:bg-purple-700' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  )}
-                  onClick={() => setSelectedTier(tier.id)}
-                >
-                  {isSelected ? 'Selected' : 'Select Plan'}
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="bg-white rounded-lg border p-6 space-y-6">
-        <DurationSelector
-          durationMonths={durationMonths}
-          onDurationChange={setDurationMonths}
-          selectedPricingTier={selectedTier}
-          isDiamondPlan={selectedTier === 'diamond'}
-        />
-        
-        <SummaryTotals
-          originalPrice={originalPrice}
-          finalPrice={finalPrice}
-          discountPercentage={discountPercentage}
-          durationMonths={durationMonths}
-          autoRenew={autoRenew}
-          onAutoRenewChange={setAutoRenew}
-        />
-        
-        <div className="flex justify-between items-center pt-4 border-t">
-          <p className="text-sm text-gray-500">
-            Secure payment processed by Stripe
-          </p>
-          <Button
-            size="lg"
-            className="bg-purple-600 hover:bg-purple-700 text-white px-8"
-            onClick={handleContinue}
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {pricingPlans.map((plan) => (
+          <Card 
+            key={plan.tier} 
+            className={`relative ${plan.popular ? 'border-purple-500 shadow-lg' : 'border-gray-200'}`}
           >
-            Continue to Payment
-          </Button>
-        </div>
+            {plan.popular && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  Most Popular
+                </span>
+              </div>
+            )}
+            
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-2">
+                <div className={`p-2 rounded-full ${plan.popular ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}>
+                  {plan.icon}
+                </div>
+              </div>
+              <CardTitle className="text-xl">{plan.name}</CardTitle>
+              <div className="text-3xl font-bold">
+                ${plan.price}
+                <span className="text-sm font-normal text-gray-500">/{plan.duration} month{plan.duration > 1 ? 's' : ''}</span>
+              </div>
+              <p className="text-gray-600">{plan.description}</p>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+              <ul className="space-y-2">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-center text-sm">
+                    <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              
+              <Button
+                onClick={() => onPricingSelect(plan.tier, plan.price, plan.duration)}
+                className={`w-full ${
+                  plan.popular 
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {plan.buttonText}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      
+      <div className="bg-blue-50 rounded-lg p-4 text-center">
+        <p className="text-sm text-blue-800">
+          <strong>Job Title:</strong> {jobData?.title || 'Your Job Posting'}
+        </p>
+        <p className="text-xs text-blue-600 mt-1">
+          All plans include: Applicant management, mobile-optimized listings, and candidate notifications
+        </p>
       </div>
     </div>
   );

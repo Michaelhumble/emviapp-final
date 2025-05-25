@@ -27,6 +27,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   const { isLoading } = useStripe();
 
   const handlePricingSelect = (tier: string, finalPrice: number, durationMonths: number) => {
+    console.log('Pricing selected:', { tier, finalPrice, durationMonths });
     setSelectedPricing({ tier, finalPrice, durationMonths });
     setCurrentStep('payment');
   };
@@ -34,11 +35,13 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
   const handlePaymentSuccess = () => {
     // Create job posting record and redirect to success page
     const jobId = Math.random().toString(36).substr(2, 9); // Generate temporary ID
+    console.log('Payment successful for job:', jobFormData);
     toast.success('Job posted successfully!');
     navigate(`/post-success?id=${jobId}`);
   };
 
   const handlePaymentError = () => {
+    console.error('Payment failed for job posting');
     toast.error('Payment failed. Please try again.');
     setCurrentStep('pricing');
   };
@@ -54,6 +57,11 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
             >
               ← Back to Job Details
             </button>
+          </div>
+          
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Posting Plan</h1>
+            <p className="text-gray-600">Select the plan that best fits your hiring needs</p>
           </div>
           
           <JobPricingTable

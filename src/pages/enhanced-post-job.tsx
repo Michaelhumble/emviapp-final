@@ -18,10 +18,10 @@ const EnhancedPostJob = () => {
   const handleTemplateSelect = (template: any) => {
     console.log('Template selected:', template);
     
-    // Get prefill data based on template selection
+    // Get prefill data based on template selection for future use
     const prefillData = getJobPrefillByIndustry(template.id || template.title || '');
     
-    // Set the selected template and initial values separately
+    // Store the selected template and prefill data (ready for when form accepts initialValues)
     setSelectedTemplate(template);
     setFormInitialValues(prefillData);
     
@@ -33,7 +33,15 @@ const EnhancedPostJob = () => {
 
   const handleFormSubmit = (formData: any) => {
     console.log('Job form submitted:', formData);
-    setJobFormData(formData);
+    
+    // Merge any prefill data with submitted form data for complete job information
+    const completeJobData = {
+      ...formInitialValues,
+      ...formData,
+      selectedTemplate
+    };
+    
+    setJobFormData(completeJobData);
     setCurrentStep('pricing');
   };
 
