@@ -30,10 +30,30 @@ const RenewPostDialog = ({
   onRenewed
 }: RenewPostDialogProps) => {
   const [selectedPlan, setSelectedPlan] = useState<JobPricingTier>('premium');
+  const [selectedDuration, setSelectedDuration] = useState<number>(1);
   const { initiatePayment, isLoading } = usePostPayment();
 
   const handlePlanChange = (newPricing: JobPricingTier) => {
     setSelectedPlan(newPricing);
+  };
+
+  const handleDurationChange = (months: number) => {
+    setSelectedDuration(months);
+  };
+
+  const getDurationDisplay = (months: number) => {
+    switch (months) {
+      case 1:
+        return '30 days';
+      case 3:
+        return '90 days';
+      case 6:
+        return '180 days';
+      case 12:
+        return '1 year';
+      default:
+        return `${months * 30} days`;
+    }
   };
 
   const handleRenew = async () => {
@@ -41,7 +61,7 @@ const RenewPostDialog = ({
     const pricingOptions: PricingOptions = {
       selectedPricingTier: selectedPlan,
       isRenewal: true,
-      durationMonths: 1,
+      durationMonths: selectedDuration,
       isNationwide,
       fastSalePackage,
       bundleWithJobPost,
@@ -84,11 +104,26 @@ const RenewPostDialog = ({
                 <div className="flex justify-between">
                   <div>
                     <p className="font-medium">Premium</p>
-                    <p className="text-sm text-gray-500">30 days visibility</p>
+                    <p className="text-sm text-gray-500">{getDurationDisplay(selectedDuration)} visibility</p>
                   </div>
                   <p className="font-semibold">$39.99</p>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Select Duration</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[1, 3, 6, 12].map((months) => (
+                <div 
+                  key={months}
+                  className={`border rounded-lg p-3 cursor-pointer ${selectedDuration === months ? 'border-primary bg-primary/5' : 'border-gray-200'}`}
+                  onClick={() => handleDurationChange(months)}
+                >
+                  <p className="text-sm font-medium">{getDurationDisplay(months)}</p>
+                </div>
+              ))}
             </div>
           </div>
 
