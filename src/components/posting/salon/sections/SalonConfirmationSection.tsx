@@ -1,182 +1,166 @@
 
-import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import confetti from 'canvas-confetti';
-import { CheckCircle, Share2, Eye, TrendingUp, Crown, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React, { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Star, TrendingUp, Users, Zap } from "lucide-react";
+import confetti from "canvas-confetti";
 
-export const SalonConfirmationSection = () => {
+interface SalonConfirmationSectionProps {
+  onComplete: () => void;
+}
+
+export const SalonConfirmationSection = ({ onComplete }: SalonConfirmationSectionProps) => {
   useEffect(() => {
     // Trigger confetti animation
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-    // Second burst after delay
-    setTimeout(() => {
-      confetti({
-        particleCount: 50,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 }
-      });
-      confetti({
-        particleCount: 50,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 }
-      });
-    }, 500);
+    function randomInRange(min: number, max: number) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+
+      confetti(Object.assign({}, defaults, {
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      }));
+      confetti(Object.assign({}, defaults, {
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      }));
+    }, 250);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto"
-      >
-        <Card className="backdrop-blur-sm bg-white/80 border border-white/20 shadow-2xl">
-          <CardContent className="p-12 text-center">
-            {/* Success Icon */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mb-8"
-            >
-              <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center shadow-lg">
-                <CheckCircle className="h-12 w-12 text-white" />
-              </div>
-            </motion.div>
+    <div className="text-center space-y-8">
+      {/* Success Animation */}
+      <div className="relative">
+        <div className="mx-auto w-24 h-24 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center animate-pulse">
+          <CheckCircle className="h-12 w-12 text-white" />
+        </div>
+        <div className="absolute inset-0 w-24 h-24 mx-auto bg-green-400 rounded-full animate-ping opacity-25"></div>
+      </div>
 
-            {/* Main Message */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mb-8"
-            >
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                🎉 Your Salon is Live!
-              </h1>
-              <p className="text-xl text-gray-600 mb-2">
-                Congratulations! Your premium listing is now active and attracting buyers.
-              </p>
-              <div className="flex justify-center gap-2 mb-4">
-                <Badge className="bg-green-100 text-green-800">
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  Active Listing
-                </Badge>
-                <Badge className="bg-purple-100 text-purple-800">
-                  <Crown className="h-3 w-3 mr-1" />
-                  Premium Featured
-                </Badge>
-              </div>
-            </motion.div>
+      {/* Success Message */}
+      <div className="space-y-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          🎉 Congratulations!
+        </h1>
+        <h2 className="text-2xl font-semibold text-gray-900">
+          Your Premium Salon Listing is Live!
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          Your salon is now featured on EmviApp's exclusive marketplace. 
+          Get ready to connect with serious buyers!
+        </p>
+      </div>
 
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-            >
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
-                <Eye className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-blue-600">127</div>
-                <div className="text-sm text-blue-700">Views in first hour</div>
-              </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
-                <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-green-600">23</div>
-                <div className="text-sm text-green-700">Interested buyers</div>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
-                <Crown className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-purple-600">#1</div>
-                <div className="text-sm text-purple-700">In your area</div>
-              </div>
-            </motion.div>
+      {/* Success Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+          <div className="flex items-center justify-center mb-3">
+            <TrendingUp className="h-8 w-8 text-blue-600" />
+          </div>
+          <h3 className="font-semibold text-lg mb-2">Average Time to Sell</h3>
+          <div className="text-3xl font-bold text-blue-600 mb-1">14 days</div>
+          <p className="text-sm text-gray-600">Premium listings sell 3x faster</p>
+        </div>
 
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center mb-8"
-            >
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-3">
-                <Eye className="h-4 w-4 mr-2" />
-                View Your Listing
-              </Button>
-              <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50 px-8 py-3">
-                <Share2 className="h-4 w-4 mr-2" />
-                Share Listing
-              </Button>
-            </motion.div>
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6">
+          <div className="flex items-center justify-center mb-3">
+            <Users className="h-8 w-8 text-emerald-600" />
+          </div>
+          <h3 className="font-semibold text-lg mb-2">Buyer Interest</h3>
+          <div className="text-3xl font-bold text-emerald-600 mb-1">95%</div>
+          <p className="text-sm text-gray-600">Of premium listings get multiple offers</p>
+        </div>
 
-            {/* Next Steps */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0 }}
-              className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 text-left"
-            >
-              <h3 className="font-semibold text-gray-900 mb-4 text-center">🚀 What Happens Next?</h3>
-              <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-medium">1</div>
-                    <div>
-                      <div className="font-medium text-gray-900">Buyer Screening</div>
-                      <div>We verify all potential buyers before sharing your contact info</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-medium">2</div>
-                    <div>
-                      <div className="font-medium text-gray-900">Instant Notifications</div>
-                      <div>Get notified immediately when qualified buyers show interest</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-medium">3</div>
-                    <div>
-                      <div className="font-medium text-gray-900">Expert Support</div>
-                      <div>Our team helps negotiate and close your sale successfully</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-medium">4</div>
-                    <div>
-                      <div className="font-medium text-gray-900">Secure Transfer</div>
-                      <div>Safe, documented ownership transfer with legal protection</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
+          <div className="flex items-center justify-center mb-3">
+            <Star className="h-8 w-8 text-purple-600" />
+          </div>
+          <h3 className="font-semibold text-lg mb-2">Success Rate</h3>
+          <div className="text-3xl font-bold text-purple-600 mb-1">98%</div>
+          <p className="text-sm text-gray-600">Premium listings close successfully</p>
+        </div>
+      </div>
 
-            {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2 }}
-              className="mt-8 text-center text-sm text-gray-500"
-            >
-              Questions? Call us at (555) 123-4567 or email support@emviapp.com
-            </motion.div>
-          </CardContent>
-        </Card>
-      </motion.div>
+      {/* Next Steps */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-8 max-w-4xl mx-auto">
+        <h3 className="font-semibold text-xl mb-4 text-amber-800">What Happens Next?</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Badge className="bg-green-500 text-white">1</Badge>
+              <span>Your listing goes live within 2 hours</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge className="bg-blue-500 text-white">2</Badge>
+              <span>Verified buyers start viewing immediately</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge className="bg-purple-500 text-white">3</Badge>
+              <span>You'll receive buyer inquiries in your dashboard</span>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Badge className="bg-orange-500 text-white">4</Badge>
+              <span>Our team screens all potential buyers</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge className="bg-red-500 text-white">5</Badge>
+              <span>We facilitate secure negotiations</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge className="bg-emerald-500 text-white">6</Badge>
+              <span>Complete your sale with legal support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button 
+          size="lg" 
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4"
+          onClick={onComplete}
+        >
+          <Zap className="h-5 w-5 mr-2" />
+          Go to Dashboard
+        </Button>
+        <Button 
+          size="lg" 
+          variant="outline"
+          className="border-purple-300 text-purple-600 hover:bg-purple-50 px-8 py-4"
+        >
+          Share Your Listing
+        </Button>
+      </div>
+
+      {/* Support Contact */}
+      <div className="text-center pt-8">
+        <p className="text-gray-600">
+          Need help? Contact our Premium Support team at{" "}
+          <a href="mailto:premium@emviapp.com" className="text-purple-600 hover:underline font-medium">
+            premium@emviapp.com
+          </a>
+        </p>
+      </div>
     </div>
   );
 };
+
+export default SalonConfirmationSection;

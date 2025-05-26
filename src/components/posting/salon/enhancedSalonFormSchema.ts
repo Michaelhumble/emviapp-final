@@ -23,15 +23,18 @@ export const enhancedSalonFormSchema = z.object({
   ownerMessage: z.string().optional(),
   reasonForSelling: z.string().optional(),
 
-  // Business Performance
+  // Business Performance - Fixed field names
   showRevenue: z.boolean().default(true),
   showProfit: z.boolean().default(true),
   showClients: z.boolean().default(true),
   revenue: z.string().optional(),
+  monthlyRevenue: z.string().optional(),
+  annualRevenue: z.string().optional(),
   profit: z.string().optional(),
   monthlyClients: z.string().optional(),
   yearsInOperation: z.string().optional(),
   leaseTerms: z.string().optional(),
+  monthlyRent: z.string().optional(),
   askingPrice: z.string().min(1, "Asking price is required"),
   hidePrice: z.boolean().default(false),
 
@@ -41,7 +44,12 @@ export const enhancedSalonFormSchema = z.object({
   teamStays: z.boolean().default(false),
   staffBios: z.string().optional(),
 
-  // Promotion Options
+  // Promotion Options - Fixed type
+  promotionUpgrades: z.object({
+    isUrgent: z.boolean().default(false),
+    isFeatured: z.boolean().default(false),
+    isDiamond: z.boolean().default(false)
+  }).default({}),
   urgentSale: z.boolean().default(false),
   featuredListing: z.boolean().default(false),
   diamondListing: z.boolean().default(false),

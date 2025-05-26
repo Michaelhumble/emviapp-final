@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/layout/Layout';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
@@ -98,7 +97,6 @@ const PostSalon = () => {
         />
       </Helmet>
       
-      {/* Remove Layout wrapper for full-screen premium experience */}
       <PremiumSalonWizard
         onSubmit={handleSubmit}
         photoUploads={photoUploads}
