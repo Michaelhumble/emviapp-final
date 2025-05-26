@@ -22,35 +22,11 @@ export const calculatePricing = (
   isFirstPost: boolean = false,
   isNationwide: boolean = false
 ): { originalPrice: number; finalPrice: number; discountPercentage: number } => {
-  // Base pricing per tier (monthly)
-  let basePrice = 0;
   
-  switch (selectedPricingTier) {
-    case 'free':
-      basePrice = 0;
-      break;
-    case 'gold':
-      basePrice = 19.99;
-      break;
-    case 'premium':
-      basePrice = 39.99;
-      break;
-    case 'diamond':
-      basePrice = 99.99;
-      break;
-    default:
-      basePrice = 19.99; // Default to gold
-  }
-  
-  // Free for first post if specified
-  if (isFirstPost && selectedPricingTier !== 'diamond') {
-    basePrice = 0;
-  }
-  
-  // Special pricing for Diamond - ALWAYS 12-month plan
+  // DIAMOND TIER - Special handling: Always $999.99 for 1 year only
   if (selectedPricingTier === 'diamond') {
-    const originalPrice = basePrice * 12; // $99.99 * 12 = $1,199.88
-    const finalPrice = 999.99; // Flat rate for Diamond annual
+    const finalPrice = 999.99;
+    const originalPrice = 1199.88; // Theoretical monthly price × 12 for discount calculation
     const discountPercentage = Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
     
     // Add nationwide fee if selected
@@ -64,6 +40,28 @@ export const calculatePricing = (
       finalPrice: finalPrice + nationwidePrice,
       discountPercentage
     };
+  }
+
+  // Base pricing per tier (monthly) for NON-DIAMOND tiers
+  let basePrice = 0;
+  
+  switch (selectedPricingTier) {
+    case 'free':
+      basePrice = 0;
+      break;
+    case 'gold':
+      basePrice = 19.99;
+      break;
+    case 'premium':
+      basePrice = 39.99;
+      break;
+    default:
+      basePrice = 19.99; // Default to gold
+  }
+  
+  // Free for first post if specified
+  if (isFirstPost && selectedPricingTier !== 'diamond') {
+    basePrice = 0;
   }
   
   // Calculate original price (without discounts) for regular plans

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -29,7 +28,13 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
 
   const handlePricingSelect = (tier: string, finalPrice: number, durationMonths: number) => {
     console.log('Pricing selected:', { tier, finalPrice, durationMonths });
-    setSelectedPricing({ tier, finalPrice, durationMonths });
+    
+    // For Diamond tier, force 12-month duration and $999.99 pricing
+    if (tier === 'diamond') {
+      setSelectedPricing({ tier, finalPrice: 999.99, durationMonths: 12 });
+    } else {
+      setSelectedPricing({ tier, finalPrice, durationMonths });
+    }
     
     // For free tier, skip confirmation
     if (tier === 'free') {
@@ -48,6 +53,12 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
         toast.error('Please log in to continue');
         navigate('/login');
         return;
+      }
+
+      // For Diamond tier, ensure we use correct pricing and duration
+      if (tier === 'diamond') {
+        finalPrice = 999.99;
+        durationMonths = 12;
       }
 
       // For free tier, create job directly without payment

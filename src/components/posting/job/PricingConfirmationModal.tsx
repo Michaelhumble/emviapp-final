@@ -36,7 +36,9 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
           icon: <Diamond className="h-6 w-6 text-cyan-500" />,
           color: 'text-cyan-600',
           bgColor: 'bg-cyan-50',
-          features: ['Top diamond placement', 'Personal account manager', 'Custom design']
+          features: ['Top diamond placement', 'Personal account manager', 'Custom design'],
+          duration: '1 year', // Diamond is always 1 year
+          price: '$999.99'
         };
       case 'premium':
         return {
@@ -44,7 +46,9 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
           icon: <Crown className="h-6 w-6 text-purple-500" />,
           color: 'text-purple-600',
           bgColor: 'bg-purple-50',
-          features: ['Premium placement above Gold', 'Advanced analytics', 'Priority support']
+          features: ['Premium placement above Gold', 'Advanced analytics', 'Priority support'],
+          duration: getDurationDisplay(durationMonths),
+          price: `$${finalPrice.toFixed(2)}`
         };
       case 'gold':
         return {
@@ -52,7 +56,9 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
           icon: <Star className="h-6 w-6 text-amber-500" />,
           color: 'text-amber-600',
           bgColor: 'bg-amber-50',
-          features: ['Featured placement', 'Gold badge highlight', 'Enhanced visibility']
+          features: ['Featured placement', 'Gold badge highlight', 'Enhanced visibility'],
+          duration: getDurationDisplay(durationMonths),
+          price: `$${finalPrice.toFixed(2)}`
         };
       default:
         return {
@@ -60,7 +66,9 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
           icon: <Sparkles className="h-6 w-6 text-gray-500" />,
           color: 'text-gray-600',
           bgColor: 'bg-gray-50',
-          features: ['Basic search visibility', 'Standard placement', '30-day duration']
+          features: ['Basic search visibility', 'Standard placement', '30-day duration'],
+          duration: getDurationDisplay(durationMonths),
+          price: '$0.00'
         };
     }
   };
@@ -105,13 +113,13 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
           
           <div className="flex justify-between items-center mb-3">
             <span className="font-medium">Duration:</span>
-            <span>{getDurationDisplay(durationMonths)}</span>
+            <span>{tierDetails.duration}</span>
           </div>
           
           <div className="flex justify-between items-center mb-4">
             <span className="font-medium">Total:</span>
             <span className="text-xl font-bold">
-              ${finalPrice.toFixed(2)}
+              {tierDetails.price}
             </span>
           </div>
 
@@ -121,6 +129,12 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
               <p key={index} className="text-sm text-gray-600">• {feature}</p>
             ))}
           </div>
+          
+          {selectedTier === 'diamond' && (
+            <div className="mt-3 p-2 bg-cyan-100 rounded text-xs text-cyan-800">
+              Annual exclusive plan - No monthly options available
+            </div>
+          )}
         </div>
 
         <DialogFooter className="flex gap-2">

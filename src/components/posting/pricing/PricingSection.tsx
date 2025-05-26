@@ -28,6 +28,8 @@ const PricingSection: React.FC<PricingSectionProps> = ({
       name: 'Free Listing',
       price: 0,
       duration: 30,
+      priceLabel: '$0',
+      durationLabel: '30 days',
       features: ['Basic visibility', '30-day duration', 'Standard placement'],
       icon: <Check className="h-5 w-5 text-gray-500" />
     },
@@ -36,6 +38,8 @@ const PricingSection: React.FC<PricingSectionProps> = ({
       name: 'Gold Featured',
       price: 19.99,
       duration: 30,
+      priceLabel: '$19.99',
+      durationLabel: '30 days',
       features: ['Featured placement', 'Gold badge', 'Priority listing'],
       icon: <Star className="h-5 w-5 text-amber-500" />
     },
@@ -44,6 +48,8 @@ const PricingSection: React.FC<PricingSectionProps> = ({
       name: 'Premium Listing',
       price: 39.99,
       duration: 30,
+      priceLabel: '$39.99',
+      durationLabel: '30 days',
       features: ['Top placement', 'Premium badge', 'Analytics'],
       icon: <Crown className="h-5 w-5 text-purple-500" />
     },
@@ -52,7 +58,9 @@ const PricingSection: React.FC<PricingSectionProps> = ({
       name: 'Diamond Exclusive',
       price: 999.99,
       duration: 365,
-      features: ['Highest placement', 'Diamond badge', 'Personal manager', '1 year duration'],
+      priceLabel: '$999.99',
+      durationLabel: '1 year',
+      features: ['Highest placement', 'Diamond badge', 'Personal manager', 'Exclusive features'],
       icon: <Diamond className="h-5 w-5 text-cyan-500" />
     }
   ];
@@ -92,11 +100,11 @@ const PricingSection: React.FC<PricingSectionProps> = ({
               <div className="flex justify-center mb-2">{plan.icon}</div>
               <CardTitle className="text-lg">{plan.name}</CardTitle>
               <div className="text-2xl font-bold">
-                ${plan.price}
+                {plan.priceLabel}
                 {plan.tier === 'diamond' && <span className="text-sm font-normal">/year</span>}
               </div>
               <p className="text-sm text-gray-500">
-                {plan.tier === 'diamond' ? '1 year' : `${plan.duration} days`}
+                {plan.durationLabel}
               </p>
             </CardHeader>
             <CardContent>
