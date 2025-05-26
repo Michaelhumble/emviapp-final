@@ -5,20 +5,20 @@ import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import PremiumSalonWizard from '@/components/posting/salon/PremiumSalonWizard';
-import { SalonListing } from '@/components/posting/salon/types';
+import { EnhancedSalonFormValues } from '@/components/posting/salon/enhancedSalonFormSchema';
 
 const PostSalon = () => {
   const { initiatePayment, isLoading } = usePostPayment();
   
-  const handleSubmit = async (data: SalonListing) => {
+  const handleSubmit = async (data: EnhancedSalonFormValues) => {
     try {
       // Convert salon listing data to the expected format for the API
       const salonDetails = {
-        title: data.identity?.salonName || 'Salon For Sale',
-        description: data.about?.description || '',
-        location: `${data.location?.city || ''}, ${data.location?.state || ''}`,
+        title: data.salonName || 'Salon For Sale',
+        description: data.description || '',
+        location: `${data.city || ''}, ${data.state || ''}`,
         price: data.askingPrice || '',
-        business_type: data.identity?.businessType || 'salon',
+        business_type: data.businessType || 'salon',
         contact_info: {
           owner_name: "Salon Owner",
           phone: "(555) 123-4567",
@@ -27,16 +27,32 @@ const PostSalon = () => {
         post_type: 'salon',
         metadata: {
           salonListingData: data,
-          photos: data.photos?.photos || [],
-          performanceData: data.performance || {},
-          assets: data.assets || {},
-          promotion: data.promotion || {},
+          photos: data.photos || [],
+          performanceData: {
+            annualRevenue: data.annualRevenue,
+            monthlyRent: data.monthlyRent,
+            averageClients: data.averageClients,
+            hideFinancialInfo: data.hideFinancialInfo,
+            growthTrend: data.growthTrend,
+          },
+          assets: {
+            equipment: data.equipment,
+            equipmentValue: data.equipmentValue,
+            staffCount: data.staffCount,
+            staffIncluded: data.staffIncluded,
+            leaseDetails: data.leaseDetails,
+          },
+          promotion: {
+            promotionTier: data.promotionTier,
+            urgentListing: data.urgentListing,
+            highlightColor: data.highlightColor,
+          },
         }
       };
       
       // Define pricing options based on selected promotion tier
       const pricingOptions: PricingOptions = {
-        selectedPricingTier: (data.promotion?.promotionTier as JobPricingTier) || 'premium',
+        selectedPricingTier: (data.promotionTier as JobPricingTier) || 'premium',
         durationMonths: 1,
         autoRenew: true,
         isFirstPost: true,
