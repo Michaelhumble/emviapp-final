@@ -1,11 +1,11 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Upload, Building2 } from "lucide-react";
+import { Upload, Building2, X } from "lucide-react";
 import { SalonFormValues } from "./salonFormSchema";
 
 interface SalonIdentitySectionProps {
@@ -25,13 +25,45 @@ const businessTypes = [
 ];
 
 export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setLogoPreview(previewUrl);
+      setLogoFile(file);
+      
       // In a real app, this would upload to a server
       console.log("Logo uploaded:", file.name);
     }
   };
+
+  const handleRemoveLogo = () => {
+    // Clean up the preview URL to prevent memory leaks
+    if (logoPreview) {
+      URL.revokeObjectURL(logoPreview);
+    }
+    setLogoPreview(null);
+    setLogoFile(null);
+    
+    // Reset the file input
+    const fileInput = document.getElementById("logo-upload") as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
+  // Clean up preview URL when component unmounts or preview changes
+  React.useEffect(() => {
+    return () => {
+      if (logoPreview) {
+        URL.revokeObjectURL(logoPreview);
+      }
+    };
+  }, [logoPreview]);
 
   return (
     <div className="space-y-8">
@@ -122,7 +154,7 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
           <FormLabel className="text-lg font-medium text-gray-800">
             Salon Logo (Optional)
           </FormLabel>
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors relative">
             <input
               type="file"
               accept="image/*"
@@ -130,17 +162,37 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
               className="hidden"
               id="logo-upload"
             />
-            <label htmlFor="logo-upload" className="cursor-pointer">
-              <div className="flex flex-col items-center space-y-3">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Upload className="w-6 h-6 text-gray-500" />
-                </div>
-                <div>
-                  <p className="font-medium text-gray-700">Upload your salon logo</p>
-                  <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
-                </div>
+            
+            {logoPreview ? (
+              <div className="relative">
+                <img
+                  src={logoPreview}
+                  alt="Logo preview"
+                  className="max-w-full max-h-32 mx-auto rounded-lg object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveLogo}
+                  className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
+                  title="Remove logo"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <p className="text-sm text-gray-500 mt-2">{logoFile?.name}</p>
               </div>
-            </label>
+            ) : (
+              <label htmlFor="logo-upload" className="cursor-pointer">
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Upload className="w-6 h-6 text-gray-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-700">Upload your salon logo</p>
+                    <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
+                  </div>
+                </div>
+              </label>
+            )}
           </div>
         </div>
       </div>
