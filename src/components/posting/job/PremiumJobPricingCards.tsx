@@ -1,383 +1,364 @@
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Check, Crown, Star, Diamond, Clock, Users, Flame, Shield, Globe, Zap } from 'lucide-react';
+import { Check, Star, Crown, Diamond, Clock, Users, Zap, Timer } from 'lucide-react';
 import { calculatePricing } from '@/utils/posting/pricing';
-import { JobPricingTier } from '@/utils/posting/types';
+import { cn } from '@/lib/utils';
 
 interface PremiumJobPricingCardsProps {
   onPricingSelect: (tier: string, finalPrice: number, durationMonths: number) => void;
   jobData?: any;
 }
 
-const PremiumJobPricingCards: React.FC<PremiumJobPricingCardsProps> = ({
+const PremiumJobPricingCards: React.FC<PremiumJobPricingCardsProps> = ({ 
   onPricingSelect,
-  jobData
+  jobData 
 }) => {
-  const [selectedTier, setSelectedTier] = useState<JobPricingTier>('gold');
-  const [durationMonths, setDurationMonths] = useState(1);
-  const [autoRenew, setAutoRenew] = useState(false);
-  const [isNationwide, setIsNationwide] = useState(false);
-  const [goldSpotsLeft] = useState(8);
-  const [premiumSpotsLeft] = useState(5);
-  const [timeLeft, setTimeLeft] = useState('47:32:15');
+  const [selectedTier, setSelectedTier] = useState<string>('gold');
+  const [selectedDuration, setSelectedDuration] = useState<number>(1);
+  const [autoRenew, setAutoRenew] = useState<boolean>(true); // Default to ON
+  const [isNationwide, setIsNationwide] = useState<boolean>(false);
 
-  // Countdown timer effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const endTime = now + (47 * 60 * 60 * 1000) + (32 * 60 * 1000) + (15 * 1000);
-      const distance = endTime - now;
-      
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      
-      setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const pricingPlans = [
+  const pricingTiers = [
     {
-      tier: 'free' as JobPricingTier,
+      id: 'free',
       name: 'Free Listing',
+      icon: <Check className="h-6 w-6 text-gray-500" />,
       price: 0,
       originalPrice: 0,
-      icon: <Check className="h-6 w-6 text-gray-500" />,
-      gradient: 'from-gray-50 to-slate-50',
-      borderColor: 'border-gray-200',
-      features: ['Basic visibility', '30-day duration', 'Standard search placement'],
       badge: null,
-      spotsLeft: null
+      badgeColor: '',
+      borderColor: 'border-gray-200',
+      buttonColor: 'bg-gray-600 hover:bg-gray-700',
+      features: [
+        'Basic visibility',
+        '30-day duration', 
+        'Standard search placement',
+        'Basic support'
+      ],
+      scarcity: null
     },
     {
-      tier: 'gold' as JobPricingTier,
+      id: 'gold',
       name: 'Gold Featured',
+      icon: <Star className="h-6 w-6 text-amber-500" />,
       price: 19.99,
       originalPrice: 24.99,
-      icon: <Star className="h-6 w-6 text-amber-500" />,
-      gradient: 'from-amber-50/80 via-yellow-50/60 to-orange-50/40',
-      borderColor: 'border-amber-300',
-      features: ['⭐ Featured placement', '🏆 Gold badge highlight', '📈 2x more visibility', '⚡ Priority in search'],
       badge: 'Most Popular',
-      spotsLeft: goldSpotsLeft
+      badgeColor: 'bg-gradient-to-r from-amber-400 to-orange-400 text-white',
+      borderColor: 'border-amber-300',
+      buttonColor: 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600',
+      features: [
+        '⭐ Featured placement',
+        '🏆 Gold badge highlight',
+        '📈 2x more visibility',
+        '⚡ Priority in search'
+      ],
+      scarcity: '8 left'
     },
     {
-      tier: 'premium' as JobPricingTier,
+      id: 'premium',
       name: 'Premium Listing',
+      icon: <Crown className="h-6 w-6 text-purple-500" />,
       price: 39.99,
       originalPrice: 49.99,
-      icon: <Crown className="h-6 w-6 text-purple-500" />,
-      gradient: 'from-purple-50/80 via-indigo-50/60 to-blue-50/40',
-      borderColor: 'border-purple-300',
-      features: ['👑 Top placement guarantee', '💎 Premium badge', '📊 Advanced analytics', '🎯 Targeted promotion'],
       badge: 'Best Value',
-      spotsLeft: premiumSpotsLeft
+      badgeColor: 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white',
+      borderColor: 'border-purple-300',
+      buttonColor: 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600',
+      features: [
+        '👑 Top placement guarantee',
+        '💎 Premium badge',
+        '📊 Advanced analytics',
+        '🎯 Targeted promotion'
+      ],
+      scarcity: '5 left'
     },
     {
-      tier: 'diamond' as JobPricingTier,
+      id: 'diamond',
       name: 'Diamond Exclusive',
+      icon: <Diamond className="h-6 w-6 text-cyan-500" />,
       price: 999.99,
       originalPrice: 1199.99,
-      icon: <Diamond className="h-6 w-6 text-cyan-500" />,
-      gradient: 'from-cyan-50/80 via-blue-50/60 to-indigo-50/40',
-      borderColor: 'border-cyan-300',
-      features: ['💎 Highest placement', '👨‍💼 Personal manager', '🎨 Custom styling', '📞 Priority support'],
       badge: 'Annual Only',
-      spotsLeft: 2
+      badgeColor: 'bg-gradient-to-r from-cyan-400 to-blue-400 text-white',
+      borderColor: 'border-cyan-300',
+      buttonColor: 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600',
+      features: [
+        '💎 Highest placement',
+        '⭐ Personal manager',
+        '🎨 Custom styling',
+        '📞 Priority support'
+      ],
+      scarcity: '2 left'
     }
   ];
 
-  const handleTierSelect = (tier: JobPricingTier) => {
-    setSelectedTier(tier);
+  const durationOptions = [
+    { months: 1, label: '1 Month', discount: 0 },
+    { months: 3, label: '3 Months', discount: 10 },
+    { months: 6, label: '6 Months', discount: 15 },
+    { months: 12, label: '12 Months', discount: 20 }
+  ];
+
+  const handleTierSelect = (tierId: string) => {
+    setSelectedTier(tierId);
+    
+    // Diamond tier is always 12 months
+    if (tierId === 'diamond') {
+      setSelectedDuration(12);
+    }
+  };
+
+  const handleDurationSelect = (months: number) => {
+    // Diamond tier is locked to 12 months
+    if (selectedTier === 'diamond') return;
+    setSelectedDuration(months);
   };
 
   const handleProceed = () => {
-    const months = selectedTier === 'diamond' ? 12 : durationMonths;
-    const { finalPrice } = calculatePricing(
-      selectedTier,
-      months,
+    const isFirstPost = false; // You can determine this based on user data
+    
+    // Use the calculatePricing utility for accurate pricing
+    const pricingResult = calculatePricing(
+      selectedTier as any,
+      selectedTier === 'diamond' ? 12 : selectedDuration,
+      autoRenew,
+      isFirstPost,
+      isNationwide
+    );
+
+    console.log('🎯 Pricing calculation result:', pricingResult);
+    
+    onPricingSelect(selectedTier, pricingResult.finalPrice, selectedTier === 'diamond' ? 12 : selectedDuration);
+  };
+
+  const getDisplayPrice = (tier: any) => {
+    if (tier.id === 'free') return '$0';
+    if (tier.id === 'diamond') return '$999.99/year';
+    
+    const pricingResult = calculatePricing(
+      tier.id as any,
+      selectedDuration,
       autoRenew,
       false,
       isNationwide
     );
     
-    onPricingSelect(selectedTier, finalPrice, months);
+    return `$${pricingResult.finalPrice.toFixed(2)}`;
   };
 
-  const getDurationOptions = () => [
-    { months: 1, label: '1 Month', discount: 0 },
-    { months: 3, label: '3 Months', discount: 10 },
-    { months: 6, label: '6 Months', discount: 15 },
-    { months: 12, label: '1 Year', discount: 20 }
-  ];
-
-  const getDisplayPrice = (plan: any) => {
-    if (plan.tier === 'free') return '$0';
-    if (plan.tier === 'diamond') return '$999.99/year';
+  const getOriginalPrice = (tier: any) => {
+    if (tier.id === 'free' || tier.id === 'diamond') return null;
     
-    const months = selectedTier === plan.tier ? durationMonths : 1;
-    const { finalPrice } = calculatePricing(
-      plan.tier,
-      months,
-      autoRenew && selectedTier === plan.tier,
+    const pricingResult = calculatePricing(
+      tier.id as any,
+      selectedDuration,
+      false, // No auto-renew for original price
       false,
-      isNationwide && selectedTier === plan.tier
+      false // No nationwide for original price
     );
     
-    return `$${finalPrice.toFixed(2)}`;
+    return pricingResult.originalPrice > pricingResult.finalPrice ? 
+      `$${pricingResult.originalPrice.toFixed(2)}` : null;
   };
 
   return (
     <div className="space-y-8">
-      {/* Scarcity Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center"
-      >
-        <div className="inline-flex items-center gap-4 bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-full px-6 py-3 shadow-lg">
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-red-500" />
-            <span className="font-bold text-red-700">Price increase in: {timeLeft}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Flame className="h-4 w-4 text-orange-500" />
-            <span className="text-sm text-orange-700">Limited spots remaining</span>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Pricing Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {pricingPlans.map((plan, index) => (
-          <motion.div
-            key={plan.tier}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            whileHover={{ 
-              y: -8,
-              transition: { duration: 0.2 }
-            }}
-            className="relative"
-          >
-            <Card className={`relative overflow-hidden cursor-pointer transition-all duration-300 ${
-              selectedTier === plan.tier 
-                ? 'ring-2 ring-purple-500 shadow-xl transform scale-105' 
-                : 'hover:shadow-lg'
-            } ${plan.borderColor} backdrop-blur-sm`}>
-              
-              {/* Gradient Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${plan.gradient} opacity-60`} />
-              
-              {/* Popular/Recommended Badge */}
-              {plan.badge && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                  <Badge className={`${
-                    plan.tier === 'gold' ? 'bg-gradient-to-r from-amber-500 to-yellow-500' :
-                    plan.tier === 'premium' ? 'bg-gradient-to-r from-purple-500 to-indigo-500' :
-                    'bg-gradient-to-r from-cyan-500 to-blue-500'
-                  } text-white border-0 px-4 py-1 text-xs font-bold shadow-lg`}>
-                    {plan.badge}
+        {pricingTiers.map((tier, index) => {
+          const isSelected = selectedTier === tier.id;
+          const originalPrice = getOriginalPrice(tier);
+          
+          return (
+            <motion.div
+              key={tier.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={cn(
+                "relative bg-white rounded-2xl border-2 transition-all duration-300 cursor-pointer group",
+                "hover:shadow-xl hover:-translate-y-1",
+                isSelected ? `${tier.borderColor} shadow-lg` : 'border-gray-200 hover:border-gray-300'
+              )}
+              onClick={() => handleTierSelect(tier.id)}
+            >
+              {/* Badge */}
+              {tier.badge && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className={`${tier.badgeColor} px-4 py-1 font-semibold text-sm shadow-lg border-0`}>
+                    {tier.badge}
                   </Badge>
                 </div>
               )}
 
-              {/* Spots Left Indicator */}
-              {plan.spotsLeft && (
-                <div className="absolute top-4 right-4 z-10">
-                  <div className="flex items-center gap-1 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
-                    <Users className="h-3 w-3" />
-                    {plan.spotsLeft} left
-                  </div>
+              {/* Scarcity indicator */}
+              {tier.scarcity && (
+                <div className="absolute -top-2 -right-2">
+                  <Badge className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse border-2 border-white">
+                    {tier.scarcity}
+                  </Badge>
                 </div>
               )}
 
-              <CardContent 
-                className="relative z-10 p-6 h-full flex flex-col"
-                onClick={() => handleTierSelect(plan.tier)}
-              >
+              <div className="p-6 space-y-4">
                 {/* Header */}
-                <div className="text-center mb-4">
-                  <div className="mb-3">{plan.icon}</div>
-                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                  
-                  {/* Pricing */}
+                <div className="text-center space-y-2">
+                  <div className="flex justify-center">{tier.icon}</div>
+                  <h3 className="text-xl font-bold text-gray-900">{tier.name}</h3>
                   <div className="space-y-1">
-                    <div className="text-3xl font-bold">
-                      {getDisplayPrice(plan)}
+                    <div className="text-3xl font-bold text-gray-900">
+                      {getDisplayPrice(tier)}
                     </div>
-                    {plan.originalPrice > plan.price && plan.tier !== 'free' && (
+                    {originalPrice && (
                       <div className="text-sm text-gray-500 line-through">
-                        ${plan.originalPrice.toFixed(2)}
+                        {originalPrice}
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Features */}
-                <ul className="space-y-2 mb-6 flex-1">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start text-sm">
-                      <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      {feature}
+                <ul className="space-y-3">
+                  {tier.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm">
+                      <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 {/* Select Button */}
                 <Button
-                  className={`w-full ${
-                    selectedTier === plan.tier
-                      ? plan.tier === 'gold' ? 'bg-amber-500 hover:bg-amber-600' :
-                        plan.tier === 'premium' ? 'bg-purple-500 hover:bg-purple-600' :
-                        plan.tier === 'diamond' ? 'bg-cyan-500 hover:bg-cyan-600' :
-                        'bg-purple-500 hover:bg-purple-600'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  } transition-all duration-200`}
+                  className={cn(
+                    "w-full py-3 text-white font-semibold transition-all duration-200",
+                    isSelected ? tier.buttonColor : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleTierSelect(plan.tier);
+                    handleTierSelect(tier.id);
                   }}
                 >
-                  {selectedTier === plan.tier ? (
-                    <div className="flex items-center gap-2">
+                  {isSelected ? (
+                    <span className="flex items-center gap-2">
                       <Check className="h-4 w-4" />
                       Selected
-                    </div>
+                    </span>
                   ) : (
                     'Select Plan'
                   )}
                 </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
-      {/* Duration Selection - Only for non-Diamond plans */}
-      {selectedTier !== 'diamond' && selectedTier !== 'free' && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 shadow-lg"
-        >
-          <h3 className="text-lg font-semibold mb-4 text-center">Choose Duration & Save More</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {getDurationOptions().map((option) => (
-              <motion.button
-                key={option.months}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setDurationMonths(option.months)}
-                className={`p-4 rounded-xl border-2 transition-all ${
-                  durationMonths === option.months
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-purple-300'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="font-semibold">{option.label}</div>
-                  {option.discount > 0 && (
-                    <Badge className="mt-1 bg-green-100 text-green-700 text-xs">
-                      Save {option.discount}%
-                    </Badge>
-                  )}
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Add-on Options */}
-      {selectedTier !== 'free' && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 shadow-lg space-y-4"
-        >
-          <h3 className="text-lg font-semibold mb-4">Boost Your Reach</h3>
-          
-          {/* Auto-renew Toggle */}
-          {selectedTier !== 'diamond' && durationMonths === 1 && (
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="flex items-center space-x-3">
-                <Zap className="h-5 w-5 text-green-600" />
-                <div>
-                  <Label className="font-medium text-green-800">Auto-renew Monthly</Label>
-                  <p className="text-sm text-green-600">Save 5% with automatic renewal</p>
-                </div>
-              </div>
-              <Switch checked={autoRenew} onCheckedChange={setAutoRenew} />
-            </div>
-          )}
-
-          {/* Nationwide Visibility */}
-          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <div className="flex items-center space-x-3">
-              <Globe className="h-5 w-5 text-blue-600" />
-              <div>
-                <Label className="font-medium text-blue-800">Nationwide Visibility</Label>
-                <p className="text-sm text-blue-600">Reach candidates in all 50 states (+$5)</p>
-              </div>
-            </div>
-            <Switch checked={isNationwide} onCheckedChange={setIsNationwide} />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Social Proof */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="text-center space-y-4"
-      >
-        <div className="flex justify-center gap-2 flex-wrap">
-          {['Luxe Beauty Studio', 'Salon Magnifique', 'The Hair Collective'].map((salon, idx) => (
-            <motion.div
-              key={salon}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1 + idx * 0.1 }}
-            >
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                <Shield className="h-3 w-3 mr-1" />
-                {salon} just upgraded
-              </Badge>
-            </motion.div>
-          ))}
-        </div>
-        
-        <div className="text-sm text-gray-500">
-          🔒 Secure payment • 30-day money-back guarantee • Cancel anytime
-        </div>
-      </motion.div>
-
-      {/* Proceed Button */}
+      {/* Duration & Options Selection */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="text-center"
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="bg-white rounded-2xl border border-gray-200 p-8 space-y-6"
       >
+        <h3 className="text-2xl font-bold text-center text-gray-900">
+          Choose Duration & Save More
+        </h3>
+
+        {/* Duration Options */}
+        <div className="space-y-4">
+          <h4 className="text-lg font-semibold text-gray-800">Duration</h4>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {durationOptions.map((option) => {
+              const isDisabled = selectedTier === 'diamond' && option.months !== 12;
+              const isSelected = selectedDuration === option.months;
+              
+              return (
+                <button
+                  key={option.months}
+                  onClick={() => handleDurationSelect(option.months)}
+                  disabled={isDisabled}
+                  className={cn(
+                    "relative p-4 rounded-xl border-2 transition-all text-center",
+                    isSelected ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-gray-300',
+                    isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'
+                  )}
+                >
+                  <div className="font-semibold text-gray-900">{option.label}</div>
+                  {option.discount > 0 && (
+                    <Badge className="mt-1 bg-green-100 text-green-800 text-xs">
+                      {option.discount}% OFF
+                    </Badge>
+                  )}
+                  {selectedTier === 'diamond' && option.months === 12 && (
+                    <Badge className="mt-1 bg-cyan-100 text-cyan-800 text-xs">
+                      Only Option
+                    </Badge>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Boost Options */}
+        <div className="space-y-4 pt-6 border-t border-gray-200">
+          <h4 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <Zap className="h-5 w-5 text-yellow-500" />
+            Boost Your Reach
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Auto-Renew Toggle - Default ON */}
+            {selectedTier !== 'free' && selectedDuration === 1 && (
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <div className="space-y-1">
+                  <Label htmlFor="auto-renew" className="text-sm font-medium text-blue-900">
+                    Auto-Renew Monthly
+                  </Label>
+                  <p className="text-xs text-blue-700">Save 5% with automatic renewal</p>
+                </div>
+                <Switch
+                  id="auto-renew"
+                  checked={autoRenew}
+                  onCheckedChange={setAutoRenew}
+                />
+              </div>
+            )}
+
+            {/* Nationwide Visibility */}
+            {selectedTier !== 'free' && (
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
+                <div className="space-y-1">
+                  <Label htmlFor="nationwide" className="text-sm font-medium text-green-900">
+                    Nationwide Visibility
+                  </Label>
+                  <p className="text-xs text-green-700">+$5 to reach all states</p>
+                </div>
+                <Switch
+                  id="nationwide"
+                  checked={isNationwide}
+                  onCheckedChange={setIsNationwide}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Continue Button */}
         <Button
           onClick={handleProceed}
-          size="lg"
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-12 py-4 rounded-xl font-semibold shadow-lg transform transition-all duration-200 hover:scale-105"
+          className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+          disabled={!selectedTier}
         >
           Continue with {selectedTier === 'free' ? 'Free' : 
-                        selectedTier === 'gold' ? 'Gold' :
-                        selectedTier === 'premium' ? 'Premium' : 'Diamond'} Plan →
+                         selectedTier === 'gold' ? 'Gold Featured' :
+                         selectedTier === 'premium' ? 'Premium' : 'Diamond'} Plan
         </Button>
       </motion.div>
     </div>
