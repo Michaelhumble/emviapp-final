@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { SalonListing } from './types';
 import SalonIdentitySection from './sections/SalonIdentitySection';
+import SalonLocationSection from './sections/SalonLocationSection';
 
 interface PremiumSalonWizardProps {
   onSubmit: (data: SalonListing) => Promise<boolean>;
@@ -17,16 +18,26 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
 
   const steps = [
     { title: 'Identity', component: 'identity' },
-    // Additional steps will be added in future phases
+    { title: 'Location', component: 'location' },
   ];
 
   const handleSectionSubmit = (sectionData: Partial<SalonListing>) => {
     const updatedData = { ...formData, ...sectionData };
     setFormData(updatedData);
     
-    // For now, just move to next step (will be implemented in future phases)
-    console.log('Section data submitted:', sectionData);
-    console.log('Full form data:', updatedData);
+    // Move to next step if not the last step
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // This would be the final submission
+      console.log('Final form data:', updatedData);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
@@ -101,6 +112,13 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
                   <SalonIdentitySection
                     data={formData}
                     onSubmit={handleSectionSubmit}
+                  />
+                )}
+                {currentStep === 1 && (
+                  <SalonLocationSection
+                    data={formData}
+                    onSubmit={handleSectionSubmit}
+                    onPrevious={handlePrevious}
                   />
                 )}
               </motion.div>

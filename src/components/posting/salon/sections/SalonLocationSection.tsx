@@ -1,37 +1,45 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { MapPin, ArrowLeft, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { MapPin, ArrowRight, ArrowLeft, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { enhancedSalonFormSchema, type EnhancedSalonFormValues } from '../enhancedSalonFormSchema';
+import { SalonSectionProps } from '../types';
 
-interface SalonLocationSectionProps {
-  data: any;
-  onSubmit: (data: any) => void;
-  onPrevious: () => void;
-}
-
-const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonLocationSectionProps) => {
-  const [formData, setFormData] = useState({
-    address: data?.location?.address || '',
-    city: data?.location?.city || '',
-    state: data?.location?.state || '',
-    zipCode: data?.location?.zipCode || '',
-    neighborhood: data?.location?.neighborhood || '',
-    hideAddressFromPublic: data?.location?.hideAddressFromPublic || false,
+const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonSectionProps) => {
+  const form = useForm<EnhancedSalonFormValues>({
+    resolver: zodResolver(enhancedSalonFormSchema),
+    defaultValues: {
+      address: data.location?.address || '',
+      city: data.location?.city || '',
+      state: data.location?.state || '',
+      zipCode: data.location?.zipCode || '',
+      neighborhood: data.location?.neighborhood || '',
+      hideAddressFromPublic: data.location?.hideAddressFromPublic || false,
+    },
   });
 
-  const handleSubmit = () => {
-    if (formData.address && formData.city && formData.state && formData.zipCode) {
-      onSubmit({ location: formData });
-    }
-  };
+  const { register, handleSubmit, watch, setValue, formState: { errors, isValid } } = form;
+  const hideAddress = watch('hideAddressFromPublic');
 
-  const isValid = formData.address.length >= 5 && formData.city && formData.state && formData.zipCode.length >= 5;
+  const onFormSubmit = (formData: EnhancedSalonFormValues) => {
+    const locationData = {
+      location: {
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        neighborhood: formData.neighborhood,
+        hideAddressFromPublic: formData.hideAddressFromPublic,
+      }
+    };
+    onSubmit(locationData);
+  };
 
   return (
     <div className="space-y-8">
@@ -41,167 +49,158 @@ const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonLocationSecti
         className="text-center"
       >
         <div className="flex items-center justify-center mb-4">
-          <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-3 rounded-full">
+          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-3 rounded-full">
             <MapPin className="w-8 h-8 text-white" />
           </div>
         </div>
         <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
-          Prime Location Details
+          Where is your salon located?
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Location is everything in the beauty business. Help buyers understand your salon's positioning.
+          Help buyers find your salon. You can choose to hide your exact address for privacy.
         </p>
-        
-        <div className="flex items-center justify-center gap-2 mt-4">
-          <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
-            🗺️ Tip: High-traffic locations increase value by 30%
-          </Badge>
-        </div>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="space-y-6"
-      >
-        {/* Full Address */}
-        <Card className="border-2 border-emerald-100 hover:border-emerald-200 transition-all">
-          <CardContent className="p-6">
-            <Label htmlFor="address" className="text-lg font-medium mb-2 block">
-              Street Address *
-            </Label>
-            <Input
-              id="address"
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              placeholder="e.g., 1234 Main Street, Suite 100"
-              className="text-lg p-4 border-2 focus:border-emerald-400"
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Include suite/unit numbers for accurate buyer directions
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* City, State, ZIP */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="border-2 border-emerald-100 hover:border-emerald-200 transition-all">
-            <CardContent className="p-6">
-              <Label htmlFor="city" className="text-lg font-medium mb-2 block">
-                City *
+      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
+        >
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="address" className="text-sm font-medium text-gray-700">
+                Street Address *
               </Label>
               <Input
-                id="city"
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                placeholder="e.g., Los Angeles"
-                className="text-lg p-4 border-2 focus:border-emerald-400"
+                id="address"
+                placeholder="123 Main Street"
+                {...register('address')}
+                className={errors.address ? 'border-red-300' : ''}
               />
-            </CardContent>
-          </Card>
+              {errors.address && (
+                <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>
+              )}
+            </div>
 
-          <Card className="border-2 border-emerald-100 hover:border-emerald-200 transition-all">
-            <CardContent className="p-6">
-              <Label htmlFor="state" className="text-lg font-medium mb-2 block">
-                State *
-              </Label>
-              <Input
-                id="state"
-                value={formData.state}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                placeholder="e.g., CA"
-                className="text-lg p-4 border-2 focus:border-emerald-400"
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-emerald-100 hover:border-emerald-200 transition-all">
-            <CardContent className="p-6">
-              <Label htmlFor="zipCode" className="text-lg font-medium mb-2 block">
-                ZIP Code *
-              </Label>
-              <Input
-                id="zipCode"
-                value={formData.zipCode}
-                onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                placeholder="e.g., 90210"
-                className="text-lg p-4 border-2 focus:border-emerald-400"
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Neighborhood */}
-        <Card className="border-2 border-emerald-100 hover:border-emerald-200 transition-all">
-          <CardContent className="p-6">
-            <Label htmlFor="neighborhood" className="text-lg font-medium mb-2 block">
-              Neighborhood/Area Highlights (Optional)
-            </Label>
-            <Input
-              id="neighborhood"
-              value={formData.neighborhood}
-              onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
-              placeholder="e.g., Beverly Hills, Downtown, Near shopping center"
-              className="text-lg p-4 border-2 focus:border-emerald-400"
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Mention nearby attractions, shopping centers, or upscale neighborhoods
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Privacy Toggle */}
-        <Card className="border-2 border-amber-100 bg-amber-50/50">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <Label className="text-lg font-medium mb-2 block flex items-center">
-                  {formData.hideAddressFromPublic ? <EyeOff className="w-5 h-5 mr-2 text-amber-600" /> : <Eye className="w-5 h-5 mr-2 text-emerald-600" />}
-                  Privacy Protection
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="city" className="text-sm font-medium text-gray-700">
+                  City *
                 </Label>
-                <p className="text-gray-600">
-                  {formData.hideAddressFromPublic 
-                    ? "Address will be hidden from public listings until serious inquiry"
-                    : "Full address will be visible to potential buyers"
-                  }
-                </p>
+                <Input
+                  id="city"
+                  placeholder="New York"
+                  {...register('city')}
+                  className={errors.city ? 'border-red-300' : ''}
+                />
+                {errors.city && (
+                  <p className="text-sm text-red-600 mt-1">{errors.city.message}</p>
+                )}
               </div>
-              <Switch
-                checked={formData.hideAddressFromPublic}
-                onCheckedChange={(checked) => setFormData({ ...formData, hideAddressFromPublic: checked })}
-              />
-            </div>
-            <div className="mt-3">
-              <Badge variant="secondary" className="bg-amber-100 text-amber-700">
-                🔒 Premium sellers prefer privacy protection
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
 
-      <div className="flex justify-between pt-6">
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          onClick={onPrevious}
-          className="px-8 py-3"
+              <div>
+                <Label htmlFor="state" className="text-sm font-medium text-gray-700">
+                  State *
+                </Label>
+                <Input
+                  id="state"
+                  placeholder="NY"
+                  {...register('state')}
+                  className={errors.state ? 'border-red-300' : ''}
+                />
+                {errors.state && (
+                  <p className="text-sm text-red-600 mt-1">{errors.state.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="zipCode" className="text-sm font-medium text-gray-700">
+                  ZIP Code *
+                </Label>
+                <Input
+                  id="zipCode"
+                  placeholder="10001"
+                  {...register('zipCode')}
+                  className={errors.zipCode ? 'border-red-300' : ''}
+                />
+                {errors.zipCode && (
+                  <p className="text-sm text-red-600 mt-1">{errors.zipCode.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="neighborhood" className="text-sm font-medium text-gray-700">
+                Neighborhood (Optional)
+              </Label>
+              <Input
+                id="neighborhood"
+                placeholder="SoHo, Downtown, etc."
+                {...register('neighborhood')}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Help buyers identify the area more easily
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-100"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!isValid}
-          size="lg"
-          className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 text-lg"
-        >
-          Continue to Photos
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
-      </div>
+          <div className="flex items-start space-x-3">
+            <Shield className="w-5 h-5 text-purple-600 mt-0.5" />
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium text-gray-900">Privacy Protection</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Hide your exact address from public listings. Buyers will see only the neighborhood.
+                  </p>
+                </div>
+                <Switch
+                  checked={hideAddress}
+                  onCheckedChange={(checked) => setValue('hideAddressFromPublic', checked)}
+                />
+              </div>
+              {hideAddress && (
+                <div className="mt-3 p-3 bg-white rounded-md border border-purple-200">
+                  <p className="text-xs text-purple-700">
+                    ✓ Your exact address will be shared only with verified, interested buyers
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="flex justify-between pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={onPrevious}
+            className="px-8 py-3"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+          <Button
+            type="submit"
+            size="lg"
+            disabled={!isValid}
+            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-3 text-lg"
+          >
+            Continue to Photos
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };
