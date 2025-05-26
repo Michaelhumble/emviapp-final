@@ -1,19 +1,18 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
 import PremiumSalonWizard from '@/components/posting/salon/PremiumSalonWizard';
+import { SalonListing } from '@/components/posting/salon/types';
 
 const PostSalon = () => {
-  const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
   
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: SalonListing) => {
     try {
-      // Convert enhanced form data to the expected format for the API
+      // Convert salon listing data to the expected format for the API
       const salonDetails = {
         title: data.identity?.salonName || 'Salon For Sale',
         description: data.about?.description || '',
@@ -27,7 +26,7 @@ const PostSalon = () => {
         },
         post_type: 'salon',
         metadata: {
-          enhancedFormData: data,
+          salonListingData: data,
           photos: data.photos?.photos || [],
           performanceData: data.performance || {},
           assets: data.assets || {},
@@ -54,7 +53,7 @@ const PostSalon = () => {
         return false;
       }
     } catch (error) {
-      console.error('Error submitting enhanced salon form:', error);
+      console.error('Error submitting salon listing:', error);
       toast.error('Error creating salon listing');
       return false;
     }
