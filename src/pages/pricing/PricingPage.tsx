@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import LanguageToggle from '@/components/ui/LanguageToggle';
-import PremiumPricingHero from '@/components/pricing/PremiumPricingHero';
+import LuxuryHero from '@/components/pricing/LuxuryHero';
 import BillingToggle from '@/components/pricing/BillingToggle';
 import PremiumPricingCard from '@/components/pricing/PremiumPricingCard';
 import TestimonialsCarousel from '@/components/pricing/TestimonialsCarousel';
-import FOMOElements from '@/components/pricing/FOMOElements';
+import ScarcityBanner from '@/components/pricing/ScarcityBanner';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
 import FinalCTA from '@/components/pricing/FinalCTA';
 
@@ -21,11 +21,11 @@ const PricingPage = () => {
       price: 0,
       isAnnual,
       features: [
-        '👁️ Basic search visibility',
-        '📅 30-day duration',
-        '📍 Standard placement',
-        '🔒 Secure posting',
-        '📱 Mobile-friendly display'
+        'Basic search visibility',
+        '30-day duration',
+        'Standard placement',
+        'Secure posting',
+        'Mobile-friendly display'
       ],
       buttonText: 'Start Free',
       buttonVariant: 'outline' as const
@@ -40,13 +40,13 @@ const PricingPage = () => {
       badge: 'POPULAR' as const,
       limitedSpots: '8/15 spots left',
       features: [
-        '🏆 Featured placement above standard',
-        '⭐ Gold badge highlight',
-        '👁️ Enhanced visibility',
-        '📈 Basic analytics',
-        '🤝 Priority support'
+        'Featured placement above standard',
+        'Gold badge highlight',
+        'Enhanced visibility boost',
+        'Basic analytics dashboard',
+        'Priority support access'
       ],
-      buttonText: 'Select Gold',
+      buttonText: 'Unlock Gold Now',
       buttonVariant: 'default' as const
     },
     {
@@ -59,13 +59,13 @@ const PricingPage = () => {
       badge: 'RECOMMENDED' as const,
       limitedSpots: '5/15 spots left',
       features: [
-        '👑 Premium placement above Gold',
-        '💎 Premium badge & styling',
-        '📊 Advanced analytics dashboard',
-        '🚀 Priority support & consultation',
-        '🎯 Targeted visibility boost'
+        'Premium placement above Gold',
+        'Premium badge and styling',
+        'Advanced analytics dashboard',
+        'Priority support and consultation',
+        'Targeted visibility boost'
       ],
-      buttonText: 'Select Premium',
+      buttonText: 'Upgrade to Premium',
       buttonVariant: 'default' as const
     },
     {
@@ -73,32 +73,20 @@ const PricingPage = () => {
       name: 'Diamond Exclusive',
       emotiveTitle: 'Diamond Elite',
       price: 999.99,
-      isAnnual: true, // Always annual
+      isAnnual: true,
       badge: 'ANNUAL_ONLY' as const,
       limitedSpots: '2/5 spots left',
       features: [
-        '💎 Highest diamond placement',
-        '🏆 Diamond badge & exclusive styling',
-        '👤 Personal account manager',
-        '📈 Premium analytics & insights',
-        '🌟 Annual exclusive benefits'
+        'Highest diamond placement',
+        'Diamond badge and exclusive styling',
+        'Personal account manager',
+        'Premium analytics and insights',
+        'Annual exclusive benefits'
       ],
       buttonText: 'Apply for Diamond',
       buttonVariant: 'default' as const
     }
   ];
-
-  const enterprisePlan = {
-    id: 'enterprise',
-    name: 'Enterprise',
-    emotiveTitle: 'Custom Solutions',
-    price: 0,
-    isAnnual: false,
-    isEnterprise: true,
-    features: [],
-    buttonText: 'Contact Sales',
-    buttonVariant: 'default' as const
-  };
 
   const handlePlanSelect = (planId: string) => {
     console.log('Selected plan:', planId);
@@ -106,14 +94,14 @@ const PricingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-purple-50/10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
       <div className="fixed top-4 right-4 z-50">
         <LanguageToggle minimal={true} />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
-        <PremiumPricingHero />
+        {/* Luxury Hero Section */}
+        <LuxuryHero />
 
         {/* Billing Toggle */}
         <BillingToggle 
@@ -121,16 +109,16 @@ const PricingPage = () => {
           onToggle={setIsAnnual} 
         />
 
-        {/* FOMO Elements */}
-        <FOMOElements />
+        {/* Scarcity and FOMO Elements */}
+        <ScarcityBanner />
 
-        {/* Pricing Cards */}
+        {/* Pricing Cards Grid */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-16"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
         >
           {pricingPlans.map((plan, index) => (
             <motion.div
@@ -139,7 +127,6 @@ const PricingPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={plan.id === 'premium' ? 'lg:col-span-1 lg:transform lg:scale-105' : ''}
             >
               <PremiumPricingCard
                 plan={plan}
@@ -148,25 +135,12 @@ const PricingPage = () => {
               />
             </motion.div>
           ))}
-          
-          {/* Enterprise Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-          >
-            <PremiumPricingCard
-              plan={enterprisePlan}
-              onSelect={() => handlePlanSelect('enterprise')}
-            />
-          </motion.div>
         </motion.div>
 
         {/* Testimonials */}
         <TestimonialsCarousel />
 
-        {/* FAQ and CTA */}
+        {/* FAQ and Final CTA */}
         <div className="space-y-24 py-16">
           <PricingFAQ />
           <FinalCTA />
