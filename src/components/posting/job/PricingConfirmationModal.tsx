@@ -1,22 +1,19 @@
 
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Crown, Star, Diamond, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Crown, Shield, Diamond, Check, Globe, Zap } from 'lucide-react';
+import { formatCurrency } from '@/utils/posting/pricing';
+import { cn } from '@/lib/utils';
 
 interface PricingConfirmationModalProps {
   open: boolean;
   onClose: () => void;
   selectedTier: string;
   finalPrice: number;
-  durationMonths?: number;
+  durationMonths: number;
   onConfirmPayment: () => void;
 }
 
@@ -25,137 +22,159 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
   onClose,
   selectedTier,
   finalPrice,
-  durationMonths = 1,
-  onConfirmPayment,
+  durationMonths,
+  onConfirmPayment
 }) => {
   const getTierDetails = () => {
     switch (selectedTier) {
-      case 'diamond':
+      case 'gold':
         return {
-          name: 'Diamond Exclusive',
-          icon: <Diamond className="h-6 w-6 text-cyan-500" />,
-          color: 'text-cyan-600',
-          bgColor: 'bg-cyan-50',
-          features: ['Top diamond placement', 'Personal account manager', 'Premium features'],
-          duration: '1 year', // Diamond is ALWAYS 1 year
-          price: '$999.99' // Diamond is ALWAYS $999.99
+          name: 'Gold Featured',
+          icon: Crown,
+          color: 'text-amber-500',
+          bgColor: 'bg-gradient-to-br from-amber-50 to-yellow-100',
+          borderColor: 'border-amber-200'
         };
       case 'premium':
         return {
           name: 'Premium Listing',
-          icon: <Crown className="h-6 w-6 text-purple-500" />,
-          color: 'text-purple-600',
-          bgColor: 'bg-purple-50',
-          features: ['Premium placement above Gold', 'Advanced analytics', 'Priority support'],
-          duration: getDurationDisplay(durationMonths),
-          price: `$${finalPrice.toFixed(2)}`
+          icon: Shield,
+          color: 'text-purple-500',
+          bgColor: 'bg-gradient-to-br from-purple-50 to-indigo-100',
+          borderColor: 'border-purple-200'
         };
-      case 'gold':
+      case 'diamond':
         return {
-          name: 'Gold Featured Listing',
-          icon: <Star className="h-6 w-6 text-amber-500" />,
-          color: 'text-amber-600',
-          bgColor: 'bg-amber-50',
-          features: ['Featured placement', 'Gold badge highlight', 'Enhanced visibility'],
-          duration: getDurationDisplay(durationMonths),
-          price: `$${finalPrice.toFixed(2)}`
+          name: 'Diamond Exclusive',
+          icon: Diamond,
+          color: 'text-cyan-500',
+          bgColor: 'bg-gradient-to-br from-cyan-50 to-blue-100',
+          borderColor: 'border-cyan-200'
         };
       default:
         return {
-          name: 'Free Listing',
-          icon: <Sparkles className="h-6 w-6 text-gray-500" />,
-          color: 'text-gray-600',
+          name: 'Premium Plan',
+          icon: Shield,
+          color: 'text-gray-500',
           bgColor: 'bg-gray-50',
-          features: ['Basic search visibility', 'Standard placement', '30-day duration'],
-          duration: getDurationDisplay(durationMonths),
-          price: '$0.00'
+          borderColor: 'border-gray-200'
         };
     }
   };
 
-  const getDurationDisplay = (months: number) => {
-    switch (months) {
-      case 1:
-        return '30 days';
-      case 3:
-        return '90 days';
-      case 6:
-        return '180 days';
-      case 12:
-        return '1 year';
-      default:
-        return `${months * 30} days`;
-    }
-  };
-
-  const tierDetails = getTierDetails();
+  const details = getTierDetails();
+  const IconComponent = details.icon;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {tierDetails.icon}
-            Confirm Your {tierDetails.name}
-          </DialogTitle>
-          <DialogDescription>
-            Review your selection before proceeding to payment
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-lg">
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="space-y-6"
+            >
+              <DialogHeader>
+                <DialogTitle className="text-center text-2xl font-bold">
+                  Confirm Your Selection
+                </DialogTitle>
+              </DialogHeader>
 
-        <div className={`p-4 rounded-lg ${tierDetails.bgColor}`}>
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-medium">Plan:</span>
-            <span className={`font-semibold ${tierDetails.color}`}>
-              {tierDetails.name}
-            </span>
-          </div>
-          
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-medium">Duration:</span>
-            <span>{tierDetails.duration}</span>
-          </div>
-          
-          <div className="flex justify-between items-center mb-4">
-            <span className="font-medium">Total:</span>
-            <span className="text-xl font-bold">
-              {tierDetails.price}
-            </span>
-          </div>
+              {/* Plan Summary Card */}
+              <div className={cn(
+                "rounded-2xl p-6 border-2",
+                details.bgColor,
+                details.borderColor
+              )}>
+                <div className="text-center space-y-4">
+                  {/* Icon */}
+                  <div className="flex justify-center">
+                    <div className="p-3 rounded-full bg-white/80 backdrop-blur-sm shadow-md">
+                      <IconComponent className={cn("h-8 w-8", details.color)} />
+                    </div>
+                  </div>
 
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-gray-700">Included features:</p>
-            {tierDetails.features.map((feature, index) => (
-              <p key={index} className="text-sm text-gray-600">• {feature}</p>
-            ))}
-          </div>
-          
-          {selectedTier === 'diamond' && (
-            <div className="mt-3 p-2 bg-cyan-100 rounded text-xs text-cyan-800">
-              Annual exclusive plan - No monthly options available
-            </div>
+                  {/* Plan Name */}
+                  <h3 className="text-xl font-bold text-gray-900">{details.name}</h3>
+
+                  {/* Pricing */}
+                  <div className="space-y-2">
+                    <div className="text-3xl font-bold text-gray-900">
+                      {formatCurrency(finalPrice)}
+                    </div>
+                    <Badge variant="outline" className="bg-white/80">
+                      {durationMonths === 12 ? '1 Year' : `${durationMonths} Month${durationMonths > 1 ? 's' : ''}`}
+                    </Badge>
+                  </div>
+
+                  {/* Features Preview */}
+                  <div className="pt-4 border-t border-white/50">
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="flex items-center gap-1">
+                        <Check className="h-3 w-3 text-green-500" />
+                        <span>Featured Placement</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Zap className="h-3 w-3 text-yellow-500" />
+                        <span>Instant Visibility</span>
+                      </div>
+                      {selectedTier !== 'gold' && (
+                        <>
+                          <div className="flex items-center gap-1">
+                            <Globe className="h-3 w-3 text-blue-500" />
+                            <span>Priority Support</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Check className="h-3 w-3 text-green-500" />
+                            <span>Analytics</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Benefits */}
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  <span className="font-medium text-green-800">What you get:</span>
+                </div>
+                <ul className="text-sm text-green-700 space-y-1">
+                  <li>• Immediate job posting activation</li>
+                  <li>• Enhanced visibility to qualified candidates</li>
+                  <li>• Professional listing with premium features</li>
+                  {selectedTier === 'diamond' && <li>• Dedicated account manager support</li>}
+                </ul>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1"
+                >
+                  Go Back
+                </Button>
+                <Button
+                  onClick={onConfirmPayment}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                >
+                  Proceed to Payment
+                </Button>
+              </div>
+
+              {/* Security Note */}
+              <p className="text-xs text-gray-500 text-center">
+                🔒 Secure payment powered by Stripe. Cancel anytime.
+              </p>
+            </motion.div>
           )}
-        </div>
-
-        <DialogFooter className="flex gap-2">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={onConfirmPayment}
-            className={`${
-              selectedTier === 'diamond' 
-                ? 'bg-cyan-600 hover:bg-cyan-700'
-                : selectedTier === 'premium'
-                ? 'bg-purple-600 hover:bg-purple-700'
-                : selectedTier === 'gold'
-                ? 'bg-amber-600 hover:bg-amber-700'
-                : 'bg-gray-600 hover:bg-gray-700'
-            }`}
-          >
-            Proceed to Payment
-          </Button>
-        </DialogFooter>
+        </AnimatePresence>
       </DialogContent>
     </Dialog>
   );
