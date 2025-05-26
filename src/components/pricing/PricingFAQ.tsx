@@ -1,111 +1,109 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useTranslation } from '@/hooks/useTranslation';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Shield, Star, Crown } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 const PricingFAQ = () => {
-  const { t } = useTranslation();
+  const [openItem, setOpenItem] = useState<number | null>(0);
 
-  const faqs = [
+  const faqItems = [
     {
-      question: {
-        english: "When will EmviApp launch?",
-        vietnamese: "Khi nào EmviApp sẽ ra mắt?"
-      },
-      answer: {
-        english: "We're launching soon! Founding members will get priority access before public release.",
-        vietnamese: "Chúng tôi sắp ra mắt! Thành viên sáng lập sẽ được ưu tiên truy cập trước khi phát hành công khai."
-      }
+      question: "What makes Diamond Exclusive so special?",
+      answer: "Diamond members get the highest placement, exclusive styling, a personal account manager, premium analytics, and annual-only benefits. Only 5 spots available per year.",
+      icon: <Crown className="h-5 w-5 text-cyan-600" />
     },
     {
-      question: {
-        english: "Is my payment secure?",
-        vietnamese: "Thanh toán của tôi có an toàn không?"
-      },
-      answer: {
-        english: "Yes, all payments are processed with industry-standard encryption and security. We never store your financial details.",
-        vietnamese: "Có, tất cả các khoản thanh toán được xử lý với mã hóa và bảo mật theo tiêu chuẩn ngành. Chúng tôi không bao giờ lưu trữ thông tin tài chính của bạn."
-      }
+      question: "Can I upgrade or downgrade my plan anytime?",
+      answer: "Yes! You can upgrade immediately. Downgrades take effect at your next billing cycle. Diamond requires approval and is annual-only.",
+      icon: <Star className="h-5 w-5 text-purple-600" />
     },
     {
-      question: {
-        english: "What happens after I pay?",
-        vietnamese: "Điều gì xảy ra sau khi tôi thanh toán?"
-      },
-      answer: {
-        english: "You'll receive instant confirmation and status updates. You'll be first to access EmviApp and enjoy exclusive perks.",
-        vietnamese: "Bạn sẽ nhận được xác nhận ngay lập tức và cập nhật trạng thái. Bạn sẽ là người đầu tiên truy cập EmviApp và tận hưởng các đặc quyền độc quyền."
-      }
+      question: "What if I'm not satisfied with my results?",
+      answer: "We offer a 30-day money-back guarantee on all paid plans. If you don't see increased visibility and bookings, we'll refund your investment.",
+      icon: <Shield className="h-5 w-5 text-green-600" />
     },
     {
-      question: {
-        english: "Can I cancel or get a refund?",
-        vietnamese: "Tôi có thể hủy hoặc được hoàn tiền không?"
-      },
-      answer: {
-        english: "Yes, you can request a refund anytime before official launch if you change your mind.",
-        vietnamese: "Có, bạn có thể yêu cầu hoàn tiền bất cứ lúc nào trước khi ra mắt chính thức nếu bạn thay đổi ý định."
-      }
+      question: "How does the limited spots system work?",
+      answer: "Gold and Premium have limited featured spots to maintain exclusivity. Diamond is invite-only with just 5 annual spots. When spots fill up, there's a waitlist.",
+      icon: <Star className="h-5 w-5 text-amber-600" />
     },
     {
-      question: {
-        english: "Why should I join now?",
-        vietnamese: "Tại sao tôi nên tham gia ngay bây giờ?"
-      },
-      answer: {
-        english: "These VIP offers will disappear after public launch. Lock in your discount and get early access benefits.",
-        vietnamese: "Những ưu đãi VIP này sẽ biến mất sau khi ra mắt công khai. Khóa mức giảm giá của bạn và nhận các lợi ích truy cập sớm."
-      }
-    },
-    {
-      question: {
-        english: "How will I get updates about launch progress?",
-        vietnamese: "Làm thế nào để tôi nhận được cập nhật về tiến độ ra mắt?"
-      },
-      answer: {
-        english: "You'll receive exclusive email updates on our progress, new features, and your special access details.",
-        vietnamese: "Bạn sẽ nhận được email cập nhật độc quyền về tiến trình của chúng tôi, các tính năng mới và chi tiết truy cập đặc biệt của bạn."
-      }
+      question: "Is there a setup fee or hidden costs?",
+      answer: "No setup fees, no hidden costs. What you see is what you pay. All plans include secure hosting, customer support, and core features.",
+      icon: <Shield className="h-5 w-5 text-blue-600" />
     }
   ];
 
   return (
-    <section className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold font-playfair">
-          {t({
-            english: "Frequently Asked Questions",
-            vietnamese: "Câu Hỏi Thường Gặp"
-          })}
+    <motion.section
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className="max-w-4xl mx-auto"
+    >
+      <div className="text-center mb-12">
+        <h2 className="text-4xl font-bold font-playfair text-gray-900 mb-4">
+          Frequently Asked Questions
         </h2>
+        <p className="text-xl text-gray-600">
+          Everything you need to know about our pricing plans
+        </p>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="max-w-3xl mx-auto"
-      >
-        <Accordion type="single" collapsible className="w-full">
-          {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className="text-left">
-                {t(faq.question)}
-              </AccordionTrigger>
-              <AccordionContent>
-                {t(faq.answer)}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </motion.div>
-    </section>
+      <div className="space-y-4">
+        {faqItems.map((item, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="overflow-hidden bg-white/80 backdrop-blur-md border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+              <button
+                onClick={() => setOpenItem(openItem === index ? null : index)}
+                className="w-full p-6 text-left focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-inset"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {item.icon}
+                    <span className="text-lg font-semibold text-gray-900">
+                      {item.question}
+                    </span>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: openItem === index ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="h-5 w-5 text-gray-500" />
+                  </motion.div>
+                </div>
+              </button>
+              
+              <AnimatePresence>
+                {openItem === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6">
+                      <p className="text-gray-600 leading-relaxed pl-8">
+                        {item.answer}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </motion.section>
   );
 };
 
