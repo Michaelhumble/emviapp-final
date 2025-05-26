@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Store, Upload, ArrowRight } from 'lucide-react';
+import { Building2, Upload, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { SalonSectionProps } from '../types';
 
-const SalonIdentitySection = ({ data, onSubmit, onPrevious }: SalonSectionProps) => {
+const SalonIdentitySection = ({ data, onSubmit }: SalonSectionProps) => {
   const [formData, setFormData] = useState({
     salonName: data.identity?.salonName || '',
     businessType: data.identity?.businessType || '',
+    logo: data.identity?.logo || null,
     establishedYear: data.identity?.establishedYear || '',
-    logo: data.identity?.logo || null
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -23,18 +23,36 @@ const SalonIdentitySection = ({ data, onSubmit, onPrevious }: SalonSectionProps)
     'Full Service Salon',
     'Nail Salon',
     'Hair Salon',
+    'Beauty Spa',
     'Barbershop',
-    'Spa & Wellness',
-    'Beauty Lounge',
-    'Medical Spa',
-    'Other'
+    'Massage Therapy',
+    'Lash Studio',
+    'Brow Bar',
+    'Med Spa',
+    'Day Spa'
   ];
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, logo: file }));
+    }
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
     if (!formData.salonName.trim()) {
       newErrors.salonName = 'Salon name is required';
+    } else if (formData.salonName.length < 2) {
+      newErrors.salonName = 'Salon name must be at least 2 characters';
     }
     
     if (!formData.businessType) {
@@ -51,17 +69,10 @@ const SalonIdentitySection = ({ data, onSubmit, onPrevious }: SalonSectionProps)
         identity: {
           salonName: formData.salonName,
           businessType: formData.businessType,
-          establishedYear: formData.establishedYear,
-          logo: formData.logo
+          logo: formData.logo || undefined,
+          establishedYear: formData.establishedYear || undefined,
         }
       });
-    }
-  };
-
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFormData({ ...formData, logo: file });
     }
   };
 
@@ -74,136 +85,113 @@ const SalonIdentitySection = ({ data, onSubmit, onPrevious }: SalonSectionProps)
       >
         <div className="flex items-center justify-center mb-4">
           <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-full">
-            <Store className="w-8 h-8 text-white" />
+            <Building2 className="w-8 h-8 text-white" />
           </div>
         </div>
         <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
           Tell Us About Your Salon
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Start by sharing your salon's identity. This helps buyers understand what makes your business special.
+          Let's start with the basics. This information helps buyers understand what makes your salon special.
         </p>
       </motion.div>
 
-      {/* Trust Badge */}
-      <Card className="bg-gradient-to-r from-emerald-50 to-blue-50 border-emerald-200">
-        <CardContent className="p-4 text-center">
-          <p className="text-sm text-emerald-700 font-medium">
-            💎 Premium listings get 3x more qualified inquiries
-          </p>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Salon Name */}
-        <div className="space-y-2">
-          <Label htmlFor="salonName" className="text-base font-medium">
-            Salon Name *
-          </Label>
-          <Input
-            id="salonName"
-            value={formData.salonName}
-            onChange={(e) => setFormData({ ...formData, salonName: e.target.value })}
-            placeholder="Enter your salon's name"
-            className={`h-12 ${errors.salonName ? 'border-red-500' : ''}`}
-          />
-          {errors.salonName && (
-            <p className="text-red-500 text-sm">{errors.salonName}</p>
-          )}
-        </div>
-
-        {/* Business Type */}
-        <div className="space-y-2">
-          <Label htmlFor="businessType" className="text-base font-medium">
-            Business Type *
-          </Label>
-          <Select value={formData.businessType} onValueChange={(value) => setFormData({ ...formData, businessType: value })}>
-            <SelectTrigger className={`h-12 ${errors.businessType ? 'border-red-500' : ''}`}>
-              <SelectValue placeholder="Select business type" />
-            </SelectTrigger>
-            <SelectContent>
-              {businessTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.businessType && (
-            <p className="text-red-500 text-sm">{errors.businessType}</p>
-          )}
-        </div>
-
-        {/* Established Year */}
-        <div className="space-y-2">
-          <Label htmlFor="establishedYear" className="text-base font-medium">
-            Year Established
-          </Label>
-          <Input
-            id="establishedYear"
-            value={formData.establishedYear}
-            onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value })}
-            placeholder="e.g., 2015"
-            className="h-12"
-          />
-        </div>
-
-        {/* Logo Upload */}
-        <div className="space-y-2">
-          <Label className="text-base font-medium">Salon Logo</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
-            <input
-              type="file"
-              id="logo-upload"
-              accept="image/*"
-              onChange={handleLogoUpload}
-              className="hidden"
+      <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+        <CardContent className="p-8 space-y-6">
+          {/* Salon Name */}
+          <div className="space-y-2">
+            <Label htmlFor="salonName" className="text-sm font-medium text-gray-700">
+              Salon Name *
+            </Label>
+            <Input
+              id="salonName"
+              value={formData.salonName}
+              onChange={(e) => handleInputChange('salonName', e.target.value)}
+              placeholder="Enter your salon's name"
+              className={`h-12 ${errors.salonName ? 'border-red-500' : ''}`}
             />
-            <label htmlFor="logo-upload" className="cursor-pointer">
-              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">
-                {formData.logo ? formData.logo.name : 'Click to upload logo'}
-              </p>
-            </label>
+            {errors.salonName && (
+              <p className="text-sm text-red-500">{errors.salonName}</p>
+            )}
+            <p className="text-xs text-gray-500">
+              This is how your salon will appear to potential buyers
+            </p>
           </div>
-        </div>
-      </div>
 
-      {/* Pro Tip */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="p-4">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 mt-1">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">💡</span>
-              </div>
-            </div>
-            <div className="text-sm text-blue-800">
-              <p className="font-medium mb-1">Pro Tip:</p>
-              <p>Salons with complete profiles and logos receive 40% more serious inquiries from qualified buyers.</p>
+          {/* Business Type */}
+          <div className="space-y-2">
+            <Label htmlFor="businessType" className="text-sm font-medium text-gray-700">
+              Business Type *
+            </Label>
+            <Select value={formData.businessType} onValueChange={(value) => handleInputChange('businessType', value)}>
+              <SelectTrigger className={`h-12 ${errors.businessType ? 'border-red-500' : ''}`}>
+                <SelectValue placeholder="Select your business type" />
+              </SelectTrigger>
+              <SelectContent>
+                {businessTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.businessType && (
+              <p className="text-sm text-red-500">{errors.businessType}</p>
+            )}
+          </div>
+
+          {/* Established Year */}
+          <div className="space-y-2">
+            <Label htmlFor="establishedYear" className="text-sm font-medium text-gray-700">
+              Year Established (Optional)
+            </Label>
+            <Input
+              id="establishedYear"
+              value={formData.establishedYear}
+              onChange={(e) => handleInputChange('establishedYear', e.target.value)}
+              placeholder="e.g., 2015"
+              className="h-12"
+              type="number"
+              min="1900"
+              max={new Date().getFullYear()}
+            />
+            <p className="text-xs text-gray-500">
+              Shows how long your business has been established
+            </p>
+          </div>
+
+          {/* Logo Upload */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-700">
+              Salon Logo (Optional)
+            </Label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="hidden"
+                id="logo-upload"
+              />
+              <label htmlFor="logo-upload" className="cursor-pointer">
+                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600">
+                  {formData.logo ? formData.logo.name : 'Click to upload your logo'}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  PNG, JPG up to 5MB
+                </p>
+              </label>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Navigation */}
-      <div className="flex justify-between pt-6">
-        {onPrevious && (
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={onPrevious}
-            className="px-8 py-3"
-          >
-            Previous
-          </Button>
-        )}
+      <div className="flex justify-end pt-6">
         <Button
-          type="button"
-          size="lg"
           onClick={handleSubmit}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 text-lg ml-auto"
+          size="lg"
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 text-lg"
         >
           Continue to Location
           <ArrowRight className="w-4 h-4 ml-2" />

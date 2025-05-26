@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,32 +17,16 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
 
   const steps = [
     { title: 'Identity', component: 'identity' },
-    { title: 'Location', component: 'location' },
-    { title: 'Photos', component: 'photos' },
-    { title: 'About', component: 'about' },
-    { title: 'Performance', component: 'performance' },
-    { title: 'Assets', component: 'assets' },
-    { title: 'Promotion', component: 'promotion' },
-    { title: 'Privacy', component: 'privacy' },
-    { title: 'Confirmation', component: 'confirmation' }
+    // Additional steps will be added in future phases
   ];
 
   const handleSectionSubmit = (sectionData: Partial<SalonListing>) => {
     const updatedData = { ...formData, ...sectionData };
     setFormData(updatedData);
     
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      // Final submission
-      onSubmit(updatedData as SalonListing);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    // For now, just move to next step (will be implemented in future phases)
+    console.log('Section data submitted:', sectionData);
+    console.log('Full form data:', updatedData);
   };
 
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
@@ -94,7 +79,7 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
                   >
                     {index + 1}
                   </div>
-                  <span className="text-xs hidden md:block">{step.title}</span>
+                  <span className="text-xs">{step.title}</span>
                 </div>
               ))}
             </div>
@@ -116,10 +101,8 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
                   <SalonIdentitySection
                     data={formData}
                     onSubmit={handleSectionSubmit}
-                    onPrevious={currentStep > 0 ? handlePrevious : undefined}
                   />
                 )}
-                {/* Other sections will be added step by step */}
               </motion.div>
             </AnimatePresence>
           </CardContent>
