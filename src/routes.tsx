@@ -15,6 +15,7 @@ import Terms from '@/pages/Terms';
 import Privacy from '@/pages/Privacy';
 import Refund from '@/pages/Refund';
 import Cookies from '@/pages/Cookies';
+import Artists from '@/pages/Artists';
 
 const routes = [
   {
@@ -24,6 +25,10 @@ const routes = [
   {
     path: '/dashboard',
     element: <Dashboard />,
+  },
+  {
+    path: '/artists',
+    element: <Artists />,
   },
   {
     path: '/jobs',
