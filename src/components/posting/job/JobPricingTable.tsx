@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Crown, Star, Diamond, Sparkles } from 'lucide-react';
-import { DurationSelector } from '@/components/posting/pricing/DurationSelector';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Check, Star, Crown, Diamond, Sparkles, Shield } from 'lucide-react';
+import { DurationSelector } from '../pricing/DurationSelector';
 
 interface JobPricingTableProps {
   onPricingSelect: (tier: string, finalPrice: number, durationMonths: number) => void;
@@ -13,230 +14,297 @@ interface JobPricingTableProps {
 
 const JobPricingTable: React.FC<JobPricingTableProps> = ({ onPricingSelect, jobData }) => {
   const [selectedTier, setSelectedTier] = useState<string>('premium');
-  const [durationMonths, setDurationMonths] = useState<number>(1);
+  const [durationMonths, setDurationMonths] = useState(1);
 
   const pricingPlans = [
     {
-      tier: 'free',
+      id: 'free',
       name: 'Free Listing',
+      emotiveTitle: 'Shine',
       price: 0,
+      originalPrice: null,
       duration: '30 days',
-      features: ['Basic visibility', 'Standard placement', '30-day duration'],
-      icon: <Sparkles className="h-6 w-6 text-gray-500" />,
-      color: 'border-gray-200',
-      popular: false
+      icon: <Star className="h-6 w-6 text-gray-500" />,
+      badge: null,
+      gradient: 'from-gray-50 to-gray-100',
+      features: [
+        '👁️ Basic search visibility',
+        '📅 30-day duration',
+        '📍 Standard placement',
+        '🔒 Secure posting'
+      ],
+      buttonText: 'Start Free',
+      buttonClass: 'bg-gray-600 hover:bg-gray-700 text-white'
     },
     {
-      tier: 'gold',
+      id: 'gold',
       name: 'Gold Featured',
+      emotiveTitle: 'Stand Out',
       price: 19.99,
+      originalPrice: null,
       duration: '30 days',
-      features: ['Featured placement', 'Gold badge highlight', 'Enhanced visibility', 'Priority listing'],
       icon: <Star className="h-6 w-6 text-amber-500" />,
-      color: 'border-amber-300',
-      popular: false
+      badge: 'POPULAR',
+      badgeColor: 'bg-amber-100 text-amber-700 border-amber-300',
+      gradient: 'from-amber-50 to-yellow-50',
+      features: [
+        '🏆 Featured placement above standard',
+        '⭐ Gold badge highlight',
+        '👁️ Enhanced visibility',
+        '📈 Basic analytics',
+        '🤝 Priority support'
+      ],
+      buttonText: 'Select Gold',
+      buttonClass: 'bg-amber-500 hover:bg-amber-600 text-white'
     },
     {
-      tier: 'premium',
+      id: 'premium',
       name: 'Premium Listing',
+      emotiveTitle: 'Go Pro',
       price: 39.99,
+      originalPrice: null,
       duration: '30 days',
-      features: ['Top placement above Gold', 'Premium badge & styling', 'Advanced analytics', 'Priority customer support', 'Social media promotion'],
       icon: <Crown className="h-6 w-6 text-purple-500" />,
-      color: 'border-purple-300',
-      popular: true,
-      recommended: true
+      badge: 'RECOMMENDED',
+      badgeColor: 'bg-purple-100 text-purple-700 border-purple-300',
+      gradient: 'from-purple-50 to-indigo-50',
+      features: [
+        '👑 Premium placement above Gold',
+        '💎 Premium badge & styling',
+        '📊 Advanced analytics dashboard',
+        '🚀 Priority support & consultation',
+        '🎯 Targeted visibility boost'
+      ],
+      buttonText: 'Select Premium',
+      buttonClass: 'bg-purple-600 hover:bg-purple-700 text-white',
+      isRecommended: true
     },
     {
-      tier: 'diamond',
+      id: 'diamond',
       name: 'Diamond Exclusive',
+      emotiveTitle: 'Diamond Elite',
       price: 999.99,
-      duration: '1 year', // Fixed duration for Diamond
-      features: ['Highest priority placement', 'Diamond exclusive badge', 'Personal account manager', 'Custom listing design', 'Industry spotlight feature', 'Premium placement requires approval'],
+      originalPrice: 1199.99,
+      duration: '1 year',
       icon: <Diamond className="h-6 w-6 text-cyan-500" />,
-      color: 'border-cyan-300',
-      popular: false,
+      badge: 'ANNUAL ONLY',
+      badgeColor: 'bg-cyan-100 text-cyan-700 border-cyan-300',
+      gradient: 'from-cyan-50 to-blue-50',
+      features: [
+        '💎 Highest diamond placement',
+        '🏆 Diamond badge & exclusive styling',
+        '👤 Personal account manager',
+        '📈 Premium analytics & insights',
+        '🌟 Annual exclusive benefits',
+        '🎯 Industry spotlight feature'
+      ],
+      buttonText: 'Apply for Diamond',
+      buttonClass: 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white',
       isAnnualOnly: true
     }
   ];
 
-  const handleTierSelect = (tier: string) => {
-    setSelectedTier(tier);
-    
-    // For Diamond tier, always force 12 months and $999.99
-    if (tier === 'diamond') {
-      setDurationMonths(12);
-    }
-  };
-
-  const handleDurationChange = (months: number) => {
-    // Prevent duration changes for Diamond tier
-    if (selectedTier !== 'diamond') {
-      setDurationMonths(months);
-    }
-  };
-
-  const calculateFinalPrice = (tier: string, basePrice: number, months: number) => {
-    // Diamond tier always returns fixed price regardless of input
-    if (tier === 'diamond') {
-      return 999.99;
-    }
-    
-    // Calculate price for other tiers
-    let totalPrice = basePrice * months;
-    
-    // Apply duration discounts for non-Diamond tiers
-    if (months >= 12) {
-      totalPrice *= 0.80; // 20% discount for 12+ months
-    } else if (months >= 6) {
-      totalPrice *= 0.85; // 15% discount for 6+ months
-    } else if (months >= 3) {
-      totalPrice *= 0.90; // 10% discount for 3+ months
-    }
-    
-    return totalPrice;
-  };
-
-  const handleProceed = () => {
-    const plan = pricingPlans.find(p => p.tier === selectedTier);
+  const handlePlanSelect = (planId: string) => {
+    const plan = pricingPlans.find(p => p.id === planId);
     if (!plan) return;
 
-    // For Diamond tier, always use 12 months and $999.99
-    if (selectedTier === 'diamond') {
-      onPricingSelect('diamond', 999.99, 12);
+    setSelectedTier(planId);
+    
+    // For Diamond, always use 12 months and fixed price
+    if (planId === 'diamond') {
+      onPricingSelect(planId, 999.99, 12);
     } else {
-      const finalPrice = calculateFinalPrice(selectedTier, plan.price, durationMonths);
-      onPricingSelect(selectedTier, finalPrice, durationMonths);
+      onPricingSelect(planId, plan.price, durationMonths);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Choose Your Job Posting Plan</h1>
-        <p className="text-gray-600">Select the perfect plan to get maximum visibility for your job posting</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,107,107,0.08),transparent_50%)]" />
       </div>
 
-      {/* Special Diamond Alert */}
-      {selectedTier === 'diamond' && (
-        <Alert className="mb-6 border-cyan-200 bg-cyan-50">
-          <Diamond className="h-4 w-4 text-cyan-600" />
-          <AlertDescription className="text-cyan-800">
-            Diamond tier is exclusively available as a $999.99 annual plan with premium placement approval required.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {pricingPlans.map((plan) => (
-          <Card
-            key={plan.tier}
-            className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg ${
-              selectedTier === plan.tier
-                ? `ring-2 ring-offset-2 ${plan.color.replace('border-', 'ring-')}`
-                : plan.color
-            } ${plan.popular ? 'scale-105' : ''}`}
-            onClick={() => handleTierSelect(plan.tier)}
-          >
-            {plan.recommended && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                  RECOMMENDED
-                </span>
-              </div>
-            )}
-            
-            <CardHeader className="text-center pb-4">
-              <div className="flex justify-center mb-3">{plan.icon}</div>
-              <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <div className="text-3xl font-bold">
-                ${plan.price.toFixed(2)}
-                {plan.isAnnualOnly && <span className="text-sm font-normal">/year</span>}
-              </div>
-              <p className="text-sm text-gray-500">
-                {plan.isAnnualOnly ? 'Annual Only' : `for ${plan.duration}`}
-              </p>
-              
-              {plan.tier === 'diamond' && (
-                <div className="mt-2">
-                  <span className="bg-cyan-100 text-cyan-800 px-2 py-1 rounded-full text-xs">
-                    Invite/Bid Only - Limited to 5 spots per industry
-                  </span>
-                </div>
-              )}
-            </CardHeader>
-            
-            <CardContent>
-              <ul className="space-y-2 mb-6">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start text-sm">
-                    <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              
-              <Button
-                className={`w-full ${
-                  selectedTier === plan.tier
-                    ? plan.tier === 'diamond'
-                      ? 'bg-cyan-600 hover:bg-cyan-700'
-                      : plan.tier === 'premium'
-                      ? 'bg-purple-600 hover:bg-purple-700'
-                      : plan.tier === 'gold'
-                      ? 'bg-amber-600 hover:bg-amber-700'
-                      : 'bg-gray-600 hover:bg-gray-700'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleTierSelect(plan.tier);
-                }}
-              >
-                {selectedTier === plan.tier ? 'Selected' : 
-                 plan.tier === 'diamond' ? 'Apply for Diamond' : 'Select Plan'}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Duration Selector - Only show for non-Diamond tiers */}
-      {selectedTier && selectedTier !== 'diamond' && (
-        <div className="mb-8">
-          <DurationSelector
-            durationMonths={durationMonths}
-            onDurationChange={handleDurationChange}
-            selectedPricingTier={selectedTier}
-            isDiamondPlan={false}
-          />
-        </div>
-      )}
-
-      {/* Diamond Special Display */}
-      {selectedTier === 'diamond' && (
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center px-6 py-3 rounded-full border-2 border-cyan-600 bg-cyan-600 text-white font-medium">
-            <Diamond className="h-5 w-5 mr-2" />
-            1 Year - $999.99 (Annual Only)
-          </div>
-          <p className="text-sm text-gray-500 mt-2">
-            Diamond tier requires approval and is limited to 5 spots per industry
-          </p>
-        </div>
-      )}
-
-      <div className="text-center">
-        <Button
-          onClick={handleProceed}
-          className="px-8 py-3 text-lg"
-          disabled={!selectedTier}
+      <div className="relative z-10 container mx-auto px-4 py-12">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
         >
-          {selectedTier === 'diamond' 
-            ? 'Apply for Diamond Annual Plan'
-            : `Continue with ${selectedTier ? selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1) : ''} Plan`
-          }
-        </Button>
+          <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            Supercharge Your Salon's
+            <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent block">
+              Success
+            </span>
+          </h1>
+          
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto font-medium mb-4">
+            Choose Your Visibility Level
+          </p>
+          
+          <p className="text-base md:text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            Every plan unlocks new ways to attract talent, win more clients, and grow your brand—
+            <span className="font-semibold text-gray-800">risk-free, with no hidden fees.</span>
+          </p>
+          
+          {/* Trust Badges */}
+          <div className="flex items-center justify-center gap-6 mt-8">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Shield className="h-4 w-4 text-green-500" />
+              <span>Secure PCI-compliant checkout</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Sparkles className="h-4 w-4 text-purple-500" />
+              <span>No hidden fees</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {pricingPlans.map((plan, index) => (
+            <motion.div
+              key={plan.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`relative ${plan.isRecommended ? 'lg:scale-105' : ''}`}
+            >
+              <Card className={`
+                relative overflow-hidden cursor-pointer transition-all duration-300
+                ${selectedTier === plan.id 
+                  ? 'ring-2 ring-purple-500 shadow-2xl' 
+                  : 'hover:shadow-xl hover:-translate-y-1'
+                }
+                bg-gradient-to-br ${plan.gradient} backdrop-blur-md
+                border-0 shadow-lg
+              `}>
+                {/* Discount Badge */}
+                {plan.originalPrice && (
+                  <div className="absolute top-0 right-0 z-10">
+                    <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-3 py-1 transform rotate-45 translate-x-2 translate-y-3 uppercase font-semibold">
+                      Save $200
+                    </div>
+                  </div>
+                )}
+
+                <CardHeader className="text-center pb-4">
+                  {/* Badge */}
+                  {plan.badge && (
+                    <Badge className={`absolute top-4 left-4 ${plan.badgeColor} font-semibold text-xs`}>
+                      {plan.badge}
+                    </Badge>
+                  )}
+
+                  {/* Icon */}
+                  <div className="flex justify-center mb-4">
+                    {plan.icon}
+                  </div>
+
+                  {/* Plan Name */}
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    {plan.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 font-medium">
+                    {plan.emotiveTitle}
+                  </p>
+
+                  {/* Pricing */}
+                  <div className="mt-4">
+                    <div className="flex items-end justify-center gap-2">
+                      {plan.originalPrice && (
+                        <span className="text-lg text-gray-500 line-through">
+                          ${plan.originalPrice}
+                        </span>
+                      )}
+                      <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                        ${plan.price}
+                      </span>
+                      {plan.isAnnualOnly && (
+                        <span className="text-sm text-gray-600 mb-1">/year</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {plan.isAnnualOnly ? 'Annual Only' : `for ${plan.duration}`}
+                    </p>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  {/* Features */}
+                  <ul className="space-y-3 mb-6">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start text-sm">
+                        <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA Button */}
+                  <Button
+                    onClick={() => handlePlanSelect(plan.id)}
+                    className={`w-full ${plan.buttonClass} font-semibold py-3 transition-all duration-300`}
+                    disabled={selectedTier === plan.id}
+                  >
+                    {selectedTier === plan.id ? 'Selected' : plan.buttonText}
+                  </Button>
+
+                  {/* Trust Message */}
+                  <p className="text-xs text-center text-gray-500 mt-3">
+                    {plan.id === 'free' 
+                      ? 'No credit card required'
+                      : 'Secure checkout • Cancel anytime'
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Duration Selector - Only for non-Diamond plans */}
+        {selectedTier !== 'diamond' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <DurationSelector
+              durationMonths={durationMonths}
+              onDurationChange={setDurationMonths}
+              selectedPricingTier={selectedTier}
+            />
+          </motion.div>
+        )}
+
+        {/* Continue Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <Button
+            onClick={() => {
+              const plan = pricingPlans.find(p => p.id === selectedTier);
+              if (plan) {
+                if (selectedTier === 'diamond') {
+                  onPricingSelect(selectedTier, 999.99, 12);
+                } else {
+                  onPricingSelect(selectedTier, plan.price, durationMonths);
+                }
+              }
+            }}
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-12 py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            Continue with {selectedTier === 'free' ? 'Free' : 
+                           selectedTier === 'gold' ? 'Gold' :
+                           selectedTier === 'premium' ? 'Premium' : 'Diamond'} Plan
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
