@@ -1,99 +1,36 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { UseFormReturn } from "react-hook-form";
+import { SalonFormValues } from "./salonFormSchema";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Upload, Building2, X } from "lucide-react";
-import { SalonFormValues } from "./salonFormSchema";
+import { Building, Calendar, Upload } from "lucide-react";
 
 interface SalonIdentitySectionProps {
   form: UseFormReturn<SalonFormValues>;
 }
 
-const businessTypes = [
-  "Hair Salon",
-  "Nail Salon", 
-  "Beauty Spa",
-  "Barbershop",
-  "Massage Therapy",
-  "Eyebrow/Lash Studio",
-  "Medical Spa",
-  "Tanning Salon",
-  "Other"
-];
-
 export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Create preview URL
-      const previewUrl = URL.createObjectURL(file);
-      setLogoPreview(previewUrl);
-      setLogoFile(file);
-      
-      // In a real app, this would upload to a server
-      console.log("Logo uploaded:", file.name);
-    }
-  };
-
-  const handleRemoveLogo = () => {
-    // Clean up the preview URL to prevent memory leaks
-    if (logoPreview) {
-      URL.revokeObjectURL(logoPreview);
-    }
-    setLogoPreview(null);
-    setLogoFile(null);
-    
-    // Reset the file input
-    const fileInput = document.getElementById("logo-upload") as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
-    }
-  };
-
-  // Clean up preview URL when component unmounts or preview changes
-  React.useEffect(() => {
-    return () => {
-      if (logoPreview) {
-        URL.revokeObjectURL(logoPreview);
-      }
-    };
-  }, [logoPreview]);
-
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 mb-4">
-          <Building2 className="w-8 h-8 text-purple-600" />
-        </div>
-        <h2 className="text-3xl font-playfair font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          Tell us about your salon
-        </h2>
-        <p className="text-gray-600 max-w-md mx-auto">
-          Help potential buyers understand your business by providing some basic information
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 mb-6">
+        <Building className="w-5 h-5 text-purple-600" />
+        <h2 className="text-2xl font-playfair font-medium">Salon Identity</h2>
       </div>
+      <p className="text-gray-600 mb-6">
+        Tell us about your salon to create an attractive listing
+      </p>
 
-      <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl p-8 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
           name="salonName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg font-medium text-gray-800">
-                Salon Name <span className="text-red-500">*</span>
-              </FormLabel>
+              <FormLabel>Salon Name *</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Enter your salon name"
-                  className="h-12 text-lg rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
-                  {...field}
-                />
+                <Input placeholder="Beautiful Nails Spa" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,21 +42,21 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
           name="businessType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg font-medium text-gray-800">
-                Business Type <span className="text-red-500">*</span>
-              </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormLabel>Business Type *</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-12 text-lg rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500/20">
-                    <SelectValue placeholder="Select your business type" />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select business type" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {businessTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="nail-salon">Nail Salon</SelectItem>
+                  <SelectItem value="hair-salon">Hair Salon</SelectItem>
+                  <SelectItem value="beauty-salon">Beauty Salon</SelectItem>
+                  <SelectItem value="spa">Spa</SelectItem>
+                  <SelectItem value="barbershop">Barbershop</SelectItem>
+                  <SelectItem value="massage">Massage Therapy</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -132,69 +69,38 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
           name="establishedYear"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-lg font-medium text-gray-800">
-                Year Established
+              <FormLabel className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Established Year
               </FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  placeholder="e.g., 2020"
-                  min="1900"
-                  max={new Date().getFullYear()}
-                  className="h-12 text-lg rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
-                  {...field}
-                />
+                <Input placeholder="2015" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="space-y-3">
-          <FormLabel className="text-lg font-medium text-gray-800">
-            Salon Logo (Optional)
-          </FormLabel>
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors relative">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleLogoUpload}
-              className="hidden"
-              id="logo-upload"
-            />
-            
-            {logoPreview ? (
-              <div className="relative">
-                <img
-                  src={logoPreview}
-                  alt="Logo preview"
-                  className="max-w-full max-h-32 mx-auto rounded-lg object-contain"
+        <FormField
+          control={form.control}
+          name="logo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2">
+                <Upload className="w-4 h-4" />
+                Logo (Optional)
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={(e) => field.onChange(e.target.files?.[0])}
                 />
-                <button
-                  type="button"
-                  onClick={handleRemoveLogo}
-                  className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
-                  title="Remove logo"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-                <p className="text-sm text-gray-500 mt-2">{logoFile?.name}</p>
-              </div>
-            ) : (
-              <label htmlFor="logo-upload" className="cursor-pointer">
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                    <Upload className="w-6 h-6 text-gray-500" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-700">Upload your salon logo</p>
-                    <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
-                  </div>
-                </div>
-              </label>
-            )}
-          </div>
-        </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ import { SalonFormValues } from "./salonFormSchema";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, DollarSign, Camera } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FileText, DollarSign, Camera, Home, Sparkles, Utensils, Shirt } from "lucide-react";
 
 interface SalonDescriptionSectionProps {
   form: UseFormReturn<SalonFormValues>;
@@ -177,6 +178,103 @@ export const SalonDescriptionSection = ({ form }: SalonDescriptionSectionProps) 
             </FormItem>
           )}
         />
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-medium text-lg">Features & Amenities</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="willTrain"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Will train new staff</FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="hasHousing"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="flex items-center gap-2">
+                  <Home className="w-4 h-4" />
+                  Housing available
+                </FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="hasWaxRoom"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Wax room
+                </FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="hasDiningRoom"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="flex items-center gap-2">
+                  <Utensils className="w-4 h-4" />
+                  Dining room
+                </FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="hasLaundry"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="flex items-center gap-2">
+                  <Shirt className="w-4 h-4" />
+                  Laundry facilities
+                </FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
     </div>
   );

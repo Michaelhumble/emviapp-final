@@ -1,236 +1,322 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Check, Star } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { CheckCircle, Star, TrendingUp, Shield, Users, Clock } from "lucide-react";
+import { SalonFormValues } from "./salonFormSchema";
+import { SalonPricingOptions, calculateSalonPostPrice, getSalonPostPricingSummary } from "@/utils/posting/salonPricing";
+import { formatCurrency } from "@/lib/utils";
 
 interface SalonPricingSectionProps {
-  onPricingSelect: (plan: string, price: number, featured: boolean) => void;
-  selectedPlan?: string;
-  featuredBoost: boolean;
-  onFeaturedChange: (featured: boolean) => void;
+  formData: Partial<SalonFormValues>;
+  photoUploads: File[];
+  pricingOptions: SalonPricingOptions;
+  setPricingOptions: React.Dispatch<React.SetStateAction<SalonPricingOptions>>;
+  onSubmit: () => void;
 }
 
-const SalonPricingSection = ({ 
-  onPricingSelect, 
-  selectedPlan = '1-month',
-  featuredBoost,
-  onFeaturedChange 
+export const SalonPricingSection = ({
+  formData,
+  photoUploads,
+  pricingOptions,
+  setPricingOptions,
+  onSubmit,
 }: SalonPricingSectionProps) => {
-  const [activePlan, setActivePlan] = useState(selectedPlan);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  
+  const pricingSummary = getSalonPostPricingSummary(pricingOptions);
 
-  const plans = [
-    {
-      id: '1-month',
-      name: 'Standard',
-      price: 24.99,
-      duration: '1 month',
-      description: 'Live instantly, cancel anytime',
-      savings: null
-    },
-    {
-      id: '6-months',
-      name: '6 Months',
-      price: 120,
-      duration: '6 months',
-      description: 'Save 20%, best for most sellers',
-      savings: 'Save 20%',
-      popular: true
-    },
-    {
-      id: '12-months',
-      name: '12 Months',
-      price: 250,
-      duration: '12 months',
-      description: 'Best value, patient sellers',
-      savings: 'Best Value'
-    }
-  ];
-
-  const handlePlanSelect = (plan: typeof plans[0]) => {
-    setActivePlan(plan.id);
-    onPricingSelect(plan.id, plan.price, featuredBoost);
+  const handleDurationChange = (months: number) => {
+    setPricingOptions(prev => ({ ...prev, durationMonths: months }));
   };
 
-  const handleFeaturedToggle = (checked: boolean) => {
-    onFeaturedChange(checked);
-    const currentPlan = plans.find(p => p.id === activePlan);
-    if (currentPlan) {
-      onPricingSelect(activePlan, currentPlan.price, checked);
-    }
+  const handleFeaturedBoostToggle = (checked: boolean) => {
+    setPricingOptions(prev => ({ ...prev, featuredBoost: checked }));
   };
 
-  const getSelectedPlan = () => plans.find(p => p.id === activePlan);
-  const totalPrice = (getSelectedPlan()?.price || 0) + (featuredBoost ? 25 : 0);
+  const handleAutoRenewToggle = (checked: boolean) => {
+    setPricingOptions(prev => ({ ...prev, autoRenew: checked }));
+  };
+
+  const canSubmit = termsAccepted && formData.salonName && formData.businessType;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-playfair font-bold text-gray-900">
+      <div className="text-center">
+        <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
           Sell Your Salon, Stress-Free
         </h2>
-        <p className="text-lg text-gray-600 italic">
-          No commissions. No contracts. Just peace of mind and real buyers.
+        <p className="text-lg text-gray-600">
+          <em>No commissions. No contracts. Just peace of mind and real buyers.</em>
         </p>
       </div>
 
-      {/* Pricing Table */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan) => (
-          <Card 
-            key={plan.id}
-            className={`relative cursor-pointer transition-all ${
-              activePlan === plan.id 
-                ? 'ring-2 ring-purple-500 border-purple-500' 
-                : 'hover:border-purple-300'
-            }`}
-            onClick={() => handlePlanSelect(plan)}
-          >
-            {plan.popular && (
-              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-600">
-                Most Popular
-              </Badge>
-            )}
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <div className="text-3xl font-bold">
-                ${plan.price}
-                <span className="text-base font-normal text-gray-500">
-                  /{plan.duration}
-                </span>
-              </div>
-              {plan.savings && (
-                <Badge variant="outline" className="text-green-600 border-green-200">
-                  {plan.savings}
-                </Badge>
+      {/* Listing Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Salon Listing Summary</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h3 className="font-semibold text-lg">{formData.salonName || "Your Salon"}</h3>
+              <p className="text-gray-600">{formData.businessType}</p>
+              <p className="text-gray-600">{formData.city}, {formData.state}</p>
+              {formData.askingPrice && (
+                <p className="text-lg font-bold text-green-600">{formData.askingPrice}</p>
               )}
-            </CardHeader>
-            <CardContent>
-              <p className="text-center text-gray-600 mb-4">{plan.description}</p>
-              <Button 
-                className={`w-full ${
-                  activePlan === plan.id 
-                    ? 'bg-purple-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePlanSelect(plan);
-                }}
-              >
-                {activePlan === plan.id ? 'Selected' : 'Select Plan'}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Featured Boost Option */}
-      <Card className="border-2 border-dashed border-orange-200 bg-orange-50">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Star className="h-6 w-6 text-orange-500" />
-              <div>
-                <h3 className="font-semibold text-gray-900">Need extra visibility?</h3>
-                <p className="text-sm text-gray-600">
-                  Upgrade to a Featured Listing for just <strong>$25 more</strong> — available on any plan.
-                </p>
-              </div>
             </div>
-            <Switch
-              checked={featuredBoost}
-              onCheckedChange={handleFeaturedToggle}
-            />
+            <div className="text-sm text-gray-500">
+              <p>Photos uploaded: {photoUploads.length}</p>
+              <p>Description: {formData.englishDescription ? "✓ Complete" : "Not provided"}</p>
+              <p>Vietnamese description: {formData.vietnameseDescription ? "✓ Complete" : "Not provided"}</p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Testimonial */}
-      <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
-        <blockquote className="text-center">
-          <p className="text-gray-700 italic mb-2">
-            "I listed and sold my salon in 3 weeks. The process was safe and easy."
-          </p>
-          <cite className="text-sm text-gray-600">— Mai, San Jose</cite>
-        </blockquote>
+      {/* Pricing Plans */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-semibold text-center">Choose Your Listing Plan</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* 1 Month Plan */}
+          <Card 
+            className={`cursor-pointer transition-all ${
+              pricingOptions.durationMonths === 1 ? "ring-2 ring-purple-500" : ""
+            }`}
+            onClick={() => handleDurationChange(1)}
+          >
+            <CardHeader className="text-center">
+              <CardTitle>1 Month</CardTitle>
+              <div className="text-2xl font-bold">$24.99/mo</div>
+              <p className="text-sm text-gray-600">Live instantly, cancel anytime</p>
+            </CardHeader>
+          </Card>
+
+          {/* 6 Month Plan */}
+          <Card 
+            className={`cursor-pointer transition-all ${
+              pricingOptions.durationMonths === 6 ? "ring-2 ring-purple-500" : ""
+            }`}
+            onClick={() => handleDurationChange(6)}
+          >
+            <CardHeader className="text-center">
+              <CardTitle>6 Months</CardTitle>
+              <div className="text-2xl font-bold">$120</div>
+              <Badge variant="secondary" className="mx-auto">Save 20%</Badge>
+              <p className="text-sm text-gray-600">Best for most sellers</p>
+            </CardHeader>
+          </Card>
+
+          {/* 12 Month Plan */}
+          <Card 
+            className={`cursor-pointer transition-all ${
+              pricingOptions.durationMonths === 12 ? "ring-2 ring-purple-500" : ""
+            }`}
+            onClick={() => handleDurationChange(12)}
+          >
+            <CardHeader className="text-center">
+              <CardTitle>12 Months</CardTitle>
+              <div className="text-2xl font-bold">$250</div>
+              <Badge className="mx-auto">Best Value</Badge>
+              <p className="text-sm text-gray-600">Patient sellers</p>
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* Featured Boost Option */}
+        <Card className="border-orange-200 bg-orange-50">
+          <CardContent className="pt-6">
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="featured-boost"
+                checked={pricingOptions.featuredBoost}
+                onCheckedChange={handleFeaturedBoostToggle}
+              />
+              <div className="flex-1">
+                <label htmlFor="featured-boost" className="flex items-center gap-2 font-medium cursor-pointer">
+                  <Star className="w-5 h-5 text-orange-500" />
+                  Featured Boost (+$25)
+                </label>
+                <p className="text-sm text-gray-600 mt-1">
+                  <strong>Need extra visibility?</strong> Upgrade to a Featured Listing for just $25 more — available on any plan.
+                </p>
+                <div className="mt-2 text-sm text-orange-700">
+                  ✓ Appear at the top of search results<br />
+                  ✓ 2x more buyer views<br />
+                  ✓ Priority in our buyer newsletter
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Auto-renew Option */}
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="auto-renew"
+            checked={pricingOptions.autoRenew}
+            onCheckedChange={handleAutoRenewToggle}
+          />
+          <div>
+            <label htmlFor="auto-renew" className="font-medium cursor-pointer">
+              Auto-renew (Save 5% extra)
+            </label>
+            <p className="text-sm text-gray-600">
+              Automatically renew your listing to keep it active. Cancel anytime.
+            </p>
+          </div>
+        </div>
       </div>
+
+      {/* Testimonial */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardContent className="pt-6">
+          <blockquote className="text-center">
+            <p className="italic text-blue-800">
+              "I listed and sold my salon in 3 weeks. The process was safe and easy."
+            </p>
+            <footer className="mt-2 text-sm text-blue-600">— Mai, San Jose</footer>
+          </blockquote>
+        </CardContent>
+      </Card>
 
       {/* Why Choose EmviApp */}
-      <div className="bg-white p-6 rounded-lg border">
-        <h3 className="text-xl font-semibold mb-4 text-center">Why Choose EmviApp</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-start space-x-3">
-            <Check className="h-5 w-5 text-green-500 mt-0.5" />
-            <span className="text-gray-700">No agent commissions (keep all your sale proceeds!)</span>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-green-600" />
+            Why Choose EmviApp
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+              <div>
+                <p className="font-medium">No agent commissions</p>
+                <p className="text-sm text-gray-600">Keep all your sale proceeds!</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Users className="w-5 h-5 text-green-600 mt-0.5" />
+              <div>
+                <p className="font-medium">Verified buyers only</p>
+                <p className="text-sm text-gray-600">No spam, no time wasters</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-green-600 mt-0.5" />
+              <div>
+                <p className="font-medium">List in 2 minutes</p>
+                <p className="text-sm text-gray-600">Pause/cancel anytime</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <TrendingUp className="w-5 h-5 text-green-600 mt-0.5" />
+              <div>
+                <p className="font-medium">Optional featured boost</p>
+                <p className="text-sm text-gray-600">Reach 2x more buyers instantly</p>
+              </div>
+            </div>
           </div>
-          <div className="flex items-start space-x-3">
-            <Check className="h-5 w-5 text-green-500 mt-0.5" />
-            <span className="text-gray-700">Verified buyers only—no spam, no time wasters</span>
-          </div>
-          <div className="flex items-start space-x-3">
-            <Check className="h-5 w-5 text-green-500 mt-0.5" />
-            <span className="text-gray-700">List in 2 minutes, pause/cancel anytime</span>
-          </div>
-          <div className="flex items-start space-x-3">
-            <Check className="h-5 w-5 text-green-500 mt-0.5" />
-            <span className="text-gray-700">Optional featured boost: reach 2x more buyers instantly</span>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Comparison Section */}
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h4 className="text-lg font-semibold mb-4">How does this compare?</h4>
-        <div className="space-y-2 text-gray-700">
-          <p>• Salon agents typically charge <strong>10% of your sale price</strong> ($10,000 on a $100k sale)</p>
-          <p>• With EmviApp: Just $24.99/month, no hidden fees, and you stay in control</p>
-          <p className="text-green-600 font-semibold">• No brainer: Save thousands, sell with confidence!</p>
-        </div>
-      </div>
-
-      {/* Total and CTA */}
-      <div className="bg-white p-6 rounded-lg border-2 border-purple-200">
-        <div className="text-center space-y-4">
-          <div className="text-2xl font-bold">
-            Total: ${totalPrice.toFixed(2)}
-            {featuredBoost && (
-              <span className="text-sm font-normal text-gray-600 block">
-                (${getSelectedPlan()?.price} + $25 featured boost)
-              </span>
-            )}
+      {/* Comparison */}
+      <Card className="border-green-200 bg-green-50">
+        <CardHeader>
+          <CardTitle>How does this compare?</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <p>• Salon agents typically charge <strong>10% of your sale price</strong> ($10,000 on a $100k sale)</p>
+            <p>• With EmviApp: Just ${pricingOptions.durationMonths === 1 ? '24.99/month' : pricingSummary.finalPrice}, no hidden fees, and you stay in control</p>
+            <p className="text-green-700 font-medium">• <strong>No brainer:</strong> Save thousands, sell with confidence!</p>
           </div>
-          <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3">
-            {featuredBoost ? 'Feature My Listing & Sell Faster' : 'Get Started & List My Salon'}
+        </CardContent>
+      </Card>
+
+      {/* Price Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Order Summary</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex justify-between">
+            <span>Base listing ({pricingOptions.durationMonths} month{pricingOptions.durationMonths > 1 ? 's' : ''})</span>
+            <span>{formatCurrency(pricingSummary.originalPrice)}</span>
+          </div>
+          
+          {pricingOptions.featuredBoost && (
+            <div className="flex justify-between">
+              <span>Featured boost</span>
+              <span>+{formatCurrency(25)}</span>
+            </div>
+          )}
+          
+          {pricingSummary.discountAmount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span>Savings ({pricingSummary.discountPercentage}% off)</span>
+              <span>-{formatCurrency(pricingSummary.discountAmount)}</span>
+            </div>
+          )}
+          
+          <Separator />
+          
+          <div className="flex justify-between font-bold text-lg">
+            <span>Total</span>
+            <span>{formatCurrency(pricingSummary.finalPrice)}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Terms and Submit */}
+      <div className="space-y-6">
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="terms"
+            checked={termsAccepted}
+            onCheckedChange={setTermsAccepted}
+          />
+          <label htmlFor="terms" className="text-sm cursor-pointer">
+            I agree to the <a href="#" className="text-purple-600 hover:underline">Terms of Service</a> and 
+            <a href="#" className="text-purple-600 hover:underline"> Privacy Policy</a>. 
+            I confirm that I am the authorized owner of this salon and have the right to sell it.
+          </label>
+        </div>
+
+        <div className="text-center">
+          <Button
+            onClick={onSubmit}
+            disabled={!canSubmit}
+            size="lg"
+            className="w-full md:w-auto px-12 py-3 text-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          >
+            {pricingOptions.featuredBoost ? "Feature My Listing & Sell Faster" : "Get Started & List My Salon"}
           </Button>
+          
+          <p className="mt-3 text-sm text-gray-500">
+            <em>Most salons sell within 1–2 months. Pause or cancel your listing anytime — no risk, no stress.</em>
+          </p>
+          <p className="text-sm text-gray-500">
+            <em>Featured listings appear at the top and get sent to our private buyers list.</em>
+          </p>
+          <p className="text-sm text-gray-500">
+            <em>We never share your exact address or personal details without your approval.</em>
+          </p>
         </div>
-      </div>
 
-      {/* Psychology & Fine Print */}
-      <div className="text-center space-y-3 text-sm text-gray-600">
-        <p className="italic">
-          Most salons sell within 1–2 months. Pause or cancel your listing anytime — no risk, no stress.
-        </p>
-        <p className="italic">
-          Featured listings appear at the top and get sent to our private buyers list.
-        </p>
-        <p className="italic">
-          We never share your exact address or personal details without your approval.
-        </p>
-      </div>
-
-      {/* Trust Section & Support */}
-      <div className="text-center p-6 bg-gray-50 rounded-lg">
-        <p className="text-gray-700 mb-2">Need help or have questions?</p>
-        <Button variant="link" className="text-purple-600 hover:text-purple-700">
-          Contact our team — We're here for you every step of the way.
-        </Button>
+        <div className="text-center text-sm text-gray-600">
+          <p>Need help or have questions?</p>
+          <a href="#" className="text-purple-600 hover:underline">Contact our team</a> — We're here for you every step of the way.
+        </div>
       </div>
     </div>
   );
 };
-
-export default SalonPricingSection;

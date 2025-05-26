@@ -1,225 +1,213 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { SalonFormValues } from './salonFormSchema';
-import { SalonIdentitySection } from './SalonIdentitySection';
-import { SalonLocationSection } from './SalonLocationSection';
-import { SalonDescriptionSection } from './SalonDescriptionSection';
-import { SalonPhotosSection } from './SalonPhotosSection';
-import SalonPricingSection from './SalonPricingSection';
-import { usePostPayment } from '@/hooks/usePostPayment';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { salonFormSchema, SalonFormValues } from "./salonFormSchema";
+import { SalonIdentitySection } from "./SalonIdentitySection";
+import { SalonLocationSection } from "./SalonLocationSection";
+import { SalonDescriptionSection } from "./SalonDescriptionSection";
+import { SalonPhotosSection } from "./SalonPhotosSection";
+import { SalonPricingSection } from "./SalonPricingSection";
+import { calculateSalonPostPrice, getSalonPostPricingSummary, SalonPricingOptions } from "@/utils/posting/salonPricing";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-const STEPS = [
-  { id: 1, title: 'Identity', description: 'Salon details' },
-  { id: 2, title: 'Location', description: 'Where is your salon?' },
-  { id: 3, title: 'Description', description: 'Tell your story' },
-  { id: 4, title: 'Photos', description: 'Show your space' },
-  { id: 5, title: 'Review & Payment', description: 'Complete your listing' }
+const steps = [
+  { id: 1, title: "Identity", description: "Basic salon information" },
+  { id: 2, title: "Location", description: "Where is your salon?" },
+  { id: 3, title: "Description", description: "Tell us about your salon" },
+  { id: 4, title: "Photos", description: "Show your salon" },
+  { id: 5, title: "Review & Payment", description: "Complete your listing" },
 ];
 
-const SalonListingWizard = () => {
-  const navigate = useNavigate();
-  const { initiatePayment, isLoading } = usePostPayment();
+export const SalonListingWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<Partial<SalonFormValues>>({});
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [selectedPlan, setSelectedPlan] = useState('1-month');
-  const [planPrice, setPlanPrice] = useState(24.99);
-  const [featuredBoost, setFeaturedBoost] = useState(false);
+  const [pricingOptions, setPricingOptions] = useState<SalonPricingOptions>({
+    selectedPricingTier: 'standard',
+    durationMonths: 1,
+    autoRenew: false,
+    isFirstPost: true,
+    featuredBoost: false,
+  });
+  
+  const navigate = useNavigate();
 
-  const progress = (currentStep / STEPS.length) * 100;
+  const form = useForm<SalonFormValues>({
+    resolver: zodResolver(salonFormSchema),
+    defaultValues: {
+      salonName: "",
+      businessType: "",
+      establishedYear: "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      neighborhood: "",
+      hideExactAddress: false,
+      askingPrice: "",
+      monthlyRent: "",
+      revenue: "",
+      squareFeet: "",
+      numberOfStaff: "",
+      virtualTourUrl: "",
+      englishDescription: "",
+      vietnameseDescription: "",
+      reasonForSelling: "",
+      willTrain: false,
+      hasHousing: false,
+      hasWaxRoom: false,
+      hasDiningRoom: false,
+      hasLaundry: false,
+      isNationwide: false,
+      fastSalePackage: false,
+      termsAccepted: false,
+    },
+  });
 
-  const handleNext = () => {
-    if (currentStep < STEPS.length) {
+  const handleNext = async () => {
+    let isValid = true;
+    
+    // Validate current step
+    switch (currentStep) {
+      case 1:
+        isValid = await form.trigger(['salonName', 'businessType']);
+        break;
+      case 2:
+        isValid = await form.trigger(['city', 'state']);
+        break;
+      case 3:
+        isValid = await form.trigger(['askingPrice']);
+        break;
+      case 4:
+        // Photos are optional, so always valid
+        break;
+      case 5:
+        isValid = await form.trigger(['termsAccepted']);
+        break;
+    }
+
+    if (isValid && currentStep < 5) {
       setCurrentStep(currentStep + 1);
+    } else if (isValid && currentStep === 5) {
+      handleSubmit();
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-    } else {
-      navigate('/dashboard');
     }
-  };
-
-  const handlePricingSelect = (plan: string, price: number, featured: boolean) => {
-    setSelectedPlan(plan);
-    setPlanPrice(price);
-    setFeaturedBoost(featured);
   };
 
   const handleSubmit = async () => {
+    const formData = form.getValues();
+    
     try {
-      const totalPrice = planPrice + (featuredBoost ? 25 : 0);
+      // Here you would typically save to database and process payment
+      console.log("Form data:", formData);
+      console.log("Photos:", photoUploads);
+      console.log("Pricing:", pricingOptions);
       
-      const salonDetails = {
-        ...formData,
-        post_type: 'salon',
-        pricing_plan: selectedPlan,
-        featured_boost: featuredBoost,
-        total_price: totalPrice
-      };
-
-      const pricingOptions = {
-        selectedPricingTier: featuredBoost ? 'premium' : 'standard',
-        durationMonths: selectedPlan === '12-months' ? 12 : selectedPlan === '6-months' ? 6 : 1,
-        autoRenew: true,
-        isFirstPost: true
-      };
-
-      const result = await initiatePayment('salon', salonDetails, pricingOptions);
-      
-      if (result.success) {
-        navigate('/salon-listing-success');
-      } else {
-        toast.error('Error processing your salon listing. Please try again.');
-      }
+      toast.success("Salon listing created successfully!");
+      navigate("/salon-listing-success");
     } catch (error) {
-      console.error('Error submitting salon listing:', error);
-      toast.error('Error creating salon listing');
+      toast.error("Failed to create listing. Please try again.");
     }
   };
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <SalonIdentitySection 
-            formData={formData}
-            onUpdate={setFormData}
-          />
-        );
-      case 2:
-        return (
-          <SalonLocationSection
-            formData={formData}
-            onUpdate={setFormData}
-          />
-        );
-      case 3:
-        return (
-          <SalonDescriptionSection
-            formData={formData}
-            onUpdate={setFormData}
-          />
-        );
-      case 4:
-        return (
-          <SalonPhotosSection
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-          />
-        );
-      case 5:
-        return (
-          <div className="space-y-8">
-            {/* Review Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Review Your Listing</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <strong>Salon Name:</strong> {formData.salonName}
-                  </div>
-                  <div>
-                    <strong>Business Type:</strong> {formData.businessType}
-                  </div>
-                  <div>
-                    <strong>Location:</strong> {formData.city}, {formData.state}
-                  </div>
-                  <div>
-                    <strong>Asking Price:</strong> {formData.askingPrice}
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" size="sm" onClick={() => setCurrentStep(1)}>
-                    Edit Identity
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentStep(2)}>
-                    Edit Location
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentStep(3)}>
-                    Edit Description
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentStep(4)}>
-                    Edit Photos
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Pricing Section */}
-            <SalonPricingSection
-              onPricingSelect={handlePricingSelect}
-              selectedPlan={selectedPlan}
-              featuredBoost={featuredBoost}
-              onFeaturedChange={setFeaturedBoost}
-            />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+  const progress = (currentStep / steps.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container max-w-4xl mx-auto py-4 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+      <div className="container max-w-4xl mx-auto py-8 px-4">
+        {/* Progress Header */}
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <Button variant="ghost" onClick={handleBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <h1 className="text-3xl font-playfair font-bold text-gray-900">
+              List Your Salon for Sale
+            </h1>
+            <span className="text-sm text-gray-500">
+              Step {currentStep} of {steps.length}
+            </span>
+          </div>
+          
+          <Progress value={progress} className="mb-4" />
+          
+          <div className="flex justify-between text-sm">
+            {steps.map((step) => (
+              <div
+                key={step.id}
+                className={`flex flex-col items-center ${
+                  currentStep >= step.id ? "text-purple-600" : "text-gray-400"
+                }`}
+              >
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium mb-1 ${
+                    currentStep >= step.id
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  {step.id}
+                </div>
+                <span className="text-xs font-medium">{step.title}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Form Content */}
+        <Form {...form}>
+          <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
+            {currentStep === 1 && <SalonIdentitySection form={form} />}
+            {currentStep === 2 && <SalonLocationSection form={form} />}
+            {currentStep === 3 && <SalonDescriptionSection form={form} />}
+            {currentStep === 4 && (
+              <SalonPhotosSection
+                photoUploads={photoUploads}
+                setPhotoUploads={setPhotoUploads}
+                maxPhotos={10}
+              />
+            )}
+            {currentStep === 5 && (
+              <SalonPricingSection
+                formData={form.getValues()}
+                photoUploads={photoUploads}
+                pricingOptions={pricingOptions}
+                setPricingOptions={setPricingOptions}
+                onSubmit={handleSubmit}
+              />
+            )}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
-            <div className="text-sm text-gray-600">
-              Step {currentStep} of {STEPS.length}
-            </div>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="container max-w-4xl mx-auto py-8 px-4">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2">{STEPS[currentStep - 1].title}</h1>
-          <p className="text-gray-600">{STEPS[currentStep - 1].description}</p>
-        </div>
-
-        {renderStepContent()}
-
-        {/* Navigation */}
-        {currentStep < 5 && (
-          <div className="flex justify-end mt-8">
-            <Button onClick={handleNext}>
-              Continue
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        )}
-
-        {currentStep === 5 && (
-          <div className="mt-8 text-center">
-            <Button 
-              size="lg" 
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3"
+            
+            <Button
+              type="button"
+              onClick={handleNext}
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
             >
-              {isLoading ? 'Processing...' : 
-               featuredBoost ? 'Feature My Listing & Sell Faster' : 'Get Started & List My Salon'}
+              {currentStep === 5 ? "Complete Listing" : "Continue"}
+              {currentStep !== 5 && <ArrowRight className="w-4 h-4" />}
             </Button>
           </div>
-        )}
+        </Form>
       </div>
     </div>
   );
