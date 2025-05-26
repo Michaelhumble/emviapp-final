@@ -27,7 +27,7 @@ export function DurationSelector({
     { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 35 },
   ];
 
-  // For Diamond plan, show special fixed pricing message only
+  // For Diamond plan, show special fixed pricing message only - NO duration selection
   if (selectedPricingTier === 'diamond') {
     return (
       <div className="space-y-4">
@@ -39,7 +39,7 @@ export function DurationSelector({
         <Alert className="border-cyan-200 bg-cyan-50">
           <Diamond className="h-4 w-4 text-cyan-600" />
           <AlertDescription className="text-cyan-800">
-            Diamond is only available as a $999.99 annual listing (Invite/Bid Only). 
+            Diamond is only available as a $999.99 annual listing. 
             This exclusive tier provides 1 year of top diamond placement with premium features.
           </AlertDescription>
         </Alert>
@@ -56,7 +56,7 @@ export function DurationSelector({
     );
   }
 
-  // Regular duration selector for other plans (Gold, Premium, Free)
+  // Regular duration selector for other plans (Gold, Premium, Free) - Diamond is excluded
   const getBadgeContent = (months: number) => {
     if (months === 6) return "Most Popular";
     if (months === 12) return "Best Value!";

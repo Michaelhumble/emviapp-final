@@ -36,9 +36,9 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
           icon: <Diamond className="h-6 w-6 text-cyan-500" />,
           color: 'text-cyan-600',
           bgColor: 'bg-cyan-50',
-          features: ['Top diamond placement', 'Personal account manager', 'Custom design'],
-          duration: '1 year', // Diamond is always 1 year
-          price: '$999.99'
+          features: ['Top diamond placement', 'Personal account manager', 'Premium features'],
+          duration: '1 year', // Diamond is ALWAYS 1 year
+          price: '$999.99' // Diamond is ALWAYS $999.99
         };
       case 'premium':
         return {

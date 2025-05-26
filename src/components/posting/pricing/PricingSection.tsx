@@ -59,8 +59,8 @@ const PricingSection: React.FC<PricingSectionProps> = ({
       price: 999.99,
       duration: 365,
       priceLabel: '$999.99',
-      durationLabel: '1 year',
-      features: ['Highest placement', 'Diamond badge', 'Personal manager', 'Exclusive features'],
+      durationLabel: '1 year only',
+      features: ['Highest placement', 'Diamond badge', 'Personal manager', 'Annual exclusive'],
       icon: <Diamond className="h-5 w-5 text-cyan-500" />
     }
   ];
@@ -80,7 +80,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({
         <Alert className="border-cyan-200 bg-cyan-50">
           <Diamond className="h-4 w-4 text-cyan-600" />
           <AlertDescription className="text-cyan-800">
-            Diamond is only available as a $999.99 annual listing (Invite/Bid Only)
+            Diamond is only available as a $999.99 annual listing - No monthly options
           </AlertDescription>
         </Alert>
       )}
@@ -104,7 +104,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({
                 {plan.tier === 'diamond' && <span className="text-sm font-normal">/year</span>}
               </div>
               <p className="text-sm text-gray-500">
-                {plan.durationLabel}
+                {plan.tier === 'diamond' ? 'Annual Only' : plan.durationLabel}
               </p>
             </CardHeader>
             <CardContent>
