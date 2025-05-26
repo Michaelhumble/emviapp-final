@@ -100,7 +100,7 @@ const FinalCTA = () => {
             className="text-sm text-gray-500 mt-6"
           >
             Trusted by over 10,000+ beauty professionals worldwide
-          </p>
+          </motion.p>
         </motion.div>
       </div>
     </motion.section>
