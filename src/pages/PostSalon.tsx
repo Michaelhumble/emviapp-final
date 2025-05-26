@@ -1,95 +1,89 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import Layout from '@/components/layout/Layout';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import PremiumSalonWizard from '@/components/posting/salon/PremiumSalonWizard';
-import { EnhancedSalonFormValues } from '@/components/posting/salon/enhancedSalonFormSchema';
 
 const PostSalon = () => {
+  const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   
-  const handleSubmit = async (data: EnhancedSalonFormValues) => {
+  const handleSubmit = async (data: any, uploads: File[]) => {
     try {
-      // Convert salon listing data to the expected format for the API
+      setIsSubmitting(true);
+      setPhotoUploads(uploads);
+      
+      // Convert form data to the expected format for the API
       const salonDetails = {
-        title: data.salonName || 'Salon For Sale',
-        description: data.description || '',
-        location: `${data.city || ''}, ${data.state || ''}`,
-        price: data.askingPrice || '',
-        business_type: data.businessType || 'salon',
+        title: data.title,
+        description: data.description,
+        location: data.location,
+        price: data.price,
+        monthly_rent: data.monthlyRent,
         contact_info: {
-          owner_name: "Salon Owner",
-          phone: "(555) 123-4567",
-          email: "owner@salon.com",
+          owner_name: data.contactName,
+          phone: data.contactPhone,
+          email: data.contactEmail,
         },
-        post_type: 'salon',
-        metadata: {
-          salonListingData: data,
-          photos: data.photos || [],
-          performanceData: {
-            annualRevenue: data.annualRevenue,
-            monthlyRent: data.monthlyRent,
-            averageClients: data.averageClients,
-            hideFinancialInfo: data.hideFinancialInfo,
-            growthTrend: data.growthTrend,
-          },
-          assets: {
-            equipment: data.equipment,
-            equipmentValue: data.equipmentValue,
-            staffCount: data.staffCount,
-            staffIncluded: data.staffIncluded,
-            leaseDetails: data.leaseDetails,
-          },
-          promotion: {
-            promotionTier: data.promotionTier,
-            urgentListing: data.urgentListing,
-            highlightColor: data.highlightColor,
-          },
-        }
+        post_type: 'salon'
       };
       
-      // Define pricing options based on selected promotion tier
+      // Define pricing options
       const pricingOptions: PricingOptions = {
-        selectedPricingTier: (data.promotionTier as JobPricingTier) || 'premium',
+        selectedPricingTier: 'standard' as JobPricingTier,
         durationMonths: 1,
         autoRenew: true,
-        isFirstPost: true,
+        isFirstPost: true
       };
       
       // Initiate payment with our consolidated hook
       const result = await initiatePayment('salon', salonDetails, pricingOptions);
       
       if (result.success) {
-        toast.success('Premium salon listing created successfully!');
+        toast.success('Salon post created successfully!');
+        navigate('/dashboard');
         return true;
       } else {
-        toast.error('Error processing your salon listing. Please try again.');
+        toast.error('Error processing your salon posting. Please try again.');
         return false;
       }
     } catch (error) {
-      console.error('Error submitting salon listing:', error);
-      toast.error('Error creating salon listing');
+      console.error('Error submitting form:', error);
+      toast.error('Error creating salon post');
       return false;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <>
+    <Layout>
       <Helmet>
-        <title>Premium Salon Listing | EmviApp Luxury Marketplace</title>
+        <title>Post Your Salon | EmviApp</title>
         <meta 
           name="description" 
-          content="Create a premium salon listing on EmviApp's exclusive luxury marketplace. Reach verified buyers and maximize your salon's value with our billion-dollar listing experience."
+          content="List your salon for rent or sale on EmviApp. Reach thousands of beauty professionals looking for salon space."
         />
       </Helmet>
-      
-      <PremiumSalonWizard
-        onSubmit={handleSubmit}
-        isSubmitting={isLoading}
-      />
-    </>
+      <div className="container max-w-4xl mx-auto py-8">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Post Your Salon</h1>
+          <p className="text-gray-600">List your salon for rent or sale</p>
+        </div>
+        
+        <Card className="bg-white shadow-md rounded-lg p-6">
+          {/* Salon form will be implemented here */}
+          <p className="text-center py-8">Salon posting form coming soon!</p>
+        </Card>
+      </div>
+    </Layout>
   );
 };
 
