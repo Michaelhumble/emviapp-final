@@ -6,13 +6,16 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { enhancedSalonFormSchema, type EnhancedSalonFormValues } from './enhancedSalonFormSchema';
 import SalonIdentitySection from './sections/SalonIdentitySection';
 import SalonLocationSection from './sections/SalonLocationSection';
 import SalonPhotosSection from './sections/SalonPhotosSection';
 import SalonAboutSection from './sections/SalonAboutSection';
 import SalonPerformanceSection from './sections/SalonPerformanceSection';
+import SalonAssetsSection from './sections/SalonAssetsSection';
 import SalonPromotionSection from './sections/SalonPromotionSection';
+import SalonContactPrivacySection from './sections/SalonContactPrivacySection';
 import SalonConfirmationSection from './sections/SalonConfirmationSection';
 
 interface PremiumSalonWizardProps {
@@ -21,16 +24,6 @@ interface PremiumSalonWizardProps {
   setPhotoUploads: (files: File[]) => void;
   onPromotionChange: (upgrades: any) => void;
 }
-
-const steps = [
-  { id: 'identity', title: 'Salon Identity', description: 'Basic information about your salon' },
-  { id: 'location', title: 'Location', description: 'Where your salon is located' },
-  { id: 'photos', title: 'Photos & Video', description: 'Visual showcase of your salon' },
-  { id: 'about', title: 'About Your Salon', description: 'Your story and unique selling points' },
-  { id: 'performance', title: 'Business Performance', description: 'Financial metrics and growth data' },
-  { id: 'promotion', title: 'Promotion Options', description: 'Boost your listing visibility' },
-  { id: 'confirmation', title: 'Review & Publish', description: 'Final review and launch' }
-];
 
 const PremiumSalonWizard = ({ 
   onSubmit, 
@@ -49,172 +42,125 @@ const PremiumSalonWizard = ({
       salonSize: '',
       city: '',
       state: '',
-      neighborhood: '',
-      hideAddress: false,
-      coverPhotoIndex: 0,
-      videoUrl: '',
       salonStory: '',
-      ownerMessage: '',
-      reasonForSelling: '',
-      showRevenue: true,
-      showProfit: true,
-      showClients: true,
-      revenue: '',
-      profit: '',
-      monthlyClients: '',
-      yearsInOperation: '',
-      leaseTerms: '',
-      monthlyRent: '',
       askingPrice: '',
+      hideAddress: false,
       hidePrice: false,
-      includedEquipment: [],
-      teamSize: '',
-      teamStays: false,
-      staffBios: '',
+      requireNDA: false,
       promotionUpgrades: {
         isUrgent: false,
         isFeatured: false,
         isDiamond: false
-      },
-      urgentSale: false,
-      featuredListing: false,
-      diamondListing: false,
-      requireNDA: false,
-      messagingOnly: true,
-    },
+      }
+    }
   });
 
+  const steps = [
+    { title: "Salon Identity", component: SalonIdentitySection },
+    { title: "Location", component: SalonLocationSection },
+    { title: "Photos & Media", component: SalonPhotosSection },
+    { title: "About Your Salon", component: SalonAboutSection },
+    { title: "Performance Metrics", component: SalonPerformanceSection },
+    { title: "Assets & Team", component: SalonAssetsSection },
+    { title: "Promotion Options", component: SalonPromotionSection },
+    { title: "Contact & Privacy", component: SalonContactPrivacySection },
+    { title: "Review & Confirm", component: SalonConfirmationSection }
+  ];
+
   const progress = ((currentStep + 1) / steps.length) * 100;
-  
-  const nextStep = () => {
-    if (currentStep < steps.length - 1) {
+
+  const isStepComplete = () => {
+    const values = form.getValues();
+    switch (currentStep) {
+      case 0: return values.salonName && values.businessType && values.salonSize;
+      case 1: return values.city && values.state;
+      case 2: return true; // Photos are optional
+      case 3: return values.salonStory;
+      case 4: return true; // Performance metrics are optional
+      case 5: return true; // Assets are optional
+      case 6: return true; // Promotion is optional
+      case 7: return true; // Contact preferences are optional
+      case 8: return values.askingPrice; // Final confirmation needs price
+      default: return false;
+    }
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1 && isStepComplete()) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  const prevStep = () => {
+  const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      const formData = form.getValues();
-      const success = await onSubmit(formData);
-      if (!success) {
+  const handleFormSubmit = async () => {
+    if (currentStep === steps.length - 1) {
+      setIsSubmitting(true);
+      try {
+        const success = await onSubmit(form.getValues());
+        if (!success) {
+          setIsSubmitting(false);
+        }
+      } catch (error) {
         setIsSubmitting(false);
       }
-    } catch (error) {
-      setIsSubmitting(false);
     }
   };
 
-  const isStepComplete = (stepIndex: number) => {
-    const values = form.getValues();
-    
-    switch (stepIndex) {
-      case 0: // Identity
-        return !!(values.salonName && values.businessType && values.salonSize);
-      case 1: // Location
-        return !!(values.city && values.state);
-      case 2: // Photos
-        return photoUploads.length > 0;
-      case 3: // About
-        return !!(values.salonStory);
-      case 4: // Performance
-        return !!(values.askingPrice);
-      case 5: // Promotion
-        return true; // Optional step
-      case 6: // Confirmation
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const canProceed = isStepComplete(currentStep);
-
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
-        return <SalonIdentitySection form={form} />;
-      case 1:
-        return <SalonLocationSection form={form} />;
-      case 2:
-        return (
-          <SalonPhotosSection 
-            form={form}
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-          />
-        );
-      case 3:
-        return <SalonAboutSection form={form} />;
-      case 4:
-        return <SalonPerformanceSection form={form} />;
-      case 5:
-        return (
-          <SalonPromotionSection 
-            form={form}
-            onPromotionChange={onPromotionChange}
-          />
-        );
-      case 6:
-        return (
-          <SalonConfirmationSection 
-            form={form}
-            isComplete={canProceed}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+  const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50/30 via-blue-50/20 to-pink-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            List Your Salon for Sale
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Create a premium listing that attracts serious buyers
-          </p>
-          
-          {/* Progress Bar */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>Step {currentStep + 1} of {steps.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+        {/* Progress Header */}
+        <div className="mb-8">
+          <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                List Your Salon for Sale
+              </h1>
+              <div className="text-sm text-gray-600">
+                Step {currentStep + 1} of {steps.length}
+              </div>
             </div>
-            <Progress value={progress} className="h-3 bg-gray-200" />
-            <div className="mt-2">
-              <h3 className="font-semibold text-lg">{steps[currentStep].title}</h3>
-              <p className="text-gray-600">{steps[currentStep].description}</p>
-            </div>
+            <Progress value={progress} className="h-2" />
+            <p className="text-sm text-gray-600 mt-2">{steps[currentStep].title}</p>
           </div>
         </div>
 
-        {/* Form Content */}
-        <div className="max-w-4xl mx-auto">
-          <Form {...form}>
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-gray-200 p-8 shadow-lg">
-              {renderStepContent()}
-            </div>
-          </Form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white/80 backdrop-blur-md rounded-xl p-8 shadow-lg border border-white/20 mb-8"
+              >
+                <CurrentStepComponent 
+                  form={form}
+                  photoUploads={photoUploads}
+                  setPhotoUploads={setPhotoUploads}
+                  onPromotionChange={onPromotionChange}
+                  isComplete={isStepComplete()}
+                  onSubmit={handleFormSubmit}
+                  isSubmitting={isSubmitting}
+                />
+              </motion.div>
+            </AnimatePresence>
 
-          {/* Navigation */}
-          {currentStep < steps.length - 1 && (
-            <div className="flex justify-between items-center mt-8">
+            {/* Navigation */}
+            <div className="flex justify-between items-center">
               <Button
+                type="button"
                 variant="outline"
-                onClick={prevStep}
+                onClick={handlePrevious}
                 disabled={currentStep === 0}
                 className="flex items-center gap-2"
               >
@@ -222,32 +168,28 @@ const PremiumSalonWizard = ({
                 Previous
               </Button>
 
-              <div className="flex gap-2">
-                {steps.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      index <= currentStep
-                        ? 'bg-purple-500'
-                        : isStepComplete(index)
-                        ? 'bg-green-500'
-                        : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <Button
-                onClick={nextStep}
-                disabled={!canProceed}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              {currentStep < steps.length - 1 ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!isStepComplete()}
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={!isStepComplete() || isSubmitting}
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                >
+                  {isSubmitting ? 'Publishing...' : 'Publish Listing'}
+                </Button>
+              )}
             </div>
-          )}
-        </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

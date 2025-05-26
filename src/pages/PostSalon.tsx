@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { PremiumSalonWizard } from '@/components/posting/salon/PremiumSalonWizard';
+import PremiumSalonWizard from '@/components/posting/salon/PremiumSalonWizard';
 import { type EnhancedSalonFormValues } from '@/components/posting/salon/enhancedSalonFormSchema';
 
 const PostSalon = () => {

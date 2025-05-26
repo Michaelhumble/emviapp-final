@@ -5,263 +5,235 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, X, Package, Users, Heart, Star } from "lucide-react";
-import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Wrench, Users, Package } from "lucide-react";
 import { EnhancedSalonFormValues } from "../enhancedSalonFormSchema";
 
 interface SalonAssetsSectionProps {
   form: UseFormReturn<EnhancedSalonFormValues>;
 }
 
-const commonEquipment = [
-  "Nail Stations", "Pedicure Chairs", "UV Lamps", "Sterilizers", 
-  "Reception Desk", "POS System", "Manicure Tables", "Storage Cabinets",
-  "Ventilation System", "Massage Chairs", "Waxing Equipment", "Hair Stations"
-];
-
 const SalonAssetsSection = ({ form }: SalonAssetsSectionProps) => {
-  const includedEquipment = form.watch("includedEquipment") || [];
-  const teamStays = form.watch("teamStays");
-
-  const toggleEquipment = (equipment: string) => {
-    const current = includedEquipment;
-    const updated = current.includes(equipment)
-      ? current.filter(item => item !== equipment)
-      : [...current, equipment];
-    form.setValue("includedEquipment", updated);
-  };
+  const equipmentOptions = [
+    "Nail stations and chairs",
+    "Pedicure chairs and tubs",
+    "UV/LED nail lamps",
+    "Autoclave sterilization equipment",
+    "Air purification system",
+    "Cash register/POS system",
+    "Reception furniture",
+    "Waiting area seating",
+    "Storage cabinets",
+    "Sound system",
+    "Security cameras",
+    "Other equipment"
+  ];
 
   return (
     <div className="space-y-8">
-      {/* Value Proposition */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6"
-      >
-        <div className="flex items-center gap-3 mb-3">
-          <Package className="h-6 w-6 text-amber-500" />
-          <h3 className="font-bold text-amber-800 text-lg">Maximize Your Sale Value</h3>
-        </div>
-        <p className="text-amber-700 leading-relaxed">
-          Included equipment and an experienced team significantly increase your salon's value. 
-          Buyers pay premium for turn-key operations that can start generating revenue immediately.
-        </p>
-      </motion.div>
-
-      {/* Equipment Section */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <Package className="h-6 w-6 text-blue-500" />
-          <div>
-            <h3 className="text-xl font-semibold">Included Equipment & Assets</h3>
-            <p className="text-gray-600">Select all equipment and assets included in the sale</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {commonEquipment.map((equipment) => (
-            <motion.div
-              key={equipment}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                includedEquipment.includes(equipment)
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-              onClick={() => toggleEquipment(equipment)}
-            >
-              <div className="flex items-center space-x-2">
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                  includedEquipment.includes(equipment) 
-                    ? 'border-blue-500 bg-blue-500' 
-                    : 'border-gray-300'
-                }`}>
-                  {includedEquipment.includes(equipment) && (
-                    <div className="w-2 h-2 bg-white rounded-sm" />
-                  )}
-                </div>
-                <span className="text-sm font-medium">{equipment}</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Selected Equipment Summary */}
-        {includedEquipment.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="bg-blue-50 rounded-xl p-4 border border-blue-200"
-          >
-            <h4 className="font-semibold text-blue-800 mb-2">
-              Selected Equipment ({includedEquipment.length} items)
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {includedEquipment.map((equipment) => (
-                <Badge key={equipment} variant="secondary" className="bg-blue-100 text-blue-700">
-                  {equipment}
-                  <button
-                    type="button"
-                    onClick={() => toggleEquipment(equipment)}
-                    className="ml-2 hover:bg-blue-200 rounded-full p-1"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          </motion.div>
-        )}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold mb-2">Assets & Team</h2>
+        <p className="text-gray-600">Detail what's included with your salon purchase</p>
       </div>
 
-      {/* Team Section */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <Users className="h-6 w-6 text-purple-500" />
-          <div>
-            <h3 className="text-xl font-semibold">Your Team</h3>
-            <p className="text-gray-600">Information about your staff and their future with the salon</p>
+      {/* Equipment Section */}
+      <Card className="border-0 bg-gradient-to-r from-blue-50 to-cyan-50">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-blue-100 p-2 rounded-full">
+              <Wrench className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">Equipment & Assets</h3>
+              <p className="text-sm text-gray-600">What equipment is included in the sale?</p>
+            </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
-            name="teamSize"
-            render={({ field }) => (
+            name="includedEquipment"
+            render={() => (
               <FormItem>
-                <FormLabel className="text-base font-semibold">Team Size</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="8 staff members"
-                    className="h-12 border-2 focus:border-purple-500"
-                    {...field}
-                  />
-                </FormControl>
+                <FormLabel className="text-base font-semibold">Included Equipment</FormLabel>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                  {equipmentOptions.map((item) => (
+                    <FormField
+                      key={item}
+                      control={form.control}
+                      name="includedEquipment"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, item])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== item
+                                        )
+                                      )
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal">
+                              {item}
+                            </FormLabel>
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  ))}
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
+        </CardContent>
+      </Card>
 
-          <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-200">
-            <div>
-              <h4 className="font-semibold text-purple-800">Team Staying with Business?</h4>
-              <p className="text-sm text-purple-600">This greatly increases sale value</p>
+      {/* Team Section */}
+      <Card className="border-0 bg-gradient-to-r from-purple-50 to-pink-50">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-purple-100 p-2 rounded-full">
+              <Users className="h-5 w-5 text-purple-600" />
             </div>
+            <div>
+              <h3 className="font-semibold text-lg">Team Information</h3>
+              <p className="text-sm text-gray-600">Details about your current staff</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
             <FormField
               control={form.control}
-              name="teamStays"
+              name="teamSize"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel className="text-base font-semibold">Team Size</FormLabel>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
+                    <Input
+                      placeholder="e.g., 5 nail technicians, 2 front desk staff"
+                      className="border-2 focus:border-purple-500"
+                      {...field}
                     />
                   </FormControl>
+                  <p className="text-sm text-gray-600">How many staff members work at your salon?</p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-purple-900">Team Stays with Sale</h4>
+                  <p className="text-sm text-purple-700">Will your current team continue working after the sale?</p>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="teamStays"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="staffBios"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold">Staff Information (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Brief description of your team's experience, specialties, and what makes them great..."
+                      className="min-h-24 border-2 focus:border-purple-500"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-sm text-gray-600">Help buyers understand the quality and experience of your team</p>
+                  <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Team Bios */}
-        <FormField
-          control={form.control}
-          name="staffBios"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-base font-semibold flex items-center gap-2">
-                <Heart className="h-5 w-5 text-red-500" />
-                Team Member Highlights (Optional)
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Tell buyers about your amazing team... Years of experience, specialties, client relationships, awards, or any standout qualities that make your team special."
-                  className="min-h-32 border-2 focus:border-purple-500"
-                  {...field}
-                />
-              </FormControl>
-              <p className="text-sm text-purple-600">
-                💡 Highlighting talented team members can increase your salon's value by 15-25%
-              </p>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Team Stays Benefits */}
-        {teamStays && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="bg-green-50 rounded-xl p-6 border border-green-200"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <Star className="h-5 w-5 text-green-500" />
-              <h4 className="font-semibold text-green-800">Incredible Value Add! 🎉</h4>
+      {/* Lease & Operations */}
+      <Card className="border-0 bg-gradient-to-r from-green-50 to-emerald-50">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-green-100 p-2 rounded-full">
+              <Package className="h-5 w-5 text-green-600" />
             </div>
-            <p className="text-green-700 mb-4">
-              Having your team stay with the business is a huge selling point that buyers love!
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <h5 className="font-medium text-green-700 mb-2">Benefits for Buyer:</h5>
-                <ul className="text-green-600 space-y-1">
-                  <li>• No hiring and training costs</li>
-                  <li>• Immediate revenue generation</li>
-                  <li>• Retained client relationships</li>
-                  <li>• Proven team chemistry</li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-medium text-green-700 mb-2">Value Impact:</h5>
-                <ul className="text-green-600 space-y-1">
-                  <li>• 20-30% higher sale price</li>
-                  <li>• Faster sale completion</li>
-                  <li>• More buyer interest</li>
-                  <li>• Reduced buyer risk</li>
-                </ul>
-              </div>
+            <div>
+              <h3 className="font-semibold text-lg">Lease & Operations</h3>
+              <p className="text-sm text-gray-600">Important operational details</p>
             </div>
-          </motion.div>
-        )}
-      </div>
+          </div>
 
-      {/* Asset Valuation Tip */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-2xl p-6"
-      >
-        <h4 className="font-semibold text-gray-800 mb-3">💰 Asset Valuation Pro Tips</h4>
+          <FormField
+            control={form.control}
+            name="leaseTerms"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-base font-semibold">Lease Terms</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="e.g., 5 years remaining, $3,500/month rent, option to renew, landlord relationship details..."
+                    className="min-h-24 border-2 focus:border-green-500"
+                    {...field}
+                  />
+                </FormControl>
+                <p className="text-sm text-gray-600">Lease details are crucial for buyer decision-making</p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Value Proposition */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+        <h3 className="font-semibold text-amber-900 mb-3">💡 Maximize Your Salon's Value</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <h5 className="font-medium text-gray-700 mb-2">Equipment Documentation:</h5>
-            <ul className="text-gray-600 space-y-1">
-              <li>• Take photos of all equipment</li>
-              <li>• Note purchase dates and warranties</li>
-              <li>• Highlight recent upgrades</li>
-              <li>• Include maintenance records</li>
+            <h4 className="font-medium text-amber-800 mb-2">Include These Assets:</h4>
+            <ul className="text-amber-700 space-y-1">
+              <li>• All furniture and equipment</li>
+              <li>• Existing client database</li>
+              <li>• Established supplier relationships</li>
+              <li>• Social media accounts</li>
             </ul>
           </div>
           <div>
-            <h5 className="font-medium text-gray-700 mb-2">Team Transition:</h5>
-            <ul className="text-gray-600 space-y-1">
-              <li>• Get team commitment in writing</li>
-              <li>• Highlight long-term employees</li>
-              <li>• Document certifications/licenses</li>
-              <li>• Show client-stylist relationships</li>
+            <h4 className="font-medium text-amber-800 mb-2">Highlight Team Value:</h4>
+            <ul className="text-amber-700 space-y-1">
+              <li>• Experienced, loyal staff</li>
+              <li>• Established client relationships</li>
+              <li>• Training and procedures</li>
+              <li>• Smooth transition support</li>
             </ul>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
