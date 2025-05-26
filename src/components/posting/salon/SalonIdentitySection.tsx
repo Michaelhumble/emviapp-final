@@ -4,7 +4,6 @@ import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Upload, Building2 } from "lucide-react";
 import { SalonFormValues } from "./salonFormSchema";
 
@@ -28,7 +27,21 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // In a real app, this would upload to a server
+      // Basic image validation
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      
+      if (!validTypes.includes(file.type)) {
+        console.error("Invalid file type. Please upload an image.");
+        return;
+      }
+      
+      if (file.size > maxSize) {
+        console.error("File too large. Please upload an image under 5MB.");
+        return;
+      }
+      
+      form.setValue("logo", file);
       console.log("Logo uploaded:", file.name);
     }
   };
@@ -78,13 +91,13 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-12 text-lg rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500/20">
+                  <SelectTrigger className="h-12 text-lg rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500/20 bg-white">
                     <SelectValue placeholder="Select your business type" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-200 rounded-xl shadow-lg z-50">
                   {businessTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
+                    <SelectItem key={type} value={type} className="hover:bg-purple-50">
                       {type}
                     </SelectItem>
                   ))}
@@ -122,7 +135,7 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
           <FormLabel className="text-lg font-medium text-gray-800">
             Salon Logo (Optional)
           </FormLabel>
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors bg-gray-50/50">
             <input
               type="file"
               accept="image/*"
@@ -132,8 +145,8 @@ export const SalonIdentitySection = ({ form }: SalonIdentitySectionProps) => {
             />
             <label htmlFor="logo-upload" className="cursor-pointer">
               <div className="flex flex-col items-center space-y-3">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Upload className="w-6 h-6 text-gray-500" />
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                  <Upload className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-700">Upload your salon logo</p>

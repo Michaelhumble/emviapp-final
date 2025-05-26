@@ -34,10 +34,10 @@ const SellSalonPage = () => {
                       watchedFields.businessType && 
                       formState.isValid;
 
-  const handleNext = () => {
+  const handleContinue = () => {
     if (isStep1Valid) {
       console.log("Step 1 completed:", watchedFields);
-      // TODO: Navigate to next step when implemented
+      // TODO: Navigate to step 2 when implemented
     }
   };
 
@@ -81,6 +81,7 @@ const SellSalonPage = () => {
               <Progress 
                 value={(currentStep / totalSteps) * 100} 
                 className="h-2 bg-gray-200"
+                indicatorClassName="bg-gradient-to-r from-purple-600 to-pink-600"
               />
             </div>
           </div>
@@ -103,9 +104,9 @@ const SellSalonPage = () => {
                 
                 <Button 
                   type="button"
-                  onClick={handleNext}
+                  onClick={handleContinue}
                   disabled={!isStep1Valid}
-                  className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Continue
                   <ArrowRight className="w-4 h-4 ml-2" />
