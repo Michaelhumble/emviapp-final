@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { EnhancedSalonFormValues } from './enhancedSalonFormSchema';
 import SalonIdentitySection from './sections/SalonIdentitySection';
-import SalonLocationSection from './sections/SalonLocationSection';
 
 interface PremiumSalonWizardProps {
   onSubmit: (data: EnhancedSalonFormValues) => Promise<boolean>;
@@ -18,25 +17,18 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
 
   const steps = [
     { title: 'Identity', component: 'identity' },
-    { title: 'Location', component: 'location' },
+    // Additional steps will be added later
   ];
 
   const handleSectionSubmit = (sectionData: Partial<EnhancedSalonFormValues>) => {
     const updatedData = { ...formData, ...sectionData };
     setFormData(updatedData);
     
-    // Move to next step if not the last step
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      // This would be the final submission
-      onSubmit(updatedData as EnhancedSalonFormValues);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+    console.log('Step 1 completed with data:', updatedData);
+    
+    // For now, just log the completion - we'll add more steps later
+    if (currentStep === 0) {
+      alert('Step 1 completed! Ready to add next step.');
     }
   };
 
@@ -112,13 +104,6 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
                   <SalonIdentitySection
                     data={formData}
                     onSubmit={handleSectionSubmit}
-                  />
-                )}
-                {currentStep === 1 && (
-                  <SalonLocationSection
-                    data={formData}
-                    onSubmit={handleSectionSubmit}
-                    onPrevious={handlePrevious}
                   />
                 )}
               </motion.div>
