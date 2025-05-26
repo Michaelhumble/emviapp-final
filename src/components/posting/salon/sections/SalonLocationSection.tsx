@@ -3,7 +3,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { MapPin, ArrowRight, ArrowLeft, Shield } from 'lucide-react';
+import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,13 @@ import { enhancedSalonFormSchema, type EnhancedSalonFormValues } from '../enhanc
 import { SalonSectionProps } from '../types';
 
 const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonSectionProps) => {
-  const form = useForm<EnhancedSalonFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<EnhancedSalonFormValues>({
     resolver: zodResolver(enhancedSalonFormSchema),
     defaultValues: {
       address: data.location?.address || '',
@@ -24,8 +30,7 @@ const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonSectionProps)
     },
   });
 
-  const { register, handleSubmit, watch, setValue, formState: { errors, isValid } } = form;
-  const hideAddress = watch('hideAddressFromPublic');
+  const hideAddressFromPublic = watch('hideAddressFromPublic');
 
   const onFormSubmit = (formData: EnhancedSalonFormValues) => {
     const locationData = {
@@ -36,7 +41,7 @@ const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonSectionProps)
         zipCode: formData.zipCode,
         neighborhood: formData.neighborhood,
         hideAddressFromPublic: formData.hideAddressFromPublic,
-      }
+      },
     };
     onSubmit(locationData);
   };
@@ -49,136 +54,133 @@ const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonSectionProps)
         className="text-center"
       >
         <div className="flex items-center justify-center mb-4">
-          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-3 rounded-full">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-full">
             <MapPin className="w-8 h-8 text-white" />
           </div>
         </div>
         <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
-          Where is your salon located?
+          Location Details
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Help buyers find your salon. You can choose to hide your exact address for privacy.
+          Help buyers find your salon and understand your location advantages
         </p>
       </motion.div>
 
-      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
-        >
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="address" className="text-sm font-medium text-gray-700">
-                Street Address *
+      <motion.form
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        onSubmit={handleSubmit(onFormSubmit)}
+        className="space-y-6"
+      >
+        {/* Address */}
+        <div className="space-y-2">
+          <Label htmlFor="address" className="text-gray-700 font-medium">
+            Street Address *
+          </Label>
+          <Input
+            id="address"
+            {...register('address')}
+            placeholder="123 Main Street"
+            className="h-12 text-lg border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+          />
+          {errors.address && (
+            <p className="text-red-500 text-sm">{errors.address.message}</p>
+          )}
+        </div>
+
+        {/* City, State, Zip Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="city" className="text-gray-700 font-medium">
+              City *
+            </Label>
+            <Input
+              id="city"
+              {...register('city')}
+              placeholder="Los Angeles"
+              className="h-12 text-lg border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+            />
+            {errors.city && (
+              <p className="text-red-500 text-sm">{errors.city.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="state" className="text-gray-700 font-medium">
+              State *
+            </Label>
+            <Input
+              id="state"
+              {...register('state')}
+              placeholder="CA"
+              className="h-12 text-lg border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+            />
+            {errors.state && (
+              <p className="text-red-500 text-sm">{errors.state.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="zipCode" className="text-gray-700 font-medium">
+              ZIP Code *
+            </Label>
+            <Input
+              id="zipCode"
+              {...register('zipCode')}
+              placeholder="90210"
+              className="h-12 text-lg border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+            />
+            {errors.zipCode && (
+              <p className="text-red-500 text-sm">{errors.zipCode.message}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Neighborhood */}
+        <div className="space-y-2">
+          <Label htmlFor="neighborhood" className="text-gray-700 font-medium">
+            Neighborhood
+            <span className="text-gray-500 text-sm ml-1">(Optional)</span>
+          </Label>
+          <Input
+            id="neighborhood"
+            {...register('neighborhood')}
+            placeholder="Beverly Hills, Downtown, etc."
+            className="h-12 text-lg border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+          />
+          <p className="text-gray-500 text-sm">
+            Help buyers understand the area and local advantages
+          </p>
+        </div>
+
+        {/* Privacy Toggle */}
+        <div className="bg-gray-50 p-6 rounded-lg border">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label className="text-gray-700 font-medium">
+                Address Privacy
               </Label>
-              <Input
-                id="address"
-                placeholder="123 Main Street"
-                {...register('address')}
-                className={errors.address ? 'border-red-300' : ''}
-              />
-              {errors.address && (
-                <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="city" className="text-sm font-medium text-gray-700">
-                  City *
-                </Label>
-                <Input
-                  id="city"
-                  placeholder="New York"
-                  {...register('city')}
-                  className={errors.city ? 'border-red-300' : ''}
-                />
-                {errors.city && (
-                  <p className="text-sm text-red-600 mt-1">{errors.city.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="state" className="text-sm font-medium text-gray-700">
-                  State *
-                </Label>
-                <Input
-                  id="state"
-                  placeholder="NY"
-                  {...register('state')}
-                  className={errors.state ? 'border-red-300' : ''}
-                />
-                {errors.state && (
-                  <p className="text-sm text-red-600 mt-1">{errors.state.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="zipCode" className="text-sm font-medium text-gray-700">
-                  ZIP Code *
-                </Label>
-                <Input
-                  id="zipCode"
-                  placeholder="10001"
-                  {...register('zipCode')}
-                  className={errors.zipCode ? 'border-red-300' : ''}
-                />
-                {errors.zipCode && (
-                  <p className="text-sm text-red-600 mt-1">{errors.zipCode.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="neighborhood" className="text-sm font-medium text-gray-700">
-                Neighborhood (Optional)
-              </Label>
-              <Input
-                id="neighborhood"
-                placeholder="SoHo, Downtown, etc."
-                {...register('neighborhood')}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Help buyers identify the area more easily
+              <p className="text-gray-500 text-sm">
+                Hide exact address from public listings until serious inquiries
               </p>
             </div>
+            <Switch
+              checked={hideAddressFromPublic}
+              onCheckedChange={(checked) => setValue('hideAddressFromPublic', checked)}
+              className="data-[state=checked]:bg-purple-500"
+            />
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-100"
-        >
-          <div className="flex items-start space-x-3">
-            <Shield className="w-5 h-5 text-purple-600 mt-0.5" />
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium text-gray-900">Privacy Protection</h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Hide your exact address from public listings. Buyers will see only the neighborhood.
-                  </p>
-                </div>
-                <Switch
-                  checked={hideAddress}
-                  onCheckedChange={(checked) => setValue('hideAddressFromPublic', checked)}
-                />
-              </div>
-              {hideAddress && (
-                <div className="mt-3 p-3 bg-white rounded-md border border-purple-200">
-                  <p className="text-xs text-purple-700">
-                    ✓ Your exact address will be shared only with verified, interested buyers
-                  </p>
-                </div>
-              )}
+          {hideAddressFromPublic && (
+            <div className="mt-3 p-3 bg-blue-50 rounded border border-blue-200">
+              <p className="text-blue-700 text-sm">
+                ✓ Only city and neighborhood will be shown publicly. Full address revealed to qualified buyers.
+              </p>
             </div>
-          </div>
-        </motion.div>
+          )}
+        </div>
 
+        {/* Navigation Buttons */}
         <div className="flex justify-between pt-6">
           <Button
             type="button"
@@ -193,14 +195,13 @@ const SalonLocationSection = ({ data, onSubmit, onPrevious }: SalonSectionProps)
           <Button
             type="submit"
             size="lg"
-            disabled={!isValid}
-            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-3 text-lg"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 text-lg"
           >
-            Continue to Photos
+            Continue
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
-      </form>
+      </motion.form>
     </div>
   );
 };
