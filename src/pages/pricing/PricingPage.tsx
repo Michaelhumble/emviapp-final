@@ -13,6 +13,11 @@ import FinalCTA from '@/components/pricing/FinalCTA';
 const PricingPage = () => {
   const [isAnnual, setIsAnnual] = useState(false);
 
+  // Diamond spots logic: Max 3 public spots, 1 reserved for brother, 1 ghost/demo
+  const diamondSpotsAvailable = 1; // Currently available for purchase (out of 3 max)
+  const maxDiamondSpots = 3;
+  const isDiamondFull = diamondSpotsAvailable === 0;
+
   const pricingPlans = [
     {
       id: 'free',
@@ -75,7 +80,7 @@ const PricingPage = () => {
       price: 999.99,
       isAnnual: true,
       badge: 'ANNUAL_ONLY' as const,
-      limitedSpots: '2/5 Diamond spots left this year',
+      limitedSpots: `${diamondSpotsAvailable}/${maxDiamondSpots} Diamond spots left`,
       features: [
         'Highest diamond placement tier',
         'Diamond badge with exclusive styling',
@@ -83,12 +88,18 @@ const PricingPage = () => {
         'Premium analytics and insights',
         'Annual exclusive member benefits'
       ],
-      buttonText: 'Apply for Diamond',
-      buttonVariant: 'default' as const
+      buttonText: isDiamondFull ? 'Join Waitlist' : 'Apply for Diamond',
+      buttonVariant: 'default' as const,
+      isWaitlistOnly: isDiamondFull
     }
   ];
 
   const handlePlanSelect = (planId: string) => {
+    if (planId === 'diamond' && isDiamondFull) {
+      // Handle waitlist logic
+      console.log('Opening Diamond waitlist modal');
+      return;
+    }
     console.log('Selected plan:', planId);
     // Handle plan selection logic here
   };
@@ -131,7 +142,24 @@ const PricingPage = () => {
         />
 
         {/* Scarcity and FOMO Elements */}
-        <ScarcityBanner />
+        <ScarcityBanner diamondSpotsLeft={diamondSpotsAvailable} maxDiamondSpots={maxDiamondSpots} />
+
+        {/* Diamond Full Warning */}
+        {isDiamondFull && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-50 to-blue-50 border-2 border-cyan-200 rounded-xl px-6 py-4 shadow-lg">
+              <div className="h-3 w-3 bg-cyan-500 rounded-full animate-pulse"></div>
+              <span className="text-cyan-800 font-semibold">
+                All Diamond spots filled! Join the waitlist for future openings.
+              </span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Pricing Cards Grid */}
         <motion.div

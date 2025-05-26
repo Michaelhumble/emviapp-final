@@ -16,7 +16,7 @@ interface TopDiamondFeaturedSectionProps {
 const TopDiamondFeaturedSection = ({ 
   featuredJobs, 
   onViewDetails, 
-  maxSpots = 5 
+  maxSpots = 3 // Updated to 3 max spots
 }: TopDiamondFeaturedSectionProps) => {
   const diamondJobs = featuredJobs.filter(job => 
     job.pricingTier === 'diamond' || job.pricing_tier === 'diamond'

@@ -4,9 +4,13 @@ import { motion } from 'framer-motion';
 import { Users, Clock, TrendingUp, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-const ScarcityBanner = () => {
+interface ScarcityBannerProps {
+  diamondSpotsLeft?: number;
+  maxDiamondSpots?: number;
+}
+
+const ScarcityBanner = ({ diamondSpotsLeft = 1, maxDiamondSpots = 3 }: ScarcityBannerProps) => {
   const [goldSpots, setGoldSpots] = useState(8);
-  const [diamondSpots, setDiamondSpots] = useState(2);
   const [timeLeft, setTimeLeft] = useState('47:23:45');
 
   useEffect(() => {
@@ -67,7 +71,7 @@ const ScarcityBanner = () => {
           </div>
         </motion.div>
 
-        {/* Diamond Spots */}
+        {/* Diamond Spots - Updated to show /3 max */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -75,10 +79,10 @@ const ScarcityBanner = () => {
           transition={{ delay: 0.1 }}
           className="text-center"
         >
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-full px-5 py-2 shadow-sm">
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-50 to-blue-50 border-2 border-cyan-200 rounded-full px-5 py-2 shadow-lg">
             <AlertTriangle className="h-4 w-4 text-cyan-600" />
             <span className="text-sm font-medium text-cyan-800">
-              Only <span className="font-bold text-cyan-900">{diamondSpots}/5</span> Diamond spots this year
+              Only <span className="font-bold text-cyan-900">{diamondSpotsLeft}/{maxDiamondSpots}</span> Diamond spots left
             </span>
           </div>
         </motion.div>
