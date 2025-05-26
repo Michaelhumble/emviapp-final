@@ -5,38 +5,30 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { motion } from "framer-motion";
-import { Crown, Shield, Star, Upload, MapPin, DollarSign, Users, Building2, Camera, Lock, Eye, EyeOff } from "lucide-react";
 import { enhancedSalonFormSchema, type EnhancedSalonFormValues } from "./enhancedSalonFormSchema";
 import SalonIdentitySection from "./sections/SalonIdentitySection";
 import SalonLocationSection from "./sections/SalonLocationSection";
-import SalonPhotosSection from "./sections/SalonPhotosSection";
 import SalonAboutSection from "./sections/SalonAboutSection";
-import SalonPerformanceSection from "./sections/SalonPerformanceSection";
-import SalonAssetsSection from "./sections/SalonAssetsSection";
-import SalonPromotionSection from "./sections/SalonPromotionSection";
-import SalonContactSection from "./sections/SalonContactSection";
+import { Sparkles, TrendingUp, Eye, Users, DollarSign, Star, Crown, Shield } from "lucide-react";
 
 interface EnhancedSalonPostFormProps {
-  onSubmit: (values: EnhancedSalonFormValues) => void;
+  onSubmit: (data: EnhancedSalonFormValues) => Promise<boolean>;
   photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  onPromotionChange: (upgrades: any) => void;
+  setPhotoUploads: (files: File[]) => void;
+  onPromotionChange?: (upgrades: any) => void;
 }
 
 export const EnhancedSalonPostForm = ({ 
   onSubmit, 
   photoUploads, 
   setPhotoUploads,
-  onPromotionChange
+  onPromotionChange 
 }: EnhancedSalonPostFormProps) => {
   const [currentSection, setCurrentSection] = useState(0);
-  const [promotionUpgrades, setPromotionUpgrades] = useState({
-    isUrgent: false,
-    isFeatured: false,
-    isDiamond: false
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<EnhancedSalonFormValues>({
     resolver: zodResolver(enhancedSalonFormSchema),
@@ -64,187 +56,168 @@ export const EnhancedSalonPostForm = ({
       includedEquipment: [],
       teamSize: "",
       teamStays: false,
+      staffBios: "",
       urgentSale: false,
       featuredListing: false,
       diamondListing: false,
       requireNDA: false,
+      messagingOnly: true,
     },
   });
 
   const sections = [
-    { id: 'identity', title: 'Salon Identity', icon: Building2, component: SalonIdentitySection },
-    { id: 'location', title: 'Location', icon: MapPin, component: SalonLocationSection },
-    { id: 'photos', title: 'Photos & Video', icon: Camera, component: SalonPhotosSection },
-    { id: 'about', title: 'About This Salon', icon: Star, component: SalonAboutSection },
-    { id: 'performance', title: 'Business Performance', icon: DollarSign, component: SalonPerformanceSection },
-    { id: 'assets', title: 'Assets & Team', icon: Users, component: SalonAssetsSection },
-    { id: 'promotion', title: 'Promotion Options', icon: Crown, component: SalonPromotionSection },
-    { id: 'contact', title: 'Contact & Privacy', icon: Shield, component: SalonContactSection },
+    { title: "Salon Identity", icon: Sparkles },
+    { title: "Location", icon: Eye },
+    { title: "About Your Salon", icon: Users },
+    { title: "Business Performance", icon: TrendingUp },
+    { title: "Assets & Team", icon: Star },
+    { title: "Promotion Options", icon: Crown },
+    { title: "Review & Submit", icon: Shield },
   ];
 
-  const CurrentSectionComponent = sections[currentSection].component;
+  const handleSubmit = async (data: EnhancedSalonFormValues) => {
+    setIsSubmitting(true);
+    try {
+      await onSubmit(data);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  const handleNext = () => {
+  const nextSection = () => {
     if (currentSection < sections.length - 1) {
       setCurrentSection(currentSection + 1);
     }
   };
 
-  const handlePrevious = () => {
+  const prevSection = () => {
     if (currentSection > 0) {
       setCurrentSection(currentSection - 1);
     }
   };
 
-  const handleFormSubmit = (values: EnhancedSalonFormValues) => {
-    onSubmit(values);
-  };
-
-  const handlePromotionUpdate = (upgrades: any) => {
-    setPromotionUpgrades(upgrades);
-    onPromotionChange(upgrades);
-  };
+  const progress = ((currentSection + 1) / sections.length) * 100;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50">
-      <div className="container max-w-4xl mx-auto py-8 px-4">
-        {/* Hero Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-purple-700 text-sm font-medium mb-4">
-            <Crown className="h-4 w-4" />
-            Premium Salon Marketplace
-          </div>
-          <h1 className="text-4xl md:text-5xl font-serif font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-amber-600 bg-clip-text text-transparent mb-4">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
             List Your Salon for Sale
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Join the most exclusive salon marketplace. Your business deserves buyers who understand its true value.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Join thousands of successful salon sales on EmviApp's exclusive marketplace
           </p>
-        </motion.div>
+        </div>
 
-        {/* Progress Indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between mb-4">
-            {sections.map((section, index) => (
-              <div key={section.id} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  index <= currentSection 
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' 
-                    : 'bg-gray-200 text-gray-400'
-                }`}>
-                  <section.icon className="h-5 w-5" />
-                </div>
-                {index < sections.length - 1 && (
-                  <div className={`w-12 h-1 mx-2 transition-all duration-300 ${
-                    index < currentSection ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-sm text-gray-600">
-            Step {currentSection + 1} of {sections.length}: {sections[currentSection].title}
-          </p>
-        </motion.div>
+        {/* Progress Bar */}
+        <Card className="mb-8 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium text-gray-600">
+                Step {currentSection + 1} of {sections.length}
+              </span>
+              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                {Math.round(progress)}% Complete
+              </Badge>
+            </div>
+            <Progress value={progress} className="h-2 mb-4" />
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <sections[currentSection].icon className="h-4 w-4" />
+              {sections[currentSection].title}
+            </div>
+          </CardContent>
+        </Card>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-            {/* Section Card */}
-            <motion.div
-              key={currentSection}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="bg-white/70 backdrop-blur-lg border-0 shadow-2xl">
-                <CardHeader className="pb-6">
-                  <CardTitle className="flex items-center gap-3 text-2xl font-serif">
-                    <sections[currentSection].icon className="h-6 w-6 text-purple-600" />
-                    {sections[currentSection].title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CurrentSectionComponent 
-                    form={form} 
-                    photoUploads={photoUploads}
-                    setPhotoUploads={setPhotoUploads}
-                    onPromotionChange={handlePromotionUpdate}
-                    promotionUpgrades={promotionUpgrades}
-                  />
-                </CardContent>
-              </Card>
-            </motion.div>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+            {/* Main Content Card */}
+            <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <sections[currentSection].icon className="h-6 w-6" />
+                  {sections[currentSection].title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-8">
+                {currentSection === 0 && <SalonIdentitySection form={form} />}
+                {currentSection === 1 && <SalonLocationSection form={form} />}
+                {currentSection === 2 && <SalonAboutSection form={form} />}
+                {currentSection === 3 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold">Business Performance & Financials</h3>
+                    <p className="text-gray-600">Share your salon's success metrics to attract serious buyers</p>
+                    {/* Business Performance fields would go here */}
+                  </div>
+                )}
+                {currentSection === 4 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold">Assets & Team</h3>
+                    <p className="text-gray-600">Highlight what makes your salon valuable</p>
+                    {/* Assets & Team fields would go here */}
+                  </div>
+                )}
+                {currentSection === 5 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold">Promotion Options</h3>
+                    <p className="text-gray-600">Boost your listing's visibility and attract more buyers</p>
+                    {/* Promotion options would go here */}
+                  </div>
+                )}
+                {currentSection === 6 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold">Review & Submit</h3>
+                    <p className="text-gray-600">Final review of your salon listing</p>
+                    {/* Review section would go here */}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Navigation */}
             <div className="flex justify-between items-center">
               <Button
                 type="button"
                 variant="outline"
-                onClick={handlePrevious}
+                onClick={prevSection}
                 disabled={currentSection === 0}
-                className="min-w-[120px]"
+                className="px-8"
               >
                 Previous
               </Button>
-
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Lock className="h-4 w-4" />
-                Your information is secure and encrypted
+              
+              <div className="flex gap-2">
+                {sections.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index <= currentSection ? 'bg-purple-600' : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
               </div>
 
-              {currentSection < sections.length - 1 ? (
+              {currentSection === sections.length - 1 ? (
                 <Button
-                  type="button"
-                  onClick={handleNext}
-                  className="min-w-[120px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
-                  Next Step
+                  {isSubmitting ? "Publishing..." : "Publish Salon"}
                 </Button>
               ) : (
                 <Button
-                  type="submit"
-                  className="min-w-[160px] bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-xl"
+                  type="button"
+                  onClick={nextSection}
+                  className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
-                  <Crown className="h-4 w-4 mr-2" />
-                  List My Salon
+                  Next
                 </Button>
               )}
             </div>
           </form>
         </Form>
-
-        {/* Trust Indicators */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
-          <div className="text-center p-6 bg-white/50 backdrop-blur rounded-2xl">
-            <Shield className="h-8 w-8 text-green-600 mx-auto mb-3" />
-            <h3 className="font-semibold mb-2">Verified Buyers Only</h3>
-            <p className="text-sm text-gray-600">All inquiries are pre-screened for serious intent</p>
-          </div>
-          <div className="text-center p-6 bg-white/50 backdrop-blur rounded-2xl">
-            <Lock className="h-8 w-8 text-purple-600 mx-auto mb-3" />
-            <h3 className="font-semibold mb-2">Complete Privacy</h3>
-            <p className="text-sm text-gray-600">Your contact info stays private until you choose to share</p>
-          </div>
-          <div className="text-center p-6 bg-white/50 backdrop-blur rounded-2xl">
-            <Star className="h-8 w-8 text-amber-600 mx-auto mb-3" />
-            <h3 className="font-semibold mb-2">Premium Exposure</h3>
-            <p className="text-sm text-gray-600">Reach qualified buyers actively seeking salon investments</p>
-          </div>
-        </motion.div>
       </div>
     </div>
   );
