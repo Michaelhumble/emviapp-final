@@ -6,13 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import { EnhancedSalonPostForm } from '@/components/posting/salon/EnhancedSalonPostForm';
+import { PremiumSalonWizard } from '@/components/posting/salon/PremiumSalonWizard';
 import { type EnhancedSalonFormValues } from '@/components/posting/salon/enhancedSalonFormSchema';
 
 const PostSalon = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [promotionUpgrades, setPromotionUpgrades] = useState({
     isUrgent: false,
@@ -22,8 +21,6 @@ const PostSalon = () => {
   
   const handleSubmit = async (data: EnhancedSalonFormValues) => {
     try {
-      setIsSubmitting(true);
-      
       // Convert form data to the expected format for the API
       const salonDetails = {
         title: data.salonName,
@@ -33,9 +30,9 @@ const PostSalon = () => {
         business_type: data.businessType,
         salon_size: data.salonSize,
         contact_info: {
-          owner_name: "Salon Owner", // This would come from auth context
-          phone: "(555) 123-4567", // This would come from user profile
-          email: "owner@salon.com", // This would come from auth context
+          owner_name: "Salon Owner",
+          phone: "(555) 123-4567",
+          email: "owner@salon.com",
         },
         post_type: 'salon',
         metadata: {
@@ -52,8 +49,8 @@ const PostSalon = () => {
         }
       };
       
-      // Define pricing options based on selected upgrades - use correct tier values
-      let baseTier: JobPricingTier = 'premium'; // Changed from 'standard' to 'premium'
+      // Define pricing options based on selected upgrades
+      let baseTier: JobPricingTier = 'premium';
       if (promotionUpgrades.isDiamond) {
         baseTier = 'diamond';
       } else if (promotionUpgrades.isFeatured) {
@@ -65,7 +62,6 @@ const PostSalon = () => {
         durationMonths: 1,
         autoRenew: true,
         isFirstPost: true,
-        // Add salon-specific promotion options
         urgentSale: promotionUpgrades.isUrgent,
         featuredListing: promotionUpgrades.isFeatured,
         diamondListing: promotionUpgrades.isDiamond,
@@ -76,7 +72,6 @@ const PostSalon = () => {
       
       if (result.success) {
         toast.success('Salon listing created successfully!');
-        navigate('/dashboard');
         return true;
       } else {
         toast.error('Error processing your salon listing. Please try again.');
@@ -86,8 +81,6 @@ const PostSalon = () => {
       console.error('Error submitting form:', error);
       toast.error('Error creating salon listing');
       return false;
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -96,22 +89,23 @@ const PostSalon = () => {
   };
 
   return (
-    <Layout>
+    <>
       <Helmet>
-        <title>List Your Salon for Sale | EmviApp</title>
+        <title>List Your Salon for Sale | EmviApp Premium Marketplace</title>
         <meta 
           name="description" 
-          content="List your salon for sale on EmviApp's exclusive marketplace. Reach verified buyers and get maximum value for your business."
+          content="List your salon for sale on EmviApp's exclusive premium marketplace. Reach verified buyers and get maximum value for your business with our billion-dollar listing experience."
         />
       </Helmet>
       
-      <EnhancedSalonPostForm
+      {/* Remove Layout wrapper for full-screen premium experience */}
+      <PremiumSalonWizard
         onSubmit={handleSubmit}
         photoUploads={photoUploads}
         setPhotoUploads={setPhotoUploads}
         onPromotionChange={handlePromotionChange}
       />
-    </Layout>
+    </>
   );
 };
 
