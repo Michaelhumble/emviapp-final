@@ -134,6 +134,7 @@ const JobPostingFlow: React.FC<JobPostingFlowProps> = ({ jobFormData, onBack }) 
           onClose={() => setShowConfirmation(false)}
           selectedTier={selectedPricing?.tier || ''}
           finalPrice={selectedPricing?.finalPrice || 0}
+          durationMonths={selectedPricing?.durationMonths || 1}
           onConfirmPayment={handleConfirmPayment}
         />
       </div>

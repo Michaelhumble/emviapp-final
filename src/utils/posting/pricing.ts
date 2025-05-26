@@ -47,7 +47,26 @@ export const calculatePricing = (
     basePrice = 0;
   }
   
-  // Calculate original price (without discounts)
+  // Special pricing for Diamond 12-month plan
+  if (selectedPricingTier === 'diamond' && durationMonths === 12) {
+    const originalPrice = basePrice * durationMonths; // $99.99 * 12 = $1,199.88
+    const finalPrice = 999.99; // Flat rate for Diamond annual
+    const discountPercentage = Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
+    
+    // Add nationwide fee if selected
+    let nationwidePrice = 0;
+    if (isNationwide) {
+      nationwidePrice = 5; // $5 nationwide fee
+    }
+    
+    return {
+      originalPrice,
+      finalPrice: finalPrice + nationwidePrice,
+      discountPercentage
+    };
+  }
+  
+  // Calculate original price (without discounts) for regular plans
   const originalPrice = basePrice * durationMonths;
   
   // Apply duration discount

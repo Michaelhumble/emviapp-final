@@ -117,7 +117,21 @@ export const durationOptions = [
   }
 ];
 
-export const calculateDiscountedPrice = (basePrice: number, months: number): { originalPrice: number; finalPrice: number; discountPercentage: number } => {
+export const calculateDiscountedPrice = (basePrice: number, months: number, tier?: string): { originalPrice: number; finalPrice: number; discountPercentage: number } => {
+  // Special pricing for Diamond 12-month plan
+  if (tier === 'diamond' && months === 12) {
+    const originalPrice = basePrice * months; // $99.99 * 12 = $1,199.88
+    const finalPrice = 999.99; // Flat rate for Diamond annual
+    const discountPercentage = Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
+    
+    return {
+      originalPrice,
+      finalPrice,
+      discountPercentage
+    };
+  }
+  
+  // Regular pricing for all other tiers and durations
   const originalPrice = basePrice * months;
   const durationOption = durationOptions.find(option => option.months === months);
   const discountPercentage = durationOption?.discount || 0;
@@ -134,7 +148,7 @@ export const calculateDiscountedPrice = (basePrice: number, months: number): { o
 // Export all required functions for compatibility
 export const calculateFinalPrice = (basePrice: number, options: PricingOptions): number => {
   const months = options.durationMonths || 1;
-  const { finalPrice } = calculateDiscountedPrice(basePrice, months);
+  const { finalPrice } = calculateDiscountedPrice(basePrice, months, options.selectedPricingTier);
   return finalPrice;
 };
 
@@ -143,7 +157,7 @@ export const calculateJobPostPrice = (options: PricingOptions, stats?: UserPosti
   if (!tierOption) return 0;
   
   const months = options.durationMonths || 1;
-  const { finalPrice } = calculateDiscountedPrice(tierOption.price, months);
+  const { finalPrice } = calculateDiscountedPrice(tierOption.price, months, options.selectedPricingTier);
   return finalPrice;
 };
 
@@ -160,7 +174,7 @@ export const getJobPrice = (options: PricingOptions): any => {
   }
   
   const months = options.durationMonths || 1;
-  const { originalPrice, finalPrice, discountPercentage } = calculateDiscountedPrice(tierOption.price, months);
+  const { originalPrice, finalPrice, discountPercentage } = calculateDiscountedPrice(tierOption.price, months, options.selectedPricingTier);
   
   return {
     basePrice: tierOption.price,
