@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -9,6 +10,7 @@ import { SalonIdentitySection } from './SalonIdentitySection';
 import { SalonLocationSection } from './SalonLocationSection';
 import { SalonPhotosSection } from './SalonPhotosSection';
 import SalonPricingSection from './SalonPricingSection';
+import SalonPlanSelectionSection from './SalonPlanSelectionSection';
 import { salonFormSchema, SalonFormValues } from './salonFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,7 +37,7 @@ const SalonListingWizard = () => {
     featuredBoost: false
   });
 
-  const totalSteps = 5;
+  const totalSteps = 6; // Updated to include the new pricing plan step
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
@@ -81,6 +83,25 @@ const SalonListingWizard = () => {
     // Handle form submission logic here (e.g., API call)
   };
 
+  const getStepTitle = () => {
+    switch (currentStep) {
+      case 1:
+        return "Salon Details";
+      case 2:
+        return "Location Information";
+      case 3:
+        return "Upload Photos";
+      case 4:
+        return "Choose Your Plan";
+      case 5:
+        return "Payment & Features";
+      case 6:
+        return "Terms & Confirmation";
+      default:
+        return "Salon Listing";
+    }
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -91,6 +112,13 @@ const SalonListingWizard = () => {
         return <SalonPhotosSection photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />;
       case 4:
         return (
+          <SalonPlanSelectionSection
+            options={pricingOptions}
+            onOptionsChange={setPricingOptions}
+          />
+        );
+      case 5:
+        return (
           <SalonPricingSection
             options={pricingOptions}
             onOptionsChange={setPricingOptions}
@@ -98,7 +126,7 @@ const SalonListingWizard = () => {
             fastSalePackage={fastSalePackage}
           />
         );
-      case 5:
+      case 6:
         return (
           <div>
             <h2>Terms and Conditions</h2>
@@ -132,8 +160,11 @@ const SalonListingWizard = () => {
           </div>
 
           <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">{getStepTitle()}</span>
+              <span className="text-sm text-gray-500">Step {currentStep} of {totalSteps}</span>
+            </div>
             <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
-            <p className="text-sm text-gray-500 mt-2">Step {currentStep} of {totalSteps}</p>
           </div>
 
           {renderStepContent()}

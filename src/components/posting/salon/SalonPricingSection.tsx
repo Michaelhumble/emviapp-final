@@ -1,16 +1,16 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { SalonPricingOptions } from '@/utils/posting/salonPricing';
-import { Dispatch, SetStateAction } from 'react';
-import { Check, Star, Shield, Heart } from 'lucide-react';
+import { Shield, Zap, Users, TrendingUp } from 'lucide-react';
+import { SalonPricingOptions, calculateSalonPostPrice, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
 
 interface SalonPricingSectionProps {
   options: SalonPricingOptions;
-  onOptionsChange: Dispatch<SetStateAction<SalonPricingOptions>>;
+  onOptionsChange: (options: SalonPricingOptions) => void;
   isNationwide: boolean;
   fastSalePackage: boolean;
 }
@@ -21,255 +21,216 @@ const SalonPricingSection: React.FC<SalonPricingSectionProps> = ({
   isNationwide,
   fastSalePackage
 }) => {
-  const [selectedDuration, setSelectedDuration] = useState(1);
-  const [featuredBoost, setFeaturedBoost] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const handleOptionChange = (option: keyof SalonPricingOptions, value: boolean) => {
+    const updatedOptions = {
+      ...options,
+      [option]: value
+    };
+    onOptionsChange(updatedOptions);
+  };
 
-  const pricingPlans = [
-    { 
-      months: 1, 
-      price: 24.99, 
-      originalPrice: 24.99, 
-      savings: 0,
-      popular: false 
+  const pricingSummary = getSalonPostPricingSummary(options);
+  
+  const additionalFeatures = [
+    {
+      id: 'isNationwide' as keyof SalonPricingOptions,
+      title: 'Nationwide Visibility',
+      description: 'Reach buyers across all states, not just your local area',
+      price: 15,
+      icon: <Users className="w-5 h-5 text-blue-600" />,
+      enabled: options.isNationwide
     },
-    { 
-      months: 6, 
-      price: 120, 
-      originalPrice: 149.94, 
-      savings: 30,
-      popular: true 
-    },
-    { 
-      months: 12, 
-      price: 249.99, 
-      originalPrice: 299.88, 
-      savings: 50,
-      popular: false 
+    {
+      id: 'autoRenew' as keyof SalonPricingOptions,
+      title: 'Auto-Renewal',
+      description: 'Automatically renew your listing for continuous visibility',
+      price: 0,
+      discount: '5% off total',
+      icon: <TrendingUp className="w-5 h-5 text-green-600" />,
+      enabled: options.autoRenew
     }
   ];
 
-  const calculateTotal = () => {
-    const selectedPlan = pricingPlans.find(plan => plan.months === selectedDuration);
-    const basePrice = selectedPlan?.price || 24.99;
-    const featuredCost = featuredBoost ? 25 : 0;
-    return basePrice + featuredCost;
-  };
-
-  const handleDurationSelect = (months: number) => {
-    setSelectedDuration(months);
-    onOptionsChange(prev => ({ 
-      ...prev, 
-      durationMonths: months 
-    }));
-  };
-
-  const handleFeaturedToggle = (checked: boolean) => {
-    setFeaturedBoost(checked);
-    onOptionsChange(prev => ({ 
-      ...prev, 
-      featuredBoost: checked 
-    }));
-  };
-
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
-      {/* Header Section */}
-      <div className="text-center space-y-3">
-        <h2 className="text-3xl font-bold text-gray-900">Choose Your Listing Plan</h2>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Enhance Your Listing</h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Join thousands of successful salon owners who trust EmviApp to connect with the Vietnamese community
+          Add these premium features to maximize your salon's visibility and sell faster.
         </p>
-        <div className="flex items-center justify-center gap-2 text-sm text-emerald-600">
-          <Shield className="w-4 h-4" />
-          <span>Trusted by 10,000+ Vietnamese business owners</span>
-        </div>
       </div>
 
-      {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {pricingPlans.map((plan) => (
-          <Card 
-            key={plan.months}
-            className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg ${
-              selectedDuration === plan.months 
-                ? 'ring-2 ring-purple-500 shadow-lg' 
-                : 'border-gray-200'
-            } ${plan.popular ? 'transform scale-105' : ''}`}
-            onClick={() => handleDurationSelect(plan.months)}
-          >
-            {plan.popular && (
-              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                <Star className="w-3 h-3 mr-1" />
-                Most Popular
-              </Badge>
-            )}
-            
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-xl font-semibold">
-                {plan.months} Month{plan.months > 1 ? 's' : ''}
-              </CardTitle>
-              <div className="space-y-2">
-                <div className="text-3xl font-bold text-purple-600">
-                  ${plan.price}
+      {/* Selected Plan Summary */}
+      <Card className="border-2 border-purple-200 bg-purple-50">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Your Selected Plan</span>
+            <Badge className="bg-purple-600 text-white">
+              {options.durationMonths === 1 ? 'Standard' : 
+               options.durationMonths === 6 ? '6 Months' : 
+               '12 Months'}
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-gray-700">
+                {options.durationMonths === 1 ? '30-day listing' : 
+                 options.durationMonths === 6 ? '6-month listing with extended visibility' : 
+                 '12-month premium listing with maximum exposure'}
+              </p>
+              {options.featuredBoost && (
+                <p className="text-purple-700 font-medium mt-1">+ Featured Boost included</p>
+              )}
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-gray-900">
+                ${pricingSummary.finalPrice}
+              </div>
+              {pricingSummary.discountAmount > 0 && (
+                <div className="text-sm text-green-600">
+                  Save ${pricingSummary.discountAmount}
                 </div>
-                {plan.savings > 0 && (
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500 line-through">
-                      ${plan.originalPrice}
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Additional Features */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-gray-900">Optional Add-ons</h3>
+        
+        {additionalFeatures.map((feature) => (
+          <Card 
+            key={feature.id}
+            className={`cursor-pointer transition-all duration-200 ${
+              feature.enabled ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'
+            }`}
+            onClick={() => handleOptionChange(feature.id, !feature.enabled)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-4">
+                  <div className="mt-1">{feature.icon}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={feature.enabled}
+                        onCheckedChange={(checked) => handleOptionChange(feature.id, checked === true)}
+                      />
+                      <Label className="text-lg font-medium cursor-pointer">
+                        {feature.title}
+                      </Label>
+                      {feature.price > 0 && (
+                        <Badge variant="outline">+${feature.price}</Badge>
+                      )}
+                      {feature.discount && (
+                        <Badge className="bg-green-100 text-green-800">{feature.discount}</Badge>
+                      )}
                     </div>
-                    <Badge variant="secondary" className="bg-green-100 text-green-700">
-                      Save ${plan.savings}
-                    </Badge>
+                    <p className="text-gray-600 mt-2 ml-6">{feature.description}</p>
                   </div>
-                )}
-                <div className="text-sm text-gray-500">
-                  ${(plan.price / plan.months).toFixed(2)}/month
                 </div>
               </div>
-            </CardHeader>
-            
-            <CardContent className="pt-2">
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  <span>Premium listing visibility</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  <span>Vietnamese community reach</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  <span>Professional listing support</span>
-                </li>
-                {plan.months >= 6 && (
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span>Priority customer support</span>
-                  </li>
-                )}
-                {plan.months >= 12 && (
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span>Free listing optimization</span>
-                  </li>
-                )}
-              </ul>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Featured Boost Upsell */}
-      <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+      {/* Trust and Security */}
+      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200">
         <CardContent className="p-6">
           <div className="flex items-start space-x-4">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-                <Star className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div className="flex-grow">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Featured Boost - Get Noticed Faster
+            <Shield className="w-8 h-8 text-blue-600 mt-1" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Trusted by the Vietnamese Salon Community
               </h3>
-              <p className="text-gray-700 mb-4">
-                Sell your salon 3x faster with premium placement. Your listing appears at the top of search results, 
-                giving you maximum exposure to serious buyers in the Vietnamese community.
+              <p className="text-gray-700 mb-3">
+                Over 10,000+ successful salon sales facilitated through our platform. Your listing will be seen 
+                by serious buyers who understand the value of established nail salon businesses.
               </p>
-              <div className="flex items-center space-x-3">
-                <Checkbox
-                  id="featured-boost"
-                  checked={featuredBoost}
-                  onCheckedChange={(checked) => handleFeaturedToggle(checked === true)}
-                />
-                <label htmlFor="featured-boost" className="text-lg font-medium cursor-pointer">
-                  Add Featured Boost for +$25
-                </label>
-                <Badge className="bg-amber-100 text-amber-800">
-                  Recommended
-                </Badge>
-              </div>
-              <div className="mt-2 text-sm text-gray-600 flex items-center gap-1">
-                <Heart className="w-4 h-4 text-red-500" />
-                <span>Loved by successful salon sellers</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="flex items-center space-x-2">
+                  <Zap className="w-4 h-4 text-yellow-600" />
+                  <span>Average sale in 45 days</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  <span>Secure payment processing</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Users className="w-4 h-4 text-blue-600" />
+                  <span>Qualified buyer network</span>
+                </div>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Trust Building Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
-        <div className="text-center space-y-3">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Peace of Mind Guarantee
-          </h3>
-          <p className="text-gray-700 max-w-2xl mx-auto">
-            Our platform has helped Vietnamese salon owners successfully sell their businesses for over 5 years. 
-            We understand your needs and provide the support you deserve during this important transition.
-          </p>
-          <div className="flex items-center justify-center gap-6 text-sm text-gray-600 pt-2">
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-blue-500" />
-              <span>Secure payments</span>
+      {/* Final Price Summary */}
+      <Card className="border-2 border-gray-800 bg-gray-50">
+        <CardContent className="p-6">
+          <div className="space-y-3">
+            <div className="flex justify-between text-gray-700">
+              <span>Base Plan ({options.durationMonths} month{options.durationMonths > 1 ? 's' : ''})</span>
+              <span>${pricingSummary.basePrice * options.durationMonths}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Heart className="w-4 h-4 text-red-500" />
-              <span>Community trusted</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-500" />
-              <span>Proven results</span>
+            
+            {options.featuredBoost && (
+              <div className="flex justify-between text-gray-700">
+                <span>Featured Boost</span>
+                <span>+$25</span>
+              </div>
+            )}
+            
+            {options.isNationwide && (
+              <div className="flex justify-between text-gray-700">
+                <span>Nationwide Visibility</span>
+                <span>+$15</span>
+              </div>
+            )}
+            
+            {pricingSummary.autoRenewDiscount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Auto-Renewal Discount (5%)</span>
+                <span>-${pricingSummary.autoRenewDiscount}</span>
+              </div>
+            )}
+            
+            {pricingSummary.discountAmount > 0 && pricingSummary.autoRenewDiscount === 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Duration Savings</span>
+                <span>-${pricingSummary.discountAmount}</span>
+              </div>
+            )}
+            
+            <div className="border-t pt-3">
+              <div className="flex justify-between items-center">
+                <span className="text-xl font-bold text-gray-900">Total</span>
+                <span className="text-2xl font-bold text-gray-900">
+                  ${pricingSummary.finalPrice}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Terms and Total */}
-      <div className="space-y-6">
-        <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-          <Checkbox
-            id="terms"
-            checked={termsAccepted}
-            onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-          />
-          <label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer leading-relaxed">
-            I agree to the <a href="#" className="text-purple-600 hover:underline">Terms of Service</a> and 
-            <a href="#" className="text-purple-600 hover:underline ml-1">Privacy Policy</a>. 
-            I understand that my listing will be published immediately after payment and will remain active 
-            for the selected duration.
-          </label>
-        </div>
-
-        {/* Payment Summary & CTA */}
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="text-center md:text-left">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Ready to Publish Your Listing?
-                </h3>
-                <p className="text-gray-600 mt-1">
-                  Join the Vietnamese business community today
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-2">
-                  Total: ${calculateTotal().toFixed(2)}
-                </div>
-                <Button 
-                  size="lg"
-                  disabled={!termsAccepted}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 text-lg font-semibold"
-                >
-                  Pay ${calculateTotal().toFixed(2)} & Publish Listing
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Payment CTA */}
+      <div className="text-center space-y-4">
+        <Button 
+          size="lg" 
+          className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg font-semibold"
+        >
+          Pay ${pricingSummary.finalPrice} & Publish Listing
+        </Button>
+        <p className="text-sm text-gray-500">
+          Secure payment processing • 30-day money-back guarantee
+        </p>
       </div>
     </div>
   );
