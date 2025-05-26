@@ -1,46 +1,35 @@
 
-import React, { useCallback } from "react";
+import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Upload, Camera, Video, Star, X } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Upload, Camera, Play, Star, X } from "lucide-react";
 import { EnhancedSalonFormValues } from "../enhancedSalonFormSchema";
-import { uploadImage } from "@/utils/uploadImage";
-import { Progress } from "@/components/ui/progress";
 
 interface SalonPhotosSectionProps {
   form: UseFormReturn<EnhancedSalonFormValues>;
   photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  setPhotoUploads: (files: File[]) => void;
 }
 
-export const SalonPhotosSection = ({ form, photoUploads, setPhotoUploads }: SalonPhotosSectionProps) => {
-  const [uploadProgress, setUploadProgress] = React.useState<{ [key: string]: number }>({});
-  const [dragOver, setDragOver] = React.useState(false);
+const SalonPhotosSection = ({ form, photoUploads, setPhotoUploads }: SalonPhotosSectionProps) => {
+  const coverPhotoIndex = form.watch("coverPhotoIndex") || 0;
 
-  const onDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-    
-    const files = Array.from(e.dataTransfer.files).filter(file => 
-      file.type.startsWith('image/')
-    );
-    
-    setPhotoUploads(prev => [...prev, ...files].slice(0, 10));
-  }, [setPhotoUploads]);
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files).filter(file => 
-        file.type.startsWith('image/')
-      );
-      setPhotoUploads(prev => [...prev, ...files].slice(0, 10));
-    }
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setPhotoUploads([...photoUploads, ...files]);
   };
 
   const removePhoto = (index: number) => {
-    setPhotoUploads(prev => prev.filter((_, i) => i !== index));
+    const newPhotos = photoUploads.filter((_, i) => i !== index);
+    setPhotoUploads(newPhotos);
+    
+    // Update cover photo index if needed
+    if (coverPhotoIndex >= newPhotos.length && newPhotos.length > 0) {
+      form.setValue("coverPhotoIndex", 0);
+    }
   };
 
   const setCoverPhoto = (index: number) => {
@@ -49,117 +38,101 @@ export const SalonPhotosSection = ({ form, photoUploads, setPhotoUploads }: Salo
 
   return (
     <div className="space-y-8">
-      {/* Drag and Drop Upload Area */}
-      <div
-        className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
-          dragOver 
-            ? 'border-purple-400 bg-purple-50/50 scale-105' 
-            : 'border-purple-200 bg-gradient-to-br from-purple-50/30 to-pink-50/30'
-        }`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOver(true);
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={onDrop}
-      >
-        <div className="space-y-4">
-          <div className="flex justify-center">
-            <div className="p-4 bg-purple-100 rounded-full">
-              <Camera className="h-8 w-8 text-purple-600" />
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Showcase Your Salon</h3>
-            <p className="text-gray-600 mb-4">
-              Drag & drop photos here, or click to browse
-            </p>
-            <p className="text-sm text-gray-500">
-              Upload up to 10 high-quality photos (JPG, PNG up to 10MB each)
-            </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-2">
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleFileInput}
-              className="hidden"
-              id="photo-upload"
-            />
-            <label htmlFor="photo-upload">
-              <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50" asChild>
-                <span>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Choose Photos
-                </span>
-              </Button>
-            </label>
-          </div>
-        </div>
-
-        {dragOver && (
-          <div className="absolute inset-0 bg-purple-100/50 rounded-xl flex items-center justify-center">
-            <div className="text-purple-600 text-lg font-medium">Drop photos here!</div>
-          </div>
-        )}
+      <div className="text-center">
+        <h2 className="text-2xl font-bold font-serif mb-2">Showcase Your Salon</h2>
+        <p className="text-gray-600">High-quality photos get 5x more buyer interest</p>
       </div>
 
-      {/* Photo Preview Grid */}
+      {/* Drag and Drop Upload */}
+      <div className="border-2 border-dashed border-purple-200 rounded-xl p-8 text-center bg-purple-50/50 hover:bg-purple-50 transition-colors">
+        <Camera className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+        <h3 className="font-semibold text-lg mb-2">Upload Salon Photos</h3>
+        <p className="text-gray-600 mb-4">Drag & drop photos here, or click to browse</p>
+        
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileUpload}
+          className="hidden"
+          id="photo-upload"
+        />
+        <label htmlFor="photo-upload">
+          <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50" asChild>
+            <span className="cursor-pointer">
+              <Upload className="h-4 w-4 mr-2" />
+              Choose Photos
+            </span>
+          </Button>
+        </label>
+        
+        <p className="text-sm text-gray-500 mt-2">
+          JPG, PNG up to 10MB each. Upload 5-15 photos for best results.
+        </p>
+      </div>
+
+      {/* Photo Grid */}
       {photoUploads.length > 0 && (
         <div>
-          <h4 className="font-semibold text-lg mb-4">Your Salon Photos ({photoUploads.length}/10)</h4>
+          <h3 className="font-semibold text-lg mb-4">Your Photos ({photoUploads.length})</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {photoUploads.map((photo, index) => (
-              <div key={index} className="relative group">
-                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                  <img
-                    src={URL.createObjectURL(photo)}
-                    alt={`Salon photo ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                
-                {/* Cover Photo Badge */}
-                {form.watch("coverPhotoIndex") === index && (
-                  <Badge className="absolute top-2 left-2 bg-yellow-500 text-white">
-                    <Star className="h-3 w-3 mr-1" />
-                    Cover
-                  </Badge>
-                )}
-
-                {/* Controls */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200 rounded-lg flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setCoverPhoto(index)}
-                    className="text-xs"
-                  >
-                    Set Cover
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => removePhoto(index)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
+            {photoUploads.map((file, index) => (
+              <Card key={index} className={`relative overflow-hidden ${index === coverPhotoIndex ? 'ring-2 ring-purple-500' : ''}`}>
+                <CardContent className="p-0">
+                  <div className="aspect-square relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Salon photo ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Cover Photo Badge */}
+                    {index === coverPhotoIndex && (
+                      <div className="absolute top-2 left-2">
+                        <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                          <Star className="h-3 w-3" />
+                          Cover
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Action Buttons */}
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      {index !== coverPhotoIndex && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="h-8 w-8 p-0"
+                          onClick={() => setCoverPhoto(index)}
+                        >
+                          <Star className="h-3 w-3" />
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="h-8 w-8 p-0"
+                        onClick={() => removePhoto(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
       )}
 
-      {/* Video Tour Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
+      {/* Video Tour (Optional) */}
+      <div className="border-2 border-dashed border-blue-200 rounded-xl p-6 bg-blue-50/50">
         <div className="flex items-center gap-3 mb-4">
-          <Video className="h-6 w-6 text-blue-600" />
-          <h3 className="font-semibold text-lg">Video Tour (Optional)</h3>
-          <Badge variant="secondary" className="bg-blue-100 text-blue-700">Increases views by 300%</Badge>
+          <Play className="h-6 w-6 text-blue-500" />
+          <div>
+            <h3 className="font-semibold text-lg">Video Tour (Optional)</h3>
+            <p className="text-gray-600">Add a video tour to increase buyer engagement by 3x</p>
+          </div>
         </div>
         
         <FormField
@@ -169,13 +142,12 @@ export const SalonPhotosSection = ({ form, photoUploads, setPhotoUploads }: Salo
             <FormItem>
               <FormLabel>YouTube or Vimeo URL</FormLabel>
               <FormControl>
-                <input
+                <Input
                   placeholder="https://youtube.com/watch?v=..."
-                  className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="border-2 focus:border-blue-500"
                   {...field}
                 />
               </FormControl>
-              <p className="text-sm text-blue-600">Pro tip: A 2-3 minute walkthrough video significantly increases buyer interest</p>
               <FormMessage />
             </FormItem>
           )}
@@ -183,25 +155,25 @@ export const SalonPhotosSection = ({ form, photoUploads, setPhotoUploads }: Salo
       </div>
 
       {/* Photography Tips */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-        <h4 className="font-semibold text-amber-800 mb-3">📸 Professional Photo Tips</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-amber-700">
+      <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-6">
+        <h3 className="font-semibold text-amber-900 mb-3">📸 Pro Photography Tips</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <h5 className="font-medium mb-2">Essential Shots:</h5>
-            <ul className="space-y-1">
-              <li>• Exterior and entrance</li>
-              <li>• Reception and waiting area</li>
-              <li>• Main service floor</li>
-              <li>• Individual stations</li>
+            <h4 className="font-medium text-amber-800 mb-2">Must-Have Shots:</h4>
+            <ul className="text-amber-700 space-y-1">
+              <li>• Front exterior with signage</li>
+              <li>• Reception/waiting area</li>
+              <li>• Service stations (all angles)</li>
+              <li>• Equipment and supplies</li>
             </ul>
           </div>
           <div>
-            <h5 className="font-medium mb-2">Best Practices:</h5>
-            <ul className="space-y-1">
-              <li>• Good lighting (avoid harsh shadows)</li>
+            <h4 className="font-medium text-amber-800 mb-2">Photo Quality:</h4>
+            <ul className="text-amber-700 space-y-1">
+              <li>• Good lighting (natural preferred)</li>
               <li>• Clean, organized spaces</li>
-              <li>• Multiple angles of key areas</li>
-              <li>• Show equipment and amenities</li>
+              <li>• High resolution (minimum 1080p)</li>
+              <li>• Multiple angles of each area</li>
             </ul>
           </div>
         </div>
