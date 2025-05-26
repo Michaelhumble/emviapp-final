@@ -3,7 +3,7 @@ import React from "react";
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, DollarSign, Diamond, Crown } from "lucide-react";
+import { MapPin, DollarSign, Diamond, Crown, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,13 +16,14 @@ interface TopDiamondFeaturedSectionProps {
 const TopDiamondFeaturedSection = ({ 
   featuredJobs, 
   onViewDetails, 
-  maxSpots = 3 // Updated to 3 max spots
+  maxSpots = 3 // Updated to 3 max spots (public spots only)
 }: TopDiamondFeaturedSectionProps) => {
   const diamondJobs = featuredJobs.filter(job => 
     job.pricingTier === 'diamond' || job.pricing_tier === 'diamond'
   ).slice(0, maxSpots);
 
   const availableSpots = maxSpots - diamondJobs.length;
+  const isFullyBooked = availableSpots === 0;
 
   if (diamondJobs.length === 0 && availableSpots === 0) return null;
 
@@ -44,9 +45,16 @@ const TopDiamondFeaturedSection = ({
           </Badge>
         </div>
         
-        {availableSpots > 0 && (
+        {!isFullyBooked && availableSpots > 0 && (
           <div className="text-sm text-gray-500">
             {availableSpots} spot{availableSpots !== 1 ? 's' : ''} available
+          </div>
+        )}
+
+        {isFullyBooked && (
+          <div className="flex items-center text-sm text-orange-600 font-medium">
+            <Lock className="h-4 w-4 mr-1" />
+            All spots filled
           </div>
         )}
       </div>
@@ -96,8 +104,8 @@ const TopDiamondFeaturedSection = ({
           </Card>
         ))}
 
-        {/* Available Spots Placeholder */}
-        {availableSpots > 0 && (
+        {/* Available Spots Placeholder or Waitlist */}
+        {!isFullyBooked && availableSpots > 0 && (
           <Card className="overflow-hidden border-2 border-dashed border-cyan-300 bg-gradient-to-br from-cyan-50/50 to-blue-50/50">
             <CardContent className="p-6 text-center">
               <Diamond className="h-12 w-12 text-cyan-400 mx-auto mb-4" />
@@ -112,6 +120,27 @@ const TopDiamondFeaturedSection = ({
                 onClick={() => window.location.href = '/post-job'}
               >
                 Apply for Diamond
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Waitlist Card when all spots are filled */}
+        {isFullyBooked && (
+          <Card className="overflow-hidden border-2 border-dashed border-orange-300 bg-gradient-to-br from-orange-50/50 to-red-50/50">
+            <CardContent className="p-6 text-center">
+              <Lock className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+              <h3 className="font-playfair font-semibold text-lg text-gray-700 mb-2">
+                All Diamond Spots Filled
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Join the waitlist for future openings
+              </p>
+              <Button 
+                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white"
+                onClick={() => window.location.href = '/waitlist'}
+              >
+                Join Waitlist
               </Button>
             </CardContent>
           </Card>

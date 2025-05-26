@@ -1,201 +1,71 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import LanguageToggle from '@/components/layout/LanguageToggle';
+import Layout from '@/components/layout/Layout';
 import LuxuryHero from '@/components/pricing/LuxuryHero';
-import BillingToggle from '@/components/pricing/BillingToggle';
-import PremiumPricingCard from '@/components/pricing/PremiumPricingCard';
-import TestimonialsCarousel from '@/components/pricing/TestimonialsCarousel';
+import PricingCards from '@/components/pricing/PricingCards';
 import ScarcityBanner from '@/components/pricing/ScarcityBanner';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
 import FinalCTA from '@/components/pricing/FinalCTA';
+import FOMOElements from '@/components/pricing/FOMOElements';
 
 const PricingPage = () => {
-  const [isAnnual, setIsAnnual] = useState(false);
-
-  // Diamond spots logic: Max 3 public spots, 1 reserved for brother, 1 ghost/demo
-  const diamondSpotsAvailable = 1; // Currently available for purchase (out of 3 max)
+  // Diamond spot logic - max 3 public spots available
   const maxDiamondSpots = 3;
-  const isDiamondFull = diamondSpotsAvailable === 0;
-
-  const pricingPlans = [
-    {
-      id: 'free',
-      name: 'Free Listing',
-      emotiveTitle: 'Start Your Journey',
-      price: 0,
-      isAnnual,
-      features: [
-        'Basic search visibility',
-        '30-day listing duration',
-        'Standard placement in results',
-        'Secure job posting',
-        'Mobile-optimized display'
-      ],
-      buttonText: 'Start Free',
-      buttonVariant: 'outline' as const
-    },
-    {
-      id: 'gold',
-      name: 'Gold Featured',
-      emotiveTitle: 'Stand Out From The Crowd',
-      price: isAnnual ? 191.92 : 19.99,
-      originalPrice: isAnnual ? 239.88 : undefined,
-      isAnnual,
-      badge: 'POPULAR' as const,
-      limitedSpots: '8/15 Gold spots left',
-      features: [
-        'Featured placement above standard listings',
-        'Gold badge and enhanced styling',
-        'Enhanced search visibility boost',
-        'Basic analytics dashboard',
-        'Priority customer support'
-      ],
-      buttonText: 'Unlock Gold Now',
-      buttonVariant: 'default' as const
-    },
-    {
-      id: 'premium',
-      name: 'Premium Listing',
-      emotiveTitle: 'Maximum Visibility',
-      price: isAnnual ? 383.92 : 39.99,
-      originalPrice: isAnnual ? 479.88 : undefined,
-      isAnnual,
-      badge: 'RECOMMENDED' as const,
-      limitedSpots: '5/15 Premium spots left',
-      features: [
-        'Premium placement above Gold',
-        'Premium badge and luxury styling',
-        'Advanced analytics dashboard',
-        'Priority support with consultation',
-        'Targeted visibility algorithms'
-      ],
-      buttonText: 'Upgrade to Premium',
-      buttonVariant: 'default' as const
-    },
-    {
-      id: 'diamond',
-      name: 'Diamond Exclusive',
-      emotiveTitle: 'Elite Status',
-      price: 999.99,
-      isAnnual: true,
-      badge: 'ANNUAL_ONLY' as const,
-      limitedSpots: `${diamondSpotsAvailable}/${maxDiamondSpots} Diamond spots left`,
-      features: [
-        'Highest diamond placement tier',
-        'Diamond badge with exclusive styling',
-        'Personal account manager assigned',
-        'Premium analytics and insights',
-        'Annual exclusive member benefits'
-      ],
-      buttonText: isDiamondFull ? 'Join Waitlist' : 'Apply for Diamond',
-      buttonVariant: 'default' as const,
-      isWaitlistOnly: isDiamondFull
-    }
-  ];
-
-  const handlePlanSelect = (planId: string) => {
-    if (planId === 'diamond' && isDiamondFull) {
-      // Handle waitlist logic
-      console.log('Opening Diamond waitlist modal');
-      return;
-    }
-    console.log('Selected plan:', planId);
-    // Handle plan selection logic here
-  };
-
+  const diamondSpotsLeft = 1; // Currently 1 spot left out of 3 public spots
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -right-40 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{ duration: 20, repeat: Infinity, repeatType: 'reverse' }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl"
-          animate={{
-            x: [0, -50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity, repeatType: 'reverse' }}
-        />
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
+        {/* Hero Section */}
+        <section className="py-16 md:py-20">
+          <div className="container mx-auto px-4">
+            <LuxuryHero />
+          </div>
+        </section>
+
+        {/* Scarcity Banner */}
+        <section className="py-8">
+          <div className="container mx-auto px-4">
+            <ScarcityBanner 
+              diamondSpotsLeft={diamondSpotsLeft} 
+              maxDiamondSpots={maxDiamondSpots}
+            />
+          </div>
+        </section>
+
+        {/* FOMO Elements */}
+        <section className="py-6">
+          <div className="container mx-auto px-4">
+            <FOMOElements />
+          </div>
+        </section>
+
+        {/* Pricing Cards */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <PricingCards 
+              diamondSpotsLeft={diamondSpotsLeft}
+              maxDiamondSpots={maxDiamondSpots}
+            />
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <PricingFAQ />
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <FinalCTA />
+          </div>
+        </section>
       </div>
-
-      {/* Language Toggle */}
-      <div className="fixed top-4 right-4 z-50">
-        <LanguageToggle minimal={true} />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Luxury Hero Section */}
-        <LuxuryHero />
-
-        {/* Billing Toggle */}
-        <BillingToggle 
-          isAnnual={isAnnual} 
-          onToggle={setIsAnnual} 
-        />
-
-        {/* Scarcity and FOMO Elements */}
-        <ScarcityBanner diamondSpotsLeft={diamondSpotsAvailable} maxDiamondSpots={maxDiamondSpots} />
-
-        {/* Diamond Full Warning */}
-        {isDiamondFull && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8"
-          >
-            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-50 to-blue-50 border-2 border-cyan-200 rounded-xl px-6 py-4 shadow-lg">
-              <div className="h-3 w-3 bg-cyan-500 rounded-full animate-pulse"></div>
-              <span className="text-cyan-800 font-semibold">
-                All Diamond spots filled! Join the waitlist for future openings.
-              </span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Pricing Cards Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20"
-        >
-          {pricingPlans.map((plan, index) => (
-            <motion.div
-              key={plan.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <PremiumPricingCard
-                plan={plan}
-                onSelect={() => handlePlanSelect(plan.id)}
-                isPopular={plan.badge === 'RECOMMENDED'}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Testimonials */}
-        <TestimonialsCarousel />
-
-        {/* FAQ and Final CTA */}
-        <div className="space-y-24 py-16">
-          <PricingFAQ />
-          <FinalCTA />
-        </div>
-      </div>
-    </div>
+    </Layout>
   );
 };
 
