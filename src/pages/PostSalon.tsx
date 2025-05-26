@@ -5,29 +5,22 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import PremiumSalonWizard from '@/components/posting/salon/PremiumSalonWizard';
-import { type EnhancedSalonFormValues } from '@/components/posting/salon/enhancedSalonFormSchema';
+import SalonPostForm from '@/components/posting/salon/SalonPostForm';
 
 const PostSalon = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [promotionUpgrades, setPromotionUpgrades] = useState({
-    isUrgent: false,
-    isFeatured: false,
-    isDiamond: false
-  });
   
-  const handleSubmit = async (data: EnhancedSalonFormValues) => {
+  const handleSubmit = async (data: any) => {
     try {
       // Convert form data to the expected format for the API
       const salonDetails = {
         title: data.salonName,
-        description: data.salonStory,
-        location: `${data.city}, ${data.state}`,
+        description: data.description,
+        location: `${data.location}`,
         price: data.askingPrice,
         business_type: data.businessType,
-        salon_size: data.salonSize,
         contact_info: {
           owner_name: "Salon Owner",
           phone: "(555) 123-4567",
@@ -35,35 +28,16 @@ const PostSalon = () => {
         },
         post_type: 'salon',
         metadata: {
-          neighborhood: data.neighborhood,
-          yearsInOperation: data.yearsInOperation,
-          leaseTerms: data.leaseTerms,
-          includedEquipment: data.includedEquipment,
-          teamSize: data.teamSize,
-          teamStays: data.teamStays,
-          hideAddress: data.hideAddress,
-          hidePrice: data.hidePrice,
-          requireNDA: data.requireNDA,
-          promotionUpgrades
+          photoUploads
         }
       };
       
-      // Define pricing options based on selected upgrades
-      let baseTier: JobPricingTier = 'premium';
-      if (promotionUpgrades.isDiamond) {
-        baseTier = 'diamond';
-      } else if (promotionUpgrades.isFeatured) {
-        baseTier = 'premium';
-      }
-      
+      // Define basic pricing options
       const pricingOptions: PricingOptions = {
-        selectedPricingTier: baseTier,
+        selectedPricingTier: 'premium' as JobPricingTier,
         durationMonths: 1,
         autoRenew: true,
         isFirstPost: true,
-        urgentSale: promotionUpgrades.isUrgent,
-        featuredListing: promotionUpgrades.isFeatured,
-        diamondListing: promotionUpgrades.isDiamond,
       };
       
       // Initiate payment with our consolidated hook
@@ -83,10 +57,6 @@ const PostSalon = () => {
     }
   };
 
-  const handlePromotionChange = (upgrades: any) => {
-    setPromotionUpgrades(upgrades);
-  };
-
   return (
     <>
       <Helmet>
@@ -97,11 +67,11 @@ const PostSalon = () => {
         />
       </Helmet>
       
-      <PremiumSalonWizard
+      <SalonPostForm
         onSubmit={handleSubmit}
         photoUploads={photoUploads}
         setPhotoUploads={setPhotoUploads}
-        onPromotionChange={handlePromotionChange}
+        isSubmitting={isLoading}
       />
     </>
   );

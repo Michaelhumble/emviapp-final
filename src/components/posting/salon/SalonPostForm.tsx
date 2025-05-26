@@ -1,112 +1,162 @@
 
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { SalonPostBasicInfo } from "./SalonPostBasicInfo";
-import { SalonPostDescription } from "./SalonPostDescription";
-import { SalonPostPhotoUpload } from "./SalonPostPhotoUpload";
-import { salonFormSchema, SalonFormValues } from "./salonFormSchema";
-import { Separator } from "@/components/ui/separator";
-import { Check } from "lucide-react";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
+import SalonPostPhotoUpload from './SalonPostPhotoUpload';
+import Layout from '@/components/layout/Layout';
 
 interface SalonPostFormProps {
-  onSubmit: (values: SalonFormValues) => void;
+  onSubmit: (data: SalonFormValues) => Promise<boolean>;
   photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
-  onNationwideChange: (checked: boolean) => void;
-  onFastSaleChange: (checked: boolean) => void;
+  setPhotoUploads: (files: File[]) => void;
+  isSubmitting: boolean;
 }
 
-export const SalonPostForm = ({ 
-  onSubmit, 
-  photoUploads, 
-  setPhotoUploads,
-  onNationwideChange,
-  onFastSaleChange
-}: SalonPostFormProps) => {
+const SalonPostForm = ({ onSubmit, photoUploads, setPhotoUploads, isSubmitting }: SalonPostFormProps) => {
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
     defaultValues: {
-      salonName: "",
-      city: "",
-      state: "",
-      askingPrice: "",
-      monthlyRent: "",
-      numberOfStaff: "",
-      squareFeet: "",
-      revenue: "",
-      reasonForSelling: "",
-      vietnameseDescription: "",
-      englishDescription: "",
-      willTrain: false,
-      isNationwide: false,
-      fastSalePackage: false,
-      hasHousing: false,
-      hasWaxRoom: false,
-      hasDiningRoom: false,
-      hasLaundry: false,
+      salonName: '',
+      businessType: '',
+      location: '',
+      description: '',
+      askingPrice: '',
     },
   });
 
-  // Watch for changes in nationwide and fast sale options
-  const isNationwide = form.watch("isNationwide");
-  const fastSalePackage = form.watch("fastSalePackage");
-  
-  // Update parent component when these values change
-  useEffect(() => {
-    onNationwideChange(isNationwide);
-  }, [isNationwide, onNationwideChange]);
-  
-  useEffect(() => {
-    onFastSaleChange(fastSalePackage);
-  }, [fastSalePackage, onFastSaleChange]);
-
-  const handleFormSubmit = (values: SalonFormValues) => {
-    onSubmit(values);
+  const handleSubmit = async (data: SalonFormValues) => {
+    const success = await onSubmit(data);
+    if (success) {
+      form.reset();
+    }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-        <div className="bg-white p-6 rounded-lg border shadow-sm">
-          <SalonPostBasicInfo form={form} />
-          
-          <Separator className="my-8" />
-          
-          <SalonPostDescription form={form} />
-          
-          <Separator className="my-8" />
-          
-          <SalonPostPhotoUpload
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-          />
-          
-          <Separator className="my-8" />
-          
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
-            <h3 className="font-medium flex items-center mb-2">
-              <Check className="w-5 h-5 mr-2 text-blue-600" />
-              Tips for a Fast Sale
-            </h3>
-            <ul className="text-sm text-blue-700 space-y-1 pl-7 list-disc">
-              <li>Include clear photos of the salon interior and exterior</li>
-              <li>Be specific about revenue, equipment included, and lease terms</li>
-              <li>Highlight unique selling points like location or established clientele</li>
-              <li>Consider the "Fast Sale Package" for nationwide exposure</li>
-            </ul>
-          </div>
+    <Layout>
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center">
+                List Your Salon for Sale
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="salonName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Salon Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter salon name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Type *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="nails">Nail Salon</SelectItem>
+                            <SelectItem value="hair">Hair Salon</SelectItem>
+                            <SelectItem value="barbershop">Barbershop</SelectItem>
+                            <SelectItem value="spa">Spa & Wellness</SelectItem>
+                            <SelectItem value="beauty">Full Service Beauty</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="City, State" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description *</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Describe your salon, its features, and why it's a great opportunity"
+                            className="min-h-24"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="askingPrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Asking Price *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="$000,000" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <SalonPostPhotoUpload 
+                    photoUploads={photoUploads}
+                    setPhotoUploads={setPhotoUploads}
+                  />
+
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Publishing...' : 'Publish Salon Listing'}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
         </div>
-        
-        <div className="mt-8">
-          <Button type="submit" className="w-full">List Salon For Sale</Button>
-          <p className="text-center text-sm text-gray-500 mt-2">
-            Your listing will be active for 30 days
-          </p>
-        </div>
-      </form>
-    </Form>
+      </div>
+    </Layout>
   );
 };
+
+export default SalonPostForm;
