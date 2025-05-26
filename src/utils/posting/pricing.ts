@@ -45,22 +45,20 @@ export const calculatePricing = (
   // Base pricing per tier (monthly) for NON-DIAMOND tiers
   let basePrice = 0;
   
-  switch (selectedPricingTier) {
-    case 'free':
-      basePrice = 0;
-      break;
-    case 'gold':
-      basePrice = 19.99;
-      break;
-    case 'premium':
-      basePrice = 39.99;
-      break;
-    default:
-      basePrice = 19.99; // Default to gold
+  // Handle only non-diamond tiers
+  if (selectedPricingTier === 'free') {
+    basePrice = 0;
+  } else if (selectedPricingTier === 'gold') {
+    basePrice = 19.99;
+  } else if (selectedPricingTier === 'premium') {
+    basePrice = 39.99;
+  } else {
+    // Fallback for any other tier
+    basePrice = 19.99;
   }
   
-  // Free for first post if specified
-  if (isFirstPost && selectedPricingTier !== 'diamond') {
+  // Free for first post if specified (only for non-diamond tiers)
+  if (isFirstPost) {
     basePrice = 0;
   }
   
