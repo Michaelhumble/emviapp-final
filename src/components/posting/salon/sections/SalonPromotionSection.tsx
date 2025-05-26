@@ -1,11 +1,11 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { UseFormReturn } from "react-hook-form";
-import { FormField, FormItem, FormControl } from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Zap, Star, Crown, Eye, Users, Clock, TrendingUp } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Zap, Star, Crown, TrendingUp, Eye, Clock, Target } from "lucide-react";
 import { motion } from "framer-motion";
 import { EnhancedSalonFormValues } from "../enhancedSalonFormSchema";
 
@@ -19,7 +19,7 @@ const SalonPromotionSection = ({ form, onPromotionChange }: SalonPromotionSectio
   const featuredListing = form.watch("featuredListing");
   const diamondListing = form.watch("diamondListing");
 
-  useEffect(() => {
+  React.useEffect(() => {
     onPromotionChange({
       isUrgent: urgentSale,
       isFeatured: featuredListing,
@@ -27,307 +27,309 @@ const SalonPromotionSection = ({ form, onPromotionChange }: SalonPromotionSectio
     });
   }, [urgentSale, featuredListing, diamondListing, onPromotionChange]);
 
-  const getPrice = (base: number, discount: boolean = false) => {
-    return discount ? Math.round(base * 0.7) : base;
-  };
-
   return (
     <div className="space-y-8">
-      {/* Section Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-3">
-          <Crown className="h-8 w-8 text-purple-600" />
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Boost Your Listing
-          </h2>
-          <Crown className="h-8 w-8 text-purple-600" />
-        </div>
-        <p className="text-xl text-gray-600">
-          Get more views, faster offers, and higher sale prices
-        </p>
+      {/* FOMO Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-4"
+      >
+        <h2 className="text-3xl font-bold text-gray-900">🚀 Accelerate Your Sale</h2>
+        <p className="text-xl text-gray-600">Get maximum visibility and sell faster with our premium promotion options</p>
         
-        {/* FOMO Banner */}
-        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-full px-6 py-2 inline-block">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <Clock className="h-4 w-4" />
-            <span>Limited Time: 30% off all upgrades this week!</span>
+        <div className="flex items-center justify-center gap-8 text-sm">
+          <div className="flex items-center gap-2 text-green-600">
+            <TrendingUp className="h-4 w-4" />
+            <span>3x More Views</span>
+          </div>
+          <div className="flex items-center gap-2 text-blue-600">
+            <Eye className="h-4 w-4" />
+            <span>5x More Inquiries</span>
+          </div>
+          <div className="flex items-center gap-2 text-purple-600">
+            <Target className="h-4 w-4" />
+            <span>Sell 73% Faster</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Promotion Options */}
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Urgent Sale */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <Card className={`transition-all duration-300 ${
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <Card className={`p-6 cursor-pointer transition-all border-2 ${
             urgentSale 
-              ? "border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg" 
-              : "border border-gray-200 hover:border-amber-300 hover:shadow-md"
+              ? 'border-amber-400 bg-amber-50 shadow-lg' 
+              : 'border-gray-200 hover:border-amber-300'
           }`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center">
-                      <Zap className="h-6 w-6 text-white" />
-                    </div>
-                    {urgentSale && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-xl font-bold text-gray-900">Urgent Sale Badge</h3>
-                      <Badge className="bg-amber-500 text-white">
-                        <Zap className="h-3 w-3 mr-1" />
-                        Fast Track
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600">
-                      Show "URGENT SALE" badge • Top of search results • 3x more visibility
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
-                        <span>+200% views</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4" />
-                        <span>Sell 40% faster</span>
-                      </div>
-                    </div>
-                  </div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-white" />
                 </div>
-                
-                <div className="text-right space-y-2">
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500 line-through">${getPrice(99)}</div>
-                    <div className="text-2xl font-bold text-amber-600">${getPrice(99, true)}</div>
-                    <div className="text-xs text-green-600 font-medium">30% OFF</div>
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name="urgentSale"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="data-[state=checked]:bg-amber-500"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                <div>
+                  <h3 className="font-bold text-lg">Urgent Sale</h3>
+                  <p className="text-sm text-gray-600">Priority placement</p>
                 </div>
               </div>
-            </CardContent>
+              <FormField
+                control={form.control}
+                name="urgentSale"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                <Clock className="h-3 w-3 mr-1" />
+                Shows at Top
+              </Badge>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Displayed above all regular listings</li>
+                <li>• "URGENT" badge for immediate attention</li>
+                <li>• 2x more buyer views guaranteed</li>
+                <li>• Perfect for quick sales</li>
+              </ul>
+              <div className="pt-2 border-t">
+                <span className="text-2xl font-bold text-amber-600">+$15</span>
+                <span className="text-sm text-gray-500 ml-2">one-time</span>
+              </div>
+            </div>
           </Card>
         </motion.div>
 
         {/* Featured Listing */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <Card className={`transition-all duration-300 ${
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <Card className={`p-6 cursor-pointer transition-all border-2 relative ${
             featuredListing 
-              ? "border-2 border-purple-400 bg-gradient-to-r from-purple-50 to-pink-50 shadow-lg" 
-              : "border border-gray-200 hover:border-purple-300 hover:shadow-md"
+              ? 'border-blue-400 bg-blue-50 shadow-lg' 
+              : 'border-gray-200 hover:border-blue-300'
           }`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                      <Star className="h-6 w-6 text-white fill-current" />
-                    </div>
-                    {featuredListing && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-xl font-bold text-gray-900">Featured Listing</h3>
-                      <Badge className="bg-purple-500 text-white">
-                        <Star className="h-3 w-3 mr-1 fill-current" />
-                        Premium
-                      </Badge>
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
-                        Most Popular
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600">
-                      Golden border • Homepage showcase • Featured in emails • Priority placement
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        <span>+500% engagement</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4" />
-                        <span>Premium buyers</span>
-                      </div>
-                    </div>
-                  </div>
+            {featuredListing && (
+              <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 rounded-bl-lg rounded-tr-lg text-xs font-medium">
+                SELECTED
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                  <Star className="h-6 w-6 text-white" />
                 </div>
-                
-                <div className="text-right space-y-2">
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500 line-through">${getPrice(199)}</div>
-                    <div className="text-2xl font-bold text-purple-600">${getPrice(199, true)}</div>
-                    <div className="text-xs text-green-600 font-medium">30% OFF</div>
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name="featuredListing"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="data-[state=checked]:bg-purple-500"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                <div>
+                  <h3 className="font-bold text-lg">Featured Listing</h3>
+                  <p className="text-sm text-gray-600">Premium visibility</p>
                 </div>
               </div>
-            </CardContent>
+              <FormField
+                control={form.control}
+                name="featuredListing"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                  <Star className="h-3 w-3 mr-1" />
+                  Featured
+                </Badge>
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                  Most Popular
+                </Badge>
+              </div>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Highlighted with premium border</li>
+                <li>• Featured section placement</li>
+                <li>• 3x more buyer engagement</li>
+                <li>• Enhanced listing appearance</li>
+                <li>• Priority in search results</li>
+              </ul>
+              <div className="pt-2 border-t">
+                <span className="text-2xl font-bold text-blue-600">+$25</span>
+                <span className="text-sm text-gray-500 ml-2">one-time</span>
+              </div>
+            </div>
           </Card>
         </motion.div>
 
         {/* Diamond Listing */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <Card className={`transition-all duration-300 ${
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <Card className={`p-6 cursor-pointer transition-all border-2 relative ${
             diamondListing 
-              ? "border-2 border-blue-400 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg" 
-              : "border border-gray-200 hover:border-blue-300 hover:shadow-md"
+              ? 'border-purple-400 bg-gradient-to-br from-purple-50 to-pink-50 shadow-xl' 
+              : 'border-gray-200 hover:border-purple-300'
           }`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
-                      <Crown className="h-6 w-6 text-white" />
-                    </div>
-                    {diamondListing && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-xl font-bold text-gray-900">Diamond Confidential</h3>
-                      <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                        <Crown className="h-3 w-3 mr-1" />
-                        Ultra Exclusive
-                      </Badge>
-                      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300">
-                        Only 3 spots left
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600">
-                      Private listing • Pre-qualified buyers only • Personal concierge • NDA protection
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Crown className="h-4 w-4" />
-                        <span>VIP treatment</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span>Highest sale prices</span>
-                      </div>
-                    </div>
-                  </div>
+            <div className="absolute top-2 right-2">
+              <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                EXCLUSIVE
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                  <Crown className="h-6 w-6 text-white" />
                 </div>
-                
-                <div className="text-right space-y-2">
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500 line-through">${getPrice(499)}</div>
-                    <div className="text-2xl font-bold text-blue-600">${getPrice(499, true)}</div>
-                    <div className="text-xs text-green-600 font-medium">30% OFF</div>
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name="diamondListing"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="data-[state=checked]:bg-blue-600"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                <div>
+                  <h3 className="font-bold text-lg">Diamond VIP</h3>
+                  <p className="text-sm text-gray-600">Ultimate exposure</p>
                 </div>
               </div>
-            </CardContent>
+              <FormField
+                control={form.control}
+                name="diamondListing"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                  <Crown className="h-3 w-3 mr-1" />
+                  VIP
+                </Badge>
+                <Badge variant="secondary" className="bg-red-100 text-red-700">
+                  Only 3 spots left!
+                </Badge>
+              </div>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Top banner placement</li>
+                <li>• Premium gradient styling</li>
+                <li>• Personal buyer concierge</li>
+                <li>• 5x more qualified leads</li>
+                <li>• Social media promotion</li>
+                <li>• Weekly performance reports</li>
+              </ul>
+              <div className="pt-2 border-t">
+                <span className="text-2xl font-bold text-purple-600">+$49</span>
+                <span className="text-sm text-gray-500 ml-2">one-time</span>
+              </div>
+            </div>
           </Card>
         </motion.div>
       </div>
 
-      {/* Social Proof & Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-700 mb-1">94%</div>
-            <div className="text-sm text-green-600">Featured listings sell</div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-700 mb-1">45 Days</div>
-            <div className="text-sm text-blue-600">Average sale time</div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-700 mb-1">$50M+</div>
-            <div className="text-sm text-purple-600">In successful sales</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Success Story */}
-      <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
-        <CardContent className="p-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <Star className="h-5 w-5 text-amber-600 fill-current" />
-              <h4 className="font-semibold text-amber-900">Success Story</h4>
-              <Star className="h-5 w-5 text-amber-600 fill-current" />
+      {/* Selected Promotions Summary */}
+      {(urgentSale || featuredListing || diamondListing) && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6"
+        >
+          <h4 className="font-bold text-green-800 text-lg mb-4">🎉 Your Promotion Package</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h5 className="font-semibold text-green-700 mb-3">Selected Upgrades:</h5>
+              <div className="space-y-2">
+                {urgentSale && (
+                  <div className="flex items-center justify-between bg-white/70 rounded-lg p-3">
+                    <span className="flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-amber-500" />
+                      <span className="font-medium">Urgent Sale</span>
+                    </span>
+                    <span className="font-bold text-amber-600">+$15</span>
+                  </div>
+                )}
+                {featuredListing && (
+                  <div className="flex items-center justify-between bg-white/70 rounded-lg p-3">
+                    <span className="flex items-center gap-2">
+                      <Star className="h-4 w-4 text-blue-500" />
+                      <span className="font-medium">Featured Listing</span>
+                    </span>
+                    <span className="font-bold text-blue-600">+$25</span>
+                  </div>
+                )}
+                {diamondListing && (
+                  <div className="flex items-center justify-between bg-white/70 rounded-lg p-3">
+                    <span className="flex items-center gap-2">
+                      <Crown className="h-4 w-4 text-purple-500" />
+                      <span className="font-medium">Diamond VIP</span>
+                    </span>
+                    <span className="font-bold text-purple-600">+$49</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <p className="text-amber-800 italic">
-              "I went with the Diamond package and got 8 serious offers in 3 weeks. 
-              Sold for $15K above asking price!" - Jennifer L., Miami
-            </p>
+            
+            <div>
+              <h5 className="font-semibold text-green-700 mb-3">Expected Results:</h5>
+              <ul className="text-green-600 space-y-2 text-sm">
+                <li className="flex items-center gap-2">
+                  <Eye className="h-4 w-4" />
+                  <span>
+                    {diamondListing ? '10x' : featuredListing ? '5x' : urgentSale ? '3x' : '2x'} more buyer views
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>
+                    Sell {diamondListing ? '85%' : featuredListing ? '73%' : '45%'} faster than basic listings
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  <span>Higher quality, more serious buyer inquiries</span>
+                </li>
+              </ul>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </motion.div>
+      )}
+
+      {/* Success Stories */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-2xl p-6"
+      >
+        <h4 className="font-semibold text-blue-800 mb-4">✨ Success Stories</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+          <div className="bg-white/70 rounded-xl p-4">
+            <p className="text-blue-700 italic leading-relaxed">
+              "I used the Featured Listing option and had 8 serious inquiries within the first week. 
+              Sold for full asking price in just 18 days!"
+            </p>
+            <p className="text-blue-600 font-medium mt-2">- Maria S., Nail Salon Owner</p>
+          </div>
+          <div className="bg-white/70 rounded-xl p-4">
+            <p className="text-blue-700 italic leading-relaxed">
+              "Diamond VIP was worth every penny. The personal concierge found me the perfect buyer 
+              who appreciated my team and paid 15% above asking!"
+            </p>
+            <p className="text-blue-600 font-medium mt-2">- James L., Hair & Beauty Studio</p>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };

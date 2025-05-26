@@ -5,115 +5,128 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Users, Heart, CheckCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, X, Package, Users, Heart, Star } from "lucide-react";
+import { motion } from "framer-motion";
 import { EnhancedSalonFormValues } from "../enhancedSalonFormSchema";
 
 interface SalonAssetsSectionProps {
   form: UseFormReturn<EnhancedSalonFormValues>;
 }
 
-const equipmentOptions = [
-  "Nail stations & chairs",
-  "Pedicure chairs & tubs",
-  "Manicure tables",
-  "UV/LED lamps",
-  "Autoclave sterilizer",
-  "Ventilation system",
-  "Cash register/POS system",
-  "Waiting area furniture",
-  "Massage chairs",
-  "Hair styling stations",
-  "Shampoo bowls",
-  "Hair dryers",
-  "Waxing beds",
-  "Facial steamers",
-  "Reception desk",
-  "Retail display shelves",
-  "Sound system",
-  "Security system",
-  "Towel warmers",
-  "Storage cabinets"
+const commonEquipment = [
+  "Nail Stations", "Pedicure Chairs", "UV Lamps", "Sterilizers", 
+  "Reception Desk", "POS System", "Manicure Tables", "Storage Cabinets",
+  "Ventilation System", "Massage Chairs", "Waxing Equipment", "Hair Stations"
 ];
 
 const SalonAssetsSection = ({ form }: SalonAssetsSectionProps) => {
-  const includedEquipment = form.watch("includedEquipment");
+  const includedEquipment = form.watch("includedEquipment") || [];
   const teamStays = form.watch("teamStays");
 
-  const handleEquipmentChange = (equipment: string, checked: boolean) => {
-    const currentEquipment = includedEquipment || [];
-    if (checked) {
-      form.setValue("includedEquipment", [...currentEquipment, equipment]);
-    } else {
-      form.setValue("includedEquipment", currentEquipment.filter(item => item !== equipment));
-    }
+  const toggleEquipment = (equipment: string) => {
+    const current = includedEquipment;
+    const updated = current.includes(equipment)
+      ? current.filter(item => item !== equipment)
+      : [...current, equipment];
+    form.setValue("includedEquipment", updated);
   };
 
   return (
     <div className="space-y-8">
+      {/* Value Proposition */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6"
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <Package className="h-6 w-6 text-amber-500" />
+          <h3 className="font-bold text-amber-800 text-lg">Maximize Your Sale Value</h3>
+        </div>
+        <p className="text-amber-700 leading-relaxed">
+          Included equipment and an experienced team significantly increase your salon's value. 
+          Buyers pay premium for turn-key operations that can start generating revenue immediately.
+        </p>
+      </motion.div>
+
       {/* Equipment Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <Wrench className="h-6 w-6 text-orange-600" />
-          <h3 className="text-xl font-semibold">Included Equipment & Assets</h3>
-          <Badge variant="outline" className="bg-orange-50 text-orange-700">
-            Adds Value
-          </Badge>
+          <Package className="h-6 w-6 text-blue-500" />
+          <div>
+            <h3 className="text-xl font-semibold">Included Equipment & Assets</h3>
+            <p className="text-gray-600">Select all equipment and assets included in the sale</p>
+          </div>
         </div>
 
-        <Card className="bg-gray-50 border-2 border-dashed border-gray-300">
-          <CardContent className="p-6">
-            <div className="mb-4">
-              <h4 className="font-semibold mb-2">Select all equipment included in the sale:</h4>
-              <p className="text-sm text-gray-600">Check everything that comes with the salon</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {equipmentOptions.map((equipment) => (
-                <div key={equipment} className="flex items-center space-x-3">
-                  <Checkbox
-                    id={equipment}
-                    checked={includedEquipment?.includes(equipment) || false}
-                    onCheckedChange={(checked) => 
-                      handleEquipmentChange(equipment, checked as boolean)
-                    }
-                  />
-                  <label
-                    htmlFor={equipment}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                  >
-                    {equipment}
-                  </label>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {commonEquipment.map((equipment) => (
+            <motion.div
+              key={equipment}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                includedEquipment.includes(equipment)
+                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => toggleEquipment(equipment)}
+            >
+              <div className="flex items-center space-x-2">
+                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                  includedEquipment.includes(equipment) 
+                    ? 'border-blue-500 bg-blue-500' 
+                    : 'border-gray-300'
+                }`}>
+                  {includedEquipment.includes(equipment) && (
+                    <div className="w-2 h-2 bg-white rounded-sm" />
+                  )}
                 </div>
+                <span className="text-sm font-medium">{equipment}</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Selected Equipment Summary */}
+        {includedEquipment.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="bg-blue-50 rounded-xl p-4 border border-blue-200"
+          >
+            <h4 className="font-semibold text-blue-800 mb-2">
+              Selected Equipment ({includedEquipment.length} items)
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {includedEquipment.map((equipment) => (
+                <Badge key={equipment} variant="secondary" className="bg-blue-100 text-blue-700">
+                  {equipment}
+                  <button
+                    type="button"
+                    onClick={() => toggleEquipment(equipment)}
+                    className="ml-2 hover:bg-blue-200 rounded-full p-1"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
               ))}
             </div>
-
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                <div>
-                  <h5 className="font-medium text-green-900 mb-1">💰 Equipment Value Tip</h5>
-                  <p className="text-sm text-green-800">
-                    Listing specific equipment can add $10,000-$50,000 to your salon's value. 
-                    Be detailed about premium items like massage chairs, high-end nail stations, or newer equipment.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </motion.div>
+        )}
       </div>
 
       {/* Team Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <Users className="h-6 w-6 text-blue-600" />
-          <h3 className="text-xl font-semibold">Team & Staff</h3>
-          <Badge variant="outline" className="bg-blue-50 text-blue-700">
-            Continuity Advantage
-          </Badge>
+          <Users className="h-6 w-6 text-purple-500" />
+          <div>
+            <h3 className="text-xl font-semibold">Your Team</h3>
+            <p className="text-gray-600">Information about your staff and their future with the salon</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -122,123 +135,133 @@ const SalonAssetsSection = ({ form }: SalonAssetsSectionProps) => {
             name="teamSize"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base font-semibold">Current Team Size</FormLabel>
+                <FormLabel className="text-base font-semibold">Team Size</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="8 nail technicians, 2 receptionists"
-                    className="h-12 border-2 focus:border-blue-500"
+                    placeholder="8 staff members"
+                    className="h-12 border-2 focus:border-purple-500"
                     {...field}
                   />
                 </FormControl>
-                <p className="text-sm text-gray-600">Number and types of staff currently employed</p>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="space-y-4">
-            <FormLabel className="text-base font-semibold">Team Transition</FormLabel>
-            <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center gap-3">
-                <Heart className="h-5 w-5 text-blue-600" />
-                <div>
-                  <h4 className="font-semibold text-blue-900">Team Stays with New Owner</h4>
-                  <p className="text-sm text-blue-700">
-                    {teamStays ? "Team committed to staying" : "Team transition to be discussed"}
-                  </p>
-                </div>
-              </div>
-              <FormField
-                control={form.control}
-                name="teamStays"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-200">
+            <div>
+              <h4 className="font-semibold text-purple-800">Team Staying with Business?</h4>
+              <p className="text-sm text-purple-600">This greatly increases sale value</p>
             </div>
+            <FormField
+              control={form.control}
+              name="teamStays"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 
+        {/* Team Bios */}
         <FormField
           control={form.control}
           name="staffBios"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-base font-semibold">Staff Overview (Optional)</FormLabel>
+              <FormLabel className="text-base font-semibold flex items-center gap-2">
+                <Heart className="h-5 w-5 text-red-500" />
+                Team Member Highlights (Optional)
+              </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Brief description of your team's experience, specialties, and what makes them special. This helps buyers understand the human value of your salon..."
-                  className="min-h-24 border-2 focus:border-blue-500"
+                  placeholder="Tell buyers about your amazing team... Years of experience, specialties, client relationships, awards, or any standout qualities that make your team special."
+                  className="min-h-32 border-2 focus:border-purple-500"
                   {...field}
                 />
               </FormControl>
-              <p className="text-sm text-gray-600">
-                Highlight your team's skills, experience, and client relationships
+              <p className="text-sm text-purple-600">
+                💡 Highlighting talented team members can increase your salon's value by 15-25%
               </p>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <Heart className="h-5 w-5 text-purple-600" />
-                <h4 className="font-semibold text-purple-900">Team Continuity = Higher Value</h4>
+        {/* Team Stays Benefits */}
+        {teamStays && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="bg-green-50 rounded-xl p-6 border border-green-200"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <Star className="h-5 w-5 text-green-500" />
+              <h4 className="font-semibold text-green-800">Incredible Value Add! 🎉</h4>
+            </div>
+            <p className="text-green-700 mb-4">
+              Having your team stay with the business is a huge selling point that buyers love!
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <h5 className="font-medium text-green-700 mb-2">Benefits for Buyer:</h5>
+                <ul className="text-green-600 space-y-1">
+                  <li>• No hiring and training costs</li>
+                  <li>• Immediate revenue generation</li>
+                  <li>• Retained client relationships</li>
+                  <li>• Proven team chemistry</li>
+                </ul>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="bg-white p-3 rounded-lg">
-                  <div className="font-semibold text-purple-900 mb-1">Experienced Team</div>
-                  <div className="text-purple-700">Reduces training time and maintains quality</div>
-                </div>
-                <div className="bg-white p-3 rounded-lg">
-                  <div className="font-semibold text-purple-900 mb-1">Client Relationships</div>
-                  <div className="text-purple-700">Existing clients follow their favorite technicians</div>
-                </div>
+              <div>
+                <h5 className="font-medium text-green-700 mb-2">Value Impact:</h5>
+                <ul className="text-green-600 space-y-1">
+                  <li>• 20-30% higher sale price</li>
+                  <li>• Faster sale completion</li>
+                  <li>• More buyer interest</li>
+                  <li>• Reduced buyer risk</li>
+                </ul>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </motion.div>
+        )}
       </div>
 
-      {/* Value Summary */}
-      {(includedEquipment?.length > 0 || teamStays) && (
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <CheckCircle className="h-6 w-6 text-green-600" />
-              <h4 className="text-lg font-semibold text-green-900">Assets Summary</h4>
-            </div>
-            
-            <div className="space-y-3">
-              {includedEquipment?.length > 0 && (
-                <div>
-                  <span className="font-medium text-green-800">Equipment Included: </span>
-                  <span className="text-green-700">{includedEquipment.length} items selected</span>
-                </div>
-              )}
-              {teamStays && (
-                <div>
-                  <span className="font-medium text-green-800">Team Continuity: </span>
-                  <span className="text-green-700">Staff committed to staying</span>
-                </div>
-              )}
-            </div>
-            
-            <p className="text-sm text-green-600 mt-3 italic">
-              These assets significantly increase your salon's attractiveness to buyers!
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Asset Valuation Tip */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-2xl p-6"
+      >
+        <h4 className="font-semibold text-gray-800 mb-3">💰 Asset Valuation Pro Tips</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <h5 className="font-medium text-gray-700 mb-2">Equipment Documentation:</h5>
+            <ul className="text-gray-600 space-y-1">
+              <li>• Take photos of all equipment</li>
+              <li>• Note purchase dates and warranties</li>
+              <li>• Highlight recent upgrades</li>
+              <li>• Include maintenance records</li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="font-medium text-gray-700 mb-2">Team Transition:</h5>
+            <ul className="text-gray-600 space-y-1">
+              <li>• Get team commitment in writing</li>
+              <li>• Highlight long-term employees</li>
+              <li>• Document certifications/licenses</li>
+              <li>• Show client-stylist relationships</li>
+            </ul>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };

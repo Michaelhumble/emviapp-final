@@ -4,15 +4,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, ChevronLeft, Star, Zap, Crown, Shield, CheckCircle } from "lucide-react";
 import { enhancedSalonFormSchema, type EnhancedSalonFormValues } from "./enhancedSalonFormSchema";
-import { Sparkles, Crown, Zap, Eye, Lock, TrendingUp } from "lucide-react";
-
-// Import section components
 import SalonIdentitySection from "./sections/SalonIdentitySection";
 import SalonLocationSection from "./sections/SalonLocationSection";
 import SalonPhotosSection from "./sections/SalonPhotosSection";
@@ -21,6 +18,7 @@ import SalonPerformanceSection from "./sections/SalonPerformanceSection";
 import SalonAssetsSection from "./sections/SalonAssetsSection";
 import SalonPromotionSection from "./sections/SalonPromotionSection";
 import SalonContactSection from "./sections/SalonContactSection";
+import SalonConfirmationSection from "./sections/SalonConfirmationSection";
 
 interface EnhancedSalonPostFormProps {
   onSubmit: (values: EnhancedSalonFormValues) => Promise<boolean>;
@@ -30,25 +28,26 @@ interface EnhancedSalonPostFormProps {
 }
 
 const sections = [
-  { id: 'identity', title: 'Salon Identity', icon: Sparkles, description: 'Name, type & branding' },
-  { id: 'location', title: 'Location', icon: Eye, description: 'Address & neighborhood' },
-  { id: 'photos', title: 'Photos & Videos', icon: TrendingUp, description: 'Visual showcase' },
-  { id: 'about', title: 'Your Story', icon: Crown, description: 'What makes you special' },
-  { id: 'performance', title: 'Business Performance', icon: Zap, description: 'Revenue & metrics' },
-  { id: 'assets', title: 'Assets & Team', icon: Lock, description: 'Equipment & staff' },
-  { id: 'promotion', title: 'Promotion Options', icon: Crown, description: 'Boost visibility' },
-  { id: 'contact', title: 'Contact & Privacy', icon: Lock, description: 'How buyers reach you' }
+  { id: 'identity', title: 'Salon Identity', icon: '🏪' },
+  { id: 'location', title: 'Location', icon: '📍' },
+  { id: 'photos', title: 'Photos & Video', icon: '📸' },
+  { id: 'about', title: 'Your Story', icon: '💝' },
+  { id: 'performance', title: 'Performance', icon: '📊' },
+  { id: 'assets', title: 'Assets & Team', icon: '👥' },
+  { id: 'promotion', title: 'Boost Your Sale', icon: '🚀' },
+  { id: 'contact', title: 'Contact & Privacy', icon: '🔒' },
+  { id: 'confirmation', title: 'Go Live!', icon: '✨' }
 ];
 
 export const EnhancedSalonPostForm = ({ 
   onSubmit, 
   photoUploads, 
   setPhotoUploads,
-  onPromotionChange 
+  onPromotionChange
 }: EnhancedSalonPostFormProps) => {
-  const [currentSection, setCurrentSection] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [completedSections, setCompletedSections] = useState<Set<number>>(new Set());
+  const [isComplete, setIsComplete] = useState(false);
 
   const form = useForm<EnhancedSalonFormValues>({
     resolver: zodResolver(enhancedSalonFormSchema),
@@ -87,42 +86,30 @@ export const EnhancedSalonPostForm = ({
     },
   });
 
-  const progress = ((currentSection + 1) / sections.length) * 100;
+  const progress = ((currentStep + 1) / sections.length) * 100;
 
   const handleNext = async () => {
-    const currentSectionId = sections[currentSection].id;
-    const isValid = await form.trigger();
-    
-    if (isValid) {
-      setCompletedSections(prev => new Set([...prev, currentSection]));
-      if (currentSection < sections.length - 1) {
-        setCurrentSection(currentSection + 1);
+    if (currentStep === sections.length - 1) {
+      setIsSubmitting(true);
+      try {
+        const result = await onSubmit(form.getValues());
+        if (result) {
+          setIsComplete(true);
+        }
+      } finally {
+        setIsSubmitting(false);
       }
+    } else {
+      setCurrentStep(prev => Math.min(prev + 1, sections.length - 1));
     }
   };
 
   const handlePrevious = () => {
-    if (currentSection > 0) {
-      setCurrentSection(currentSection - 1);
-    }
-  };
-
-  const handleFormSubmit = async (values: EnhancedSalonFormValues) => {
-    setIsSubmitting(true);
-    try {
-      const success = await onSubmit(values);
-      if (success) {
-        // Handle success - maybe show confetti or redirect
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    setCurrentStep(prev => Math.max(prev - 1, 0));
   };
 
   const renderCurrentSection = () => {
-    const sectionId = sections[currentSection].id;
-    
-    switch (sectionId) {
+    switch (sections[currentStep].id) {
       case 'identity':
         return <SalonIdentitySection form={form} />;
       case 'location':
@@ -139,155 +126,181 @@ export const EnhancedSalonPostForm = ({
         return <SalonPromotionSection form={form} onPromotionChange={onPromotionChange} />;
       case 'contact':
         return <SalonContactSection form={form} />;
+      case 'confirmation':
+        return <SalonConfirmationSection form={form} isComplete={isComplete} />;
       default:
         return null;
     }
   };
 
+  if (isComplete) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50"
+      >
+        <Card className="max-w-2xl mx-auto p-8 text-center bg-white/80 backdrop-blur-lg border-0 shadow-2xl">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring" }}
+          >
+            <CheckCircle className="h-24 w-24 text-green-500 mx-auto mb-6" />
+          </motion.div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">🎉 Your Salon is Live!</h1>
+          <p className="text-xl text-gray-600 mb-8">Congratulations! Your salon listing is now visible to thousands of potential buyers.</p>
+          <div className="space-y-4">
+            <Button size="lg" className="w-full">View My Listing</Button>
+            <Button variant="outline" size="lg" className="w-full">Share with Friends</Button>
+          </div>
+        </Card>
+      </motion.div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      {/* FOMO Header */}
-      <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-center py-3">
-        <div className="flex items-center justify-center gap-2 text-sm font-medium">
-          <Crown className="h-4 w-4" />
-          <span>Only 3 Diamond slots left this month • 127 salons upgraded this week</span>
-          <Crown className="h-4 w-4" />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
+      {/* Header with Progress */}
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-purple-100">
+        <div className="container max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">List Your Salon for Sale</h1>
+              <p className="text-gray-600">Step {currentStep + 1} of {sections.length}</p>
+            </div>
+            <Badge variant="secondary" className="bg-purple-100 text-purple-700 px-4 py-2">
+              <Crown className="h-4 w-4 mr-2" />
+              Premium Experience
+            </Badge>
+          </div>
+          <Progress value={progress} className="h-2 bg-purple-100" />
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            List Your Salon for Sale
-          </h1>
-          <p className="text-xl text-gray-600 mb-6">
-            Join 500+ successful salon owners who sold with EmviApp
-          </p>
-          
-          {/* Progress Bar */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-500">Step {currentSection + 1} of {sections.length}</span>
-              <span className="text-sm text-gray-500">{Math.round(progress)}% Complete</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-
-          {/* Section Navigation */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {sections.map((section, index) => {
-              const Icon = section.icon;
-              const isCompleted = completedSections.has(index);
-              const isCurrent = index === currentSection;
-              
-              return (
-                <Badge
-                  key={section.id}
-                  variant={isCurrent ? "default" : isCompleted ? "secondary" : "outline"}
-                  className={`cursor-pointer transition-all ${
-                    isCurrent ? "bg-purple-600 text-white" : 
-                    isCompleted ? "bg-green-100 text-green-700" : 
-                    "hover:bg-gray-100"
+      {/* Step Navigation */}
+      <div className="container max-w-4xl mx-auto px-6 py-6">
+        <div className="flex items-center justify-center mb-8 overflow-x-auto">
+          <div className="flex items-center space-x-2">
+            {sections.map((section, index) => (
+              <motion.div
+                key={section.id}
+                className={`flex items-center ${index < sections.length - 1 ? 'mr-4' : ''}`}
+                whileHover={{ scale: 1.05 }}
+              >
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                    index === currentStep
+                      ? 'bg-purple-600 text-white shadow-lg'
+                      : index < currentStep
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-200 text-gray-500'
                   }`}
-                  onClick={() => setCurrentSection(index)}
                 >
-                  <Icon className="h-3 w-3 mr-1" />
-                  {section.title}
-                </Badge>
-              );
-            })}
+                  {index < currentStep ? (
+                    <CheckCircle className="h-5 w-5" />
+                  ) : (
+                    <span>{section.icon}</span>
+                  )}
+                </div>
+                {index < sections.length - 1 && (
+                  <div className={`w-8 h-0.5 mx-2 ${index < currentStep ? 'bg-green-500' : 'bg-gray-200'}`} />
+                )}
+              </motion.div>
+            ))}
           </div>
         </div>
 
+        {/* Current Section Title */}
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
+        >
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            {sections[currentStep].icon} {sections[currentStep].title}
+          </h2>
+          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full" />
+        </motion.div>
+
+        {/* Form Content */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-            {/* Current Section Card */}
-            <motion.div
-              key={currentSection}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="p-8 bg-white/80 backdrop-blur-sm border-2 border-purple-100 shadow-xl">
-                <div className="mb-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    {React.createElement(sections[currentSection].icon, { 
-                      className: "h-6 w-6 text-purple-600" 
-                    })}
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      {sections[currentSection].title}
-                    </h2>
-                  </div>
-                  <p className="text-gray-600">{sections[currentSection].description}</p>
-                </div>
-
-                <Separator className="mb-8" />
-
-                {/* Render Current Section */}
-                <AnimatePresence mode="wait">
-                  {renderCurrentSection()}
-                </AnimatePresence>
-              </Card>
-            </motion.div>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between items-center">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePrevious}
-                disabled={currentSection === 0}
-                className="px-8"
-              >
-                Previous
-              </Button>
-
-              <div className="flex gap-4">
-                {currentSection < sections.length - 1 ? (
-                  <Button
-                    type="button"
-                    onClick={handleNext}
-                    className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  >
-                    Continue
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-8 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                  >
-                    {isSubmitting ? "Creating Listing..." : "Launch Your Listing"}
-                  </Button>
-                )}
-              </div>
-            </div>
-          </form>
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="bg-white/80 backdrop-blur-lg border-0 shadow-xl p-8">
+              {renderCurrentSection()}
+            </Card>
+          </motion.div>
         </Form>
 
+        {/* Navigation Buttons */}
+        <div className="flex items-center justify-between mt-8">
+          <Button
+            variant="outline"
+            onClick={handlePrevious}
+            disabled={currentStep === 0}
+            className="flex items-center space-x-2"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span>Previous</span>
+          </Button>
+
+          <div className="flex items-center space-x-4">
+            {currentStep === sections.length - 2 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center space-x-2 text-amber-600"
+              >
+                <Zap className="h-5 w-5" />
+                <span className="font-medium">Almost there!</span>
+              </motion.div>
+            )}
+            
+            <Button
+              onClick={handleNext}
+              disabled={isSubmitting}
+              className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            >
+              <span>
+                {currentStep === sections.length - 1 
+                  ? isSubmitting ? 'Publishing...' : 'Publish Listing'
+                  : 'Continue'
+                }
+              </span>
+              {currentStep !== sections.length - 1 && <ChevronRight className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+
         {/* Trust Indicators */}
-        <div className="mt-12 text-center">
-          <div className="flex flex-wrap justify-center gap-8 mb-6">
-            <div className="flex items-center gap-2 text-gray-600">
-              <Lock className="h-4 w-4" />
-              <span className="text-sm">Secure & Confidential</span>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-12 text-center"
+        >
+          <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-4 w-4" />
+              <span>Secure & Private</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Crown className="h-4 w-4" />
-              <span className="text-sm">Premium Marketplace</span>
+            <div className="flex items-center space-x-2">
+              <Star className="h-4 w-4" />
+              <span>Trusted by 10,000+ Salon Owners</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-sm">Avg. Sale Time: 45 Days</span>
+            <div className="flex items-center space-x-2">
+              <Zap className="h-4 w-4" />
+              <span>Average Sale in 30 Days</span>
             </div>
           </div>
-          
-          <p className="text-sm text-gray-500">
-            Trusted by 500+ salon owners • $50M+ in successful sales
-          </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
