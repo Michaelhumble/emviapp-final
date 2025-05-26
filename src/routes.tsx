@@ -8,6 +8,7 @@ import ArtistProfile from '@/pages/ArtistProfile';
 import SalonDetail from '@/pages/SalonDetail';
 import BookingConfirmation from '@/pages/BookingConfirmation';
 import BookingSuccess from '@/pages/BookingSuccess';
+import SalonListingSuccess from '@/pages/SalonListingSuccess';
 import Contact from '@/pages/Contact';
 import About from '@/pages/About';
 import Terms from '@/pages/Terms';
@@ -47,6 +48,10 @@ const routes = [
   {
     path: '/booking/success',
     element: <BookingSuccess />,
+  },
+  {
+    path: '/salon-listing-success',
+    element: <SalonListingSuccess />,
   },
   {
     path: '/contact',

@@ -1,111 +1,210 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
+  CheckCircle, 
+  ArrowLeft, 
+  Edit3, 
   MapPin, 
-  Building2, 
   DollarSign, 
-  Camera, 
-  Edit, 
-  Eye, 
-  Star,
-  Calendar,
-  Globe,
-  Shield
+  Camera,
+  Building2,
+  Loader2,
+  AlertCircle,
+  Star
 } from "lucide-react";
 import { SalonFormValues } from "./salonFormSchema";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { showSuccessToast, showErrorToast } from "@/utils/toastUtils";
 
 interface SalonReviewSectionProps {
   form: UseFormReturn<SalonFormValues>;
-  onEdit: (step: number) => void;
-  confirmed: boolean;
-  setConfirmed: (confirmed: boolean) => void;
+  onBack: () => void;
+  onEditStep: (step: number) => void;
 }
 
-export const SalonReviewSection = ({ 
-  form, 
-  onEdit, 
-  confirmed, 
-  setConfirmed 
-}: SalonReviewSectionProps) => {
+export const SalonReviewSection = ({ form, onBack, onEditStep }: SalonReviewSectionProps) => {
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  
   const formData = form.getValues();
 
+  const validateAllData = (): boolean => {
+    const result = form.trigger();
+    return result as boolean;
+  };
+
+  const submitListing = async () => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+
+      // Final validation
+      const isValid = await validateAllData();
+      if (!isValid) {
+        throw new Error("Please fix all validation errors before submitting.");
+      }
+
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("You must be logged in to submit a listing.");
+      }
+
+      // Prepare salon data for submission
+      const salonData = {
+        user_id: user.id,
+        salon_name: formData.salonName,
+        business_type: formData.businessType,
+        city: formData.city,
+        state: formData.state,
+        asking_price: parseFloat(formData.askingPrice),
+        description: formData.salonDescription,
+        is_urgent: false,
+        is_private: formData.hideAddressFromPublic,
+        status: 'active'
+      };
+
+      // Submit to salon_sales table
+      const { data: salonSale, error: salonError } = await supabase
+        .from('salon_sales')
+        .insert([salonData])
+        .select()
+        .single();
+
+      if (salonError) {
+        throw new Error(`Failed to create salon listing: ${salonError.message}`);
+      }
+
+      // Upload photos if any
+      if (formData.photos && formData.photos.length > 0) {
+        for (let i = 0; i < formData.photos.length; i++) {
+          const photo = formData.photos[i];
+          if (photo instanceof File) {
+            // Upload photo to storage
+            const fileName = `${salonSale.id}/photo-${i}-${Date.now()}.${photo.name.split('.').pop()}`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from('salon_photos')
+              .upload(fileName, photo);
+
+            if (uploadError) {
+              console.error('Photo upload error:', uploadError);
+              continue; // Continue with other photos if one fails
+            }
+
+            // Get public URL
+            const { data: urlData } = supabase.storage
+              .from('salon_photos')
+              .getPublicUrl(fileName);
+
+            // Save photo record
+            await supabase
+              .from('salon_sale_photos')
+              .insert([{
+                salon_sale_id: salonSale.id,
+                photo_url: urlData.publicUrl,
+                order_number: i
+              }]);
+          }
+        }
+      }
+
+      // Analytics event
+      console.log('Analytics: listing_submitted', {
+        listing_id: salonSale.id,
+        business_type: formData.businessType,
+        asking_price: formData.askingPrice,
+        location: `${formData.city}, ${formData.state}`
+      });
+
+      // Success - redirect to success page
+      showSuccessToast("Salon listing submitted successfully!");
+      navigate('/salon-listing-success');
+
+    } catch (err) {
+      console.error('Submission error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+      setError(errorMessage);
+      showErrorToast("Failed to submit listing", errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const formatPrice = (price: string) => {
-    const numPrice = parseFloat(price);
+    const num = parseFloat(price);
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(numPrice);
+      maximumFractionDigits: 0
+    }).format(num);
   };
 
   return (
     <div className="space-y-8">
       <div className="text-center space-y-3">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 mb-4">
-          <Eye className="w-8 h-8 text-green-600" />
+          <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
-        <h2 className="text-3xl font-playfair font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-playfair font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
           Review & Confirm
         </h2>
         <p className="text-gray-600 max-w-md mx-auto">
-          Please review all your listing details carefully before publishing
+          Please review all information before submitting your salon listing
         </p>
       </div>
 
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+          <div>
+            <h4 className="font-medium text-red-800">Submission Error</h4>
+            <p className="text-red-700 text-sm mt-1">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Review Cards */}
       <div className="space-y-6">
-        {/* Salon Identity Section */}
-        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-playfair">
-              <Building2 className="w-5 h-5 text-purple-600" />
-              Salon Identity
-            </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onEdit(1)}
-              className="flex items-center gap-1"
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Identity Section */}
+        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-purple-600" />
+                <h3 className="text-lg font-semibold text-gray-800">Salon Identity</h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditStep(1)}
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+              >
+                <Edit3 className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+            </div>
+            <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">Salon Name</label>
-                <p className="text-lg font-semibold text-gray-900">{formData.salonName}</p>
+                <span className="font-medium text-gray-700">Salon Name: </span>
+                <span className="text-gray-900">{formData.salonName}</span>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Business Type</label>
-                <Badge variant="secondary" className="mt-1">{formData.businessType}</Badge>
+                <span className="font-medium text-gray-700">Business Type: </span>
+                <span className="text-gray-900">{formData.businessType}</span>
               </div>
               {formData.establishedYear && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Established</label>
-                  <p className="flex items-center gap-1 text-gray-900">
-                    <Calendar className="w-4 h-4" />
-                    {formData.establishedYear}
-                  </p>
-                </div>
-              )}
-              {formData.logo && (
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Logo</label>
-                  <div className="mt-1 w-16 h-16 rounded-lg border overflow-hidden bg-gray-100">
-                    <img 
-                      src={URL.createObjectURL(formData.logo)} 
-                      alt="Logo preview" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <span className="font-medium text-gray-700">Established: </span>
+                  <span className="text-gray-900">{formData.establishedYear}</span>
                 </div>
               )}
             </div>
@@ -113,191 +212,187 @@ export const SalonReviewSection = ({
         </Card>
 
         {/* Location Section */}
-        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-playfair">
-              <MapPin className="w-5 h-5 text-blue-600" />
-              Location
-            </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onEdit(2)}
-              className="flex items-center gap-1"
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-700">Address</label>
-                <p className="text-gray-900">{formData.address}</p>
+        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-purple-600" />
+                <h3 className="text-lg font-semibold text-gray-800">Location</h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditStep(2)}
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+              >
+                <Edit3 className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <span className="font-medium text-gray-700">Address: </span>
+                <span className="text-gray-900">{formData.address}</span>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">City</label>
-                <p className="text-gray-900">{formData.city}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">State</label>
-                <p className="text-gray-900">{formData.state}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">ZIP Code</label>
-                <p className="text-gray-900">{formData.zipCode}</p>
+                <span className="font-medium text-gray-700">City, State ZIP: </span>
+                <span className="text-gray-900">{formData.city}, {formData.state} {formData.zipCode}</span>
               </div>
               {formData.neighborhood && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Neighborhood</label>
-                  <p className="text-gray-900">{formData.neighborhood}</p>
+                  <span className="font-medium text-gray-700">Neighborhood: </span>
+                  <span className="text-gray-900">{formData.neighborhood}</span>
                 </div>
               )}
-              {formData.hideAddressFromPublic && (
-                <div className="md:col-span-2">
-                  <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                    <Shield className="w-3 h-3" />
-                    Address will be hidden from public
-                  </Badge>
-                </div>
-              )}
+              <div>
+                <span className="font-medium text-gray-700">Address Privacy: </span>
+                <span className="text-gray-900">
+                  {formData.hideAddressFromPublic ? "Hidden from public" : "Visible to buyers"}
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Description Section */}
-        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-playfair">
-              <DollarSign className="w-5 h-5 text-green-600" />
-              Description & Pricing
-            </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onEdit(3)}
-              className="flex items-center gap-1"
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Asking Price</label>
-              <p className="text-2xl font-bold text-green-600">
-                {formatPrice(formData.askingPrice)}
-              </p>
+        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <DollarSign className="w-5 h-5 text-purple-600" />
+                <h3 className="text-lg font-semibold text-gray-800">Description & Pricing</h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditStep(3)}
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+              >
+                <Edit3 className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">Description</label>
-              <p className="text-gray-900 leading-relaxed bg-gray-50 rounded-lg p-3">
-                {formData.salonDescription}
-              </p>
-            </div>
-            {formData.reasonForSelling && (
+            <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">Reason for Selling</label>
-                <p className="text-gray-900 leading-relaxed bg-gray-50 rounded-lg p-3">
-                  {formData.reasonForSelling}
+                <span className="font-medium text-gray-700">Asking Price: </span>
+                <span className="text-gray-900 text-xl font-semibold text-green-600">
+                  {formatPrice(formData.askingPrice)}
+                </span>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Description: </span>
+                <p className="text-gray-900 mt-1 text-sm leading-relaxed">
+                  {formData.salonDescription}
                 </p>
               </div>
-            )}
-            {formData.virtualTourUrl && (
-              <div>
-                <label className="text-sm font-medium text-gray-700">Virtual Tour</label>
-                <a 
-                  href={formData.virtualTourUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-700 underline"
-                >
-                  <Globe className="w-4 h-4" />
-                  View Virtual Tour
-                </a>
-              </div>
-            )}
+              {formData.reasonForSelling && (
+                <div>
+                  <span className="font-medium text-gray-700">Reason for Selling: </span>
+                  <span className="text-gray-900">{formData.reasonForSelling}</span>
+                </div>
+              )}
+              {formData.virtualTourUrl && (
+                <div>
+                  <span className="font-medium text-gray-700">Virtual Tour: </span>
+                  <a 
+                    href={formData.virtualTourUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-purple-600 hover:text-purple-700 underline"
+                  >
+                    View Tour
+                  </a>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
         {/* Photos Section */}
-        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-playfair">
-              <Camera className="w-5 h-5 text-pink-600" />
-              Photos ({formData.photos?.length || 0})
-            </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onEdit(4)}
-              className="flex items-center gap-1"
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {formData.photos && formData.photos.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {formData.photos.map((photo, index) => (
-                  <div key={index} className="relative group">
-                    <div className="aspect-square rounded-lg border overflow-hidden bg-gray-100">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Photo ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    {index === formData.coverPhotoIndex && (
-                      <div className="absolute top-2 right-2">
-                        <Badge className="bg-yellow-500 text-yellow-900 flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-current" />
-                          Cover
-                        </Badge>
-                      </div>
-                    )}
-                    <div className="absolute bottom-2 left-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {index + 1}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-center py-8">No photos uploaded</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Confirmation Section */}
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 shadow-xl">
+        <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg">
           <CardContent className="p-6">
-            <FormField
-              control={form.control}
-              name="salonName" // Using dummy field name for the checkbox
-              render={() => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={confirmed}
-                      onCheckedChange={setConfirmed}
-                      className="mt-1"
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <label className="text-sm font-medium leading-relaxed cursor-pointer">
-                      I confirm that all information provided is accurate and complete. 
-                      I understand that this listing will be publicly visible and agree 
-                      to EmviApp's terms of service.
-                    </label>
-                  </div>
-                </FormItem>
-              )}
-            />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Camera className="w-5 h-5 text-purple-600" />
+                <h3 className="text-lg font-semibold text-gray-800">Photos</h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditStep(4)}
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+              >
+                <Edit3 className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {formData.photos?.map((photo, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={photo instanceof File ? URL.createObjectURL(photo) : photo}
+                    alt={`Salon photo ${index + 1}`}
+                    className="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
+                  />
+                  {index === formData.coverPhotoIndex && (
+                    <div className="absolute top-1 right-1 bg-yellow-500 text-white p-1 rounded-full">
+                      <Star className="w-3 h-3" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 mt-3">
+              {formData.photos?.length || 0} photo(s) uploaded
+              {formData.coverPhotoIndex !== undefined && ` • Photo ${formData.coverPhotoIndex + 1} set as cover`}
+            </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Confirmation Checkbox */}
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg p-6">
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="confirm"
+            checked={isConfirmed}
+            onCheckedChange={(checked) => setIsConfirmed(checked as boolean)}
+            className="mt-1"
+          />
+          <label htmlFor="confirm" className="text-gray-700 font-medium cursor-pointer">
+            I confirm that all information is correct and ready to publish. I understand that this listing will be reviewed before going live.
+          </label>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-between pt-6">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          disabled={isSubmitting}
+          className="order-2 sm:order-1 bg-white/50 hover:bg-white/70 border-gray-200"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Photos
+        </Button>
+
+        <Button
+          type="button"
+          onClick={submitListing}
+          disabled={!isConfirmed || isSubmitting}
+          className="order-1 sm:order-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            'Submit Listing'
+          )}
+        </Button>
       </div>
     </div>
   );
