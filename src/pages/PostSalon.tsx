@@ -5,22 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePostPayment } from '@/hooks/usePostPayment';
 import { PricingOptions, JobPricingTier } from '@/utils/posting/types';
-import SalonPostForm from '@/components/posting/salon/SalonPostForm';
+import PremiumSalonWizard from '@/components/posting/salon/PremiumSalonWizard';
 
 const PostSalon = () => {
   const navigate = useNavigate();
   const { initiatePayment, isLoading } = usePostPayment();
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   
   const handleSubmit = async (data: any) => {
     try {
-      // Convert form data to the expected format for the API
+      // Convert enhanced form data to the expected format for the API
       const salonDetails = {
-        title: data.salonName,
-        description: data.description,
-        location: `${data.location}`,
-        price: data.askingPrice,
-        business_type: data.businessType,
+        title: data.identity?.salonName || 'Salon For Sale',
+        description: data.about?.description || '',
+        location: `${data.location?.city || ''}, ${data.location?.state || ''}`,
+        price: data.askingPrice || '',
+        business_type: data.identity?.businessType || 'salon',
         contact_info: {
           owner_name: "Salon Owner",
           phone: "(555) 123-4567",
@@ -28,13 +27,17 @@ const PostSalon = () => {
         },
         post_type: 'salon',
         metadata: {
-          photoUploads
+          enhancedFormData: data,
+          photos: data.photos?.photos || [],
+          performanceData: data.performance || {},
+          assets: data.assets || {},
+          promotion: data.promotion || {},
         }
       };
       
-      // Define basic pricing options
+      // Define pricing options based on selected promotion tier
       const pricingOptions: PricingOptions = {
-        selectedPricingTier: 'premium' as JobPricingTier,
+        selectedPricingTier: (data.promotion?.promotionTier as JobPricingTier) || 'premium',
         durationMonths: 1,
         autoRenew: true,
         isFirstPost: true,
@@ -44,14 +47,14 @@ const PostSalon = () => {
       const result = await initiatePayment('salon', salonDetails, pricingOptions);
       
       if (result.success) {
-        toast.success('Salon listing created successfully!');
+        toast.success('Premium salon listing created successfully!');
         return true;
       } else {
         toast.error('Error processing your salon listing. Please try again.');
         return false;
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error submitting enhanced salon form:', error);
       toast.error('Error creating salon listing');
       return false;
     }
@@ -60,17 +63,15 @@ const PostSalon = () => {
   return (
     <>
       <Helmet>
-        <title>List Your Salon for Sale | EmviApp Premium Marketplace</title>
+        <title>Premium Salon Listing | EmviApp Luxury Marketplace</title>
         <meta 
           name="description" 
-          content="List your salon for sale on EmviApp's exclusive premium marketplace. Reach verified buyers and get maximum value for your business with our billion-dollar listing experience."
+          content="Create a premium salon listing on EmviApp's exclusive luxury marketplace. Reach verified buyers and maximize your salon's value with our billion-dollar listing experience."
         />
       </Helmet>
       
-      <SalonPostForm
+      <PremiumSalonWizard
         onSubmit={handleSubmit}
-        photoUploads={photoUploads}
-        setPhotoUploads={setPhotoUploads}
         isSubmitting={isLoading}
       />
     </>
