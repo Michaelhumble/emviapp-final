@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { DurationOption } from '@/types/pricing';
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Diamond } from 'lucide-react';
 
 interface DurationSelectorProps {
   durationMonths: number;
@@ -25,12 +27,40 @@ export function DurationSelector({
     { months: 12, label: '12 Months', vietnameseLabel: '1 năm', discount: 35 },
   ];
 
-  // For Diamond plan, only show annual option
-  const displayedDurations = isDiamondPlan 
-    ? durations.filter(d => d.months === 12)
-    : durations;
+  // For Diamond plan, only show 12-month option and a message
+  if (selectedPricingTier === 'diamond') {
+    return (
+      <div className="space-y-4">
+        <div className="text-center">
+          <h3 className="text-lg font-medium">Diamond Exclusive Plan</h3>
+          <p className="text-sm text-gray-500">Premium annual listing only</p>
+        </div>
+        
+        <Alert className="border-cyan-200 bg-cyan-50">
+          <Diamond className="h-4 w-4 text-cyan-600" />
+          <AlertDescription className="text-cyan-800">
+            Diamond is only available as a $999.99 annual listing (Invite/Bid Only). 
+            This premium tier provides 1 year of top diamond placement with exclusive features.
+          </AlertDescription>
+        </Alert>
+        
+        <div className="flex justify-center">
+          <button
+            type="button"
+            className="px-6 py-3 rounded-full border-2 border-cyan-600 bg-cyan-600 text-white font-medium"
+            disabled
+          >
+            1 Year - $999.99
+            <span className="text-xs bg-cyan-100 text-cyan-800 px-2 py-1 rounded-full ml-2">
+              Annual Only
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  // Helper function to determine badge content based on duration
+  // Regular duration selector for other plans
   const getBadgeContent = (months: number) => {
     if (months === 6) return "Most Popular";
     if (months === 12) return "Best Value!";
@@ -43,7 +73,7 @@ export function DurationSelector({
       <p className="text-sm text-gray-500">Choose how long your job post will be active</p>
       
       <div className="flex flex-wrap gap-2 mt-3">
-        {displayedDurations.map((duration) => {
+        {durations.map((duration) => {
           const badgeContent = getBadgeContent(duration.months);
           
           return (
@@ -53,14 +83,12 @@ export function DurationSelector({
                   <button
                     type="button"
                     onClick={() => onDurationChange(duration.months)}
-                    disabled={isDiamondPlan && duration.months !== 12}
                     className={cn(
                       "px-4 py-2 rounded-full border transition-all relative",
                       "text-sm font-medium flex flex-col items-center gap-1",
                       durationMonths === duration.months
                         ? "bg-purple-600 text-white border-purple-600"
-                        : "bg-white border-gray-200 hover:bg-gray-50",
-                      isDiamondPlan && duration.months !== 12 && "opacity-50 cursor-not-allowed"
+                        : "bg-white border-gray-200 hover:bg-gray-50"
                     )}
                   >
                     <span>{duration.label}</span>
@@ -82,11 +110,6 @@ export function DurationSelector({
                     )}
                   </button>
                 </TooltipTrigger>
-                {isDiamondPlan && duration.months !== 12 && (
-                  <TooltipContent side="top">
-                    <p>Diamond plan is only available as annual subscription</p>
-                  </TooltipContent>
-                )}
               </Tooltip>
             </TooltipProvider>
           );

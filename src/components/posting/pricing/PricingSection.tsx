@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { JobPricingTier, PricingOptions } from '@/utils/posting/types';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Check, Crown, Star, Diamond } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface PricingSectionProps {
   selectedTier: JobPricingTier;
@@ -49,19 +50,32 @@ const PricingSection: React.FC<PricingSectionProps> = ({
     {
       tier: 'diamond' as JobPricingTier,
       name: 'Diamond Exclusive',
-      price: 99.99,
-      duration: 30,
-      features: ['Highest placement', 'Diamond badge', 'Personal manager'],
+      price: 999.99,
+      duration: 365,
+      features: ['Highest placement', 'Diamond badge', 'Personal manager', '1 year duration'],
       icon: <Diamond className="h-5 w-5 text-cyan-500" />
     }
   ];
+
+  const handleTierSelect = (tier: JobPricingTier) => {
+    onTierSelect(tier);
+  };
 
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-2">Choose Your Plan</h2>
-        <p className="text-gray-600">All plans include 30-day duration</p>
+        <p className="text-gray-600">Select the perfect plan for your listing</p>
       </div>
+      
+      {selectedTier === 'diamond' && (
+        <Alert className="border-cyan-200 bg-cyan-50">
+          <Diamond className="h-4 w-4 text-cyan-600" />
+          <AlertDescription className="text-cyan-800">
+            Diamond is only available as a $999.99 annual listing (Invite/Bid Only)
+          </AlertDescription>
+        </Alert>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {pricingPlans.map((plan) => (
@@ -72,13 +86,18 @@ const PricingSection: React.FC<PricingSectionProps> = ({
                 ? 'ring-2 ring-purple-500 border-purple-500'
                 : 'hover:border-purple-300'
             }`}
-            onClick={() => onTierSelect(plan.tier)}
+            onClick={() => handleTierSelect(plan.tier)}
           >
             <CardHeader className="text-center">
               <div className="flex justify-center mb-2">{plan.icon}</div>
               <CardTitle className="text-lg">{plan.name}</CardTitle>
-              <div className="text-2xl font-bold">${plan.price}</div>
-              <p className="text-sm text-gray-500">{plan.duration} days</p>
+              <div className="text-2xl font-bold">
+                ${plan.price}
+                {plan.tier === 'diamond' && <span className="text-sm font-normal">/year</span>}
+              </div>
+              <p className="text-sm text-gray-500">
+                {plan.tier === 'diamond' ? '1 year' : `${plan.duration} days`}
+              </p>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
@@ -97,7 +116,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onTierSelect(plan.tier);
+                  handleTierSelect(plan.tier);
                 }}
               >
                 {selectedTier === plan.tier ? 'Selected' : 'Select'}
@@ -111,7 +130,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({
         <Button onClick={onProceed} className="px-8 py-2">
           Continue with {selectedTier === 'free' ? 'Free' : 
                        selectedTier === 'gold' ? 'Gold' :
-                       selectedTier === 'premium' ? 'Premium' : 'Diamond'} Plan
+                       selectedTier === 'premium' ? 'Premium' : 'Diamond Annual'} Plan
         </Button>
       </div>
     </div>

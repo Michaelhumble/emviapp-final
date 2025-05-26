@@ -74,13 +74,13 @@ const pricingTiers: JobPricingOption[] = [
   {
     id: 'diamond',
     name: 'Diamond Exclusive',
-    price: 99.99,
-    duration: 30,
-    description: 'Top Diamond Featured - Invite/Bid Only',
-    vietnameseDescription: 'Top Diamond Featured - Chỉ theo lời mời/đấu giá',
+    price: 999.99,
+    duration: 365,
+    description: 'Annual Diamond Featured - Invite/Bid Only',
+    vietnameseDescription: 'Annual Diamond Featured - Chỉ theo lời mời/đấu giá',
     tier: 'diamond',
     features: [
-      '30-day top diamond placement',
+      '1 year top diamond placement',
       'Highest priority placement',
       'Diamond exclusive badge',
       'Personal account manager',
@@ -90,7 +90,7 @@ const pricingTiers: JobPricingOption[] = [
     popular: false,
     hidden: false,
     tag: 'Invite Only',
-    upsellText: 'Exclusive Access'
+    upsellText: 'Annual Plan Only'
   }
 ];
 
@@ -98,12 +98,14 @@ interface PricingTierSelectorProps {
   selectedTier: JobPricingTier;
   onTierSelect: (tier: JobPricingTier) => void;
   options: PricingOptions;
+  onDurationChange?: (months: number) => void;
 }
 
 const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
   selectedTier,
   onTierSelect,
-  options
+  options,
+  onDurationChange
 }) => {
   const { t } = useTranslation();
 
@@ -116,6 +118,16 @@ const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
     }
   };
 
+  const handleTierSelect = (tier: JobPricingTier) => {
+    // For Diamond tier, force 12-month duration
+    if (tier === 'diamond') {
+      if (onDurationChange) {
+        onDurationChange(12);
+      }
+    }
+    onTierSelect(tier);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {pricingTiers.map((tier) => (
@@ -126,7 +138,7 @@ const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
               ? 'ring-2 ring-purple-500 border-purple-500'
               : 'hover:border-purple-300'
           }`}
-          onClick={() => onTierSelect(tier.tier)}
+          onClick={() => handleTierSelect(tier.tier)}
         >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-3">
@@ -136,6 +148,9 @@ const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
               )}
               {tier.recommended && (
                 <Badge className="bg-purple-100 text-purple-800">Recommended</Badge>
+              )}
+              {tier.tier === 'diamond' && (
+                <Badge className="bg-cyan-100 text-cyan-800">Annual Only</Badge>
               )}
             </div>
             
@@ -147,6 +162,9 @@ const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
                 <span className="text-sm text-gray-500 line-through ml-2">
                   ${tier.wasPrice}
                 </span>
+              )}
+              {tier.tier === 'diamond' && (
+                <span className="text-sm text-gray-600 ml-2">/year</span>
               )}
             </div>
             
@@ -163,7 +181,7 @@ const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
               ))}
             </ul>
             
-            {tier.limitedSpots && (
+            {tier.limitedSpots && tier.tier !== 'diamond' && (
               <p className="text-xs text-orange-600 mb-3">{tier.limitedSpots}</p>
             )}
             
@@ -175,7 +193,7 @@ const PricingTierSelector: React.FC<PricingTierSelectorProps> = ({
               }`}
               onClick={(e) => {
                 e.stopPropagation();
-                onTierSelect(tier.tier);
+                handleTierSelect(tier.tier);
               }}
             >
               {selectedTier === tier.tier ? 'Selected' : 'Select Plan'}
