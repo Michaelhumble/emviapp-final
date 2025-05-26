@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { SalonIdentitySection } from "@/components/posting/salon/SalonIdentitySection";
+import { SalonLocationSection } from "@/components/posting/salon/SalonLocationSection";
 import { salonFormSchema, SalonFormValues } from "@/components/posting/salon/salonFormSchema";
 import { useNavigate } from "react-router-dom";
 
 const SellSalonPage = () => {
   const navigate = useNavigate();
-  const currentStep = 1;
+  const [currentStep, setCurrentStep] = React.useState(1);
   const totalSteps = 5;
   
   const form = useForm<SalonFormValues>({
@@ -23,26 +24,74 @@ const SellSalonPage = () => {
       salonName: "",
       businessType: "",
       establishedYear: "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      neighborhood: "",
+      hideAddressFromPublic: false,
     },
   });
 
   const { watch, formState } = form;
   const watchedFields = watch();
   
-  // Check if required fields are filled for step 1
+  // Check if current step is valid
   const isStep1Valid = watchedFields.salonName && 
                       watchedFields.businessType && 
-                      formState.isValid;
+                      !formState.errors.salonName &&
+                      !formState.errors.businessType;
+
+  const isStep2Valid = watchedFields.address && 
+                      watchedFields.city && 
+                      watchedFields.state && 
+                      watchedFields.zipCode &&
+                      !formState.errors.address &&
+                      !formState.errors.city &&
+                      !formState.errors.state &&
+                      !formState.errors.zipCode;
+
+  const isCurrentStepValid = currentStep === 1 ? isStep1Valid : isStep2Valid;
 
   const handleContinue = () => {
-    if (isStep1Valid) {
-      console.log("Step 1 completed:", watchedFields);
-      // TODO: Navigate to step 2 when implemented
+    if (isCurrentStepValid) {
+      if (currentStep === 1) {
+        setCurrentStep(2);
+      } else if (currentStep === 2) {
+        console.log("Step 2 completed:", watchedFields);
+        // TODO: Navigate to step 3 when implemented
+      }
     }
   };
 
   const handleBack = () => {
-    navigate("/dashboard");
+    if (currentStep === 1) {
+      navigate("/dashboard");
+    } else {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <SalonIdentitySection form={form} />;
+      case 2:
+        return <SalonLocationSection form={form} />;
+      default:
+        return <SalonIdentitySection form={form} />;
+    }
+  };
+
+  const getStepName = () => {
+    switch (currentStep) {
+      case 1:
+        return "Identity";
+      case 2:
+        return "Location";
+      default:
+        return "Identity";
+    }
   };
 
   return (
@@ -66,7 +115,7 @@ const SellSalonPage = () => {
                 className="text-gray-600 hover:text-gray-800"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
+                {currentStep === 1 ? "Back to Dashboard" : "Back"}
               </Button>
               <div className="text-sm font-medium text-gray-600">
                 Step {currentStep} of {totalSteps}
@@ -75,7 +124,7 @@ const SellSalonPage = () => {
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
-                <span>Identity</span>
+                <span>{getStepName()}</span>
                 <span>{Math.round((currentStep / totalSteps) * 100)}% Complete</span>
               </div>
               <Progress 
@@ -89,7 +138,7 @@ const SellSalonPage = () => {
           {/* Form Content */}
           <Form {...form}>
             <form className="space-y-8">
-              <SalonIdentitySection form={form} />
+              {renderCurrentStep()}
               
               {/* Navigation */}
               <div className="flex justify-between pt-8">
@@ -99,13 +148,13 @@ const SellSalonPage = () => {
                   onClick={handleBack}
                   className="px-8"
                 >
-                  Cancel
+                  {currentStep === 1 ? "Cancel" : "Back"}
                 </Button>
                 
                 <Button 
                   type="button"
                   onClick={handleContinue}
-                  disabled={!isStep1Valid}
+                  disabled={!isCurrentStepValid}
                   className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Continue
