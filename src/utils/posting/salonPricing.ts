@@ -3,8 +3,18 @@ import { PricingOptions, JobPricingTier } from "./types";
 
 export type SalonPricingTier = 'standard' | 'featured';
 
-export interface SalonPricingOptions extends Omit<PricingOptions, 'selectedPricingTier'> {
+export interface SalonPricingOptions {
   selectedPricingTier: SalonPricingTier;
+  durationMonths?: number;
+  autoRenew?: boolean;
+  isNationwide?: boolean;
+  isFirstPost?: boolean;
+  showAtTop?: boolean;
+  fastSalePackage?: boolean;
+  jobPostBundle?: boolean;
+  bundleWithJobPost?: boolean;
+  isRenewal?: boolean;
+  hasReferrals?: boolean;
   featuredBoost?: boolean;
 }
 

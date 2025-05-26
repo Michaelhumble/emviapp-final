@@ -2,13 +2,12 @@
 import React, { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { PricingOptions } from '@/utils/posting/types';
-import { calculateSalonPostPrice } from '@/utils/posting/salonPricing';
+import { calculateSalonPostPrice, SalonPricingOptions } from '@/utils/posting/salonPricing';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonPostOptionsProps {
-  options: PricingOptions;
-  onOptionsChange: (options: PricingOptions) => void;
+  options: SalonPricingOptions;
+  onOptionsChange: (options: SalonPricingOptions) => void;
   isFirstPost?: boolean;
 }
 
@@ -18,12 +17,13 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
   isFirstPost = false
 }) => {
   const { t } = useTranslation();
-  const [localOptions, setLocalOptions] = useState<PricingOptions>({
+  const [localOptions, setLocalOptions] = useState<SalonPricingOptions>({
     ...options,
-    isFirstPost
+    isFirstPost,
+    selectedPricingTier: 'standard'
   });
 
-  const handleOptionChange = (option: keyof PricingOptions, value: boolean) => {
+  const handleOptionChange = (option: keyof SalonPricingOptions, value: boolean) => {
     const updatedOptions = {
       ...localOptions,
       [option]: value
