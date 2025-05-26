@@ -45,11 +45,11 @@ export const calculatePricing = (
   // Base pricing per tier (monthly) for NON-DIAMOND tiers
   let basePrice = 0;
   
-  // Handle only non-diamond tiers
+  // Handle only non-diamond tiers with EXACT pricing
   if (selectedPricingTier === 'free') {
     basePrice = 0;
   } else if (selectedPricingTier === 'gold') {
-    basePrice = 19.99;
+    basePrice = 19.99; // EXACT Gold Featured monthly price
   } else if (selectedPricingTier === 'premium') {
     basePrice = 39.99;
   } else {
@@ -63,9 +63,10 @@ export const calculatePricing = (
   }
   
   // Calculate original price (without discounts) for regular plans
+  // CRITICAL: This must be basePrice × durationMonths for correct totals
   const originalPrice = basePrice * durationMonths;
   
-  // Apply duration discount
+  // Apply duration discount with EXACT percentages
   let discountPercentage = 0;
   if (durationMonths === 3) {
     discountPercentage = 10; // 10% discount for 3 months
@@ -75,7 +76,7 @@ export const calculatePricing = (
     discountPercentage = 20; // 20% discount for 12+ months
   }
   
-  // Apply auto-renew discount if enabled
+  // Apply auto-renew discount if enabled (only for monthly plans)
   if (autoRenew && durationMonths === 1) {
     discountPercentage += 5; // Additional 5% for auto-renew on monthly plans
   }
@@ -87,6 +88,7 @@ export const calculatePricing = (
   }
   
   // Calculate final price with discounts
+  // CRITICAL: Apply discount to originalPrice, then add nationwide fee
   const discount = (originalPrice * discountPercentage) / 100;
   const finalPrice = originalPrice - discount + nationwidePrice;
   
