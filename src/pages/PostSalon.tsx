@@ -52,8 +52,8 @@ const PostSalon = () => {
         }
       };
       
-      // Define pricing options based on selected upgrades
-      let baseTier: JobPricingTier = 'standard';
+      // Define pricing options based on selected upgrades - use correct tier values
+      let baseTier: JobPricingTier = 'premium'; // Changed from 'standard' to 'premium'
       if (promotionUpgrades.isDiamond) {
         baseTier = 'diamond';
       } else if (promotionUpgrades.isFeatured) {
@@ -65,7 +65,7 @@ const PostSalon = () => {
         durationMonths: 1,
         autoRenew: true,
         isFirstPost: true,
-        // Add promotion-specific options
+        // Add salon-specific promotion options
         urgentSale: promotionUpgrades.isUrgent,
         featuredListing: promotionUpgrades.isFeatured,
         diamondListing: promotionUpgrades.isDiamond,

@@ -44,6 +44,10 @@ export interface PricingOptions {
   bundleWithJobPost?: boolean;
   isRenewal?: boolean;
   hasReferrals?: boolean;
+  // Salon-specific promotion options
+  urgentSale?: boolean;
+  featuredListing?: boolean;
+  diamondListing?: boolean;
 }
 
 export interface DurationOption {
