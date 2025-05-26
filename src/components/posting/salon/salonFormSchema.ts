@@ -15,6 +15,19 @@ export const salonFormSchema = z.object({
   zipCode: z.string().min(1, "ZIP code is required"),
   neighborhood: z.string().optional(),
   hideAddressFromPublic: z.boolean().default(false),
+  
+  // Step 3: Description
+  salonDescription: z.string()
+    .min(30, "Description must be at least 30 characters")
+    .max(1000, "Description must not exceed 1000 characters"),
+  askingPrice: z.string().min(1, "Asking price is required"),
+  reasonForSelling: z.string()
+    .max(300, "Reason must not exceed 300 characters")
+    .optional(),
+  virtualTourUrl: z.string()
+    .url("Please enter a valid URL")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type SalonFormValues = z.infer<typeof salonFormSchema>;

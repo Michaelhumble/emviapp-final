@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { SalonIdentitySection } from "@/components/posting/salon/SalonIdentitySection";
 import { SalonLocationSection } from "@/components/posting/salon/SalonLocationSection";
+import { SalonDescriptionSection } from "@/components/posting/salon/SalonDescriptionSection";
 import { salonFormSchema, SalonFormValues } from "@/components/posting/salon/salonFormSchema";
 import { useNavigate } from "react-router-dom";
 
@@ -30,6 +31,10 @@ const SellSalonPage = () => {
       zipCode: "",
       neighborhood: "",
       hideAddressFromPublic: false,
+      salonDescription: "",
+      askingPrice: "",
+      reasonForSelling: "",
+      virtualTourUrl: "",
     },
   });
 
@@ -51,15 +56,34 @@ const SellSalonPage = () => {
                       !formState.errors.state &&
                       !formState.errors.zipCode;
 
-  const isCurrentStepValid = currentStep === 1 ? isStep1Valid : isStep2Valid;
+  const isStep3Valid = watchedFields.salonDescription && 
+                      watchedFields.askingPrice &&
+                      watchedFields.salonDescription.length >= 30 &&
+                      watchedFields.salonDescription.length <= 1000 &&
+                      !formState.errors.salonDescription &&
+                      !formState.errors.askingPrice &&
+                      !formState.errors.virtualTourUrl;
+
+  const isCurrentStepValid = () => {
+    switch (currentStep) {
+      case 1:
+        return isStep1Valid;
+      case 2:
+        return isStep2Valid;
+      case 3:
+        return isStep3Valid;
+      default:
+        return false;
+    }
+  };
 
   const handleContinue = () => {
-    if (isCurrentStepValid) {
-      if (currentStep === 1) {
-        setCurrentStep(2);
-      } else if (currentStep === 2) {
-        console.log("Step 2 completed:", watchedFields);
-        // TODO: Navigate to step 3 when implemented
+    if (isCurrentStepValid()) {
+      if (currentStep < 3) {
+        setCurrentStep(currentStep + 1);
+      } else if (currentStep === 3) {
+        console.log("Step 3 completed:", watchedFields);
+        // TODO: Navigate to step 4 when implemented
       }
     }
   };
@@ -78,6 +102,8 @@ const SellSalonPage = () => {
         return <SalonIdentitySection form={form} />;
       case 2:
         return <SalonLocationSection form={form} />;
+      case 3:
+        return <SalonDescriptionSection form={form} />;
       default:
         return <SalonIdentitySection form={form} />;
     }
@@ -89,6 +115,8 @@ const SellSalonPage = () => {
         return "Identity";
       case 2:
         return "Location";
+      case 3:
+        return "Description";
       default:
         return "Identity";
     }
@@ -154,7 +182,7 @@ const SellSalonPage = () => {
                 <Button 
                   type="button"
                   onClick={handleContinue}
-                  disabled={!isCurrentStepValid}
+                  disabled={!isCurrentStepValid()}
                   className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Continue
