@@ -1,178 +1,122 @@
 
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Helmet } from "react-helmet-async";
 import Layout from "@/components/layout/Layout";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { SalonSale } from "@/types/salonSale";
-import { fetchSalonSales } from "@/utils/salonSales";
-import SalonListingDetail from "@/components/sell-salon/SalonListingDetail";
-import { SalonSalesFilters } from "@/components/sell-salon/SalonSalesFilters";
-import { SalonSalesGrid } from "@/components/sell-salon/SalonSalesGrid";
+import { Progress } from "@/components/ui/progress";
+import { ArrowRight, ArrowLeft } from "lucide-react";
+import { SalonIdentitySection } from "@/components/posting/salon/SalonIdentitySection";
+import { salonFormSchema, SalonFormValues } from "@/components/posting/salon/salonFormSchema";
+import { useNavigate } from "react-router-dom";
 
-// Define filter and sort types
-type SortOption = "newest" | "lowest_price" | "highest_price" | "featured_first";
-type BusinessTypeFilter = "all" | "Hair" | "Nails" | "Spa" | "Barbershop" | "Other";
-
-interface FilterState {
-  searchTerm: string;
-  businessType: BusinessTypeFilter;
-  priceRange: {
-    min: string;
-    max: string;
-  };
-  sortBy: SortOption;
-}
-
-const SalonSalesPage = () => {
+const SellSalonPage = () => {
   const navigate = useNavigate();
-  const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
-  const [filteredSales, setFilteredSales] = useState<SalonSale[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedSalon, setSelectedSalon] = useState<SalonSale | null>(null);
+  const currentStep = 1;
+  const totalSteps = 5;
   
-  // Filter and sort state
-  const [filters, setFilters] = useState<FilterState>({
-    searchTerm: "",
-    businessType: "all",
-    priceRange: {
-      min: "",
-      max: ""
+  const form = useForm<SalonFormValues>({
+    resolver: zodResolver(salonFormSchema),
+    defaultValues: {
+      salonName: "",
+      businessType: "",
+      establishedYear: "",
     },
-    sortBy: "newest"
   });
 
-  useEffect(() => {
-    const loadSalonSales = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchSalonSales();
-        setSalonSales(data);
-        setFilteredSales(data);
-      } catch (error) {
-        console.error("Error loading salon sales:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const { watch, formState } = form;
+  const watchedFields = watch();
+  
+  // Check if required fields are filled for step 1
+  const isStep1Valid = watchedFields.salonName && 
+                      watchedFields.businessType && 
+                      formState.isValid;
 
-    loadSalonSales();
-  }, []);
-
-  useEffect(() => {
-    // Apply filters and sorting
-    let filtered = [...salonSales];
-    
-    // Apply search filter
-    if (filters.searchTerm.trim() !== "") {
-      const term = filters.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (salon) =>
-          salon.salon_name.toLowerCase().includes(term) ||
-          salon.city.toLowerCase().includes(term) ||
-          salon.state.toLowerCase().includes(term) ||
-          (salon.description && salon.description.toLowerCase().includes(term)) ||
-          (salon.business_type && salon.business_type.toLowerCase().includes(term))
-      );
+  const handleNext = () => {
+    if (isStep1Valid) {
+      console.log("Step 1 completed:", watchedFields);
+      // TODO: Navigate to next step when implemented
     }
-    
-    // Apply business type filter
-    if (filters.businessType !== "all") {
-      filtered = filtered.filter(salon => salon.business_type === filters.businessType);
-    }
-    
-    // Apply price range filter
-    if (filters.priceRange.min) {
-      const minPrice = parseFloat(filters.priceRange.min);
-      filtered = filtered.filter(salon => salon.asking_price >= minPrice);
-    }
-    
-    if (filters.priceRange.max) {
-      const maxPrice = parseFloat(filters.priceRange.max);
-      filtered = filtered.filter(salon => salon.asking_price <= maxPrice);
-    }
-    
-    // Apply sorting
-    switch (filters.sortBy) {
-      case "newest":
-        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-        break;
-      case "lowest_price":
-        filtered.sort((a, b) => a.asking_price - b.asking_price);
-        break;
-      case "highest_price":
-        filtered.sort((a, b) => b.asking_price - a.asking_price);
-        break;
-      case "featured_first":
-        filtered.sort((a, b) => {
-          // First sort by featured status
-          if (a.is_featured && !b.is_featured) return -1;
-          if (!a.is_featured && b.is_featured) return 1;
-          
-          // Then sort by newest
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        });
-        break;
-    }
-    
-    // If not sorting by featured_first, still put featured listings at the top
-    if (filters.sortBy !== "featured_first") {
-      const featured = filtered.filter(salon => salon.is_featured);
-      const nonFeatured = filtered.filter(salon => !salon.is_featured);
-      filtered = [...featured, ...nonFeatured];
-    }
-    
-    setFilteredSales(filtered);
-  }, [salonSales, filters]);
-
-  const handleViewDetails = (salon: SalonSale) => {
-    setSelectedSalon(salon);
   };
 
-  const handleFilterChange = (newFilters: Partial<FilterState>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+  const handleBack = () => {
+    navigate("/dashboard");
   };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-serif mb-2">Salons For Sale</h1>
-            <p className="text-gray-600">
-              Find the perfect salon opportunity for your next business venture
-            </p>
+      <Helmet>
+        <title>Sell Your Salon | EmviApp</title>
+        <meta 
+          name="description" 
+          content="List your salon for sale on EmviApp and connect with qualified buyers."
+        />
+      </Helmet>
+      
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        <div className="container max-w-4xl mx-auto py-8 px-4">
+          {/* Progress Header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <Button 
+                variant="ghost" 
+                onClick={handleBack}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+              <div className="text-sm font-medium text-gray-600">
+                Step {currentStep} of {totalSteps}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Identity</span>
+                <span>{Math.round((currentStep / totalSteps) * 100)}% Complete</span>
+              </div>
+              <Progress 
+                value={(currentStep / totalSteps) * 100} 
+                className="h-2 bg-gray-200"
+              />
+            </div>
           </div>
-          <Button 
-            className="mt-4 md:mt-0" 
-            onClick={() => navigate("/sell-salon/new")}
-          >
-            <Plus className="mr-2 h-4 w-4" /> List Your Salon
-          </Button>
+
+          {/* Form Content */}
+          <Form {...form}>
+            <form className="space-y-8">
+              <SalonIdentitySection form={form} />
+              
+              {/* Navigation */}
+              <div className="flex justify-between pt-8">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleBack}
+                  className="px-8"
+                >
+                  Cancel
+                </Button>
+                
+                <Button 
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!isStep1Valid}
+                  className="px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
-
-        {/* Filter Bar Component */}
-        <SalonSalesFilters 
-          filters={filters} 
-          onFilterChange={handleFilterChange} 
-        />
-
-        {/* Grid Component */}
-        <SalonSalesGrid 
-          salonSales={filteredSales} 
-          isLoading={isLoading} 
-          onViewDetails={handleViewDetails} 
-        />
       </div>
-
-      {selectedSalon && (
-        <SalonListingDetail
-          salon={selectedSalon}
-          onClose={() => setSelectedSalon(null)}
-        />
-      )}
     </Layout>
   );
 };
 
-export default SalonSalesPage;
+export default SellSalonPage;
