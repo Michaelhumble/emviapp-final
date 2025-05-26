@@ -31,6 +31,7 @@ import SignIn from "@/pages/auth/SignIn";
 import SignUp from "@/pages/auth/SignUp";
 import EnhancedPostJob from "@/pages/enhanced-post-job";
 import SellSalonPage from "@/pages/sell-salon";
+import SalonListingSuccessPage from "@/pages/salon-listing-success";
 
 function App() {
   const location = useLocation();
@@ -66,6 +67,9 @@ function App() {
                     {/* Salon selling route */}
                     <Route path="/sell-salon" element={<SellSalonPage />} />
                     
+                    {/* Salon listing success route */}
+                    <Route path="/salon-listing-success" element={<Layout><SalonListingSuccessPage /></Layout>} />
+                    
                     {/* Payment routes */}
                     <Route path="/checkout" element={<CheckoutFallback />} />
                     <Route path="/post-success" element={<PostSuccess />} />
@@ -85,7 +89,7 @@ function App() {
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
                        route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
-                       route.path !== "/sell-salon") && (
+                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success") && (
                         <Route 
                           key={index}
                           path={route.path}
