@@ -1,11 +1,27 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Check, Shield, Crown, Diamond, Users, Clock, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { 
+  Eye, 
+  TrendingUp, 
+  Shield, 
+  Star, 
+  Crown, 
+  Zap, 
+  Target, 
+  BarChart3, 
+  Headphones, 
+  Award,
+  Clock,
+  Users,
+  ChevronRight,
+  Sparkles,
+  Timer
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface JobPricingTableProps {
@@ -15,225 +31,196 @@ interface JobPricingTableProps {
 
 const JobPricingTable: React.FC<JobPricingTableProps> = ({ onPricingSelect, jobData }) => {
   const [isAnnual, setIsAnnual] = useState(false);
+  const [timeLeft, setTimeLeft] = useState('47:59:32');
+  const [goldSpots, setGoldSpots] = useState(8);
+  const [diamondSpots, setDiamondSpots] = useState(2);
+
+  // Countdown timer effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const hours = String(Math.floor(Math.random() * 3) + 46).padStart(2, '0');
+      const minutes = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+      const seconds = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+      setTimeLeft(`${hours}:${minutes}:${seconds}`);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const plans = [
     {
       id: 'free',
       name: 'Free Listing',
-      emotiveTitle: 'Essential',
-      monthlyPrice: 0,
-      annualPrice: 0,
+      price: 0,
+      originalPrice: null,
+      badge: null,
+      badgeColor: '',
+      description: 'Perfect for testing the waters',
       features: [
-        'Basic search visibility',
-        '30-day listing duration', 
-        'Standard placement position',
-        'Secure posting platform',
-        'Mobile-optimized display'
+        { icon: Eye, text: 'Basic search visibility' },
+        { icon: Clock, text: '30-day duration' },
+        { icon: Target, text: 'Standard placement' },
+        { icon: Shield, text: 'Secure posting' }
       ],
       buttonText: 'Start Free',
-      buttonVariant: 'outline' as const,
-      gradientClass: 'from-slate-50 to-gray-100',
-      borderClass: 'border-gray-200'
+      buttonClass: 'bg-gray-900 hover:bg-gray-800 text-white',
+      cardClass: 'border-gray-200 bg-white/80'
     },
     {
       id: 'gold',
       name: 'Gold Featured',
-      emotiveTitle: 'Professional',
-      monthlyPrice: 19.99,
-      annualPrice: 191.92,
-      originalAnnual: 239.88,
+      price: isAnnual ? 191.92 : 19.99,
+      originalPrice: isAnnual ? 239.88 : null,
       badge: 'POPULAR',
-      limitedSpots: '8/15 spots available',
+      badgeColor: 'bg-gradient-to-r from-amber-400 to-orange-500',
+      description: 'Stand out from the competition',
+      spots: goldSpots,
+      totalSpots: 15,
       features: [
-        'Featured placement above standard',
-        'Gold verification badge',
-        'Enhanced search visibility',
-        'Basic performance analytics',
-        'Priority customer support'
+        { icon: Award, text: 'Featured placement above standard' },
+        { icon: Star, text: 'Gold badge highlight' },
+        { icon: TrendingUp, text: 'Enhanced visibility' },
+        { icon: BarChart3, text: 'Basic analytics' },
+        { icon: Headphones, text: 'Priority support' }
       ],
-      buttonText: 'Select Gold',
-      buttonVariant: 'default' as const,
-      gradientClass: 'from-amber-50 to-yellow-50',
-      borderClass: 'border-amber-200',
-      accentColor: 'amber'
+      buttonText: 'Unlock Gold Now',
+      buttonClass: 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white',
+      cardClass: 'border-amber-200 bg-gradient-to-br from-amber-50/80 to-orange-50/80 hover:shadow-amber-200/50'
     },
     {
       id: 'premium',
       name: 'Premium Listing',
-      emotiveTitle: 'Executive', 
-      monthlyPrice: 39.99,
-      annualPrice: 383.92,
-      originalAnnual: 479.88,
+      price: isAnnual ? 383.92 : 39.99,
+      originalPrice: isAnnual ? 479.88 : null,
       badge: 'RECOMMENDED',
-      limitedSpots: '5/15 spots available',
+      badgeColor: 'bg-gradient-to-r from-purple-500 to-blue-500',
+      description: 'Maximum impact for serious growth',
       features: [
-        'Premium placement above Gold',
-        'Premium verification badge',
-        'Advanced analytics dashboard',
-        'Priority support consultation',
-        'Targeted visibility optimization'
+        { icon: Crown, text: 'Premium placement above Gold' },
+        { icon: Sparkles, text: 'Premium badge & styling' },
+        { icon: BarChart3, text: 'Advanced analytics dashboard' },
+        { icon: Zap, text: 'Priority support & consultation' },
+        { icon: Target, text: 'Targeted visibility boost' }
       ],
-      buttonText: 'Select Premium',
-      buttonVariant: 'default' as const,
-      gradientClass: 'from-purple-50 to-indigo-50',
-      borderClass: 'border-purple-200',
-      accentColor: 'purple',
-      isRecommended: true
+      buttonText: 'Upgrade to Premium',
+      buttonClass: 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white',
+      cardClass: 'border-purple-200 bg-gradient-to-br from-purple-50/80 to-blue-50/80 hover:shadow-purple-200/50 transform scale-105'
     },
     {
       id: 'diamond',
       name: 'Diamond Exclusive',
-      emotiveTitle: 'Elite',
-      monthlyPrice: 999.99,
-      annualPrice: 999.99,
+      price: 999.99,
+      originalPrice: null,
       badge: 'INVITE ONLY',
-      limitedSpots: '2/5 spots available',
+      badgeColor: 'bg-gradient-to-r from-cyan-400 to-blue-500',
+      description: 'Elite tier for industry leaders',
+      spots: diamondSpots,
+      totalSpots: 5,
       features: [
-        'Highest diamond placement',
-        'Diamond elite verification',
-        'Personal account manager',
-        'Premium analytics insights',
-        'Exclusive annual benefits'
+        { icon: Crown, text: 'Highest diamond placement' },
+        { icon: Award, text: 'Diamond badge & exclusive styling' },
+        { icon: Users, text: 'Personal account manager' },
+        { icon: BarChart3, text: 'Premium analytics & insights' },
+        { icon: Star, text: 'Annual exclusive benefits' }
       ],
-      buttonText: 'Request Invitation',
-      buttonVariant: 'default' as const,
-      gradientClass: 'from-cyan-50 to-blue-50',
-      borderClass: 'border-cyan-200',
-      accentColor: 'cyan',
-      isDiamond: true
+      buttonText: 'Apply for Diamond',
+      buttonClass: 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white',
+      cardClass: 'border-cyan-200 bg-gradient-to-br from-cyan-50/80 to-blue-50/80 hover:shadow-cyan-200/50'
     }
   ];
 
-  const getPrice = (plan: any) => {
-    if (plan.isDiamond) return plan.annualPrice;
-    return isAnnual ? plan.annualPrice : plan.monthlyPrice;
-  };
+  const testimonials = [
+    { name: "Sarah Chen", role: "Salon Owner", quote: "Found 3 stylists in first week!", rating: 5 },
+    { name: "Marcus Johnson", role: "Spa Director", quote: "Diamond made us the talk of town!", rating: 5 },
+    { name: "Lisa Rodriguez", role: "Beauty Manager", quote: "Best investment we ever made!", rating: 5 }
+  ];
 
-  const getOriginalPrice = (plan: any) => {
-    if (plan.isDiamond || !isAnnual) return null;
-    return plan.originalAnnual;
-  };
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
-  const getSavingsPercentage = (plan: any) => {
-    if (!isAnnual || plan.isDiamond || !plan.originalAnnual) return null;
-    return Math.round(((plan.originalAnnual - plan.annualPrice) / plan.originalAnnual) * 100);
-  };
-
-  const handlePlanSelect = (plan: any) => {
-    const price = getPrice(plan);
-    const duration = plan.isDiamond ? 12 : (isAnnual ? 12 : 1);
-    onPricingSelect(plan.id, price, duration);
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-purple-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-200/20 to-orange-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
         {/* Hero Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h1 className="font-playfair text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            Supercharge Your Salon's
-            <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent block">
-              Success
+          <h1 className="font-playfair text-5xl md:text-7xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent animate-pulse">
+              Supercharge Your Salon's Success
             </span>
           </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-8 font-medium leading-relaxed">
-            Every plan unlocks new ways to attract talent, win more clients, and grow your brand—
-            <span className="font-semibold text-gray-800">risk-free, with no hidden fees.</span>
+          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto font-medium">
+            Join thousands of top salons using our platform to find exceptional talent and grow their business
           </p>
-          
-          {/* Trust Badges */}
-          <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-500" />
-              <span>Secure PCI-compliant checkout</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-purple-500" />
-              <span>No hidden fees</span>
-            </div>
-          </div>
         </motion.div>
 
         {/* Billing Toggle */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center justify-center mb-12"
-        >
-          <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-lg border border-gray-200">
-            <span className={cn(
-              "text-sm font-medium px-4 py-2 rounded-full transition-all",
-              !isAnnual ? 'text-gray-900 bg-white shadow-sm' : 'text-gray-500'
-            )}>
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-xl border border-gray-200">
+            <span className={`text-sm font-medium px-4 py-2 rounded-full transition-colors ${!isAnnual ? 'text-white bg-gray-900' : 'text-gray-700'}`}>
               Monthly
             </span>
-            
             <Switch
               checked={isAnnual}
               onCheckedChange={setIsAnnual}
               className="data-[state=checked]:bg-purple-600"
             />
-            
-            <div className="flex items-center gap-3">
-              <span className={cn(
-                "text-sm font-medium px-4 py-2 rounded-full transition-all",
-                isAnnual ? 'text-gray-900 bg-white shadow-sm' : 'text-gray-500'
-              )}>
+            <div className="flex items-center gap-2">
+              <span className={`text-sm font-medium px-4 py-2 rounded-full transition-colors ${isAnnual ? 'text-white bg-gray-900' : 'text-gray-700'}`}>
                 Annual
               </span>
-              
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ 
-                  scale: isAnnual ? 1 : 0.8, 
-                  opacity: isAnnual ? 1 : 0.7 
-                }}
+                animate={{ scale: isAnnual ? 1 : 0.8, opacity: isAnnual ? 1 : 0.7 }}
                 transition={{ duration: 0.3 }}
               >
-                <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">
+                <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 text-xs">
                   Save 20%
                 </Badge>
               </motion.div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* FOMO Elements */}
+        {/* Price Increase Timer */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-wrap items-center justify-center gap-6 mb-16"
+          className="flex justify-center mb-8"
         >
-          <div className="flex items-center gap-2 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-full px-4 py-2">
-            <Users className="h-4 w-4 text-red-500" />
-            <span className="text-sm font-medium text-red-700">
-              Only <strong>12/15</strong> Diamond spots left this year
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-full px-4 py-2">
-            <Clock className="h-4 w-4 text-orange-500" />
-            <span className="text-sm font-medium text-orange-700">
-              Next price increase in <strong>48:00:00</strong>
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-full px-4 py-2">
-            <TrendingUp className="h-4 w-4 text-green-500" />
-            <span className="text-sm font-medium text-green-700">
-              <strong>127 salons</strong> upgraded this week
-            </span>
+          <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
+            <Timer className="h-4 w-4" />
+            <span className="text-sm font-medium">Next Price Increase in {timeLeft}</span>
           </div>
         </motion.div>
+
+        {/* Scarcity Indicators */}
+        <div className="flex justify-center gap-4 mb-12 flex-wrap">
+          <div className="bg-amber-100 border border-amber-300 rounded-full px-4 py-2 flex items-center gap-2">
+            <Users className="h-4 w-4 text-amber-600" />
+            <span className="text-sm font-medium text-amber-800">{goldSpots}/15 Gold spots left</span>
+          </div>
+          <div className="bg-cyan-100 border border-cyan-300 rounded-full px-4 py-2 flex items-center gap-2">
+            <Crown className="h-4 w-4 text-cyan-600" />
+            <span className="text-sm font-medium text-cyan-800">{diamondSpots}/5 Diamond spots left</span>
+          </div>
+        </div>
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -242,176 +229,161 @@ const JobPricingTable: React.FC<JobPricingTableProps> = ({ onPricingSelect, jobD
               key={plan.id}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={cn(
-                "relative",
-                plan.isRecommended && "lg:transform lg:scale-110"
-              )}
+              transition={{ delay: index * 0.1 }}
+              className="relative"
             >
               <Card className={cn(
-                "relative overflow-hidden p-8 h-full transition-all duration-500 cursor-pointer group",
-                "bg-gradient-to-br backdrop-blur-sm shadow-xl hover:shadow-2xl",
-                "border-2 hover:border-opacity-50",
-                plan.gradientClass,
-                plan.borderClass,
-                plan.isDiamond && "ring-2 ring-cyan-200 shadow-cyan-100/50"
+                "relative overflow-hidden backdrop-blur-md transition-all duration-300 hover:shadow-2xl border-2",
+                plan.cardClass,
+                plan.id === 'premium' && "ring-2 ring-purple-300 ring-opacity-50"
               )}>
-                {/* Background Glow Effect */}
-                <div className={cn(
-                  "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                  plan.accentColor === 'amber' && "bg-gradient-to-br from-amber-100/20 to-yellow-100/20",
-                  plan.accentColor === 'purple' && "bg-gradient-to-br from-purple-100/20 to-indigo-100/20",
-                  plan.accentColor === 'cyan' && "bg-gradient-to-br from-cyan-100/20 to-blue-100/20"
-                )} />
-                
                 {/* Badge */}
                 {plan.badge && (
-                  <div className="absolute top-4 right-4">
-                    <Badge className={cn(
-                      "font-medium tracking-wide",
-                      plan.badge === 'POPULAR' && "bg-gradient-to-r from-amber-500 to-yellow-500 text-white",
-                      plan.badge === 'RECOMMENDED' && "bg-gradient-to-r from-purple-500 to-indigo-500 text-white animate-pulse",
-                      plan.badge === 'INVITE ONLY' && "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
-                    )}>
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.05, 1],
+                        boxShadow: ['0 0 0 rgba(0,0,0,0)', '0 0 20px rgba(147,51,234,0.3)', '0 0 0 rgba(0,0,0,0)']
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className={cn(
+                        "px-4 py-1 rounded-full text-xs font-bold text-white shadow-lg",
+                        plan.badgeColor
+                      )}
+                    >
                       {plan.badge}
-                    </Badge>
+                    </motion.div>
                   </div>
                 )}
 
-                <div className="relative z-10 h-full flex flex-col">
-                  {/* Plan Icon */}
-                  <div className="mb-6">
-                    {plan.id === 'diamond' && <Diamond className="h-8 w-8 text-cyan-600" />}
-                    {plan.id === 'premium' && <Crown className="h-8 w-8 text-purple-600" />}
-                    {plan.id === 'gold' && <Shield className="h-8 w-8 text-amber-600" />}
-                    {plan.id === 'free' && <Check className="h-8 w-8 text-gray-600" />}
-                  </div>
-
-                  {/* Plan Name */}
-                  <div className="mb-4">
-                    <h3 className="font-playfair text-2xl font-bold text-gray-900 mb-1">
-                      {plan.name}
-                    </h3>
-                    <p className="text-sm font-medium text-gray-600">
-                      {plan.emotiveTitle}
-                    </p>
-                  </div>
-
-                  {/* Pricing */}
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-playfair font-bold text-gray-900">
-                        ${getPrice(plan)}
-                      </span>
-                      {!plan.isDiamond && (
-                        <span className="text-gray-500 font-medium">
-                          /{isAnnual ? 'year' : 'month'}
-                        </span>
-                      )}
-                      {plan.isDiamond && (
-                        <span className="text-gray-500 font-medium">/year</span>
-                      )}
-                    </div>
+                <div className="p-6 pt-8">
+                  {/* Plan Header */}
+                  <div className="text-center mb-6">
+                    <h3 className="font-playfair text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
                     
-                    {getOriginalPrice(plan) && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-lg text-gray-400 line-through">
-                          ${getOriginalPrice(plan)}
-                        </span>
-                        <Badge className="bg-green-100 text-green-800 text-xs">
-                          Save {getSavingsPercentage(plan)}%
-                        </Badge>
+                    {/* Spots Left */}
+                    {plan.spots && (
+                      <div className="mb-4">
+                        <div className="flex justify-center items-center gap-2 text-xs text-gray-500 mb-1">
+                          <span>{plan.spots}/{plan.totalSpots} spots remaining</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div 
+                            className={cn(
+                              "h-1.5 rounded-full transition-all duration-300",
+                              plan.id === 'gold' ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-cyan-400 to-blue-500'
+                            )}
+                            style={{ width: `${(plan.spots / plan.totalSpots) * 100}%` }}
+                          ></div>
+                        </div>
                       </div>
                     )}
-                  </div>
 
-                  {/* Limited Spots */}
-                  {plan.limitedSpots && (
-                    <div className="mb-6">
-                      <div className={cn(
-                        "text-xs font-medium px-3 py-1.5 rounded-full border",
-                        plan.accentColor === 'amber' && "bg-amber-50 text-amber-700 border-amber-200",
-                        plan.accentColor === 'purple' && "bg-purple-50 text-purple-700 border-purple-200",
-                        plan.accentColor === 'cyan' && "bg-cyan-50 text-cyan-700 border-cyan-200"
-                      )}>
-                        {plan.limitedSpots}
-                      </div>
+                    {/* Pricing */}
+                    <div className="flex items-end justify-center gap-2 mb-6">
+                      <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+                      {plan.originalPrice && (
+                        <span className="text-lg text-gray-500 line-through">${plan.originalPrice}</span>
+                      )}
+                      {plan.id !== 'diamond' && (
+                        <span className="text-sm text-gray-600">/{isAnnual ? 'year' : 'month'}</span>
+                      )}
                     </div>
-                  )}
+                  </div>
 
                   {/* Features */}
-                  <div className="flex-1 mb-8">
-                    <ul className="space-y-3">
-                      {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <Check className={cn(
-                            "h-4 w-4 mt-0.5 flex-shrink-0",
-                            plan.accentColor === 'amber' && "text-amber-600",
-                            plan.accentColor === 'purple' && "text-purple-600", 
-                            plan.accentColor === 'cyan' && "text-cyan-600",
-                            !plan.accentColor && "text-gray-600"
-                          )} />
-                          <span className="text-sm font-medium text-gray-700 leading-relaxed">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center gap-3">
+                        <feature.icon className="h-5 w-5 text-gray-600 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">{feature.text}</span>
+                      </li>
+                    ))}
+                  </ul>
 
                   {/* CTA Button */}
                   <Button
-                    onClick={() => handlePlanSelect(plan)}
-                    variant={plan.buttonVariant}
+                    onClick={() => onPricingSelect(plan.id, plan.price, plan.id === 'diamond' ? 12 : (isAnnual ? 12 : 1))}
                     className={cn(
-                      "w-full font-semibold py-3 transition-all duration-300",
-                      plan.buttonVariant === 'outline' 
-                        ? "border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                        : cn(
-                            "text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02]",
-                            plan.accentColor === 'amber' && "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600",
-                            plan.accentColor === 'purple' && "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600",
-                            plan.accentColor === 'cyan' && "bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
-                          )
+                      "w-full h-12 font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg",
+                      plan.buttonClass
                     )}
                   >
                     {plan.buttonText}
+                    <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
-
-                  {/* Trust Microcopy */}
-                  <p className="text-xs text-gray-500 text-center mt-3">
-                    {plan.id === 'free' ? 'No payment required' : 'Secure checkout • Cancel anytime'}
-                  </p>
                 </div>
+
+                {/* Special Effects */}
+                {plan.id === 'diamond' && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    <motion.div
+                      animate={{
+                        background: [
+                          'radial-gradient(circle at 0% 0%, rgba(6,182,212,0.1) 0%, transparent 50%)',
+                          'radial-gradient(circle at 100% 100%, rgba(6,182,212,0.1) 0%, transparent 50%)',
+                          'radial-gradient(circle at 0% 0%, rgba(6,182,212,0.1) 0%, transparent 50%)'
+                        ]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="absolute inset-0 rounded-lg"
+                    />
+                  </div>
+                )}
               </Card>
             </motion.div>
           ))}
         </div>
 
-        {/* Enterprise Card */}
+        {/* Testimonials Carousel */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="max-w-md mx-auto"
+          className="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-gray-200 mb-16"
         >
-          <Card className="p-8 bg-gradient-to-br from-gray-900 to-black text-white shadow-2xl border-gray-700">
-            <div className="text-center">
-              <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="font-playfair text-2xl font-bold mb-2">Enterprise</h3>
-              <p className="text-gray-300 mb-6">Custom Solutions</p>
-              <p className="text-gray-400 text-sm mb-6">
-                For salon groups or industry partners—talk to our team for a tailored package.
-              </p>
-              <Button 
-                variant="outline" 
-                className="w-full border-gray-600 text-white hover:bg-gray-800"
-              >
-                Contact Sales
-              </Button>
+          <div className="text-center mb-6">
+            <div className="flex justify-center gap-1 mb-2">
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ delay: i * 0.1, duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
+                </motion.div>
+              ))}
             </div>
-          </Card>
+            <h3 className="font-playfair text-2xl font-bold text-gray-900">Real salon owners rate us 5/5</h3>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentTestimonial}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.5 }}
+              className="text-center"
+            >
+              <blockquote className="text-lg text-gray-700 italic mb-4">
+                "{testimonials[currentTestimonial].quote}"
+              </blockquote>
+              <div>
+                <p className="font-semibold text-gray-900">{testimonials[currentTestimonial].name}</p>
+                <p className="text-sm text-gray-600">{testimonials[currentTestimonial].role}</p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
+
+        {/* Mobile Sticky CTA */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-gray-200 lg:hidden z-50">
+          <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold">
+            Select Plan
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
