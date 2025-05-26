@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Jobs from './pages/Jobs';
@@ -10,8 +11,8 @@ import PostJob from './pages/PostJob';
 import PostSalon from './pages/PostSalon';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
+import SignIn from './pages/auth/SignIn';
+import SignUp from './pages/auth/SignUp';
 import ArtistProfile from './pages/ArtistProfile';
 import Messages from './pages/Messages';
 import Notifications from './pages/Notifications';
@@ -20,7 +21,7 @@ import SellSalon from './pages/SellSalon';
 import Explore from './pages/Explore';
 import Marketplace from './pages/Marketplace';
 import UserPage from './pages/UserPage';
-import { AuthGuard } from './components/auth/AuthGuard';
+import AuthGuard from './components/auth/AuthGuard';
 
 const AppRoutes = () => {
   return (

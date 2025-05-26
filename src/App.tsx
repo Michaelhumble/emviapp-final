@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -6,7 +5,7 @@ import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import { HelmetProvider } from 'react-helmet-async';
-import routes from './routes';
+import AppRoutes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import { Toaster } from "@/components/ui/toaster";
@@ -77,17 +76,9 @@ function App() {
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
-                    {routes.map((route, index) => (
-                      (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
-                       route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
-                       route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job") && (
-                        <Route 
-                          key={index}
-                          path={route.path}
-                          element={<Layout>{route.element}</Layout>}
-                        />
-                      )
-                    ))}
+                    {/* All other routes */}
+                    <Route path="/*" element={<AppRoutes />} />
+                    
                     <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
                     <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
                   </Routes>

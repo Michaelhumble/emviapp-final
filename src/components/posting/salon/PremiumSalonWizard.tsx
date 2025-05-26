@@ -3,25 +3,25 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { SalonListing } from './types';
+import { EnhancedSalonFormValues } from './enhancedSalonFormSchema';
 import SalonIdentitySection from './sections/SalonIdentitySection';
 import SalonLocationSection from './sections/SalonLocationSection';
 
 interface PremiumSalonWizardProps {
-  onSubmit: (data: SalonListing) => Promise<boolean>;
+  onSubmit: (data: EnhancedSalonFormValues) => Promise<boolean>;
   isSubmitting?: boolean;
 }
 
 const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWizardProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<Partial<SalonListing>>({});
+  const [formData, setFormData] = useState<Partial<EnhancedSalonFormValues>>({});
 
   const steps = [
     { title: 'Identity', component: 'identity' },
     { title: 'Location', component: 'location' },
   ];
 
-  const handleSectionSubmit = (sectionData: Partial<SalonListing>) => {
+  const handleSectionSubmit = (sectionData: Partial<EnhancedSalonFormValues>) => {
     const updatedData = { ...formData, ...sectionData };
     setFormData(updatedData);
     
@@ -30,7 +30,7 @@ const PremiumSalonWizard = ({ onSubmit, isSubmitting = false }: PremiumSalonWiza
       setCurrentStep(currentStep + 1);
     } else {
       // This would be the final submission
-      console.log('Final form data:', updatedData);
+      onSubmit(updatedData as EnhancedSalonFormValues);
     }
   };
 
