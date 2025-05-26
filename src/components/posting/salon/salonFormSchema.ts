@@ -28,6 +28,10 @@ export const salonFormSchema = z.object({
     .url("Please enter a valid URL")
     .optional()
     .or(z.literal("")),
+
+  // Step 4: Photos
+  photos: z.array(z.any()).min(1, "At least one photo is required").max(10, "Maximum 10 photos allowed"),
+  coverPhotoIndex: z.number().min(0).default(0),
 });
 
 export type SalonFormValues = z.infer<typeof salonFormSchema>;
