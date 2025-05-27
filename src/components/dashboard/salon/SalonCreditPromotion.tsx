@@ -57,11 +57,11 @@ const SalonCreditPromotion = () => {
   }, [user, userProfile]);
   
   const handleBuyCredits = () => {
-    toast.info(t("Credit purchase will be available soon!"));
+    toast.info(t({ english: "Credit purchase will be available soon!", vietnamese: "Tính năng mua credit sẽ sớm có sẵn!" }));
   };
   
   const handleUpgrade = () => {
-    toast.info(t("Pro subscription plans will be available soon!"));
+    toast.info(t({ english: "Pro subscription plans will be available soon!", vietnamese: "Gói đăng ký Pro sẽ sớm có sẵn!" }));
   };
   
   return (
@@ -76,7 +76,7 @@ const SalonCreditPromotion = () => {
         <CardHeader>
           <CardTitle className="text-lg flex items-center">
             <CreditCard className="h-5 w-5 text-purple-500 mr-2" />
-            {t("Credit Balance & Pro Plan")}
+            {t({ english: "Credit Balance & Pro Plan", vietnamese: "Số Dư Credit & Gói Pro" })}
           </CardTitle>
         </CardHeader>
         

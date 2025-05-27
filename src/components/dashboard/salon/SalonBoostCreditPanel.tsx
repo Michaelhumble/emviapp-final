@@ -1,174 +1,142 @@
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { BadgeDollarSign, Zap, Plus } from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { BadgeDollarSign, Rocket, Plus, RefreshCw, Shield, TrendingUp } from "lucide-react";
-import { useSalonCredits } from "@/hooks/useSalonCredits";
 import { toast } from "sonner";
+import { checkCredits } from "@/utils/credits";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useNavigate } from "react-router-dom";
 
 const SalonBoostCreditPanel = () => {
+  const { user } = useAuth();
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { credits, boostStatus, loading, refreshCredits } = useSalonCredits();
-  const [boosting, setBoosting] = useState(false);
+  const [credits, setCredits] = useState(0);
+  const [loading, setLoading] = useState(false);
   
-  const handleBuyCredits = () => {
-    // Temporary handling until checkout is implemented
-    toast.info(t("Credit purchase will be available soon!"));
-    navigate("/dashboard/owner");
+  useEffect(() => {
+    if (!user?.id) return;
+    
+    const fetchCredits = async () => {
+      try {
+        const userCredits = await checkCredits(user.id);
+        setCredits(userCredits);
+      } catch (err) {
+        console.error("Error fetching credits:", err);
+      }
+    };
+    
+    fetchCredits();
+    
+    // Setup a refresh interval
+    const interval = setInterval(fetchCredits, 60000);
+    
+    return () => clearInterval(interval);
+  }, [user]);
+  
+  const handleAddCredits = () => {
+    toast.info(t({ english: "Credit purchase will be available soon!", vietnamese: "Tính năng mua credit sẽ sớm có sẵn!" }));
   };
   
-  const handleBoost = async () => {
-    if (credits < 10) {
-      toast.error(t("Not enough credits! You need at least 10 credits to boost your listing."));
-      return;
-    }
-    
-    setBoosting(true);
-    
-    try {
-      // This is a placeholder for future payment flow
-      setTimeout(() => {
-        setBoosting(false);
-        toast.info(t("Boost functionality will be implemented in a future update!"));
-      }, 1000);
-    } catch (error) {
-      console.error("Boost error:", error);
-      setBoosting(false);
-      toast.error(t("Something went wrong. Please try again."));
-    }
-  };
-  
-  const formatDate = (date: Date | null) => {
-    if (!date) return "N/A";
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    });
-  };
-  
-  const getDaysRemaining = () => {
-    if (!boostStatus.expiresAt) return 0;
-    
-    const now = new Date();
-    const diff = boostStatus.expiresAt.getTime() - now.getTime();
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  const handleBoostSalon = () => {
+    toast.info(t({ english: "Salon boost feature coming soon!", vietnamese: "Tính năng tăng cường salon sẽ sớm có sẵn!" }));
   };
   
   return (
-    <Card className="border-purple-100">
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center">
-          <BadgeDollarSign className="h-5 w-5 text-purple-500 mr-2" />
-          {t("Boost & Credits")}
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {loading ? (
-          <div className="py-4 text-center text-gray-500">
-            <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2" />
-            <p>{t("Loading credit data...")}</p>
-          </div>
-        ) : (
-          <>
-            {/* Credit Balance */}
-            <div className="flex items-center justify-between bg-purple-50 p-4 rounded-lg">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Credit Status Card */}
+      <Card className="border-purple-100">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center">
+            <BadgeDollarSign className="h-5 w-5 text-purple-500 mr-2" />
+            {t({ english: "Credit Status", vietnamese: "Trạng Thái Credit" })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col space-y-4">
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl flex justify-between items-center">
               <div>
-                <h3 className="font-medium text-purple-800">{t("Credit Balance")}</h3>
-                <p className="text-2xl font-bold text-purple-700">{credits}</p>
+                <p className="text-sm text-purple-600">{t({ english: "Current Balance", vietnamese: "Số Dư Hiện Tại" })}</p>
+                <p className="text-2xl font-bold text-purple-800">{credits} {t({ english: "credits", vietnamese: "credit" })}</p>
               </div>
               <Button 
-                variant="outline" 
-                className="border-purple-200 hover:bg-purple-100 transition-colors"
-                onClick={handleBuyCredits}
+                className="bg-white text-purple-600 hover:bg-purple-50 border border-purple-200"
+                onClick={handleAddCredits}
+                disabled={loading}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                {t("Buy Credits")}
+                <Plus className="h-4 w-4 mr-1" />
+                {t({ english: "Add Credits", vietnamese: "Thêm Credit" })}
               </Button>
             </div>
             
-            {/* Boost Status */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="font-medium text-blue-800 flex items-center">
-                    <Rocket className="h-4 w-4 mr-1" />
-                    {t("Listing Boost")}
-                  </h3>
-                  <p className="text-sm text-blue-600">
-                    {boostStatus.isActive 
-                      ? `${t("Active until")} ${formatDate(boostStatus.expiresAt)}`
-                      : credits === 0 ? t("Inactive") : t("Not active")}
-                  </p>
-                </div>
-                
-                {boostStatus.isActive ? (
-                  <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
-                    {getDaysRemaining()} {t("days left")}
-                  </div>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
-                    disabled={credits < 10 || boosting}
-                    onClick={handleBoost}
-                  >
-                    {boosting ? (
-                      <>
-                        <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                        {t("Processing")}
-                      </>
-                    ) : (
-                      <>
-                        <Rocket className="h-3 w-3 mr-1" />
-                        {t("Boost Now")}
-                      </>
-                    )}
-                  </Button>
-                )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              <div className="bg-white p-3 rounded-md border border-gray-100">
+                <p className="text-gray-500">{t({ english: "Featured Listing", vietnamese: "Danh Sách Nổi Bật" })}</p>
+                <p className="font-medium flex items-center">
+                  <BadgeDollarSign className="h-4 w-4 text-amber-500 mr-1" />
+                  10 {t({ english: "credits", vietnamese: "credit" })}
+                </p>
               </div>
-              
-              {boostStatus.isActive && (
-                <Progress
-                  value={Math.min((getDaysRemaining() / 7) * 100, 100)}
-                  className="h-2 bg-blue-100"
-                />
-              )}
-              
-              <div className="mt-2 text-xs text-blue-700 flex items-center">
-                <Shield className="h-3 w-3 mr-1" />
-                <span>{t("10 credits for 7 days of premium visibility")}</span>
+              <div className="bg-white p-3 rounded-md border border-gray-100">
+                <p className="text-gray-500">{t({ english: "Post Job", vietnamese: "Đăng Việc" })}</p>
+                <p className="font-medium flex items-center">
+                  <BadgeDollarSign className="h-4 w-4 text-green-500 mr-1" />
+                  0 {t({ english: "credits", vietnamese: "credit" })} <span className="ml-1 text-xs text-green-500">({t({ english: "Free", vietnamese: "Miễn Phí" })})</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Salon Boost Card */}
+      <Card className="border-amber-100">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center">
+            <Zap className="h-5 w-5 text-amber-500 mr-2" />
+            {t({ english: "Salon Boost", vietnamese: "Tăng Cường Salon" })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col space-y-4">
+            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm text-amber-600">{t({ english: "Boost Status", vietnamese: "Trạng Thái Tăng Cường" })}</p>
+                  <p className="text-lg font-bold text-amber-800">{t({ english: "Not Active", vietnamese: "Không Hoạt Động" })}</p>
+                </div>
+                <Button 
+                  className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white border-none"
+                  onClick={handleBoostSalon}
+                  disabled={loading}
+                >
+                  <Zap className="h-4 w-4 mr-1" />
+                  {t({ english: "Boost Now", vietnamese: "Tăng Cường Ngay" })}
+                </Button>
               </div>
             </div>
             
-            {/* Boost Benefits */}
-            <div className="mt-2 space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">{t("Boost Benefits")}:</h4>
-              <ul className="text-xs text-gray-600 space-y-1">
-                <li className="flex items-start">
-                  <TrendingUp className="h-3 w-3 text-green-500 mr-1 mt-0.5" />
-                  <span>{t("3x higher visibility in search results")}</span>
+            <div className="bg-white p-3 rounded-md border border-gray-100">
+              <p className="text-sm text-gray-600 mb-2">{t({ english: "What you get:", vietnamese: "Những gì bạn nhận được:" })}</p>
+              <ul className="text-sm space-y-1">
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
+                  {t({ english: "Featured placement", vietnamese: "Vị trí nổi bật" })}
                 </li>
-                <li className="flex items-start">
-                  <TrendingUp className="h-3 w-3 text-green-500 mr-1 mt-0.5" />
-                  <span>{t("Featured in \"Recommended Salons\" section")}</span>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
+                  {t({ english: "2x more visibility", vietnamese: "Tăng 2 lần độ hiển thị" })}
                 </li>
-                <li className="flex items-start">
-                  <TrendingUp className="h-3 w-3 text-green-500 mr-1 mt-0.5" />
-                  <span>{t("Priority placement in salon listings")}</span>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
+                  {t({ english: "Priority in search", vietnamese: "Ưu tiên trong tìm kiếm" })}
                 </li>
               </ul>
             </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

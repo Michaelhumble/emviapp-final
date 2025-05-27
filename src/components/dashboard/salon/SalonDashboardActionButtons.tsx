@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Store, TrendingUp, RefreshCw } from "lucide-react";
@@ -36,7 +37,7 @@ const SalonDashboardActionButtons = () => {
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
       <h2 className="text-lg font-medium text-gray-800 mb-4">
-        {isVietnamese ? "Hành Động Nhanh Cho Tiệm" : t("Salon Quick Actions")}
+        {isVietnamese ? "Hành Động Nhanh Cho Tiệm" : t({ english: "Salon Quick Actions", vietnamese: "Hành Động Nhanh Cho Tiệm" })}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Button 
@@ -44,18 +45,18 @@ const SalonDashboardActionButtons = () => {
           onClick={() => handleButtonClick("/post-job", "Post a Job")}
         >
           <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-            {isVietnamese ? "HOT" : t("Hot")}
+            {isVietnamese ? "HOT" : t({ english: "Hot", vietnamese: "HOT" })}
           </div>
           <PlusCircle className="h-10 w-10 mb-1" />
           <div className="flex flex-col items-center text-center">
             <span className="font-semibold text-lg">
-              {isVietnamese ? "Đăng Tuyển Dụng Mới" : t("Post a New Job")}
+              {isVietnamese ? "Đăng Tuyển Dụng Mới" : t({ english: "Post a New Job", vietnamese: "Đăng Tuyển Dụng Mới" })}
             </span>
             <span className="text-sm font-normal opacity-90">
-              {isVietnamese ? "Tìm thợ nail nhanh chóng" : t("Find nail techs quickly")}
+              {isVietnamese ? "Tìm thợ nail nhanh chóng" : t({ english: "Find nail techs quickly", vietnamese: "Tìm thợ nail nhanh chóng" })}
             </span>
             {isVietnamese && (
-              <span className="text-xs text-blue-100 mt-1">{t("Đăng tuyển dụng để tìm nhân viên phù hợp.")}</span>
+              <span className="text-xs text-blue-100 mt-1">{t({ english: "Post a job to find suitable employees.", vietnamese: "Đăng tuyển dụng để tìm nhân viên phù hợp." })}</span>
             )}
           </div>
         </Button>
@@ -67,17 +68,17 @@ const SalonDashboardActionButtons = () => {
           <Store className="h-8 w-8 mb-1" />
           <div className="flex flex-col items-center text-center">
             <span className="font-semibold">
-              {isVietnamese ? "Đăng Bán Tiệm" : t("List Salon for Sale")}
+              {isVietnamese ? "Đăng Bán Tiệm" : t({ english: "List Salon for Sale", vietnamese: "Đăng Bán Tiệm" })}
             </span>
             <span className="text-xs font-normal opacity-90">
-              {isVietnamese ? "Đăng bán tiệm của bạn" : t("List your salon")}
+              {isVietnamese ? "Đăng bán tiệm của bạn" : t({ english: "List your salon", vietnamese: "Đăng bán tiệm của bạn" })}
             </span>
           </div>
         </Button>
         
         <Button 
           className="bg-purple-600 hover:bg-purple-700 h-auto py-3 px-4 flex flex-col items-center justify-center gap-2 transition-colors"
-          onClick={() => handleActionClick(isVietnamese ? "Quảng Bá Tiệm" : t("Promote My Business"))}
+          onClick={() => handleActionClick(isVietnamese ? "Quảng Bá Tiệm" : t({ english: "Promote My Business", vietnamese: "Quảng Bá Tiệm" }))}
           disabled={loadingPromotion}
         >
           {loadingPromotion ? (
@@ -87,10 +88,10 @@ const SalonDashboardActionButtons = () => {
           )}
           <div className="flex flex-col items-center text-center">
             <span className="font-semibold">
-              {isVietnamese ? "Quảng Bá Tiệm" : t("Promote My Business")}
+              {isVietnamese ? "Quảng Bá Tiệm" : t({ english: "Promote My Business", vietnamese: "Quảng Bá Tiệm" })}
             </span>
             <span className="text-xs font-normal opacity-90">
-              {isVietnamese ? "Tăng độ phổ biến" : t("Boost visibility")}
+              {isVietnamese ? "Tăng độ phổ biến" : t({ english: "Boost visibility", vietnamese: "Tăng độ phổ biến" })}
             </span>
           </div>
         </Button>
