@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Check, Crown, Star, Shield } from 'lucide-react';
-import { SalonPricingOptions, calculateSalonPostPrice } from '@/utils/posting/salonPricing';
-import SalonPostOptions from './SalonPostOptions';
+import { Badge } from '@/components/ui/badge';
+import { Check, Crown, Star, Zap } from 'lucide-react';
+import { SalonPricingOptions, SalonPricingTier, calculateSalonPostPrice } from '@/utils/posting/salonPricing';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonPricingSelectionProps {
   selectedOptions: SalonPricingOptions;
@@ -16,175 +16,137 @@ const SalonPricingSelection: React.FC<SalonPricingSelectionProps> = ({
   selectedOptions,
   onOptionsChange
 }) => {
+  const { t } = useTranslation();
+
   const pricingPlans = [
     {
-      id: 'standard',
-      name: 'Standard Listing',
+      id: 'basic' as SalonPricingTier,
+      name: t({ english: 'Basic', vietnamese: 'Cơ bản' }),
+      price: 19.99,
+      duration: 30,
+      icon: <Star className="h-5 w-5" />,
+      features: [
+        t({ english: 'Basic listing visibility', vietnamese: 'Hiển thị tin đăng cơ bản' }),
+        t({ english: '30-day active period', vietnamese: 'Thời gian hoạt động 30 ngày' }),
+        t({ english: 'Standard support', vietnamese: 'Hỗ trợ tiêu chuẩn' })
+      ]
+    },
+    {
+      id: 'standard' as SalonPricingTier,
+      name: t({ english: 'Standard', vietnamese: 'Tiêu chuẩn' }),
       price: 24.99,
-      duration: 1,
-      savings: 0,
-      popular: false,
-      icon: <Check className="h-5 w-5 text-green-500" />,
-      features: [
-        'Active for 30 days',
-        'Basic listing visibility',
-        'Email notifications for inquiries',
-        'Standard support'
-      ]
-    },
-    {
-      id: '6months',
-      name: '6 Month Package',
-      price: 120,
-      duration: 6,
-      savings: 30,
+      duration: 30,
+      icon: <Zap className="h-5 w-5" />,
       popular: true,
-      icon: <Star className="h-5 w-5 text-amber-500" />,
       features: [
-        'Active for 6 months',
-        'Enhanced visibility',
-        'Priority email notifications',
-        'Dedicated support',
-        'Save $30 vs monthly'
+        t({ english: 'Enhanced visibility', vietnamese: 'Hiển thị nâng cao' }),
+        t({ english: 'Priority placement', vietnamese: 'Vị trí ưu tiên' }),
+        t({ english: 'Photo gallery', vietnamese: 'Thư viện ảnh' }),
+        t({ english: 'Priority support', vietnamese: 'Hỗ trợ ưu tiên' })
       ]
     },
     {
-      id: '12months',
-      name: '12 Month Package',
-      price: 249.99,
-      duration: 12,
-      savings: 50,
-      popular: false,
-      icon: <Crown className="h-5 w-5 text-purple-500" />,
+      id: 'featured' as SalonPricingTier,
+      name: t({ english: 'Featured', vietnamese: 'Nổi bật' }),
+      price: 39.99,
+      duration: 30,
+      icon: <Crown className="h-5 w-5" />,
       features: [
-        'Active for 12 months',
-        'Maximum visibility',
-        'Instant notifications',
-        'Premium support',
-        'Save $50 vs monthly'
+        t({ english: 'Maximum visibility', vietnamese: 'Hiển thị tối đa' }),
+        t({ english: 'Top placement', vietnamese: 'Vị trí hàng đầu' }),
+        t({ english: 'Featured badge', vietnamese: 'Huy hiệu nổi bật' }),
+        t({ english: 'Premium support', vietnamese: 'Hỗ trợ cao cấp' }),
+        t({ english: 'Social media boost', vietnamese: 'Tăng cường mạng xã hội' })
+      ]
+    },
+    {
+      id: 'premium' as SalonPricingTier,
+      name: t({ english: 'Premium', vietnamese: 'Cao cấp' }),
+      price: 59.99,
+      duration: 30,
+      icon: <Crown className="h-5 w-5" />,
+      features: [
+        t({ english: 'Ultimate visibility', vietnamese: 'Hiển thị tối ưu' }),
+        t({ english: 'Guaranteed top spot', vietnamese: 'Đảm bảo vị trí hàng đầu' }),
+        t({ english: 'Multiple badges', vietnamese: 'Nhiều huy hiệu' }),
+        t({ english: 'Dedicated support', vietnamese: 'Hỗ trợ chuyên biệt' }),
+        t({ english: 'Full marketing package', vietnamese: 'Gói marketing đầy đủ' })
       ]
     }
   ];
 
-  const handlePlanSelect = (planId: string) => {
-    let newOptions = { ...selectedOptions };
-    
-    if (planId === 'standard') {
-      newOptions.selectedPricingTier = 'standard';
-      newOptions.durationMonths = 1;
-    } else if (planId === '6months') {
-      newOptions.selectedPricingTier = 'standard';
-      newOptions.durationMonths = 6;
-    } else if (planId === '12months') {
-      newOptions.selectedPricingTier = 'standard';
-      newOptions.durationMonths = 12;
-    }
-    
-    onOptionsChange(newOptions);
+  const handlePlanSelect = (planId: SalonPricingTier) => {
+    onOptionsChange({
+      ...selectedOptions,
+      selectedPricingTier: planId
+    });
   };
 
-  const getSelectedPlanId = () => {
-    if (selectedOptions.durationMonths === 1) return 'standard';
-    if (selectedOptions.durationMonths === 6) return '6months';
-    if (selectedOptions.durationMonths === 12) return '12months';
-    return 'standard';
-  };
-
-  const selectedPlanId = getSelectedPlanId();
   const currentPrice = calculateSalonPostPrice(selectedOptions);
 
   return (
-    <div className="space-y-8">
-      {/* Pricing Plans Grid */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {pricingPlans.map((plan) => {
-          const isSelected = selectedPlanId === plan.id;
-          
-          return (
-            <Card
-              key={plan.id}
-              className={`relative cursor-pointer transition-all duration-200 ${
-                isSelected
-                  ? 'ring-2 ring-purple-500 border-purple-500 shadow-lg'
-                  : 'hover:border-purple-300 hover:shadow-md'
-              } ${plan.popular ? 'border-amber-400' : ''}`}
-              onClick={() => handlePlanSelect(plan.id)}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-amber-500 text-white px-3 py-1">
-                    Most Popular
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-2">{plan.icon}</div>
-                <CardTitle className="text-lg">{plan.name}</CardTitle>
-                <div className="space-y-1">
-                  <div className="text-3xl font-bold text-gray-900">
-                    ${plan.price}
-                  </div>
-                  {plan.savings > 0 && (
-                    <div className="text-sm text-green-600 font-medium">
-                      Save ${plan.savings}
-                    </div>
-                  )}
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <ul className="space-y-2 mb-4">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start text-sm">
-                      <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                
-                <Button
-                  className={`w-full ${
-                    isSelected
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlanSelect(plan.id);
-                  }}
-                >
-                  {isSelected ? 'Selected' : 'Select Plan'}
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Add-on Options */}
-      <div className="border-t pt-6">
-        <SalonPostOptions
-          options={selectedOptions}
-          onOptionsChange={onOptionsChange}
-        />
-      </div>
-
-      {/* Price Summary */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-green-500" />
-            <span className="font-medium text-gray-900">Total Price</span>
-          </div>
-          <div className="text-2xl font-bold text-purple-600">
-            ${currentPrice.toFixed(2)}
-          </div>
-        </div>
-        <p className="text-sm text-gray-600 mt-2">
-          Your listing will be active for {selectedOptions.durationMonths} month{selectedOptions.durationMonths > 1 ? 's' : ''}
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold">{t({ english: 'Choose Your Listing Plan', vietnamese: 'Chọn gói tin đăng' })}</h2>
+        <p className="text-gray-600 mt-2">
+          {t({ english: 'Select the plan that best fits your needs', vietnamese: 'Chọn gói phù hợp nhất với nhu cầu của bạn' })}
         </p>
       </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {pricingPlans.map((plan) => (
+          <Card 
+            key={plan.id}
+            className={`relative cursor-pointer transition-all hover:shadow-lg ${
+              selectedOptions.selectedPricingTier === plan.id 
+                ? 'ring-2 ring-purple-500 border-purple-500' 
+                : ''
+            } ${plan.popular ? 'border-purple-200' : ''}`}
+            onClick={() => handlePlanSelect(plan.id)}
+          >
+            {plan.popular && (
+              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500">
+                {t({ english: 'Popular', vietnamese: 'Phổ biến' })}
+              </Badge>
+            )}
+            
+            <CardHeader className="text-center pb-2">
+              <div className="flex justify-center mb-2 text-purple-600">
+                {plan.icon}
+              </div>
+              <CardTitle className="text-lg">{plan.name}</CardTitle>
+              <div className="text-2xl font-bold text-purple-600">
+                ${plan.price}
+                <span className="text-sm font-normal text-gray-500">/{plan.duration}d</span>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="pt-0">
+              <ul className="space-y-2">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start text-sm">
+                    <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {selectedOptions.selectedPricingTier && (
+        <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <div className="flex justify-between items-center">
+            <span className="font-medium text-purple-800">
+              {t({ english: 'Selected Plan Total:', vietnamese: 'Tổng gói đã chọn:' })}
+            </span>
+            <span className="font-bold text-lg text-purple-600">
+              ${currentPrice.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { calculateSalonPostPrice, SalonPricingOptions } from '@/utils/posting/salonPricing';
+import { calculateSalonPostPrice, SalonPricingOptions, SalonPricingTier } from '@/utils/posting/salonPricing';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonPostOptionsProps {
@@ -20,7 +20,7 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
   const [localOptions, setLocalOptions] = useState<SalonPricingOptions>({
     ...options,
     isFirstPost,
-    selectedPricingTier: 'standard'
+    selectedPricingTier: 'standard' as SalonPricingTier
   });
 
   const handleOptionChange = (option: keyof SalonPricingOptions, value: boolean) => {

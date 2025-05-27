@@ -1,7 +1,7 @@
 
 import { PricingOptions, JobPricingTier } from "./types";
 
-export type SalonPricingTier = 'standard' | 'featured';
+export type SalonPricingTier = 'basic' | 'standard' | 'featured' | 'premium';
 
 export interface SalonPricingOptions {
   selectedPricingTier: SalonPricingTier;
