@@ -78,3 +78,26 @@ export const getPlanDetails = (durationMonths: number) => {
       return getPlanDetails(1);
   }
 };
+
+export const getSalonPostPricingSummary = (options: SalonPricingOptions) => {
+  const basePrice = calculateSalonPostPrice(options);
+  const planDetails = getPlanDetails(options.durationMonths);
+  
+  return {
+    basePrice,
+    totalPrice: basePrice,
+    planName: planDetails.name,
+    features: planDetails.features,
+    addOns: []
+  };
+};
+
+export const validateSalonPricingOptions = (options: SalonPricingOptions): boolean => {
+  return options.durationMonths > 0 && options.selectedPricingTier !== undefined;
+};
+
+export const getStripeSalonPriceId = (options: SalonPricingOptions): string => {
+  // This would return the appropriate Stripe price ID based on the selected options
+  // For now, return a placeholder
+  return `salon_${options.durationMonths}month_${options.selectedPricingTier}`;
+};
