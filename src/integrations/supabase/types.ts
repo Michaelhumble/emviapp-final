@@ -1639,6 +1639,7 @@ export type Database = {
           is_featured: boolean | null
           is_private: boolean | null
           is_urgent: boolean | null
+          monthly_rent: number | null
           salon_name: string
           size: string | null
           state: string
@@ -1656,6 +1657,7 @@ export type Database = {
           is_featured?: boolean | null
           is_private?: boolean | null
           is_urgent?: boolean | null
+          monthly_rent?: number | null
           salon_name: string
           size?: string | null
           state: string
@@ -1673,6 +1675,7 @@ export type Database = {
           is_featured?: boolean | null
           is_private?: boolean | null
           is_urgent?: boolean | null
+          monthly_rent?: number | null
           salon_name?: string
           size?: string | null
           state?: string

@@ -6,19 +6,24 @@ import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { SalonPostForm } from './SalonPostForm';
 import SalonPlanSelectionSection from './SalonPlanSelectionSection';
+import SalonPaymentFeatures from './SalonPaymentFeatures';
 import { SalonPricingOptions, SalonPricingTier, calculateSalonPostPrice } from '@/utils/posting/salonPricing';
 import { SalonFormValues } from './salonFormSchema';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const SalonListingWizard = () => {
   const { t } = useTranslation();
+  const { user, userRole } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<SalonFormValues | null>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   
-  // Fix: Initialize with proper SalonPricingTier type instead of string
+  // Initialize with proper SalonPricingTier type
   const [pricingOptions, setPricingOptions] = useState<SalonPricingOptions>({
-    selectedPricingTier: 'standard' as SalonPricingTier, // Fix: explicit type cast
+    selectedPricingTier: 'standard' as SalonPricingTier,
     isNationwide: false,
     fastSalePackage: false,
     showAtTop: false,
@@ -41,9 +46,53 @@ const SalonListingWizard = () => {
     setCurrentStep(3);
   };
 
-  const handlePaymentComplete = () => {
-    // Payment completion logic
-    console.log('Payment completed for salon listing');
+  const handlePaymentComplete = async () => {
+    if (!formData || !user) {
+      toast.error('Missing required data for listing creation');
+      return;
+    }
+
+    try {
+      // Create salon listing in database with pending status
+      const { data, error } = await supabase
+        .from('salon_sales')
+        .insert({
+          user_id: user.id,
+          salon_name: formData.salonName,
+          city: formData.city,
+          state: formData.state,
+          asking_price: parseFloat(formData.askingPrice),
+          monthly_rent: parseFloat(formData.monthlyRent),
+          size: formData.squareFeet || null,
+          business_type: 'salon',
+          description: formData.englishDescription || formData.vietnameseDescription || '',
+          is_urgent: formData.fastSalePackage,
+          is_private: false,
+          is_featured: pricingOptions.showAtTop,
+          status: 'pending' // Set initial status as pending for moderation
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating salon listing:', error);
+        toast.error('Failed to create salon listing. Please try again.');
+        return;
+      }
+
+      console.log('Salon listing created successfully:', data);
+      toast.success('Salon listing submitted for review!');
+      
+      // TODO: Redirect to success page or salon listing dashboard
+      // For now, just reset the wizard
+      setCurrentStep(1);
+      setFormData(null);
+      setPhotoUploads([]);
+      
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+    }
   };
 
   const currentPrice = calculateSalonPostPrice(pricingOptions);
@@ -85,25 +134,13 @@ const SalonListingWizard = () => {
             />
           )}
 
-          {currentStep === 3 && (
-            <div className="text-center py-8">
-              <h2 className="text-2xl font-bold mb-4">
-                {t({ english: 'Complete Payment', vietnamese: 'Hoàn tất thanh toán' })}
-              </h2>
-              <p className="text-gray-600 mb-6">
-                {t({ english: `Total: $${currentPrice.toFixed(2)}`, vietnamese: `Tổng: $${currentPrice.toFixed(2)}` })}
-              </p>
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={() => setCurrentStep(2)}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t({ english: 'Back', vietnamese: 'Quay lại' })}
-                </Button>
-                <Button onClick={handlePaymentComplete}>
-                  {t({ english: 'Pay Now', vietnamese: 'Thanh toán ngay' })}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </div>
+          {currentStep === 3 && formData && (
+            <SalonPaymentFeatures
+              formData={formData}
+              selectedOptions={pricingOptions}
+              onPayment={handlePaymentComplete}
+              onBack={() => setCurrentStep(2)}
+            />
           )}
         </CardContent>
       </Card>
