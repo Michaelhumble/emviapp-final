@@ -39,7 +39,16 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
 
   const handleFormSubmit = (values: SalonFormValues) => {
     console.log('Form submitted with values:', values);
+    console.log('Photos uploaded:', photoUploads.length);
+    
+    // Validate photos one more time
+    if (photoUploads.length === 0) {
+      console.error('No photos uploaded, cannot proceed');
+      return;
+    }
+    
     setFormData(values);
+    console.log('Moving to pricing step (step 4)');
     setCurrentStep(4); // Go to pricing step
   };
 
