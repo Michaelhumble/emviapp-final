@@ -1,69 +1,105 @@
 
-export type SalonPricingTier = 'basic' | 'premium' | 'enterprise';
+import { PricingOptions, JobPricingTier } from "./types";
+
+export type SalonPricingTier = 'standard' | 'featured';
 
 export interface SalonPricingOptions {
-  durationMonths: number;
   selectedPricingTier: SalonPricingTier;
-  isNationwide: boolean;
-  fastSalePackage: boolean;
-  featuredBoost?: boolean;
-  showAtTop?: boolean;
-  bundleWithJobPost?: boolean;
+  durationMonths?: number;
+  autoRenew?: boolean;
+  isNationwide?: boolean;
   isFirstPost?: boolean;
+  showAtTop?: boolean;
+  fastSalePackage?: boolean;
+  jobPostBundle?: boolean;
+  bundleWithJobPost?: boolean;
+  isRenewal?: boolean;
+  hasReferrals?: boolean;
+  featuredBoost?: boolean;
 }
 
+// Calculate salon posting price based on options
 export const calculateSalonPostPrice = (options: SalonPricingOptions): number => {
-  let basePrice = 50; // Base price for 1 month
+  let basePrice = 24.99; // Base salon posting price per month
   
-  // Duration multiplier with discounts
-  if (options.durationMonths === 6) {
-    basePrice = 250; // 17% discount
-  } else if (options.durationMonths === 12) {
-    basePrice = 450; // 25% discount
+  // Duration-based pricing
+  const months = options.durationMonths || 1;
+  let totalPrice = basePrice * months;
+  
+  // Duration discounts
+  if (months >= 12) {
+    totalPrice = 250; // Special 12-month price
+  } else if (months >= 6) {
+    totalPrice = 120; // Special 6-month price
   }
   
-  // Add-ons
-  if (options.isNationwide) basePrice += 10;
-  if (options.fastSalePackage) basePrice += 20;
-  if (options.featuredBoost) basePrice += 15;
-  if (options.showAtTop) basePrice += 15;
-  if (options.bundleWithJobPost) basePrice += 15;
-  
-  // Premium tier upgrade
-  if (options.selectedPricingTier === 'premium') basePrice += 25;
-  if (options.selectedPricingTier === 'enterprise') basePrice += 50;
-  
-  return basePrice;
+  // Featured boost add-on
+  if (options.featuredBoost || options.fastSalePackage) {
+    totalPrice += 25;
+  }
+
+  // Auto-renew discount (5% off)
+  if (options.autoRenew) {
+    totalPrice *= 0.95;
+  }
+
+  return Math.round(totalPrice * 100) / 100; // Round to 2 decimal places
 };
 
-export const getPlanDetails = (months: number) => {
-  switch (months) {
-    case 1:
-      return {
-        name: 'Basic Plan',
-        price: 50,
-        description: '1 month listing',
-        features: ['Basic listing', 'Email support', 'Standard placement']
-      };
-    case 6:
-      return {
-        name: 'Popular Plan',
-        price: 250,
-        originalPrice: 300,
-        savings: 17,
-        description: '6 month listing',
-        features: ['Extended exposure', 'Priority support', 'Featured placement']
-      };
-    case 12:
-      return {
-        name: 'Best Value',
-        price: 450,
-        originalPrice: 600,
-        savings: 25,
-        description: '12 month listing',
-        features: ['Maximum exposure', 'Premium support', 'Top placement', 'Analytics dashboard']
-      };
-    default:
-      return getPlanDetails(1);
+export const getSalonPostPricingSummary = (options: SalonPricingOptions) => {
+  const basePrice = 24.99;
+  const months = options.durationMonths || 1;
+  
+  let monthlyPrice = basePrice;
+  let originalPrice = monthlyPrice * months;
+  let finalPrice = originalPrice;
+  
+  // Apply special pricing for longer durations
+  if (months >= 12) {
+    originalPrice = basePrice * 12;
+    finalPrice = 250;
+  } else if (months >= 6) {
+    originalPrice = basePrice * 6;
+    finalPrice = 120;
   }
+  
+  // Featured boost add-on
+  let featuredCost = 0;
+  if (options.featuredBoost || options.fastSalePackage) {
+    featuredCost = 25;
+    finalPrice += featuredCost;
+  }
+  
+  // Auto-renew discount
+  let autoRenewDiscount = 0;
+  if (options.autoRenew) {
+    autoRenewDiscount = finalPrice * 0.05;
+    finalPrice *= 0.95;
+  }
+  
+  const discountAmount = originalPrice - finalPrice + autoRenewDiscount;
+  const discountPercentage = originalPrice > 0 ? Math.round((discountAmount / originalPrice) * 100) : 0;
+  
+  return {
+    basePrice: monthlyPrice,
+    originalPrice,
+    finalPrice: Math.round(finalPrice * 100) / 100,
+    discountAmount: Math.round(discountAmount * 100) / 100,
+    discountPercentage,
+    featuredCost,
+    autoRenewDiscount: Math.round(autoRenewDiscount * 100) / 100,
+    breakdown: {
+      featuredBoost: featuredCost,
+      autoRenewDiscount: Math.round(autoRenewDiscount * 100) / 100
+    }
+  };
+};
+
+export const validateSalonPricingOptions = (options: SalonPricingOptions): boolean => {
+  return true; // Basic validation - can be enhanced
+};
+
+export const getStripeSalonPriceId = (options: SalonPricingOptions): string => {
+  // Return appropriate Stripe price ID based on options
+  return 'price_salon_base';
 };

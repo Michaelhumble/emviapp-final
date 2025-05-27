@@ -35,14 +35,8 @@ const ArtistList = ({ displayedArtists, isLoading, getArtistRating }: ArtistList
     return (
       <div className="text-center py-6">
         <Camera className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">{t({
-          english: "No artists found in your area yet",
-          vietnamese: "Chưa tìm thấy nghệ sĩ nào trong khu vực của bạn"
-        })}</p>
-        <p className="text-xs text-muted-foreground mt-1">{t({
-          english: "Check back soon as our network grows!",
-          vietnamese: "Hãy kiểm tra lại sớm khi mạng lưới của chúng tôi phát triển!"
-        })}</p>
+        <p className="text-sm text-muted-foreground">{t("No artists found in your area yet")}</p>
+        <p className="text-xs text-muted-foreground mt-1">{t("Check back soon as our network grows!")}</p>
       </div>
     );
   }
@@ -58,10 +52,7 @@ const ArtistList = ({ displayedArtists, isLoading, getArtistRating }: ArtistList
         size="sm" 
         className="w-full border-dashed border-primary/30 text-primary mt-4"
       >
-        {t({
-          english: "View all top artists in your area",
-          vietnamese: "Xem tất cả nghệ sĩ hàng đầu trong khu vực của bạn"
-        })}
+        {t("View all top artists in your area")}
       </Button>
     </div>
   );

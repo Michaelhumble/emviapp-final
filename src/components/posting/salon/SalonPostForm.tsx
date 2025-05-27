@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
 import { SalonPostBasicInfo } from "./SalonPostBasicInfo";
 import { SalonPostDescription } from "./SalonPostDescription";
 import { SalonPostPhotoUpload } from "./SalonPostPhotoUpload";
@@ -28,9 +26,6 @@ export const SalonPostForm = ({
   onNationwideChange,
   onFastSaleChange
 }: SalonPostFormProps) => {
-  const [showPhotoValidationError, setShowPhotoValidationError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
     defaultValues: {
@@ -68,30 +63,8 @@ export const SalonPostForm = ({
     onFastSaleChange(fastSalePackage);
   }, [fastSalePackage, onFastSaleChange]);
 
-  const handleFormSubmit = async (values: SalonFormValues) => {
-    console.log('Form submission started with photos:', photoUploads.length);
-    
-    // Validate photos
-    if (photoUploads.length === 0) {
-      setShowPhotoValidationError(true);
-      // Scroll to photo section
-      const photoSection = document.querySelector('[data-photo-section]');
-      if (photoSection) {
-        photoSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      return;
-    }
-
-    setShowPhotoValidationError(false);
-    setIsSubmitting(true);
-    
-    try {
-      console.log('Calling onSubmit with form values and photos');
-      await onSubmit(values);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      setIsSubmitting(false);
-    }
+  const handleFormSubmit = (values: SalonFormValues) => {
+    onSubmit(values);
   };
 
   return (
@@ -106,13 +79,10 @@ export const SalonPostForm = ({
           
           <Separator className="my-8" />
           
-          <div data-photo-section>
-            <SalonPostPhotoUpload
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              showValidationError={showPhotoValidationError}
-            />
-          </div>
+          <SalonPostPhotoUpload
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+          />
           
           <Separator className="my-8" />
           
@@ -131,24 +101,9 @@ export const SalonPostForm = ({
         </div>
         
         <div className="mt-8">
-          {showPhotoValidationError && photoUploads.length === 0 && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                Please upload at least 1 photo before continuing to the next step.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Processing...' : 'Continue to Pricing'}
-          </Button>
+          <Button type="submit" className="w-full">List Salon For Sale</Button>
           <p className="text-center text-sm text-gray-500 mt-2">
-            Next: Choose your listing plan and pricing options
+            Your listing will be active for 30 days
           </p>
         </div>
       </form>

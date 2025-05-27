@@ -1,148 +1,186 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
-import SalonDetailsSection from './SalonDetailsSection';
-import SalonPhotosSection from './SalonPhotosSection';
-import SalonPricingSection from './SalonPricingSection';
-import SalonReviewSection from './SalonReviewSection';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { SalonPostForm } from './SalonPostForm';
 import { SalonFormValues } from './salonFormSchema';
+import SalonPricingSelection from './SalonPricingSelection';
+import SalonPaymentFeatures from './SalonPaymentFeatures';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 
-interface SalonListingWizardProps {
-  onComplete: (formData: SalonFormValues, options: SalonPricingOptions) => void;
-}
+const TOTAL_STEPS = 6;
 
-type WizardStep = 'details' | 'photos' | 'pricing' | 'review' | 'payment';
-
-const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) => {
-  const [currentStep, setCurrentStep] = useState<WizardStep>('details');
-  const [formData, setFormData] = useState<Partial<SalonFormValues>>({
-    numberOfTables: "4",
-    numberOfChairs: "9"
-  });
-  const [photos, setPhotos] = useState<File[]>([]);
+const SalonListingWizard = () => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<SalonFormValues | null>(null);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<SalonPricingOptions>({
+    selectedPricingTier: 'standard',
     durationMonths: 1,
-    selectedPricingTier: 'basic',
+    autoRenew: false,
     isNationwide: false,
+    isFirstPost: false,
+    showAtTop: false,
     fastSalePackage: false,
+    jobPostBundle: false,
+    bundleWithJobPost: false,
+    isRenewal: false,
+    hasReferrals: false,
     featuredBoost: false
   });
-  const [paymentCompleted, setPaymentCompleted] = useState(false);
 
-  const steps = [
-    { key: 'details', label: 'Salon Details' },
-    { key: 'photos', label: 'Photos' },
-    { key: 'pricing', label: 'Pricing' },
-    { key: 'review', label: 'Review' },
-    { key: 'payment', label: 'Payment' }
+  const stepTitles = [
+    'Basic Information',
+    'Description & Details', 
+    'Photos',
+    'Choose Your Plan', // This is the pricing selection step
+    'Payment & Features',
+    'Success'
   ];
 
-  const currentStepIndex = steps.findIndex(step => step.key === currentStep);
-  const progress = ((currentStepIndex + 1) / steps.length) * 100;
+  const progress = (currentStep / TOTAL_STEPS) * 100;
 
-  const handleNext = () => {
-    const stepIndex = currentStepIndex;
-    if (stepIndex < steps.length - 1) {
-      setCurrentStep(steps[stepIndex + 1].key as WizardStep);
-    }
+  const handleFormSubmit = (values: SalonFormValues) => {
+    setFormData(values);
+    setCurrentStep(4); // Go to pricing selection step
+  };
+
+  const handlePricingSelect = (options: SalonPricingOptions) => {
+    setPricingOptions(options);
+    setCurrentStep(5); // Go to payment step
+  };
+
+  const handlePayment = async () => {
+    // Handle payment processing here
+    console.log('Processing payment with:', { formData, photoUploads, pricingOptions });
+    // After successful payment, redirect to success page
+    navigate('/salon-listing-success');
   };
 
   const handleBack = () => {
-    const stepIndex = currentStepIndex;
-    if (stepIndex > 0) {
-      setCurrentStep(steps[stepIndex - 1].key as WizardStep);
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      navigate('/');
     }
   };
 
-  const handleComplete = () => {
-    if (paymentCompleted && formData) {
-      onComplete(formData as SalonFormValues, pricingOptions);
-    }
-  };
-
-  const renderCurrentStep = () => {
-    switch (currentStep) {
-      case 'details':
-        return (
-          <SalonDetailsSection
-            formData={formData}
-            onUpdate={setFormData}
-            onNext={handleNext}
-          />
-        );
-      case 'photos':
-        return (
-          <SalonPhotosSection
-            photos={photos}
-            onPhotosChange={setPhotos}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        );
-      case 'pricing':
-        return (
-          <SalonPricingSection
-            options={pricingOptions}
-            onOptionsChange={setPricingOptions}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        );
-      case 'review':
-        return (
-          <SalonReviewSection
-            formData={formData as SalonFormValues}
-            options={pricingOptions}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        );
-      case 'payment':
-        return (
-          <div className="text-center space-y-4">
-            <h3 className="text-xl font-semibold">Complete Payment</h3>
-            <p>Payment integration will be implemented here</p>
-            <button 
-              onClick={() => {
-                setPaymentCompleted(true);
-                handleComplete();
-              }}
-              className="bg-green-600 text-white px-6 py-2 rounded"
-            >
-              Complete Payment & Publish
-            </button>
-          </div>
-        );
-      default:
-        return null;
+  const handleNext = () => {
+    if (currentStep < TOTAL_STEPS) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center">Sell Your Salon</CardTitle>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm text-gray-600">
-              {steps.map((step, index) => (
-                <span 
-                  key={step.key} 
-                  className={index <= currentStepIndex ? 'text-purple-600 font-medium' : ''}
-                >
-                  {step.label}
-                </span>
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+      <Helmet>
+        <title>Sell Your Salon | EmviApp</title>
+        <meta name="description" content="List your salon for sale on EmviApp. Reach thousands of qualified buyers." />
+      </Helmet>
+
+      {/* Header */}
+      <div className="bg-white border-b sticky top-0 z-10">
+        <div className="container max-w-4xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={handleBack}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Button>
+            <div className="text-center">
+              <h1 className="text-xl font-semibold">List Your Salon for Sale</h1>
+              <p className="text-sm text-gray-600">
+                Step {currentStep} of {TOTAL_STEPS}: {stepTitles[currentStep - 1]}
+              </p>
             </div>
-            <Progress value={progress} className="w-full" />
+            <div className="w-16"></div> {/* Spacer for centering */}
           </div>
-        </CardHeader>
-        <CardContent>
-          {renderCurrentStep()}
-        </CardContent>
-      </Card>
+          <Progress value={progress} className="h-2" />
+        </div>
+      </div>
+
+      {/* Step Content */}
+      <div className="container max-w-4xl mx-auto px-4 py-8">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-xl shadow-lg p-6 md:p-8"
+          >
+            {/* Steps 1-3: Combined Form */}
+            {currentStep >= 1 && currentStep <= 3 && (
+              <SalonPostForm
+                onSubmit={handleFormSubmit}
+                photoUploads={photoUploads}
+                setPhotoUploads={setPhotoUploads}
+                onNationwideChange={(checked) => 
+                  setPricingOptions(prev => ({ ...prev, isNationwide: checked }))
+                }
+                onFastSaleChange={(checked) => 
+                  setPricingOptions(prev => ({ ...prev, fastSalePackage: checked }))
+                }
+              />
+            )}
+
+            {/* Step 4: Pricing Selection */}
+            {currentStep === 4 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Plan</h2>
+                  <p className="text-gray-600">Select the perfect listing plan for your salon</p>
+                </div>
+                
+                <SalonPricingSelection
+                  selectedOptions={pricingOptions}
+                  onOptionsChange={setPricingOptions}
+                />
+
+                <div className="flex justify-between mt-8">
+                  <Button variant="outline" onClick={handleBack}>
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Photos
+                  </Button>
+                  <Button 
+                    onClick={() => handlePricingSelect(pricingOptions)}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    Continue to Payment
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Payment & Features */}
+            {currentStep === 5 && formData && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment & Features</h2>
+                  <p className="text-gray-600">Review your selection and complete payment</p>
+                </div>
+
+                <SalonPaymentFeatures
+                  formData={formData}
+                  selectedOptions={pricingOptions}
+                  onPayment={handlePayment}
+                  onBack={() => setCurrentStep(4)}
+                />
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

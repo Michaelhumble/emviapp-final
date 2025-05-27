@@ -10,10 +10,7 @@ const CardHeader = () => {
     <div className="flex items-center justify-between mb-1">
       <CardTitle className="text-lg flex items-center">
         <MapPin className="h-5 w-5 text-amber-500 mr-2" />
-        {t({
-          english: "Top Artists Near You",
-          vietnamese: "Nghệ Sĩ Hàng Đầu Gần Bạn"
-        })}
+        {t("Top Artists Near You")}
       </CardTitle>
     </div>
   );

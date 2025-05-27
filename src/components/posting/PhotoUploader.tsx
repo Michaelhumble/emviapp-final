@@ -1,5 +1,5 @@
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { X, Upload, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -42,41 +42,6 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     newFiles.splice(index, 1);
     onChange(newFiles);
   };
-
-  // Create safe object URLs with error handling
-  const filePreviewUrls = useMemo(() => {
-    return files.map((file, index) => {
-      try {
-        return {
-          file,
-          url: URL.createObjectURL(file),
-          id: `${file.name}-${index}-${file.lastModified}`
-        };
-      } catch (error) {
-        console.error('Error creating object URL:', error);
-        return {
-          file,
-          url: null,
-          id: `${file.name}-${index}-${file.lastModified}`
-        };
-      }
-    });
-  }, [files]);
-
-  // Cleanup object URLs when component unmounts or files change
-  React.useEffect(() => {
-    return () => {
-      filePreviewUrls.forEach(({ url }) => {
-        if (url) {
-          try {
-            URL.revokeObjectURL(url);
-          } catch (error) {
-            // Silently handle cleanup errors
-          }
-        }
-      });
-    };
-  }, [filePreviewUrls]);
   
   const previewsExist = files.length > 0;
 
@@ -125,26 +90,13 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       {previewsExist && (
         <div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-            {filePreviewUrls.map(({ file, url, id }, index) => (
-              <div key={id} className="relative group aspect-square">
-                <div className="w-full h-full object-cover rounded-md border bg-gray-100 flex items-center justify-center">
-                  {url ? (
-                    <img
-                      src={url}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-full object-cover rounded-md"
-                      onError={(e) => {
-                        console.error('Error loading image preview:', e);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-gray-400">
-                      <Image className="w-8 h-8 mb-2" />
-                      <span className="text-xs">{file.name}</span>
-                    </div>
-                  )}
-                </div>
+            {files.map((file, index) => (
+              <div key={`${file.name}-${index}`} className="relative group aspect-square">
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={`Preview ${index + 1}`}
+                  className="w-full h-full object-cover rounded-md border"
+                />
                 <button
                   type="button"
                   onClick={() => removeFile(index)}

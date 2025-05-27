@@ -1,90 +1,71 @@
 
 import React from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react';
-import { useTranslation } from "@/hooks/useTranslation";
+import { Clock } from 'lucide-react';
+import { Notification } from '@/types/notification';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface NotificationItemProps {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  isRead: boolean;
-  createdAt: string;
-  onMarkAsRead: (id: string) => void;
+  notification: Notification;
+  onClick: (notification: Notification) => void;
 }
 
-const NotificationItem: React.FC<NotificationItemProps> = ({
-  id,
-  title,
-  message,
-  type,
-  isRead,
-  createdAt,
-  onMarkAsRead,
-}) => {
+export function NotificationItem({ notification, onClick }: NotificationItemProps) {
   const { t } = useTranslation();
-  
-  const getIcon = () => {
+
+  // Format notification timestamp
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return t('Just now');
+    if (diffInMinutes < 60) return `${diffInMinutes}m ${t('ago')}`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ${t('ago')}`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ${t('ago')}`;
+    
+    return date.toLocaleDateString();
+  };
+
+  // Get icon for notification type
+  const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <span className="text-green-500 text-lg">✓</span>;
       case 'warning':
+        return <span className="text-amber-500 text-lg">⚠</span>;
       case 'error':
-        return <AlertCircle className="h-5 w-5 text-red-500" />;
+        return <span className="text-red-500 text-lg">⚠</span>;
       case 'info':
       default:
-        return <Info className="h-5 w-5 text-blue-500" />;
+        return <span className="text-blue-500 text-lg">ℹ</span>;
     }
   };
 
-  const timeAgo = formatDistanceToNow(new Date(createdAt), { addSuffix: true });
-
   return (
-    <div
-      className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-        !isRead ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+    <div 
+      className={`mb-2 p-3 rounded-md cursor-pointer transition-colors ${
+        notification.isRead ? 'bg-gray-50 hover:bg-gray-100' : 'bg-blue-50 hover:bg-blue-100'
       }`}
-      onClick={() => !isRead && onMarkAsRead(id)}
+      onClick={() => onClick(notification)}
     >
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0 mt-0.5">
-          {getIcon()}
+      <div className="flex items-start">
+        <div className="mr-2 mt-0.5">
+          {getNotificationIcon(notification.type)}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h4 className={`text-sm font-medium ${!isRead ? 'text-gray-900' : 'text-gray-700'}`}>
-                {title}
-              </h4>
-              <p className="text-sm text-gray-600 mt-1">
-                {message}
-              </p>
-            </div>
-            {!isRead && (
-              <div className="flex-shrink-0 ml-2">
-                <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-gray-500">{timeAgo}</span>
-            {!isRead && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMarkAsRead(id);
-                }}
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-              >
-                {t({ english: "Mark as read", vietnamese: "Đánh dấu đã đọc" })}
-              </button>
-            )}
+        <div className="flex-1">
+          <div className="text-sm font-medium">{notification.message}</div>
+          <div className="text-xs text-gray-500 mt-1">
+            {formatTime(notification.createdAt)}
           </div>
         </div>
+        {!notification.isRead && (
+          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+        )}
       </div>
     </div>
   );
-};
-
-export default NotificationItem;
+}

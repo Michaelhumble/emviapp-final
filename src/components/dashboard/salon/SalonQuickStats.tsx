@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Briefcase, BadgeDollarSign, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import SalonErrorState from "@/components/dashboard/salon/SalonErrorState";
 import SalonProfileCompletionCard from "@/components/dashboard/salon/SalonProfileCompletionCard";
-import { wrapTranslation } from "@/utils/translationUtils";
 
 const SalonQuickStats = () => {
   const { t } = useTranslation();
@@ -77,7 +75,7 @@ const SalonQuickStats = () => {
             ) : (
               <div className="text-2xl font-bold">{stats.applicantsThisMonth}</div>
             )}
-            <div className="text-sm text-gray-500">{t(wrapTranslation("Applicants This Month"))}</div>
+            <div className="text-sm text-gray-500">{t("Applicants This Month")}</div>
           </CardContent>
         </Card>
         
@@ -91,7 +89,7 @@ const SalonQuickStats = () => {
             ) : (
               <div className="text-2xl font-bold">{stats.activeJobPosts}</div>
             )}
-            <div className="text-sm text-gray-500">{t(wrapTranslation("Active Job Posts"))}</div>
+            <div className="text-sm text-gray-500">{t("Active Job Posts")}</div>
           </CardContent>
         </Card>
         
@@ -105,7 +103,7 @@ const SalonQuickStats = () => {
             ) : (
               <div className="text-2xl font-bold">{stats.creditsRemaining}</div>
             )}
-            <div className="text-sm text-gray-500">{t(wrapTranslation("Credits Remaining"))}</div>
+            <div className="text-sm text-gray-500">{t("Credits Remaining")}</div>
           </CardContent>
         </Card>
       </div>

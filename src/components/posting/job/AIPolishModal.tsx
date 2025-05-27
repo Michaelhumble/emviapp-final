@@ -1,227 +1,204 @@
 
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Sparkles, Check, X } from 'lucide-react';
-import { useTranslation } from "@/hooks/useTranslation";
+import { Sparkles, Check } from 'lucide-react';
+import { aiPolishTemplates } from './aiPolishTemplates';
 
 interface AIPolishModalProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  onApply: (polishedContent: any) => void;
-  currentContent: {
-    title: string;
-    description: string;
-    requirements: string[];
-    benefits: string[];
-  };
+  currentDescription: string;
+  jobTitle: string;
+  onApply: (polishedText: string) => void;
 }
 
-const AIPolishModal: React.FC<AIPolishModalProps> = ({
-  isOpen,
+export const AIPolishModal: React.FC<AIPolishModalProps> = ({
+  open,
   onClose,
-  onApply,
-  currentContent
+  currentDescription,
+  jobTitle,
+  onApply
 }) => {
   const { t } = useTranslation();
-  const [isPolishing, setIsPolishing] = useState(false);
-  const [polishedContent, setPolishedContent] = useState<any>(null);
-  const [customPrompt, setCustomPrompt] = useState('');
-
-  const handlePolish = async () => {
-    setIsPolishing(true);
-    
-    // Simulate AI polishing with a delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mock polished content - in reality this would call an AI service
-    const polished = {
-      title: currentContent.title + " - Enhanced",
-      description: currentContent.description + "\n\nThis position offers excellent growth opportunities in a supportive environment.",
-      requirements: [
-        ...currentContent.requirements,
-        "Strong attention to detail and customer service skills"
-      ],
-      benefits: [
-        ...currentContent.benefits,
-        "Professional development opportunities",
-        "Flexible scheduling options"
-      ]
-    };
-    
-    setPolishedContent(polished);
-    setIsPolishing(false);
-  };
-
-  const handleApplyChanges = () => {
-    if (polishedContent) {
-      onApply(polishedContent);
-      onClose();
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [customizedText, setCustomizedText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('professional');
+  
+  // Reset when modal opens
+  useEffect(() => {
+    if (open) {
+      setSelectedTemplate('');
+      setCustomizedText(currentDescription);
+      setIsLoading(false);
     }
+  }, [open, currentDescription]);
+  
+  // Set customized text when template is selected
+  useEffect(() => {
+    if (selectedTemplate) {
+      setCustomizedText(selectedTemplate);
+    }
+  }, [selectedTemplate]);
+  
+  const handleGenerateAI = () => {
+    setIsLoading(true);
+    
+    // Simulate AI processing time
+    setTimeout(() => {
+      const templates = aiPolishTemplates.find(t => t.style === activeTab)?.templates || [];
+      const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+      setSelectedTemplate(randomTemplate);
+      setIsLoading(false);
+    }, 1500);
   };
-
-  const handleClose = () => {
-    setPolishedContent(null);
-    setCustomPrompt('');
-    onClose();
-  };
-
+  
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-600" />
-            {t({ english: "AI Polish Your Job Posting", vietnamese: "AI Hoàn Thiện Bài Đăng" })}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Custom Prompt */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t({ english: "Custom Instructions (Optional)", vietnamese: "Hướng Dẫn Tùy Chỉnh" })}
-            </label>
-            <Textarea
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              placeholder={t({ english: "e.g., 'Make it more professional and emphasize growth opportunities'", vietnamese: "VD: 'Làm cho chuyên nghiệp hơn và nhấn mạnh cơ hội phát triển'" })}
-              className="min-h-[80px]"
-            />
+          <div className="flex items-center justify-start gap-2">
+            <Sparkles className="h-5 w-5 text-purple-500" />
+            <DialogTitle>{t("AI Polish Your Job Description")}</DialogTitle>
           </div>
-
-          {/* Polish Button */}
-          {!polishedContent && (
-            <Button 
-              onClick={handlePolish} 
-              disabled={isPolishing}
-              className="w-full"
-            >
-              {isPolishing ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t({ english: "Polishing...", vietnamese: "Đang Hoàn Thiện..." })}
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {t({ english: "Polish with AI", vietnamese: "Hoàn Thiện Với AI" })}
-                </>
-              )}
-            </Button>
-          )}
-
-          {/* Results */}
-          {polishedContent && (
-            <div className="space-y-6">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="font-medium text-green-800 mb-2">
-                  {t({ english: "✨ AI Enhanced Version", vietnamese: "✨ Phiên Bản AI Cải Thiện" })}
-                </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            {t("Select a style that best represents your salon and attracts your ideal candidates")}
+          </p>
+        </DialogHeader>
+        
+        <div className="space-y-4 my-2">
+          <Tabs defaultValue="professional" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-3 mb-4">
+              <TabsTrigger value="professional" className="flex-1">{t("Professional")}</TabsTrigger>
+              <TabsTrigger value="friendly" className="flex-1">{t("Friendly & Warm")}</TabsTrigger>
+              <TabsTrigger value="vietnamese" className="flex-1">{t("Vietnamese")}</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="professional" className="space-y-4">
+              <p className="text-sm">
+                {t("Polished, professional tone with clear qualifications and responsibilities")}
+              </p>
+              
+              <Button
+                type="button"
+                onClick={handleGenerateAI}
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              >
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-opacity-20 border-t-white rounded-full"></div>
+                    {t("Polishing...")}
+                  </div>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {t("Generate Professional Description")}
+                  </>
+                )}
+              </Button>
+            </TabsContent>
+            
+            <TabsContent value="friendly" className="space-y-4">
+              <p className="text-sm">
+                {t("Warm, inviting tone that emphasizes salon culture and team atmosphere")}
+              </p>
+              
+              <Button
+                type="button"
+                onClick={handleGenerateAI}
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              >
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-opacity-20 border-t-white rounded-full"></div>
+                    {t("Polishing...")}
+                  </div>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {t("Generate Friendly Description")}
+                  </>
+                )}
+              </Button>
+            </TabsContent>
+            
+            <TabsContent value="vietnamese" className="space-y-4">
+              <p className="text-sm">
+                {t("Professionally written Vietnamese language description")}
+              </p>
+              
+              <Button
+                type="button"
+                onClick={handleGenerateAI}
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              >
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-opacity-20 border-t-white rounded-full"></div>
+                    {t("Polishing...")}
+                  </div>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {t("Generate Vietnamese Description")}
+                  </>
+                )}
+              </Button>
+            </TabsContent>
+          </Tabs>
+          
+          {selectedTemplate && (
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium">{t("AI Enhanced Description")}</h3>
+                <span className="text-xs text-green-600 flex items-center">
+                  <Check className="h-3 w-3 mr-1" /> {t("Optimized for engagement")}
+                </span>
               </div>
-
-              {/* Title Comparison */}
-              <div className="space-y-3">
-                <h4 className="font-medium">{t({ english: "Job Title", vietnamese: "Tiêu Đề Việc Làm" })}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-gray-600">{t({ english: "Original", vietnamese: "Gốc" })}</label>
-                    <div className="p-3 bg-gray-50 rounded border">
-                      {currentContent.title}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-green-600">{t({ english: "Enhanced", vietnamese: "Cải Thiện" })}</label>
-                    <div className="p-3 bg-green-50 rounded border border-green-200">
-                      {polishedContent.title}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Description Comparison */}
-              <div className="space-y-3">
-                <h4 className="font-medium">{t({ english: "Description", vietnamese: "Mô Tả" })}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-gray-600">{t({ english: "Original", vietnamese: "Gốc" })}</label>
-                    <div className="p-3 bg-gray-50 rounded border max-h-40 overflow-y-auto">
-                      {currentContent.description}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-green-600">{t({ english: "Enhanced", vietnamese: "Cải Thiện" })}</label>
-                    <div className="p-3 bg-green-50 rounded border border-green-200 max-h-40 overflow-y-auto">
-                      {polishedContent.description}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Requirements Comparison */}
-              <div className="space-y-3">
-                <h4 className="font-medium">{t({ english: "Requirements", vietnamese: "Yêu Cầu" })}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-gray-600">{t({ english: "Original", vietnamese: "Gốc" })}</label>
-                    <ul className="space-y-1 p-3 bg-gray-50 rounded border">
-                      {currentContent.requirements.map((req, index) => (
-                        <li key={index} className="text-sm">• {req}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-green-600">{t({ english: "Enhanced", vietnamese: "Cải Thiện" })}</label>
-                    <ul className="space-y-1 p-3 bg-green-50 rounded border border-green-200">
-                      {polishedContent.requirements.map((req: string, index: number) => (
-                        <li key={index} className="text-sm">• {req}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Benefits Comparison */}
-              <div className="space-y-3">
-                <h4 className="font-medium">{t({ english: "Benefits", vietnamese: "Phúc Lợi" })}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-gray-600">{t({ english: "Original", vietnamese: "Gốc" })}</label>
-                    <ul className="space-y-1 p-3 bg-gray-50 rounded border">
-                      {currentContent.benefits.map((benefit, index) => (
-                        <li key={index} className="text-sm">• {benefit}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-green-600">{t({ english: "Enhanced", vietnamese: "Cải Thiện" })}</label>
-                    <ul className="space-y-1 p-3 bg-green-50 rounded border border-green-200">
-                      {polishedContent.benefits.map((benefit: string, index: number) => (
-                        <li key={index} className="text-sm">• {benefit}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button variant="outline" onClick={handleClose}>
-                  <X className="h-4 w-4 mr-2" />
-                  {t({ english: "Keep Original", vietnamese: "Giữ Nguyên Bản" })}
-                </Button>
-                <Button onClick={handleApplyChanges} className="bg-green-600 hover:bg-green-700">
-                  <Check className="h-4 w-4 mr-2" />
-                  {t({ english: "Apply Changes", vietnamese: "Áp Dụng Thay Đổi" })}
-                </Button>
-              </div>
+              
+              <Textarea
+                value={customizedText}
+                onChange={(e) => setCustomizedText(e.target.value)}
+                rows={12}
+                className="text-base resize-none"
+              />
             </div>
           )}
         </div>
+        
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-2">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onClose}
+          >
+            {t("Cancel")}
+          </Button>
+          <Button 
+            type="button" 
+            onClick={() => onApply(customizedText)}
+            disabled={!selectedTemplate}
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+          >
+            {t("Apply Enhanced Description")}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
-
-export default AIPolishModal;

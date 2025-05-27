@@ -20,14 +20,8 @@ export {
   getJobPrice
 } from './jobPricing';
 
-export type {
-  SalonPricingTier,
-  SalonPricingOptions
-} from './salonPricing';
-
 export {
   calculateSalonPostPrice,
-  getPlanDetails,
   getSalonPostPricingSummary,
   validateSalonPricingOptions,
   getStripeSalonPriceId

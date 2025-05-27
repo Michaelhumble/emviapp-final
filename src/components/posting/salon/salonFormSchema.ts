@@ -2,37 +2,45 @@
 import { z } from "zod";
 
 export const salonFormSchema = z.object({
-  salonName: z.string().min(1, "Salon name is required"),
-  businessType: z.string().min(1, "Business type is required"),
+  // Identity fields (Step 1)
+  salonName: z.string().min(2, "Salon name must be at least 2 characters"),
+  businessType: z.string().min(1, "Please select a business type"),
   establishedYear: z.string().optional(),
   logo: z.any().optional(),
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
+  
+  // Location fields (Step 2)
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
   zipCode: z.string().optional(),
   neighborhood: z.string().optional(),
-  hideExactAddress: z.boolean().default(false),
-  askingPrice: z.string().min(1, "Asking price is required"),
-  monthlyRent: z.string().min(1, "Monthly rent is required"),
-  numberOfStaff: z.string().min(1, "Number of staff is required"),
-  numberOfTables: z.string().min(1, "Số bàn is required").default("4"),
-  numberOfChairs: z.string().min(1, "Số ghế is required").default("9"),
-  squareFeet: z.string().optional(),
+  hideExactAddress: z.boolean().optional(),
+  
+  // Description & Financial fields (Step 3)
+  askingPrice: z.string().optional(),
+  monthlyRent: z.string().optional(),
   revenue: z.string().optional(),
-  reasonForSelling: z.string().min(10, "Please provide a reason for selling"),
+  squareFeet: z.string().optional(),
+  numberOfStaff: z.string().optional(),
+  virtualTourUrl: z.string().url().optional().or(z.literal("")),
+  englishDescription: z.string().optional(),
   vietnameseDescription: z.string().optional(),
-  englishDescription: z.string().min(10, "English description is required"),
-  virtualTourUrl: z.string().optional(),
-  willTrain: z.boolean().default(false),
-  isNationwide: z.boolean().default(false),
-  fastSalePackage: z.boolean().default(false),
-  hasHousing: z.boolean().default(false),
-  hasWaxRoom: z.boolean().default(false),
-  hasDiningRoom: z.boolean().default(false),
-  hasLaundry: z.boolean().default(false),
-  specialNotes: z.string().optional(),
-  termsAccepted: z.boolean().refine(val => val === true, {
-    message: "You must accept the terms and conditions"
+  reasonForSelling: z.string().optional(),
+  
+  // Features/Amenities
+  willTrain: z.boolean().optional(),
+  hasHousing: z.boolean().optional(),
+  hasWaxRoom: z.boolean().optional(),
+  hasDiningRoom: z.boolean().optional(),
+  hasLaundry: z.boolean().optional(),
+  
+  // Marketing options
+  isNationwide: z.boolean().optional(),
+  fastSalePackage: z.boolean().optional(),
+  
+  // Payment & Terms (Step 5)
+  termsAccepted: z.boolean().refine((val) => val === true, {
+    message: "You must accept the terms and conditions",
   }),
 });
 

@@ -1,27 +1,40 @@
 
-interface TranslationOptions {
+import { useMemo } from 'react';
+import { getLanguagePreference, setLanguagePreference } from '@/utils/languagePreference';
+
+export interface Translation {
   english: string;
   vietnamese: string;
 }
 
-export type Translation = TranslationOptions;
-
 export const useTranslation = () => {
-  const isVietnamese = false; // For now, always return false - can be enhanced later
-  
-  const t = (options: TranslationOptions) => {
-    // For now, always return English
-    return options.english;
-  };
+  const currentLanguage = getLanguagePreference();
+  const isVietnamese = currentLanguage === 'vi';
+
+  const t = useMemo(() => {
+    return (content: Translation | string) => {
+      // Handle string inputs by creating a Translation object
+      if (typeof content === 'string') {
+        return content;
+      }
+      
+      if (currentLanguage === 'vi') {
+        return content.vietnamese;
+      }
+      return content.english;
+    };
+  }, [currentLanguage]);
 
   const toggleLanguage = () => {
-    // Placeholder function for language toggle
-    console.log('Language toggle not implemented yet');
+    const newLanguage = currentLanguage === 'en' ? 'vi' : 'en';
+    setLanguagePreference(newLanguage);
+    window.location.reload(); // Simple refresh to apply language change
   };
 
   return { 
     t, 
-    isVietnamese, 
-    toggleLanguage 
+    isVietnamese,
+    toggleLanguage,
+    currentLanguage 
   };
 };
