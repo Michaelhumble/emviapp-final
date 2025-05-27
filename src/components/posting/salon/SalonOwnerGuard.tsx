@@ -13,6 +13,14 @@ interface SalonOwnerGuardProps {
 const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
   const { user, userProfile } = useAuth();
 
+  // Debug logging for QA
+  console.log('SalonOwnerGuard Debug:', {
+    user: user?.email,
+    userProfile: userProfile,
+    role: userProfile?.role,
+    isHumbleInsider: user?.email === 'humbleinsider@gmail.com'
+  });
+
   // Check if user is authenticated
   if (!user) {
     return (
@@ -46,8 +54,14 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     );
   }
 
-  // Check if user is a salon owner (basic check - can be enhanced)
-  const isSalonOwner = userProfile?.role === 'salon_owner' || userProfile?.role === 'salon';
+  // Special QA bypass for humbleinsider@gmail.com
+  const isQAUser = user.email === 'humbleinsider@gmail.com';
+  
+  // Check if user is a salon owner or has salon access
+  const isSalonOwner = userProfile?.role === 'salon' || 
+                      userProfile?.role === 'owner' || 
+                      userProfile?.role === 'salon_owner' ||
+                      isQAUser; // QA bypass
 
   if (!isSalonOwner) {
     return (
@@ -63,6 +77,11 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
             <p className="text-gray-600">
               Tính năng này chỉ dành cho các chủ salon đã được xác minh / This feature is only available to verified salon owners
             </p>
+            {isQAUser && (
+              <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                QA Mode: Role detected as "{userProfile?.role}". Contact support if access issues persist.
+              </p>
+            )}
             <div className="space-y-2">
               <Button asChild className="w-full">
                 <Link to="/dashboard">
@@ -81,7 +100,12 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     );
   }
 
-  // User is authenticated and is a salon owner
+  // Log successful access for QA
+  if (isQAUser) {
+    console.log('QA Access Granted: humbleinsider@gmail.com accessing Sell Salon wizard');
+  }
+
+  // User is authenticated and is a salon owner or QA user
   return <>{children}</>;
 };
 
