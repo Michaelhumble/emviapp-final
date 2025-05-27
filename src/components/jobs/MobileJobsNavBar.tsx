@@ -1,81 +1,60 @@
 
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Home, Briefcase, PlusSquare, User } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useTranslation } from '@/hooks/useTranslation';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Search, Briefcase, Building2, Filter } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const MobileJobsNavBar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const isMobile = useIsMobile();
   const { t } = useTranslation();
   
-  // Don't render on desktop
-  if (!isMobile) return null;
-  
-  // Don't render on post-job pages as they have their own navigation
-  if (location.pathname === '/post-job') return null;
-  
-  // Check current route for active state
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path);
+  const isActive = (path: string) => location.pathname === path;
   
   const navItems = [
-    { 
-      icon: Home, 
-      label: t('Home'), 
-      path: '/',
-      isActive: location.pathname === '/'
+    {
+      icon: Briefcase,
+      label: t({ english: "All Jobs", vietnamese: "Tất Cả Việc" }),
+      path: "/jobs",
     },
-    { 
-      icon: Briefcase, 
-      label: t('Jobs'), 
-      path: '/jobs',
-      isActive: location.pathname === '/jobs' || location.pathname.startsWith('/jobs/')
+    {
+      icon: Building2,
+      label: t({ english: "Salons", vietnamese: "Tiệm" }),
+      path: "/jobs/salons",
     },
-    { 
-      icon: PlusSquare, 
-      label: t('Post Job'), 
-      path: '/post-job',
-      isActive: location.pathname === '/post-job'
+    {
+      icon: Search,
+      label: t({ english: "Search", vietnamese: "Tìm Kiếm" }),
+      path: "/jobs/search",
     },
-    { 
-      icon: User, 
-      label: t('Profile'), 
-      path: '/dashboard',
-      isActive: location.pathname.startsWith('/dashboard')
+    {
+      icon: Filter,
+      label: t({ english: "Filter", vietnamese: "Lọc" }),
+      path: "/jobs/filter",
     },
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg nav-bottom-glow">
-      <div className="flex items-center justify-around h-16">
-        {navItems.map((item) => (
-          <button
-            key={item.path}
-            onClick={() => navigate(item.path)}
-            className="flex flex-col items-center justify-center flex-1 h-full"
-            aria-current={item.isActive ? "page" : undefined}
-          >
-            <div 
-              className={cn(
-                "flex items-center justify-center",
-                item.isActive ? "text-emvi-accent" : "text-gray-500"
-              )}
+    <div className="md:hidden bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-50">
+      <div className="flex justify-around py-2">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex flex-col items-center justify-center px-3 py-2 min-w-0 flex-1 ${
+                isActive(item.path)
+                  ? "text-purple-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
-              <item.icon size={24} strokeWidth={1.75} />
-            </div>
-            <span 
-              className={cn(
-                "text-xs mt-1 font-medium",
-                item.isActive ? "text-emvi-accent" : "text-gray-500"
-              )}
-            >
-              {item.label}
-            </span>
-          </button>
-        ))}
+              <Icon className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium truncate w-full text-center">
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

@@ -7,12 +7,14 @@ import { SalonPostForm } from './SalonPostForm';
 import SalonPricingSection from './SalonPricingSection';
 import SalonPaymentFeatures from './SalonPaymentFeatures';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SalonListingWizardProps {
   onComplete: (formData: SalonFormValues, options: SalonPricingOptions) => void;
 }
 
 const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<SalonFormValues | null>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
@@ -29,12 +31,12 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
   });
 
   const steps = [
-    'Salon Details',
-    'Description & Features', 
-    'Upload Photos',
-    'Choose Your Plan',
-    'Payment & Review',
-    'Success'
+    t({ english: 'Salon Details', vietnamese: 'Chi Tiết Tiệm' }),
+    t({ english: 'Description & Features', vietnamese: 'Mô Tả & Tính Năng' }),
+    t({ english: 'Upload Photos', vietnamese: 'Tải Ảnh' }),
+    t({ english: 'Choose Your Plan', vietnamese: 'Chọn Gói' }),
+    t({ english: 'Payment & Review', vietnamese: 'Thanh Toán & Xem Lại' }),
+    t({ english: 'Success', vietnamese: 'Thành Công' })
   ];
 
   const handleFormSubmit = (values: SalonFormValues) => {
@@ -65,6 +67,8 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
   const handlePayment = () => {
     if (formData) {
       console.log('Payment step completed, calling onComplete');
+      // CRITICAL: Only call onComplete after payment is processed
+      // This ensures no listing is created without payment
       onComplete(formData, selectedOptions);
     }
   };
@@ -83,8 +87,8 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
         <CardContent className="p-6">
           <div className="space-y-4">
             <div className="flex justify-between text-sm text-gray-600">
-              <span>Step {currentStep} of {steps.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+              <span>{t({ english: `Step ${currentStep} of ${steps.length}`, vietnamese: `Bước ${currentStep} / ${steps.length}` })}</span>
+              <span>{Math.round(progress)}% {t({ english: "Complete", vietnamese: "Hoàn Thành" })}</span>
             </div>
             <Progress value={progress} className="w-full" />
             <div className="flex justify-between text-sm">

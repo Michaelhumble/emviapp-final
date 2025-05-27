@@ -1,182 +1,136 @@
+
 import React, { useState } from "react";
-import { 
-  Avatar, 
-  AvatarFallback, 
-  AvatarImage 
-} from "@/components/ui/avatar";
+import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { 
-  User, 
-  Settings, 
-  LogOut, 
-  CreditCard, 
-  LayoutDashboard, 
-  UserPlus, 
-  MessageSquare 
-} from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/auth";
-import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { useTranslation } from "@/hooks/useTranslation";
-import { toast } from "sonner";
-import { validateRoute } from "@/utils/routeValidator";
+import {
+  User,
+  Settings,
+  LogOut,
+  PlusCircle,
+  Building,
+  CreditCard,
+  Bell,
+} from "lucide-react";
 
-export function UserMenu() {
-  const { user, signOut, userProfile } = useAuth();
-  const [open, setOpen] = useState(false);
-  const { t } = useTranslation();
+const UserMenu = () => {
+  const { user, userProfile, signOut } = useAuth();
   const navigate = useNavigate();
-  
+  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleSignOut = async () => {
-    try {
-      await signOut();
-      setOpen(false);
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
+    await signOut();
+    navigate("/");
   };
 
-  const getInitials = () => {
-    if (!userProfile?.full_name) return "U";
-    
-    const names = userProfile.full_name.split(" ");
-    if (names.length > 1) {
-      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
-    }
-    return names[0][0].toUpperCase();
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
-  
-  const handleNavigation = (path: string, featureName: string) => {
-    if (validateRoute(path)) {
-      navigate(path);
-    } else {
-      toast.info(`${t(featureName)} feature coming soon!`);
-      navigate("/dashboard");
-    }
-    setOpen(false);
+
+  const getProfilePath = () => {
+    if (userProfile?.role === "salon_owner") return "/dashboard/owner";
+    if (userProfile?.role === "artist") return "/dashboard/artist";
+    if (userProfile?.role === "customer") return "/dashboard/customer";
+    return "/profile";
   };
-  
+
+  const getDashboardLabel = () => {
+    if (userProfile?.role === "salon_owner") return "Salon Dashboard";
+    if (userProfile?.role === "artist") return "Artist Dashboard";
+    if (userProfile?.role === "customer") return "Customer Dashboard";
+    return "Dashboard";
+  };
+
   return (
-    <div className="flex items-center gap-2">
-      {user && <NotificationCenter className="mr-1" />}
-      
-      <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={userProfile?.avatar_url || ""} alt={userProfile?.full_name || "User"} />
-              <AvatarFallback className="bg-primary text-white">
-                {getInitials()}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {userProfile?.full_name || "User"}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {user?.email}
-              </p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem 
-              onClick={() => handleNavigation("/dashboard", "Dashboard")}
-              className="cursor-pointer"
-            >
-              <LayoutDashboard className="mr-2 h-4 w-4" />
-              <span>{t({
-                english: "Dashboard",
-                vietnamese: "Bảng điều khiển"
-              })}</span>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={userProfile?.avatar_url || ""} alt={userProfile?.full_name || ""} />
+            <AvatarFallback>
+              {getInitials(userProfile?.full_name || user?.email || "U")}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {userProfile?.full_name || t({ english: "User", vietnamese: "Người Dùng" })}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user?.email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem asChild>
+          <Link to={getProfilePath()} className="cursor-pointer">
+            <User className="mr-2 h-4 w-4" />
+            <span>{getDashboardLabel()}</span>
+          </Link>
+        </DropdownMenuItem>
+
+        {userProfile?.role === "salon_owner" && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link to="/post-job" className="cursor-pointer">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                <span>{t({ english: "Post Job", vietnamese: "Đăng Việc" })}</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => handleNavigation("/profile", "Profile")}
-              className="cursor-pointer"
-            >
-              <User className="mr-2 h-4 w-4" />
-              <span>{t({
-                english: "Profile",
-                vietnamese: "Hồ sơ"
-              })}</span>
+            <DropdownMenuItem asChild>
+              <Link to="/sell-salon" className="cursor-pointer">
+                <Building className="mr-2 h-4 w-4" />
+                <span>{t({ english: "Sell Salon", vietnamese: "Bán Tiệm" })}</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => {
-                toast.info(t("Messages feature coming soon!"));
-                navigate("/dashboard");
-                setOpen(false);
-              }}
-              className="cursor-pointer"
-            >
-              <MessageSquare className="mr-2 h-4 w-4" />
-              <span>{t({
-                english: "Messages",
-                vietnamese: "Tin nhắn"
-              })}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => {
-                toast.info(t("Credits feature coming soon!"));
-                navigate("/dashboard");
-                setOpen(false);
-              }}
-              className="cursor-pointer"
-            >
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>{t({
-                english: "Credits",
-                vietnamese: "Tín dụng"
-              })}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => handleNavigation("/settings", "Settings")}
-              className="cursor-pointer"
-            >
-              <Settings className="mr-2 h-4 w-4" />
-              <span>{t({
-                english: "Settings",
-                vietnamese: "Cài đặt"
-              })}</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            onClick={() => {
-              toast.info(t("Referrals feature coming soon!"));
-              navigate("/dashboard");
-              setOpen(false);
-            }}
-            className="cursor-pointer"
-          >
-            <UserPlus className="mr-2 h-4 w-4" />
-            <span>{t({
-              english: "Invite Friends",
-              vietnamese: "Mời bạn bè"
-            })}</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>{t({
-              english: "Log out",
-              vietnamese: "Đăng xuất"
-            })}</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+          </>
+        )}
+
+        <DropdownMenuItem asChild>
+          <Link to="/notifications" className="cursor-pointer">
+            <Bell className="mr-2 h-4 w-4" />
+            <span>{t({ english: "Notifications", vietnamese: "Thông Báo" })}</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link to="/settings" className="cursor-pointer">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>{t({ english: "Settings", vietnamese: "Cài Đặt" })}</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem
+          className="cursor-pointer text-red-600 focus:text-red-600"
+          onClick={handleSignOut}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>{t({ english: "Log out", vietnamese: "Đăng Xuất" })}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
-}
+};
+
+export default UserMenu;
