@@ -24,8 +24,11 @@ export interface SalonPricingSummary {
   discounts: {
     firstPost: number;
     bulk: number;
+    autoRenewDiscount: number;
   };
   totalPrice: number;
+  finalPrice: number;
+  discountAmount: number;
 }
 
 const SALON_BASE_PRICES: Record<SalonPricingTier, number> = {
@@ -43,6 +46,9 @@ export const calculateSalonPostPrice = (options: SalonPricingOptions): number =>
   if (options.fastSalePackage || options.featuredBoost) totalPrice += 20;
   if (options.showAtTop) totalPrice += 15;
   if (options.bundleWithJobPost) totalPrice += 15;
+
+  // Auto-renew discount
+  if (options.autoRenew) totalPrice *= 0.9; // 10% discount
 
   // First post discount
   if (options.isFirstPost) {
@@ -64,18 +70,21 @@ export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonP
 
   const discounts = {
     firstPost: options.isFirstPost ? basePrice * 0.2 : 0,
-    bulk: 0 // Not implemented yet
+    bulk: 0, // Not implemented yet
+    autoRenewDiscount: options.autoRenew ? basePrice * 0.1 : 0
   };
 
   const subtotal = basePrice + Object.values(addOns).reduce((sum, addon) => sum + addon, 0);
   const totalDiscounts = Object.values(discounts).reduce((sum, discount) => sum + discount, 0);
-  const totalPrice = subtotal - totalDiscounts;
+  const finalPrice = subtotal - totalDiscounts;
 
   return {
     basePrice,
     addOns,
     discounts,
-    totalPrice: Math.round(totalPrice * 100) / 100
+    totalPrice: subtotal,
+    finalPrice: Math.round(finalPrice * 100) / 100,
+    discountAmount: totalDiscounts
   };
 };
 

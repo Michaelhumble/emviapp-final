@@ -54,8 +54,9 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     );
   }
 
-  // Check if user has salon owner role
-  const isSalonOwner = userRole === 'salon_owner' || userRole === 'owner' || userRole === 'salon';
+  // Check if user has salon owner role - handle string comparison properly
+  const allowedRoles = ['salon_owner', 'owner', 'salon'];
+  const isSalonOwner = userRole && allowedRoles.includes(userRole);
 
   if (!isSalonOwner) {
     return (
@@ -92,8 +93,8 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
             </div>
             <p className="text-sm text-red-500 mt-3">
               {t({ 
-                english: `Current role: ${userRole}. Required role: salon_owner`,
-                vietnamese: `Vai trò hiện tại: ${userRole}. Vai trò yêu cầu: salon_owner`
+                english: `Current role: ${userRole || 'none'}. Required role: salon_owner`,
+                vietnamese: `Vai trò hiện tại: ${userRole || 'none'}. Vai trò yêu cầu: salon_owner`
               })}
             </p>
           </CardContent>
