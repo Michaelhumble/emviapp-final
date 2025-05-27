@@ -27,6 +27,7 @@ const SalonListingWizard = () => {
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<SalonPricingOptions>({
     selectedPricingTier: 'basic',
+    durationMonths: 1,
     autoRenew: false
   });
 
@@ -131,7 +132,7 @@ const SalonListingWizard = () => {
       case 3:
         return formData.askingPrice && formData.monthlyRent;
       case 4:
-        return selectedOptions.selectedPricingTier;
+        return selectedOptions.selectedPricingTier && selectedOptions.durationMonths;
       case 5:
         return formData.termsAccepted;
       default:

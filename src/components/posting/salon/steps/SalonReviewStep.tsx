@@ -2,15 +2,13 @@
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { SalonFormValues } from "../salonFormSchema";
-import { SalonPricingOptions, getSalonPostPricingSummary, DURATION_OPTIONS } from "@/utils/posting/salonPricing";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { SalonPricingOptions, getSalonPostPricingSummary } from "@/utils/posting/salonPricing";
 import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle, MapPin, Building, CreditCard, AlertCircle } from "lucide-react";
-import { useStripe } from "@/hooks/useStripe";
-import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Eye, MapPin, Building, DollarSign, Image, CreditCard } from "lucide-react";
 
 interface SalonReviewStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -27,233 +25,238 @@ export const SalonReviewStep = ({
   photoUploads, 
   onPayment 
 }: SalonReviewStepProps) => {
-  const { isLoading, initiatePayment } = useStripe();
   const pricingSummary = getSalonPostPricingSummary(selectedOptions);
-  const selectedDuration = DURATION_OPTIONS.find(d => d.months === selectedOptions.durationMonths);
-
-  const handlePaymentSubmit = async () => {
-    if (!form.getValues('termsAccepted')) {
-      toast.error("Vui lòng chấp nhận điều khoản / Please accept the terms and conditions");
-      return;
-    }
-
-    try {
-      const success = await initiatePayment(selectedOptions);
-      if (success) {
-        onPayment();
-        toast.success("Thanh toán thành công / Payment successful");
-      } else {
-        toast.error("Thanh toán thất bại / Payment failed. Please try again.");
-      }
-    } catch (error) {
-      toast.error("Lỗi thanh toán / Payment error. Please try another method.");
-    }
-  };
-
-  const getPlanName = () => {
-    switch (selectedOptions.selectedPricingTier) {
-      case 'basic': return 'Tin đăng cơ bản / Basic Listing';
-      case 'standard': return 'Tin đăng tiêu chuẩn / Standard Listing';
-      case 'featured': return 'Tin đăng nổi bật / Featured Listing';
-      default: return 'Unknown Plan';
-    }
-  };
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-playfair font-medium flex items-center gap-2">
-          <CheckCircle className="w-6 h-6 text-green-600" />
-          Xem Lại & Thanh Toán / Review & Payment
-        </h2>
-        <p className="text-gray-600 mt-2">
-          Vui lòng kiểm tra lại thông tin trước khi thanh toán / Please review your information before payment
-        </p>
+      <div className="flex items-center gap-2 mb-6">
+        <Eye className="w-5 h-5 text-purple-600" />
+        <h2 className="text-2xl font-playfair font-medium">Xem Lại & Thanh Toán / Review & Payment</h2>
       </div>
+      <p className="text-gray-600 mb-6">
+        Vui lòng xem lại tất cả thông tin trước khi thanh toán / Please review all information before payment
+      </p>
 
-      {/* Salon Information Summary */}
+      {/* Identity Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building className="w-5 h-5" />
-            Thông Tin Salon / Salon Information
+            Thông Tin Salon / Salon Identity
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-semibold text-lg">{formData.salonName}</h3>
-              <p className="text-gray-600">{formData.businessType}</p>
-              {formData.establishedYear && (
-                <p className="text-sm text-gray-500">Thành lập / Established: {formData.establishedYear}</p>
-              )}
+              <span className="font-medium">Tên Salon / Salon Name:</span>
+              <p>{formData.salonName || "Chưa nhập / Not provided"}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-gray-500" />
+            <div>
+              <span className="font-medium">Loại Hình / Business Type:</span>
+              <p>{formData.businessType || "Chưa nhập / Not provided"}</p>
+            </div>
+            {formData.establishedYear && (
               <div>
-                <p className="font-medium">{formData.address}</p>
-                <p className="text-gray-600">{formData.city}, {formData.state} {formData.zipCode}</p>
-                {formData.neighborhood && (
-                  <p className="text-sm text-gray-500">{formData.neighborhood}</p>
-                )}
+                <span className="font-medium">Năm Thành Lập / Established:</span>
+                <p>{formData.establishedYear}</p>
               </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Business Details Summary */}
+      {/* Location Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Chi Tiết Kinh Doanh / Business Details</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
+            Địa Chỉ / Location
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500">Giá bán / Asking Price</p>
-              <p className="font-semibold">${formData.askingPrice}</p>
+              <span className="font-medium">Địa chỉ / Address:</span>
+              <p>{formData.address || "Chưa nhập / Not provided"}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Tiền thuê / Monthly Rent</p>
-              <p className="font-semibold">${formData.monthlyRent}</p>
+              <span className="font-medium">Thành phố / City:</span>
+              <p>{formData.city || "Chưa nhập / Not provided"}</p>
             </div>
+            <div>
+              <span className="font-medium">Bang / State:</span>
+              <p>{formData.state || "Chưa nhập / Not provided"}</p>
+            </div>
+            {formData.zipCode && (
+              <div>
+                <span className="font-medium">Mã bưu điện / ZIP:</span>
+                <p>{formData.zipCode}</p>
+              </div>
+            )}
+            {formData.neighborhood && (
+              <div>
+                <span className="font-medium">Khu vực / Neighborhood:</span>
+                <p>{formData.neighborhood}</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Details Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="w-5 h-5" />
+            Chi Tiết / Details
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {formData.numberOfTables && (
               <div>
-                <p className="text-sm text-gray-500">Số bàn / Tables</p>
-                <p className="font-semibold">{formData.numberOfTables}</p>
+                <span className="font-medium">Số bàn / Tables:</span>
+                <p>{formData.numberOfTables}</p>
               </div>
             )}
             {formData.numberOfChairs && (
               <div>
-                <p className="text-sm text-gray-500">Số ghế / Chairs</p>
-                <p className="font-semibold">{formData.numberOfChairs}</p>
+                <span className="font-medium">Số ghế / Chairs:</span>
+                <p>{formData.numberOfChairs}</p>
+              </div>
+            )}
+            <div>
+              <span className="font-medium">Tiền thuê / Monthly Rent:</span>
+              <p>{formData.monthlyRent || "Chưa nhập / Not provided"}</p>
+            </div>
+            {formData.monthlyRevenue && (
+              <div>
+                <span className="font-medium">Doanh thu / Monthly Revenue:</span>
+                <p>{formData.monthlyRevenue}</p>
+              </div>
+            )}
+            {formData.squareFeet && (
+              <div>
+                <span className="font-medium">Diện tích / Square Feet:</span>
+                <p>{formData.squareFeet}</p>
+              </div>
+            )}
+            {formData.numberOfStaff && (
+              <div>
+                <span className="font-medium">Số nhân viên / Staff:</span>
+                <p>{formData.numberOfStaff}</p>
               </div>
             )}
           </div>
 
           {/* Amenities */}
           <div className="mt-4">
-            <p className="text-sm text-gray-500 mb-2">Tiện ích / Amenities</p>
-            <div className="flex flex-wrap gap-2">
+            <span className="font-medium">Tiện ích / Amenities:</span>
+            <div className="flex flex-wrap gap-2 mt-2">
               {formData.hasParking && <Badge variant="secondary">Bãi đậu xe / Parking</Badge>}
               {formData.hasLaundry && <Badge variant="secondary">Giặt ủi / Laundry</Badge>}
               {formData.hasWaxRoom && <Badge variant="secondary">Phòng wax / Wax Room</Badge>}
               {formData.hasDiningRoom && <Badge variant="secondary">Phòng ăn / Dining Room</Badge>}
+              {formData.willTrain && <Badge variant="secondary">Sẽ đào tạo / Will Train</Badge>}
             </div>
           </div>
 
           {/* Photos */}
-          <div className="mt-4">
-            <p className="text-sm text-gray-500 mb-2">Hình ảnh / Photos</p>
-            <p className="text-gray-600">{photoUploads.length} ảnh đã tải lên / {photoUploads.length} photos uploaded</p>
-          </div>
+          {photoUploads.length > 0 && (
+            <div className="mt-4">
+              <span className="font-medium flex items-center gap-2">
+                <Image className="w-4 h-4" />
+                Hình ảnh / Photos: {photoUploads.length} ảnh
+              </span>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Pricing Summary */}
-      <Card className="border-purple-200 bg-purple-50">
+      <Card className="bg-purple-50 border-purple-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-700">
+          <CardTitle className="flex items-center gap-2">
             <CreditCard className="w-5 h-5" />
-            Chi Tiết Thanh Toán / Payment Details
+            Tóm Tắt Thanh Toán / Payment Summary
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-3">
+        <CardContent className="space-y-3">
+          <div className="flex justify-between">
+            <span>Gói đã chọn / Selected Plan:</span>
+            <span className="font-medium capitalize">{selectedOptions.selectedPricingTier}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Thời hạn / Duration:</span>
+            <span className="font-medium">{selectedOptions.durationMonths} tháng / months</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Tự động gia hạn / Auto-renew:</span>
+            <span className="font-medium">{selectedOptions.autoRenew ? "Có / Yes" : "Không / No"}</span>
+          </div>
+          
+          <hr className="my-3" />
+          
+          <div className="space-y-2">
             <div className="flex justify-between">
-              <span>Gói / Plan:</span>
-              <span className="font-medium">{getPlanName()}</span>
-            </div>
-            
-            <div className="flex justify-between">
-              <span>Thời hạn / Duration:</span>
-              <span className="font-medium">{selectedDuration?.label}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Giá cơ bản / Base Price:</span>
+              <span>Tổng phụ / Subtotal:</span>
               <span>${pricingSummary.subtotal.toFixed(2)}</span>
             </div>
-
             {pricingSummary.durationDiscount > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>Giảm giá theo thời hạn / Duration Discount:</span>
+                <span>Giảm giá thời hạn / Duration discount:</span>
                 <span>-${pricingSummary.durationDiscount.toFixed(2)}</span>
               </div>
             )}
-
-            {selectedOptions.autoRenew && pricingSummary.autoRenewDiscount > 0 && (
+            {pricingSummary.autoRenewDiscount > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>Giảm giá tự động gia hạn / Auto-renew Discount:</span>
+                <span>Giảm giá tự động gia hạn / Auto-renew discount:</span>
                 <span>-${pricingSummary.autoRenewDiscount.toFixed(2)}</span>
               </div>
             )}
-
-            <div className="border-t pt-3">
-              <div className="flex justify-between font-bold text-lg">
-                <span>Tổng cộng / Total:</span>
-                <span className="text-purple-600">${pricingSummary.finalPrice.toFixed(2)}</span>
+            <hr className="my-2" />
+            <div className="flex justify-between font-bold text-lg">
+              <span>Tổng cộng / Total:</span>
+              <span className="text-purple-600">${pricingSummary.finalPrice.toFixed(2)}</span>
+            </div>
+            {pricingSummary.discountPercentage > 0 && (
+              <div className="text-center text-green-600 font-medium">
+                Bạn tiết kiệm được {pricingSummary.discountPercentage}% / You save {pricingSummary.discountPercentage}%
               </div>
-              {pricingSummary.discountPercentage > 0 && (
-                <p className="text-sm text-green-600 text-right">
-                  Tiết kiệm {pricingSummary.discountPercentage}% / Save {pricingSummary.discountPercentage}%
-                </p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Terms and Payment */}
-      <Card className="border-red-200 bg-red-50">
-        <CardContent className="pt-6">
-          <div className="flex items-start space-x-3 mb-4">
-            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-red-900">Quan trọng / Important</h4>
-              <p className="text-sm text-red-700">
-                Tin đăng chỉ được tạo sau khi thanh toán thành công. Nếu thanh toán thất bại, bạn có thể thử lại hoặc chọn phương thức khác.
-              </p>
-              <p className="text-sm text-red-700 mt-1">
-                Listing will only be created after successful payment. If payment fails, you can retry or choose another method.
-              </p>
-            </div>
-          </div>
-
-          <FormField
-            control={form.control}
-            name="termsAccepted"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <label className="text-sm font-medium cursor-pointer">
-                    Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật / I agree to the terms of service and privacy policy
-                  </label>
-                </div>
-              </FormItem>
             )}
-          />
+          </div>
         </CardContent>
       </Card>
+
+      {/* Terms Acceptance */}
+      <FormField
+        control={form.control}
+        name="termsAccepted"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <label className="text-sm">
+                Tôi đồng ý với các điều khoản và điều kiện / I agree to the terms and conditions *
+              </label>
+            </div>
+          </FormItem>
+        )}
+      />
 
       {/* Payment Button */}
-      <div className="flex justify-center pt-4">
-        <Button
-          onClick={handlePaymentSubmit}
-          disabled={isLoading || !form.watch('termsAccepted')}
-          className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold min-w-[300px]"
+      <div className="pt-4">
+        <Button 
+          onClick={onPayment}
+          disabled={!form.watch('termsAccepted')}
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg"
         >
-          {isLoading ? (
-            "Đang xử lý / Processing..."
-          ) : (
-            `Thanh toán $${pricingSummary.finalPrice.toFixed(2)} / Pay $${pricingSummary.finalPrice.toFixed(2)}`
-          )}
+          Thanh Toán ${pricingSummary.finalPrice.toFixed(2)} / Pay ${pricingSummary.finalPrice.toFixed(2)}
         </Button>
       </div>
     </div>

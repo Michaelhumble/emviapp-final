@@ -6,8 +6,8 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Building2, Camera, Car, Shirt } from "lucide-react";
-import SalonPhotoUpload from "../SalonPostPhotoUpload";
+import { ImageIcon, DollarSign, Users, Table } from "lucide-react";
+import SalonPostPhotoUpload from "../SalonPostPhotoUpload";
 
 interface SalonDetailsStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -19,11 +19,11 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">
-        <Building2 className="w-5 h-5 text-purple-600" />
+        <ImageIcon className="w-5 h-5 text-purple-600" />
         <h2 className="text-2xl font-playfair font-medium">Chi Tiết & Hình Ảnh / Details & Photos</h2>
       </div>
       <p className="text-gray-600 mb-6">
-        Thông tin chi tiết về salon giúp người mua hiểu rõ hơn về doanh nghiệp / Detailed information helps buyers understand your business better
+        Cung cấp thông tin chi tiết về salon để thu hút người mua / Provide detailed salon information to attract buyers
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -32,9 +32,12 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="numberOfTables"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Số bàn / Number of Tables</FormLabel>
+              <FormLabel className="flex items-center gap-2">
+                <Table className="w-4 h-4" />
+                Số bàn / Number of Tables
+              </FormLabel>
               <FormControl>
-                <Input placeholder="10" {...field} />
+                <Input placeholder="8" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -46,9 +49,12 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="numberOfChairs"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Số ghế / Number of Chairs</FormLabel>
+              <FormLabel className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Số ghế / Number of Chairs
+              </FormLabel>
               <FormControl>
-                <Input placeholder="20" {...field} />
+                <Input placeholder="16" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -60,9 +66,12 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="monthlyRent"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tiền thuê mỗi tháng / Monthly Rent *</FormLabel>
+              <FormLabel className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                Tiền thuê mỗi tháng / Monthly Rent *
+              </FormLabel>
               <FormControl>
-                <Input placeholder="$3,000" {...field} />
+                <Input placeholder="$3,500" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,7 +83,10 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="monthlyRevenue"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Doanh thu mỗi tháng / Monthly Revenue</FormLabel>
+              <FormLabel className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                Doanh thu mỗi tháng / Monthly Revenue
+              </FormLabel>
               <FormControl>
                 <Input placeholder="$15,000" {...field} />
               </FormControl>
@@ -104,7 +116,7 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
             <FormItem>
               <FormLabel>Số nhân viên / Number of Staff</FormLabel>
               <FormControl>
-                <Input placeholder="8" {...field} />
+                <Input placeholder="6" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -112,114 +124,13 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
         />
       </div>
 
-      {/* Salon Photos */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Camera className="w-4 h-4 text-purple-600" />
-          <FormLabel className="text-base">Hình ảnh Salon / Salon Photos</FormLabel>
-        </div>
-        <SalonPhotoUpload
-          photoUploads={photoUploads}
-          setPhotoUploads={setPhotoUploads}
-        />
-      </div>
-
-      {/* Amenities */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-lg">Tiện nghi / Amenities</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="hasParking"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel className="flex items-center gap-2">
-                    <Car className="w-4 h-4" />
-                    Bãi đậu xe / Parking Available
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="hasLaundry"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel className="flex items-center gap-2">
-                    <Shirt className="w-4 h-4" />
-                    Giặt ủi / Laundry Facilities
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="hasWaxRoom"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    Phòng wax / Wax Room
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="hasDiningRoom"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    Phòng ăn / Dining Room
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
-
-      {/* Additional Description */}
-      <div className="grid grid-cols-1 gap-6">
         <FormField
           control={form.control}
           name="vietnameseDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mô tả tiếng Việt / Vietnamese Description</FormLabel>
+              <FormLabel>Mô tả bằng tiếng Việt / Vietnamese Description</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Mô tả salon của bạn bằng tiếng Việt..."
@@ -237,7 +148,7 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="englishDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mô tả tiếng Anh / English Description</FormLabel>
+              <FormLabel>English Description</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Describe your salon in English..."
@@ -258,7 +169,7 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
               <FormLabel>Lý do bán / Reason for Selling</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Lý do bán salon / Reason for selling salon..."
+                  placeholder="Tại sao bạn muốn bán salon? / Why are you selling the salon?"
                   className="min-h-[80px]"
                   {...field} 
                 />
@@ -266,6 +177,102 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
               <FormMessage />
             </FormItem>
           )}
+        />
+      </div>
+
+      {/* Amenities */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Tiện ích / Amenities</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="hasParking"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Bãi đậu xe / Parking</FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="hasLaundry"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Giặt ủi / Laundry</FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="hasWaxRoom"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Phòng wax / Wax Room</FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="hasDiningRoom"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Phòng ăn / Dining Room</FormLabel>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="willTrain"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Sẽ đào tạo / Will Train</FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Photo Upload */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Hình ảnh Salon / Salon Photos</h3>
+        <SalonPostPhotoUpload 
+          photoUploads={photoUploads}
+          setPhotoUploads={setPhotoUploads}
+          maxPhotos={8}
         />
       </div>
     </div>
