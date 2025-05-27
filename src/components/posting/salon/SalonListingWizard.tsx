@@ -9,9 +9,9 @@ import { ArrowLeft, Building2 } from 'lucide-react';
 import { SalonFormValues, salonFormSchema } from './salonFormSchema';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 import SalonBasicInfoStep from './steps/SalonBasicInfoStep';
-import SalonLocationStep from './steps/SalonLocationStep';
+import { SalonLocationStep } from './steps/SalonLocationStep';
 import SalonDetailsStep from './steps/SalonDetailsStep';
-import SalonPricingStep from './steps/SalonPricingStep';
+import { SalonPricingStep } from './steps/SalonPricingStep';
 import SalonReviewStep from './steps/SalonReviewStep';
 
 type WizardStep = 1 | 2 | 3 | 4 | 5;
