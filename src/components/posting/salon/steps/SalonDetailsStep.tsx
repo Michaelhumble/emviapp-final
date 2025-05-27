@@ -1,13 +1,12 @@
 
-import React from "react";
-import { UseFormReturn } from "react-hook-form";
-import { SalonFormValues } from "../salonFormSchema";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ImageIcon, DollarSign, Users, Table } from "lucide-react";
-import SalonPostPhotoUpload from "../SalonPostPhotoUpload";
+import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { SalonFormValues } from '../salonFormSchema';
+import SalonPostPhotoUpload from '../SalonPostPhotoUpload';
 
 interface SalonDetailsStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -15,29 +14,30 @@ interface SalonDetailsStepProps {
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
 }
 
-export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonDetailsStepProps) => {
+export const SalonDetailsStep: React.FC<SalonDetailsStepProps> = ({
+  form,
+  photoUploads,
+  setPhotoUploads
+}) => {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 mb-6">
-        <ImageIcon className="w-5 h-5 text-purple-600" />
+      <div className="mb-6">
         <h2 className="text-2xl font-playfair font-medium">Chi Tiết & Hình Ảnh / Details & Photos</h2>
+        <p className="text-gray-600 mt-2">
+          Cung cấp thông tin chi tiết về salon để thu hút người mua / Provide detailed salon information to attract buyers
+        </p>
       </div>
-      <p className="text-gray-600 mb-6">
-        Cung cấp thông tin chi tiết về salon để thu hút người mua / Provide detailed salon information to attract buyers
-      </p>
 
+      {/* Business Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
           name="numberOfTables"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <Table className="w-4 h-4" />
-                Số bàn / Number of Tables
-              </FormLabel>
+              <FormLabel>Số bàn / Number of Tables</FormLabel>
               <FormControl>
-                <Input placeholder="8" {...field} />
+                <Input placeholder="10" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -49,12 +49,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="numberOfChairs"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Số ghế / Number of Chairs
-              </FormLabel>
+              <FormLabel>Số ghế / Number of Chairs</FormLabel>
               <FormControl>
-                <Input placeholder="16" {...field} />
+                <Input placeholder="20" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -66,12 +63,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="monthlyRent"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
-                Tiền thuê mỗi tháng / Monthly Rent *
-              </FormLabel>
+              <FormLabel>Tiền thuê mỗi tháng / Monthly Rent ($)</FormLabel>
               <FormControl>
-                <Input placeholder="$3,500" {...field} />
+                <Input placeholder="5000" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,26 +77,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
           name="monthlyRevenue"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
-                Doanh thu mỗi tháng / Monthly Revenue
-              </FormLabel>
+              <FormLabel>Doanh thu mỗi tháng / Monthly Revenue ($)</FormLabel>
               <FormControl>
-                <Input placeholder="$15,000" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="squareFeet"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Diện tích (sq ft) / Square Feet</FormLabel>
-              <FormControl>
-                <Input placeholder="1,200" {...field} />
+                <Input placeholder="15000" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -116,7 +93,21 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
             <FormItem>
               <FormLabel>Số nhân viên / Number of Staff</FormLabel>
               <FormControl>
-                <Input placeholder="6" {...field} />
+                <Input placeholder="8" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="squareFeet"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Diện tích / Square Feet</FormLabel>
+              <FormControl>
+                <Input placeholder="2000" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,13 +115,14 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
         />
       </div>
 
+      {/* Descriptions */}
       <div className="space-y-4">
         <FormField
           control={form.control}
           name="vietnameseDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mô tả bằng tiếng Việt / Vietnamese Description</FormLabel>
+              <FormLabel>Mô tả tiếng Việt / Vietnamese Description</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Mô tả salon của bạn bằng tiếng Việt..."
@@ -169,7 +161,7 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
               <FormLabel>Lý do bán / Reason for Selling</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Tại sao bạn muốn bán salon? / Why are you selling the salon?"
+                  placeholder="Tại sao bạn muốn bán salon? / Why are you selling your salon?"
                   className="min-h-[80px]"
                   {...field} 
                 />
@@ -182,7 +174,7 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
 
       {/* Amenities */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Tiện ích / Amenities</h3>
+        <h3 className="text-lg font-medium">Tiện nghi / Amenities</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
@@ -195,7 +187,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel>Bãi đậu xe / Parking</FormLabel>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Bãi đậu xe / Parking</FormLabel>
+                </div>
               </FormItem>
             )}
           />
@@ -211,7 +205,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel>Giặt ủi / Laundry</FormLabel>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Giặt ủi / Laundry</FormLabel>
+                </div>
               </FormItem>
             )}
           />
@@ -227,7 +223,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel>Phòng wax / Wax Room</FormLabel>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Phòng wax / Wax Room</FormLabel>
+                </div>
               </FormItem>
             )}
           />
@@ -243,7 +241,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel>Phòng ăn / Dining Room</FormLabel>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Phòng ăn / Dining Room</FormLabel>
+                </div>
               </FormItem>
             )}
           />
@@ -259,7 +259,9 @@ export const SalonDetailsStep = ({ form, photoUploads, setPhotoUploads }: SalonD
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel>Sẽ đào tạo / Will Train</FormLabel>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Đào tạo / Will Train</FormLabel>
+                </div>
               </FormItem>
             )}
           />

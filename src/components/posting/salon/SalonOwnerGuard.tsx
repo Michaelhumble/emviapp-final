@@ -3,107 +3,85 @@ import React from 'react';
 import { useAuth } from '@/context/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, AlertCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Shield, Users, Building } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface SalonOwnerGuardProps {
   children: React.ReactNode;
 }
 
 const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
-  const { user, userRole, loading } = useAuth();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-
-  // Show loading state while checking auth
-  if (loading) {
-    return (
-      <div className="container max-w-4xl mx-auto py-8 px-4">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-        </div>
-      </div>
-    );
-  }
+  const { user, userProfile } = useAuth();
 
   // Check if user is authenticated
   if (!user) {
     return (
-      <div className="container max-w-4xl mx-auto py-8 px-4">
-        <Card className="border-orange-200 bg-orange-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-700">
-              <Shield className="h-5 w-5" />
-              {t({ english: 'Authentication Required', vietnamese: 'Yêu cầu đăng nhập' })}
-            </CardTitle>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+              <Shield className="h-6 w-6 text-purple-600" />
+            </div>
+            <CardTitle>Yêu Cầu Đăng Nhập / Login Required</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-orange-600 mb-4">
-              {t({ 
-                english: 'Please sign in to access the salon listing feature.',
-                vietnamese: 'Vui lòng đăng nhập để truy cập tính năng đăng bán salon.'
-              })}
+          <CardContent className="text-center space-y-4">
+            <p className="text-gray-600">
+              Bạn cần đăng nhập để đăng tin bán salon / You need to login to post a salon listing
             </p>
-            <Button onClick={() => navigate('/sign-in')} className="bg-orange-600 hover:bg-orange-700">
-              {t({ english: 'Sign In', vietnamese: 'Đăng nhập' })}
-            </Button>
+            <div className="space-y-2">
+              <Button asChild className="w-full">
+                <Link to="/auth/signin">
+                  Đăng nhập / Sign In
+                </Link>
+              </Button>
+              <Button variant="outline" asChild className="w-full">
+                <Link to="/auth/signup">
+                  Đăng ký / Sign Up
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Check if user has salon owner role - handle string comparison properly
-  const allowedRoles = ['salon_owner', 'owner', 'salon'];
-  const isSalonOwner = userRole && allowedRoles.includes(userRole);
+  // Check if user is a salon owner (basic check - can be enhanced)
+  const isSalonOwner = userProfile?.role === 'salon_owner' || userProfile?.role === 'salon';
 
   if (!isSalonOwner) {
     return (
-      <div className="container max-w-4xl mx-auto py-8 px-4">
-        <Card className="border-red-200 bg-red-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-700">
-              <AlertCircle className="h-5 w-5" />
-              {t({ english: 'Access Restricted', vietnamese: 'Truy cập bị hạn chế' })}
-            </CardTitle>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+              <Building className="h-6 w-6 text-orange-600" />
+            </div>
+            <CardTitle>Chỉ Dành Cho Chủ Salon / Salon Owners Only</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-red-600 mb-4">
-              {t({ 
-                english: 'Only verified salon owners can post a salon for sale. Please update your profile or contact support for access.',
-                vietnamese: 'Chỉ chủ salon đã xác minh mới có thể đăng bán salon. Vui lòng cập nhật hồ sơ hoặc liên hệ hỗ trợ để được truy cập.'
-              })}
+          <CardContent className="text-center space-y-4">
+            <p className="text-gray-600">
+              Tính năng này chỉ dành cho các chủ salon đã được xác minh / This feature is only available to verified salon owners
             </p>
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/dashboard')}
-                className="border-red-300 text-red-700 hover:bg-red-100"
-              >
-                {t({ english: 'Update Profile', vietnamese: 'Cập nhật hồ sơ' })}
+            <div className="space-y-2">
+              <Button asChild className="w-full">
+                <Link to="/dashboard">
+                  Về Dashboard / Go to Dashboard
+                </Link>
               </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/contact')}
-                className="border-red-300 text-red-700 hover:bg-red-100"
-              >
-                {t({ english: 'Contact Support', vietnamese: 'Liên hệ hỗ trợ' })}
+              <Button variant="outline" asChild className="w-full">
+                <Link to="/contact">
+                  Liên hệ hỗ trợ / Contact Support
+                </Link>
               </Button>
             </div>
-            <p className="text-sm text-red-500 mt-3">
-              {t({ 
-                english: `Current role: ${userRole || 'none'}. Required role: salon_owner`,
-                vietnamese: `Vai trò hiện tại: ${userRole || 'none'}. Vai trò yêu cầu: salon_owner`
-              })}
-            </p>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // User is authorized, render children
+  // User is authenticated and is a salon owner
   return <>{children}</>;
 };
 
