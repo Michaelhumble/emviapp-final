@@ -58,9 +58,7 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
   const isQAUser = user.email === 'humbleinsider@gmail.com';
   
   // Check if user is a salon owner or has salon access
-  const isSalonOwner = userProfile?.role === 'salon' || 
-                      userProfile?.role === 'owner' || 
-                      userProfile?.role === 'salon_owner' ||
+  const isSalonOwner = userProfile?.role === 'owner' || 
                       isQAUser; // QA bypass
 
   if (!isSalonOwner) {
