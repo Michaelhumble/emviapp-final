@@ -1,38 +1,64 @@
 
 import React from 'react';
-import { Notification } from '@/types/notification';
-import { NotificationItem } from './NotificationItem';
-import { NotificationEmptyState } from './NotificationEmptyState';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import NotificationItem from './NotificationItem';
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  isRead: boolean;
+  createdAt: string;
+}
 
 interface NotificationListProps {
   notifications: Notification[];
-  onNotificationClick: (notification: Notification) => void;
-  maxHeight?: string;
-  variant?: 'icon' | 'card';
+  onMarkAsRead: (id: string) => void;
+  onMarkAllAsRead: () => void;
 }
 
-export function NotificationList({ 
-  notifications, 
-  onNotificationClick, 
-  maxHeight = '300px',
-  variant = 'icon'
-}: NotificationListProps) {
+const NotificationList: React.FC<NotificationListProps> = ({
+  notifications,
+  onMarkAsRead,
+  onMarkAllAsRead,
+}) => {
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
   return (
-    <ScrollArea className={`${variant === 'icon' ? 'h-[300px]' : 'h-[400px]'} ${variant === 'card' ? 'pr-4' : ''}`}>
-      <CardContent className={variant === 'icon' ? 'p-2' : undefined}>
-        {notifications.length > 0 
-          ? notifications.map(notification => (
-              <NotificationItem 
-                key={notification.id} 
-                notification={notification} 
-                onClick={onNotificationClick} 
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-xl font-semibold">
+          Notifications {unreadCount > 0 && `(${unreadCount} unread)`}
+        </CardTitle>
+        {unreadCount > 0 && (
+          <button
+            onClick={onMarkAllAsRead}
+            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Mark all as read
+          </button>
+        )}
+      </CardHeader>
+      <CardContent className="p-0">
+        {notifications.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            No notifications yet
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {notifications.map((notification) => (
+              <NotificationItem
+                key={notification.id}
+                {...notification}
+                onMarkAsRead={onMarkAsRead}
               />
-            ))
-          : <NotificationEmptyState />
-        }
+            ))}
+          </div>
+        )}
       </CardContent>
-    </ScrollArea>
+    </Card>
   );
-}
+};
+
+export default NotificationList;

@@ -1,123 +1,33 @@
 
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { SalonFormValues } from "./salonFormSchema";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
-import { SalonFormValues } from "./salonFormSchema";
-import { useTranslation } from "@/hooks/useTranslation";
 
 interface SalonPostBasicInfoProps {
   form: UseFormReturn<SalonFormValues>;
 }
 
 export const SalonPostBasicInfo = ({ form }: SalonPostBasicInfoProps) => {
-  const { t } = useTranslation();
-  
-  const states = [
-    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
-  ];
-
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">
-          {t({ english: "Basic Salon Information", vietnamese: "Thông Tin Cơ Bản Tiệm" })}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="salonName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "Salon Name", vietnamese: "Tên Tiệm" })} *
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder={t({ english: "Enter salon name", vietnamese: "Nhập tên tiệm" })} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "City", vietnamese: "Thành Phố" })} *
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder={t({ english: "Enter city", vietnamese: "Nhập thành phố" })} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "State", vietnamese: "Bang" })} *
-                </FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t({ english: "Select state", vietnamese: "Chọn bang" })} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {states.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="neighborhood"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "Neighborhood/Area", vietnamese: "Khu Vực" })}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder={t({ english: "e.g., Little Saigon, Asian Plaza", vietnamese: "VD: Little Saigon, Asian Plaza" })} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Thông Tin Cơ Bản Salon</h2>
+        <p className="text-gray-600">Vui lòng điền thông tin chi tiết về salon của bạn</p>
       </div>
 
-      <div>
-        <h4 className="text-md font-medium mb-4">
-          {t({ english: "Vietnamese Salon Details", vietnamese: "Chi Tiết Tiệm Việt" })}
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Vietnamese-specific fields at the top */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+        <h3 className="font-semibold text-blue-900 mb-4">Thông Tin Tiệm Nail Việt</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="numberOfTables"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {t({ english: "Number of Tables", vietnamese: "Số Bàn" })} *
-                </FormLabel>
+                <FormLabel>Số Bàn (Number of Tables) *</FormLabel>
                 <FormControl>
                   <Input placeholder="4" {...field} />
                 </FormControl>
@@ -131,9 +41,7 @@ export const SalonPostBasicInfo = ({ form }: SalonPostBasicInfoProps) => {
             name="numberOfChairs"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {t({ english: "Number of Chairs", vietnamese: "Số Ghế" })} *
-                </FormLabel>
+                <FormLabel>Số Ghế (Number of Chairs) *</FormLabel>
                 <FormControl>
                   <Input placeholder="9" {...field} />
                 </FormControl>
@@ -144,98 +52,159 @@ export const SalonPostBasicInfo = ({ form }: SalonPostBasicInfoProps) => {
         </div>
       </div>
 
-      <div>
-        <h4 className="text-md font-medium mb-4">
-          {t({ english: "Financial Information", vietnamese: "Thông Tin Tài Chính" })}
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FormField
-            control={form.control}
-            name="askingPrice"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "Asking Price", vietnamese: "Giá Sang" })} *
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="$150,000" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="salonName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tên Salon (Salon Name) *</FormLabel>
+              <FormControl>
+                <Input placeholder="Beautiful Nails Spa" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="monthlyRent"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "Monthly Rent", vietnamese: "Tiền Thuê Hàng Tháng" })} *
-                </FormLabel>
+        <FormField
+          control={form.control}
+          name="businessType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Loại Hình Kinh Doanh (Business Type) *</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <Input placeholder="$4,500" {...field} />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn loại hình kinh doanh" />
+                  </SelectTrigger>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <SelectContent>
+                  <SelectItem value="nail-salon">Tiệm Nail</SelectItem>
+                  <SelectItem value="hair-salon">Salon Tóc</SelectItem>
+                  <SelectItem value="beauty-salon">Salon Làm Đẹp</SelectItem>
+                  <SelectItem value="spa">Spa</SelectItem>
+                  <SelectItem value="barbershop">Tiệm Cắt Tóc Nam</SelectItem>
+                  <SelectItem value="massage">Massage</SelectItem>
+                  <SelectItem value="other">Khác</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="revenue"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "Monthly Revenue", vietnamese: "Doanh Thu Hàng Tháng" })}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="$25,000" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
+        <FormField
+          control={form.control}
+          name="city"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Thành Phố (City) *</FormLabel>
+              <FormControl>
+                <Input placeholder="San Jose" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <div>
-        <h4 className="text-md font-medium mb-4">
-          {t({ english: "Additional Details", vietnamese: "Thông Tin Thêm" })}
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FormField
-            control={form.control}
-            name="numberOfStaff"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "Number of Staff", vietnamese: "Số Nhân Viên" })} *
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="5" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="state"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bang (State) *</FormLabel>
+              <FormControl>
+                <Input placeholder="CA" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="squareFeet"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t({ english: "Square Footage", vietnamese: "Diện Tích" })}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="1,200 sq ft" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="askingPrice"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Giá Sang (Asking Price) *</FormLabel>
+              <FormControl>
+                <Input placeholder="$120,000" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="monthlyRent"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tiền Thuê Hàng Tháng (Monthly Rent) *</FormLabel>
+              <FormControl>
+                <Input placeholder="$3,500" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="numberOfStaff"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Số Nhân Viên (Number of Staff) *</FormLabel>
+              <FormControl>
+                <Input placeholder="5" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="squareFeet"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Diện Tích (Square Feet)</FormLabel>
+              <FormControl>
+                <Input placeholder="1,200 sqft" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="revenue"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Doanh Thu Hàng Tháng (Monthly Revenue)</FormLabel>
+              <FormControl>
+                <Input placeholder="$15,000" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="neighborhood"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Khu Vực (Neighborhood)</FormLabel>
+              <FormControl>
+                <Input placeholder="Downtown, Little Saigon, etc." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );

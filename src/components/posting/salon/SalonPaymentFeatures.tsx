@@ -1,183 +1,171 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react';
+import { Check, CreditCard, AlertTriangle } from 'lucide-react';
 import { SalonFormValues } from './salonFormSchema';
-import { SalonPricingOptions, calculateSalonPostPrice } from '@/utils/posting/salonPricing';
-import { useTranslation } from "@/hooks/useTranslation";
+import { SalonPricingOptions } from '@/utils/posting/salonPricing';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import StripeCheckout from '@/components/payments/StripeCheckout';
 
 interface SalonPaymentFeaturesProps {
   formData: SalonFormValues;
   selectedOptions: SalonPricingOptions;
   onPayment: () => void;
+  onPaymentSuccess?: () => void;
   onBack: () => void;
+  paymentCompleted?: boolean;
 }
 
 const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
   formData,
   selectedOptions,
   onPayment,
-  onBack
+  onPaymentSuccess,
+  onBack,
+  paymentCompleted = false
 }) => {
-  const { t } = useTranslation();
-  const totalPrice = calculateSalonPostPrice(selectedOptions);
-  
-  const getPlanName = () => {
-    if (selectedOptions.durationMonths === 1) return t({ english: 'Standard Listing', vietnamese: 'Đăng Tiêu Chuẩn' });
-    if (selectedOptions.durationMonths === 6) return t({ english: '6 Month Package', vietnamese: 'Gói 6 Tháng' });
-    if (selectedOptions.durationMonths === 12) return t({ english: '12 Month Package', vietnamese: 'Gói 12 Tháng' });
-    return t({ english: 'Standard Listing', vietnamese: 'Đăng Tiêu Chuẩn' });
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  const calculatePrice = () => {
+    let basePrice = 49;
+    if (selectedOptions.selectedPricingTier === 'premium') basePrice = 99;
+    if (selectedOptions.selectedPricingTier === 'platinum') basePrice = 199;
+    
+    if (selectedOptions.fastSalePackage) basePrice += 50;
+    if (selectedOptions.featuredBoost) basePrice += 30;
+    
+    return basePrice * selectedOptions.durationMonths;
   };
 
-  const getIncludedFeatures = () => {
-    const features = [];
+  const totalPrice = calculatePrice();
+
+  const handleStripePayment = async () => {
+    setIsProcessingPayment(true);
     
-    if (selectedOptions.isNationwide) {
-      features.push(t({ english: 'Nationwide Visibility (+$10)', vietnamese: 'Hiển Thị Toàn Quốc (+$10)' }));
+    try {
+      // Simulate Stripe payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      if (onPaymentSuccess) {
+        onPaymentSuccess();
+      }
+      
+      console.log('Payment completed successfully');
+    } catch (error) {
+      console.error('Payment failed:', error);
+    } finally {
+      setIsProcessingPayment(false);
     }
-    
-    if (selectedOptions.fastSalePackage || selectedOptions.featuredBoost) {
-      features.push(t({ english: 'Premium Promotion (+$20)', vietnamese: 'Quảng Bá Cao Cấp (+$20)' }));
-    }
-    
-    if (selectedOptions.showAtTop) {
-      features.push(t({ english: 'Featured Placement (+$15)', vietnamese: 'Vị Trí Nổi Bật (+$15)' }));
-    }
-    
-    if (selectedOptions.bundleWithJobPost) {
-      features.push(t({ english: 'Bundle with Job Post (+$15)', vietnamese: 'Gói Cùng Đăng Việc (+$15)' }));
-    }
-    
-    return features;
   };
 
-  const displaySalonInfo = () => {
-    const tables = formData.numberOfTables || "4";
-    const chairs = formData.numberOfChairs || "9";
-    return `${tables} ${t({ english: "tables", vietnamese: "bàn" })}, ${chairs} ${t({ english: "chairs", vietnamese: "ghế" })}`;
+  const handlePublishListing = () => {
+    if (!paymentCompleted) {
+      console.error('Cannot publish listing without payment');
+      return;
+    }
+    onPayment();
   };
 
   return (
     <div className="space-y-6">
+      <div className="border-b pb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Payment & Review</h2>
+        <p className="text-gray-600 mt-1">Complete payment to publish your salon listing</p>
+      </div>
+
       {/* Listing Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-500" />
-            {t({ english: "Listing Summary", vietnamese: "Tóm Tắt Đăng Bán" })}
+            <span>Salon Listing Summary</span>
+            {paymentCompleted && <Badge variant="secondary" className="bg-green-100 text-green-800">Payment Completed</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-lg">{formData.salonName}</h3>
               <p className="text-gray-600">{formData.city}, {formData.state}</p>
-              {formData.neighborhood && (
-                <p className="text-sm text-gray-500">{t({ english: "Area", vietnamese: "Khu vực" })}: {formData.neighborhood}</p>
-              )}
+              <p className="text-gray-600">{formData.numberOfTables} bàn, {formData.numberOfChairs} ghế</p>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-500">{t({ english: "Asking Price", vietnamese: "Giá Sang" })}:</span>
-                <p className="font-medium">${formData.askingPrice}</p>
+                <span className="font-medium">Asking Price:</span> {formData.askingPrice}
               </div>
               <div>
-                <span className="text-gray-500">{t({ english: "Monthly Rent", vietnamese: "Tiền Thuê/Tháng" })}:</span>
-                <p className="font-medium">${formData.monthlyRent}</p>
+                <span className="font-medium">Monthly Rent:</span> {formData.monthlyRent}
               </div>
               <div>
-                <span className="text-gray-500">{t({ english: "Tables & Chairs", vietnamese: "Bàn & Ghế" })}:</span>
-                <p className="font-medium">{displaySalonInfo()}</p>
+                <span className="font-medium">Business Type:</span> {formData.businessType}
               </div>
               <div>
-                <span className="text-gray-500">{t({ english: "Staff", vietnamese: "Nhân Viên" })}:</span>
-                <p className="font-medium">{formData.numberOfStaff} {t({ english: "people", vietnamese: "người" })}</p>
+                <span className="font-medium">Staff Count:</span> {formData.numberOfStaff}
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Plan Details */}
+      {/* Payment Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-purple-500" />
-            {t({ english: "Selected Plan", vietnamese: "Gói Đã Chọn" })}
+            <CreditCard className="w-5 h-5" />
+            Payment Required
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-semibold">{getPlanName()}</h3>
-                <p className="text-sm text-gray-600">
-                  {t({ english: "Active for", vietnamese: "Hoạt động trong" })} {selectedOptions.durationMonths} {t({ english: "month(s)", vietnamese: "tháng" })}
-                </p>
-              </div>
-              <Badge variant="outline" className="text-purple-600">
-                ${totalPrice.toFixed(2)}
-              </Badge>
+              <span className="font-medium">Listing Package ({selectedOptions.selectedPricingTier})</span>
+              <span className="font-bold text-lg">${totalPrice}</span>
             </div>
             
-            {getIncludedFeatures().length > 0 && (
-              <div>
-                <h4 className="font-medium text-sm text-gray-700 mb-2">
-                  {t({ english: "Add-ons Included", vietnamese: "Dịch Vụ Thêm" })}:
-                </h4>
-                <ul className="space-y-1">
-                  {getIncludedFeatures().map((feature, index) => (
-                    <li key={index} className="flex items-center text-sm text-gray-600">
-                      <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+            {!paymentCompleted ? (
+              <>
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <AlertDescription className="text-red-800">
+                    <strong>Payment Required:</strong> Your salon listing will only be published after successful payment via Stripe.
+                  </AlertDescription>
+                </Alert>
+                
+                <StripeCheckout
+                  amount={totalPrice * 100} // Convert to cents
+                  productName={`Salon Listing - ${formData.salonName}`}
+                  buttonText={isProcessingPayment ? "Processing Payment..." : "Pay with Stripe"}
+                  onSuccess={handleStripePayment}
+                />
+              </>
+            ) : (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-green-800">
+                  <Check className="w-5 h-5" />
+                  <span className="font-medium">Payment Completed Successfully!</span>
+                </div>
+                <p className="text-green-700 text-sm mt-1">
+                  Your payment has been processed. You can now publish your salon listing.
+                </p>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Payment Summary */}
-      <Card className="border-purple-200 bg-purple-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-700">
-            <CreditCard className="h-5 w-5" />
-            {t({ english: "Payment Summary", vietnamese: "Tóm Tắt Thanh Toán" })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between text-lg font-semibold">
-              <span>{t({ english: "Total Amount", vietnamese: "Tổng Số Tiền" })}:</span>
-              <span className="text-purple-600">${totalPrice.toFixed(2)}</span>
-            </div>
-            <div className="text-sm text-gray-600">
-              <div className="flex items-center gap-2 mb-2">
-                <Shield className="h-4 w-4 text-green-500" />
-                <span>{t({ english: "Secure payment powered by Stripe", vietnamese: "Thanh toán bảo mật qua Stripe" })}</span>
-              </div>
-              <p>{t({ english: "Your listing will be active immediately after payment confirmation.", vietnamese: "Đăng bán sẽ hoạt động ngay sau khi xác nhận thanh toán." })}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Action Buttons */}
-      <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
-          <ArrowLeft className="w-4 h-4" />
-          {t({ english: "Back to Plan Selection", vietnamese: "Quay Lại Chọn Gói" })}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onBack}>
+          Back to Pricing
         </Button>
         
         <Button 
-          onClick={onPayment}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg font-semibold"
+          onClick={handlePublishListing}
+          disabled={!paymentCompleted}
+          className={paymentCompleted ? "bg-green-600 hover:bg-green-700" : ""}
         >
-          {t({ english: `Pay $${totalPrice.toFixed(2)} & Publish Listing`, vietnamese: `Thanh Toán $${totalPrice.toFixed(2)} & Đăng Bán` })}
+          {paymentCompleted ? "Publish Salon Listing" : "Complete Payment First"}
         </Button>
       </div>
     </div>

@@ -8,6 +8,8 @@ import SalonPricingSection from './SalonPricingSection';
 import SalonPaymentFeatures from './SalonPaymentFeatures';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 import { useTranslation } from "@/hooks/useTranslation";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertTriangle } from 'lucide-react';
 
 interface SalonListingWizardProps {
   onComplete: (formData: SalonFormValues, options: SalonPricingOptions) => void;
@@ -18,6 +20,7 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<SalonFormValues | null>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<SalonPricingOptions>({
     durationMonths: 1,
     selectedPricingTier: 'standard',
@@ -43,6 +46,12 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
     console.log('Form submitted with values:', values);
     console.log('Photos uploaded:', photoUploads.length);
     
+    // Validate required Vietnamese fields
+    if (!values.numberOfTables || !values.numberOfChairs) {
+      console.error('Vietnamese salon fields (tables/chairs) are required');
+      return;
+    }
+    
     // Validate photos one more time
     if (photoUploads.length === 0) {
       console.error('No photos uploaded, cannot proceed');
@@ -55,6 +64,10 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
   };
 
   const handlePricingNext = () => {
+    if (!formData) {
+      console.error('No form data available');
+      return;
+    }
     console.log('Pricing step completed, moving to payment');
     setCurrentStep(5); // Go to payment step
   };
@@ -65,12 +78,23 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
   };
 
   const handlePayment = () => {
-    if (formData) {
-      console.log('Payment step completed, calling onComplete');
-      // CRITICAL: Only call onComplete after payment is processed
-      // This ensures no listing is created without payment
-      onComplete(formData, selectedOptions);
+    if (!formData) {
+      console.error('No form data available for payment');
+      return;
     }
+    
+    if (!paymentCompleted) {
+      console.error('Payment must be completed before publishing listing');
+      return;
+    }
+    
+    console.log('Payment completed, calling onComplete');
+    onComplete(formData, selectedOptions);
+  };
+
+  const handlePaymentSuccess = () => {
+    console.log('Payment successful, enabling listing creation');
+    setPaymentCompleted(true);
   };
 
   const handlePaymentBack = () => {
@@ -109,6 +133,16 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
         </CardContent>
       </Card>
 
+      {/* Payment Warning */}
+      {currentStep >= 4 && !paymentCompleted && (
+        <Alert className="mb-6 border-orange-200 bg-orange-50">
+          <AlertTriangle className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-800">
+            <strong>Payment Required:</strong> Your salon listing will only be published after successful payment processing via Stripe.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Step Content */}
       <Card>
         <CardContent className="p-8">
@@ -141,7 +175,9 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
               formData={formData}
               selectedOptions={selectedOptions}
               onPayment={handlePayment}
+              onPaymentSuccess={handlePaymentSuccess}
               onBack={handlePaymentBack}
+              paymentCompleted={paymentCompleted}
             />
           )}
         </CardContent>

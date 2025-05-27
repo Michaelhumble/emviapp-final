@@ -56,6 +56,8 @@ const UserMenu = () => {
     return "Dashboard";
   };
 
+  const isSalonOwner = userProfile?.role === "salon_owner";
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
@@ -88,7 +90,7 @@ const UserMenu = () => {
           </Link>
         </DropdownMenuItem>
 
-        {userProfile?.role === "salon_owner" && (
+        {isSalonOwner && (
           <>
             <DropdownMenuItem asChild>
               <Link to="/post-job" className="cursor-pointer">
