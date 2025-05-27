@@ -78,8 +78,8 @@ const SalonListingWizard = () => {
   };
 
   const handlePayment = () => {
-    // Payment logic will be handled here
-    console.log("Processing payment...");
+    // Payment logic is now handled within SalonReviewStep
+    console.log("Payment initiated from review step");
   };
 
   const renderStep = () => {
@@ -130,7 +130,6 @@ const SalonListingWizard = () => {
       case 2:
         return formData.address && formData.city && formData.state;
       case 3:
-        // Step 3: Check required fields AND at least one photo
         return formData.askingPrice && 
                formData.monthlyRent && 
                photoUploads.length > 0;
@@ -151,20 +150,20 @@ const SalonListingWizard = () => {
             {renderStep()}
           </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between mt-8">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Quay lại / Back
-            </Button>
+          {/* Navigation - Only show for steps 1-4, step 5 handles its own payment button */}
+          {currentStep < STEPS.length && (
+            <div className="flex justify-between mt-8">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Quay lại / Back
+              </Button>
 
-            {currentStep < STEPS.length ? (
               <Button
                 type="button"
                 onClick={nextStep}
@@ -174,17 +173,23 @@ const SalonListingWizard = () => {
                 Tiếp tục / Next
                 <ArrowRight className="w-4 h-4" />
               </Button>
-            ) : (
+            </div>
+          )}
+
+          {/* Back button for step 5 */}
+          {currentStep === STEPS.length && (
+            <div className="flex justify-start mt-8">
               <Button
                 type="button"
-                onClick={handlePayment}
-                disabled={!canProceed()}
-                className="bg-green-600 hover:bg-green-700"
+                variant="outline"
+                onClick={prevStep}
+                className="flex items-center gap-2"
               >
-                Hoàn tất thanh toán / Complete Payment
+                <ArrowLeft className="w-4 h-4" />
+                Quay lại / Back
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </Form>
       </div>
     </PostWizardLayout>
