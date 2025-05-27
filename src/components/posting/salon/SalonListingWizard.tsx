@@ -38,25 +38,30 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
   ];
 
   const handleFormSubmit = (values: SalonFormValues) => {
+    console.log('Form submitted with values:', values);
     setFormData(values);
     setCurrentStep(4); // Go to pricing step
   };
 
   const handlePricingNext = () => {
+    console.log('Pricing step completed, moving to payment');
     setCurrentStep(5); // Go to payment step
   };
 
   const handlePricingBack = () => {
+    console.log('Going back to form');
     setCurrentStep(1); // Go back to form (which includes photos)
   };
 
   const handlePayment = () => {
     if (formData) {
+      console.log('Payment step completed, calling onComplete');
       onComplete(formData, selectedOptions);
     }
   };
 
   const handlePaymentBack = () => {
+    console.log('Going back to pricing');
     setCurrentStep(4); // Go back to pricing
   };
 
@@ -110,7 +115,7 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
 
           {currentStep === 4 && (
             <SalonPricingSection
-              selectedOptions={selectedOptions}
+              options={selectedOptions}
               onOptionsChange={setSelectedOptions}
               onNext={handlePricingNext}
               onBack={handlePricingBack}

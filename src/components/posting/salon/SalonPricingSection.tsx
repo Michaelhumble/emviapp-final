@@ -7,7 +7,7 @@ import { SalonPricingOptions, calculateSalonPostPrice, getPlanDetails } from '@/
 import SalonPostOptions from './SalonPostOptions';
 
 interface SalonPricingSectionProps {
-  selectedOptions: SalonPricingOptions;
+  options: SalonPricingOptions;
   onOptionsChange: (options: SalonPricingOptions) => void;
   onNext: () => void;
   onBack: () => void;
@@ -15,18 +15,18 @@ interface SalonPricingSectionProps {
 }
 
 const SalonPricingSection: React.FC<SalonPricingSectionProps> = ({
-  selectedOptions,
+  options,
   onOptionsChange,
   onNext,
   onBack,
   isFirstPost = false
 }) => {
-  const currentPrice = calculateSalonPostPrice(selectedOptions);
-  const planDetails = getPlanDetails(selectedOptions.durationMonths);
+  const currentPrice = calculateSalonPostPrice(options);
+  const planDetails = getPlanDetails(options.durationMonths);
 
   const handleDurationChange = (months: number) => {
     onOptionsChange({
-      ...selectedOptions,
+      ...options,
       durationMonths: months
     });
   };
@@ -47,7 +47,7 @@ const SalonPricingSection: React.FC<SalonPricingSectionProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 6, 12].map((months) => {
               const details = getPlanDetails(months);
-              const isSelected = selectedOptions.durationMonths === months;
+              const isSelected = options.durationMonths === months;
               
               return (
                 <div
@@ -90,7 +90,7 @@ const SalonPricingSection: React.FC<SalonPricingSectionProps> = ({
 
       {/* Add-on Options */}
       <SalonPostOptions
-        options={selectedOptions}
+        options={options}
         onOptionsChange={onOptionsChange}
         isFirstPost={isFirstPost}
       />

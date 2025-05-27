@@ -1,47 +1,25 @@
 
-import { z } from "zod";
+import { z } from 'zod';
 
 export const salonFormSchema = z.object({
-  // Identity fields (Step 1)
-  salonName: z.string().min(2, "Salon name must be at least 2 characters"),
-  businessType: z.string().min(1, "Please select a business type"),
-  establishedYear: z.string().optional(),
-  logo: z.any().optional(),
-  
-  // Location fields (Step 2)
-  address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zipCode: z.string().optional(),
-  neighborhood: z.string().optional(),
-  hideExactAddress: z.boolean().optional(),
-  
-  // Description & Financial fields (Step 3)
-  askingPrice: z.string().optional(),
-  monthlyRent: z.string().optional(),
-  revenue: z.string().optional(),
-  squareFeet: z.string().optional(),
-  numberOfStaff: z.string().optional(),
-  virtualTourUrl: z.string().url().optional().or(z.literal("")),
-  englishDescription: z.string().optional(),
+  salonName: z.string().min(1, 'Salon name is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
+  askingPrice: z.string().min(1, 'Asking price is required'),
+  monthlyRent: z.string().min(1, 'Monthly rent is required'),
+  numberOfStaff: z.string().min(1, 'Number of staff is required'),
+  squareFeet: z.string().min(1, 'Square feet is required'),
+  revenue: z.string().min(1, 'Revenue is required'),
+  reasonForSelling: z.string().min(1, 'Reason for selling is required'),
   vietnameseDescription: z.string().optional(),
-  reasonForSelling: z.string().optional(),
-  
-  // Features/Amenities
-  willTrain: z.boolean().optional(),
-  hasHousing: z.boolean().optional(),
-  hasWaxRoom: z.boolean().optional(),
-  hasDiningRoom: z.boolean().optional(),
-  hasLaundry: z.boolean().optional(),
-  
-  // Marketing options
-  isNationwide: z.boolean().optional(),
-  fastSalePackage: z.boolean().optional(),
-  
-  // Payment & Terms (Step 5)
-  termsAccepted: z.boolean().refine((val) => val === true, {
-    message: "You must accept the terms and conditions",
-  }),
+  englishDescription: z.string().min(1, 'English description is required'),
+  willTrain: z.boolean().default(false),
+  isNationwide: z.boolean().default(false),
+  fastSalePackage: z.boolean().default(false),
+  hasHousing: z.boolean().default(false),
+  hasWaxRoom: z.boolean().default(false),
+  hasDiningRoom: z.boolean().default(false),
+  hasLaundry: z.boolean().default(false),
 });
 
 export type SalonFormValues = z.infer<typeof salonFormSchema>;
