@@ -44,6 +44,7 @@ export const salonFormSchema = z.object({
   // Pricing options
   isNationwide: z.boolean().default(false),
   fastSalePackage: z.boolean().default(false),
+  autoRenew: z.boolean().default(false),
   
   // Terms acceptance for final step
   termsAccepted: z.boolean().default(false),
