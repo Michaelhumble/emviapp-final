@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAuth } from '@/context/auth';
 import Logo from '@/components/ui/Logo';
-import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import NotificationCenter from "@/components/notifications/NotificationCenter";
 
 export interface CustomerDashboardHeaderProps {
   profile?: any;

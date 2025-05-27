@@ -43,20 +43,25 @@ const UserMenu = () => {
   };
 
   const getProfilePath = () => {
-    if (userProfile?.role === "owner" || userProfile?.role === "salon_owner") return "/dashboard/owner";
-    if (userProfile?.role === "artist") return "/dashboard/artist";
-    if (userProfile?.role === "customer") return "/dashboard/customer";
+    const role = userProfile?.role;
+    if (role === "owner" || role === "salon") return "/dashboard/owner";
+    if (role === "artist") return "/dashboard/artist";
+    if (role === "customer") return "/dashboard/customer";
     return "/profile";
   };
 
   const getDashboardLabel = () => {
-    if (userProfile?.role === "owner" || userProfile?.role === "salon_owner") return "Salon Dashboard";
-    if (userProfile?.role === "artist") return "Artist Dashboard";
-    if (userProfile?.role === "customer") return "Customer Dashboard";
+    const role = userProfile?.role;
+    if (role === "owner" || role === "salon") return "Salon Dashboard";
+    if (role === "artist") return "Artist Dashboard";
+    if (role === "customer") return "Customer Dashboard";
     return "Dashboard";
   };
 
-  const isSalonOwner = userProfile?.role === "owner" || userProfile?.role === "salon_owner";
+  const isSalonOwner = () => {
+    const role = userProfile?.role;
+    return role === "owner" || role === "salon";
+  };
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -90,7 +95,7 @@ const UserMenu = () => {
           </Link>
         </DropdownMenuItem>
 
-        {isSalonOwner && (
+        {isSalonOwner() && (
           <>
             <DropdownMenuItem asChild>
               <Link to="/post-job" className="cursor-pointer">
