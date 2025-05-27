@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format, parseISO } from "date-fns";
 import { Bell } from "lucide-react";
-import { useTranslation, Translation } from "@/hooks/useTranslation";
+import { useTranslation, type Translation } from "@/hooks/useTranslation";
 
 interface BookingReminderStatusProps {
   reminderSent: boolean;

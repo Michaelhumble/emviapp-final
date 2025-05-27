@@ -28,7 +28,10 @@ const TopLocalArtists = () => {
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center">
           <MapPin className="h-5 w-5 text-amber-500 mr-2" />
-          {t("Top Artists Near You")}
+          {t({
+            english: "Top Artists Near You",
+            vietnamese: "Nghệ Sĩ Hàng Đầu Gần Bạn"
+          })}
         </CardTitle>
         <CardDescription />
       </CardHeader>

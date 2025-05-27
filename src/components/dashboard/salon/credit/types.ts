@@ -1,5 +1,5 @@
 
-import { Translation } from "@/hooks/useTranslation";
+import type { Translation } from "@/hooks/useTranslation";
 
 export type CreditOption = {
   id: string;

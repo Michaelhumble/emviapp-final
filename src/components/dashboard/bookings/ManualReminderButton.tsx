@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
-import { useTranslation, Translation } from "@/hooks/useTranslation";
+import { useTranslation, type Translation } from "@/hooks/useTranslation";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";

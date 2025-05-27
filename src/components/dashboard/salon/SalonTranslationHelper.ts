@@ -1,5 +1,5 @@
 
-import { Translation } from "@/hooks/useTranslation";
+import type { Translation } from "@/hooks/useTranslation";
 
 // Define a type for translatable text
 export type TranslatableText = Translation;
