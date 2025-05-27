@@ -43,20 +43,20 @@ const UserMenu = () => {
   };
 
   const getProfilePath = () => {
-    if (userProfile?.role === "salon_owner") return "/dashboard/owner";
+    if (userProfile?.role === "owner" || userProfile?.role === "salon_owner") return "/dashboard/owner";
     if (userProfile?.role === "artist") return "/dashboard/artist";
     if (userProfile?.role === "customer") return "/dashboard/customer";
     return "/profile";
   };
 
   const getDashboardLabel = () => {
-    if (userProfile?.role === "salon_owner") return "Salon Dashboard";
+    if (userProfile?.role === "owner" || userProfile?.role === "salon_owner") return "Salon Dashboard";
     if (userProfile?.role === "artist") return "Artist Dashboard";
     if (userProfile?.role === "customer") return "Customer Dashboard";
     return "Dashboard";
   };
 
-  const isSalonOwner = userProfile?.role === "salon_owner";
+  const isSalonOwner = userProfile?.role === "owner" || userProfile?.role === "salon_owner";
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>

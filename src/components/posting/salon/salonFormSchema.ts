@@ -15,8 +15,8 @@ export const salonFormSchema = z.object({
   askingPrice: z.string().min(1, "Asking price is required"),
   monthlyRent: z.string().min(1, "Monthly rent is required"),
   numberOfStaff: z.string().min(1, "Number of staff is required"),
-  numberOfTables: z.string().default("4"),
-  numberOfChairs: z.string().default("9"),
+  numberOfTables: z.string().min(1, "Số bàn is required").default("4"),
+  numberOfChairs: z.string().min(1, "Số ghế is required").default("9"),
   squareFeet: z.string().optional(),
   revenue: z.string().optional(),
   reasonForSelling: z.string().min(10, "Please provide a reason for selling"),
@@ -31,6 +31,9 @@ export const salonFormSchema = z.object({
   hasDiningRoom: z.boolean().default(false),
   hasLaundry: z.boolean().default(false),
   specialNotes: z.string().optional(),
+  termsAccepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions"
+  }),
 });
 
 export type SalonFormValues = z.infer<typeof salonFormSchema>;

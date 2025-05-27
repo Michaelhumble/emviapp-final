@@ -1,162 +1,69 @@
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Helmet } from 'react-helmet-async';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
-
-// Define TypeScript interfaces for the responses
-interface PaymentData {
-  session_id?: string;
-  payment_intent?: string;
-  payment_status?: string;
-  amount_total?: number;
-  customer_email?: string;
-  payment_method_types?: string[];
-  metadata?: {
-    listing_id?: string;
-    user_id?: string;
-    plan_type?: string;
-  };
-}
-
-interface SuccessState {
-  paymentIntent: string | null;
-  paymentAmount: number | null;
-  customerEmail: string | null;
-  paymentMethod: string | null;
-  paymentStatus: string | null;
-  hasErrors: boolean;
-  errorMessage: string | null;
-  planType: string | null;
-  listingId: string | null;
-}
+import { supabase } from '@/integrations/supabase/client';
+import Layout from '@/components/layout/Layout';
+import { Check, ArrowRight, Home, Share2, Eye } from 'lucide-react';
+import { toast } from 'sonner';
 
 const PaymentSuccess: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [loading, setLoading] = useState(true);
-  const [paymentData, setPaymentData] = useState<SuccessState>({
-    paymentIntent: null,
-    paymentAmount: null,
-    customerEmail: null,
-    paymentMethod: null,
-    paymentStatus: null,
-    hasErrors: false,
-    errorMessage: null,
-    planType: null,
-    listingId: null
-  });
-
-  // Get the session_id from the URL
   const sessionId = searchParams.get('session_id');
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [paymentData, setPaymentData] = useState<any>(null);
+
   useEffect(() => {
     const verifyPayment = async () => {
       if (!sessionId) {
-        setPaymentData(prev => ({
-          ...prev,
-          hasErrors: true,
-          errorMessage: t("No session ID provided")
-        }));
-        setLoading(false);
+        setIsLoading(false);
         return;
       }
 
       try {
-        const { data, error } = await supabase.functions.invoke('verify-payment', {
+        const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
           body: { sessionId }
         });
 
         if (error) {
-          console.error("Verification error:", error);
-          setPaymentData(prev => ({
-            ...prev,
-            hasErrors: true,
-            errorMessage: t("Failed to verify payment")
-          }));
-          setLoading(false);
+          console.error('Payment verification error:', error);
+          toast.error(t({ english: "Payment verification failed", vietnamese: "Xác minh thanh toán thất bại" }));
+          setIsLoading(false);
           return;
         }
 
-        // Process the response
-        const sessionData = data as PaymentData;
-        if (!sessionData || !sessionData.payment_status) {
-          setPaymentData(prev => ({
-            ...prev,
-            hasErrors: true,
-            errorMessage: t("Invalid payment data received")
-          }));
+        if (data?.success) {
+          setPaymentData(data);
+          toast.success(t({ english: "Payment successful! Your listing is now live.", vietnamese: "Thanh toán thành công! Tin đăng của bạn đã được đăng." }));
         } else {
-          setPaymentData({
-            paymentIntent: sessionData.payment_intent || null,
-            paymentAmount: sessionData.amount_total ? sessionData.amount_total / 100 : null, // Convert from cents
-            customerEmail: sessionData.customer_email || null,
-            paymentMethod: sessionData.payment_method_types?.[0] || null,
-            paymentStatus: sessionData.payment_status || null,
-            hasErrors: false,
-            errorMessage: null,
-            planType: sessionData.metadata?.plan_type || null,
-            listingId: sessionData.metadata?.listing_id || null
-          });
+          toast.error(t({ english: "Payment verification failed", vietnamese: "Xác minh thanh toán thất bại" }));
         }
       } catch (error) {
-        console.error("Error verifying payment:", error);
-        setPaymentData(prev => ({
-          ...prev,
-          hasErrors: true,
-          errorMessage: t("An unexpected error occurred")
-        }));
+        console.error('Verification error:', error);
+        toast.error(t({ english: "Failed to verify payment", vietnamese: "Không thể xác minh thanh toán" }));
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     verifyPayment();
   }, [sessionId, t]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Layout>
-        <div className="container max-w-3xl py-16">
-          <div className="bg-white p-8 rounded-lg shadow-sm">
-            <div className="flex flex-col items-center justify-center space-y-4">
-              <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
-              <p>{t("Verifying your payment...")}</p>
-            </div>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">
+              {t({ english: "Verifying payment...", vietnamese: "Đang xác minh thanh toán..." })}
+            </p>
           </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (paymentData.hasErrors) {
-    return (
-      <Layout>
-        <div className="container max-w-3xl py-16">
-          <Card>
-            <CardContent className="pt-6 flex flex-col items-center">
-              <div className="rounded-full bg-red-100 p-3 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </div>
-              <h1 className="text-2xl font-bold mb-2 text-center">{t("Payment Verification Failed")}</h1>
-              <p className="text-gray-600 mb-6 text-center">{paymentData.errorMessage || t("We couldn't verify your payment. Please contact support.")}</p>
-              <div className="flex gap-4">
-                <Button variant="outline" onClick={() => navigate('/pricing')}>
-                  {t("Back to Pricing")}
-                </Button>
-                <Button onClick={() => navigate('/dashboard')}>
-                  {t("Go to Dashboard")}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </Layout>
     );
@@ -164,72 +71,166 @@ const PaymentSuccess: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container max-w-3xl py-16">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center mb-8">
-              <div className="rounded-full bg-green-100 p-3 mb-4">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+      <Helmet>
+        <title>
+          {t({ english: "Payment Successful | EmviApp", vietnamese: "Thanh toán thành công | EmviApp" })}
+        </title>
+      </Helmet>
+
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12">
+        <div className="container mx-auto px-4 max-w-4xl">
+          {/* Success Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+              <Check className="w-10 h-10 text-green-600" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t({ english: "Payment Successful!", vietnamese: "Thanh toán thành công!" })}
+            </h1>
+            <p className="text-xl text-gray-600">
+              {t({ 
+                english: "Your salon listing has been published and is now live on EmviApp",
+                vietnamese: "Tin đăng tiệm của bạn đã được đăng và hiện đang hoạt động trên EmviApp"
+              })}
+            </p>
+          </div>
+
+          {/* Payment Details */}
+          {paymentData && (
+            <Card className="mb-8 border-green-200 bg-white shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-green-800">
+                  <Check className="w-5 h-5" />
+                  {t({ english: "Payment Details", vietnamese: "Chi tiết thanh toán" })}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <span className="font-medium">
+                      {t({ english: "Listing ID", vietnamese: "Mã tin đăng" })}:
+                    </span>
+                    <span className="ml-2 font-mono text-sm">{paymentData.post_id}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">
+                      {t({ english: "Plan Type", vietnamese: "Loại gói" })}:
+                    </span>
+                    <Badge variant="outline" className="ml-2">
+                      {paymentData.pricing_tier || t({ english: "Standard", vietnamese: "Tiêu chuẩn" })}
+                    </Badge>
+                  </div>
+                  {paymentData.expires_at && (
+                    <div className="md:col-span-2">
+                      <span className="font-medium">
+                        {t({ english: "Listing expires", vietnamese: "Tin đăng hết hạn" })}:
+                      </span>
+                      <span className="ml-2">
+                        {new Date(paymentData.expires_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Next Steps */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>
+                {t({ english: "What's Next?", vietnamese: "Tiếp theo là gì?" })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Eye className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">
+                      {t({ english: "Your listing is now visible", vietnamese: "Tin đăng của bạn hiện đã hiển thị" })}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t({ 
+                        english: "Potential buyers can now view and contact you about your salon",
+                        vietnamese: "Người mua tiềm năng hiện có thể xem và liên hệ với bạn về tiệm nail"
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Share2 className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">
+                      {t({ english: "Share your listing", vietnamese: "Chia sẻ tin đăng" })}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t({ 
+                        english: "Share the link with your network to reach more potential buyers",
+                        vietnamese: "Chia sẻ liên kết với mạng lưới của bạn để tiếp cận nhiều người mua tiềm năng hơn"
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <ArrowRight className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">
+                      {t({ english: "Manage your listing", vietnamese: "Quản lý tin đăng" })}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t({ 
+                        english: "You can edit or update your listing anytime from your dashboard",
+                        vietnamese: "Bạn có thể chỉnh sửa hoặc cập nhật tin đăng bất cứ lúc nào từ bảng điều khiển"
+                      })}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h1 className="text-2xl font-bold mb-2">{t("Payment Successful!")}</h1>
-              <p className="text-gray-600">{t("Thank you for your payment. Your transaction has been completed.")}</p>
-            </div>
-            
-            <div className="space-y-4 mb-6">
-              <div className="flex justify-between border-b pb-2">
-                <span className="font-medium">{t("Payment Status")}:</span>
-                <span className="text-green-600 font-medium">{paymentData.paymentStatus === 'paid' ? t("Paid") : t("Processing")}</span>
-              </div>
-              
-              {paymentData.paymentAmount && (
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">{t("Amount")}:</span>
-                  <span>${paymentData.paymentAmount.toFixed(2)} USD</span>
-                </div>
-              )}
-              
-              {paymentData.customerEmail && (
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">{t("Email")}:</span>
-                  <span>{paymentData.customerEmail}</span>
-                </div>
-              )}
-              
-              {paymentData.paymentIntent && (
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">{t("Payment ID")}:</span>
-                  <span className="text-xs font-mono bg-gray-100 p-1 rounded">{paymentData.paymentIntent}</span>
-                </div>
-              )}
-              
-              {paymentData.planType && (
-                <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium">{t("Plan")}:</span>
-                  <span>{paymentData.planType === 'job' ? t("Job Listing") : t("Salon Profile")}</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex flex-col space-y-3">
-              <Button onClick={() => navigate('/dashboard')} className="flex items-center justify-center gap-2">
-                {t("Go to Dashboard")}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              
-              {paymentData.listingId && paymentData.planType === 'job' && (
-                <Button variant="outline" onClick={() => navigate(`/jobs/${paymentData.listingId}`)}>
-                  {t("View Your Job Listing")}
-                </Button>
-              )}
-              
-              {paymentData.listingId && paymentData.planType === 'salon' && (
-                <Button variant="outline" onClick={() => navigate(`/salons/${paymentData.listingId}`)}>
-                  {t("View Your Salon Profile")}
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700">
+              <Link to="/salons-for-sale">
+                {t({ english: "View All Salon Listings", vietnamese: "Xem tất cả tin đăng tiệm" })}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+
+            <Button asChild variant="outline" size="lg">
+              <Link to="/dashboard">
+                {t({ english: "Go to Dashboard", vietnamese: "Đến bảng điều khiển" })}
+              </Link>
+            </Button>
+
+            <Button asChild variant="outline" size="lg">
+              <Link to="/">
+                <Home className="w-4 h-4 mr-2" />
+                {t({ english: "Return Home", vietnamese: "Về trang chủ" })}
+              </Link>
+            </Button>
+          </div>
+
+          {/* Support Note */}
+          <div className="text-center mt-8 text-sm text-gray-600">
+            <p>
+              {t({ 
+                english: "Need help? Contact our support team at support@emviapp.com",
+                vietnamese: "Cần hỗ trợ? Liên hệ đội ngũ hỗ trợ tại support@emviapp.com"
+              })}
+            </p>
+          </div>
+        </div>
       </div>
     </Layout>
   );

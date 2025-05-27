@@ -1,257 +1,277 @@
 
-import React from "react";
-import { UseFormReturn } from "react-hook-form";
-import { SalonFormValues } from "./salonFormSchema";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { FormField, FormItem, FormControl } from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Edit2, CheckCircle2, DollarSign, MapPin, FileText, Camera } from "lucide-react";
-import StripeCheckout from "@/components/payments/StripeCheckout";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, DollarSign, Users, Home, Star, Check, X } from 'lucide-react';
+import { SalonFormValues } from './salonFormSchema';
+import { SalonPricingOptions } from '@/utils/posting/salonPricing';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonReviewSectionProps {
-  form: UseFormReturn<SalonFormValues>;
+  formData: SalonFormValues;
+  pricingOptions: SalonPricingOptions;
   photoUploads: File[];
-  onEditStep: (step: number) => void;
-  onSubmit: () => void;
-  isSubmitting: boolean;
+  onConfirm: (termsAccepted: boolean) => void;
+  isSubmitting?: boolean;
 }
 
-export const SalonReviewSection = ({ 
-  form, 
-  photoUploads, 
-  onEditStep, 
-  onSubmit,
-  isSubmitting 
-}: SalonReviewSectionProps) => {
-  const formData = form.getValues();
-  const listingFee = 29.99; // Fixed listing fee
+const SalonReviewSection: React.FC<SalonReviewSectionProps> = ({
+  formData,
+  pricingOptions,
+  photoUploads,
+  onConfirm,
+  isSubmitting = false
+}) => {
+  const { t } = useTranslation();
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const handlePaymentSuccess = () => {
-    console.log("Payment successful, submitting form...");
-    onSubmit();
+  const formatCurrency = (amount: string) => {
+    const num = parseFloat(amount);
+    return isNaN(num) ? amount : `$${num.toLocaleString()}`;
+  };
+
+  const handleConfirm = () => {
+    onConfirm(termsAccepted);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 mb-6">
-        <CheckCircle2 className="w-5 h-5 text-purple-600" />
-        <h2 className="text-2xl font-playfair font-medium">Review & Payment</h2>
+      <div className="border-b pb-4">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-900">
+          {t({ english: "Review Your Listing", vietnamese: "Xem lại tin đăng" })}
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          {t({ english: "Please review all details before proceeding to payment", vietnamese: "Vui lòng xem lại tất cả thông tin trước khi thanh toán" })}
+        </p>
       </div>
-      <p className="text-gray-600 mb-6">
-        Review your salon listing details and complete payment to publish your listing
-      </p>
 
-      {/* Identity Section */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <FileText className="w-4 h-4" />
-            Salon Identity
+      {/* Vietnamese Salon Details - Tables and Chairs First */}
+      <Card className="border-l-4 border-l-purple-500">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Home className="w-5 h-5 text-purple-600" />
+            {t({ english: "Vietnamese Salon Details", vietnamese: "Thông tin tiệm nail Việt" })}
           </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEditStep(1)}
-            className="text-purple-600 hover:text-purple-700"
-          >
-            <Edit2 className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <h3 className="font-semibold text-xl">{formData.salonName || "Salon Name"}</h3>
-            <p className="text-gray-600">{formData.businessType || "Business Type"}</p>
-            {formData.establishedYear && (
-              <p className="text-sm text-gray-500">Established: {formData.establishedYear}</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Location Section */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <MapPin className="w-4 h-4" />
-            Location
-          </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEditStep(2)}
-            className="text-purple-600 hover:text-purple-700"
-          >
-            <Edit2 className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
         </CardHeader>
         <CardContent>
-          <div className="space-y-1">
-            {formData.address && <p>{formData.address}</p>}
-            <p>{formData.city || "City"}, {formData.state || "State"} {formData.zipCode || "ZIP"}</p>
-            {formData.neighborhood && <p className="text-sm text-gray-600">Neighborhood: {formData.neighborhood}</p>}
-            {formData.hideExactAddress && (
-              <Badge variant="secondary" className="mt-2">
-                Exact address hidden for privacy
-              </Badge>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+              <div className="text-sm font-medium text-yellow-800 mb-1">
+                Số bàn / Tables
+              </div>
+              <div className="text-xl font-bold text-yellow-900">
+                {formData.numberOfTables} bàn
+              </div>
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <div className="text-sm font-medium text-blue-800 mb-1">
+                Số ghế / Chairs
+              </div>
+              <div className="text-xl font-bold text-blue-900">
+                {formData.numberOfChairs} ghế
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <span className="font-medium">
+                {t({ english: "Number of Staff", vietnamese: "Số nhân viên" })}:
+              </span>
+              <span className="ml-2">{formData.numberOfStaff}</span>
+            </div>
+            <div>
+              <span className="font-medium">
+                {t({ english: "Monthly Rent", vietnamese: "Tiền thuê hàng tháng" })}:
+              </span>
+              <span className="ml-2">{formatCurrency(formData.monthlyRent)}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Basic Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Star className="w-5 h-5 text-blue-600" />
+            {t({ english: "Basic Information", vietnamese: "Thông tin cơ bản" })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div>
+              <span className="font-medium">{t({ english: "Salon Name", vietnamese: "Tên tiệm" })}:</span>
+              <span className="ml-2">{formData.salonName}</span>
+            </div>
+            <div>
+              <span className="font-medium">{t({ english: "Business Type", vietnamese: "Loại hình kinh doanh" })}:</span>
+              <span className="ml-2">{formData.businessType}</span>
+            </div>
+            {formData.establishedYear && (
+              <div>
+                <span className="font-medium">{t({ english: "Established", vietnamese: "Thành lập" })}:</span>
+                <span className="ml-2">{formData.establishedYear}</span>
+              </div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Description & Pricing Section */}
+      {/* Location */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <DollarSign className="w-4 h-4" />
-            Details & Pricing
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-green-600" />
+            {t({ english: "Location", vietnamese: "Địa điểm" })}
           </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEditStep(3)}
-            className="text-purple-600 hover:text-purple-700"
-          >
-            <Edit2 className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            {formData.askingPrice && (
-              <div>
-                <span className="font-medium">Asking Price:</span>
-                <p>{formData.askingPrice}</p>
+        <CardContent>
+          <div className="space-y-2">
+            <div>{formData.address}</div>
+            <div>{formData.city}, {formData.state} {formData.zipCode}</div>
+            {formData.neighborhood && (
+              <div className="text-sm text-gray-600">
+                {t({ english: "Neighborhood", vietnamese: "Khu vực" })}: {formData.neighborhood}
               </div>
             )}
-            {formData.monthlyRent && (
-              <div>
-                <span className="font-medium">Monthly Rent:</span>
-                <p>{formData.monthlyRent}</p>
-              </div>
-            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Financial Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-green-600" />
+            {t({ english: "Financial Details", vietnamese: "Thông tin tài chính" })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <span className="font-medium">{t({ english: "Asking Price", vietnamese: "Giá yêu cầu" })}:</span>
+              <span className="ml-2 text-lg font-bold text-green-600">{formatCurrency(formData.askingPrice)}</span>
+            </div>
+            <div>
+              <span className="font-medium">{t({ english: "Monthly Rent", vietnamese: "Tiền thuê" })}:</span>
+              <span className="ml-2">{formatCurrency(formData.monthlyRent)}</span>
+            </div>
             {formData.revenue && (
               <div>
-                <span className="font-medium">Monthly Revenue:</span>
-                <p>{formData.revenue}</p>
-              </div>
-            )}
-            {formData.squareFeet && (
-              <div>
-                <span className="font-medium">Square Feet:</span>
-                <p>{formData.squareFeet}</p>
+                <span className="font-medium">{t({ english: "Monthly Revenue", vietnamese: "Doanh thu tháng" })}:</span>
+                <span className="ml-2">{formatCurrency(formData.revenue)}</span>
               </div>
             )}
           </div>
-          {formData.englishDescription && (
-            <div>
-              <span className="font-medium">Description:</span>
-              <p className="text-gray-600 text-sm mt-1 line-clamp-3">{formData.englishDescription}</p>
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* Photos Section */}
+      {/* Photos */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Camera className="w-4 h-4" />
-            Photos ({photoUploads.length})
+        <CardHeader>
+          <CardTitle className="text-lg">
+            {t({ english: "Photos", vietnamese: "Hình ảnh" })} ({photoUploads.length})
           </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEditStep(4)}
-            className="text-purple-600 hover:text-purple-700"
-          >
-            <Edit2 className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
         </CardHeader>
         <CardContent>
           {photoUploads.length > 0 ? (
-            <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-              {photoUploads.slice(0, 6).map((file, index) => (
-                <div key={index} className="aspect-square rounded border overflow-hidden">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+              {photoUploads.map((file, index) => (
+                <div key={index} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-600">
+                  {file.name.substring(0, 20)}...
                 </div>
               ))}
-              {photoUploads.length > 6 && (
-                <div className="aspect-square rounded border bg-gray-100 flex items-center justify-center">
-                  <span className="text-sm font-medium text-gray-600">
-                    +{photoUploads.length - 6}
-                  </span>
-                </div>
-              )}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No photos uploaded</p>
+            <div className="text-gray-500 text-center py-4">
+              {t({ english: "No photos uploaded", vietnamese: "Chưa có hình ảnh" })}
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Payment Section */}
-      <Card className="border-purple-200 bg-purple-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-purple-600" />
-            Listing Payment
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-between items-center text-lg font-semibold">
-            <span>Salon Listing Fee:</span>
-            <span>${listingFee}</span>
-          </div>
-          <p className="text-sm text-gray-600">
-            Your listing will be active for 60 days and promoted to qualified buyers in your area.
-          </p>
-          
-          <FormField
-            control={form.control}
-            name="termsAccepted"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <p className="text-sm">
-                    I agree to the{" "}
-                    <a href="/terms" className="text-purple-600 hover:underline">
-                      Terms of Service
-                    </a>{" "}
-                    and{" "}
-                    <a href="/privacy" className="text-purple-600 hover:underline">
-                      Privacy Policy
-                    </a>
-                  </p>
-                </div>
-              </FormItem>
-            )}
-          />
+      {/* Special Features */}
+      {(formData.hasWaxRoom || formData.hasDiningRoom || formData.hasLaundry || formData.hasHousing) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">
+              {t({ english: "Special Features", vietnamese: "Tiện ích đặc biệt" })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {formData.hasWaxRoom && (
+                <Badge variant="secondary">
+                  {t({ english: "Wax Room", vietnamese: "Phòng wax" })}
+                </Badge>
+              )}
+              {formData.hasDiningRoom && (
+                <Badge variant="secondary">
+                  {t({ english: "Dining Room", vietnamese: "Phòng ăn" })}
+                </Badge>
+              )}
+              {formData.hasLaundry && (
+                <Badge variant="secondary">
+                  {t({ english: "Laundry", vietnamese: "Giặt ủi" })}
+                </Badge>
+              )}
+              {formData.hasHousing && (
+                <Badge variant="secondary">
+                  {t({ english: "Housing Available", vietnamese: "Có chỗ ở" })}
+                </Badge>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-          <div className="pt-4">
-            <StripeCheckout
-              amount={listingFee}
-              productName="Salon Listing"
-              buttonText={`Pay $${listingFee} & Publish Listing`}
-              onSuccess={handlePaymentSuccess}
+      {/* Terms and Conditions */}
+      <Card className="border-2 border-dashed border-gray-300">
+        <CardContent className="pt-6">
+          <div className="flex items-start space-x-3">
+            <Checkbox
+              id="terms"
+              checked={termsAccepted}
+              onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+              className="mt-1"
             />
+            <label htmlFor="terms" className="text-sm leading-relaxed cursor-pointer">
+              {t({ 
+                english: "I agree to the Terms of Service and Privacy Policy. I confirm that all information provided is accurate and I have the right to sell this salon.",
+                vietnamese: "Tôi đồng ý với Điều khoản Dịch vụ và Chính sách Bảo mật. Tôi xác nhận rằng tất cả thông tin được cung cấp là chính xác và tôi có quyền bán tiệm này."
+              })}
+            </label>
           </div>
         </CardContent>
       </Card>
+
+      {/* Action Buttons */}
+      <div className="flex justify-between pt-6">
+        <div className="text-sm text-gray-600">
+          {t({ 
+            english: "After clicking continue, you'll be redirected to secure payment processing.",
+            vietnamese: "Sau khi nhấn tiếp tục, bạn sẽ được chuyển đến trang thanh toán bảo mật."
+          })}
+        </div>
+        <Button
+          onClick={handleConfirm}
+          disabled={!termsAccepted || isSubmitting}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-8"
+        >
+          {isSubmitting ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              {t({ english: "Processing...", vietnamese: "Đang xử lý..." })}
+            </>
+          ) : (
+            t({ english: "Continue to Payment", vietnamese: "Tiếp tục thanh toán" })
+          )}
+        </Button>
+      </div>
     </div>
   );
 };
+
+export default SalonReviewSection;

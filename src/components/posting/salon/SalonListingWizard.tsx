@@ -1,187 +1,185 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { SalonFormValues } from './salonFormSchema';
-import { SalonPostForm } from './SalonPostForm';
-import SalonPricingSection from './SalonPricingSection';
-import SalonPaymentFeatures from './SalonPaymentFeatures';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
-import { useTranslation } from "@/hooks/useTranslation";
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
+import { SalonPostForm } from './SalonPostForm';
+import { SalonPricingSection } from './SalonPricingSection';
+import { SalonReviewSection } from './SalonReviewSection';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonListingWizardProps {
   onComplete: (formData: SalonFormValues, options: SalonPricingOptions) => void;
 }
 
+type WizardStep = 'form' | 'pricing' | 'review' | 'payment' | 'processing';
+
 const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) => {
   const { t } = useTranslation();
-  const [currentStep, setCurrentStep] = useState(1);
+  const { user } = useAuth();
+  const [currentStep, setCurrentStep] = useState<WizardStep>('form');
   const [formData, setFormData] = useState<SalonFormValues | null>(null);
+  const [pricingOptions, setPricingOptions] = useState<SalonPricingOptions | null>(null);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [paymentCompleted, setPaymentCompleted] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<SalonPricingOptions>({
-    durationMonths: 1,
-    selectedPricingTier: 'standard',
-    autoRenew: false,
-    isNationwide: false,
-    isFirstPost: true,
-    showAtTop: false,
-    fastSalePackage: false,
-    bundleWithJobPost: false,
-    featuredBoost: false
-  });
+  const [isNationwide, setIsNationwide] = useState(false);
+  const [fastSalePackage, setFastSalePackage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentVerified, setPaymentVerified] = useState(false);
 
-  const steps = [
-    t({ english: 'Salon Details', vietnamese: 'Chi Tiết Tiệm' }),
-    t({ english: 'Description & Features', vietnamese: 'Mô Tả & Tính Năng' }),
-    t({ english: 'Upload Photos', vietnamese: 'Tải Ảnh' }),
-    t({ english: 'Choose Your Plan', vietnamese: 'Chọn Gói' }),
-    t({ english: 'Payment & Review', vietnamese: 'Thanh Toán & Xem Lại' }),
-    t({ english: 'Success', vietnamese: 'Thành Công' })
-  ];
+  const handleFormSubmit = (data: SalonFormValues) => {
+    console.log('Form submitted with data:', data);
+    setFormData(data);
+    setCurrentStep('pricing');
+  };
 
-  const handleFormSubmit = (values: SalonFormValues) => {
-    console.log('Form submitted with values:', values);
-    console.log('Photos uploaded:', photoUploads.length);
-    
-    // Validate required Vietnamese fields
-    if (!values.numberOfTables || !values.numberOfChairs) {
-      console.error('Vietnamese salon fields (tables/chairs) are required');
+  const handlePricingSubmit = (options: SalonPricingOptions) => {
+    console.log('Pricing submitted with options:', options);
+    setPricingOptions(options);
+    setCurrentStep('review');
+  };
+
+  const handleReviewConfirm = async (termsAccepted: boolean) => {
+    if (!termsAccepted) {
+      toast.error(t({ 
+        english: "You must accept the terms and conditions to continue",
+        vietnamese: "Bạn phải chấp nhận các điều khoản và điều kiện để tiếp tục"
+      }));
       return;
     }
-    
-    // Validate photos one more time
-    if (photoUploads.length === 0) {
-      console.error('No photos uploaded, cannot proceed');
+
+    if (!formData || !pricingOptions) {
+      toast.error(t({ 
+        english: "Missing form data or pricing options",
+        vietnamese: "Thiếu dữ liệu biểu mẫu hoặc tùy chọn giá"
+      }));
       return;
     }
-    
-    setFormData(values);
-    console.log('Moving to pricing step (step 4)');
-    setCurrentStep(4); // Go to pricing step
+
+    setCurrentStep('payment');
+    await initiateStripePayment();
   };
 
-  const handlePricingNext = () => {
-    if (!formData) {
-      console.error('No form data available');
+  const initiateStripePayment = async () => {
+    if (!user || !formData || !pricingOptions) {
+      toast.error(t({ 
+        english: "Please log in and complete all required information",
+        vietnamese: "Vui lòng đăng nhập và hoàn thành tất cả thông tin bắt buộc"
+      }));
       return;
     }
-    console.log('Pricing step completed, moving to payment');
-    setCurrentStep(5); // Go to payment step
-  };
 
-  const handlePricingBack = () => {
-    console.log('Going back to form');
-    setCurrentStep(1); // Go back to form (which includes photos)
-  };
+    setIsSubmitting(true);
 
-  const handlePayment = () => {
-    if (!formData) {
-      console.error('No form data available for payment');
-      return;
+    try {
+      // Create Stripe checkout session for salon listing
+      const { data, error } = await supabase.functions.invoke('create-salon-checkout', {
+        body: {
+          salonData: formData,
+          pricingOptions: pricingOptions,
+          photoCount: photoUploads.length
+        }
+      });
+
+      if (error) {
+        console.error('Stripe checkout error:', error);
+        toast.error(t({ 
+          english: "Failed to create payment session",
+          vietnamese: "Không thể tạo phiên thanh toán"
+        }));
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (data?.url) {
+        // Redirect to Stripe checkout - listing will only be created after successful payment
+        window.location.href = data.url;
+      } else {
+        toast.error(t({ 
+          english: "No checkout URL received",
+          vietnamese: "Không nhận được URL thanh toán"
+        }));
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error(t({ 
+        english: "Payment processing failed",
+        vietnamese: "Xử lý thanh toán thất bại"
+      }));
+      setIsSubmitting(false);
     }
-    
-    if (!paymentCompleted) {
-      console.error('Payment must be completed before publishing listing');
-      return;
-    }
-    
-    console.log('Payment completed, calling onComplete');
-    onComplete(formData, selectedOptions);
   };
 
-  const handlePaymentSuccess = () => {
-    console.log('Payment successful, enabling listing creation');
-    setPaymentCompleted(true);
-  };
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 'form':
+        return (
+          <SalonPostForm
+            onSubmit={handleFormSubmit}
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            onNationwideChange={setIsNationwide}
+            onFastSaleChange={setFastSalePackage}
+          />
+        );
 
-  const handlePaymentBack = () => {
-    console.log('Going back to pricing');
-    setCurrentStep(4); // Go back to pricing
-  };
+      case 'pricing':
+        return (
+          <SalonPricingSection
+            onSubmit={handlePricingSubmit}
+            onBack={() => setCurrentStep('form')}
+            isNationwide={isNationwide}
+            fastSalePackage={fastSalePackage}
+          />
+        );
 
-  const progress = (currentStep / steps.length) * 100;
+      case 'review':
+        if (!formData || !pricingOptions) {
+          setCurrentStep('form');
+          return null;
+        }
+        return (
+          <SalonReviewSection
+            formData={formData}
+            pricingOptions={pricingOptions}
+            photoUploads={photoUploads}
+            onConfirm={handleReviewConfirm}
+            isSubmitting={isSubmitting}
+          />
+        );
 
-  return (
-    <div className="max-w-4xl mx-auto">
-      {/* Progress Bar */}
-      <Card className="mb-8">
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>{t({ english: `Step ${currentStep} of ${steps.length}`, vietnamese: `Bước ${currentStep} / ${steps.length}` })}</span>
-              <span>{Math.round(progress)}% {t({ english: "Complete", vietnamese: "Hoàn Thành" })}</span>
-            </div>
-            <Progress value={progress} className="w-full" />
-            <div className="flex justify-between text-sm">
-              {steps.map((step, index) => (
-                <span 
-                  key={index}
-                  className={`${
-                    index + 1 <= currentStep 
-                      ? 'text-purple-600 font-medium' 
-                      : 'text-gray-400'
-                  }`}
-                >
-                  {step}
-                </span>
-              ))}
+      case 'payment':
+      case 'processing':
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
+            <div className="text-center bg-white/80 backdrop-blur-lg rounded-2xl p-8 shadow-xl max-w-md">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-gray-600 font-medium mb-2">
+                {t({ 
+                  english: "Redirecting to secure payment...",
+                  vietnamese: "Đang chuyển hướng đến thanh toán bảo mật..."
+                })}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t({ 
+                  english: "Your listing will be published after successful payment",
+                  vietnamese: "Tin đăng của bạn sẽ được đăng sau khi thanh toán thành công"
+                })}
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        );
 
-      {/* Payment Warning */}
-      {currentStep >= 4 && !paymentCompleted && (
-        <Alert className="mb-6 border-orange-200 bg-orange-50">
-          <AlertTriangle className="h-4 w-4 text-orange-600" />
-          <AlertDescription className="text-orange-800">
-            <strong>Payment Required:</strong> Your salon listing will only be published after successful payment processing via Stripe.
-          </AlertDescription>
-        </Alert>
-      )}
+      default:
+        return null;
+    }
+  };
 
-      {/* Step Content */}
-      <Card>
-        <CardContent className="p-8">
-          {currentStep <= 3 && (
-            <SalonPostForm
-              onSubmit={handleFormSubmit}
-              photoUploads={photoUploads}
-              setPhotoUploads={setPhotoUploads}
-              onNationwideChange={(checked) => 
-                setSelectedOptions(prev => ({ ...prev, isNationwide: checked }))
-              }
-              onFastSaleChange={(checked) => 
-                setSelectedOptions(prev => ({ ...prev, fastSalePackage: checked }))
-              }
-            />
-          )}
-
-          {currentStep === 4 && (
-            <SalonPricingSection
-              options={selectedOptions}
-              onOptionsChange={setSelectedOptions}
-              onNext={handlePricingNext}
-              onBack={handlePricingBack}
-              isFirstPost={true}
-            />
-          )}
-
-          {currentStep === 5 && formData && (
-            <SalonPaymentFeatures
-              formData={formData}
-              selectedOptions={selectedOptions}
-              onPayment={handlePayment}
-              onPaymentSuccess={handlePaymentSuccess}
-              onBack={handlePaymentBack}
-              paymentCompleted={paymentCompleted}
-            />
-          )}
-        </CardContent>
-      </Card>
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {renderCurrentStep()}
     </div>
   );
 };
