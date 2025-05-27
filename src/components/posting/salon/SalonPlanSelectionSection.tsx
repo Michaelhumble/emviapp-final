@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Star, Zap } from 'lucide-react';
+import { Check, Crown, Star, Zap, ArrowLeft } from 'lucide-react';
 import { SalonPricingOptions, SalonPricingTier } from '@/utils/posting/salonPricing';
 import { useTranslation } from '@/hooks/useTranslation';
 
