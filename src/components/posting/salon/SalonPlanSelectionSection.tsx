@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,13 +11,15 @@ interface SalonPlanSelectionSectionProps {
   onOptionsChange: (options: SalonPricingOptions) => void;
   onNext: () => void;
   onBack: () => void;
+  hideNavigation?: boolean;
 }
 
 const SalonPlanSelectionSection: React.FC<SalonPlanSelectionSectionProps> = ({
   selectedOptions,
   onOptionsChange,
   onNext,
-  onBack
+  onBack,
+  hideNavigation = false,
 }) => {
   const { t } = useTranslation();
 
@@ -122,18 +123,21 @@ const SalonPlanSelectionSection: React.FC<SalonPlanSelectionSectionProps> = ({
         ))}
       </div>
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onBack}>
-          {t({ english: 'Back', vietnamese: 'Quay lại' })}
-        </Button>
-        <Button 
-          onClick={onNext}
-          disabled={!selectedOptions.selectedPricingTier}
-          className="bg-purple-600 hover:bg-purple-700"
-        >
-          {t({ english: 'Continue to Payment', vietnamese: 'Tiếp tục thanh toán' })}
-        </Button>
-      </div>
+      {!hideNavigation && (
+        <div className="flex justify-between pt-4">
+          <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Details
+          </Button>
+          
+          <Button 
+            onClick={onNext}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-8"
+          >
+            Continue to Review
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
