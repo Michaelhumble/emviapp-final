@@ -15,7 +15,15 @@ interface Notification {
   createdAt: string;
 }
 
-const NotificationCenter: React.FC = () => {
+interface NotificationCenterProps {
+  className?: string;
+  variant?: 'default' | 'card' | 'dropdown';
+}
+
+const NotificationCenter: React.FC<NotificationCenterProps> = ({ 
+  className = '',
+  variant = 'default'
+}) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -45,8 +53,27 @@ const NotificationCenter: React.FC = () => {
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  if (variant === 'card') {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle>
+            {t({ english: "Notifications", vietnamese: "Thông Báo" })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <NotificationList
+            notifications={notifications}
+            onMarkAsRead={handleMarkAsRead}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <Button
         variant="ghost"
         size="icon"

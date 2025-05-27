@@ -1,37 +1,41 @@
 
 import React, { useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Camera, Star } from "lucide-react";
+import { Upload, X, Camera, Star, ArrowLeft, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SalonPhotosSectionProps {
-  photoUploads: File[];
-  setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  photos: File[];
+  onPhotosChange: (photos: File[]) => void;
+  onNext: () => void;
+  onBack: () => void;
   maxPhotos?: number;
 }
 
-export const SalonPhotosSection = ({ 
-  photoUploads, 
-  setPhotoUploads,
+const SalonPhotosSection: React.FC<SalonPhotosSectionProps> = ({ 
+  photos, 
+  onPhotosChange,
+  onNext,
+  onBack,
   maxPhotos = 10
-}: SalonPhotosSectionProps) => {
+}) => {
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
     
     const newFiles = Array.from(files);
-    const remainingSlots = maxPhotos - photoUploads.length;
+    const remainingSlots = maxPhotos - photos.length;
     const filesToAdd = newFiles.slice(0, remainingSlots);
     
-    setPhotoUploads(prev => [...prev, ...filesToAdd]);
+    onPhotosChange([...photos, ...filesToAdd]);
     
     // Reset the input value to allow selecting the same file again
     event.target.value = '';
-  }, [setPhotoUploads, photoUploads.length, maxPhotos]);
+  }, [onPhotosChange, photos.length, maxPhotos, photos]);
 
   const removePhoto = useCallback((index: number) => {
-    setPhotoUploads(prev => prev.filter((_, i) => i !== index));
-  }, [setPhotoUploads]);
+    onPhotosChange(photos.filter((_, i) => i !== index));
+  }, [onPhotosChange, photos]);
 
   const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -39,11 +43,11 @@ export const SalonPhotosSection = ({
     if (!files || files.length === 0) return;
     
     const newFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-    const remainingSlots = maxPhotos - photoUploads.length;
+    const remainingSlots = maxPhotos - photos.length;
     const filesToAdd = newFiles.slice(0, remainingSlots);
     
-    setPhotoUploads(prev => [...prev, ...filesToAdd]);
-  }, [setPhotoUploads, photoUploads.length, maxPhotos]);
+    onPhotosChange([...photos, ...filesToAdd]);
+  }, [onPhotosChange, photos.length, maxPhotos, photos]);
 
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -83,28 +87,28 @@ export const SalonPhotosSection = ({
               Support: JPG, PNG, WEBP. Max 5MB each. Up to {maxPhotos} photos.
             </p>
             <p className="text-xs text-gray-400 mt-1">
-              {photoUploads.length}/{maxPhotos} photos uploaded
+              {photos.length}/{maxPhotos} photos uploaded
             </p>
           </div>
           <Button
             type="button"
             variant="outline"
             onClick={() => document.getElementById('photo-upload')?.click()}
-            disabled={photoUploads.length >= maxPhotos}
+            disabled={photos.length >= maxPhotos}
           >
             Select Photos
           </Button>
         </div>
       </div>
 
-      {photoUploads.length > 0 && (
+      {photos.length > 0 && (
         <div className="mt-8">
           <h3 className="font-medium mb-4 flex items-center gap-2">
             <Star className="w-4 h-4 text-yellow-500" />
-            Uploaded Photos ({photoUploads.length})
+            Uploaded Photos ({photos.length})
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {photoUploads.map((file, index) => (
+            {photos.map((file, index) => (
               <div key={`${file.name}-${index}`} className="relative group">
                 <div className="aspect-square rounded-lg border-2 border-gray-200 bg-gray-100 overflow-hidden hover:border-purple-300 transition-colors">
                   <img
@@ -134,6 +138,23 @@ export const SalonPhotosSection = ({
           before/after client work, and team photos. Well-lit, high-quality images get 3x more inquiries!
         </AlertDescription>
       </Alert>
+
+      <div className="flex justify-between pt-6">
+        <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Details
+        </Button>
+        
+        <Button 
+          onClick={onNext}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-8 flex items-center gap-2"
+        >
+          Next: Pricing
+          <ArrowRight className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 };
+
+export default SalonPhotosSection;

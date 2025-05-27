@@ -94,7 +94,6 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
         return (
           <SalonReviewSection
             formData={formData as SalonFormValues}
-            photos={photos}
             options={pricingOptions}
             onNext={handleNext}
             onBack={handleBack}

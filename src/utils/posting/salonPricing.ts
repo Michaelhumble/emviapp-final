@@ -1,103 +1,69 @@
 
-export type SalonPricingTier = 'standard' | 'premium' | 'enterprise';
+export type SalonPricingTier = 'basic' | 'premium' | 'enterprise';
 
 export interface SalonPricingOptions {
   durationMonths: number;
   selectedPricingTier: SalonPricingTier;
-  autoRenew?: boolean;
-  isNationwide?: boolean;
-  isFirstPost?: boolean;
-  showAtTop?: boolean;
-  fastSalePackage?: boolean;
-  bundleWithJobPost?: boolean;
+  isNationwide: boolean;
+  fastSalePackage: boolean;
   featuredBoost?: boolean;
+  showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
+  isFirstPost?: boolean;
 }
 
 export const calculateSalonPostPrice = (options: SalonPricingOptions): number => {
-  let basePrice = 0;
+  let basePrice = 50; // Base price for 1 month
   
-  // Base pricing by duration and tier
-  if (options.durationMonths === 1) {
-    basePrice = 24.99; // Standard 1 month
-  } else if (options.durationMonths === 6) {
-    basePrice = 120; // 6 month package
+  // Duration multiplier with discounts
+  if (options.durationMonths === 6) {
+    basePrice = 250; // 17% discount
   } else if (options.durationMonths === 12) {
-    basePrice = 249.99; // 12 month package
+    basePrice = 450; // 25% discount
   }
   
   // Add-ons
-  if (options.isNationwide) {
-    basePrice += 10;
-  }
+  if (options.isNationwide) basePrice += 10;
+  if (options.fastSalePackage) basePrice += 20;
+  if (options.featuredBoost) basePrice += 15;
+  if (options.showAtTop) basePrice += 15;
+  if (options.bundleWithJobPost) basePrice += 15;
   
-  if (options.fastSalePackage || options.featuredBoost) {
-    basePrice += 25; // Feature Boost
-  }
-  
-  if (options.showAtTop) {
-    basePrice += 15;
-  }
-  
-  if (options.bundleWithJobPost) {
-    basePrice += 15;
-  }
+  // Premium tier upgrade
+  if (options.selectedPricingTier === 'premium') basePrice += 25;
+  if (options.selectedPricingTier === 'enterprise') basePrice += 50;
   
   return basePrice;
 };
 
-export const getPlanDetails = (durationMonths: number) => {
-  switch (durationMonths) {
+export const getPlanDetails = (months: number) => {
+  switch (months) {
     case 1:
       return {
-        name: 'Standard Listing',
-        price: 24.99,
-        originalPrice: null,
-        savings: null,
-        description: 'Perfect for getting started',
-        features: ['Basic listing visibility', '30 days active', 'Standard support']
+        name: 'Basic Plan',
+        price: 50,
+        description: '1 month listing',
+        features: ['Basic listing', 'Email support', 'Standard placement']
       };
     case 6:
       return {
-        name: '6 Month Package',
-        price: 120,
-        originalPrice: 149.94,
-        savings: 20,
-        description: 'Most popular choice',
-        features: ['Enhanced visibility', '6 months active', 'Priority support', 'Analytics dashboard']
+        name: 'Popular Plan',
+        price: 250,
+        originalPrice: 300,
+        savings: 17,
+        description: '6 month listing',
+        features: ['Extended exposure', 'Priority support', 'Featured placement']
       };
     case 12:
       return {
-        name: '12 Month Package',
-        price: 249.99,
-        originalPrice: 299.88,
-        savings: 17,
-        description: 'Best value for serious sellers',
-        features: ['Maximum visibility', '12 months active', 'VIP support', 'Advanced analytics', 'Featured placement']
+        name: 'Best Value',
+        price: 450,
+        originalPrice: 600,
+        savings: 25,
+        description: '12 month listing',
+        features: ['Maximum exposure', 'Premium support', 'Top placement', 'Analytics dashboard']
       };
     default:
       return getPlanDetails(1);
   }
-};
-
-export const getSalonPostPricingSummary = (options: SalonPricingOptions) => {
-  const basePrice = calculateSalonPostPrice(options);
-  const planDetails = getPlanDetails(options.durationMonths);
-  
-  return {
-    basePrice,
-    totalPrice: basePrice,
-    planName: planDetails.name,
-    features: planDetails.features,
-    addOns: []
-  };
-};
-
-export const validateSalonPricingOptions = (options: SalonPricingOptions): boolean => {
-  return options.durationMonths > 0 && options.selectedPricingTier !== undefined;
-};
-
-export const getStripeSalonPriceId = (options: SalonPricingOptions): string => {
-  // This would return the appropriate Stripe price ID based on the selected options
-  // For now, return a placeholder
-  return `salon_${options.durationMonths}month_${options.selectedPricingTier}`;
 };
