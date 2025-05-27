@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react';
 import { SalonFormValues } from './salonFormSchema';
-import { SalonPricingOptions, calculateSalonPostPrice } from '@/utils/posting/salonPricing';
+import { SalonPricingOptions, calculateSalonPostPrice, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
 
 interface SalonPaymentFeaturesProps {
   formData: SalonFormValues;
@@ -21,6 +21,7 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
   onBack
 }) => {
   const totalPrice = calculateSalonPostPrice(selectedOptions);
+  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
   
   const getPlanName = () => {
     if (selectedOptions.durationMonths === 1) return 'Standard Listing';
@@ -33,19 +34,19 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
     const features = [];
     
     if (selectedOptions.isNationwide) {
-      features.push('Nationwide Visibility (+$10)');
+      features.push(`Nationwide Visibility (+$${pricingSummary.addOns.nationwide.toFixed(2)})`);
     }
     
     if (selectedOptions.fastSalePackage || selectedOptions.featuredBoost) {
-      features.push('Premium Promotion (+$20)');
+      features.push(`Premium Promotion (+$${pricingSummary.addOns.fastSale.toFixed(2)})`);
     }
     
     if (selectedOptions.showAtTop) {
-      features.push('Featured Placement (+$15)');
+      features.push(`Featured Placement (+$${pricingSummary.addOns.showAtTop.toFixed(2)})`);
     }
     
     if (selectedOptions.bundleWithJobPost) {
-      features.push('Bundle with Job Post (+$15)');
+      features.push(`Bundle with Job Post (+$${pricingSummary.addOns.bundleWithJobPost.toFixed(2)})`);
     }
     
     return features;
@@ -95,7 +96,7 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
               <div>
                 <h3 className="font-semibold">{getPlanName()}</h3>
                 <p className="text-sm text-gray-600">
-                  Active for {selectedOptions.durationMonths} month{selectedOptions.durationMonths > 1 ? 's' : ''}
+                  Active for {selectedOptions.durationMonths || 1} month{(selectedOptions.durationMonths || 1) > 1 ? 's' : ''}
                 </p>
               </div>
               <Badge variant="outline" className="text-purple-600">
