@@ -1,5 +1,4 @@
-
-export type SalonPricingTier = 'basic' | 'featured';
+export type SalonPricingTier = 'basic' | 'featured' | 'standard';
 
 export interface SalonPricingOptions {
   selectedPricingTier: SalonPricingTier;
@@ -53,6 +52,12 @@ const SALON_PRICING_PLANS = {
     3: { price: 79.99, originalPrice: 119.97 },
     6: { price: 159.99, originalPrice: 239.94 },
     12: { price: 269.99, originalPrice: 479.88 }
+  },
+  standard: {
+    1: { price: 19.99, originalPrice: 29.99 },
+    3: { price: 49.99, originalPrice: 89.97 },
+    6: { price: 99.99, originalPrice: 179.94 },
+    12: { price: 149.99, originalPrice: 359.88 }
   }
 };
 
@@ -145,7 +150,7 @@ export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonP
 
 export const validateSalonPricingOptions = (options: SalonPricingOptions): boolean => {
   return options.selectedPricingTier !== undefined && 
-         ['basic', 'featured'].includes(options.selectedPricingTier) &&
+         ['basic', 'featured', 'standard'].includes(options.selectedPricingTier) &&
          options.durationMonths > 0 &&
          [1, 3, 6, 12].includes(options.durationMonths);
 };
@@ -154,7 +159,8 @@ export const getStripeSalonPriceId = (options: SalonPricingOptions): string => {
   // Return appropriate Stripe price ID based on options
   const tierPriceIds = {
     basic: 'price_salon_basic',
-    featured: 'price_salon_featured'
+    featured: 'price_salon_featured',
+    standard: 'price_salon_standard'
   };
   
   return tierPriceIds[options.selectedPricingTier];
