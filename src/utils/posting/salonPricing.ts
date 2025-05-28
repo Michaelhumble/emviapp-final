@@ -1,3 +1,4 @@
+
 export type SalonPricingTier = 'basic' | 'featured';
 
 export interface SalonPricingOptions {

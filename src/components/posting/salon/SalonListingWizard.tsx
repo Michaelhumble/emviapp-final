@@ -30,6 +30,7 @@ const SalonListingWizard = () => {
     durationMonths: 1,
     autoRenew: false
   });
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
@@ -124,11 +125,12 @@ const SalonListingWizard = () => {
       case 2:
         return formData.address && formData.city && formData.state;
       case 3:
-        return photoUploads.length > 0; // Only photos required, financial details are optional
+        return photoUploads.length > 0;
       case 4:
         return selectedOptions.selectedPricingTier && selectedOptions.durationMonths;
       case 5:
-        return formData.termsAccepted;
+        // Payment step - user cannot proceed without completing Stripe payment
+        return formData.termsAccepted && paymentCompleted;
       default:
         return true;
     }
@@ -142,20 +144,20 @@ const SalonListingWizard = () => {
             {renderStep()}
           </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between mt-8">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back / Quay lại
-            </Button>
+          {/* Navigation - Hide on final step since payment handles completion */}
+          {currentStep < STEPS.length && (
+            <div className="flex justify-between mt-8">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back / Quay lại
+              </Button>
 
-            {currentStep < STEPS.length && (
               <Button
                 type="button"
                 onClick={nextStep}
@@ -165,8 +167,8 @@ const SalonListingWizard = () => {
                 Next / Tiếp tục
                 <ArrowRight className="w-4 h-4" />
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </Form>
       </div>
     </PostWizardLayout>

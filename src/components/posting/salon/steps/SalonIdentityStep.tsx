@@ -37,7 +37,10 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
             <FormItem>
               <FormLabel>Salon Name / Tên Salon *</FormLabel>
               <FormControl>
-                <Input placeholder="Beautiful Nails & Spa" {...field} />
+                <Input 
+                  placeholder="Beautiful Nails & Spa" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -51,8 +54,14 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
             <FormItem>
               <FormLabel>Business Type / Loại Hình Kinh Doanh *</FormLabel>
               <FormControl>
-                <Input placeholder="Nail Salon, Hair Salon, Spa, etc." {...field} />
+                <Input 
+                  placeholder="Nail Salon, Hair Salon, Spa, etc." 
+                  {...field} 
+                />
               </FormControl>
+              <p className="text-sm text-gray-500 mt-1">
+                Pre-filled as "Nail Salon" - edit if needed / Đã điền sẵn "Nail Salon" - chỉnh sửa nếu cần
+              </p>
               <FormMessage />
             </FormItem>
           )}
@@ -68,7 +77,10 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
                 Year Established / Năm Thành Lập (Optional / Tùy chọn)
               </FormLabel>
               <FormControl>
-                <Input placeholder="2020" {...field} />
+                <Input 
+                  placeholder="2020" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
