@@ -80,7 +80,7 @@ serve(async (req) => {
       customerId = customer.id
     }
 
-    // Create checkout session
+    // Create checkout session with enforced success redirect
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -104,7 +104,8 @@ serve(async (req) => {
         pricing_tier: pricingOptions.selectedPricingTier,
         duration_months: pricingOptions.durationMonths.toString(),
         salon_name: formData?.salonName || '',
-        asking_price: formData?.askingPrice || ''
+        asking_price: formData?.askingPrice || '',
+        post_type: 'salon'
       }
     })
 

@@ -38,7 +38,7 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
               <FormLabel>Salon Name / Tên Salon *</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="Beautiful Nails & Spa" 
+                  placeholder="e.g., Beautiful Nails & Spa, Golden Touch Salon"
                   {...field} 
                 />
               </FormControl>
@@ -78,7 +78,7 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
               </FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="2020" 
+                  placeholder="e.g., 2020, 2018" 
                   {...field} 
                 />
               </FormControl>

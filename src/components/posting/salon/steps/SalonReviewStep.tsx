@@ -1,14 +1,14 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+import { CheckCircle, CreditCard, Shield, Building2, MapPin, Calendar, DollarSign } from "lucide-react";
 import { SalonFormValues } from "../salonFormSchema";
-import { SalonPricingOptions } from "@/utils/posting/salonPricing";
-import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
+import { SalonPricingOptions, getSalonPostPricingSummary, DURATION_OPTIONS } from "@/utils/posting/salonPricing";
+import { FormField, FormItem, FormControl } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import StripeCheckout from "@/components/payments/StripeCheckout";
-import { CheckCircle } from "lucide-react";
 
 interface SalonReviewStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -17,176 +17,219 @@ interface SalonReviewStepProps {
   photoUploads: File[];
 }
 
-export const SalonReviewStep = ({ 
-  form, 
-  formData, 
-  selectedOptions, 
-  photoUploads 
-}: SalonReviewStepProps) => {
-  const [paymentCompleted, setPaymentCompleted] = useState(false);
-
-  const getPrice = (months: number, isFeatured: boolean = false) => {
-    const basePrices = { 1: 19.99, 3: 49.99, 6: 99.99, 12: 149.99 };
-    const originalPrices = { 1: 29.99, 3: 89.97, 6: 179.94, 12: 359.88 };
-    
-    const basePrice = basePrices[months as keyof typeof basePrices];
-    const originalPrice = originalPrices[months as keyof typeof originalPrices];
-    const finalPrice = isFeatured ? basePrice + 10 : basePrice;
-    const finalOriginalPrice = isFeatured ? originalPrice + 10 : originalPrice;
-    
-    return { finalPrice, originalPrice: finalOriginalPrice };
+export const SalonReviewStep = ({ form, formData, selectedOptions, photoUploads }: SalonReviewStepProps) => {
+  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
+  const durationOption = DURATION_OPTIONS.find(opt => opt.months === selectedOptions.durationMonths);
+  
+  const handlePaymentSuccess = () => {
+    console.log("Payment successful, listing will be published");
+    // The useStripe hook handles the redirect to success page
   };
 
-  const isFeatured = selectedOptions.selectedPricingTier === 'featured';
-  const { finalPrice, originalPrice } = getPrice(selectedOptions.durationMonths, isFeatured);
-
-  const handlePaymentSuccess = () => {
-    setPaymentCompleted(true);
-    // Redirect to success page after payment
-    window.location.href = '/salon-listing-success';
+  const canProceed = () => {
+    return (
+      formData.salonName &&
+      formData.businessType &&
+      formData.address &&
+      formData.city &&
+      formData.state &&
+      photoUploads.length > 0 &&
+      formData.termsAccepted
+    );
   };
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
+      <div className="flex items-center gap-2 mb-6">
+        <CreditCard className="w-5 h-5 text-purple-600" />
         <h2 className="text-2xl font-playfair font-medium">Review & Payment / Xem Lại & Thanh Toán</h2>
-        <p className="text-gray-600 mt-2">
-          Review your salon listing and complete payment to publish / Xem lại tin đăng và thanh toán để xuất bản
-        </p>
       </div>
+      <p className="text-gray-600 mb-6">
+        Review your listing details and complete payment to publish / Xem lại chi tiết tin đăng và thanh toán để đăng tin
+      </p>
 
-      {/* Salon Information Summary */}
+      {/* Listing Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Salon Information / Thông Tin Salon</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-purple-500" />
+            Listing Summary / Tóm Tắt Tin Đăng
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h3 className="font-semibold text-lg">{formData.salonName}</h3>
-            <p className="text-gray-600">{formData.businessType}</p>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <div>
+                <h3 className="font-semibold text-lg">{formData.salonName}</h3>
+                <p className="text-purple-600 font-medium">{formData.businessType}</p>
+              </div>
+              
+              <div className="flex items-center gap-2 text-gray-600">
+                <MapPin className="w-4 h-4" />
+                <span>{formData.address}, {formData.city}, {formData.state}</span>
+              </div>
+
+              {formData.establishedYear && (
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Calendar className="w-4 h-4" />
+                  <span>Established {formData.establishedYear}</span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 text-gray-600">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span>{photoUploads.length} photo{photoUploads.length !== 1 ? 's' : ''} uploaded</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {formData.askingPrice && (
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-green-600" />
+                  <span className="font-semibold">Asking Price: ${formData.askingPrice}</span>
+                </div>
+              )}
+              
+              {formData.monthlyRent && (
+                <p className="text-gray-600">Monthly Rent: ${formData.monthlyRent}</p>
+              )}
+
+              {formData.numberOfStaff && (
+                <p className="text-gray-600">Staff: {formData.numberOfStaff}</p>
+              )}
+
+              {formData.squareFeet && (
+                <p className="text-gray-600">Size: {formData.squareFeet} sq ft</p>
+              )}
+            </div>
           </div>
-          <div className="text-sm text-gray-600">
-            <p>{formData.address}, {formData.city}, {formData.state}</p>
-            {formData.askingPrice && <p>Asking Price: ${formData.askingPrice}</p>}
-            {formData.monthlyRent && <p>Monthly Rent: ${formData.monthlyRent}</p>}
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <Badge variant="outline">{photoUploads.length} photos uploaded</Badge>
-            {formData.hasParking && <Badge variant="outline">Parking</Badge>}
-            {formData.hasLaundry && <Badge variant="outline">Laundry</Badge>}
-            {formData.hasWaxRoom && <Badge variant="outline">Wax Room</Badge>}
-            {formData.willTrain && <Badge variant="outline">Will Train</Badge>}
-          </div>
+
+          {(formData.vietnameseDescription || formData.englishDescription) && (
+            <div className="mt-4 pt-4 border-t">
+              <h4 className="font-medium mb-2">Description:</h4>
+              {formData.vietnameseDescription && (
+                <p className="text-sm text-gray-600 mb-2">{formData.vietnameseDescription}</p>
+              )}
+              {formData.englishDescription && (
+                <p className="text-sm text-gray-600">{formData.englishDescription}</p>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Pricing Summary */}
+      {/* Plan Details */}
       <Card>
         <CardHeader>
-          <CardTitle>Selected Plan / Gói Đã Chọn</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-purple-500" />
+            Selected Plan / Gói Đã Chọn
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="font-medium">
-                {selectedOptions.durationMonths} month{selectedOptions.durationMonths > 1 ? 's' : ''} listing
-              </span>
+              <div>
+                <h3 className="font-semibold">
+                  {selectedOptions.selectedPricingTier === 'featured' ? 'Featured ' : ''}
+                  {durationOption?.label || `${selectedOptions.durationMonths} month${selectedOptions.durationMonths > 1 ? 's' : ''}`}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Active for {selectedOptions.durationMonths} month{selectedOptions.durationMonths > 1 ? 's' : ''}
+                </p>
+              </div>
               <div className="text-right">
-                <span className="font-bold text-lg">${finalPrice.toFixed(2)}</span>
-                <div className="text-sm text-gray-500 line-through">
-                  ${originalPrice.toFixed(2)}
+                <div className="text-2xl font-bold text-purple-600">
+                  ${pricingSummary.finalPrice.toFixed(2)}
                 </div>
+                <div className="text-sm text-gray-500 line-through">
+                  ${pricingSummary.originalPrice.toFixed(2)}
+                </div>
+                <Badge variant="secondary" className="bg-green-100 text-green-800 mt-1">
+                  Save {pricingSummary.savingsPercentage}%!
+                </Badge>
               </div>
             </div>
-            {isFeatured && (
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-purple-600">✨ Featured listing upgrade</span>
-                <span className="text-purple-600">+$10.00</span>
+            
+            {selectedOptions.selectedPricingTier === 'featured' && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <div className="flex items-center text-sm text-yellow-800">
+                  <CheckCircle className="h-4 w-4 text-yellow-600 mr-2" />
+                  Featured listing with priority placement (+$10)
+                </div>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Terms Acceptance */}
-      <Card>
-        <CardContent className="pt-6">
+      {/* Terms and Payment */}
+      <Card className="border-purple-200 bg-purple-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-purple-700">
+            <Shield className="h-5 w-5" />
+            Terms & Payment / Điều Khoản & Thanh Toán
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <FormField
             control={form.control}
             name="termsAccepted"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    I agree to the Terms of Service and Privacy Policy
+              <FormItem>
+                <div className="flex items-start space-x-2">
+                  <FormControl>
+                    <Checkbox 
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      id="terms"
+                    />
+                  </FormControl>
+                  <label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
+                    I agree to the Terms of Service and Privacy Policy. I confirm that all information provided is accurate and I have the right to sell this business.
+                    <br />
+                    <span className="text-gray-600">
+                      Tôi đồng ý với Điều khoản Dịch vụ và Chính sách Bảo mật. Tôi xác nhận rằng tất cả thông tin được cung cấp là chính xác và tôi có quyền bán doanh nghiệp này.
+                    </span>
                   </label>
-                  <p className="text-xs text-muted-foreground">
-                    Tôi đồng ý với Điều khoản Dịch vụ và Chính sách Bảo mật
-                  </p>
                 </div>
-                <FormMessage />
               </FormItem>
             )}
           />
-        </CardContent>
-      </Card>
 
-      {/* Payment Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {paymentCompleted ? (
-              <>
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                Payment Completed / Đã Thanh Toán
-              </>
-            ) : (
-              "Complete Payment / Hoàn Tất Thanh Toán"
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {paymentCompleted ? (
-            <div className="text-center py-4">
-              <p className="text-green-600 font-medium">
-                ✅ Payment successful! Your listing is being published.
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                Thanh toán thành công! Tin đăng của bạn đang được xuất bản.
+          <div className="bg-white border border-purple-200 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-lg font-semibold">Total Amount / Tổng Tiền:</span>
+              <span className="text-2xl font-bold text-purple-600">
+                ${pricingSummary.finalPrice.toFixed(2)}
+              </span>
+            </div>
+            <div className="text-sm text-gray-600 space-y-1">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-green-500" />
+                <span>Secure payment powered by Stripe</span>
+              </div>
+              <p>Your listing will be published immediately after payment confirmation.</p>
+              <p className="text-purple-600 font-medium">
+                Payment is required to publish your salon listing.
               </p>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-yellow-800">
-                  <strong>Payment Required:</strong> Your salon listing will only be published after successful payment.
-                </p>
-                <p className="text-sm text-yellow-700 mt-1">
-                  <strong>Yêu cầu thanh toán:</strong> Tin đăng salon chỉ được xuất bản sau khi thanh toán thành công.
-                </p>
-              </div>
-              
-              <StripeCheckout
-                amount={Math.round(finalPrice * 100)} // Convert to cents
-                productName={`${selectedOptions.durationMonths}-month salon listing${isFeatured ? ' (Featured)' : ''}`}
-                buttonText={`Pay $${finalPrice.toFixed(2)} & Publish / Thanh toán $${finalPrice.toFixed(2)} & Xuất bản`}
-                onSuccess={handlePaymentSuccess}
-                pricingOptions={selectedOptions}
-                formData={formData}
-                disabled={!formData.termsAccepted}
-              />
-              
-              {!formData.termsAccepted && (
-                <p className="text-sm text-red-600 text-center">
-                  Please accept the terms and conditions to proceed with payment.
-                </p>
-              )}
+          </div>
+
+          <StripeCheckout
+            amount={pricingSummary.finalPrice}
+            productName={`${selectedOptions.selectedPricingTier === 'featured' ? 'Featured ' : ''}Salon Listing - ${selectedOptions.durationMonths} month${selectedOptions.durationMonths > 1 ? 's' : ''}`}
+            buttonText={`Pay $${pricingSummary.finalPrice.toFixed(2)} & Publish Listing`}
+            onSuccess={handlePaymentSuccess}
+            pricingOptions={selectedOptions}
+            formData={formData}
+          />
+
+          {!canProceed() && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-700 text-sm">
+                Please complete all required fields and accept the terms before proceeding with payment.
+              </p>
             </div>
           )}
         </CardContent>
