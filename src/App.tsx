@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './context/auth';
+import Home from './pages/Home';
 import Dashboard from './pages/dashboard';
 import Jobs from './pages/Jobs';
 import Artists from './pages/Artists';
@@ -26,7 +27,7 @@ function App() {
           <BrowserRouter>
             <Toaster />
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/" element={<Home />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/artists" element={<Artists />} />
