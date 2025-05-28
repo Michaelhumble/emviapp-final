@@ -23,21 +23,55 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    // Create Supabase client
-    const supabaseClient = createClient(
+    // Create Supabase client with service role for draft listing creation
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
     )
 
     // Get the authenticated user
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    )
     const { data } = await supabaseClient.auth.getUser(token)
     const user = data.user
 
     if (!user?.email) {
       throw new Error('User not authenticated')
     }
+
+    // Create DRAFT salon listing first
+    const { data: draftListing, error: listingError } = await supabaseAdmin
+      .from('salon_listings')
+      .insert({
+        user_id: user.id,
+        salon_name: formData?.salonName || '',
+        business_type: formData?.businessType || 'Nail Salon',
+        address: formData?.address || '',
+        city: formData?.city || '',
+        state: formData?.state || '',
+        zip_code: formData?.zipCode || '',
+        asking_price: formData?.askingPrice || '',
+        monthly_rent: formData?.monthlyRent || '',
+        description_vietnamese: formData?.vietnameseDescription || '',
+        description_english: formData?.englishDescription || '',
+        is_live: false, // DRAFT STATUS - NEVER LIVE WITHOUT PAYMENT
+        status: 'draft',
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (listingError) {
+      console.error('Error creating draft listing:', listingError)
+      throw new Error('Failed to create draft listing')
+    }
+
+    console.log('Draft listing created:', draftListing.id)
 
     // Calculate pricing based on options
     let unitAmount = 1999 // Basic plan $19.99
@@ -80,7 +114,7 @@ serve(async (req) => {
       customerId = customer.id
     }
 
-    // Create checkout session with enforced success redirect
+    // Create checkout session with DRAFT LISTING ID in metadata
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -101,6 +135,7 @@ serve(async (req) => {
       cancel_url: `${req.headers.get('origin')}/sell-salon`,
       metadata: {
         user_id: user.id,
+        draft_listing_id: draftListing.id, // CRITICAL: Pass draft listing ID
         pricing_tier: pricingOptions.selectedPricingTier,
         duration_months: pricingOptions.durationMonths.toString(),
         salon_name: formData?.salonName || '',
@@ -109,10 +144,13 @@ serve(async (req) => {
       }
     })
 
-    console.log('Checkout session created:', session.id)
+    console.log('Checkout session created with draft listing ID:', session.id, draftListing.id)
 
     return new Response(
-      JSON.stringify({ url: session.url }),
+      JSON.stringify({ 
+        url: session.url,
+        draft_listing_id: draftListing.id 
+      }),
       { 
         headers: { 
           ...corsHeaders, 

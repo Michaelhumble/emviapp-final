@@ -1,14 +1,17 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { SalonFormValues } from "../salonFormSchema";
+import { SalonPricingOptions } from "@/utils/posting/salonPricing";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, CreditCard, Shield, Building2, MapPin, Calendar, DollarSign } from "lucide-react";
-import { SalonFormValues } from "../salonFormSchema";
-import { SalonPricingOptions, getSalonPostPricingSummary, DURATION_OPTIONS } from "@/utils/posting/salonPricing";
-import { FormField, FormItem, FormControl } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import StripeCheckout from "@/components/payments/StripeCheckout";
+import { FileText, MapPin, DollarSign, Calendar, CheckCircle, AlertCircle } from "lucide-react";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { useStripe } from "@/hooks/useStripe";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface SalonReviewStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -17,112 +20,135 @@ interface SalonReviewStepProps {
   photoUploads: File[];
 }
 
-export const SalonReviewStep = ({ form, formData, selectedOptions, photoUploads }: SalonReviewStepProps) => {
-  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
-  const durationOption = DURATION_OPTIONS.find(opt => opt.months === selectedOptions.durationMonths);
-  
-  const handlePaymentSuccess = () => {
-    console.log("Payment successful, listing will be published");
-    // The useStripe hook handles the redirect to success page
+export const SalonReviewStep = ({ 
+  form, 
+  formData, 
+  selectedOptions, 
+  photoUploads 
+}: SalonReviewStepProps) => {
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'creating-draft' | 'processing-payment' | 'published' | 'failed'>('idle');
+  const { initiatePayment } = useStripe();
+
+  const getPrice = (months: number, isFeatured: boolean = false) => {
+    const basePrices = { 1: 19.99, 3: 49.99, 6: 99.99, 12: 149.99 };
+    const basePrice = basePrices[months as keyof typeof basePrices];
+    return isFeatured ? basePrice + 10 : basePrice;
   };
 
-  const canProceed = () => {
-    return (
-      formData.salonName &&
-      formData.businessType &&
-      formData.address &&
-      formData.city &&
-      formData.state &&
-      photoUploads.length > 0 &&
-      formData.termsAccepted
-    );
+  const isFeatured = selectedOptions.selectedPricingTier === 'featured';
+  const totalPrice = getPrice(selectedOptions.durationMonths, isFeatured);
+
+  const handlePayAndPublish = async () => {
+    if (!form.getValues('termsAccepted')) {
+      toast.error("Please accept the terms and conditions");
+      return;
+    }
+
+    setIsPublishing(true);
+    setPublishStatus('creating-draft');
+
+    try {
+      console.log('Starting payment and publish flow...');
+      
+      // Start Stripe payment - this will create draft listing and redirect to Stripe
+      setPublishStatus('processing-payment');
+      
+      const success = await initiatePayment(selectedOptions, formData);
+      
+      if (success) {
+        // User will be redirected to Stripe Checkout
+        // The listing will only be published after successful payment via backend
+        setPublishStatus('processing-payment');
+        toast.info("Redirecting to payment...", {
+          description: "Your listing will be published after successful payment"
+        });
+      } else {
+        throw new Error('Failed to initiate payment');
+      }
+    } catch (error) {
+      console.error('Error in pay and publish flow:', error);
+      setPublishStatus('failed');
+      toast.error("Publishing Failed", {
+        description: "Failed to start payment process. Please try again."
+      });
+    } finally {
+      setIsPublishing(false);
+    }
   };
+
+  const getStatusMessage = () => {
+    switch (publishStatus) {
+      case 'creating-draft':
+        return { icon: <AlertCircle className="w-4 h-4 text-blue-500" />, text: "Creating your listing..." };
+      case 'processing-payment':
+        return { icon: <AlertCircle className="w-4 h-4 text-yellow-500" />, text: "Processing payment..." };
+      case 'published':
+        return { icon: <CheckCircle className="w-4 h-4 text-green-500" />, text: "Listing published successfully!" };
+      case 'failed':
+        return { icon: <AlertCircle className="w-4 h-4 text-red-500" />, text: "Publishing failed. Please try again." };
+      default:
+        return null;
+    }
+  };
+
+  const statusMessage = getStatusMessage();
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">
-        <CreditCard className="w-5 h-5 text-purple-600" />
+        <FileText className="w-5 h-5 text-purple-600" />
         <h2 className="text-2xl font-playfair font-medium">Review & Payment / Xem Lại & Thanh Toán</h2>
       </div>
+
+      {statusMessage && (
+        <Card className="border-l-4 border-l-blue-500 bg-blue-50">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
+              {statusMessage.icon}
+              <span className="font-medium">{statusMessage.text}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <p className="text-gray-600 mb-6">
-        Review your listing details and complete payment to publish / Xem lại chi tiết tin đăng và thanh toán để đăng tin
+        Review your salon listing details and complete payment to publish / Xem lại thông tin salon và thanh toán để đăng tin
       </p>
 
-      {/* Listing Summary */}
+      {/* Salon Information Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-purple-500" />
-            Listing Summary / Tóm Tắt Tin Đăng
+            <CheckCircle className="w-5 h-5 text-green-500" />
+            Salon Information / Thông Tin Salon
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div>
-                <h3 className="font-semibold text-lg">{formData.salonName}</h3>
-                <p className="text-purple-600 font-medium">{formData.businessType}</p>
-              </div>
-              
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="w-4 h-4" />
-                <span>{formData.address}, {formData.city}, {formData.state}</span>
-              </div>
-
-              {formData.establishedYear && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Calendar className="w-4 h-4" />
-                  <span>Established {formData.establishedYear}</span>
-                </div>
-              )}
-
-              <div className="flex items-center gap-2 text-gray-600">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span>{photoUploads.length} photo{photoUploads.length !== 1 ? 's' : ''} uploaded</span>
-              </div>
+          <div className="space-y-3">
+            <div>
+              <h3 className="font-semibold text-lg">{formData.salonName}</h3>
+              <p className="text-gray-600">{formData.businessType}</p>
             </div>
-
-            <div className="space-y-3">
-              {formData.askingPrice && (
-                <div className="flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-green-600" />
-                  <span className="font-semibold">Asking Price: ${formData.askingPrice}</span>
-                </div>
-              )}
-              
-              {formData.monthlyRent && (
-                <p className="text-gray-600">Monthly Rent: ${formData.monthlyRent}</p>
-              )}
-
-              {formData.numberOfStaff && (
-                <p className="text-gray-600">Staff: {formData.numberOfStaff}</p>
-              )}
-
-              {formData.squareFeet && (
-                <p className="text-gray-600">Size: {formData.squareFeet} sq ft</p>
-              )}
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <MapPin className="w-4 h-4" />
+              <span>{formData.address}, {formData.city}, {formData.state} {formData.zipCode}</span>
             </div>
+            {formData.askingPrice && (
+              <div className="flex items-center gap-2 text-sm">
+                <DollarSign className="w-4 h-4" />
+                <span className="font-medium">Asking Price: ${formData.askingPrice}</span>
+              </div>
+            )}
           </div>
-
-          {(formData.vietnameseDescription || formData.englishDescription) && (
-            <div className="mt-4 pt-4 border-t">
-              <h4 className="font-medium mb-2">Description:</h4>
-              {formData.vietnameseDescription && (
-                <p className="text-sm text-gray-600 mb-2">{formData.vietnameseDescription}</p>
-              )}
-              {formData.englishDescription && (
-                <p className="text-sm text-gray-600">{formData.englishDescription}</p>
-              )}
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* Plan Details */}
+      {/* Selected Plan Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-purple-500" />
+            <Calendar className="w-5 h-5 text-purple-500" />
             Selected Plan / Gói Đã Chọn
           </CardTitle>
         </CardHeader>
@@ -131,109 +157,116 @@ export const SalonReviewStep = ({ form, formData, selectedOptions, photoUploads 
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="font-semibold">
-                  {selectedOptions.selectedPricingTier === 'featured' ? 'Featured ' : ''}
-                  {durationOption?.label || `${selectedOptions.durationMonths} month${selectedOptions.durationMonths > 1 ? 's' : ''}`}
+                  {selectedOptions.durationMonths} Month{selectedOptions.durationMonths > 1 ? 's' : ''} Listing
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Active for {selectedOptions.durationMonths} month{selectedOptions.durationMonths > 1 ? 's' : ''}
+                  {selectedOptions.durationMonths * 30} days of visibility
                 </p>
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-purple-600">
-                  ${pricingSummary.finalPrice.toFixed(2)}
-                </div>
-                <div className="text-sm text-gray-500 line-through">
-                  ${pricingSummary.originalPrice.toFixed(2)}
-                </div>
-                <Badge variant="secondary" className="bg-green-100 text-green-800 mt-1">
-                  Save {pricingSummary.savingsPercentage}%!
-                </Badge>
-              </div>
+              <Badge variant="outline" className="text-purple-600">
+                ${getPrice(selectedOptions.durationMonths, false).toFixed(2)}
+              </Badge>
             </div>
             
-            {selectedOptions.selectedPricingTier === 'featured' && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <div className="flex items-center text-sm text-yellow-800">
-                  <CheckCircle className="h-4 w-4 text-yellow-600 mr-2" />
-                  Featured listing with priority placement (+$10)
+            {isFeatured && (
+              <div className="flex justify-between items-center pt-2 border-t">
+                <div>
+                  <h4 className="font-medium text-sm">Featured Listing Upgrade</h4>
+                  <p className="text-xs text-gray-600">Priority placement and highlighted badge</p>
                 </div>
+                <Badge variant="outline" className="text-orange-600">
+                  +$10.00
+                </Badge>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Terms and Payment */}
+      {/* Total and Payment */}
       <Card className="border-purple-200 bg-purple-50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-purple-700">
-            <Shield className="h-5 w-5" />
-            Terms & Payment / Điều Khoản & Thanh Toán
+            <DollarSign className="w-5 h-5" />
+            Payment Summary / Tóm Tắt Thanh Toán
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Total Amount / Tổng Tiền:</span>
+              <span className="text-purple-600">${totalPrice.toFixed(2)}</span>
+            </div>
+            <div className="text-sm text-gray-600">
+              <p className="mb-2">✅ Secure payment powered by Stripe</p>
+              <p className="font-medium text-purple-700">
+                Your listing will be published immediately after payment confirmation.
+              </p>
+              <p className="text-xs">
+                Tin đăng sẽ được xuất bản ngay sau khi thanh toán thành công.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Terms and Conditions */}
+      <Card>
+        <CardContent className="pt-6">
           <FormField
             control={form.control}
             name="termsAccepted"
             render={({ field }) => (
-              <FormItem>
-                <div className="flex items-start space-x-2">
-                  <FormControl>
-                    <Checkbox 
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id="terms"
-                    />
-                  </FormControl>
-                  <label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
-                    I agree to the Terms of Service and Privacy Policy. I confirm that all information provided is accurate and I have the right to sell this business.
-                    <br />
-                    <span className="text-gray-600">
-                      Tôi đồng ý với Điều khoản Dịch vụ và Chính sách Bảo mật. Tôi xác nhận rằng tất cả thông tin được cung cấp là chính xác và tôi có quyền bán doanh nghiệp này.
-                    </span>
-                  </label>
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="cursor-pointer">
+                    I agree to the Terms of Service and Privacy Policy *
+                  </FormLabel>
+                  <p className="text-sm text-gray-500">
+                    Tôi đồng ý với Điều khoản Dịch vụ và Chính sách Bảo mật
+                  </p>
+                  <FormMessage />
                 </div>
               </FormItem>
             )}
           />
-
-          <div className="bg-white border border-purple-200 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-lg font-semibold">Total Amount / Tổng Tiền:</span>
-              <span className="text-2xl font-bold text-purple-600">
-                ${pricingSummary.finalPrice.toFixed(2)}
-              </span>
-            </div>
-            <div className="text-sm text-gray-600 space-y-1">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-green-500" />
-                <span>Secure payment powered by Stripe</span>
-              </div>
-              <p>Your listing will be published immediately after payment confirmation.</p>
-              <p className="text-purple-600 font-medium">
-                Payment is required to publish your salon listing.
-              </p>
-            </div>
-          </div>
-
-          <StripeCheckout
-            amount={pricingSummary.finalPrice}
-            productName={`${selectedOptions.selectedPricingTier === 'featured' ? 'Featured ' : ''}Salon Listing - ${selectedOptions.durationMonths} month${selectedOptions.durationMonths > 1 ? 's' : ''}`}
-            buttonText={`Pay $${pricingSummary.finalPrice.toFixed(2)} & Publish Listing`}
-            onSuccess={handlePaymentSuccess}
-            pricingOptions={selectedOptions}
-            formData={formData}
-          />
-
-          {!canProceed() && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-700 text-sm">
-                Please complete all required fields and accept the terms before proceeding with payment.
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
+
+      {/* Pay & Publish Button */}
+      <div className="pt-4">
+        <Button 
+          onClick={handlePayAndPublish}
+          disabled={isPublishing || !form.getValues('termsAccepted') || publishStatus === 'published'}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 text-lg"
+          size="lg"
+        >
+          {isPublishing ? (
+            <>
+              <AlertCircle className="mr-2 h-5 w-5 animate-spin" />
+              {publishStatus === 'creating-draft' && "Creating Listing..."}
+              {publishStatus === 'processing-payment' && "Processing Payment..."}
+            </>
+          ) : publishStatus === 'published' ? (
+            <>
+              <CheckCircle className="mr-2 h-5 w-5" />
+              Published Successfully!
+            </>
+          ) : (
+            `Pay $${totalPrice.toFixed(2)} & Publish Listing`
+          )}
+        </Button>
+        
+        <p className="text-xs text-gray-500 text-center mt-2">
+          Your listing will only be published after successful Stripe payment
+        </p>
+      </div>
     </div>
   );
 };
