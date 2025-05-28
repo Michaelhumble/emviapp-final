@@ -11,6 +11,14 @@ interface SalonIdentityStepProps {
 }
 
 export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
+  // Auto-fill Business Type with "Nail Salon" if empty
+  React.useEffect(() => {
+    const currentBusinessType = form.getValues('businessType');
+    if (!currentBusinessType) {
+      form.setValue('businessType', 'Nail Salon');
+    }
+  }, [form]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">

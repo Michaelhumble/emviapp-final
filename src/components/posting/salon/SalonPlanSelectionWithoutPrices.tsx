@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Star, Zap } from 'lucide-react';
+import { Check, Star, Crown, Zap } from 'lucide-react';
 import { SalonPricingOptions, DURATION_OPTIONS, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
 
 interface SalonPlanSelectionWithoutPricesProps {
@@ -29,115 +29,179 @@ const SalonPlanSelectionWithoutPrices: React.FC<SalonPlanSelectionWithoutPricesP
     });
   };
 
-  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
+  const getBasicPrice = (months: number) => {
+    const summary = getSalonPostPricingSummary({
+      selectedPricingTier: 'basic',
+      durationMonths: months
+    });
+    return summary;
+  };
+
+  const getFeaturedPrice = (months: number) => {
+    const summary = getSalonPostPricingSummary({
+      selectedPricingTier: 'featured',
+      durationMonths: months
+    });
+    return summary;
+  };
+
+  const getDurationOption = (months: number) => {
+    return DURATION_OPTIONS.find(option => option.months === months);
+  };
 
   return (
     <div className="space-y-8">
       {/* Plan Selection */}
       <div>
-        <h3 className="text-lg font-medium mb-4">Choose Your Plan / Chọn Gói Của Bạn</h3>
+        <h3 className="text-xl font-semibold mb-4">Choose Your Plan / Chọn Gói Của Bạn</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Plan */}
-          <Card className={`cursor-pointer transition-all ${
-            selectedOptions.selectedPricingTier === 'basic' 
-              ? 'ring-2 ring-purple-500 border-purple-500' 
-              : 'hover:border-purple-300'
-          }`} onClick={() => handlePlanSelect('basic')}>
+          <Card 
+            className={`cursor-pointer transition-all ${
+              selectedOptions.selectedPricingTier === 'basic' 
+                ? 'ring-2 ring-purple-500 border-purple-500' 
+                : 'hover:border-purple-300'
+            }`}
+            onClick={() => handlePlanSelect('basic')}
+          >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Check className="w-5 h-5 text-green-500" />
-                Basic Listing / Tin Cơ Bản
+                <Star className="w-5 h-5 text-purple-600" />
+                Basic Listing
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Standard visibility / Hiển thị tiêu chuẩn
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Photo gallery / Thư viện ảnh
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Contact information / Thông tin liên hệ
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Basic search results / Kết quả tìm kiếm cơ bản
-                </li>
-              </ul>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Perfect for quick sales</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm">Standard listing visibility</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm">Contact information display</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm">Photo gallery</span>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
           {/* Featured Plan */}
-          <Card className={`cursor-pointer transition-all ${
-            selectedOptions.selectedPricingTier === 'featured' 
-              ? 'ring-2 ring-purple-500 border-purple-500' 
-              : 'hover:border-purple-300'
-          }`} onClick={() => handlePlanSelect('featured')}>
+          <Card 
+            className={`cursor-pointer transition-all relative ${
+              selectedOptions.selectedPricingTier === 'featured' 
+                ? 'ring-2 ring-yellow-500 border-yellow-500' 
+                : 'hover:border-yellow-300'
+            }`}
+            onClick={() => handlePlanSelect('featured')}
+          >
+            <Badge className="absolute -top-2 left-4 bg-yellow-500 text-white">
+              <Zap className="w-3 h-3 mr-1" />
+              MOST POPULAR
+            </Badge>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-yellow-500" />
-                Featured Listing / Tin Nổi Bật
-                <Badge variant="outline" className="text-purple-600">
-                  <Zap className="w-3 h-3 mr-1" />
-                  Popular / Phổ biến
-                </Badge>
+                <Crown className="w-5 h-5 text-yellow-600" />
+                Featured Listing
+                <Badge variant="outline" className="text-xs">+$10/mo</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Everything in Basic / Mọi thứ trong gói Cơ bản
-                </li>
-                <li className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  Priority placement / Vị trí ưu tiên
-                </li>
-                <li className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  Highlighted in search / Nổi bật trong tìm kiếm
-                </li>
-                <li className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  Featured badge / Huy hiệu nổi bật
-                </li>
-                <li className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  Social media promotion / Quảng bá mạng xã hội
-                </li>
-              </ul>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Get noticed faster with premium placement</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm font-medium text-yellow-700">Top of search results</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm font-medium text-yellow-700">Premium badge display</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm">All Basic features included</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm font-medium text-yellow-700">3x more visibility</span>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Duration Selection */}
+      {/* Duration Selection with Pricing */}
       <div>
-        <h3 className="text-lg font-medium mb-4">Duration / Thời Hạn</h3>
+        <h3 className="text-xl font-semibold mb-4">Select Duration & See Pricing / Chọn Thời Hạn & Xem Giá</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {DURATION_OPTIONS.map((option) => {
-            const isSelected = selectedOptions.durationMonths === option.months;
+            const basicPricing = getBasicPrice(option.months);
+            const featuredPricing = getFeaturedPrice(option.months);
+            const currentPricing = selectedOptions.selectedPricingTier === 'featured' ? featuredPricing : basicPricing;
+            
             return (
               <Card 
                 key={option.months}
                 className={`cursor-pointer transition-all ${
-                  isSelected 
-                    ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' 
-                    : 'hover:border-purple-300'
+                  selectedOptions.durationMonths === option.months 
+                    ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50' 
+                    : 'hover:border-blue-300'
                 }`}
                 onClick={() => handleDurationSelect(option.months)}
               >
-                <CardContent className="p-4 text-center">
-                  <div className="font-medium">{option.label}</div>
-                  {option.discount > 0 && (
-                    <Badge variant="outline" className="mt-2 text-green-600 border-green-600">
-                      Save {option.discount}% / Tiết kiệm {option.discount}%
-                    </Badge>
-                  )}
+                <CardContent className="p-4">
+                  <div className="text-center space-y-2">
+                    <h4 className="font-semibold">{option.label}</h4>
+                    
+                    {/* Basic Pricing */}
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-500 uppercase font-medium">Basic Plan</p>
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-sm text-gray-400 line-through">
+                          ${basicPricing.originalPrice.toFixed(2)}
+                        </span>
+                        <Badge variant="destructive" className="text-xs">
+                          Save {basicPricing.savingsPercentage}%!
+                        </Badge>
+                      </div>
+                      <p className="text-lg font-bold text-green-600">
+                        ${basicPricing.finalPrice.toFixed(2)}
+                      </p>
+                    </div>
+
+                    {/* Featured Pricing */}
+                    <div className="space-y-1 pt-2 border-t border-gray-200">
+                      <p className="text-xs text-yellow-600 uppercase font-medium">Featured Plan</p>
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-sm text-gray-400 line-through">
+                          ${featuredPricing.originalPrice.toFixed(2)}
+                        </span>
+                        <Badge variant="destructive" className="text-xs">
+                          Save {featuredPricing.savingsPercentage}%!
+                        </Badge>
+                      </div>
+                      <p className="text-lg font-bold text-yellow-600">
+                        ${featuredPricing.finalPrice.toFixed(2)}
+                      </p>
+                      <p className="text-xs text-yellow-700">+$10/mo upgrade</p>
+                    </div>
+
+                    {option.months > 1 && (
+                      <div className="mt-2 p-2 bg-red-50 rounded">
+                        <p className="text-xs text-red-600 font-medium">
+                          🔥 Limited Time: Save {option.discount}%!
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             );
@@ -145,37 +209,47 @@ const SalonPlanSelectionWithoutPrices: React.FC<SalonPlanSelectionWithoutPricesP
         </div>
       </div>
 
-      {/* Pricing Summary */}
+      {/* Current Selection Summary */}
       {selectedOptions.selectedPricingTier && selectedOptions.durationMonths && (
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-lg font-medium mb-4">Pricing Summary / Tóm Tắt Giá</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">
-                {selectedOptions.selectedPricingTier === 'basic' ? 'Basic Listing' : 'Featured Listing'} 
-                {' '}({selectedOptions.durationMonths} month{selectedOptions.durationMonths > 1 ? 's' : ''})
-              </span>
-              <div className="text-right">
-                <span className="text-lg font-bold text-purple-600">
-                  ${pricingSummary.finalPrice.toFixed(2)}
-                </span>
-                <div className="text-sm text-gray-500">
-                  <span className="line-through">${pricingSummary.originalPrice.toFixed(2)}</span>
-                  <span className="ml-2 text-green-600 font-medium">
-                    Save {pricingSummary.savingsPercentage}%
-                  </span>
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg border">
+          <h4 className="font-semibold text-lg mb-3">Your Selection / Lựa Chọn Của Bạn</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600">Plan / Gói:</p>
+              <p className="font-semibold capitalize flex items-center gap-2">
+                {selectedOptions.selectedPricingTier} Listing
+                {selectedOptions.selectedPricingTier === 'featured' && (
+                  <Badge className="bg-yellow-500">
+                    <Crown className="w-3 h-3 mr-1" />
+                    FEATURED
+                  </Badge>
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Duration / Thời hạn:</p>
+              <p className="font-semibold">{getDurationOption(selectedOptions.durationMonths)?.label}</p>
+            </div>
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">Original Price:</p>
+                  <p className="text-lg text-gray-400 line-through">
+                    ${getSalonPostPricingSummary(selectedOptions).originalPrice.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Your Price:</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    ${getSalonPostPricingSummary(selectedOptions).finalPrice.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <Badge variant="destructive" className="text-sm">
+                    🎉 Save {getSalonPostPricingSummary(selectedOptions).savingsPercentage}%!
+                  </Badge>
                 </div>
               </div>
-            </div>
-            
-            <div className="pt-3 border-t">
-              <div className="flex justify-between items-center text-lg font-bold">
-                <span>Total / Tổng Cộng:</span>
-                <span className="text-purple-600">${pricingSummary.finalPrice.toFixed(2)}</span>
-              </div>
-              <p className="text-sm text-green-600 text-right">
-                You save ${pricingSummary.savingsAmount.toFixed(2)} / Bạn tiết kiệm ${pricingSummary.savingsAmount.toFixed(2)}
-              </p>
             </div>
           </div>
         </div>
