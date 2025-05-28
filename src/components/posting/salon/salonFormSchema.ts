@@ -16,9 +16,9 @@ export const salonFormSchema = z.object({
   neighborhood: z.string().optional(),
   hideExactAddress: z.boolean().default(false),
 
-  // Financial/Business details
-  askingPrice: z.string().min(1, "Asking price is required"),
-  monthlyRent: z.string().min(1, "Monthly rent is required"),
+  // Financial/Business details - NOW OPTIONAL
+  askingPrice: z.string().optional(),
+  monthlyRent: z.string().optional(),
   numberOfStaff: z.string().optional(),
   numberOfTables: z.string().optional(),
   numberOfChairs: z.string().optional(),

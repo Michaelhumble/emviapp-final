@@ -57,7 +57,7 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
             <FormItem>
               <FormLabel className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                Year Established / Năm Thành Lập
+                Year Established / Năm Thành Lập (Optional / Tùy chọn)
               </FormLabel>
               <FormControl>
                 <Input placeholder="2020" {...field} />

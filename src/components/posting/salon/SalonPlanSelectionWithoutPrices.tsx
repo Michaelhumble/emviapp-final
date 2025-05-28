@@ -3,174 +3,183 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Star, Zap, Crown } from 'lucide-react';
-import { SalonPricingOptions, DURATION_OPTIONS } from '@/utils/posting/salonPricing';
+import { Check, Star, Zap } from 'lucide-react';
+import { SalonPricingOptions, DURATION_OPTIONS, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
 
 interface SalonPlanSelectionWithoutPricesProps {
   selectedOptions: SalonPricingOptions;
   onOptionsChange: (options: SalonPricingOptions) => void;
 }
 
-const SalonPlanSelectionWithoutPrices = ({ 
-  selectedOptions, 
-  onOptionsChange 
-}: SalonPlanSelectionWithoutPricesProps) => {
-  
-  const plans = [
-    {
-      id: 'basic',
-      name: 'Basic Plan / Gói Cơ Bản',
-      icon: <CheckCircle className="w-6 h-6 text-blue-500" />,
-      features: [
-        'Standard listing visibility / Hiển thị tin đăng tiêu chuẩn',
-        'Basic photo gallery / Thư viện ảnh cơ bản',
-        'Contact information display / Hiển thị thông tin liên hệ',
-        'Search engine optimization / Tối ưu hóa công cụ tìm kiếm'
-      ],
-      recommended: false
-    },
-    {
-      id: 'standard',
-      name: 'Standard Plan / Gói Tiêu Chuẩn',
-      icon: <Star className="w-6 h-6 text-purple-500" />,
-      features: [
-        'Enhanced listing visibility / Tăng cường hiển thị tin đăng',
-        'Premium photo gallery / Thư viện ảnh cao cấp',
-        'Featured in search results / Nổi bật trong kết quả tìm kiếm',
-        'Priority customer support / Hỗ trợ khách hàng ưu tiên',
-        'Analytics dashboard / Bảng điều khiển phân tích'
-      ],
-      recommended: true
-    },
-    {
-      id: 'featured',
-      name: 'Featured Plan / Gói Nổi Bật',
-      icon: <Crown className="w-6 h-6 text-gold-500" />,
-      features: [
-        'Maximum visibility / Hiển thị tối đa',
-        'Top of search results / Đầu kết quả tìm kiếm',
-        'Premium badge display / Hiển thị huy hiệu cao cấp',
-        'Virtual tour integration / Tích hợp tour ảo',
-        'Social media promotion / Quảng bá mạng xã hội',
-        'Dedicated account manager / Quản lý tài khoản chuyên dụng'
-      ],
-      recommended: false
-    }
-  ];
-
-  const handlePlanSelect = (planId: string) => {
+const SalonPlanSelectionWithoutPrices: React.FC<SalonPlanSelectionWithoutPricesProps> = ({
+  selectedOptions,
+  onOptionsChange
+}) => {
+  const handlePlanSelect = (tier: 'basic' | 'featured') => {
     onOptionsChange({
       ...selectedOptions,
-      selectedPricingTier: planId as any
+      selectedPricingTier: tier
     });
   };
 
-  const handleDurationChange = (months: number) => {
+  const handleDurationSelect = (months: number) => {
     onOptionsChange({
       ...selectedOptions,
       durationMonths: months
     });
   };
 
-  const handleAutoRenewToggle = () => {
-    onOptionsChange({
-      ...selectedOptions,
-      autoRenew: !selectedOptions.autoRenew
-    });
-  };
+  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Plan Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {plans.map((plan) => (
-          <Card 
-            key={plan.id}
-            className={`relative cursor-pointer transition-all hover:shadow-lg ${
-              selectedOptions.selectedPricingTier === plan.id 
-                ? 'ring-2 ring-purple-500 shadow-lg' 
-                : 'hover:ring-1 hover:ring-gray-300'
-            }`}
-            onClick={() => handlePlanSelect(plan.id)}
-          >
-            {plan.recommended && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-purple-500 text-white">
-                  Recommended / Khuyên Dùng
-                </Badge>
-              </div>
-            )}
-            
-            <CardHeader className="text-center pb-2">
-              <div className="flex justify-center mb-2">
-                {plan.icon}
-              </div>
-              <CardTitle className="text-lg">{plan.name}</CardTitle>
+      <div>
+        <h3 className="text-lg font-medium mb-4">Choose Your Plan / Chọn Gói Của Bạn</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Basic Plan */}
+          <Card className={`cursor-pointer transition-all ${
+            selectedOptions.selectedPricingTier === 'basic' 
+              ? 'ring-2 ring-purple-500 border-purple-500' 
+              : 'hover:border-purple-300'
+          }`} onClick={() => handlePlanSelect('basic')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-500" />
+                Basic Listing / Tin Cơ Bản
+              </CardTitle>
             </CardHeader>
-            
             <CardContent>
               <ul className="space-y-2 text-sm">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Standard visibility / Hiển thị tiêu chuẩn
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Photo gallery / Thư viện ảnh
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Contact information / Thông tin liên hệ
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Basic search results / Kết quả tìm kiếm cơ bản
+                </li>
               </ul>
             </CardContent>
           </Card>
-        ))}
+
+          {/* Featured Plan */}
+          <Card className={`cursor-pointer transition-all ${
+            selectedOptions.selectedPricingTier === 'featured' 
+              ? 'ring-2 ring-purple-500 border-purple-500' 
+              : 'hover:border-purple-300'
+          }`} onClick={() => handlePlanSelect('featured')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-500" />
+                Featured Listing / Tin Nổi Bật
+                <Badge variant="outline" className="text-purple-600">
+                  <Zap className="w-3 h-3 mr-1" />
+                  Popular / Phổ biến
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Everything in Basic / Mọi thứ trong gói Cơ bản
+                </li>
+                <li className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  Priority placement / Vị trí ưu tiên
+                </li>
+                <li className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  Highlighted in search / Nổi bật trong tìm kiếm
+                </li>
+                <li className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  Featured badge / Huy hiệu nổi bật
+                </li>
+                <li className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  Social media promotion / Quảng bá mạng xã hội
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Duration Selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Duration / Thời Hạn</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {DURATION_OPTIONS.map((option) => (
-              <Button
+      <div>
+        <h3 className="text-lg font-medium mb-4">Duration / Thời Hạn</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {DURATION_OPTIONS.map((option) => {
+            const isSelected = selectedOptions.durationMonths === option.months;
+            return (
+              <Card 
                 key={option.months}
-                variant={selectedOptions.durationMonths === option.months ? "default" : "outline"}
-                onClick={() => handleDurationChange(option.months)}
-                className="h-auto py-3 px-4 flex flex-col items-center gap-1"
+                className={`cursor-pointer transition-all ${
+                  isSelected 
+                    ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' 
+                    : 'hover:border-purple-300'
+                }`}
+                onClick={() => handleDurationSelect(option.months)}
               >
-                <span className="font-semibold">{option.label}</span>
-                {option.discount > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    {option.discount}% off / giảm {option.discount}%
-                  </Badge>
-                )}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                <CardContent className="p-4 text-center">
+                  <div className="font-medium">{option.label}</div>
+                  {option.discount > 0 && (
+                    <Badge variant="outline" className="mt-2 text-green-600 border-green-600">
+                      Save {option.discount}% / Tiết kiệm {option.discount}%
+                    </Badge>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
 
-      {/* Auto-Renewal Option */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-orange-500" />
-              <div>
-                <h4 className="font-medium">Auto-Renewal / Tự Động Gia Hạn</h4>
-                <p className="text-sm text-gray-600">
-                  Save with automatic renewal / Tiết kiệm với gia hạn tự động
-                </p>
+      {/* Pricing Summary */}
+      {selectedOptions.selectedPricingTier && selectedOptions.durationMonths && (
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h3 className="text-lg font-medium mb-4">Pricing Summary / Tóm Tắt Giá</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">
+                {selectedOptions.selectedPricingTier === 'basic' ? 'Basic Listing' : 'Featured Listing'} 
+                {' '}({selectedOptions.durationMonths} month{selectedOptions.durationMonths > 1 ? 's' : ''})
+              </span>
+              <div className="text-right">
+                <span className="text-lg font-bold text-purple-600">
+                  ${pricingSummary.finalPrice.toFixed(2)}
+                </span>
+                <div className="text-sm text-gray-500">
+                  <span className="line-through">${pricingSummary.originalPrice.toFixed(2)}</span>
+                  <span className="ml-2 text-green-600 font-medium">
+                    Save {pricingSummary.savingsPercentage}%
+                  </span>
+                </div>
               </div>
             </div>
-            <Button
-              variant={selectedOptions.autoRenew ? "default" : "outline"}
-              onClick={handleAutoRenewToggle}
-              size="sm"
-            >
-              {selectedOptions.autoRenew ? 'Enabled / Đã Bật' : 'Enable / Bật'}
-            </Button>
+            
+            <div className="pt-3 border-t">
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span>Total / Tổng Cộng:</span>
+                <span className="text-purple-600">${pricingSummary.finalPrice.toFixed(2)}</span>
+              </div>
+              <p className="text-sm text-green-600 text-right">
+                You save ${pricingSummary.savingsAmount.toFixed(2)} / Bạn tiết kiệm ${pricingSummary.savingsAmount.toFixed(2)}
+              </p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
   );
 };

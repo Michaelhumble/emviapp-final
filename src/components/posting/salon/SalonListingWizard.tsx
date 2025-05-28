@@ -124,9 +124,7 @@ const SalonListingWizard = () => {
       case 2:
         return formData.address && formData.city && formData.state;
       case 3:
-        return formData.askingPrice && 
-               formData.monthlyRent && 
-               photoUploads.length > 0;
+        return photoUploads.length > 0; // Only photos required, financial details are optional
       case 4:
         return selectedOptions.selectedPricingTier && selectedOptions.durationMonths;
       case 5:
