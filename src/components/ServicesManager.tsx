@@ -1,224 +1,210 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { Trash2, Edit, Plus } from 'lucide-react';
 
 interface Service {
   id: string;
+  title: string;
   name: string;
-  description?: string;
+  description: string;
+  price: number;
+  duration_minutes: number;
+  user_id: string;
+  image_url?: string;
+  is_visible?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface NewService {
+  title: string;
+  name: string;
+  description: string;
   price: number;
   duration_minutes: number;
 }
 
 const ServicesManager = () => {
-  const { user, userRole } = useAuth();
+  const { user } = useAuth();
   const [services, setServices] = useState<Service[]>([]);
-  const [editingService, setEditingService] = useState<Service | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Form state
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [duration, setDuration] = useState('');
-
-  // Check if user can manage services (salon owners, artists, freelancers)
-  const canManageServices = userRole === 'salon' || userRole === 'owner' || 
-                           userRole === 'artist' || userRole === 'nail technician/artist' ||
-                           userRole === 'freelancer';
+  const [isEditing, setIsEditing] = useState<string | null>(null);
+  const [newService, setNewService] = useState<NewService>({
+    title: '',
+    name: '',
+    description: '',
+    price: 0,
+    duration_minutes: 30
+  });
 
   useEffect(() => {
-    loadServices();
-  }, [user?.id]);
+    if (user) {
+      fetchServices();
+    }
+  }, [user]);
 
-  const loadServices = async () => {
-    if (!user?.id) return;
-    setIsLoading(true);
+  const fetchServices = async () => {
+    if (!user) return;
+
     try {
       const { data, error } = await supabase
         .from('services')
         .select('*')
         .eq('user_id', user.id);
+
       if (error) throw error;
-      setServices(data || []);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load services');
-    } finally {
-      setIsLoading(false);
+
+      // Map database fields to component interface
+      const mappedServices = data.map(service => ({
+        ...service,
+        name: service.title || service.name || ''
+      }));
+
+      setServices(mappedServices);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      toast.error('Failed to load services');
     }
   };
 
-  const resetForm = () => {
-    setName('');
-    setDescription('');
-    setPrice('');
-    setDuration('');
-    setEditingService(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user?.id) return;
-
-    const serviceData = {
-      user_id: user.id,
-      name,
-      description,
-      price: parseFloat(price),
-      duration_minutes: parseInt(duration, 10),
-    };
+  const addService = async () => {
+    if (!user || !newService.title.trim()) return;
 
     try {
-      if (editingService) {
-        // Update existing service
-        const { data, error } = await supabase
-          .from('services')
-          .update(serviceData)
-          .eq('id', editingService.id)
-          .select();
-        if (error) throw error;
-        setServices(services.map(s => (s.id === editingService.id ? { ...s, ...serviceData } : s)));
-        toast.success('Service updated successfully');
-      } else {
-        // Create new service
-        const { data, error } = await supabase
-          .from('services')
-          .insert([serviceData])
-          .select();
-        if (error) throw error;
-        setServices([...services, ...(data || [])]);
-        toast.success('Service created successfully');
-      }
-      loadServices();
-      resetForm();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to save service');
+      const serviceData = {
+        user_id: user.id,
+        title: newService.title,
+        description: newService.description,
+        price: newService.price,
+        duration_minutes: newService.duration_minutes
+      };
+
+      const { data, error } = await supabase
+        .from('services')
+        .insert([serviceData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const mappedService = {
+        ...data,
+        name: data.title || ''
+      };
+
+      setServices([...services, mappedService]);
+      setNewService({
+        title: '',
+        name: '',
+        description: '',
+        price: 0,
+        duration_minutes: 30
+      });
+      toast.success('Service added successfully');
+    } catch (error) {
+      console.error('Error adding service:', error);
+      toast.error('Failed to add service');
     }
   };
 
-  const handleEdit = (service: Service) => {
-    setEditingService(service);
-    setName(service.name);
-    setDescription(service.description || '');
-    setPrice(service.price.toString());
-    setDuration(service.duration_minutes.toString());
-  };
-
-  const handleDelete = async (serviceId: string) => {
+  const deleteService = async (id: string) => {
     try {
       const { error } = await supabase
         .from('services')
         .delete()
-        .eq('id', serviceId);
+        .eq('id', id);
+
       if (error) throw error;
-      setServices(services.filter(s => s.id !== serviceId));
+
+      setServices(services.filter(s => s.id !== id));
       toast.success('Service deleted successfully');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete service');
+    } catch (error) {
+      console.error('Error deleting service:', error);
+      toast.error('Failed to delete service');
     }
   };
 
-  if (!canManageServices) {
-    return (
+  return (
+    <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-gray-500">
-            Service management is only available for salon owners, artists, and freelancers.
-          </p>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            Add New Service
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Input
+            placeholder="Service title"
+            value={newService.title}
+            onChange={(e) => setNewService({ ...newService, title: e.target.value })}
+          />
+          <Textarea
+            placeholder="Service description"
+            value={newService.description}
+            onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              type="number"
+              placeholder="Price"
+              value={newService.price}
+              onChange={(e) => setNewService({ ...newService, price: Number(e.target.value) })}
+            />
+            <Input
+              type="number"
+              placeholder="Duration (minutes)"
+              value={newService.duration_minutes}
+              onChange={(e) => setNewService({ ...newService, duration_minutes: Number(e.target.value) })}
+            />
+          </div>
+          <Button onClick={addService} disabled={!newService.title.trim()}>
+            Add Service
+          </Button>
         </CardContent>
       </Card>
-    );
-  }
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Manage Services</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="price">Price</Label>
-            <Input
-              id="price"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="duration">Duration (minutes)</Label>
-            <Input
-              id="duration"
-              type="number"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              required
-            />
-          </div>
-          <Button type="submit">
-            {editingService ? 'Update Service' : 'Add Service'}
-          </Button>
-          {editingService && (
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel Edit
-            </Button>
-          )}
-        </form>
-
-        {isLoading ? (
-          <p>Loading services...</p>
-        ) : (
-          <div className="space-y-2">
-            {services.map((service) => (
-              <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <h4 className="font-medium">{service.name}</h4>
-                  <p className="text-sm text-gray-600">
-                    {service.description || 'No description'} - ${service.price} - {service.duration_minutes} mins
-                  </p>
+      <div className="grid gap-4">
+        {services.map((service) => (
+          <Card key={service.id}>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="font-semibold">{service.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                  <div className="flex gap-4 mt-2 text-sm">
+                    <span>${service.price}</span>
+                    <span>{service.duration_minutes} minutes</span>
+                  </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" onClick={() => handleEdit(service)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(service.id)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="destructive" size="icon" onClick={() => handleDelete(service.id)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => deleteService(service.id)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-            ))}
-            {services.length === 0 && <p>No services added yet.</p>}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 };
 

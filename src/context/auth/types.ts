@@ -23,6 +23,7 @@ export interface UserProfile {
   specialty?: string;
   location?: string;
   avatar_url?: string;
+  profile_image?: string; // Added for compatibility
   role?: UserRole;
   created_at: string;
   updated_at: string;
@@ -59,6 +60,7 @@ export interface UserProfile {
   birthday?: string | null;
   communication_preferences?: string[];
   commPrefs?: string[];
+  is_premium?: boolean; // Added for compatibility
 }
 
 export interface AuthContextType {
@@ -71,7 +73,7 @@ export interface AuthContextType {
   clearIsNewUser: () => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<any>;
+  signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;

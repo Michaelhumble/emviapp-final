@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -9,7 +10,7 @@ import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import { Toaster } from "@/components/ui/toaster";
-import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
+import AppErrorBoundary from '@/components/error-handling/AppErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
@@ -45,7 +46,7 @@ function App() {
 
   return (
     <HelmetProvider>
-      <GeneralErrorBoundary>
+      <AppErrorBoundary>
         <AuthProvider>
           <SalonProvider>
             <SubscriptionProvider>
@@ -105,7 +106,7 @@ function App() {
             </SubscriptionProvider>
           </SalonProvider>
         </AuthProvider>
-      </GeneralErrorBoundary>
+      </AppErrorBoundary>
     </HelmetProvider>
   );
 }

@@ -27,14 +27,17 @@ const UserProfile = () => {
     setIsBoosted(true);
   };
 
+  const displayName = userProfile?.full_name || user?.email || 'User';
+  const avatarUrl = userProfile?.avatar_url || userProfile?.profile_image;
+
   return (
     <div className="flex flex-col items-center justify-center p-6 rounded-lg shadow-md bg-white">
       <Avatar className="h-24 w-24 mb-4">
-        <AvatarImage src={userProfile?.profile_image || ""} alt={user?.email || "User"} />
-        <AvatarFallback>{user?.email?.substring(0, 2).toUpperCase()}</AvatarFallback>
+        <AvatarImage src={avatarUrl || ""} alt={displayName} />
+        <AvatarFallback>{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
       </Avatar>
 
-      <h2 className="text-2xl font-semibold text-gray-800 mb-2">{userProfile?.full_name || user?.email}</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-2">{displayName}</h2>
       <p className="text-gray-500 mb-4">{userProfile?.bio || "No bio available"}</p>
 
       <div className="flex space-x-4">

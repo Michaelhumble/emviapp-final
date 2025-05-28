@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const userProfile = null; // This will be enhanced later with actual profile fetching
   const userRole = user?.user_metadata?.role || null;
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<void> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       if (error) throw error;
-      return data;
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error(error.message || 'Failed to sign in');
@@ -30,11 +29,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<void> => {
     return login(email, password);
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -45,15 +44,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signOut = async () => {
+  const signOut = async (): Promise<void> => {
     return logout();
   };
 
-  const refreshUserProfile = async () => {
+  const refreshUserProfile = async (): Promise<void> => {
     console.log('Refresh user profile called');
   };
 
-  const updateProfile = async (updates: Partial<UserProfile>) => {
+  const updateProfile = async (updates: Partial<UserProfile>): Promise<void> => {
     console.log('Update profile called with:', updates);
   };
 
