@@ -44,7 +44,7 @@ serve(async (req) => {
       throw new Error('User not authenticated')
     }
 
-    // Create DRAFT salon listing first
+    // CRITICAL: Create DRAFT salon listing first - NEVER LIVE
     const { data: draftListing, error: listingError } = await supabaseAdmin
       .from('salon_listings')
       .insert({
@@ -59,7 +59,7 @@ serve(async (req) => {
         monthly_rent: formData?.monthlyRent || '',
         description_vietnamese: formData?.vietnameseDescription || '',
         description_english: formData?.englishDescription || '',
-        is_live: false, // DRAFT STATUS - NEVER LIVE WITHOUT PAYMENT
+        is_live: false, // CRITICAL: ALWAYS FALSE - NEVER LIVE WITHOUT PAYMENT
         status: 'draft',
         created_at: new Date().toISOString()
       })
@@ -73,16 +73,16 @@ serve(async (req) => {
 
     console.log('Draft listing created:', draftListing.id)
 
-    // Calculate pricing based on options
+    // Calculate pricing based on options with FOMO pricing
     let unitAmount = 1999 // Basic plan $19.99
     let productName = 'Basic Salon Listing'
 
     if (pricingOptions.selectedPricingTier === 'featured') {
-      unitAmount = 2999 // Featured plan $29.99
+      unitAmount = 2999 // Featured plan $29.99 (+$10)
       productName = 'Featured Salon Listing'
     }
 
-    // Apply duration pricing
+    // Apply duration pricing with FOMO discounts
     if (pricingOptions.durationMonths === 3) {
       unitAmount = pricingOptions.selectedPricingTier === 'featured' ? 5999 : 4999
     } else if (pricingOptions.durationMonths === 6) {

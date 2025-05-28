@@ -23,6 +23,8 @@ const SalonListingSuccess = () => {
       }
 
       try {
+        console.log('Verifying payment for session:', sessionId);
+        
         // Call the verify-checkout-session function to confirm payment
         const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
           body: { sessionId }
@@ -34,10 +36,14 @@ const SalonListingSuccess = () => {
           return;
         }
 
+        console.log('Payment verification response:', data);
+
         if (data?.success && data?.listing_id) {
           setStatus('success');
           setListingData(data);
+          console.log('✅ Payment verified and listing published:', data.listing_id);
         } else {
+          console.error('Payment verification failed:', data);
           setStatus('error');
         }
       } catch (error) {
@@ -54,9 +60,12 @@ const SalonListingSuccess = () => {
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <Clock className="w-16 h-16 text-purple-500 mx-auto mb-6 animate-spin" />
-          <h1 className="text-3xl font-bold mb-4">Verifying Payment...</h1>
-          <p className="text-gray-600">
-            Please wait while we confirm your payment and publish your listing.
+          <h1 className="text-3xl font-bold mb-4">Processing Payment...</h1>
+          <p className="text-gray-600 mb-2">
+            Please wait while we verify your payment and publish your listing.
+          </p>
+          <p className="text-sm text-gray-500">
+            This process ensures only paid listings go live. Do not refresh this page.
           </p>
         </div>
       </Layout>
@@ -70,11 +79,17 @@ const SalonListingSuccess = () => {
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
           <h1 className="text-3xl font-bold mb-4">Payment Verification Failed</h1>
           <p className="text-gray-600 mb-6">
-            There was an issue verifying your payment. Please contact support if you believe this is an error.
+            Your payment could not be verified. Your listing has NOT been published.
+            Please try again or contact support if you believe this is an error.
           </p>
-          <Button onClick={() => navigate('/sell-salon')} variant="outline">
-            Try Again
-          </Button>
+          <div className="space-y-3">
+            <Button onClick={() => navigate('/sell-salon')} variant="outline">
+              Try Again
+            </Button>
+            <p className="text-xs text-gray-500">
+              Session ID: {sessionId} - Save this for support reference
+            </p>
+          </div>
         </div>
       </Layout>
     );
@@ -87,7 +102,7 @@ const SalonListingSuccess = () => {
           <CheckCircle className="w-24 h-24 text-green-500 mx-auto mb-8" />
           
           <h1 className="text-4xl font-bold mb-4">
-            🎉 Salon Listing Published Successfully!
+            🎉 Payment Verified & Listing Published!
           </h1>
           
           <p className="text-xl text-gray-600 mb-8">
@@ -103,9 +118,9 @@ const SalonListingSuccess = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold">Your listing is live</h3>
+                    <h3 className="font-semibold">✅ Your listing is LIVE</h3>
                     <p className="text-sm text-gray-600">
-                      Potential buyers can now view and contact you about your salon.
+                      Only after payment verification, your listing is now visible to buyers.
                     </p>
                   </div>
                 </div>
@@ -113,7 +128,7 @@ const SalonListingSuccess = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold">Email notifications</h3>
+                    <h3 className="font-semibold">📧 Email notifications</h3>
                     <p className="text-sm text-gray-600">
                       You'll receive email notifications when buyers show interest.
                     </p>
@@ -123,7 +138,7 @@ const SalonListingSuccess = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold">Dashboard access</h3>
+                    <h3 className="font-semibold">📊 Dashboard access</h3>
                     <p className="text-sm text-gray-600">
                       Manage your listing and view analytics from your dashboard.
                     </p>
@@ -148,15 +163,18 @@ const SalonListingSuccess = () => {
             </Button>
           </div>
 
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Payment Confirmation:</strong> Session ID {sessionId}
+          <div className="mt-8 p-4 bg-green-50 rounded-lg border border-green-200">
+            <p className="text-sm text-green-800">
+              <strong>✅ Payment Confirmed:</strong> Session ID {sessionId}
             </p>
             {listingData?.listing_id && (
-              <p className="text-sm text-blue-800">
-                <strong>Listing ID:</strong> {listingData.listing_id}
+              <p className="text-sm text-green-800">
+                <strong>📝 Listing ID:</strong> {listingData.listing_id}
               </p>
             )}
+            <p className="text-xs text-green-600 mt-2">
+              🔒 Your listing was published only after backend payment verification
+            </p>
           </div>
         </div>
       </div>
