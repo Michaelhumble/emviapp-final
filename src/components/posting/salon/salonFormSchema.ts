@@ -4,7 +4,7 @@ import { z } from "zod";
 export const salonFormSchema = z.object({
   // Identity fields
   salonName: z.string().min(2, "Salon name must be at least 2 characters"),
-  businessType: z.string().min(1, "Business type is required"),
+  businessType: z.string().min(1, "Business type is required").default("Nail Salon"),
   establishedYear: z.string().optional(),
   logo: z.any().optional(),
 
@@ -16,7 +16,7 @@ export const salonFormSchema = z.object({
   neighborhood: z.string().optional(),
   hideExactAddress: z.boolean().default(false),
 
-  // Financial/Business details - NOW OPTIONAL
+  // Financial/Business details - ALL OPTIONAL
   askingPrice: z.string().optional(),
   monthlyRent: z.string().optional(),
   numberOfStaff: z.string().optional(),

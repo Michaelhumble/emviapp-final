@@ -15,6 +15,8 @@ serve(async (req) => {
 
   try {
     const { sessionId } = await req.json();
+    
+    console.log('🔍 Verifying checkout session:', sessionId);
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -28,17 +30,22 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Retrieve the session
+    // Retrieve the session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
+      console.error('❌ Invalid session ID:', sessionId);
       return new Response(JSON.stringify({ error: "Invalid session" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Check if payment is complete
+    console.log('💳 Stripe session status:', session.payment_status);
+    console.log('📋 Session metadata:', session.metadata);
+
+    // Check if payment is complete - CRITICAL CHECK
     if (session.payment_status !== "paid") {
+      console.error('❌ Payment not completed. Status:', session.payment_status);
       return new Response(JSON.stringify({ 
         error: "Payment not completed", 
         status: session.payment_status 
@@ -53,13 +60,14 @@ serve(async (req) => {
     const draftListingId = metadata.draft_listing_id;
     
     if (!draftListingId) {
+      console.error('❌ No draft listing ID found in metadata');
       return new Response(JSON.stringify({ error: "No draft listing ID found" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    console.log('Payment verified, publishing listing:', draftListingId);
+    console.log('✅ Payment verified, publishing listing:', draftListingId);
 
     // CRITICAL: ONLY BACKEND CAN SET isLive = true
     // This is the ONLY place where a listing becomes live
@@ -78,14 +86,14 @@ serve(async (req) => {
       .single();
 
     if (publishError) {
-      console.error('Error publishing listing:', publishError);
+      console.error('❌ Error publishing listing:', publishError);
       return new Response(JSON.stringify({ error: "Failed to publish listing" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    console.log('Listing successfully published:', publishedListing.id);
+    console.log('🎉 Listing successfully published:', publishedListing.id);
 
     // Log the payment and publication
     await supabaseAdmin
@@ -105,14 +113,15 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         listing_id: draftListingId,
-        published: true
+        published: true,
+        message: "Listing successfully published after payment verification"
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    console.error("Error verifying checkout session:", error);
+    console.error("❌ Error verifying checkout session:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
