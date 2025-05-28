@@ -1,36 +1,123 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { UseFormReturn } from "react-hook-form";
 import { SalonFormValues } from "../salonFormSchema";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { MapPin, Shield } from "lucide-react";
 
-export interface SalonLocationStepProps {
-  formData: Partial<SalonFormValues>;
-  onNext: () => void;
-  onBack: () => void;
-  onFormDataUpdate: (data: Partial<SalonFormValues>) => void;
+interface SalonLocationStepProps {
+  form: UseFormReturn<SalonFormValues>;
 }
 
-export const SalonLocationStep = ({ formData, onNext, onBack, onFormDataUpdate }: SalonLocationStepProps) => {
+export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-playfair font-medium">Địa điểm / Location</h2>
-        <p className="text-gray-600 mt-2">
-          Thông tin địa điểm salon của bạn / Your salon location information
-        </p>
+      <div className="flex items-center gap-2 mb-6">
+        <MapPin className="w-5 h-5 text-purple-600" />
+        <h2 className="text-2xl font-playfair font-medium">Địa Chỉ / Location Details</h2>
       </div>
-      
-      <div className="text-center py-8">
-        <p className="text-gray-500">Location step coming soon...</p>
-      </div>
+      <p className="text-gray-600 mb-6">
+        Thông tin địa chỉ giúp người mua tìm thấy salon của bạn / Location information helps buyers find your salon
+      </p>
 
-      <div className="flex justify-between pt-6">
-        <Button type="button" variant="outline" onClick={onBack}>
-          Quay lại / Back
-        </Button>
-        <Button type="button" onClick={onNext}>
-          Tiếp tục / Continue
-        </Button>
+      <div className="grid grid-cols-1 gap-6">
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Địa Chỉ Đường / Street Address *</FormLabel>
+              <FormControl>
+                <Input placeholder="123 Main Street" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Thành Phố / City *</FormLabel>
+                <FormControl>
+                  <Input placeholder="San Jose" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bang / State *</FormLabel>
+                <FormControl>
+                  <Input placeholder="CA" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="zipCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mã Bưu Điện / ZIP Code</FormLabel>
+                <FormControl>
+                  <Input placeholder="95123" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="neighborhood"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Khu Vực / Neighborhood</FormLabel>
+              <FormControl>
+                <Input placeholder="Trung tâm thương mại, gần chợ / Downtown, Near shopping center" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="hideExactAddress"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Ẩn địa chỉ chính xác / Hide exact address in listing
+                </FormLabel>
+                <FormDescription>
+                  Chỉ hiển thị khu vực chung để bảo vệ quyền riêng tư / Only show general area to protect your privacy
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );

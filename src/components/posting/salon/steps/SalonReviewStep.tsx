@@ -1,210 +1,232 @@
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, CreditCard } from "lucide-react";
-import { SalonFormValues } from "../salonFormSchema";
-import { SalonPricingOptions } from "@/utils/posting/salonPricing";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { FormField, FormItem, FormControl } from '@/components/ui/form';
+import { Checkbox } from '@/components/ui/checkbox';
+import { CheckCircle, MapPin, DollarSign, Users, Image } from 'lucide-react';
+import { SalonFormValues } from '../salonFormSchema';
+import { SalonPricingOptions, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
 
 interface SalonReviewStepProps {
+  form: UseFormReturn<SalonFormValues>;
   formData: SalonFormValues;
   selectedOptions: SalonPricingOptions;
-  onBack: () => void;
+  photoUploads: File[];
+  onPayment: () => void;
 }
 
-const SalonReviewStep = ({ formData, selectedOptions, onBack }: SalonReviewStepProps) => {
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-
-  const calculateFinalPrice = () => {
-    let basePrice = 0;
-    
-    // Base tier pricing
-    switch (selectedOptions.selectedPricingTier) {
-      case 'basic':
-        basePrice = 99;
-        break;
-      case 'standard':
-        basePrice = 199;
-        break;
-      case 'featured':
-        basePrice = 299;
-        break;
-      default:
-        basePrice = 99;
-    }
-
-    // Duration multiplier
-    let finalPrice = basePrice * selectedOptions.durationMonths;
-
-    // Add-on features
-    if (selectedOptions.isNationwide) finalPrice += 50;
-    if (selectedOptions.fastSalePackage) finalPrice += 25;
-    if (selectedOptions.featuredBoost) finalPrice += 30;
-    if (selectedOptions.showAtTop) finalPrice += 40;
-
-    return finalPrice;
-  };
-
-  const getTierDisplayName = () => {
-    switch (selectedOptions.selectedPricingTier) {
-      case 'basic':
-        return 'Basic Salon Listing';
-      case 'standard':
-        return 'Standard Salon Listing';
-      case 'featured':
-        return 'Featured Salon Listing';
-      default:
-        return 'Salon Listing';
-    }
-  };
-
-  const handlePayment = async () => {
-    setIsProcessingPayment(true);
-
-    try {
-      const finalPrice = calculateFinalPrice();
-      
-      const { data, error } = await supabase.functions.invoke('create-salon-checkout', {
-        body: {
-          tier: selectedOptions.selectedPricingTier,
-          durationMonths: selectedOptions.durationMonths,
-          autoRenew: selectedOptions.autoRenew,
-          finalPrice: finalPrice,
-          salonData: {
-            salonName: formData.salonName,
-            askingPrice: formData.askingPrice,
-            city: formData.city,
-            state: formData.state,
-            address: formData.address
-          }
-        }
-      });
-
-      if (error) {
-        console.error('Error creating checkout session:', error);
-        toast.error('Lỗi tạo phiên thanh toán / Error creating payment session');
-        return;
-      }
-
-      if (data?.url) {
-        // Open Stripe checkout in new tab
-        window.open(data.url, '_blank');
-      } else {
-        toast.error('Không nhận được URL thanh toán / No payment URL received');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Lỗi xử lý thanh toán / Payment processing error');
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
-
-  const finalPrice = calculateFinalPrice();
+export const SalonReviewStep: React.FC<SalonReviewStepProps> = ({
+  form,
+  formData,
+  selectedOptions,
+  photoUploads,
+  onPayment
+}) => {
+  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
 
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-playfair font-medium">Xem lại & Thanh toán / Review & Payment</h2>
+        <h2 className="text-2xl font-playfair font-medium">Xem Lại & Thanh Toán / Review & Payment</h2>
         <p className="text-gray-600 mt-2">
-          Xem lại thông tin và hoàn tất thanh toán / Review your information and complete payment
+          Kiểm tra lại thông tin trước khi thanh toán / Review your information before payment
         </p>
       </div>
 
-      {/* Salon Information Review */}
+      {/* Salon Identity Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Thông tin Salon / Salon Information</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            Thông Tin Salon / Salon Identity
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <span className="font-medium">Tên Salon / Salon Name:</span>
-            <span className="ml-2">{formData.salonName || 'N/A'}</span>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-medium">Tên salon / Salon name:</span>
+              <p>{formData.salonName}</p>
+            </div>
+            <div>
+              <span className="font-medium">Loại hình kinh doanh / Business type:</span>
+              <p>{formData.businessType}</p>
+            </div>
+            {formData.establishedYear && (
+              <div>
+                <span className="font-medium">Năm thành lập / Established:</span>
+                <p>{formData.establishedYear}</p>
+              </div>
+            )}
           </div>
-          <div>
-            <span className="font-medium">Giá yêu cầu / Asking Price:</span>
-            <span className="ml-2">${formData.askingPrice || 'N/A'}</span>
+        </CardContent>
+      </Card>
+
+      {/* Location Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-blue-500" />
+            Địa Chỉ / Location
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <p><span className="font-medium">Địa chỉ / Address:</span> {formData.address}</p>
+            <p><span className="font-medium">Thành phố / City:</span> {formData.city}, {formData.state}</p>
+            {formData.zipCode && <p><span className="font-medium">Mã zip / Zip:</span> {formData.zipCode}</p>}
+            {formData.neighborhood && <p><span className="font-medium">Khu vực / Neighborhood:</span> {formData.neighborhood}</p>}
           </div>
-          <div>
-            <span className="font-medium">Địa chỉ / Location:</span>
-            <span className="ml-2">{formData.address || 'N/A'}, {formData.city || 'N/A'}, {formData.state || 'N/A'}</span>
+        </CardContent>
+      </Card>
+
+      {/* Business Details Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5 text-green-500" />
+            Chi Tiết Kinh Doanh / Business Details
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-medium">Giá bán / Asking price:</span>
+              <p>${formData.askingPrice}</p>
+            </div>
+            <div>
+              <span className="font-medium">Tiền thuê hàng tháng / Monthly rent:</span>
+              <p>${formData.monthlyRent}</p>
+            </div>
+            {formData.monthlyRevenue && (
+              <div>
+                <span className="font-medium">Doanh thu hàng tháng / Monthly revenue:</span>
+                <p>${formData.monthlyRevenue}</p>
+              </div>
+            )}
+            {formData.numberOfTables && (
+              <div>
+                <span className="font-medium">Số bàn / Tables:</span>
+                <p>{formData.numberOfTables}</p>
+              </div>
+            )}
+            {formData.numberOfChairs && (
+              <div>
+                <span className="font-medium">Số ghế / Chairs:</span>
+                <p>{formData.numberOfChairs}</p>
+              </div>
+            )}
+            {formData.numberOfStaff && (
+              <div>
+                <span className="font-medium">Số nhân viên / Staff:</span>
+                <p>{formData.numberOfStaff}</p>
+              </div>
+            )}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Photos Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Image className="h-5 w-5 text-purple-500" />
+            Hình Ảnh / Photos
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm">
+            <span className="font-medium">Số lượng ảnh / Number of photos:</span> {photoUploads.length}
+          </p>
+          {photoUploads.length > 0 && (
+            <div className="mt-2 grid grid-cols-4 gap-2">
+              {photoUploads.slice(0, 4).map((file, index) => (
+                <div key={index} className="aspect-square bg-gray-100 rounded border flex items-center justify-center">
+                  <Image className="h-6 w-6 text-gray-400" />
+                </div>
+              ))}
+              {photoUploads.length > 4 && (
+                <div className="aspect-square bg-gray-100 rounded border flex items-center justify-center text-xs text-gray-500">
+                  +{photoUploads.length - 4} more
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Pricing Summary */}
-      <Card>
+      <Card className="border-purple-200 bg-purple-50">
         <CardHeader>
-          <CardTitle>Tóm tắt giá / Pricing Summary</CardTitle>
+          <CardTitle className="text-purple-700">
+            Tóm Tắt Thanh Toán / Payment Summary
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex justify-between">
-            <span>{getTierDisplayName()}</span>
-            <span>${selectedOptions.selectedPricingTier === 'basic' ? 99 : selectedOptions.selectedPricingTier === 'standard' ? 199 : 299}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Thời hạn / Duration: {selectedOptions.durationMonths} tháng</span>
-            <span>x{selectedOptions.durationMonths}</span>
-          </div>
-          {selectedOptions.isNationwide && (
-            <div className="flex justify-between">
-              <span>Toàn quốc / Nationwide</span>
-              <span>+$50</span>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span>Gói đã chọn / Selected plan:</span>
+              <Badge variant="outline">{selectedOptions.selectedPricingTier}</Badge>
             </div>
-          )}
-          {selectedOptions.fastSalePackage && (
-            <div className="flex justify-between">
-              <span>Gói bán nhanh / Fast Sale Package</span>
-              <span>+$25</span>
+            <div className="flex justify-between items-center">
+              <span>Thời hạn / Duration:</span>
+              <span>{selectedOptions.durationMonths} tháng / {selectedOptions.durationMonths} months</span>
             </div>
-          )}
-          {selectedOptions.featuredBoost && (
-            <div className="flex justify-between">
-              <span>Tăng cường nổi bật / Featured Boost</span>
-              <span>+$30</span>
+            {selectedOptions.autoRenew && (
+              <div className="flex justify-between items-center text-green-600">
+                <span>Tự động gia hạn / Auto-renew:</span>
+                <span>✓ Enabled (-5%)</span>
+              </div>
+            )}
+            <div className="border-t pt-3 flex justify-between items-center font-semibold text-lg">
+              <span>Tổng cộng / Total:</span>
+              <span className="text-purple-600">${pricingSummary.finalPrice.toFixed(2)}</span>
             </div>
-          )}
-          {selectedOptions.showAtTop && (
-            <div className="flex justify-between">
-              <span>Hiển thị trên đầu / Show at Top</span>
-              <span>+$40</span>
-            </div>
-          )}
-          <hr className="my-3" />
-          <div className="flex justify-between font-bold text-lg">
-            <span>Tổng cộng / Total</span>
-            <span>${finalPrice}</span>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex justify-between pt-6">
-        <Button type="button" variant="outline" onClick={onBack} disabled={isProcessingPayment}>
-          Quay lại / Back
-        </Button>
+      {/* Terms and Conditions */}
+      <Card>
+        <CardContent className="pt-6">
+          <FormField
+            control={form.control}
+            name="termsAccepted"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Tôi đồng ý với các điều khoản và điều kiện / I agree to the terms and conditions
+                  </label>
+                  <p className="text-xs text-gray-600">
+                    Bằng cách tiếp tục, bạn đồng ý với chính sách của chúng tôi / By proceeding, you agree to our policies
+                  </p>
+                </div>
+              </FormItem>
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Payment Button */}
+      <div className="flex justify-center pt-6">
         <Button 
-          type="button" 
-          onClick={handlePayment}
-          disabled={isProcessingPayment}
-          className="bg-purple-600 hover:bg-purple-700"
+          onClick={onPayment}
+          disabled={!form.watch('termsAccepted')}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg font-semibold"
+          size="lg"
         >
-          {isProcessingPayment ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Đang xử lý / Processing
-            </>
-          ) : (
-            <>
-              <CreditCard className="w-4 h-4 mr-2" />
-              Thanh toán với Stripe / Pay with Stripe
-            </>
-          )}
+          Thanh Toán ${pricingSummary.finalPrice.toFixed(2)} / Pay ${pricingSummary.finalPrice.toFixed(2)}
         </Button>
       </div>
     </div>
   );
 };
-
-export default SalonReviewStep;

@@ -1,39 +1,39 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { SalonFormValues } from "../salonFormSchema";
 import { SalonPricingOptions } from "@/utils/posting/salonPricing";
+import SalonPlanSelectionSection from "../SalonPlanSelectionSection";
+import { UseFormReturn } from "react-hook-form";
+import { SalonFormValues } from "../salonFormSchema";
 
-export interface SalonPricingStepProps {
-  formData: SalonFormValues;
+interface SalonPricingStepProps {
   selectedOptions: SalonPricingOptions;
-  onNext: () => void;
-  onBack: () => void;
-  onPricingOptionsUpdate: (options: SalonPricingOptions) => void;
+  onOptionsChange: (options: SalonPricingOptions) => void;
+  form: UseFormReturn<SalonFormValues>;
 }
 
-export const SalonPricingStep = ({ formData, selectedOptions, onNext, onBack, onPricingOptionsUpdate }: SalonPricingStepProps) => {
+export const SalonPricingStep = ({ selectedOptions, onOptionsChange, form }: SalonPricingStepProps) => {
+  const handleOptionsChange = (options: SalonPricingOptions) => {
+    onOptionsChange(options);
+    // Sync auto-renew option with form
+    form.setValue('autoRenew', options.autoRenew || false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-playfair font-medium">Gói đăng tin / Pricing Plan</h2>
+        <h2 className="text-2xl font-playfair font-medium">Chọn Gói Đăng Tin / Pricing Plan</h2>
         <p className="text-gray-600 mt-2">
-          Chọn gói đăng tin phù hợp / Select the right pricing plan
+          Chọn gói và thời hạn đăng tin phù hợp với nhu cầu của bạn / Choose the plan and duration that fits your needs
         </p>
       </div>
       
-      <div className="text-center py-8">
-        <p className="text-gray-500">Pricing step coming soon...</p>
-      </div>
-
-      <div className="flex justify-between pt-6">
-        <Button type="button" variant="outline" onClick={onBack}>
-          Quay lại / Back
-        </Button>
-        <Button type="button" onClick={onNext}>
-          Tiếp tục / Continue
-        </Button>
-      </div>
+      <SalonPlanSelectionSection
+        selectedOptions={selectedOptions}
+        onOptionsChange={handleOptionsChange}
+        onNext={() => {}} // Will be handled by parent wizard
+        onBack={() => {}} // Will be handled by parent wizard
+        hideNavigation={true}
+      />
     </div>
   );
 };
