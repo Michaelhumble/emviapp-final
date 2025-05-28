@@ -15,11 +15,11 @@ import { SalonReviewStep } from "./steps/SalonReviewStep";
 import PostWizardLayout from "../PostWizardLayout";
 
 const STEPS = [
-  { id: 1, title: "Thông Tin Salon / Identity", component: "identity" },
-  { id: 2, title: "Địa Chỉ / Location", component: "location" },
-  { id: 3, title: "Chi Tiết & Hình Ảnh / Details & Photos", component: "details" },
-  { id: 4, title: "Chọn Gói / Pricing Plan", component: "pricing" },
-  { id: 5, title: "Xem Lại & Thanh Toán / Review & Payment", component: "review" }
+  { id: 1, title: "Salon Information / Thông Tin Salon", component: "identity" },
+  { id: 2, title: "Location / Địa Chỉ", component: "location" },
+  { id: 3, title: "Details & Photos / Chi Tiết & Hình Ảnh", component: "details" },
+  { id: 4, title: "Pricing Plan / Chọn Gói", component: "pricing" },
+  { id: 5, title: "Review & Payment / Xem Lại & Thanh Toán", component: "review" }
 ];
 
 const SalonListingWizard = () => {
@@ -161,7 +161,7 @@ const SalonListingWizard = () => {
               className="flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Quay lại / Back
+              Back / Quay lại
             </Button>
 
             {currentStep < STEPS.length ? (
@@ -171,7 +171,7 @@ const SalonListingWizard = () => {
                 disabled={!canProceed()}
                 className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
               >
-                Tiếp tục / Next
+                Next / Tiếp tục
                 <ArrowRight className="w-4 h-4" />
               </Button>
             ) : (
@@ -181,7 +181,7 @@ const SalonListingWizard = () => {
                 disabled={!canProceed()}
                 className="bg-green-600 hover:bg-green-700"
               >
-                Hoàn tất thanh toán / Complete Payment
+                Complete Payment / Hoàn tất thanh toán
               </Button>
             )}
           </div>

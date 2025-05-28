@@ -2,12 +2,11 @@
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { SalonFormValues } from "../salonFormSchema";
-import { SalonPricingOptions } from "@/utils/posting/salonPricing";
+import { SalonPricingOptions, getSalonPostPricingSummary } from "@/utils/posting/salonPricing";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, MapPin, DollarSign, Camera } from "lucide-react";
 import StripeCheckout from "@/components/payments/StripeCheckout";
-import { calculateSalonPricing } from "@/utils/posting/salonPricing";
 
 interface SalonReviewStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -24,11 +23,9 @@ export const SalonReviewStep = ({
   photoUploads, 
   onPayment 
 }: SalonReviewStepProps) => {
-  const pricing = calculateSalonPricing(selectedOptions);
+  const pricing = getSalonPostPricingSummary(selectedOptions);
   
   const handlePaymentSuccess = () => {
-    // Redirect to success page - Stripe will handle the actual redirect
-    // but we can prepare any additional logic here
     onPayment();
   };
 
@@ -114,7 +111,7 @@ export const SalonReviewStep = ({
               </p>
             </div>
             <Badge variant="outline" className="text-lg px-3 py-1">
-              ${pricing.total}
+              ${pricing.finalPrice}
             </Badge>
           </div>
 
@@ -128,7 +125,7 @@ export const SalonReviewStep = ({
           <div className="border-t pt-4">
             <div className="flex justify-between items-center font-semibold text-lg">
               <span>Total / Tổng Cộng:</span>
-              <span className="text-green-600">${pricing.total}</span>
+              <span className="text-green-600">${pricing.finalPrice}</span>
             </div>
           </div>
         </CardContent>
@@ -145,7 +142,7 @@ export const SalonReviewStep = ({
           </p>
           
           <StripeCheckout
-            amount={pricing.total * 100} // Convert to cents
+            amount={pricing.finalPrice * 100} // Convert to cents
             productName={`Salon Listing - ${selectedOptions.selectedPricingTier} Plan`}
             buttonText="Pay Now & Publish Listing / Thanh Toán & Đăng Tin"
             onSuccess={handlePaymentSuccess}
