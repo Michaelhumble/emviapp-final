@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 
-const PostSuccess = () => {
+const SalonListingSuccessPage = () => {
   return (
     <>
       <Helmet>
-        <title>Post Published Successfully | EmviApp</title>
-        <meta name="description" content="Your post has been published successfully on EmviApp" />
+        <title>Salon Listing Published Successfully | EmviApp</title>
+        <meta name="description" content="Your salon listing has been published successfully on EmviApp" />
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
@@ -21,17 +21,20 @@ const PostSuccess = () => {
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <CardTitle className="text-2xl font-playfair text-green-800">
-              Post Published Successfully!
+              Listing Published Successfully!
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-600">
-              Your post is now live and visible to the EmviApp community.
+              Your salon listing is now live and visible to potential buyers on EmviApp.
+            </p>
+            <p className="text-sm text-gray-500">
+              Danh sách salon của bạn hiện đã được công bố và có thể nhìn thấy đối với những người mua tiềm năng trên EmviApp.
             </p>
             <div className="space-y-2 pt-4">
               <Button asChild className="w-full">
-                <Link to="/jobs">
-                  View All Posts
+                <Link to="/salons">
+                  View All Salon Listings
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
@@ -47,4 +50,4 @@ const PostSuccess = () => {
   );
 };
 
-export default PostSuccess;
+export default SalonListingSuccessPage;

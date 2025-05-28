@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -85,7 +84,7 @@ function App() {
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
-                    {routes.map((route, index) => (
+                    {(routes || []).map((route, index) => (
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
                        route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
