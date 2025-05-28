@@ -1,9 +1,16 @@
 
 import React from 'react';
-import EnhancedPostJob from './enhanced-post-job';
+import Layout from '@/components/layout/Layout';
 
 const PostJob = () => {
-  return <EnhancedPostJob />;
+  return (
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Post a Job</h1>
+        <p className="text-gray-600">Create a job posting.</p>
+      </div>
+    </Layout>
+  );
 };
 
 export default PostJob;

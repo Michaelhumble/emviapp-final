@@ -6,8 +6,8 @@ const EnhancedPostJob = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Post a Job</h1>
-        <p className="text-gray-600">Create a new job posting.</p>
+        <h1 className="text-3xl font-bold mb-6">Enhanced Job Posting</h1>
+        <p className="text-gray-600">Create an enhanced job posting.</p>
       </div>
     </Layout>
   );
