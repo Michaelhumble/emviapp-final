@@ -40,20 +40,24 @@ serve(async (req) => {
     }
 
     // Calculate pricing based on options
-    let unitAmount = 4900 // Basic plan $49
+    let unitAmount = 1999 // Basic plan $19.99
     let productName = 'Basic Salon Listing'
 
-    if (pricingOptions.selectedPricingTier === 'standard') {
-      unitAmount = 9900 // $99
-      productName = 'Standard Salon Listing'
-    } else if (pricingOptions.selectedPricingTier === 'featured') {
-      unitAmount = 19900 // $199
+    if (pricingOptions.selectedPricingTier === 'featured') {
+      unitAmount = 2999 // Featured plan $29.99
       productName = 'Featured Salon Listing'
     }
 
-    // Apply duration multiplier
+    // Apply duration pricing
+    if (pricingOptions.durationMonths === 3) {
+      unitAmount = pricingOptions.selectedPricingTier === 'featured' ? 5999 : 4999
+    } else if (pricingOptions.durationMonths === 6) {
+      unitAmount = pricingOptions.selectedPricingTier === 'featured' ? 10999 : 9999
+    } else if (pricingOptions.durationMonths === 12) {
+      unitAmount = pricingOptions.selectedPricingTier === 'featured' ? 15999 : 14999
+    }
+
     if (pricingOptions.durationMonths > 1) {
-      unitAmount *= pricingOptions.durationMonths
       productName += ` (${pricingOptions.durationMonths} months)`
     }
 
