@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +35,7 @@ const SalonListingWizard = () => {
     defaultValues: {
       salonName: "",
       businessType: "",
+      beautyIndustry: "Nails", // Default to Nails
       establishedYear: "",
       address: "",
       city: "",
@@ -78,8 +78,8 @@ const SalonListingWizard = () => {
   };
 
   const handlePayment = () => {
-    // Payment logic will be handled here
-    console.log("Processing payment...");
+    // Redirect to success page after payment
+    window.location.href = "/salon-listing-success";
   };
 
   const renderStep = () => {
@@ -126,11 +126,10 @@ const SalonListingWizard = () => {
     const formData = form.getValues();
     switch (currentStep) {
       case 1:
-        return formData.salonName && formData.businessType;
+        return formData.salonName && formData.businessType && formData.beautyIndustry;
       case 2:
         return formData.address && formData.city && formData.state;
       case 3:
-        // Step 3: Check required fields AND at least one photo
         return formData.askingPrice && 
                formData.monthlyRent && 
                photoUploads.length > 0;

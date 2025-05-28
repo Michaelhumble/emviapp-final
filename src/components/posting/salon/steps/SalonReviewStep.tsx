@@ -6,7 +6,9 @@ import { SalonPricingOptions, getSalonPostPricingSummary } from "@/utils/posting
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, MapPin, DollarSign, Camera } from "lucide-react";
-import StripeCheckout from "@/components/payments/StripeCheckout";
+import { useStripe } from "@/hooks/useStripe";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 interface SalonReviewStepProps {
   form: UseFormReturn<SalonFormValues>;
@@ -24,9 +26,17 @@ export const SalonReviewStep = ({
   onPayment 
 }: SalonReviewStepProps) => {
   const pricing = getSalonPostPricingSummary(selectedOptions);
+  const { isLoading, initiatePayment } = useStripe();
   
-  const handlePaymentSuccess = () => {
-    onPayment();
+  const handlePaymentClick = async () => {
+    try {
+      const success = await initiatePayment(selectedOptions, formData);
+      if (success) {
+        onPayment();
+      }
+    } catch (error) {
+      console.error("Payment failed:", error);
+    }
   };
 
   return (
@@ -47,7 +57,11 @@ export const SalonReviewStep = ({
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold text-lg">{formData.salonName}</h3>
-            <p className="text-gray-600">{formData.businessType}</p>
+            <div className="flex items-center gap-2 text-gray-600">
+              <span>{formData.beautyIndustry}</span>
+              <span>•</span>
+              <span>{formData.businessType}</span>
+            </div>
             {formData.establishedYear && (
               <p className="text-sm text-gray-500">
                 Established / Thành lập: {formData.establishedYear}
@@ -141,14 +155,20 @@ export const SalonReviewStep = ({
             Secure payment powered by Stripe / Thanh toán bảo mật được hỗ trợ bởi Stripe
           </p>
           
-          <StripeCheckout
-            amount={pricing.finalPrice * 100} // Convert to cents
-            productName={`Salon Listing - ${selectedOptions.selectedPricingTier} Plan`}
-            buttonText="Pay Now & Publish Listing / Thanh Toán & Đăng Tin"
-            onSuccess={handlePaymentSuccess}
-            pricingOptions={selectedOptions}
-            formData={formData}
-          />
+          <Button
+            onClick={handlePaymentClick}
+            disabled={isLoading}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing... / Đang xử lý...
+              </>
+            ) : (
+              `Pay $${pricing.finalPrice} & Publish Listing / Thanh Toán $${pricing.finalPrice} & Đăng Tin`
+            )}
+          </Button>
         </CardContent>
       </Card>
     </div>

@@ -1,7 +1,7 @@
 
 import React from "react";
 import { SalonPricingOptions } from "@/utils/posting/salonPricing";
-import SalonPlanSelectionSection from "../SalonPlanSelectionSection";
+import SalonPlanSelectionWithoutPrices from "../SalonPlanSelectionWithoutPrices";
 import { UseFormReturn } from "react-hook-form";
 import { SalonFormValues } from "../salonFormSchema";
 
@@ -27,12 +27,9 @@ export const SalonPricingStep = ({ selectedOptions, onOptionsChange, form }: Sal
         </p>
       </div>
       
-      <SalonPlanSelectionSection
+      <SalonPlanSelectionWithoutPrices
         selectedOptions={selectedOptions}
         onOptionsChange={handleOptionsChange}
-        onNext={() => {}} // Will be handled by parent wizard
-        onBack={() => {}} // Will be handled by parent wizard
-        hideNavigation={true}
       />
     </div>
   );

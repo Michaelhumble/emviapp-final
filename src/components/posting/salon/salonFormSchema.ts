@@ -5,6 +5,7 @@ export const salonFormSchema = z.object({
   // Identity fields
   salonName: z.string().min(2, "Salon name must be at least 2 characters"),
   businessType: z.string().min(1, "Business type is required"),
+  beautyIndustry: z.string().default("Nails"),
   establishedYear: z.string().optional(),
   logo: z.any().optional(),
 
