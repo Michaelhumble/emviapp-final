@@ -1,131 +1,211 @@
-
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { AuthContextType, UserProfile, UserRole } from './types';
-import { useSession } from './hooks/useSession';
-import { useUserProfile } from './hooks/useUserProfile';
-import { useAuthMethods } from './hooks/useAuthMethods';
+import { AuthContext } from './AuthContext';
+import { fetchUserProfile, createUserProfile, updateUserProfile } from './userProfileService';
+import { UserRole, UserProfile } from './types';
+import { toast } from 'sonner';
+import { normalizeRole } from '@/utils/roles';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>('customer');
   const [loading, setLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
-  
-  // Use session management hook
-  const { session, user, isNewUser, clearIsNewUser } = useSession();
-  
-  // Use user profile management hook
-  const { userProfile, userRole, refreshUserProfile } = useUserProfile(user, setLoading);
-  
-  // Use authentication methods hook
-  const { signIn, signUp, signOut } = useAuthMethods(setLoading);
 
-  // Derived state
-  const isSignedIn = !!user;
+  const clearIsNewUser = () => {
+    setIsNewUser(false);
+  };
 
-  // Enhanced sign-in wrapper
-  const enhancedSignIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error }> => {
     try {
-      const result = await signIn(email, password);
-      return { success: !result.error, error: result.error };
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: new Error(error.message) };
+      }
+      
+      return { success: true };
     } catch (error) {
-      return { success: false, error: error as Error };
+      console.error('Error signing in:', error);
+      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
+      return { success: false, error: errorObj };
     }
   };
 
-  // Enhanced sign-up wrapper
-  const enhancedSignUp = async (email: string, password: string, userData?: any) => {
+  const signUp = async (email: string, password: string, userData: Partial<UserProfile> = {}): Promise<{ success: boolean; error?: Error; userId?: string }> => {
     try {
-      const result = await signUp(email, password);
-      return { 
-        success: !result.error, 
-        error: result.error,
-        userId: result.data?.user?.id 
-      };
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            ...userData
+          }
+        }
+      });
+
+      if (error) {
+        return { success: false, error: new Error(error.message) };
+      }
+      
+      return { success: true, userId: data.user?.id };
     } catch (error) {
-      return { success: false, error: error as Error };
+      console.error('Error signing up:', error);
+      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
+      return { success: false, error: errorObj };
     }
   };
 
-  // Enhanced sign-out wrapper
-  const enhancedSignOut = async () => {
+  const refreshUserProfile = async () => {
+    if (!user) return false;
+    
     try {
-      await signOut();
+      const profile = await fetchUserProfile(user.id);
+      if (profile) {
+        setUserProfile(profile);
+        if (profile.role) {
+          const normalizedRole = normalizeRole(profile.role);
+          setUserRole(normalizedRole);
+        }
+      } else {
+        console.log('No profile found, creating one...');
+        const newProfile = await createUserProfile(user);
+        if (newProfile) {
+          setUserProfile(newProfile);
+          if (newProfile.role) {
+            const normalizedRole = normalizeRole(newProfile.role);
+            setUserRole(normalizedRole);
+          }
+          setIsNewUser(true);
+        }
+      }
+      return true;
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error('Error fetching user profile:', error);
+      setIsError(true);
+      return false;
     }
   };
 
-  // Update user role function
-  const updateUserRole = async (role: UserRole) => {
+  const updateUserRole = async (role: UserRole): Promise<void> => {
     if (!user) return;
     
     try {
-      const { error } = await supabase
-        .from('users')
-        .update({ role })
-        .eq('id', user.id);
-        
-      if (error) throw error;
+      const updatedProfile = await updateUserProfile({ 
+        id: user.id,
+        role: role
+      });
       
-      // Refresh profile to get updated role
-      await refreshUserProfile();
+      if (updatedProfile && updatedProfile.role) {
+        const normalizedRole = normalizeRole(updatedProfile.role);
+        setUserRole(normalizedRole);
+      }
     } catch (error) {
       console.error('Error updating user role:', error);
     }
   };
 
-  // Update profile function
-  const updateProfile = async (data: Partial<UserProfile>) => {
-    if (!user) return { success: false, error: new Error('No user') };
-    
+  const signOut = async () => {
     try {
-      const { error } = await supabase
-        .from('users')
-        .update(data)
-        .eq('id', user.id);
-        
-      if (error) throw error;
-      
-      // Refresh profile to get updated data
-      await refreshUserProfile();
-      return { success: true };
+      await supabase.auth.signOut();
+      setUser(null);
+      setUserProfile(null);
+      setUserRole('customer');
+      localStorage.removeItem('emviapp_user_role');
+      localStorage.removeItem('emviapp_new_user');
     } catch (error) {
-      console.error('Error updating profile:', error);
-      return { success: false, error: error as Error };
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out. Please try again.');
     }
   };
 
-  const contextValue: AuthContextType = {
-    user,
-    userProfile,
-    userRole: userRole || 'customer',
-    loading,
-    isSignedIn,
-    isError,
-    isNewUser,
-    clearIsNewUser,
-    signIn: enhancedSignIn,
-    signUp: enhancedSignUp,
-    signOut: enhancedSignOut,
-    refreshUserProfile,
-    updateUserRole,
-    updateProfile,
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user || null);
+      setLoading(false);
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user || null);
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      refreshUserProfile();
+    } else {
+      setUserProfile(null);
+      setUserRole('customer');
+    }
+  }, [user]);
+
+  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
+    try {
+      if (!user || !userProfile) {
+        return { success: false, error: new Error('User not authenticated') };
+      }
+      
+      const updatedProfile = await updateUserProfile({
+        id: userProfile.id,
+        ...data
+      });
+      
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+        if (updatedProfile.role && updatedProfile.role !== userRole) {
+          const normalizedRole = normalizeRole(updatedProfile.role);
+          setUserRole(normalizedRole);
+        }
+        return { success: true };
+      }
+      
+      return { success: false, error: new Error('Failed to update profile') };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error : new Error('Unknown error occurred') 
+      };
+    }
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider
+      value={{
+        user,
+        userProfile,
+        userRole,
+        loading,
+        isSignedIn: !!user,
+        isError,
+        isNewUser,
+        clearIsNewUser,
+        signIn,
+        signUp,
+        signOut,
+        refreshUserProfile,
+        updateUserRole,
+        updateProfile
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

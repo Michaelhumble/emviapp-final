@@ -62,7 +62,7 @@ const StripeCheckout = ({
     <Button 
       onClick={handleCheckout} 
       disabled={loading} 
-      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 text-lg"
+      className="w-full"
     >
       {loading ? (
         <>

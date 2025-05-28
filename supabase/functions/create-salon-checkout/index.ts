@@ -23,20 +23,15 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    // Create Supabase client with service role for draft listing creation
-    const supabaseAdmin = createClient(
+    // Create Supabase client
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { persistSession: false } }
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
     // Get the authenticated user
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-    )
     const { data } = await supabaseClient.auth.getUser(token)
     const user = data.user
 
@@ -44,54 +39,21 @@ serve(async (req) => {
       throw new Error('User not authenticated')
     }
 
-    // CRITICAL: Create DRAFT salon listing first - NEVER LIVE
-    const { data: draftListing, error: listingError } = await supabaseAdmin
-      .from('salon_listings')
-      .insert({
-        user_id: user.id,
-        salon_name: formData?.salonName || '',
-        business_type: formData?.businessType || 'Nail Salon',
-        address: formData?.address || '',
-        city: formData?.city || '',
-        state: formData?.state || '',
-        zip_code: formData?.zipCode || '',
-        asking_price: formData?.askingPrice || '',
-        monthly_rent: formData?.monthlyRent || '',
-        description_vietnamese: formData?.vietnameseDescription || '',
-        description_english: formData?.englishDescription || '',
-        is_live: false, // CRITICAL: ALWAYS FALSE - NEVER LIVE WITHOUT PAYMENT
-        status: 'draft',
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single()
-
-    if (listingError) {
-      console.error('Error creating draft listing:', listingError)
-      throw new Error('Failed to create draft listing')
-    }
-
-    console.log('Draft listing created:', draftListing.id)
-
-    // Calculate pricing based on options with FOMO pricing
-    let unitAmount = 1999 // Basic plan $19.99
+    // Calculate pricing based on options
+    let unitAmount = 4900 // Basic plan $49
     let productName = 'Basic Salon Listing'
 
-    if (pricingOptions.selectedPricingTier === 'featured') {
-      unitAmount = 2999 // Featured plan $29.99 (+$10)
+    if (pricingOptions.selectedPricingTier === 'standard') {
+      unitAmount = 9900 // $99
+      productName = 'Standard Salon Listing'
+    } else if (pricingOptions.selectedPricingTier === 'featured') {
+      unitAmount = 19900 // $199
       productName = 'Featured Salon Listing'
     }
 
-    // Apply duration pricing with FOMO discounts
-    if (pricingOptions.durationMonths === 3) {
-      unitAmount = pricingOptions.selectedPricingTier === 'featured' ? 5999 : 4999
-    } else if (pricingOptions.durationMonths === 6) {
-      unitAmount = pricingOptions.selectedPricingTier === 'featured' ? 10999 : 9999
-    } else if (pricingOptions.durationMonths === 12) {
-      unitAmount = pricingOptions.selectedPricingTier === 'featured' ? 15999 : 14999
-    }
-
+    // Apply duration multiplier
     if (pricingOptions.durationMonths > 1) {
+      unitAmount *= pricingOptions.durationMonths
       productName += ` (${pricingOptions.durationMonths} months)`
     }
 
@@ -114,7 +76,7 @@ serve(async (req) => {
       customerId = customer.id
     }
 
-    // Create checkout session with DRAFT LISTING ID in metadata
+    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -135,22 +97,17 @@ serve(async (req) => {
       cancel_url: `${req.headers.get('origin')}/sell-salon`,
       metadata: {
         user_id: user.id,
-        draft_listing_id: draftListing.id, // CRITICAL: Pass draft listing ID
         pricing_tier: pricingOptions.selectedPricingTier,
         duration_months: pricingOptions.durationMonths.toString(),
         salon_name: formData?.salonName || '',
-        asking_price: formData?.askingPrice || '',
-        post_type: 'salon'
+        asking_price: formData?.askingPrice || ''
       }
     })
 
-    console.log('Checkout session created with draft listing ID:', session.id, draftListing.id)
+    console.log('Checkout session created:', session.id)
 
     return new Response(
-      JSON.stringify({ 
-        url: session.url,
-        draft_listing_id: draftListing.id 
-      }),
+      JSON.stringify({ url: session.url }),
       { 
         headers: { 
           ...corsHeaders, 
