@@ -1,164 +1,164 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, AlertCircle, ExternalLink, Home } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import Layout from '@/components/layout/Layout';
 
 const SalonListingSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [verificationStatus, setVerificationStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
-  const [listingId, setListingId] = useState<string | null>(null);
+  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
+  const [listingData, setListingData] = useState<any>(null);
+
+  const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
-    
-    if (!sessionId) {
-      setVerificationStatus('failed');
-      return;
-    }
-
-    verifyPaymentAndPublish(sessionId);
-  }, [searchParams]);
-
-  const verifyPaymentAndPublish = async (sessionId: string) => {
-    try {
-      console.log('Verifying payment and publishing listing...', sessionId);
-
-      // Call our backend function to verify payment and publish listing
-      const { data, error } = await supabase.functions.invoke('publish-salon-listing', {
-        body: { sessionId }
-      });
-
-      if (error) {
-        console.error('Error verifying payment:', error);
-        throw error;
+    const verifyPayment = async () => {
+      if (!sessionId) {
+        setStatus('error');
+        return;
       }
 
-      if (data?.success && data?.listing_id) {
-        setListingId(data.listing_id);
-        setVerificationStatus('success');
-        toast.success("Listing Published Successfully!", {
-          description: "Your salon listing is now live and visible to customers."
+      try {
+        // Call the verify-checkout-session function to confirm payment
+        const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
+          body: { sessionId }
         });
-      } else {
-        throw new Error('Payment verification failed');
-      }
-    } catch (error) {
-      console.error('Payment verification failed:', error);
-      setVerificationStatus('failed');
-      toast.error("Publication Failed", {
-        description: "There was an issue publishing your listing. Please contact support."
-      });
-    }
-  };
 
-  if (verificationStatus === 'verifying') {
+        if (error) {
+          console.error('Payment verification error:', error);
+          setStatus('error');
+          return;
+        }
+
+        if (data?.success && data?.listing_id) {
+          setStatus('success');
+          setListingData(data);
+        } else {
+          setStatus('error');
+        }
+      } catch (error) {
+        console.error('Payment verification failed:', error);
+        setStatus('error');
+      }
+    };
+
+    verifyPayment();
+  }, [sessionId]);
+
+  if (status === 'verifying') {
     return (
       <Layout>
-        <div className="max-w-2xl mx-auto py-12 px-4">
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <AlertCircle className="w-12 h-12 text-blue-500 mx-auto mb-4 animate-spin" />
-              <h2 className="text-2xl font-semibold mb-2">Verifying Payment...</h2>
-              <p className="text-gray-600">
-                Please wait while we confirm your payment and publish your listing.
-              </p>
-            </CardContent>
-          </Card>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <Clock className="w-16 h-16 text-purple-500 mx-auto mb-6 animate-spin" />
+          <h1 className="text-3xl font-bold mb-4">Verifying Payment...</h1>
+          <p className="text-gray-600">
+            Please wait while we confirm your payment and publish your listing.
+          </p>
         </div>
       </Layout>
     );
   }
 
-  if (verificationStatus === 'failed') {
+  if (status === 'error') {
     return (
       <Layout>
-        <div className="max-w-2xl mx-auto py-12 px-4">
-          <Card className="border-red-200">
-            <CardContent className="pt-6 text-center">
-              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold mb-2 text-red-700">Publication Failed</h2>
-              <p className="text-gray-600 mb-6">
-                There was an issue verifying your payment or publishing your listing.
-                Please contact support or try again.
-              </p>
-              <div className="space-y-3">
-                <Button onClick={() => navigate('/sell-salon')} variant="outline" className="w-full">
-                  Try Again
-                </Button>
-                <Button onClick={() => navigate('/dashboard')} className="w-full">
-                  <Home className="w-4 h-4 mr-2" />
-                  Go to Dashboard
-                </Button>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
+          <h1 className="text-3xl font-bold mb-4">Payment Verification Failed</h1>
+          <p className="text-gray-600 mb-6">
+            There was an issue verifying your payment. Please contact support if you believe this is an error.
+          </p>
+          <Button onClick={() => navigate('/sell-salon')} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-2xl mx-auto text-center">
+          <CheckCircle className="w-24 h-24 text-green-500 mx-auto mb-8" />
+          
+          <h1 className="text-4xl font-bold mb-4">
+            🎉 Salon Listing Published Successfully!
+          </h1>
+          
+          <p className="text-xl text-gray-600 mb-8">
+            Your salon listing is now live and visible to potential buyers across our platform.
+          </p>
+
+          <Card className="text-left mb-8">
+            <CardHeader>
+              <CardTitle>What happens next?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold">Your listing is live</h3>
+                    <p className="text-sm text-gray-600">
+                      Potential buyers can now view and contact you about your salon.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold">Email notifications</h3>
+                    <p className="text-sm text-gray-600">
+                      You'll receive email notifications when buyers show interest.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold">Dashboard access</h3>
+                    <p className="text-sm text-gray-600">
+                      Manage your listing and view analytics from your dashboard.
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              onClick={() => navigate('/dashboard')}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              Go to Dashboard
+            </Button>
+            <Button 
+              onClick={() => navigate('/salons')}
+              variant="outline"
+            >
+              View All Salons
+            </Button>
+          </div>
+
+          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Payment Confirmation:</strong> Session ID {sessionId}
+            </p>
+            {listingData?.listing_id && (
+              <p className="text-sm text-blue-800">
+                <strong>Listing ID:</strong> {listingData.listing_id}
+              </p>
+            )}
+          </div>
         </div>
-      </Layout>
-    );
-  }
-
-  // Success state
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto py-12 px-4">
-        <Card className="border-green-200 bg-green-50">
-          <CardHeader className="text-center">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <CardTitle className="text-3xl font-bold text-green-700">
-              Listing Published Successfully!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <div>
-              <p className="text-lg text-gray-700 mb-2">
-                🎉 Your salon listing is now live and visible to customers!
-              </p>
-              <p className="text-sm text-gray-600">
-                Tin đăng salon của bạn đã được xuất bản và khách hàng có thể xem được.
-              </p>
-            </div>
-
-            <div className="bg-white border border-green-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">What happens next?</h3>
-              <ul className="text-sm text-gray-600 space-y-1 text-left">
-                <li>✅ Your listing is now searchable on EmviApp</li>
-                <li>✅ Potential buyers can contact you directly</li>
-                <li>✅ You'll receive notifications for inquiries</li>
-                <li>✅ Track your listing performance in your dashboard</li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <Button 
-                onClick={() => navigate('/salons')} 
-                className="w-full bg-purple-600 hover:bg-purple-700"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                View Your Live Listing
-              </Button>
-              
-              <Button 
-                onClick={() => navigate('/dashboard')} 
-                variant="outline" 
-                className="w-full"
-              >
-                <Home className="w-4 h-4 mr-2" />
-                Go to Dashboard
-              </Button>
-            </div>
-
-            <div className="text-xs text-gray-500 pt-4 border-t">
-              <p>Listing ID: {listingId}</p>
-              <p>Need help? Contact our support team.</p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </Layout>
   );

@@ -1,35 +1,19 @@
 
-import React, { ReactNode } from 'react';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useLocation } from 'react-router-dom';
-import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
+import React from 'react';
 
 interface LayoutProps {
-  children: ReactNode;
-  hideNavbar?: boolean;
+  children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
-  const isMobile = useIsMobile();
-  const location = useLocation();
-  
-  // Always show mobile bottom navbar on all pages 
-  const showMobileNav = isMobile;
-
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col">
-      {!hideNavbar && <Navbar />}
-      
-      <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
-        {children}
-      </main>
-      
-      <Footer />
-      
-      {/* Show the bottom navbar on all pages */}
-      {showMobileNav && <MobileBottomNavBar />}
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
+          <h1 className="text-2xl font-bold text-purple-600">EmviApp</h1>
+        </div>
+      </header>
+      <main>{children}</main>
     </div>
   );
 };
