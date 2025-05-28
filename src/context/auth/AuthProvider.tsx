@@ -1,7 +1,9 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useSession } from './hooks/useSession';
-import { AuthContextType } from './types';
+import { AuthContextType, UserProfile } from './types';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -13,18 +15,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const userRole = user?.user_metadata?.role || null;
 
   const login = async (email: string, password: string) => {
-    // Implementation will be added when needed
-    console.log('Login called with:', email);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      return data;
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Failed to sign in');
+      throw error;
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    return login(email, password);
   };
 
   const logout = async () => {
-    // Implementation will be added when needed
-    console.log('Logout called');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      window.location.href = '/';
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      toast.error(error.message || 'Failed to sign out');
+    }
+  };
+
+  const signOut = async () => {
+    return logout();
   };
 
   const refreshUserProfile = async () => {
-    // Implementation will be added when needed
     console.log('Refresh user profile called');
+  };
+
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    console.log('Update profile called with:', updates);
   };
 
   const value: AuthContextType = {
@@ -37,7 +67,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     clearIsNewUser,
     login,
     logout,
-    refreshUserProfile
+    signIn,
+    signOut,
+    refreshUserProfile,
+    updateProfile
   };
 
   return (

@@ -1,503 +1,223 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, DollarSign, Clock } from "lucide-react";
-import { toast } from "sonner";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-// Define service interface
-interface ArtistService {
+interface Service {
   id: string;
-  user_id: string;
   name: string;
+  description?: string;
   price: number;
-  duration: number | null;
-  description: string | null;
-  created_at: string;
+  duration_minutes: number;
 }
-
-// Initial state for new service
-const initialServiceState = {
-  name: '',
-  price: 0,
-  duration: 60,
-  description: ''
-};
 
 const ServicesManager = () => {
   const { user, userRole } = useAuth();
-  const queryClient = useQueryClient();
-  const isArtist = userRole === 'artist' || userRole === 'nail technician/artist' || userRole === 'renter';
-  
-  // State for modals
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  
-  // Service states
-  const [newService, setNewService] = useState(initialServiceState);
-  const [currentService, setCurrentService] = useState<ArtistService | null>(null);
-  const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch services
-  const { data: services = [], isLoading } = useQuery({
-    queryKey: ['artist-services', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      
-      // Use a more generic approach to avoid type issues
+  // Form state
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [duration, setDuration] = useState('');
+
+  // Check if user can manage services (salon owners, artists, freelancers)
+  const canManageServices = userRole === 'salon' || userRole === 'owner' || 
+                           userRole === 'artist' || userRole === 'nail technician/artist' ||
+                           userRole === 'freelancer';
+
+  useEffect(() => {
+    loadServices();
+  }, [user?.id]);
+
+  const loadServices = async () => {
+    if (!user?.id) return;
+    setIsLoading(true);
+    try {
       const { data, error } = await supabase
-        .from('artist_services')
+        .from('services')
         .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-        
+        .eq('user_id', user.id);
       if (error) throw error;
-      
-      // Cast the result to our expected type
-      return (data || []) as ArtistService[];
-    },
-    enabled: !!user?.id && isArtist
-  });
-
-  // Create service mutation
-  const createServiceMutation = useMutation({
-    mutationFn: async (service: Omit<ArtistService, 'id' | 'user_id' | 'created_at'>) => {
-      if (!user?.id) throw new Error('User not authenticated');
-      
-      // Use a more generic approach to avoid type issues
-      const { data, error } = await supabase
-        .from('artist_services')
-        .insert({
-          user_id: user.id,
-          name: service.name,
-          price: service.price,
-          duration: service.duration,
-          description: service.description
-        })
-        .select();
-        
-      if (error) throw error;
-      
-      // Return the first item
-      return data?.[0] as ArtistService;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
-      toast.success('Service added successfully!');
-      setIsAddModalOpen(false);
-      setNewService(initialServiceState);
-    },
-    onError: (error) => {
-      console.error('Error adding service:', error);
-      toast.error('Failed to add service. Please try again.');
+      setServices(data || []);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to load services');
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
 
-  // Update service mutation
-  const updateServiceMutation = useMutation({
-    mutationFn: async (service: ArtistService) => {
-      // Use a more generic approach to avoid type issues
-      const { data, error } = await supabase
-        .from('artist_services')
-        .update({
-          name: service.name,
-          price: service.price,
-          duration: service.duration,
-          description: service.description
-        })
-        .eq('id', service.id)
-        .select();
-        
-      if (error) throw error;
-      
-      // Return the first item
-      return data?.[0] as ArtistService;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
-      toast.success('Service updated successfully!');
-      setIsEditModalOpen(false);
-      setCurrentService(null);
-    },
-    onError: (error) => {
-      console.error('Error updating service:', error);
-      toast.error('Failed to update service. Please try again.');
+  const resetForm = () => {
+    setName('');
+    setDescription('');
+    setPrice('');
+    setDuration('');
+    setEditingService(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) return;
+
+    const serviceData = {
+      user_id: user.id,
+      name,
+      description,
+      price: parseFloat(price),
+      duration_minutes: parseInt(duration, 10),
+    };
+
+    try {
+      if (editingService) {
+        // Update existing service
+        const { data, error } = await supabase
+          .from('services')
+          .update(serviceData)
+          .eq('id', editingService.id)
+          .select();
+        if (error) throw error;
+        setServices(services.map(s => (s.id === editingService.id ? { ...s, ...serviceData } : s)));
+        toast.success('Service updated successfully');
+      } else {
+        // Create new service
+        const { data, error } = await supabase
+          .from('services')
+          .insert([serviceData])
+          .select();
+        if (error) throw error;
+        setServices([...services, ...(data || [])]);
+        toast.success('Service created successfully');
+      }
+      loadServices();
+      resetForm();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to save service');
     }
-  });
+  };
 
-  // Delete service mutation
-  const deleteServiceMutation = useMutation({
-    mutationFn: async (serviceId: string) => {
-      // Use a more generic approach to avoid type issues
+  const handleEdit = (service: Service) => {
+    setEditingService(service);
+    setName(service.name);
+    setDescription(service.description || '');
+    setPrice(service.price.toString());
+    setDuration(service.duration_minutes.toString());
+  };
+
+  const handleDelete = async (serviceId: string) => {
+    try {
       const { error } = await supabase
-        .from('artist_services')
+        .from('services')
         .delete()
         .eq('id', serviceId);
-        
       if (error) throw error;
-      return serviceId;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
-      toast.success('Service deleted successfully!');
-      setIsDeleteModalOpen(false);
-      setServiceIdToDelete(null);
-    },
-    onError: (error) => {
-      console.error('Error deleting service:', error);
-      toast.error('Failed to delete service. Please try again.');
-    }
-  });
-
-  // Handle form submissions
-  const handleCreateService = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newService.name.trim()) {
-      toast.error('Service name is required');
-      return;
-    }
-    
-    if (newService.price <= 0) {
-      toast.error('Price must be greater than zero');
-      return;
-    }
-    
-    createServiceMutation.mutate(newService);
-  };
-
-  const handleUpdateService = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!currentService) return;
-    
-    if (!currentService.name.trim()) {
-      toast.error('Service name is required');
-      return;
-    }
-    
-    if (currentService.price <= 0) {
-      toast.error('Price must be greater than zero');
-      return;
-    }
-    
-    updateServiceMutation.mutate(currentService);
-  };
-
-  const handleDeleteService = () => {
-    if (serviceIdToDelete) {
-      deleteServiceMutation.mutate(serviceIdToDelete);
+      setServices(services.filter(s => s.id !== serviceId));
+      toast.success('Service deleted successfully');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete service');
     }
   };
 
-  // Open edit modal with service data
-  const openEditModal = (service: ArtistService) => {
-    setCurrentService(service);
-    setIsEditModalOpen(true);
-  };
-
-  // Open delete confirmation modal
-  const openDeleteModal = (serviceId: string) => {
-    setServiceIdToDelete(serviceId);
-    setIsDeleteModalOpen(true);
-  };
-
-  // Render appropriate content based on loading state and data
-  const renderContent = () => {
-    if (isLoading) {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-6 bg-slate-200 rounded mb-4"></div>
-                <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      );
-    }
-
-    if (services.length === 0) {
-      return (
-        <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 mb-4">
-            <Plus className="h-8 w-8 text-purple-600" />
-          </div>
-          <h3 className="text-lg font-medium mb-2">No Services Added Yet</h3>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Add your first service to let clients know what you offer, including pricing and duration.
-          </p>
-          <Button onClick={() => setIsAddModalOpen(true)}>
-            Add Your First Service
-          </Button>
-        </div>
-      );
-    }
-
+  if (!canManageServices) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {services.map((service) => (
-          <Card key={service.id} className="overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="font-semibold text-lg">{service.name}</h3>
-                <div className="flex space-x-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openEditModal(service)}
-                    className="h-8 w-8"
-                  >
-                    <Pencil className="h-4 w-4" />
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-center text-gray-500">
+            Service management is only available for salon owners, artists, and freelancers.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Manage Services</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="price">Price</Label>
+            <Input
+              id="price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="duration">Duration (minutes)</Label>
+            <Input
+              id="duration"
+              type="number"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit">
+            {editingService ? 'Update Service' : 'Add Service'}
+          </Button>
+          {editingService && (
+            <Button type="button" variant="secondary" onClick={resetForm}>
+              Cancel Edit
+            </Button>
+          )}
+        </form>
+
+        {isLoading ? (
+          <p>Loading services...</p>
+        ) : (
+          <div className="space-y-2">
+            {services.map((service) => (
+              <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <h4 className="font-medium">{service.name}</h4>
+                  <p className="text-sm text-gray-600">
+                    {service.description || 'No description'} - ${service.price} - {service.duration_minutes} mins
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="icon" onClick={() => handleEdit(service)}>
+                    <Edit className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openDeleteModal(service.id)}
-                    className="h-8 w-8 text-destructive"
-                  >
+                  <Button variant="destructive" size="icon" onClick={() => handleDelete(service.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              
-              <p className="text-muted-foreground text-sm mb-4 line-clamp-2 min-h-[40px]">
-                {service.description || "No description provided"}
-              </p>
-              
-              <div className="flex justify-between items-center">
-                <div className="flex items-center text-green-600">
-                  <DollarSign className="h-4 w-4 mr-1" />
-                  <span className="font-medium">${service.price}</span>
-                </div>
-                
-                {service.duration && (
-                  <div className="flex items-center text-blue-600">
-                    <Clock className="h-4 w-4 mr-1" />
-                    <span>{service.duration} min</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  };
-
-  return (
-    <Card className="shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-xl font-serif">My Services</CardTitle>
-          <CardDescription>
-            Manage the services you offer to clients
-          </CardDescription>
-        </div>
-        <Button 
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center"
-        >
-          <Plus className="h-4 w-4 mr-2" /> Add Service
-        </Button>
-      </CardHeader>
-      
-      <CardContent>{renderContent()}</CardContent>
-
-      {/* Add Service Modal */}
-      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Service</DialogTitle>
-          </DialogHeader>
-          
-          <form onSubmit={handleCreateService}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Service Name *</Label>
-                <Input
-                  id="name"
-                  value={newService.name}
-                  onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                  placeholder="e.g. Gel Manicure"
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="price">Price ($) *</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={newService.price}
-                    onChange={(e) => setNewService({ ...newService, price: parseFloat(e.target.value) })}
-                    required
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="duration">Duration (minutes)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    min="0"
-                    step="5"
-                    value={newService.duration || ''}
-                    onChange={(e) => setNewService({ ...newService, duration: parseInt(e.target.value) || null })}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={newService.description || ''}
-                  onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                  placeholder="Describe what's included in this service"
-                  rows={3}
-                />
-              </div>
-            </div>
-            
-            <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => {
-                  setIsAddModalOpen(false);
-                  setNewService(initialServiceState);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit"
-                disabled={createServiceMutation.isPending}
-              >
-                {createServiceMutation.isPending ? 'Adding...' : 'Add Service'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Service Modal */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Service</DialogTitle>
-          </DialogHeader>
-          
-          {currentService && (
-            <form onSubmit={handleUpdateService}>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-name">Service Name *</Label>
-                  <Input
-                    id="edit-name"
-                    value={currentService.name}
-                    onChange={(e) => setCurrentService({ ...currentService, name: e.target.value })}
-                    placeholder="e.g. Gel Manicure"
-                    required
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-price">Price ($) *</Label>
-                    <Input
-                      id="edit-price"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={currentService.price}
-                      onChange={(e) => setCurrentService({ ...currentService, price: parseFloat(e.target.value) })}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-duration">Duration (minutes)</Label>
-                    <Input
-                      id="edit-duration"
-                      type="number"
-                      min="0"
-                      step="5"
-                      value={currentService.duration || ''}
-                      onChange={(e) => setCurrentService({ ...currentService, duration: parseInt(e.target.value) || null })}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-description">Description</Label>
-                  <Textarea
-                    id="edit-description"
-                    value={currentService.description || ''}
-                    onChange={(e) => setCurrentService({ ...currentService, description: e.target.value })}
-                    placeholder="Describe what's included in this service"
-                    rows={3}
-                  />
-                </div>
-              </div>
-              
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit"
-                  disabled={updateServiceMutation.isPending}
-                >
-                  {updateServiceMutation.isPending ? 'Updating...' : 'Update Service'}
-                </Button>
-              </DialogFooter>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Modal */}
-      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Service</DialogTitle>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <p>Are you sure you want to delete this service? This action cannot be undone.</p>
+            ))}
+            {services.length === 0 && <p>No services added yet.</p>}
           </div>
-          
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleDeleteService}
-              disabled={deleteServiceMutation.isPending}
-            >
-              {deleteServiceMutation.isPending ? 'Deleting...' : 'Delete Service'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        )}
+      </CardContent>
     </Card>
   );
 };

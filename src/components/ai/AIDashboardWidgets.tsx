@@ -1,37 +1,24 @@
 
-import { useAuth } from "@/context/auth";
-import AIWelcomeAssistant from "./AIWelcomeAssistant";
-import AIRecommendations from "./AIRecommendations";
-import AISmartReminder from "./AISmartReminder";
-import AIPostPerformance from "./AIPostPerformance";
+import React from 'react';
+import { useAuth } from '@/context/auth';
+import AIRecommendations from './AIRecommendations';
+import AIWelcomeAssistant from './AIWelcomeAssistant';
+import AISmartReminder from './AISmartReminder';
 
-interface AIDashboardWidgetsProps {
-  className?: string;
-}
+const AIDashboardWidgets = () => {
+  const { userRole } = useAuth();
 
-const AIDashboardWidgets = ({ className = "" }: AIDashboardWidgetsProps) => {
-  const { user, userRole } = useAuth();
-  
-  if (!user) return null;
-  
-  // Determine which components to show based on user role
-  const showPostPerformance = userRole === 'artist' || 
-                             userRole === 'salon' || 
-                             userRole === 'freelancer' || 
-                             userRole === 'vendor' ||
-                             userRole === 'owner' ||
-                             userRole === 'supplier' ||
-                             userRole === 'beauty supplier';
-  
+  // Show different AI widgets based on user role
+  const isArtist = userRole === 'artist' || userRole === 'nail technician/artist';
+  const isSalon = userRole === 'salon' || userRole === 'owner';
+  const isSupplier = userRole === 'supplier' || userRole === 'beauty supplier';
+  const isCustomer = userRole === 'customer';
+
   return (
-    <div className={`space-y-6 ${className}`}>
-      <AISmartReminder />
+    <div className="space-y-6">
       <AIWelcomeAssistant />
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <AIRecommendations />
-        {showPostPerformance && <AIPostPerformance />}
-      </div>
+      <AIRecommendations />
+      <AISmartReminder />
     </div>
   );
 };

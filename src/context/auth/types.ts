@@ -11,6 +11,7 @@ export type UserRole =
   | 'supplier'
   | 'beauty supplier'
   | 'manager'
+  | 'renter'
   | 'other';
 
 export interface UserProfile {
@@ -40,6 +41,7 @@ export interface UserProfile {
   skills?: string[];
   portfolio_urls?: string[];
   credits?: number;
+  creditsThisMonth?: number;
   custom_role?: string;
   contact_link?: string;
   badges?: string[];
@@ -48,6 +50,15 @@ export interface UserProfile {
   completed_profile_tasks?: string[];
   years_experience?: number;
   professional_name?: string;
+  profile_completion?: number;
+  user_id?: string;
+  username?: string;
+  independent?: boolean;
+  favorite_artist_types?: string[];
+  artistTypes?: string[];
+  birthday?: string | null;
+  communication_preferences?: string[];
+  commPrefs?: string[];
 }
 
 export interface AuthContextType {
@@ -60,5 +71,8 @@ export interface AuthContextType {
   clearIsNewUser: () => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<any>;
+  signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
 }

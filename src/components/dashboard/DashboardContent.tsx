@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import ProfileCompletionCard from "../profile/ProfileCompletionCard";
 import AIDashboardWidgets from "../ai/AIDashboardWidgets";
 import DashboardGreeting from "./common/DashboardGreeting";
-// Replace the incorrect import with a new artist dashboard widgets component
 import ArtistDashboardWidgets from "./artist/ArtistDashboardWidgets";
 import SalonOwnerDashboardWidgets from "./salon/SalonOwnerDashboardWidgets";
 import CustomerDashboardWidgets from "./customer/CustomerDashboardWidgets";
@@ -22,10 +21,10 @@ interface DashboardContentProps {
 const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   const { userRole, userProfile } = useAuth();
 
-  const isArtistOrTechnician = userRole === 'artist' || userRole === 'nail technician/artist' || userRole === 'renter';
+  const isArtistOrTechnician = userRole === 'artist' || userRole === 'nail technician/artist';
   const isFreelancer = userRole === 'freelancer';
   const isSalon = userRole === 'salon' || userRole === 'owner';
-  const isSupplier = userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier';
+  const isSupplier = userRole === 'supplier' || userRole === 'beauty supplier';
   const isCustomer = userRole === 'customer';
   const isOther = userRole === 'other' || !userRole;
   
