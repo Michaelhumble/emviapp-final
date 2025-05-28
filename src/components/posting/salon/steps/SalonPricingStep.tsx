@@ -21,9 +21,9 @@ export const SalonPricingStep = ({ selectedOptions, onOptionsChange, form }: Sal
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-playfair font-medium">Chọn Gói Đăng Tin / Pricing Plan</h2>
+        <h2 className="text-2xl font-playfair font-medium">Pricing Plan / Chọn Gói Đăng Tin</h2>
         <p className="text-gray-600 mt-2">
-          Chọn gói và thời hạn đăng tin phù hợp với nhu cầu của bạn / Choose the plan and duration that fits your needs
+          Choose the plan and duration that fits your needs / Chọn gói và thời hạn đăng tin phù hợp với nhu cầu của bạn
         </p>
       </div>
       

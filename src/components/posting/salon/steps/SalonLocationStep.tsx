@@ -16,10 +16,10 @@ export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">
         <MapPin className="w-5 h-5 text-purple-600" />
-        <h2 className="text-2xl font-playfair font-medium">Địa Chỉ / Location Details</h2>
+        <h2 className="text-2xl font-playfair font-medium">Location Details / Chi Tiết Địa Chỉ</h2>
       </div>
       <p className="text-gray-600 mb-6">
-        Thông tin địa chỉ giúp người mua tìm thấy salon của bạn / Location information helps buyers find your salon
+        Location information helps buyers find your salon / Thông tin địa chỉ giúp người mua tìm thấy salon của bạn
       </p>
 
       <div className="grid grid-cols-1 gap-6">
@@ -28,7 +28,7 @@ export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Địa Chỉ Đường / Street Address *</FormLabel>
+              <FormLabel>Street Address / Địa Chỉ Đường *</FormLabel>
               <FormControl>
                 <Input placeholder="123 Main Street" {...field} />
               </FormControl>
@@ -43,7 +43,7 @@ export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Thành Phố / City *</FormLabel>
+                <FormLabel>City / Thành Phố *</FormLabel>
                 <FormControl>
                   <Input placeholder="San Jose" {...field} />
                 </FormControl>
@@ -57,7 +57,7 @@ export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
             name="state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Bang / State *</FormLabel>
+                <FormLabel>State / Bang *</FormLabel>
                 <FormControl>
                   <Input placeholder="CA" {...field} />
                 </FormControl>
@@ -71,7 +71,7 @@ export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
             name="zipCode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mã Bưu Điện / ZIP Code</FormLabel>
+                <FormLabel>ZIP Code / Mã Bưu Điện</FormLabel>
                 <FormControl>
                   <Input placeholder="95123" {...field} />
                 </FormControl>
@@ -86,9 +86,9 @@ export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
           name="neighborhood"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Khu Vực / Neighborhood</FormLabel>
+              <FormLabel>Neighborhood / Khu Vực</FormLabel>
               <FormControl>
-                <Input placeholder="Trung tâm thương mại, gần chợ / Downtown, Near shopping center" {...field} />
+                <Input placeholder="Downtown, Near shopping center / Trung tâm thương mại, gần chợ" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -109,10 +109,10 @@ export const SalonLocationStep = ({ form }: SalonLocationStepProps) => {
               <div className="space-y-1 leading-none">
                 <FormLabel className="flex items-center gap-2">
                   <Shield className="w-4 h-4" />
-                  Ẩn địa chỉ chính xác / Hide exact address in listing
+                  Hide exact address in listing / Ẩn địa chỉ chính xác
                 </FormLabel>
                 <FormDescription>
-                  Chỉ hiển thị khu vực chung để bảo vệ quyền riêng tư / Only show general area to protect your privacy
+                  Only show general area to protect your privacy / Chỉ hiển thị khu vực chung để bảo vệ quyền riêng tư
                 </FormDescription>
               </div>
             </FormItem>

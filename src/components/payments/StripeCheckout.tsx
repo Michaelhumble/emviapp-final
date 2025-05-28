@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth";
+import { useStripe } from "@/hooks/useStripe";
 
 interface StripeCheckoutProps {
   amount: number;
@@ -15,87 +15,45 @@ interface StripeCheckoutProps {
   isSubscription?: boolean;
   subscriptionInterval?: "month" | "year";
   setupOnly?: boolean;
+  pricingOptions?: any;
+  formData?: any;
 }
 
 const StripeCheckout = ({
   amount,
   productName,
-  buttonText = "Pay Now",
+  buttonText = "Pay Now / Thanh Toán Ngay",
   onSuccess,
-  mode = "payment",
-  isSubscription = false,
-  subscriptionInterval = "month",
-  setupOnly = false
+  pricingOptions,
+  formData,
+  ...otherProps
 }: StripeCheckoutProps) => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const { initiatePayment } = useStripe();
 
   const handleCheckout = async () => {
     if (!user) {
-      toast.error("You must be logged in to make a purchase");
+      toast.error("Authentication Required / Yêu Cầu Xác Thực", {
+        description: "You must be logged in to make a purchase / Bạn phải đăng nhập để thực hiện mua hàng"
+      });
       return;
     }
 
     setLoading(true);
     
     try {
-      // This is a placeholder for edge function call
-      // In a real implementation, this would call a Supabase Edge Function
-      // that creates a Stripe Checkout session
-      toast.info("Processing your payment", {
-        description: setupOnly 
-          ? "Saving your payment method..."
-          : isSubscription 
-            ? "We're setting up your plan..." 
-            : "Processing your payment..."
-      });
+      const success = await initiatePayment(pricingOptions, formData);
       
-      // Simulating a response
-      setTimeout(() => {
-        setLoading(false);
-        
-        if (setupOnly) {
-          toast.success("Payment method saved!", {
-            description: "Your card has been saved for future purchases"
-          });
-        } else if (isSubscription) {
-          toast.success(`Subscribed to ${productName}!`, {
-            description: `Your ${subscriptionInterval}ly subscription has been activated`
-          });
-        } else {
-          toast.success(`Payment complete for ${productName}!`, {
-            description: "Your payment has been processed"
-          });
-        }
-        
-        if (onSuccess) {
-          onSuccess();
-        }
-      }, 2000);
-      
-      /* Real implementation would be:
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { 
-          amount, 
-          productName, 
-          mode, 
-          isSubscription,
-          subscriptionInterval,
-          setupOnly
-        }
-      });
-      
-      if (error) throw error;
-      
-      if (data?.url) {
-        window.location.href = data.url;
+      if (success && onSuccess) {
+        onSuccess();
       }
-      */
     } catch (error) {
       console.error("Checkout error:", error);
-      toast.error("Payment processing failed", {
-        description: "Please try again or contact support."
+      toast.error("Payment Failed / Thanh Toán Thất Bại", {
+        description: "Please try again or contact support. / Vui lòng thử lại hoặc liên hệ hỗ trợ."
       });
+    } finally {
       setLoading(false);
     }
   };
@@ -109,7 +67,7 @@ const StripeCheckout = ({
       {loading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Processing...
+          Processing... / Đang xử lý...
         </>
       ) : (
         buttonText
