@@ -6,6 +6,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './context/auth';
 import Home from './pages/Home';
+import About from './pages/About';
 import Dashboard from './pages/dashboard';
 import Jobs from './pages/Jobs';
 import Artists from './pages/Artists';
@@ -28,6 +29,7 @@ function App() {
             <Toaster />
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/artists" element={<Artists />} />
