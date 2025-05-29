@@ -1,50 +1,56 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { SalonFormValues, salonFormSchema } from './salonFormSchema';
-import { SalonPricingOptions } from '@/utils/posting/salonPricing';
+import { SalonPricingOptions, calculateSalonPostPrice } from '@/utils/posting/salonPricing';
 import { SalonDetailsStep } from './steps/SalonDetailsStep';
 import { LocationDetailsStep } from './steps/LocationDetailsStep';
 import { FinancialDetailsStep } from './steps/FinancialDetailsStep';
 import { FeaturesDetailsStep } from './steps/FeaturesDetailsStep';
 import { PhotoUploadStep } from './steps/PhotoUploadStep';
 import SalonPricingStep from './steps/SalonPricingStep';
-import SalonReviewStep from './steps/SalonReviewStep';
-
-interface WizardStep {
-  id: string;
-  title: string;
-  component: React.ComponentType<any>;
-  isCompleted?: boolean;
-}
+import { SalonReviewStep } from './steps/SalonReviewStep';
 
 interface SalonListingWizardProps {
-  onSubmit: (data: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
-  isSubmitting?: boolean;
+  onComplete: (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
 }
 
-export const SalonListingWizard = ({ onSubmit, isSubmitting = false }: SalonListingWizardProps) => {
+export const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<SalonFormValues>({});
+  const [formData, setFormData] = useState<SalonFormValues>({
+    salonName: '',
+    businessType: '',
+    beautyIndustry: 'Nails',
+    address: '',
+    city: '',
+    state: '',
+    askingPrice: '',
+    monthlyRent: '',
+    termsAccepted: false,
+  });
+  
   const [photos, setPhotos] = useState<File[]>([]);
   const [pricing, setPricing] = useState<SalonPricingOptions>({
-    listingType: 'standard',
-    duration: 30,
-    featured: false,
-    totalPrice: 49
+    selectedPricingTier: 'standard',
+    durationMonths: 3,
+    featuredAddOn: false,
+    autoRenew: false,
+    isFirstPost: true,
+    isNationwide: false,
+    fastSalePackage: false
   });
 
-  const steps: WizardStep[] = [
-    { id: 'details', title: 'Salon Details', component: SalonDetailsStep },
-    { id: 'location', title: 'Location', component: LocationDetailsStep },
-    { id: 'financial', title: 'Financial Info', component: FinancialDetailsStep },
-    { id: 'features', title: 'Features', component: FeaturesDetailsStep },
-    { id: 'photos', title: 'Photos', component: PhotoUploadStep },
-    { id: 'pricing', title: 'Pricing & Publish', component: SalonPricingStep },
-    { id: 'review', title: 'Review & Submit', component: SalonReviewStep }
+  const steps = [
+    { id: 1, name: 'Salon Details', component: 'details' },
+    { id: 2, name: 'Location', component: 'location' },
+    { id: 3, name: 'Financial Details', component: 'financial' },
+    { id: 4, name: 'Features', component: 'features' },
+    { id: 5, name: 'Photos', component: 'photos' },
+    { id: 6, name: 'Pricing', component: 'pricing' },
+    { id: 7, name: 'Review', component: 'review' }
   ];
 
   const updateFormData = (data: Partial<SalonFormValues>) => {
@@ -72,75 +78,109 @@ export const SalonListingWizard = ({ onSubmit, isSubmitting = false }: SalonList
   };
 
   const handleComplete = () => {
-    onSubmit(formData, photos, pricing);
+    onComplete(formData, photos, pricing);
   };
 
-  const currentStepData = steps[currentStep];
-  const StepComponent = currentStepData.component;
-  const progress = ((currentStep + 1) / steps.length) * 100;
+  const getStepProgress = () => {
+    return ((currentStep + 1) / steps.length) * 100;
+  };
+
+  const renderStep = () => {
+    const stepProps = {
+      formData,
+      photos,
+      pricing,
+      updateFormData,
+      updatePhotos,
+      updatePricing,
+      onNext: handleNext,
+      onPrev: handlePrev,
+      onComplete: handleComplete,
+      isFirstStep: currentStep === 0,
+      isLastStep: currentStep === steps.length - 1
+    };
+
+    switch (steps[currentStep].component) {
+      case 'details':
+        return <SalonDetailsStep {...stepProps} />;
+      case 'location':
+        return <LocationDetailsStep {...stepProps} />;
+      case 'financial':
+        return <FinancialDetailsStep {...stepProps} />;
+      case 'features':
+        return <FeaturesDetailsStep {...stepProps} />;
+      case 'photos':
+        return <PhotoUploadStep {...stepProps} />;
+      case 'pricing':
+        return <SalonPricingStep {...stepProps} />;
+      case 'review':
+        return <SalonReviewStep {...stepProps} />;
+      default:
+        return <SalonDetailsStep {...stepProps} />;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">List Your Salon</h1>
-              <p className="text-gray-600">Step {currentStep + 1} of {steps.length}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">{Math.round(progress)}% Complete</span>
-              <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            List Your Salon for Sale
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Connect with qualified buyers and sell your salon business through EmviApp's trusted marketplace.
+          </p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-sm font-medium text-gray-700">
+              Step {currentStep + 1} of {steps.length}
+            </span>
+            <span className="text-sm text-gray-500">
+              {Math.round(getStepProgress())}% Complete
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <motion.div
+              className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${getStepProgress()}%` }}
+              transition={{ duration: 0.3 }}
+            />
           </div>
         </div>
-      </div>
 
-      {/* Step Indicator */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-8 overflow-x-auto">
+        {/* Step Indicators */}
+        <div className="flex justify-between mb-8 overflow-x-auto">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <div className="flex flex-col items-center min-w-0">
-                <motion.div
-                  className={`
-                    w-12 h-12 rounded-full flex items-center justify-center font-medium text-sm
-                    transition-all duration-300 shadow-lg
-                    ${index < currentStep 
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' 
-                      : index === currentStep
-                      ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-purple-200'
-                      : 'bg-white text-gray-400 border-2 border-gray-200'
-                    }
-                  `}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {index < currentStep ? (
-                    <Check className="w-5 h-5" />
-                  ) : (
-                    <span>{index + 1}</span>
-                  )}
-                </motion.div>
-                <span className={`
-                  mt-2 text-xs font-medium text-center max-w-20 leading-tight
-                  ${index <= currentStep ? 'text-gray-900' : 'text-gray-400'}
-                `}>
-                  {step.title}
-                </span>
+            <div key={step.id} className="flex flex-col items-center min-w-0 flex-1">
+              <div className={`
+                w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium mb-2
+                ${index <= currentStep 
+                  ? 'bg-purple-500 text-white' 
+                  : 'bg-gray-200 text-gray-500'
+                }
+                ${index < currentStep ? 'bg-green-500' : ''}
+              `}>
+                {index < currentStep ? (
+                  <CheckCircle className="w-5 h-5" />
+                ) : (
+                  step.id
+                )}
               </div>
+              <span className={`
+                text-xs text-center
+                ${index <= currentStep ? 'text-purple-600 font-medium' : 'text-gray-500'}
+              `}>
+                {step.name}
+              </span>
               {index < steps.length - 1 && (
                 <div className={`
-                  w-8 h-0.5 mx-2 transition-colors duration-300
-                  ${index < currentStep ? 'bg-green-400' : 'bg-gray-200'}
+                  hidden md:block w-full h-px mt-2
+                  ${index < currentStep ? 'bg-green-500' : 'bg-gray-200'}
                 `} />
               )}
             </div>
@@ -148,66 +188,54 @@ export const SalonListingWizard = ({ onSubmit, isSubmitting = false }: SalonList
         </div>
 
         {/* Step Content */}
-        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+        <Card className="max-w-4xl mx-auto">
           <CardContent className="p-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {renderStep()}
+            </motion.div>
+
+            {/* Navigation */}
+            <div className="flex justify-between items-center mt-8 pt-6 border-t">
+              <Button
+                variant="outline"
+                onClick={handlePrev}
+                disabled={currentStep === 0}
+                className="flex items-center"
               >
-                <StepComponent
-                  formData={formData}
-                  photos={photos}
-                  pricing={pricing}
-                  updateFormData={updateFormData}
-                  updatePhotos={updatePhotos}
-                  updatePricing={updatePricing}
-                  onNext={handleNext}
-                  onPrev={handlePrev}
-                  onComplete={handleComplete}
-                  isFirstStep={currentStep === 0}
-                  isLastStep={currentStep === steps.length - 1}
-                />
-              </motion.div>
-            </AnimatePresence>
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
+              </Button>
+
+              <Badge variant="outline" className="px-4 py-2">
+                {steps[currentStep].name}
+              </Badge>
+
+              {currentStep === steps.length - 1 ? (
+                <Button
+                  onClick={handleComplete}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white flex items-center"
+                >
+                  Complete Listing
+                  <CheckCircle className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleNext}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white flex items-center"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
-
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-8">
-          <Button
-            variant="outline"
-            onClick={handlePrev}
-            disabled={currentStep === 0}
-            className="px-6 py-3"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Previous
-          </Button>
-
-          <div className="flex items-center gap-2">
-            {currentStep < steps.length - 1 ? (
-              <Button
-                onClick={handleNext}
-                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-              >
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleComplete}
-                disabled={isSubmitting}
-                className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-              >
-                {isSubmitting ? 'Publishing...' : 'Publish Listing'}
-              </Button>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

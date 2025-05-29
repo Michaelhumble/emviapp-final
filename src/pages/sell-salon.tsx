@@ -2,7 +2,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import SalonListingWizard from '@/components/posting/salon/SalonListingWizard';
+import { SalonListingWizard } from '@/components/posting/salon/SalonListingWizard';
 import SalonOwnerGuard from '@/components/posting/salon/SalonOwnerGuard';
 import { SalonFormValues } from '@/components/posting/salon/salonFormSchema';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
