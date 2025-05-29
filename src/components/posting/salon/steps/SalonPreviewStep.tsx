@@ -95,18 +95,27 @@ export const SalonPreviewStep = ({ form, photoUploads = [] }: SalonPreviewStepPr
           <div>
             <h4 className="font-semibold mb-3">Contact Information</h4>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-gray-600" />
-                <span>{values.contactName}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gray-600" />
-                <span>{values.contactEmail}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-600" />
-                <span>{values.contactPhone}</span>
-              </div>
+              {values.contactName && (
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-gray-600" />
+                  <span>{values.contactName}</span>
+                </div>
+              )}
+              {values.contactEmail && (
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-gray-600" />
+                  <span>{values.contactEmail}</span>
+                </div>
+              )}
+              {values.contactPhone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-gray-600" />
+                  <span>{values.contactPhone}</span>
+                </div>
+              )}
+              {!values.contactName && !values.contactEmail && !values.contactPhone && (
+                <p className="text-gray-500 italic">No contact information provided</p>
+              )}
             </div>
           </div>
 
