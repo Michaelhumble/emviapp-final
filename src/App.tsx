@@ -43,40 +43,40 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <BookingNotificationProvider>
-            <Router>
-              <Helmet>
-                <title>EmviApp - Beauty Professional Network</title>
-                <meta name="description" content="Connect with beauty professionals, find jobs, and grow your career in the beauty industry." />
-              </Helmet>
-              
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/profile/:id" element={<Profile />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/edit-profile" element={<EditProfile />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/post-job" element={<PostJob />} />
-                <Route path="/jobs" element={<Jobs />} />
-                <Route path="/jobs/:id" element={<JobDetail />} />
-                <Route path="/salons" element={<Salons />} />
-                <Route path="/salons/:id" element={<SalonDetail />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/post-success" element={<PostSuccess />} />
-                <Route path="/post-canceled" element={<PostCanceled />} />
-                <Route path="/enhanced-post-job" element={<EnhancedPostJob />} />
-                <Route path="/sell-salon" element={<SellSalonPage />} />
-                <Route path="/salon-listing-success" element={<SalonListingSuccessPage />} />
-              </Routes>
-              
+          <Router>
+            <Helmet>
+              <title>EmviApp - Beauty Professional Network</title>
+              <meta name="description" content="Connect with beauty professionals, find jobs, and grow your career in the beauty industry." />
+            </Helmet>
+            
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile/:id" element={<Profile />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/post-job" element={<PostJob />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/jobs/:id" element={<JobDetail />} />
+              <Route path="/salons" element={<Salons />} />
+              <Route path="/salons/:id" element={<SalonDetail />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/post-success" element={<PostSuccess />} />
+              <Route path="/post-canceled" element={<PostCanceled />} />
+              <Route path="/enhanced-post-job" element={<EnhancedPostJob />} />
+              <Route path="/sell-salon" element={<SellSalonPage />} />
+              <Route path="/salon-listing-success" element={<SalonListingSuccessPage />} />
+            </Routes>
+            
+            <BookingNotificationProvider>
               <Toaster 
                 position="top-right"
                 toastOptions={{
@@ -88,8 +88,8 @@ function App() {
                   },
                 }}
               />
-            </Router>
-          </BookingNotificationProvider>
+            </BookingNotificationProvider>
+          </Router>
         </AuthProvider>
       </QueryClientProvider>
     </HelmetProvider>
