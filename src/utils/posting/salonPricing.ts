@@ -84,7 +84,7 @@ export const DURATION_OPTIONS = [
 export const salonPricingPlans: SalonPricingPlan[] = [
   {
     id: 'standard',
-    name: 'Standard Listing / Đăng Tin Cơ Bản',
+    name: 'Standard Listing / Đăng tin cơ bản',
     price: 19.99,
     duration: 3,
     features: [
@@ -114,7 +114,7 @@ export const calculateSalonPostPrice = (options: SalonPricingOptions): number =>
     price = price * 0.95;
   }
   
-  return price;
+  return Number(price.toFixed(2)); // Ensure 2 decimal places
 };
 
 export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonPricingSummary => {
@@ -138,20 +138,20 @@ export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonP
   
   return {
     planName: `Standard Listing - ${duration} months`,
-    basePrice,
-    finalPrice,
+    basePrice: Number(basePrice.toFixed(2)),
+    finalPrice: Number(finalPrice.toFixed(2)),
     duration,
     durationMonths: duration,
     features: salonPricingPlans[0].features,
-    subtotal,
+    subtotal: Number(subtotal.toFixed(2)),
     durationDiscount: 0,
-    autoRenewDiscount,
+    autoRenewDiscount: Number(autoRenewDiscount.toFixed(2)),
     addOns,
     discounts: {
       duration: 0,
-      autoRenew: autoRenewDiscount,
+      autoRenew: Number(autoRenewDiscount.toFixed(2)),
       firstPost: 0,
-      autoRenewDiscount
+      autoRenewDiscount: Number(autoRenewDiscount.toFixed(2))
     }
   };
 };

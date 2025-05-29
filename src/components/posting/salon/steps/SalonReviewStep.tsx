@@ -2,191 +2,248 @@
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { SalonFormValues } from '../salonFormSchema';
+import { SalonPricingOptions, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, DollarSign, Star, Camera, CheckCircle } from 'lucide-react';
+import { CheckCircle, MapPin, DollarSign, Star, Camera } from 'lucide-react';
 
 interface SalonReviewStepProps {
   form: UseFormReturn<SalonFormValues>;
-  selectedDuration: number;
-  featuredAddOn: boolean;
+  pricingOptions: SalonPricingOptions;
   photoUploads: File[];
 }
 
-const DURATION_OPTIONS = [
-  { months: 1, discountPrice: 19.99, originalPrice: 24.99 },
-  { months: 3, discountPrice: 54.99, originalPrice: 74.99 },
-  { months: 6, discountPrice: 99.99, originalPrice: 149.99 },
-  { months: 12, discountPrice: 145.99, originalPrice: 300.00 }
-];
-
-const SalonReviewStep = ({ form, selectedDuration, featuredAddOn, photoUploads }: SalonReviewStepProps) => {
+const SalonReviewStep = ({ form, pricingOptions, photoUploads }: SalonReviewStepProps) => {
   const formData = form.getValues();
-  const selectedOption = DURATION_OPTIONS.find(option => option.months === selectedDuration);
-  const basePrice = selectedOption?.discountPrice || 19.99;
-  const featuredFee = featuredAddOn ? 10 : 0; // One-time $10 fee
-  const totalPrice = basePrice + featuredFee;
+  const pricingSummary = getSalonPostPricingSummary(pricingOptions);
+
+  // Format price to always show 2 decimal places
+  const formatPrice = (price: number): string => {
+    return price.toFixed(2);
+  };
 
   return (
-    <div className="space-y-6 bg-gradient-to-br from-pink-50 to-rose-50 min-h-screen p-6">
+    <div className="space-y-6 bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen p-6">
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center mb-4">
-          <div className="bg-blue-100 p-3 rounded-full">
-            <CheckCircle className="w-6 h-6 text-blue-600" />
+          <div className="bg-green-100 p-3 rounded-full">
+            <CheckCircle className="w-6 h-6 text-green-600" />
           </div>
-          <span className="ml-3 text-xl font-medium">📋 Review Your Listing / Xem lại tin đăng</span>
+          <span className="ml-3 text-xl font-medium">✅ Final Review / Xem lại cuối cùng</span>
         </div>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Please review all details before submitting your salon listing for payment.
+          Please review all details before submitting your salon listing.
           <br />
-          <span className="text-blue-600 font-medium">
-            Vui lòng xem lại tất cả chi tiết trước khi gửi tin đăng salon để thanh toán.
+          <span className="text-green-600 font-medium">
+            Vui lòng xem lại tất cả thông tin trước khi đăng tin salon của bạn.
           </span>
         </p>
       </div>
 
-      {/* Salon Overview */}
-      <Card className="bg-white/80 backdrop-blur border-pink-200">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Star className="w-5 h-5 text-yellow-500 mr-2" />
-            Salon Overview / Tổng quan salon
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Salon Details */}
+        <Card className="bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Star className="w-5 h-5 text-purple-600 mr-2" />
+              Salon Information / Thông tin Salon
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold text-lg mb-2">{formData.salonName || 'Salon Name'}</h3>
-              <div className="flex items-center text-gray-600 mb-2">
-                <MapPin className="w-4 h-4 mr-1" />
-                <span>{formData.address}, {formData.city}, {formData.state}</span>
-              </div>
-              <div className="flex items-center text-gray-600">
-                <DollarSign className="w-4 h-4 mr-1" />
-                <span>Asking: {formData.askingPrice}</span>
-              </div>
+              <label className="text-sm font-medium text-gray-600">Salon Name / Tên Salon</label>
+              <p className="text-lg font-semibold">{formData.salonName}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">
-                <strong>Business Type:</strong> {formData.businessType}<br />
-                <strong>Monthly Rent:</strong> {formData.monthlyRent}<br />
-                <strong>Square Feet:</strong> {formData.squareFeet || 'Not specified'}
-              </p>
+              <label className="text-sm font-medium text-gray-600">Business Type / Loại hình kinh doanh</label>
+              <p>{formData.businessType}</p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+            <div>
+              <label className="text-sm font-medium text-gray-600">Industry / Ngành nghề</label>
+              <p>{formData.beautyIndustry}</p>
+            </div>
+            {formData.establishedYear && (
+              <div>
+                <label className="text-sm font-medium text-gray-600">Established / Thành lập</label>
+                <p>{formData.establishedYear}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-      {/* Photos */}
-      <Card className="bg-white/80 backdrop-blur border-pink-200">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Camera className="w-5 h-5 text-purple-500 mr-2" />
-            Photos ({photoUploads.length}) / Hình ảnh ({photoUploads.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {photoUploads.length > 0 ? (
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-              {photoUploads.slice(0, 8).map((photo, index) => (
-                <div key={index} className="relative">
-                  <img 
-                    src={URL.createObjectURL(photo)} 
-                    alt={`Photo ${index + 1}`}
-                    className="w-full h-20 object-cover rounded border"
-                  />
-                  {index === 0 && (
-                    <Badge className="absolute top-1 left-1 text-xs bg-purple-500">Main</Badge>
-                  )}
-                </div>
-              ))}
+        {/* Location */}
+        <Card className="bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <MapPin className="w-5 h-5 text-blue-600 mr-2" />
+              Location / Địa điểm
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-gray-600">Address / Địa chỉ</label>
+              <p>{formData.address}</p>
             </div>
-          ) : (
-            <p className="text-gray-500">No photos uploaded</p>
-          )}
-        </CardContent>
-      </Card>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600">City / Thành phố</label>
+                <p>{formData.city}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">State / Bang</label>
+                <p>{formData.state}</p>
+              </div>
+            </div>
+            {formData.zipCode && (
+              <div>
+                <label className="text-sm font-medium text-gray-600">ZIP Code</label>
+                <p>{formData.zipCode}</p>
+              </div>
+            )}
+            {formData.neighborhood && (
+              <div>
+                <label className="text-sm font-medium text-gray-600">Neighborhood / Khu vực</label>
+                <p>{formData.neighborhood}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Financial Details */}
+        <Card className="bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <DollarSign className="w-5 h-5 text-green-600 mr-2" />
+              Financial Details / Chi tiết tài chính
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-gray-600">Asking Price / Giá yêu cầu</label>
+              <p className="text-xl font-bold text-green-600">${formData.askingPrice}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-600">Monthly Rent / Tiền thuê hàng tháng</label>
+              <p className="text-lg">${formData.monthlyRent}/month</p>
+            </div>
+            {formData.monthlyProfit && (
+              <div>
+                <label className="text-sm font-medium text-gray-600">Monthly Profit / Lợi nhuận hàng tháng</label>
+                <p className="text-lg text-green-600">${formData.monthlyProfit}</p>
+              </div>
+            )}
+            {formData.numberOfTables && (
+              <div>
+                <label className="text-sm font-medium text-gray-600">Number of Tables / Số bàn</label>
+                <p>{formData.numberOfTables}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Photos */}
+        <Card className="bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Camera className="w-5 h-5 text-purple-600 mr-2" />
+              Photos / Hình ảnh ({photoUploads.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {photoUploads.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {photoUploads.slice(0, 6).map((photo, index) => (
+                  <div key={index} className="relative aspect-square">
+                    <img
+                      src={URL.createObjectURL(photo)}
+                      alt={`Salon photo ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    {index === 0 && (
+                      <Badge className="absolute top-1 left-1 bg-purple-600">
+                        Main / Chính
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+                {photoUploads.length > 6 && (
+                  <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                    <span className="text-sm text-gray-600">+{photoUploads.length - 6} more</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">No photos uploaded</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Features */}
-      <Card className="bg-white/80 backdrop-blur border-pink-200">
-        <CardHeader>
-          <CardTitle>Features & Amenities / Tính năng & Tiện ích</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {formData.willTrain && (
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span className="text-sm">Will Train</span>
-              </div>
-            )}
-            {formData.hasWaxRoom && (
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span className="text-sm">Wax Room</span>
-              </div>
-            )}
-            {formData.hasParking && (
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span className="text-sm">Parking</span>
-              </div>
-            )}
-          </div>
-          {formData.reasonForSelling && (
-            <div className="mt-4 p-3 bg-gray-50 rounded">
-              <p className="text-sm"><strong>Reason for Selling:</strong> {formData.reasonForSelling}</p>
+      {(formData.willTrain || formData.hasWaxRoom || formData.hasParking) && (
+        <Card className="bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle>Features & Amenities / Tính năng & Tiện ích</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {formData.willTrain && (
+                <Badge variant="secondary">Will Train / Sẽ đào tạo</Badge>
+              )}
+              {formData.hasWaxRoom && (
+                <Badge variant="secondary">Wax Room / Phòng wax</Badge>
+              )}
+              {formData.hasParking && (
+                <Badge variant="secondary">Parking / Bãi đỗ xe</Badge>
+              )}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Pricing Summary */}
-      <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+      <Card className="bg-gradient-to-r from-purple-100 to-pink-100 border-purple-200">
         <CardHeader>
-          <CardTitle className="text-green-800">Final Pricing Summary / Tóm tắt giá cuối cùng</CardTitle>
+          <CardTitle className="text-purple-800">Pricing Summary / Tóm tắt giá</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span>Listing Duration / Thời hạn đăng tin</span>
-              <span className="font-medium">{selectedDuration} months</span>
+        <CardContent className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="font-medium">{pricingSummary.planName}</span>
+            <span className="font-bold">${formatPrice(pricingSummary.basePrice)}</span>
+          </div>
+          
+          {pricingOptions.featuredAddOn && (
+            <div className="flex justify-between items-center">
+              <span className="text-purple-600">Featured Placement (one-time)</span>
+              <span className="font-bold text-purple-600">+$10.00</span>
             </div>
-            <div className="flex justify-between">
-              <span>Base Price / Giá cơ bản</span>
-              <span>${basePrice.toFixed(2)}</span>
+          )}
+          
+          {pricingSummary.discounts.autoRenew > 0 && (
+            <div className="flex justify-between items-center text-green-600">
+              <span>Auto-renew discount (5%)</span>
+              <span>-${formatPrice(pricingSummary.discounts.autoRenew)}</span>
             </div>
-            {featuredAddOn && (
-              <div className="flex justify-between text-yellow-600">
-                <span>Featured Placement (one-time) / Nổi bật (một lần)</span>
-                <span>+$10.00</span>
-              </div>
-            )}
-            <div className="border-t pt-3 flex justify-between font-bold text-lg">
-              <span>Total Amount / Tổng tiền</span>
-              <span className="text-green-600">${totalPrice.toFixed(2)}</span>
+          )}
+          
+          <div className="border-t pt-4">
+            <div className="flex justify-between items-center text-lg font-bold">
+              <span>Total / Tổng cộng</span>
+              <span className="text-purple-600">${formatPrice(pricingSummary.finalPrice)}</span>
             </div>
           </div>
           
-          <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-            <p className="text-sm text-blue-800">
-              <strong>Payment:</strong> Stripe payment required before publishing listing.
-              <br />
-              <strong>Thanh toán:</strong> Cần thanh toán Stripe trước khi xuất bản tin đăng.
+          <div className="text-sm text-gray-600 mt-4">
+            <p>
+              All listings expire after chosen duration unless renewed. First-time discounts apply only once per account.
+            </p>
+            <p className="text-purple-600 mt-1">
+              Tất cả tin đăng hết hạn sau thời gian đã chọn trừ khi gia hạn. Giá ưu đãi lần đầu chỉ áp dụng 1 lần cho mỗi tài khoản.
             </p>
           </div>
         </CardContent>
       </Card>
-
-      {/* Final Note */}
-      <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-        <p className="text-sm text-yellow-800">
-          <strong>EN:</strong> All listings expire after chosen duration unless renewed. First-time discounts apply only once per account.
-          <br />
-          <strong>VI:</strong> Tất cả tin đăng hết hạn sau thời gian đã chọn trừ khi gia hạn. Giá ưu đãi lần đầu chỉ áp dụng 1 lần cho mỗi tài khoản.
-        </p>
-      </div>
     </div>
   );
 };
