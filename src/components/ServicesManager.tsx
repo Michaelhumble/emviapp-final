@@ -1,70 +1,48 @@
+
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Trash2, Edit, Plus } from 'lucide-react';
-
-interface Service {
-  id: string;
-  title: string;
-  name: string;
-  description: string;
-  price: number;
-  duration_minutes: number;
-  user_id: string;
-  image_url?: string;
-  is_visible?: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface NewService {
-  title: string;
-  name: string;
-  description: string;
-  price: number;
-  duration_minutes: number;
-}
+import { Service } from '@/pages/u/artist-profile/types';
 
 const ServicesManager = () => {
-  const { user } = useAuth();
   const [services, setServices] = useState<Service[]>([]);
   const [isEditing, setIsEditing] = useState<string | null>(null);
-  const [newService, setNewService] = useState<NewService>({
+  const [newService, setNewService] = useState({
     title: '',
-    name: '',
     description: '',
-    price: 0,
-    duration_minutes: 30
+    price: '',
+    duration: '',
+    category: ''
   });
+  const [isAddingNew, setIsAddingNew] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      fetchServices();
-    }
-  }, [user]);
+    fetchServices();
+  }, []);
 
   const fetchServices = async () => {
-    if (!user) return;
-
     try {
       const { data, error } = await supabase
         .from('services')
         .select('*')
-        .eq('user_id', user.id);
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-
-      // Map database fields to component interface with proper fallbacks
-      const mappedServices = data.map(service => ({
+      
+      // Map the data to include name from title for compatibility
+      const mappedServices = data?.map(service => ({
         ...service,
-        name: service.title || service.name || service.title || '' // Use title as fallback for name
-      }));
-
+        name: service.title, // Add name property from title
+        price_type: service.price_type || 'fixed',
+        duration: service.duration || '30 minutes'
+      })) || [];
+      
       setServices(mappedServices);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -72,39 +50,42 @@ const ServicesManager = () => {
     }
   };
 
-  const addService = async () => {
-    if (!user || !newService.title.trim()) return;
+  const handleAddService = async () => {
+    if (!newService.title || !newService.price) {
+      toast.error('Please fill in title and price');
+      return;
+    }
 
     try {
-      const serviceData = {
-        user_id: user.id,
-        title: newService.title,
-        description: newService.description,
-        price: newService.price,
-        duration_minutes: newService.duration_minutes
-      };
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('services')
-        .insert([serviceData])
+        .insert([{
+          title: newService.title,
+          description: newService.description,
+          price: parseFloat(newService.price),
+          duration: newService.duration || '30 minutes',
+          category: newService.category,
+          user_id: user.id,
+          duration_minutes: parseInt(newService.duration) || 30,
+          price_type: 'fixed'
+        }])
         .select()
         .single();
 
       if (error) throw error;
 
-      const mappedService = {
+      // Add name property for compatibility
+      const serviceWithName = {
         ...data,
-        name: data.title || ''
+        name: data.title
       };
 
-      setServices([...services, mappedService]);
-      setNewService({
-        title: '',
-        name: '',
-        description: '',
-        price: 0,
-        duration_minutes: 30
-      });
+      setServices([serviceWithName, ...services]);
+      setNewService({ title: '', description: '', price: '', duration: '', category: '' });
+      setIsAddingNew(false);
       toast.success('Service added successfully');
     } catch (error) {
       console.error('Error adding service:', error);
@@ -112,7 +93,7 @@ const ServicesManager = () => {
     }
   };
 
-  const deleteService = async (id: string) => {
+  const handleDeleteService = async (id: string) => {
     try {
       const { error } = await supabase
         .from('services')
@@ -121,7 +102,7 @@ const ServicesManager = () => {
 
       if (error) throw error;
 
-      setServices(services.filter(s => s.id !== id));
+      setServices(services.filter(service => service.id !== id));
       toast.success('Service deleted successfully');
     } catch (error) {
       console.error('Error deleting service:', error);
@@ -130,80 +111,140 @@ const ServicesManager = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5" />
-            Add New Service
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            placeholder="Service title"
-            value={newService.title}
-            onChange={(e) => setNewService({ ...newService, title: e.target.value })}
-          />
-          <Textarea
-            placeholder="Service description"
-            value={newService.description}
-            onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              type="number"
-              placeholder="Price"
-              value={newService.price}
-              onChange={(e) => setNewService({ ...newService, price: Number(e.target.value) })}
-            />
-            <Input
-              type="number"
-              placeholder="Duration (minutes)"
-              value={newService.duration_minutes}
-              onChange={(e) => setNewService({ ...newService, duration_minutes: Number(e.target.value) })}
-            />
-          </div>
-          <Button onClick={addService} disabled={!newService.title.trim()}>
-            Add Service
-          </Button>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-4">
-        {services.map((service) => (
-          <Card key={service.id}>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h3 className="font-semibold">{service.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                  <div className="flex gap-4 mt-2 text-sm">
-                    <span>${service.price}</span>
-                    <span>{service.duration_minutes} minutes</span>
-                  </div>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Services</CardTitle>
+        <Button 
+          onClick={() => setIsAddingNew(true)}
+          className="flex items-center gap-2"
+          disabled={isAddingNew}
+        >
+          <Plus className="h-4 w-4" />
+          Add Service
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isAddingNew && (
+          <Card className="p-4 border-dashed">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Service Title</Label>
+                <Input
+                  id="title"
+                  value={newService.title}
+                  onChange={(e) => setNewService({ ...newService, title: e.target.value })}
+                  placeholder="e.g., Classic Manicure"
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={newService.description}
+                  onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+                  placeholder="Describe your service..."
+                  rows={3}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="price">Price ($)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={newService.price}
+                    onChange={(e) => setNewService({ ...newService, price: e.target.value })}
+                    placeholder="25.00"
+                  />
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditing(service.id)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteService(service.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                <div>
+                  <Label htmlFor="duration">Duration (minutes)</Label>
+                  <Input
+                    id="duration"
+                    value={newService.duration}
+                    onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
+                    placeholder="30"
+                  />
                 </div>
               </div>
-            </CardContent>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Input
+                  id="category"
+                  value={newService.category}
+                  onChange={(e) => setNewService({ ...newService, category: e.target.value })}
+                  placeholder="e.g., Manicure, Pedicure"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleAddService} className="flex items-center gap-2">
+                  <Save className="h-4 w-4" />
+                  Save Service
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsAddingNew(false);
+                    setNewService({ title: '', description: '', price: '', duration: '', category: '' });
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  Cancel
+                </Button>
+              </div>
+            </div>
           </Card>
-        ))}
-      </div>
-    </div>
+        )}
+
+        {services.length === 0 && !isAddingNew ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>No services added yet</p>
+            <p className="text-sm">Click "Add Service" to get started</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {services.map((service) => (
+              <Card key={service.id} className="p-4">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h4 className="font-semibold">{service.title || service.name}</h4>
+                    <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                    <div className="flex gap-4 mt-2 text-sm">
+                      <span className="font-medium text-green-600">${service.price}</span>
+                      <span className="text-gray-500">{service.duration}</span>
+                      {service.category && (
+                        <span className="text-blue-600">{service.category}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditing(service.id)}
+                      className="flex items-center gap-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteService(service.id)}
+                      className="flex items-center gap-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

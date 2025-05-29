@@ -36,3 +36,8 @@ export const clearProfileCache = (userId?: string) => {
     profileCache.clear();
   }
 };
+
+// Fix: Add the missing export
+export const clearCacheForUser = (userId: string) => {
+  profileCache.delete(userId);
+};

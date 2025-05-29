@@ -26,6 +26,7 @@ export const useSession = () => {
         setUser(session?.user ?? null);
         setLoading(false);
         
+        // Fix: Use string comparison for event type
         if (event === 'SIGNED_UP') {
           setIsNewUser(true);
         }

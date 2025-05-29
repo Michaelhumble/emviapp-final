@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -56,6 +55,7 @@ function App() {
                   <Routes>
                     {/* Auth routes */}
                     <Route path="/login" element={<SignIn />} />
+                    <Route path="/sign-in" element={<SignIn />} />
                     <Route path="/sign-up" element={<SignUp />} />
                     <Route path="/register" element={<SignUp />} />
                     
@@ -85,11 +85,17 @@ function App() {
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
+                    {/* Dashboard routes */}
+                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
+                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
+                    
+                    {/* Dynamic routes from routes config */}
                     {(routes || []).map((route, index) => (
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
                        route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
-                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success") && (
+                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success" &&
+                       route.path !== "/login" && route.path !== "/sign-in" && route.path !== "/sign-up") && (
                         <Route 
                           key={index}
                           path={route.path}
@@ -97,8 +103,6 @@ function App() {
                         />
                       )
                     ))}
-                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
-                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
                   </Routes>
                 </Suspense>
                 <Toaster />

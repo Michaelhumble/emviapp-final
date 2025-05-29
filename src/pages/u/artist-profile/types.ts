@@ -2,21 +2,23 @@
 export interface PortfolioImage {
   id: string;
   url: string;
-  name: string; // Changed from optional to required
+  name: string;
   description?: string;
 }
 
 export interface Service {
   id: string;
-  name: string; // This was missing and causing errors
+  name?: string; // Made optional since Supabase uses 'title'
   title: string;
-  description: string; // Changed from optional to required
+  description: string;
   price: number;
-  price_type: string; // Changed from optional to required
-  duration: string; // Changed from optional to required
+  price_type: string;
+  duration: string;
   duration_minutes: number;
   image_url?: string;
   category?: string;
   created_at: string;
   updated_at: string;
+  is_visible?: boolean;
+  user_id?: string;
 }

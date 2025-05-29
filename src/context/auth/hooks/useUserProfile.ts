@@ -24,32 +24,10 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       const cachedData = getCachedProfile(userId);
       
       if (cachedData && cachedData.profile) {
-        const cacheStatus = cachedData.status;
-        
         // Populate UI immediately with cached data
-        console.log(`Using ${cacheStatus} cached profile data`);
+        console.log(`Using cached profile data`);
         setUserProfile(cachedData.profile);
         if (cachedData.role) setUserRole(cachedData.role);
-        
-        // If not fresh, trigger background refresh but don't block UI
-        if (cacheStatus !== 'fresh') {
-          // Don't show loading spinner for background refresh
-          console.log(`Cache is ${cacheStatus}, refreshing in background`);
-          
-          // Using setTimeout to ensure this runs after current execution
-          setTimeout(() => {
-            fetchFreshProfileData(userId).then(result => {
-              if (result.profile) {
-                setUserProfile(result.profile);
-                if (result.role) setUserRole(result.role);
-                setLastRefreshTime(Date.now());
-              }
-            }).catch(err => {
-              console.warn("Background refresh failed:", err);
-              // Don't set error state for background refresh failures
-            });
-          }, 100);
-        }
         
         // Always mark as not loading when using cache
         setLoading(false);
@@ -138,7 +116,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       // Check if we already have fresh data for this user
       const cachedData = getCachedProfile(user.id);
       
-      if (cachedData && cachedData.status === 'fresh' && cachedData.profile) {
+      if (cachedData && cachedData.profile) {
         // Use cached data without fetching again
         console.log("Using cached profile data for user change");
         setUserProfile(cachedData.profile);
