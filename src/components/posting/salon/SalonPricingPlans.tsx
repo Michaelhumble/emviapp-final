@@ -3,17 +3,20 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Check, Star, Zap, Crown, Trophy } from 'lucide-react';
-import { SALON_PRICING_PLANS, SalonPricingTier, SalonPricingOptions } from '@/utils/posting/salonPricing';
+import { SALON_PRICING_PLANS, SalonPricingTier, SalonPricingOptions, FEATURED_ADDON_PRICE, calculateSalonPostPrice } from '@/utils/posting/salonPricing';
 
 interface SalonPricingPlansProps {
   selectedOptions: SalonPricingOptions;
   onPlanSelect: (tier: SalonPricingTier) => void;
+  onFeaturedAddonChange?: (featured: boolean) => void;
 }
 
 const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
   selectedOptions,
-  onPlanSelect
+  onPlanSelect,
+  onFeaturedAddonChange
 }) => {
   const getPlanIcon = (tier: SalonPricingTier) => {
     switch (tier) {
@@ -35,6 +38,12 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
     }
   };
 
+  const handleFeaturedAddonChange = (checked: boolean) => {
+    if (onFeaturedAddonChange) {
+      onFeaturedAddonChange(checked);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
@@ -51,6 +60,7 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
           const isSelected = selectedOptions.selectedPricingTier === plan.tier;
           const isPopular = plan.tier === 'premium';
           const gradient = getPlanGradient(plan.tier);
+          const hasSavings = plan.originalPrice && plan.originalPrice > plan.price;
           
           return (
             <Card 
@@ -69,6 +79,14 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
                   </Badge>
                 </div>
               )}
+
+              {hasSavings && (
+                <div className="absolute -top-2 -right-2 z-10">
+                  <Badge variant="destructive" className="text-xs font-bold animate-pulse">
+                    {plan.savings || 'SAVE!'}
+                  </Badge>
+                </div>
+              )}
               
               <CardHeader className="text-center pb-4 pt-6">
                 <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center text-white mb-4 shadow-lg`}>
@@ -78,17 +96,24 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
                 <CardTitle className="text-xl font-bold text-gray-900">{plan.name}</CardTitle>
                 
                 <div className="mt-4">
-                  <div className="flex items-center justify-center">
-                    <span className="text-4xl font-bold text-gray-900">
-                      ${plan.price}
-                    </span>
-                    <span className="text-gray-600 ml-2">
-                      /{plan.duration === 1 ? 'mo' : `${plan.duration}mo`}
-                    </span>
+                  <div className="flex items-center justify-center flex-col">
+                    {hasSavings && (
+                      <div className="text-lg text-gray-500 line-through mb-1">
+                        ${plan.originalPrice}
+                      </div>
+                    )}
+                    <div className="flex items-baseline">
+                      <span className="text-4xl font-bold text-gray-900">
+                        ${plan.price}
+                      </span>
+                      <span className="text-gray-600 ml-2">
+                        /{plan.duration === 1 ? 'mo' : `${plan.duration}mo`}
+                      </span>
+                    </div>
                   </div>
                   {plan.tier === 'annual' && (
                     <div className="text-sm text-green-600 font-semibold mt-1">
-                      Save $89 vs monthly!
+                      Save $150 vs monthly!
                     </div>
                   )}
                 </div>
@@ -124,6 +149,71 @@ const SalonPricingPlans: React.FC<SalonPricingPlansProps> = ({
           );
         })}
       </div>
+
+      {/* Featured Placement Add-on */}
+      <div className="max-w-2xl mx-auto">
+        <Card className="border-2 border-dashed border-purple-300 bg-purple-50/50">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-4">
+              <Checkbox
+                id="featured-addon"
+                checked={selectedOptions.featuredAddon}
+                onCheckedChange={handleFeaturedAddonChange}
+                className="mt-1"
+              />
+              <div className="flex-1">
+                <label htmlFor="featured-addon" className="cursor-pointer">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-lg font-semibold text-purple-900">
+                      ⭐ Featured Placement Add-on
+                    </h4>
+                    <span className="text-lg font-bold text-purple-700">
+                      +${FEATURED_ADDON_PRICE}
+                    </span>
+                  </div>
+                  <p className="text-sm text-purple-700 leading-relaxed">
+                    Get your salon listing featured prominently at the top of search results and category pages. 
+                    Increase visibility by up to 3x with this premium placement upgrade.
+                  </p>
+                </label>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Pricing Summary */}
+      {selectedOptions.selectedPricingTier && (
+        <div className="max-w-md mx-auto">
+          <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+            <CardContent className="p-6">
+              <h4 className="font-semibold text-lg mb-4 text-center">Order Summary</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span>
+                    {SALON_PRICING_PLANS.find(p => p.tier === selectedOptions.selectedPricingTier)?.name}
+                  </span>
+                  <span>
+                    ${SALON_PRICING_PLANS.find(p => p.tier === selectedOptions.selectedPricingTier)?.price}
+                  </span>
+                </div>
+                {selectedOptions.featuredAddon && (
+                  <div className="flex justify-between text-purple-700">
+                    <span>Featured Placement</span>
+                    <span>+${FEATURED_ADDON_PRICE}</span>
+                  </div>
+                )}
+                <div className="border-t pt-2 mt-3">
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span>${calculateSalonPostPrice(selectedOptions).toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="text-center text-sm text-gray-500 max-w-2xl mx-auto">
         <p>All plans include secure payment processing, dedicated support, and a 30-day satisfaction guarantee.</p>

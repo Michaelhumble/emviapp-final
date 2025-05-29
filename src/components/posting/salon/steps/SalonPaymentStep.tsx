@@ -26,6 +26,10 @@ export const SalonPaymentStep = ({ form, onPaymentComplete }: SalonPaymentStepPr
     form.setValue("selectedPricingTier", tier);
   };
 
+  const handleFeaturedAddonChange = (featured: boolean) => {
+    form.setValue("featuredAddon", featured);
+  };
+
   const handleContinueToPayment = async () => {
     if (!selectedOptions.selectedPricingTier) {
       toast.error("Please select a pricing plan first");
@@ -52,6 +56,7 @@ export const SalonPaymentStep = ({ form, onPaymentComplete }: SalonPaymentStepPr
       <SalonPricingPlans 
         selectedOptions={selectedOptions}
         onPlanSelect={handlePlanSelect}
+        onFeaturedAddonChange={handleFeaturedAddonChange}
       />
       
       <div className="flex justify-center pt-6">

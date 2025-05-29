@@ -11,9 +11,11 @@ export interface SalonPricingPlan {
   tier: SalonPricingTier;
   name: string;
   price: number;
+  originalPrice?: number; // For showing discounts
   duration: number; // in months
   description: string;
   features: string[];
+  savings?: string; // For annual plan savings text
 }
 
 export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
@@ -21,7 +23,7 @@ export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
     id: 'basic',
     tier: 'basic',
     name: 'Basic Listing',
-    price: 39,
+    price: 19.99,
     duration: 1,
     description: 'Essential visibility for your salon listing',
     features: [
@@ -36,7 +38,7 @@ export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
     id: 'gold',
     tier: 'gold',
     name: 'Gold Listing',
-    price: 89,
+    price: 59.99,
     duration: 2,
     description: 'Enhanced visibility with premium features',
     features: [
@@ -53,7 +55,8 @@ export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
     id: 'premium',
     tier: 'premium',
     name: 'Premium Listing',
-    price: 149,
+    price: 99.99,
+    originalPrice: 149.99,
     duration: 3,
     description: 'Maximum exposure with all premium features',
     features: [
@@ -72,9 +75,11 @@ export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
     id: 'annual',
     tier: 'annual',
     name: 'Annual Package',
-    price: 299,
+    price: 149.00,
+    originalPrice: 299.99,
     duration: 12,
     description: 'Best value for long-term listings',
+    savings: 'Save $150!',
     features: [
       '12-month active listing',
       'Top search placement',
@@ -91,17 +96,19 @@ export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
   }
 ];
 
+export const FEATURED_ADDON_PRICE = 10.00;
+
 export const calculateSalonPostPrice = (options: SalonPricingOptions): number => {
   const plan = SALON_PRICING_PLANS.find(p => p.tier === options.selectedPricingTier);
   const basePrice = plan?.price || 0;
-  const addonPrice = options.featuredAddon ? 10 : 0;
+  const addonPrice = options.featuredAddon ? FEATURED_ADDON_PRICE : 0;
   return basePrice + addonPrice;
 };
 
 export const getSalonPostPricingSummary = (options: SalonPricingOptions) => {
   const plan = SALON_PRICING_PLANS.find(p => p.tier === options.selectedPricingTier);
   const basePrice = plan?.price || 0;
-  const addonPrice = options.featuredAddon ? 10 : 0;
+  const addonPrice = options.featuredAddon ? FEATURED_ADDON_PRICE : 0;
   const total = basePrice + addonPrice;
   
   return {
