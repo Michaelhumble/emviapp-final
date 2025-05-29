@@ -1,27 +1,43 @@
 
 import React, { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import SalonDetailsStep from './steps/SalonDetailsStep';
+import LocationDetailsStep from './steps/LocationDetailsStep';
+import FinancialDetailsStep from './steps/FinancialDetailsStep';
+import FeaturesDetailsStep from './steps/FeaturesDetailsStep';
+import SalonPricingStep from './steps/SalonPricingStep';
+import SalonReviewStep from './steps/SalonReviewStep';
 import { SalonFormValues, salonFormSchema } from './salonFormSchema';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
-import { SalonDetailsStep } from './steps/SalonDetailsStep';
-import { LocationDetailsStep } from './steps/LocationDetailsStep';
-import { FinancialDetailsStep } from './steps/FinancialDetailsStep';
-import PhotoUpload from '@/components/posting/PhotoUpload';
-import { FeaturesDetailsStep } from './steps/FeaturesDetailsStep';
-import { SalonPricingStep } from './steps/SalonPricingStep';
-import { SalonReviewStep } from './steps/SalonReviewStep';
 
 interface SalonListingWizardProps {
   onComplete: (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
 }
 
 const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState<SalonFormValues>({
+    salonName: '',
+    description: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    askingPrice: 0,
+    monthlyRent: 0,
+    monthlyRevenue: 0,
+    yearEstablished: 2020,
+    numberOfChairs: 1,
+    hasParking: false,
+    hasWaitingArea: false,
+    hasPrivateRooms: false,
+    equipment: []
+  });
+  const [photos, setPhotos] = useState<File[]>([]);
   const [pricing, setPricing] = useState<SalonPricingOptions>({
     selectedPricingTier: 'standard',
     durationMonths: 3,
@@ -29,180 +45,128 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
     autoRenew: false
   });
 
-  const form = useForm<SalonFormValues>({
-    resolver: zodResolver(salonFormSchema),
-    defaultValues: {
-      beautyIndustry: 'Nails',
-      hideExactAddress: false,
-      willTrain: false,
-      hasHousing: false,
-      hasWaxRoom: false,
-      hasDiningRoom: false,
-      hasLaundry: false,
-      hasParking: false,
-      isNationwide: false,
-      fastSalePackage: false,
-      autoRenew: false,
-      termsAccepted: false,
-    }
-  });
-
   const steps = [
-    { id: 1, title: 'Salon Identity', titleVi: 'Danh tính salon' },
-    { id: 2, title: 'Location Details', titleVi: 'Chi tiết vị trí' },
-    { id: 3, title: 'Business Details', titleVi: 'Chi tiết kinh doanh' },
-    { id: 4, title: 'Photos', titleVi: 'Ảnh salon' },
-    { id: 5, title: 'Features & Amenities', titleVi: 'Tính năng & Tiện ích' },
-    { id: 6, title: 'Pricing', titleVi: 'Giá cả' },
-    { id: 7, title: 'Review', titleVi: 'Xem lại' }
+    { title: 'Salon Details', component: SalonDetailsStep },
+    { title: 'Location', component: LocationDetailsStep },
+    { title: 'Financial Details', component: FinancialDetailsStep },
+    { title: 'Features & Equipment', component: FeaturesDetailsStep },
+    { title: 'Pricing', component: SalonPricingStep },
+    { title: 'Review & Submit', component: SalonReviewStep }
   ];
 
-  const handleNext = async () => {
-    const isValid = await form.trigger();
-    if (isValid && currentStep < steps.length) {
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  const handleBack = () => {
-    if (currentStep > 1) {
+  const handlePrev = () => {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleSubmit = (data: SalonFormValues) => {
-    if (currentStep === steps.length) {
-      onComplete(data, photoUploads, pricing);
-    }
+  const handleComplete = () => {
+    onComplete(formData, photos, pricing);
   };
 
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return <SalonDetailsStep form={form} />;
-      case 2:
-        return <LocationDetailsStep form={form} />;
-      case 3:
-        return <FinancialDetailsStep form={form} />;
-      case 4:
-        return (
-          <PhotoUpload
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-            maxPhotos={8}
-          />
-        );
-      case 5:
-        return <FeaturesDetailsStep form={form} />;
-      case 6:
-        return (
-          <SalonPricingStep
-            pricing={pricing}
-            setPricing={setPricing}
-          />
-        );
-      case 7:
-        return (
-          <SalonReviewStep
-            form={form}
-            photoUploads={photoUploads}
-            pricing={pricing}
-          />
-        );
-      default:
-        return <SalonDetailsStep form={form} />;
-    }
+  const updateFormData = (data: Partial<SalonFormValues>) => {
+    setFormData(prev => ({ ...prev, ...data }));
   };
+
+  const updatePhotos = (newPhotos: File[]) => {
+    setPhotos(newPhotos);
+  };
+
+  const updatePricing = (newPricing: SalonPricingOptions) => {
+    setPricing(newPricing);
+  };
+
+  const StepComponent = steps[currentStep].component;
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50" style={{ backgroundColor: '#FFF2FA' }}>
-      <div className="container mx-auto px-4 py-8">
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            {steps.map((step, index) => (
-              <div
-                key={step.id}
-                className={`flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}
-              >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentStep >= step.id
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}
-                >
-                  {currentStep > step.id ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    step.id
-                  )}
-                </div>
-                <div className="ml-2 hidden md:block">
-                  <div className="text-sm font-medium">
-                    {step.title}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {step.titleVi}
-                  </div>
-                </div>
-                {index < steps.length - 1 && (
-                  <div className="flex-1 h-0.5 bg-gray-200 mx-4 hidden md:block">
-                    <div
-                      className={`h-full bg-purple-600 transition-all duration-300 ${
-                        currentStep > step.id ? 'w-full' : 'w-0'
-                      }`}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">List Your Salon for Sale</h1>
+          <p className="text-gray-600">Connect with qualified buyers looking for salon businesses</p>
         </div>
 
-        {/* Main Content */}
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <Card className="max-w-4xl mx-auto">
-              <CardContent className="p-8">
-                {renderStep()}
-              </CardContent>
-            </Card>
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-700">
+              Step {currentStep + 1} of {steps.length}
+            </span>
+            <Badge variant="outline" className="text-purple-600 border-purple-200">
+              {steps[currentStep].title}
+            </Badge>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
 
-            {/* Navigation */}
-            <div className="flex justify-between mt-8 max-w-4xl mx-auto">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleBack}
-                disabled={currentStep === 1}
-                className="flex items-center"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Back / Quay lại
-              </Button>
+        {/* Step Content */}
+        <Card className="shadow-lg border-0">
+          <CardContent className="p-8">
+            <StepComponent
+              formData={formData}
+              photos={photos}
+              pricing={pricing}
+              updateFormData={updateFormData}
+              updatePhotos={updatePhotos}
+              updatePricing={updatePricing}
+              onNext={handleNext}
+              onPrev={handlePrev}
+              onComplete={handleComplete}
+              isFirstStep={currentStep === 0}
+              isLastStep={currentStep === steps.length - 1}
+            />
+          </CardContent>
+        </Card>
 
-              {currentStep < steps.length ? (
-                <Button
-                  type="button"
-                  onClick={handleNext}
-                  className="flex items-center bg-purple-600 hover:bg-purple-700"
-                >
-                  Next / Tiếp theo
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  className="flex items-center bg-green-600 hover:bg-green-700"
-                >
-                  Complete Listing / Hoàn thành
-                  <Check className="w-4 h-4 ml-2" />
-                </Button>
-              )}
-            </div>
-          </form>
-        </FormProvider>
+        {/* Navigation */}
+        <div className="flex justify-between items-center mt-8">
+          <Button
+            variant="outline"
+            onClick={handlePrev}
+            disabled={currentStep === 0}
+            className="flex items-center gap-2"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          
+          <div className="flex gap-2">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  index <= currentStep ? 'bg-purple-600' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+
+          {currentStep < steps.length - 1 ? (
+            <Button
+              onClick={handleNext}
+              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleComplete}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+            >
+              Complete Listing
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
