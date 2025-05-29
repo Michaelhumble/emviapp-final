@@ -60,8 +60,8 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     );
   }
 
-  // Check if user is a salon owner - only allow "salon" role
-  const isSalonOwner = userProfile?.role === 'salon';
+  // Check if user is a salon owner - allow "salon" or "owner" roles
+  const isSalonOwner = userProfile?.role === 'salon' || userProfile?.role === 'owner';
 
   if (!isSalonOwner) {
     return (
