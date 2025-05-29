@@ -26,9 +26,19 @@ export const useSession = () => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Fix: Use proper enum comparison for AuthChangeEvent
-        if (event === 'SIGNED_UP') {
-          setIsNewUser(true);
+        // Fix: Use correct string value for AuthChangeEvent
+        if (event === 'SIGNED_IN') {
+          // Check if this is a new user by looking at user metadata or creation time
+          if (session?.user) {
+            const userCreatedAt = new Date(session.user.created_at);
+            const now = new Date();
+            const timeDiff = now.getTime() - userCreatedAt.getTime();
+            const isRecentlyCreated = timeDiff < 60000; // Less than 1 minute ago
+            
+            if (isRecentlyCreated) {
+              setIsNewUser(true);
+            }
+          }
         }
       }
     );
