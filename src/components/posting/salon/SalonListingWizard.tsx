@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +18,7 @@ import PostWizardLayout from '../PostWizardLayout';
 const SalonListingWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
@@ -81,7 +80,8 @@ const SalonListingWizard = () => {
   };
 
   const handlePaymentComplete = () => {
-    setCurrentStep(7); // Move to final step/success page
+    // Payment completed - could redirect or show success
+    console.log('Payment completed successfully');
   };
 
   const renderStep = () => {
@@ -122,16 +122,16 @@ const SalonListingWizard = () => {
       case 5: return 'Description';
       case 6: return 'Photos';
       case 7: return 'Preview';
-      case 8: return 'Payment';
+      case 8: return 'Pricing & Payment';
       default: return 'Salon Identity';
     }
   };
 
-  const isLastStep = currentStep === 8;
+  const isLastStep = currentStep === totalSteps;
   const isPreviewStep = currentStep === 7;
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={8}>
+    <PostWizardLayout currentStep={currentStep} totalSteps={totalSteps}>
       <Form {...form}>
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
