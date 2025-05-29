@@ -2,16 +2,9 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
-import { SalonListingWizard } from '@/components/posting/salon/SalonListingWizard';
-import { SalonFormValues } from '@/components/posting/salon/salonFormSchema';
-import { SalonPricingOptions } from '@/utils/posting/salonPricing';
+import SalonListingWizard from '@/components/posting/salon/SalonListingWizard';
 
 const PostSalon = () => {
-  const handleComplete = (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => {
-    console.log('Salon listing completed:', { formData, photos, pricing });
-    // Handle form submission - could redirect to payment, save to database, etc.
-  };
-
   return (
     <Layout>
       <Helmet>
@@ -21,7 +14,7 @@ const PostSalon = () => {
           content="List your salon for sale on EmviApp. Reach thousands of qualified buyers looking for salon businesses."
         />
       </Helmet>
-      <SalonListingWizard onComplete={handleComplete} />
+      <SalonListingWizard />
     </Layout>
   );
 };

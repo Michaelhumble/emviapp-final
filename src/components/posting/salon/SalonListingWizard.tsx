@@ -1,191 +1,178 @@
 
-import React, { useState } from 'react';
-import { SalonFormValues } from './salonFormSchema';
-import { SalonPricingOptions } from '@/utils/posting/salonPricing';
-import { SalonDetailsStep } from './steps/SalonDetailsStep';
-import { LocationDetailsStep } from './steps/LocationDetailsStep';
-import { FinancialDetailsStep } from './steps/FinancialDetailsStep';
-import { FeaturesDetailsStep } from './steps/FeaturesDetailsStep';
-import { PhotoUploadStep } from './steps/PhotoUploadStep';
-import { SalonPricingStep } from './steps/SalonPricingStep';
-import { SalonReviewStep } from './steps/SalonReviewStep';
-import { useStripe } from '@/hooks/useStripe';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { salonFormSchema, SalonFormValues } from "./salonFormSchema";
+import { SalonPricingOptions } from "@/utils/posting/salonPricing";
+import { SalonIdentityStep } from "./steps/SalonIdentityStep";
+import { SalonLocationStep } from "./steps/SalonLocationStep";
+import { SalonDetailsStep } from "./steps/SalonDetailsStep";
+import { SalonPricingStep } from "./steps/SalonPricingStep";
+import { SalonReviewStep } from "./steps/SalonReviewStep";
+import PostWizardLayout from "../PostWizardLayout";
 
-interface SalonListingWizardProps {
-  onComplete: (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
-}
+const STEPS = [
+  { id: 1, title: "Salon Information / Thông Tin Salon", component: "identity" },
+  { id: 2, title: "Location / Địa Chỉ", component: "location" },
+  { id: 3, title: "Details & Photos / Chi Tiết & Hình Ảnh", component: "details" },
+  { id: 4, title: "Pricing Plan / Chọn Gói", component: "pricing" },
+  { id: 5, title: "Review & Payment / Xem Lại & Thanh Toán", component: "review" }
+];
 
-export const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<SalonFormValues>({
-    salonName: '',
-    businessType: '',
-    address: '',
-    city: '',
-    state: '',
-    askingPrice: '',
-    monthlyRent: ''
-  });
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [pricing, setPricing] = useState<SalonPricingOptions>({
-    selectedPricingTier: 'standard',
-    durationMonths: 3,
-    featuredAddOn: false,
+const SalonListingWizard = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<SalonPricingOptions>({
+    selectedPricingTier: 'basic',
+    durationMonths: 1,
     autoRenew: false
   });
 
-  const { initiatePayment, isLoading } = useStripe();
-
-  const steps = [
-    'Salon Details',
-    'Location',
-    'Financial Info',
-    'Features',
-    'Photos',
-    'Pricing',
-    'Review'
-  ];
-
-  const updateFormData = (data: Partial<SalonFormValues>) => {
-    setFormData(prev => ({ ...prev, ...data }));
-  };
-
-  const updatePhotos = (newPhotos: File[]) => {
-    setPhotos(newPhotos);
-  };
-
-  const updatePricing = (newPricing: SalonPricingOptions) => {
-    setPricing(newPricing);
-  };
+  const form = useForm<SalonFormValues>({
+    resolver: zodResolver(salonFormSchema),
+    defaultValues: {
+      salonName: "",
+      businessType: "",
+      establishedYear: "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      neighborhood: "",
+      hideExactAddress: false,
+      askingPrice: "",
+      monthlyRent: "",
+      numberOfStaff: "",
+      numberOfTables: "",
+      numberOfChairs: "",
+      squareFeet: "",
+      monthlyRevenue: "",
+      vietnameseDescription: "",
+      englishDescription: "",
+      reasonForSelling: "",
+      hasParking: false,
+      hasLaundry: false,
+      hasWaxRoom: false,
+      hasDiningRoom: false,
+      willTrain: false,
+      isNationwide: false,
+      fastSalePackage: false,
+      autoRenew: false,
+      termsAccepted: false,
+    },
+  });
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < STEPS.length) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const prevStep = () => {
-    if (currentStep > 0) {
+    if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleComplete = async () => {
-    try {
-      const success = await initiatePayment(pricing, formData);
-      if (success) {
-        onComplete(formData, photos, pricing);
-        toast.success('Salon listing created successfully!');
-      }
-    } catch (error) {
-      console.error('Error completing salon listing:', error);
-      toast.error('Failed to complete salon listing. Please try again.');
+  const renderStep = () => {
+    const currentStepData = STEPS[currentStep - 1];
+    const formData = form.getValues();
+
+    switch (currentStepData.component) {
+      case "identity":
+        return <SalonIdentityStep form={form} />;
+      case "location":
+        return <SalonLocationStep form={form} />;
+      case "details":
+        return (
+          <SalonDetailsStep 
+            form={form} 
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+          />
+        );
+      case "pricing":
+        return (
+          <SalonPricingStep 
+            selectedOptions={selectedOptions}
+            onOptionsChange={setSelectedOptions}
+            form={form}
+          />
+        );
+      case "review":
+        return (
+          <SalonReviewStep 
+            form={form}
+            formData={formData}
+            selectedOptions={selectedOptions}
+            photoUploads={photoUploads}
+          />
+        );
+      default:
+        return null;
     }
   };
 
-  const stepProps = {
-    formData,
-    photos,
-    pricing,
-    updateFormData,
-    updatePhotos,
-    updatePricing,
-    onNext: nextStep,
-    onPrev: prevStep,
-    onComplete: handleComplete,
-    isFirstStep: currentStep === 0,
-    isLastStep: currentStep === steps.length - 1
-  };
-
-  const renderStep = () => {
+  const canProceed = () => {
+    const formData = form.getValues();
     switch (currentStep) {
-      case 0:
-        return <SalonDetailsStep {...stepProps} />;
       case 1:
-        return <LocationDetailsStep {...stepProps} />;
+        return formData.salonName && formData.businessType;
       case 2:
-        return <FinancialDetailsStep {...stepProps} />;
+        return formData.address && formData.city && formData.state;
       case 3:
-        return <FeaturesDetailsStep {...stepProps} />;
+        return formData.askingPrice && 
+               formData.monthlyRent && 
+               photoUploads.length > 0;
       case 4:
-        return <PhotoUploadStep {...stepProps} />;
+        return selectedOptions.selectedPricingTier && selectedOptions.durationMonths;
       case 5:
-        return <SalonPricingStep {...stepProps} setPricing={updatePricing} />;
-      case 6:
-        return <SalonReviewStep {...stepProps} />;
+        return formData.termsAccepted;
       default:
-        return <SalonDetailsStep {...stepProps} />;
+        return true;
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          {steps.map((step, index) => (
-            <div
-              key={step}
-              className={`flex items-center ${
-                index <= currentStep ? 'text-purple-600' : 'text-gray-400'
-              }`}
+    <PostWizardLayout currentStep={currentStep} totalSteps={STEPS.length}>
+      <div className="max-w-4xl mx-auto">
+        <Form {...form}>
+          <div className="bg-white rounded-lg shadow-sm border p-6 md:p-8">
+            {renderStep()}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between mt-8">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className="flex items-center gap-2"
             >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  index <= currentStep
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-200 text-gray-400'
-                }`}
+              <ArrowLeft className="w-4 h-4" />
+              Back / Quay lại
+            </Button>
+
+            {currentStep < STEPS.length && (
+              <Button
+                type="button"
+                onClick={nextStep}
+                disabled={!canProceed()}
+                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
               >
-                {index + 1}
-              </div>
-              <span className="ml-2 text-sm font-medium hidden md:block">
-                {step}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-          />
-        </div>
+                Next / Tiếp tục
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+        </Form>
       </div>
-
-      {/* Step Content */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        {renderStep()}
-      </div>
-
-      {/* Navigation */}
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={prevStep}
-          disabled={currentStep === 0}
-          className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Previous
-        </button>
-        
-        {currentStep === steps.length - 1 ? (
-          <button
-            onClick={handleComplete}
-            disabled={isLoading}
-            className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50"
-          >
-            {isLoading ? 'Processing...' : 'Complete & Pay'}
-          </button>
-        ) : (
-          <button
-            onClick={nextStep}
-            className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
-          >
-            Next
-          </button>
-        )}
-      </div>
-    </div>
+    </PostWizardLayout>
   );
 };
+
+export default SalonListingWizard;

@@ -5,7 +5,6 @@ export const salonFormSchema = z.object({
   // Identity fields
   salonName: z.string().min(2, "Salon name must be at least 2 characters"),
   businessType: z.string().min(1, "Business type is required"),
-  beautyIndustry: z.string().default("Nails"),
   establishedYear: z.string().optional(),
   logo: z.any().optional(),
 
@@ -20,18 +19,15 @@ export const salonFormSchema = z.object({
   // Financial/Business details
   askingPrice: z.string().min(1, "Asking price is required"),
   monthlyRent: z.string().min(1, "Monthly rent is required"),
-  monthlyProfit: z.string().optional(),
-  monthlyRevenue: z.string().optional(),
-  employeeCount: z.string().optional(),
   numberOfStaff: z.string().optional(),
   numberOfTables: z.string().optional(),
   numberOfChairs: z.string().optional(),
   squareFeet: z.string().optional(),
   revenue: z.string().optional(),
+  monthlyRevenue: z.string().optional(),
   yearlyRevenue: z.string().optional(),
   
-  // Descriptions and details - FIXED: Added description field
-  description: z.string().optional(),
+  // Descriptions and details
   vietnameseDescription: z.string().optional(),
   englishDescription: z.string().optional(),
   reasonForSelling: z.string().optional(),
@@ -44,9 +40,6 @@ export const salonFormSchema = z.object({
   hasDiningRoom: z.boolean().default(false),
   hasLaundry: z.boolean().default(false),
   hasParking: z.boolean().default(false),
-  hasWaitingArea: z.boolean().default(false),
-  hasPrivateRooms: z.boolean().default(false),
-  equipment: z.array(z.string()).default([]),
   
   // Pricing options
   isNationwide: z.boolean().default(false),

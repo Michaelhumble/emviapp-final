@@ -1,204 +1,176 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Star, Crown } from 'lucide-react';
-import { DURATION_OPTIONS, type SalonPricingTier } from '@/utils/posting/salonPricing';
+import { CheckCircle, Star, Zap, Crown } from 'lucide-react';
+import { SalonPricingOptions, DURATION_OPTIONS } from '@/utils/posting/salonPricing';
 
 interface SalonPlanSelectionWithoutPricesProps {
-  onPricingSelect: (tier: SalonPricingTier, finalPrice: number) => void;
-  selectedTier?: SalonPricingTier;
+  selectedOptions: SalonPricingOptions;
+  onOptionsChange: (options: SalonPricingOptions) => void;
 }
 
-const SalonPlanSelectionWithoutPrices: React.FC<SalonPlanSelectionWithoutPricesProps> = ({
-  onPricingSelect,
-  selectedTier
-}) => {
-  const [selectedDuration, setSelectedDuration] = useState(3);
-  const [featuredAddOn, setFeaturedAddOn] = useState(false);
+const SalonPlanSelectionWithoutPrices = ({ 
+  selectedOptions, 
+  onOptionsChange 
+}: SalonPlanSelectionWithoutPricesProps) => {
+  
+  const plans = [
+    {
+      id: 'basic',
+      name: 'Basic Plan / Gói Cơ Bản',
+      icon: <CheckCircle className="w-6 h-6 text-blue-500" />,
+      features: [
+        'Standard listing visibility / Hiển thị tin đăng tiêu chuẩn',
+        'Basic photo gallery / Thư viện ảnh cơ bản',
+        'Contact information display / Hiển thị thông tin liên hệ',
+        'Search engine optimization / Tối ưu hóa công cụ tìm kiếm'
+      ],
+      recommended: false
+    },
+    {
+      id: 'standard',
+      name: 'Standard Plan / Gói Tiêu Chuẩn',
+      icon: <Star className="w-6 h-6 text-purple-500" />,
+      features: [
+        'Enhanced listing visibility / Tăng cường hiển thị tin đăng',
+        'Premium photo gallery / Thư viện ảnh cao cấp',
+        'Featured in search results / Nổi bật trong kết quả tìm kiếm',
+        'Priority customer support / Hỗ trợ khách hàng ưu tiên',
+        'Analytics dashboard / Bảng điều khiển phân tích'
+      ],
+      recommended: true
+    },
+    {
+      id: 'featured',
+      name: 'Featured Plan / Gói Nổi Bật',
+      icon: <Crown className="w-6 h-6 text-gold-500" />,
+      features: [
+        'Maximum visibility / Hiển thị tối đa',
+        'Top of search results / Đầu kết quả tìm kiếm',
+        'Premium badge display / Hiển thị huy hiệu cao cấp',
+        'Virtual tour integration / Tích hợp tour ảo',
+        'Social media promotion / Quảng bá mạng xã hội',
+        'Dedicated account manager / Quản lý tài khoản chuyên dụng'
+      ],
+      recommended: false
+    }
+  ];
 
-  const calculatePrice = (duration: number, withFeatured: boolean) => {
-    const durationOption = DURATION_OPTIONS.find(d => d.months === duration);
-    const basePrice = durationOption?.price || 19.99;
-    const featuredCost = withFeatured ? duration * 10 : 0;
-    return basePrice + featuredCost;
+  const handlePlanSelect = (planId: string) => {
+    onOptionsChange({
+      ...selectedOptions,
+      selectedPricingTier: planId as any
+    });
   };
 
-  const handleSelectPlan = () => {
-    const finalPrice = calculatePrice(selectedDuration, featuredAddOn);
-    onPricingSelect('standard', finalPrice);
+  const handleDurationChange = (months: number) => {
+    onOptionsChange({
+      ...selectedOptions,
+      durationMonths: months
+    });
   };
 
-  const getSavingsText = (duration: number) => {
-    if (duration === 6) return 'Tiết kiệm 25% / Save 25%';
-    if (duration === 12) return 'Tiết kiệm 30% / Save 30%';
-    return '';
+  const handleAutoRenewToggle = () => {
+    onOptionsChange({
+      ...selectedOptions,
+      autoRenew: !selectedOptions.autoRenew
+    });
   };
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4 font-playfair">
-          Chọn Gói Đăng Tin / Choose Your Listing Plan
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Chọn thời hạn phù hợp để salon của bạn tiếp cận đúng đối tượng khách hàng.
-          <br />
-          Select the right duration to reach your target buyers effectively.
-        </p>
+      {/* Plan Selection */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {plans.map((plan) => (
+          <Card 
+            key={plan.id}
+            className={`relative cursor-pointer transition-all hover:shadow-lg ${
+              selectedOptions.selectedPricingTier === plan.id 
+                ? 'ring-2 ring-purple-500 shadow-lg' 
+                : 'hover:ring-1 hover:ring-gray-300'
+            }`}
+            onClick={() => handlePlanSelect(plan.id)}
+          >
+            {plan.recommended && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-purple-500 text-white">
+                  Recommended / Khuyên Dùng
+                </Badge>
+              </div>
+            )}
+            
+            <CardHeader className="text-center pb-2">
+              <div className="flex justify-center mb-2">
+                {plan.icon}
+              </div>
+              <CardTitle className="text-lg">{plan.name}</CardTitle>
+            </CardHeader>
+            
+            <CardContent>
+              <ul className="space-y-2 text-sm">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Duration Selection */}
-      <Card className="border-blue-300">
-        <CardHeader className="text-center pb-4">
-          <div className="flex justify-center mb-2">
-            <Star className="h-6 w-6 text-blue-600" />
-          </div>
-          <CardTitle className="text-lg font-bold">
-            Standard Listing / Đăng Tin Cơ Bản
-          </CardTitle>
-          <Badge className="bg-blue-600 text-white mx-auto">
-            Phổ Biến / Most Popular
-          </Badge>
+      <Card>
+        <CardHeader>
+          <CardTitle>Duration / Thời Hạn</CardTitle>
         </CardHeader>
-
-        <CardContent className="space-y-6">
-          {/* Duration Options */}
-          <div className="space-y-3">
-            <h4 className="font-medium text-gray-900">
-              Chọn thời hạn / Select Duration:
-            </h4>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {DURATION_OPTIONS.map((option) => (
-              <div key={option.months} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                <label className="flex items-center cursor-pointer flex-1">
-                  <input
-                    type="radio"
-                    name="duration"
-                    value={option.months}
-                    checked={selectedDuration === option.months}
-                    onChange={() => setSelectedDuration(option.months)}
-                    className="mr-3"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium">{option.label}</div>
-                    {getSavingsText(option.months) && (
-                      <div className="text-sm text-green-600 font-medium">
-                        {getSavingsText(option.months)}
-                      </div>
-                    )}
-                  </div>
-                </label>
-                <div className="text-right">
-                  <div className="font-bold text-lg">${option.price}</div>
-                  <div className="text-sm text-gray-500">
-                    ${(option.price / option.months).toFixed(2)}/tháng
-                  </div>
-                </div>
-              </div>
+              <Button
+                key={option.months}
+                variant={selectedOptions.durationMonths === option.months ? "default" : "outline"}
+                onClick={() => handleDurationChange(option.months)}
+                className="h-auto py-3 px-4 flex flex-col items-center gap-1"
+              >
+                <span className="font-semibold">{option.label}</span>
+                {option.discount > 0 && (
+                  <Badge variant="secondary" className="text-xs">
+                    {option.discount}% off / giảm {option.discount}%
+                  </Badge>
+                )}
+              </Button>
             ))}
-          </div>
-
-          {/* Featured Add-on */}
-          <div className="border-t pt-4">
-            <div className="flex items-center justify-between p-3 border rounded-lg bg-yellow-50 border-yellow-200">
-              <label className="flex items-center cursor-pointer flex-1">
-                <input
-                  type="checkbox"
-                  checked={featuredAddOn}
-                  onChange={(e) => setFeaturedAddOn(e.target.checked)}
-                  className="mr-3"
-                />
-                <div className="flex-1">
-                  <div className="font-medium flex items-center">
-                    <Crown className="h-4 w-4 text-yellow-600 mr-2" />
-                    Featured Add-On / Nổi Bật
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Highlighted placement, "Featured" badge
-                    <br />
-                    Vị trí nổi bật, huy hiệu "Đặc biệt"
-                  </div>
-                </div>
-              </label>
-              <div className="text-right">
-                <div className="font-bold text-lg">+$10/month</div>
-                <div className="text-sm text-gray-500">
-                  +${selectedDuration * 10} total
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Features List */}
-          <div>
-            <h4 className="font-medium text-gray-900 mb-3">
-              Bao gồm / Includes:
-            </h4>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  Basic salon listing / Đăng tin cơ bản
-                </span>
-              </li>
-              <li className="flex items-start">
-                <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  Search visibility / Hiển thị trong tìm kiếm
-                </span>
-              </li>
-              <li className="flex items-start">
-                <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  Contact information display / Hiển thị thông tin liên hệ
-                </span>
-              </li>
-              <li className="flex items-start">
-                <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  Photo gallery / Thư viện hình ảnh
-                </span>
-              </li>
-              {featuredAddOn && (
-                <li className="flex items-start">
-                  <Crown className="h-4 w-4 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-700">
-                    Featured placement & badge / Vị trí nổi bật & huy hiệu
-                  </span>
-                </li>
-              )}
-            </ul>
-          </div>
-
-          {/* Total Price */}
-          <div className="border-t pt-4">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-medium">Total / Tổng cộng:</span>
-              <span className="text-2xl font-bold text-blue-600">
-                ${calculatePrice(selectedDuration, featuredAddOn).toFixed(2)}
-              </span>
-            </div>
-            
-            <Button
-              onClick={handleSelectPlan}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              disabled={selectedTier === 'standard'}
-            >
-              {selectedTier === 'standard' ? 'Đã Chọn / Selected' : 'Chọn Gói / Select Plan'}
-            </Button>
           </div>
         </CardContent>
       </Card>
 
-      <div className="mt-8 text-center text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
-        <p className="mb-2">
-          💡 <strong>Lời khuyên:</strong> Gói dài hạn giúp tiết kiệm chi phí và duy trì hiển thị ổn định.
-        </p>
-        <p>
-          💡 <strong>Tip:</strong> Longer plans help save costs and maintain stable visibility.
-        </p>
-      </div>
+      {/* Auto-Renewal Option */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-orange-500" />
+              <div>
+                <h4 className="font-medium">Auto-Renewal / Tự Động Gia Hạn</h4>
+                <p className="text-sm text-gray-600">
+                  Save with automatic renewal / Tiết kiệm với gia hạn tự động
+                </p>
+              </div>
+            </div>
+            <Button
+              variant={selectedOptions.autoRenew ? "default" : "outline"}
+              onClick={handleAutoRenewToggle}
+              size="sm"
+            >
+              {selectedOptions.autoRenew ? 'Enabled / Đã Bật' : 'Enable / Bật'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
