@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,6 +38,10 @@ const SalonPostForm = () => {
       englishDescription: '',
       reasonForSelling: '',
       virtualTourUrl: '',
+      contactName: '',
+      contactEmail: '',
+      contactPhone: '',
+      contactNotes: '',
       willTrain: false,
       hasHousing: false,
       hasWaxRoom: false,

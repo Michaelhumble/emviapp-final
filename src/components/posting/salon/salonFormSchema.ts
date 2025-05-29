@@ -35,6 +35,12 @@ export const salonFormSchema = z.object({
   reasonForSelling: z.string().optional(),
   virtualTourUrl: z.string().optional(),
   
+  // Contact Information
+  contactName: z.string().min(1, 'Contact name is required'),
+  contactEmail: z.string().email('Valid email is required'),
+  contactPhone: z.string().min(1, 'Phone number is required'),
+  contactNotes: z.string().optional(),
+  
   // Features and amenities
   willTrain: z.boolean().default(false),
   hasHousing: z.boolean().default(false),
