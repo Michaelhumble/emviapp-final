@@ -24,10 +24,9 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
   const pricingSummary = getSalonPostPricingSummary(selectedOptions);
   
   const getPlanName = () => {
-    const duration = selectedOptions.durationMonths || 1;
-    if (duration === 1) return 'Standard Listing';
-    if (duration === 6) return '6 Month Package';
-    if (duration === 12) return '12 Month Package';
+    if (selectedOptions.durationMonths === 1) return 'Standard Listing';
+    if (selectedOptions.durationMonths === 6) return '6 Month Package';
+    if (selectedOptions.durationMonths === 12) return '12 Month Package';
     return 'Standard Listing';
   };
 

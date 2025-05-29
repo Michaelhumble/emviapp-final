@@ -16,7 +16,6 @@ export const salonFormSchema = z.object({
   zipCode: z.string().optional(),
   neighborhood: z.string().optional(),
   hideExactAddress: z.boolean().default(false),
-  location: z.string().optional(),
 
   // Financial/Business details
   askingPrice: z.string().min(1, "Asking price is required"),
@@ -32,15 +31,10 @@ export const salonFormSchema = z.object({
   yearlyRevenue: z.string().optional(),
   
   // Descriptions and details
-  description: z.string().optional(),
   vietnameseDescription: z.string().optional(),
   englishDescription: z.string().optional(),
   reasonForSelling: z.string().optional(),
   virtualTourUrl: z.string().optional(),
-  
-  // Contact information
-  contactEmail: z.string().optional(),
-  contactPhone: z.string().optional(),
   
   // Features and amenities
   willTrain: z.boolean().default(false),

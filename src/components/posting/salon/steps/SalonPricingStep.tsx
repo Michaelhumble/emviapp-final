@@ -1,19 +1,9 @@
 
 import React from "react";
-import { type SalonPricingTier } from "@/utils/posting/salonPricing";
+import { SalonPricingOptions } from "@/utils/posting/salonPricing";
 import SalonPlanSelectionWithoutPrices from "../SalonPlanSelectionWithoutPrices";
 import { UseFormReturn } from "react-hook-form";
 import { SalonFormValues } from "../salonFormSchema";
-
-interface SalonPricingOptions {
-  selectedPricingTier: SalonPricingTier;
-  isNationwide?: boolean;
-  fastSalePackage?: boolean;
-  showAtTop?: boolean;
-  bundleWithJobPost?: boolean;
-  autoRenew?: boolean;
-  isFirstPost?: boolean;
-}
 
 interface SalonPricingStepProps {
   selectedOptions: SalonPricingOptions;
@@ -22,13 +12,10 @@ interface SalonPricingStepProps {
 }
 
 export const SalonPricingStep = ({ selectedOptions, onOptionsChange, form }: SalonPricingStepProps) => {
-  const handlePricingSelect = (tier: SalonPricingTier, finalPrice: number) => {
-    const updatedOptions = {
-      ...selectedOptions,
-      selectedPricingTier: tier
-    };
-    onOptionsChange(updatedOptions);
-    form.setValue('autoRenew', updatedOptions.autoRenew || false);
+  const handleOptionsChange = (options: SalonPricingOptions) => {
+    onOptionsChange(options);
+    // Sync auto-renew option with form
+    form.setValue('autoRenew', options.autoRenew || false);
   };
 
   return (
@@ -41,8 +28,8 @@ export const SalonPricingStep = ({ selectedOptions, onOptionsChange, form }: Sal
       </div>
       
       <SalonPlanSelectionWithoutPrices
-        onPricingSelect={handlePricingSelect}
-        selectedTier={selectedOptions.selectedPricingTier}
+        selectedOptions={selectedOptions}
+        onOptionsChange={handleOptionsChange}
       />
     </div>
   );
