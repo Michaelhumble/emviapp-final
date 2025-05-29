@@ -24,7 +24,9 @@ export {
   calculateSalonPostPrice,
   getSalonPostPricingSummary,
   validateSalonPricingOptions,
-  getStripeSalonPriceId
+  getStripeSalonPriceId,
+  getSalonPricingPlan,
+  salonPricingPlans
 } from './salonPricing';
 
 export type {
