@@ -1,38 +1,51 @@
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ArrowLeft, Home, AlertCircle } from 'lucide-react';
 
 const CheckoutFallback = () => {
+  const navigate = useNavigate();
+  const { t, isVietnamese } = useTranslation();
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="max-w-md w-full">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-            <AlertTriangle className="h-8 w-8 text-orange-600" />
-          </div>
-          <CardTitle className="text-xl">Checkout Not Available</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">
-            The checkout system is currently being set up. Please try again later or contact support.
-          </p>
-          <div className="space-y-2">
-            <Button asChild className="w-full">
-              <Link to="/">
-                Return to Home
-              </Link>
-            </Button>
-            <Button variant="outline" asChild className="w-full">
-              <Link to="/contact">
-                Contact Support
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[70vh]">
+      <Alert variant="destructive" className="max-w-md w-full mb-6">
+        <AlertCircle className="h-5 w-5" />
+        <AlertTitle>
+          {t("Invalid Checkout Path")}
+        </AlertTitle>
+        <AlertDescription>
+          {t("You're not supposed to access this page directly. Please return to the payment flow.")}
+        </AlertDescription>
+      </Alert>
+      
+      <div className="flex flex-col sm:flex-row gap-4 mt-4">
+        <Button 
+          onClick={() => navigate(-1)} 
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t("Go Back")}
+        </Button>
+        
+        <Button 
+          onClick={() => navigate('/')} 
+          className="flex items-center gap-2"
+        >
+          <Home className="h-4 w-4" />
+          {t("Return to Home")}
+        </Button>
+      </div>
+      
+      <p className="mt-12 text-sm text-muted-foreground max-w-md text-center">
+        {isVietnamese 
+          ? "Nếu bạn đang cố gắng thanh toán, vui lòng quay lại màn hình trước đó và thực hiện lại quy trình thanh toán."
+          : "If you were trying to make a payment, please go back to the previous screen and follow the payment process again."
+        }
+      </p>
     </div>
   );
 };

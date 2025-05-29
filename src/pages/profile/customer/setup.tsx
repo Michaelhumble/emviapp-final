@@ -1,109 +1,177 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '@/context/auth';
+import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select } from "@/components/ui/select";
 import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/context/auth';
+import Layout from '@/components/layout/Layout';
+import { CustomerProfileCompletionTracker } from '@/components/customer/CustomerProfileCompletionTracker';
+
+const BEAUTY_PREFERENCES = [
+  "Hair", "Nails", "Makeup", "Skincare", "Lashes", "Brows", 
+  "Massage", "Facial", "Waxing"
+];
 
 const CustomerSetup = () => {
-  const { userProfile, updateProfile } = useAuth();
+  const { user, userProfile, updateProfile } = useAuth();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
-    full_name: userProfile?.full_name || '',
-    phone: userProfile?.phone || '',
-    location: userProfile?.location || '',
+    fullName: userProfile?.full_name || '',
     gender: userProfile?.gender || '',
-    favorite_artist_types: userProfile?.favorite_artist_types || [],
-    communication_preferences: userProfile?.communication_preferences || []
+    location: userProfile?.location || '',
+    phone: userProfile?.phone || '',
+    preferences: userProfile?.preferences || []
   });
+
   const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    
     try {
-      await updateProfile({
-        ...formData,
-        profile_completion: 80 // Mark as mostly complete
+      const success = await updateProfile({
+        full_name: formData.fullName,
+        gender: formData.gender,
+        location: formData.location,
+        phone: formData.phone,
+        preferences: formData.preferences,
       });
       
-      toast.success('Profile updated successfully');
+      if (success) {
+        navigate('/dashboard/customer');
+      }
     } catch (error) {
-      console.error('Profile update failed:', error);
-      toast.error('Failed to update profile');
+      console.error("Error saving profile:", error);
+      toast.error("Failed to save profile. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Complete Your Customer Profile</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="full_name">Full Name</Label>
-            <Input
-              id="full_name"
-              value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              placeholder="Your full name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="Your phone number"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              placeholder="Your city/location"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="gender">Gender (Optional)</Label>
-            <Select 
-              value={formData.gender} 
-              onValueChange={(value) => setFormData({ ...formData, gender: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="non-binary">Non-binary</SelectItem>
-                <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? 'Saving...' : 'Save Profile'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <Layout>
+      <div className="container max-w-3xl py-10 px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif font-bold mb-2">Complete your profile</h1>
+          <p className="text-muted-foreground">Help us personalize your experience</p>
+        </div>
+        
+        <CustomerProfileCompletionTracker />
+        
+        <Card className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-col items-center mb-8">
+              <Avatar className="w-24 h-24 mb-4">
+                <AvatarImage src={userProfile?.avatar_url || undefined} />
+                <AvatarFallback className="text-xl">
+                  {formData.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <Button type="button" variant="outline" size="sm">
+                Upload Photo
+              </Button>
+            </div>
+            
+            <div className="grid gap-6">
+              <div>
+                <Label htmlFor="fullName">Full Name <span className="text-red-500">*</span></Label>
+                <Input
+                  id="fullName"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="mt-1"
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="gender">Gender (Optional)</Label>
+                <Select 
+                  name="gender" 
+                  value={formData.gender}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+                >
+                  <option value="">Select gender</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="City, State"
+                  className="mt-1"
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="phone">Phone Number (Optional)</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="(123) 456-7890"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label>Beauty Preferences</Label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {BEAUTY_PREFERENCES.map(pref => (
+                    <Button
+                      key={pref}
+                      type="button"
+                      variant={formData.preferences.includes(pref) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          preferences: prev.preferences.includes(pref)
+                            ? prev.preferences.filter(p => p !== pref)
+                            : [...prev.preferences, pref]
+                        }));
+                      }}
+                    >
+                      {pref}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <div className="pt-4">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Saving..." : "Save Profile"}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </Layout>
   );
 };
 

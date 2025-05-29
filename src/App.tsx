@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -9,7 +10,7 @@ import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import { Toaster } from "@/components/ui/toaster";
-import AppErrorBoundary from '@/components/error-handling/AppErrorBoundary';
+import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
@@ -45,7 +46,7 @@ function App() {
 
   return (
     <HelmetProvider>
-      <AppErrorBoundary>
+      <GeneralErrorBoundary>
         <AuthProvider>
           <SalonProvider>
             <SubscriptionProvider>
@@ -55,7 +56,6 @@ function App() {
                   <Routes>
                     {/* Auth routes */}
                     <Route path="/login" element={<SignIn />} />
-                    <Route path="/sign-in" element={<SignIn />} />
                     <Route path="/sign-up" element={<SignUp />} />
                     <Route path="/register" element={<SignUp />} />
                     
@@ -85,17 +85,11 @@ function App() {
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
-                    {/* Dashboard routes */}
-                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
-                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
-                    
-                    {/* Dynamic routes from routes config */}
-                    {(routes || []).map((route, index) => (
+                    {routes.map((route, index) => (
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
                        route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
-                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success" &&
-                       route.path !== "/login" && route.path !== "/sign-in" && route.path !== "/sign-up") && (
+                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success") && (
                         <Route 
                           key={index}
                           path={route.path}
@@ -103,6 +97,8 @@ function App() {
                         />
                       )
                     ))}
+                    <Route path="/dashboard/artist/booking-calendar" element={<Layout><BookingCalendar /></Layout>} />
+                    <Route path="/dashboard/artist/inbox" element={<Layout><ArtistInbox /></Layout>} />
                   </Routes>
                 </Suspense>
                 <Toaster />
@@ -110,7 +106,7 @@ function App() {
             </SubscriptionProvider>
           </SalonProvider>
         </AuthProvider>
-      </AppErrorBoundary>
+      </GeneralErrorBoundary>
     </HelmetProvider>
   );
 }

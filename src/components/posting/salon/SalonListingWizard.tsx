@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +35,7 @@ const SalonListingWizard = () => {
     defaultValues: {
       salonName: "",
       businessType: "",
+      beautyIndustry: "Nails", // Default to Nails
       establishedYear: "",
       address: "",
       city: "",
@@ -77,6 +77,11 @@ const SalonListingWizard = () => {
     }
   };
 
+  const handlePayment = () => {
+    // Redirect to success page after payment
+    window.location.href = "/salon-listing-success";
+  };
+
   const renderStep = () => {
     const currentStepData = STEPS[currentStep - 1];
     const formData = form.getValues();
@@ -109,6 +114,7 @@ const SalonListingWizard = () => {
             formData={formData}
             selectedOptions={selectedOptions}
             photoUploads={photoUploads}
+            onPayment={handlePayment}
           />
         );
       default:
@@ -120,7 +126,7 @@ const SalonListingWizard = () => {
     const formData = form.getValues();
     switch (currentStep) {
       case 1:
-        return formData.salonName && formData.businessType;
+        return formData.salonName && formData.businessType && formData.beautyIndustry;
       case 2:
         return formData.address && formData.city && formData.state;
       case 3:
@@ -157,7 +163,7 @@ const SalonListingWizard = () => {
               Back / Quay lại
             </Button>
 
-            {currentStep < STEPS.length && (
+            {currentStep < STEPS.length ? (
               <Button
                 type="button"
                 onClick={nextStep}
@@ -166,6 +172,15 @@ const SalonListingWizard = () => {
               >
                 Next / Tiếp tục
                 <ArrowRight className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={handlePayment}
+                disabled={!canProceed()}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Complete Payment / Hoàn tất thanh toán
               </Button>
             )}
           </div>

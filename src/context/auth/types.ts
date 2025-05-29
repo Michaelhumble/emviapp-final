@@ -1,89 +1,37 @@
 
-import { User, Session } from '@supabase/supabase-js';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
-export type UserRole = 
-  | 'artist' 
-  | 'nail technician/artist'
-  | 'salon'
-  | 'owner'
-  | 'freelancer'
-  | 'customer'
-  | 'supplier'
-  | 'beauty supplier'
-  | 'manager'
-  | 'renter'
-  | 'vendor'
-  | 'admin'
-  | 'other';
+export type { SupabaseUser as User };
+
+export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'supplier' | 'vendor' | 'renter' | 'other';
 
 export interface UserProfile {
   id: string;
+  email: string; // Changed from optional to required to match other UserProfile definitions
   full_name?: string;
-  email: string;
-  phone?: string;
+  role?: UserRole;
+  avatar_url?: string;
   bio?: string;
   specialty?: string;
   location?: string;
-  avatar_url?: string;
-  profile_image?: string; // Added for compatibility
-  role?: UserRole;
-  created_at: string;
-  updated_at: string;
-  instagram?: string;
-  website?: string;
-  salon_name?: string;
-  company_name?: string;
-  preferred_language?: string;
-  profile_views?: number;
-  account_type?: string;
   referral_code?: string;
-  affiliate_code?: string;
-  referral_count?: number;
-  booking_url?: string;
-  boosted_until?: string | null;
-  skills?: string[];
   portfolio_urls?: string[];
-  credits?: number;
-  creditsThisMonth?: number;
-  custom_role?: string;
-  contact_link?: string;
-  badges?: string[];
-  accepts_bookings?: boolean;
-  preferences?: string[];
-  completed_profile_tasks?: string[];
-  years_experience?: number;
-  professional_name?: string;
-  profile_completion?: number;
-  user_id?: string;
-  username?: string;
-  independent?: boolean;
-  favorite_artist_types?: string[];
-  artistTypes?: string[];
-  birthday?: string | null;
-  communication_preferences?: string[];
-  commPrefs?: string[];
-  is_premium?: boolean; // Added for compatibility
-  
-  // NEW PROPERTIES FOR MISSING FIELDS
-  bookings_count?: number;
-  reviews_count?: number;
-  last_booking_date?: string | null;
-  gender?: string;
+  [key: string]: any;
 }
 
 export interface AuthContextType {
-  user: User | null;
+  user: SupabaseUser | null;
   userProfile: UserProfile | null;
-  userRole: UserRole | null;
-  isSignedIn: boolean;
+  userRole: UserRole;
   loading: boolean;
+  isSignedIn: boolean;
+  isError: boolean;
   isNewUser: boolean;
-  isError?: boolean; // Added missing property
   clearIsNewUser: () => void;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error }>;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;
   signOut: () => Promise<void>;
-  refreshUserProfile: () => Promise<void>;
-  updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
+  refreshUserProfile: () => Promise<boolean>;
+  updateUserRole: (role: UserRole) => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
 }

@@ -1,4 +1,3 @@
-
 export interface Location {
   lat: number | null;
   lng: number | null;
@@ -74,7 +73,6 @@ export interface UserProfile {
   
   // Additional properties
   profile_views?: number;
-  profile_completion?: number;
   username?: string;
   boosted_until?: string;
   contact_link?: string;
@@ -88,16 +86,15 @@ export interface UserProfile {
   referral_code?: string;
   referral_count?: number;
   credits?: number;
-  creditsThisMonth?: number;
   google_review_link?: string;
   independent?: boolean;
+  profile_completion?: number;
 
   // ✨ NEW CUSTOMER FIELDS
   favorite_artist_types?: string[]; // E.g. ["studio", "booth-renter"]
   artistTypes?: string[];           // Synonym for favorite_artist_types
   birthday?: string | null;         // ISO date string or null
   communication_preferences?: string[]; // E.g. ["email", "sms", "app"]
-  commPrefs?: string[];             // Synonym for communication_preferences
 }
 
 // Helper function to safely get location as a string for display

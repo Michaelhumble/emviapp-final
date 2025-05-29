@@ -1,231 +1,503 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Trash2, Edit, Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Service } from '@/pages/u/artist-profile/types';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Plus, Pencil, Trash2, DollarSign, Clock } from "lucide-react";
+import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-interface ServicesManagerProps {
-  services: Service[];
-  onServicesChange: (services: Service[]) => void;
+// Define service interface
+interface ArtistService {
+  id: string;
+  user_id: string;
+  name: string;
+  price: number;
+  duration: number | null;
+  description: string | null;
+  created_at: string;
 }
 
-const ServicesManager: React.FC<ServicesManagerProps> = ({ services, onServicesChange }) => {
-  const [isAddingService, setIsAddingService] = useState(false);
-  const [editingService, setEditingService] = useState<Service | null>(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    price: '',
-    duration: '',
-    category: ''
+// Initial state for new service
+const initialServiceState = {
+  name: '',
+  price: 0,
+  duration: 60,
+  description: ''
+};
+
+const ServicesManager = () => {
+  const { user, userRole } = useAuth();
+  const queryClient = useQueryClient();
+  const isArtist = userRole === 'artist' || userRole === 'nail technician/artist' || userRole === 'renter';
+  
+  // State for modals
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  
+  // Service states
+  const [newService, setNewService] = useState(initialServiceState);
+  const [currentService, setCurrentService] = useState<ArtistService | null>(null);
+  const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
+
+  // Fetch services
+  const { data: services = [], isLoading } = useQuery({
+    queryKey: ['artist-services', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      // Use a more generic approach to avoid type issues
+      const { data, error } = await supabase
+        .from('artist_services')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      
+      // Cast the result to our expected type
+      return (data || []) as ArtistService[];
+    },
+    enabled: !!user?.id && isArtist
   });
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      price: '',
-      duration: '',
-      category: ''
-    });
-  };
+  // Create service mutation
+  const createServiceMutation = useMutation({
+    mutationFn: async (service: Omit<ArtistService, 'id' | 'user_id' | 'created_at'>) => {
+      if (!user?.id) throw new Error('User not authenticated');
+      
+      // Use a more generic approach to avoid type issues
+      const { data, error } = await supabase
+        .from('artist_services')
+        .insert({
+          user_id: user.id,
+          name: service.name,
+          price: service.price,
+          duration: service.duration,
+          description: service.description
+        })
+        .select();
+        
+      if (error) throw error;
+      
+      // Return the first item
+      return data?.[0] as ArtistService;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
+      toast.success('Service added successfully!');
+      setIsAddModalOpen(false);
+      setNewService(initialServiceState);
+    },
+    onError: (error) => {
+      console.error('Error adding service:', error);
+      toast.error('Failed to add service. Please try again.');
+    }
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Update service mutation
+  const updateServiceMutation = useMutation({
+    mutationFn: async (service: ArtistService) => {
+      // Use a more generic approach to avoid type issues
+      const { data, error } = await supabase
+        .from('artist_services')
+        .update({
+          name: service.name,
+          price: service.price,
+          duration: service.duration,
+          description: service.description
+        })
+        .eq('id', service.id)
+        .select();
+        
+      if (error) throw error;
+      
+      // Return the first item
+      return data?.[0] as ArtistService;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
+      toast.success('Service updated successfully!');
+      setIsEditModalOpen(false);
+      setCurrentService(null);
+    },
+    onError: (error) => {
+      console.error('Error updating service:', error);
+      toast.error('Failed to update service. Please try again.');
+    }
+  });
+
+  // Delete service mutation
+  const deleteServiceMutation = useMutation({
+    mutationFn: async (serviceId: string) => {
+      // Use a more generic approach to avoid type issues
+      const { error } = await supabase
+        .from('artist_services')
+        .delete()
+        .eq('id', serviceId);
+        
+      if (error) throw error;
+      return serviceId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
+      toast.success('Service deleted successfully!');
+      setIsDeleteModalOpen(false);
+      setServiceIdToDelete(null);
+    },
+    onError: (error) => {
+      console.error('Error deleting service:', error);
+      toast.error('Failed to delete service. Please try again.');
+    }
+  });
+
+  // Handle form submissions
+  const handleCreateService = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const serviceData: Service = {
-      id: editingService?.id || `service-${Date.now()}`,
-      name: formData.title, // Map title to name for consistency
-      title: formData.title,
-      description: formData.description,
-      price: parseFloat(formData.price) || 0,
-      price_type: 'fixed', // Default value
-      duration: formData.duration, // Keep as string
-      duration_minutes: parseInt(formData.duration) || 60, // Convert to minutes
-      category: formData.category,
-      created_at: editingService?.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      is_visible: true,
-      user_id: editingService?.user_id || ''
-    };
+    if (!newService.name.trim()) {
+      toast.error('Service name is required');
+      return;
+    }
+    
+    if (newService.price <= 0) {
+      toast.error('Price must be greater than zero');
+      return;
+    }
+    
+    createServiceMutation.mutate(newService);
+  };
 
-    if (editingService) {
-      // Update existing service
-      const updatedServices = services.map(service => 
-        service.id === editingService.id ? serviceData : service
+  const handleUpdateService = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!currentService) return;
+    
+    if (!currentService.name.trim()) {
+      toast.error('Service name is required');
+      return;
+    }
+    
+    if (currentService.price <= 0) {
+      toast.error('Price must be greater than zero');
+      return;
+    }
+    
+    updateServiceMutation.mutate(currentService);
+  };
+
+  const handleDeleteService = () => {
+    if (serviceIdToDelete) {
+      deleteServiceMutation.mutate(serviceIdToDelete);
+    }
+  };
+
+  // Open edit modal with service data
+  const openEditModal = (service: ArtistService) => {
+    setCurrentService(service);
+    setIsEditModalOpen(true);
+  };
+
+  // Open delete confirmation modal
+  const openDeleteModal = (serviceId: string) => {
+    setServiceIdToDelete(serviceId);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Render appropriate content based on loading state and data
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="p-6">
+                <div className="h-6 bg-slate-200 rounded mb-4"></div>
+                <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       );
-      onServicesChange(updatedServices);
-    } else {
-      // Add new service
-      onServicesChange([...services, serviceData]);
     }
 
-    setIsAddingService(false);
-    setEditingService(null);
-    resetForm();
-  };
+    if (services.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 mb-4">
+            <Plus className="h-8 w-8 text-purple-600" />
+          </div>
+          <h3 className="text-lg font-medium mb-2">No Services Added Yet</h3>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            Add your first service to let clients know what you offer, including pricing and duration.
+          </p>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            Add Your First Service
+          </Button>
+        </div>
+      );
+    }
 
-  const handleEdit = (service: Service) => {
-    setEditingService(service);
-    setFormData({
-      title: service.title,
-      description: service.description,
-      price: service.price.toString(),
-      duration: service.duration || '60',
-      category: service.category || ''
-    });
-    setIsAddingService(true);
-  };
-
-  const handleDelete = (serviceId: string) => {
-    const updatedServices = services.filter(service => service.id !== serviceId);
-    onServicesChange(updatedServices);
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {services.map((service) => (
+          <Card key={service.id} className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="font-semibold text-lg">{service.name}</h3>
+                <div className="flex space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openEditModal(service)}
+                    className="h-8 w-8"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openDeleteModal(service.id)}
+                    className="h-8 w-8 text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <p className="text-muted-foreground text-sm mb-4 line-clamp-2 min-h-[40px]">
+                {service.description || "No description provided"}
+              </p>
+              
+              <div className="flex justify-between items-center">
+                <div className="flex items-center text-green-600">
+                  <DollarSign className="h-4 w-4 mr-1" />
+                  <span className="font-medium">${service.price}</span>
+                </div>
+                
+                {service.duration && (
+                  <div className="flex items-center text-blue-600">
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span>{service.duration} min</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Services & Pricing
-          <Dialog open={isAddingService} onOpenChange={setIsAddingService}>
-            <DialogTrigger asChild>
-              <Button onClick={() => { resetForm(); setEditingService(null); }}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Service
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {editingService ? 'Edit Service' : 'Add New Service'}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Service Name</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="e.g., Gel Manicure"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe your service..."
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="price">Price ($)</Label>
+    <Card className="shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="text-xl font-serif">My Services</CardTitle>
+          <CardDescription>
+            Manage the services you offer to clients
+          </CardDescription>
+        </div>
+        <Button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="flex items-center"
+        >
+          <Plus className="h-4 w-4 mr-2" /> Add Service
+        </Button>
+      </CardHeader>
+      
+      <CardContent>{renderContent()}</CardContent>
+
+      {/* Add Service Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Service</DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={handleCreateService}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Service Name *</Label>
+                <Input
+                  id="name"
+                  value={newService.name}
+                  onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+                  placeholder="e.g. Gel Manicure"
+                  required
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="price">Price ($) *</Label>
                   <Input
                     id="price"
                     type="number"
                     min="0"
                     step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                    placeholder="0.00"
+                    value={newService.price}
+                    onChange={(e) => setNewService({ ...newService, price: parseFloat(e.target.value) })}
                     required
                   />
                 </div>
-                <div>
+                
+                <div className="grid gap-2">
                   <Label htmlFor="duration">Duration (minutes)</Label>
                   <Input
                     id="duration"
                     type="number"
-                    min="15"
-                    step="15"
-                    value={formData.duration}
-                    onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-                    placeholder="60"
+                    min="0"
+                    step="5"
+                    value={newService.duration || ''}
+                    onChange={(e) => setNewService({ ...newService, duration: parseInt(e.target.value) || null })}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={newService.description || ''}
+                  onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+                  placeholder="Describe what's included in this service"
+                  rows={3}
+                />
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => {
+                  setIsAddModalOpen(false);
+                  setNewService(initialServiceState);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                disabled={createServiceMutation.isPending}
+              >
+                {createServiceMutation.isPending ? 'Adding...' : 'Add Service'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Service Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Service</DialogTitle>
+          </DialogHeader>
+          
+          {currentService && (
+            <form onSubmit={handleUpdateService}>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-name">Service Name *</Label>
+                  <Input
+                    id="edit-name"
+                    value={currentService.name}
+                    onChange={(e) => setCurrentService({ ...currentService, name: e.target.value })}
+                    placeholder="e.g. Gel Manicure"
                     required
                   />
                 </div>
-                <div>
-                  <Label htmlFor="category">Category (Optional)</Label>
-                  <Input
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                    placeholder="e.g., Nails, Hair, etc."
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-price">Price ($) *</Label>
+                    <Input
+                      id="edit-price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={currentService.price}
+                      onChange={(e) => setCurrentService({ ...currentService, price: parseFloat(e.target.value) })}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-duration">Duration (minutes)</Label>
+                    <Input
+                      id="edit-duration"
+                      type="number"
+                      min="0"
+                      step="5"
+                      value={currentService.duration || ''}
+                      onChange={(e) => setCurrentService({ ...currentService, duration: parseInt(e.target.value) || null })}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-description">Description</Label>
+                  <Textarea
+                    id="edit-description"
+                    value={currentService.description || ''}
+                    onChange={(e) => setCurrentService({ ...currentService, description: e.target.value })}
+                    placeholder="Describe what's included in this service"
+                    rows={3}
                   />
                 </div>
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1">
-                    {editingService ? 'Update Service' : 'Add Service'}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setIsAddingService(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {services.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">
-            No services added yet. Click "Add Service" to get started.
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {services.map((service) => (
-              <div key={service.id} className="border rounded-lg p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-medium">{service.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                    <div className="flex gap-4 mt-2 text-sm text-gray-500">
-                      <span>Price: {formatPrice(service.price)}</span>
-                      <span>Duration: {service.duration || service.duration_minutes} min</span>
-                      {service.category && <span>Category: {service.category}</span>}
-                    </div>
-                  </div>
-                  <div className="flex gap-2 ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(service)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(service.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
               </div>
-            ))}
+              
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit"
+                  disabled={updateServiceMutation.isPending}
+                >
+                  {updateServiceMutation.isPending ? 'Updating...' : 'Update Service'}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Service</DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <p>Are you sure you want to delete this service? This action cannot be undone.</p>
           </div>
-        )}
-      </CardContent>
+          
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteService}
+              disabled={deleteServiceMutation.isPending}
+            >
+              {deleteServiceMutation.isPending ? 'Deleting...' : 'Delete Service'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

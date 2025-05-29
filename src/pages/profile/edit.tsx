@@ -49,13 +49,16 @@ const ProfileEdit = () => {
     }
   }, [userRole]);
   
-  // Optimized refresh function with proper async handling
+  // Optimized refresh function with type adapter pattern
   const handleRefresh = useCallback(async () => {
     if (!refreshUserProfile) return;
     
     try {
-      await refreshUserProfile();
-      toast.success('Profile refreshed successfully');
+      // Adapt the boolean return to void to satisfy TypeScript
+      const success = await refreshUserProfile();
+      if (!success) {
+        toast.error("Could not load your profile. Please try again later.");
+      }
     } catch (error) {
       console.error("Error refreshing profile:", error);
       toast.error("Could not load your profile. Please try again later.");

@@ -1,49 +1,89 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import JobPostingSuccess from '@/components/posting/job/JobPostingSuccess';
+import ConfettiExplosion from '@/components/ui/ConfettiExplosion';
+import { toast } from 'sonner';
 
 const PostSuccess = () => {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session_id');
+  const [jobDetails, setJobDetails] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const verifyPayment = async () => {
+      if (!sessionId) {
+        // No session ID, show generic success
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Verify the Stripe session and get job details
+        const { data, error } = await supabase.functions.invoke('verify-checkout-session', {
+          body: { sessionId }
+        });
+
+        if (error) {
+          console.error('Payment verification error:', error);
+          toast.error('Payment verification failed');
+          setIsLoading(false);
+          return;
+        }
+
+        if (data?.success) {
+          setJobDetails({
+            jobId: data.post_id || 'job-' + Math.random().toString(36).substr(2, 9),
+            jobTitle: data.jobTitle || 'Job Posting',
+            planType: data.pricing_tier || 'Standard'
+          });
+          toast.success('Payment successful! Your job posting is now live.');
+        } else {
+          toast.error('Payment verification failed');
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        toast.error('Failed to verify payment');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    verifyPayment();
+  }, [sessionId]);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Verifying payment...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
-    <>
+    <Layout>
       <Helmet>
-        <title>Post Published Successfully | EmviApp</title>
-        <meta name="description" content="Your post has been published successfully on EmviApp" />
+        <title>Post Created Successfully | EmviApp</title>
       </Helmet>
       
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardHeader>
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl font-playfair text-green-800">
-              Post Published Successfully!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-gray-600">
-              Your post is now live and visible to the EmviApp community.
-            </p>
-            <div className="space-y-2 pt-4">
-              <Button asChild className="w-full">
-                <Link to="/jobs">
-                  View All Posts
-                </Link>
-              </Button>
-              <Button variant="outline" asChild className="w-full">
-                <Link to="/dashboard">
-                  Go to Dashboard
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+      <ConfettiExplosion />
+      
+      <JobPostingSuccess
+        jobId={jobDetails?.jobId}
+        jobTitle={jobDetails?.jobTitle || 'Job Posting'}
+        planType={jobDetails?.planType || 'Standard'}
+      />
+    </Layout>
   );
 };
 
