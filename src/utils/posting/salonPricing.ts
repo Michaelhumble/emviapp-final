@@ -90,3 +90,41 @@ export const SALON_PRICING_PLANS: SalonPricingPlan[] = [
     ]
   }
 ];
+
+export const calculateSalonPostPrice = (options: SalonPricingOptions): number => {
+  const plan = SALON_PRICING_PLANS.find(p => p.tier === options.selectedPricingTier);
+  const basePrice = plan?.price || 0;
+  const addonPrice = options.featuredAddon ? 10 : 0;
+  return basePrice + addonPrice;
+};
+
+export const getSalonPostPricingSummary = (options: SalonPricingOptions) => {
+  const plan = SALON_PRICING_PLANS.find(p => p.tier === options.selectedPricingTier);
+  const basePrice = plan?.price || 0;
+  const addonPrice = options.featuredAddon ? 10 : 0;
+  const total = basePrice + addonPrice;
+  
+  return {
+    planName: plan?.name || 'Unknown Plan',
+    basePrice,
+    addonPrice,
+    total,
+    duration: plan?.duration || 1
+  };
+};
+
+export const validateSalonPricingOptions = (options: SalonPricingOptions): boolean => {
+  return Boolean(options.selectedPricingTier && 
+    SALON_PRICING_PLANS.some(p => p.tier === options.selectedPricingTier));
+};
+
+export const getStripeSalonPriceId = (tier: SalonPricingTier): string => {
+  // These would be your actual Stripe price IDs in production
+  const priceMap = {
+    basic: 'price_basic_salon',
+    gold: 'price_gold_salon', 
+    premium: 'price_premium_salon',
+    annual: 'price_annual_salon'
+  };
+  return priceMap[tier] || priceMap.basic;
+};

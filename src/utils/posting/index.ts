@@ -24,10 +24,12 @@ export {
   calculateSalonPostPrice,
   getSalonPostPricingSummary,
   validateSalonPricingOptions,
-  getStripeSalonPriceId
+  getStripeSalonPriceId,
+  SALON_PRICING_PLANS
 } from './salonPricing';
 
 export type {
   SalonPricingTier,
-  SalonPricingOptions
+  SalonPricingOptions,
+  SalonPricingPlan
 } from './salonPricing';
