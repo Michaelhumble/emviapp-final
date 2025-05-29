@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -55,9 +54,8 @@ const SalonListingWizard = () => {
       equipmentIncluded: false,
       leaseTransferable: false,
       sellerFinancing: false,
-      isNationwide: false,
-      fastSalePackage: false,
-      autoRenew: false,
+      selectedPricingTier: 'basic',
+      featuredAddon: false,
       termsAccepted: false
     }
   });

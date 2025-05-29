@@ -48,9 +48,8 @@ const SalonPostForm = () => {
       equipmentIncluded: false,
       leaseTransferable: false,
       sellerFinancing: false,
-      isNationwide: false,
-      fastSalePackage: false,
-      autoRenew: false,
+      selectedPricingTier: 'basic',
+      featuredAddon: false,
       termsAccepted: false
     }
   });
