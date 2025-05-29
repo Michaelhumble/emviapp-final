@@ -6,7 +6,12 @@ interface StepProps {
 }
 
 const TermsAndConditionsStep: React.FC<StepProps> = ({ form }) => {
-  return null;
+  return (
+    <div className="p-6 text-center">
+      <h3 className="text-lg font-medium mb-2">Terms and Conditions</h3>
+      <p className="text-gray-600">Step Coming Soon</p>
+    </div>
+  );
 };
 
 export default TermsAndConditionsStep;
