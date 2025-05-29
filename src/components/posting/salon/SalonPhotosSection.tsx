@@ -29,55 +29,86 @@ export const SalonPhotosSection = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Image className="h-5 w-5" />
+    <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h3 className="text-2xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
           Salon Photos
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {photoUploads.map((photo, index) => (
-            <div key={index} className="relative">
-              <img
-                src={URL.createObjectURL(photo)}
-                alt={`Salon photo ${index + 1}`}
-                className="w-full h-32 object-cover rounded-lg"
-              />
-              <Button
-                variant="destructive"
-                size="icon"
-                className="absolute top-2 right-2 h-6 w-6"
-                onClick={() => removePhoto(index)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+        </h3>
+        <p className="text-gray-600">
+          Upload up to {maxPhotos} photos to showcase your salon
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Image className="h-5 w-5" />
+            Upload Photos ({photoUploads.length}/{maxPhotos})
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {photoUploads.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+              {photoUploads.map((photo, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt={`Salon photo ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => removePhoto(index)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        
-        {photoUploads.length < maxPhotos && (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <div className="mt-4">
-              <label htmlFor="photo-upload" className="cursor-pointer">
-                <span className="mt-2 block text-sm font-medium text-gray-900">
-                  Upload salon photos ({photoUploads.length}/{maxPhotos})
-                </span>
-                <input
-                  id="photo-upload"
-                  type="file"
-                  className="sr-only"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                />
-              </label>
+          )}
+          
+          {photoUploads.length < maxPhotos && (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors">
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <div className="space-y-2">
+                <label htmlFor="photo-upload" className="cursor-pointer">
+                  <span className="text-lg font-medium text-gray-900 hover:text-purple-600">
+                    Click to upload or drag and drop
+                  </span>
+                  <p className="text-sm text-gray-500 mt-1">
+                    PNG, JPG, GIF up to 10MB each
+                  </p>
+                  <input
+                    id="photo-upload"
+                    type="file"
+                    className="sr-only"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                  />
+                </label>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => document.getElementById('photo-upload')?.click()}
+                >
+                  Select Photos
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+
+          {photoUploads.length >= maxPhotos && (
+            <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-green-700 font-medium">
+                Maximum photos uploaded ({maxPhotos}/{maxPhotos})
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };

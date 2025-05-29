@@ -4,13 +4,14 @@ import { UseFormReturn } from "react-hook-form";
 import { SalonFormValues } from "../salonFormSchema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, Users, Building2, Phone, Mail, User } from "lucide-react";
+import { MapPin, DollarSign, Users, Building2, Phone, Mail, User, Image } from "lucide-react";
 
 interface SalonPreviewStepProps {
   form: UseFormReturn<SalonFormValues>;
+  photoUploads?: File[];
 }
 
-export const SalonPreviewStep = ({ form }: SalonPreviewStepProps) => {
+export const SalonPreviewStep = ({ form, photoUploads = [] }: SalonPreviewStepProps) => {
   const values = form.getValues();
 
   return (
@@ -33,6 +34,26 @@ export const SalonPreviewStep = ({ form }: SalonPreviewStepProps) => {
           </div>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
+          {/* Photos Section */}
+          {photoUploads.length > 0 && (
+            <div>
+              <h4 className="font-semibold mb-3 flex items-center gap-2">
+                <Image className="h-4 w-4" />
+                Photos ({photoUploads.length})
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {photoUploads.map((photo, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(photo)}
+                    alt={`Salon photo ${index + 1}`}
+                    className="w-full h-24 object-cover rounded-md border"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-green-600" />
@@ -44,14 +65,14 @@ export const SalonPreviewStep = ({ form }: SalonPreviewStepProps) => {
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="font-semibold text-lg">{values.numberOfStaff}</p>
+                <p className="font-semibold text-lg">{values.numberOfStaff || 'N/A'}</p>
                 <p className="text-sm text-gray-600">Staff Members</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-purple-600" />
               <div>
-                <p className="font-semibold text-lg">{values.monthlyRent}</p>
+                <p className="font-semibold text-lg">{values.monthlyRent || 'N/A'}</p>
                 <p className="text-sm text-gray-600">Monthly Rent</p>
               </div>
             </div>
@@ -61,6 +82,13 @@ export const SalonPreviewStep = ({ form }: SalonPreviewStepProps) => {
             <div>
               <h4 className="font-semibold mb-2">Description</h4>
               <p className="text-gray-700">{values.englishDescription}</p>
+            </div>
+          )}
+
+          {values.vietnameseDescription && (
+            <div>
+              <h4 className="font-semibold mb-2">Mô tả (Vietnamese)</h4>
+              <p className="text-gray-700">{values.vietnameseDescription}</p>
             </div>
           )}
 

@@ -1,60 +1,65 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
+import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { salonFormSchema, SalonFormValues } from './salonFormSchema';
-import { SalonPricingOptions, SalonPricingTier } from '@/utils/posting/salonPricing';
-import { useStripe } from '@/hooks/useStripe';
 import { toast } from 'sonner';
-
-// Import step components
-import { SalonIdentityStep } from './steps/SalonIdentityStep';
-import { SalonBusinessStep } from './steps/SalonBusinessStep';
-import { SalonDescriptionStep } from './steps/SalonDescriptionStep';
-import { SalonContactStep } from './steps/SalonContactStep';
-import { SalonPhotosStep } from './steps/SalonPhotosStep';
-import { SalonFeaturesStep } from './steps/SalonFeaturesStep';
-import { SalonPreviewStep } from './steps/SalonPreviewStep';
-import SalonPricingPlans from './SalonPricingPlans';
-import SalonPaymentOptions from './SalonPaymentOptions';
+import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
+import { SalonIdentitySection } from './SalonIdentitySection';
+import { SalonLocationSection } from './SalonLocationSection';
+import { SalonPostDescription } from './SalonPostDescription';
+import { SalonPhotosSection } from './SalonPhotosSection';
+import SalonPaymentStep from './steps/SalonPaymentStep';
+import SalonPreviewStep from './steps/SalonPreviewStep';
 
 const steps = [
-  { id: 'identity', label: 'Salon Identity', component: SalonIdentityStep },
-  { id: 'business', label: 'Business Details', component: SalonBusinessStep },
-  { id: 'description', label: 'Description', component: SalonDescriptionStep },
-  { id: 'contact', label: 'Contact Info', component: SalonContactStep },
-  { id: 'photos', label: 'Photos', component: SalonPhotosStep },
-  { id: 'features', label: 'Features', component: SalonFeaturesStep },
-  { id: 'preview', label: 'Preview', component: SalonPreviewStep },
-  { id: 'pricing', label: 'Select Plan', component: null },
-  { id: 'payment', label: 'Payment', component: null },
+  { id: 'identity', title: 'Salon Identity', component: 'identity' },
+  { id: 'location', title: 'Location', component: 'location' },
+  { id: 'description', title: 'Description', component: 'description' },
+  { id: 'photos', title: 'Photos', component: 'photos' },
+  { id: 'preview', title: 'Preview', component: 'preview' },
+  { id: 'payment', title: 'Payment', component: 'payment' }
 ];
 
 const SalonListingWizard = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedOptions, setSelectedOptions] = useState<SalonPricingOptions>({});
-  const { initiatePayment, isLoading } = useStripe();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
     defaultValues: {
       salonName: '',
       businessType: '',
+      establishedYear: '',
       address: '',
       city: '',
       state: '',
       zipCode: '',
+      neighborhood: '',
+      hideExactAddress: false,
       askingPrice: '',
-      contactName: '',
-      contactEmail: '',
-      contactPhone: '',
+      monthlyRent: '',
+      numberOfStaff: '',
+      numberOfTables: '',
+      numberOfChairs: '',
+      squareFeet: '',
+      revenue: '',
+      monthlyRevenue: '',
+      yearlyRevenue: '',
+      grossRevenue: '',
+      netProfit: '',
+      vietnameseDescription: '',
       englishDescription: '',
       reasonForSelling: '',
       virtualTourUrl: '',
+      contactName: '',
+      contactEmail: '',
+      contactPhone: '',
       contactNotes: '',
       willTrain: false,
       hasHousing: false,
@@ -67,36 +72,11 @@ const SalonListingWizard = () => {
       sellerFinancing: false,
       selectedPricingTier: 'basic',
       featuredAddon: false,
-      termsAccepted: false,
-    },
+      termsAccepted: false
+    }
   });
 
-  const nextStep = async () => {
-    const stepId = steps[currentStep].id;
-    
-    // Validate current step
-    let fieldsToValidate: (keyof SalonFormValues)[] = [];
-    
-    switch (stepId) {
-      case 'identity':
-        fieldsToValidate = ['salonName', 'businessType'];
-        break;
-      case 'business':
-        fieldsToValidate = ['askingPrice'];
-        break;
-      case 'contact':
-        fieldsToValidate = ['contactName', 'contactEmail', 'contactPhone'];
-        break;
-      // Add other validations as needed
-    }
-    
-    if (fieldsToValidate.length > 0) {
-      const isValid = await form.trigger(fieldsToValidate);
-      if (!isValid) {
-        return;
-      }
-    }
-    
+  const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -108,101 +88,69 @@ const SalonListingWizard = () => {
     }
   };
 
-  const handlePlanSelect = (tier: SalonPricingTier) => {
-    setSelectedOptions({ ...selectedOptions, selectedPricingTier: tier });
-    nextStep();
-  };
-
-  const handlePayment = async () => {
-    try {
-      const formData = form.getValues();
-      const success = await initiatePayment(selectedOptions, formData);
-      
-      if (success) {
-        toast.success('Redirecting to payment...');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Payment failed. Please try again.');
-    }
-  };
-
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   const renderStepContent = () => {
     const step = steps[currentStep];
     
-    if (step.id === 'pricing') {
-      return (
-        <SalonPricingPlans
-          selectedOptions={selectedOptions}
-          onPlanSelect={handlePlanSelect}
-        />
-      );
+    switch (step.component) {
+      case 'identity':
+        return <SalonIdentitySection form={form} />;
+      case 'location':
+        return <SalonLocationSection form={form} />;
+      case 'description':
+        return <SalonPostDescription form={form} />;
+      case 'photos':
+        return (
+          <SalonPhotosSection 
+            photoUploads={photoUploads}
+            setPhotoUploads={setPhotoUploads}
+            maxPhotos={7}
+          />
+        );
+      case 'preview':
+        return <SalonPreviewStep form={form} photoUploads={photoUploads} />;
+      case 'payment':
+        return (
+          <SalonPaymentStep 
+            form={form}
+            onPaymentComplete={() => {
+              toast.success('Salon listing published successfully!');
+            }}
+          />
+        );
+      default:
+        return null;
     }
-    
-    if (step.id === 'payment') {
-      return (
-        <SalonPaymentOptions
-          form={form}
-          selectedOptions={selectedOptions}
-          onPayment={handlePayment}
-          onBack={prevStep}
-        />
-      );
-    }
-    
-    if (step.component) {
-      const StepComponent = step.component;
-      return <StepComponent form={form} />;
-    }
-    
-    return null;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Progress Header */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                List Your Salon
-              </h1>
-              <span className="text-sm text-gray-600">
-                Step {currentStep + 1} of {steps.length}
-              </span>
+    <div className="container mx-auto py-8 px-4 max-w-4xl">
+      <Card className="shadow-xl">
+        <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-serif">List Your Salon for Sale</CardTitle>
+              <CardDescription className="text-lg">
+                Step {currentStep + 1} of {steps.length}: {steps[currentStep].title}
+              </CardDescription>
             </div>
-            <Progress value={progress} className="h-2" />
-            <div className="flex justify-between mt-2">
-              {steps.map((step, index) => (
-                <span
-                  key={step.id}
-                  className={`text-xs ${
-                    index <= currentStep ? 'text-purple-600 font-medium' : 'text-gray-400'
-                  }`}
-                >
-                  {step.label}
-                </span>
-              ))}
+            <div className="text-right">
+              <div className="text-sm text-gray-600 mb-2">Progress</div>
+              <div className="w-32">
+                <Progress value={progress} className="h-2" />
+              </div>
             </div>
           </div>
+        </CardHeader>
 
-          {/* Step Content */}
-          <Card className="shadow-xl border-0">
-            <CardContent className="p-8">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(() => {})}>
-                  {renderStepContent()}
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+        <CardContent className="p-8">
+          <Form {...form}>
+            <div className="min-h-[400px]">
+              {renderStepContent()}
+            </div>
 
-          {/* Navigation */}
-          {steps[currentStep].id !== 'pricing' && steps[currentStep].id !== 'payment' && (
-            <div className="flex justify-between mt-8">
+            <div className="flex justify-between items-center mt-8 pt-6 border-t">
               <Button
                 type="button"
                 variant="outline"
@@ -210,23 +158,24 @@ const SalonListingWizard = () => {
                 disabled={currentStep === 0}
                 className="flex items-center gap-2"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="h-4 w-4" />
                 Previous
               </Button>
 
-              <Button
-                type="button"
-                onClick={nextStep}
-                disabled={currentStep === steps.length - 1}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-              >
-                Next
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              {currentStep < steps.length - 1 ? (
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                >
+                  Next
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              ) : null}
             </div>
-          )}
-        </div>
-      </div>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

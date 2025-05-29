@@ -52,11 +52,11 @@ export const SalonPostDescription = ({ form }: SalonPostDescriptionProps) => {
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <Globe className="h-4 w-4 text-purple-600" />
-                Vietnamese Description (Optional)
+                Vietnamese Description (Mô tả bằng tiếng Việt)
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Mô tả tiệm nail của bạn bằng tiếng Việt..."
+                  placeholder="Mô tả tiệm nail của bạn, đặc điểm độc đáo, khách hàng, và tại sao đây là cơ hội tuyệt vời..."
                   className="min-h-[120px] border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
                   {...field}
                 />
