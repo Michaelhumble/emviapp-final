@@ -15,11 +15,12 @@ import { SalonReviewStep } from "./steps/SalonReviewStep";
 import PostWizardLayout from "../PostWizardLayout";
 
 const STEPS = [
-  { id: 1, title: "Salon Information / Thông Tin Salon", component: "identity" },
-  { id: 2, title: "Location / Địa Chỉ", component: "location" },
-  { id: 3, title: "Details & Photos / Chi Tiết & Hình Ảnh", component: "details" },
-  { id: 4, title: "Pricing Plan / Chọn Gói", component: "pricing" },
-  { id: 5, title: "Review & Payment / Xem Lại & Thanh Toán", component: "review" }
+  { id: 1, title: "Identity / Danh tính", subtitle: "Salon details / Chi tiết salon" },
+  { id: 2, title: "Location / Vị trí", subtitle: "Where is your salon / Salon ở đâu" },
+  { id: 3, title: "Details / Chi tiết", subtitle: "Business information / Thông tin kinh doanh" },
+  { id: 4, title: "Photos / Ảnh", subtitle: "Show your salon / Hiển thị salon" },
+  { id: 5, title: "Pricing / Giá cả", subtitle: "Choose your plan / Chọn gói" },
+  { id: 6, title: "Review / Xem lại", subtitle: "Final check / Kiểm tra cuối" }
 ];
 
 const SalonListingWizard = () => {
@@ -81,12 +82,14 @@ const SalonListingWizard = () => {
     const currentStepData = STEPS[currentStep - 1];
     const formData = form.getValues();
 
-    switch (currentStepData.component) {
-      case "identity":
+    switch (currentStep) {
+      case 1:
         return <SalonIdentityStep form={form} />;
-      case "location":
+      case 2:
         return <SalonLocationStep form={form} />;
-      case "details":
+      case 3:
+        return <SalonDetailsStep form={form} photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />;
+      case 4:
         return (
           <SalonDetailsStep 
             form={form} 
@@ -94,7 +97,7 @@ const SalonListingWizard = () => {
             setPhotoUploads={setPhotoUploads}
           />
         );
-      case "pricing":
+      case 5:
         return (
           <SalonPricingStep 
             selectedOptions={selectedOptions}
@@ -102,7 +105,7 @@ const SalonListingWizard = () => {
             form={form}
           />
         );
-      case "review":
+      case 6:
         return (
           <SalonReviewStep 
             form={form}
@@ -124,21 +127,93 @@ const SalonListingWizard = () => {
       case 2:
         return formData.address && formData.city && formData.state;
       case 3:
-        return formData.askingPrice && 
-               formData.monthlyRent && 
-               photoUploads.length > 0;
+        return formData.askingPrice && formData.monthlyRent;
       case 4:
-        return selectedOptions.selectedPricingTier && selectedOptions.durationMonths;
+        return photoUploads.length > 0;
       case 5:
+        return selectedOptions.selectedPricingTier && selectedOptions.durationMonths;
+      case 6:
         return formData.termsAccepted;
       default:
         return true;
     }
   };
 
+  const getCompletionPercentage = () => {
+    return Math.round((currentStep / STEPS.length) * 100);
+  };
+
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={STEPS.length}>
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with progress */}
+      <div className="bg-white border-b sticky top-0 z-10">
+        <div className="container max-w-6xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="mr-4" 
+                onClick={prevStep}
+                disabled={currentStep === 1}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              
+              <div>
+                <h1 className="text-xl font-medium">Sell Your Salon / Bán Salon Của Bạn</h1>
+                <p className="text-sm text-gray-600">
+                  Connect with serious buyers and get the best value / Kết nối với người mua nghiêm túc và nhận giá trị tốt nhất
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Progress info */}
+          <div className="pb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600">Step {currentStep} of {STEPS.length}</span>
+              <span className="text-sm font-medium text-purple-600">{getCompletionPercentage()}% Complete / Hoàn thành</span>
+            </div>
+            
+            {/* Progress bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${getCompletionPercentage()}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Step indicators */}
+          <div className="flex items-center justify-between pb-4">
+            {STEPS.map((step, index) => (
+              <div key={step.id} className="flex flex-col items-center text-center flex-1">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
+                  currentStep === step.id 
+                    ? 'bg-purple-600 text-white' 
+                    : currentStep > step.id 
+                      ? 'bg-purple-100 text-purple-600 border-2 border-purple-600'
+                      : 'bg-gray-200 text-gray-500'
+                }`}>
+                  {step.id}
+                </div>
+                <div className="text-xs">
+                  <div className={`font-medium ${currentStep >= step.id ? 'text-purple-600' : 'text-gray-500'}`}>
+                    {step.title}
+                  </div>
+                  <div className="text-gray-500 mt-1">
+                    {step.subtitle}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="container max-w-4xl mx-auto py-8 px-4">
         <Form {...form}>
           <div className="bg-white rounded-lg shadow-sm border p-6 md:p-8">
             {renderStep()}
@@ -154,7 +229,7 @@ const SalonListingWizard = () => {
               className="flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back / Quay lại
+              Previous / Trước
             </Button>
 
             {currentStep < STEPS.length && (
@@ -164,14 +239,14 @@ const SalonListingWizard = () => {
                 disabled={!canProceed()}
                 className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
               >
-                Next / Tiếp tục
+                Next / Tiếp theo
                 <ArrowRight className="w-4 h-4" />
               </Button>
             )}
           </div>
         </Form>
       </div>
-    </PostWizardLayout>
+    </div>
   );
 };
 
