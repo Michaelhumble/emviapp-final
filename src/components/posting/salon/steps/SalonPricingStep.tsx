@@ -1,322 +1,267 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Star, TrendingUp, Calendar, Award } from 'lucide-react';
+import { Check, Star, Zap, Clock, Shield, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-export interface SalonPricingOptions {
-  planType: '1-month' | '3-month' | '6-month' | '12-month';
-  duration: string;
-  price: number;
-  originalPrice: number;
-  isFeatured: boolean;
-  isNationwide: boolean;
-}
-
 interface SalonPricingStepProps {
-  data: SalonPricingOptions;
-  onUpdate: (data: Partial<SalonPricingOptions>) => void;
-  onNext: () => void;
-  onPrevious: () => void;
+  pricingOptions: any;
+  setPricingOptions: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const SalonPricingStep: React.FC<SalonPricingStepProps> = ({
-  data,
-  onUpdate,
-  onNext,
-  onPrevious,
+const SalonPricingStep: React.FC<SalonPricingStepProps> = ({ 
+  pricingOptions, 
+  setPricingOptions 
 }) => {
-  const [selectedPlan, setSelectedPlan] = useState(data.planType || '3-month');
-  const [isFeatured, setIsFeatured] = useState(data.isFeatured || false);
+  const [selectedPlan, setSelectedPlan] = useState(pricingOptions.selectedPricingTier || 'standard');
+  const [featuredAddOn, setFeaturedAddOn] = useState(pricingOptions.featuredAddOn || false);
 
-  const pricingPlans = [
+  const plans = [
     {
-      id: '1-month',
-      duration: '1 Month',
+      id: 'basic',
+      name: '1 Month',
       price: 19.99,
       originalPrice: 24.99,
-      discount: '20%',
-      icon: Calendar,
-      badge: null,
-      badgeColor: '',
-      popular: false,
+      discount: '20% off',
+      period: '/mo',
+      icon: Clock,
       features: [
-        'Professional salon listing',
-        'High-quality photo gallery',
-        'Contact information display',
-        'Basic search visibility'
-      ]
+        'Basic salon listing',
+        'Standard visibility',
+        'Basic search placement',
+        'Contact information display'
+      ],
+      popular: false,
+      bestValue: false
     },
     {
-      id: '3-month',
-      duration: '3 Months',
+      id: 'standard',
+      name: '3 Months',
       price: 54.99,
       originalPrice: 74.99,
-      discount: '27%',
-      icon: TrendingUp,
-      badge: 'Most Popular',
-      badgeColor: 'bg-orange-500',
-      popular: true,
+      discount: '27% off',
+      period: '/3mo',
+      icon: Star,
       features: [
-        'Everything in 1 Month',
-        'Enhanced search ranking',
-        'Featured in category listings',
-        'Priority customer support'
-      ]
+        'Enhanced salon listing',
+        'Priority placement',
+        'Featured in search results',
+        'Photo gallery showcase',
+        'Customer reviews display'
+      ],
+      popular: true,
+      bestValue: false
     },
     {
-      id: '6-month',
-      duration: '6 Months',
+      id: 'premium',
+      name: '6 Months',
       price: 99.99,
       originalPrice: 149.99,
-      discount: '33%',
-      icon: Star,
-      badge: null,
-      badgeColor: '',
-      popular: false,
+      discount: '33% off',
+      period: '/6mo',
+      icon: Zap,
       features: [
-        'Everything in 3 Months',
-        'Advanced analytics dashboard',
+        'Premium salon listing',
+        'Top search placement',
         'Social media integration',
-        'Custom branding options'
-      ]
+        'Advanced analytics',
+        'Priority customer support'
+      ],
+      popular: false,
+      bestValue: false
     },
     {
-      id: '12-month',
-      duration: '12 Months',
+      id: 'enterprise',
+      name: '12 Months',
       price: 145.99,
       originalPrice: 300,
-      discount: '51%',
-      icon: Award,
-      badge: 'Best Value',
-      badgeColor: 'bg-green-500',
-      popular: false,
+      discount: '51% off',
+      period: '/year',
+      icon: Crown,
       features: [
-        'Everything in 6 Months',
+        'Elite salon listing',
         'Premium placement guarantee',
+        'Custom branding options',
         'Dedicated account manager',
-        'Advanced marketing tools'
-      ]
+        'Advanced marketing tools',
+        'Priority listing reviews'
+      ],
+      popular: false,
+      bestValue: true
     }
   ];
 
   const handlePlanSelect = (planId: string) => {
-    setSelectedPlan(planId as any);
-    const plan = pricingPlans.find(p => p.id === planId);
-    if (plan) {
-      onUpdate({
-        planType: planId as any,
-        duration: plan.duration,
-        price: isFeatured ? plan.price + 10 : plan.price,
-        originalPrice: plan.originalPrice,
-        isFeatured,
-        isNationwide: data.isNationwide || false
-      });
-    }
+    setSelectedPlan(planId);
+    setPricingOptions((prev: any) => ({
+      ...prev,
+      selectedPricingTier: planId
+    }));
   };
 
-  const handleFeaturedToggle = () => {
-    const newFeatured = !isFeatured;
-    setIsFeatured(newFeatured);
-    const plan = pricingPlans.find(p => p.id === selectedPlan);
-    if (plan) {
-      onUpdate({
-        ...data,
-        isFeatured: newFeatured,
-        price: newFeatured ? plan.price + 10 : plan.price
-      });
-    }
-  };
-
-  const handleNext = () => {
-    const plan = pricingPlans.find(p => p.id === selectedPlan);
-    if (plan) {
-      onUpdate({
-        planType: selectedPlan as any,
-        duration: plan.duration,
-        price: isFeatured ? plan.price + 10 : plan.price,
-        originalPrice: plan.originalPrice,
-        isFeatured,
-        isNationwide: data.isNationwide || false
-      });
-      onNext();
-    }
+  const handleFeaturedAddOnToggle = () => {
+    const newValue = !featuredAddOn;
+    setFeaturedAddOn(newValue);
+    setPricingOptions((prev: any) => ({
+      ...prev,
+      featuredAddOn: newValue
+    }));
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Choose Your Listing Package
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Choose Your Salon Listing Plan
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Select the perfect plan to showcase your salon to thousands of potential buyers
+            Select the perfect plan to showcase your salon and attract customers
           </p>
-          <p className="text-lg text-gray-500 mt-2">
-            Chọn gói hoàn hảo để giới thiệu salon của bạn đến hàng nghìn người mua tiềm năng
-          </p>
-        </motion.div>
+        </div>
 
+        {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {pricingPlans.map((plan, index) => (
-            <motion.div
-              key={plan.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative"
-            >
-              {plan.badge && (
-                <div className={`absolute -top-3 left-1/2 transform -translate-x-1/2 z-10`}>
-                  <Badge className={`${plan.badgeColor} text-white px-3 py-1 text-sm font-medium`}>
-                    {plan.badge}
-                  </Badge>
-                </div>
-              )}
-              
-              <Card 
-                className={`relative cursor-pointer transition-all duration-300 hover:shadow-2xl h-full ${
-                  selectedPlan === plan.id 
-                    ? 'ring-4 ring-pink-400 shadow-2xl transform scale-105 bg-gradient-to-br from-white to-pink-50' 
-                    : 'hover:shadow-xl bg-white'
-                } ${plan.popular ? 'border-2 border-pink-300' : ''}`}
-                onClick={() => handlePlanSelect(plan.id)}
+          {plans.map((plan) => {
+            const IconComponent = plan.icon;
+            const isSelected = selectedPlan === plan.id;
+            
+            return (
+              <motion.div
+                key={plan.id}
+                whileHover={{ y: -5, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative"
               >
-                <CardContent className="p-6 text-center h-full flex flex-col">
-                  {selectedPlan === plan.id && (
-                    <div className="absolute top-4 right-4">
-                      <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                    <Badge className="bg-orange-500 text-white px-4 py-1 text-sm font-semibold">
+                      Most Popular
+                    </Badge>
+                  </div>
+                )}
+                {plan.bestValue && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                    <Badge className="bg-green-500 text-white px-4 py-1 text-sm font-semibold">
+                      Best Value
+                    </Badge>
+                  </div>
+                )}
+                
+                <Card 
+                  className={`h-full cursor-pointer transition-all duration-300 ${
+                    isSelected 
+                      ? 'ring-4 ring-purple-500 shadow-2xl bg-white' 
+                      : 'hover:shadow-xl bg-white/80 backdrop-blur-sm'
+                  } ${plan.popular ? 'border-orange-300' : plan.bestValue ? 'border-green-300' : 'border-gray-200'}`}
+                  onClick={() => handlePlanSelect(plan.id)}
+                >
+                  <CardContent className="p-6">
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-4">
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                      
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <span className="text-3xl font-bold text-gray-900">${plan.price}</span>
+                        <span className="text-gray-600">{plan.period}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <span className="text-sm text-gray-500 line-through">${plan.originalPrice}</span>
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                          {plan.discount}
+                        </span>
                       </div>
                     </div>
-                  )}
-                  
-                  <div className="mb-4">
-                    <plan.icon className="w-12 h-12 mx-auto text-pink-500 mb-3" />
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.duration}</h3>
-                  </div>
-                  
-                  <div className="mb-6">
-                    <div className="flex items-center justify-center mb-2">
-                      <span className="text-sm text-gray-500 line-through mr-2">
-                        ${plan.originalPrice}
-                      </span>
-                      <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
-                        {plan.discount} OFF
-                      </Badge>
-                    </div>
-                    <div className="text-3xl font-bold text-gray-900 mb-1">
-                      ${plan.price}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {plan.id === '1-month' ? '/tháng' : 
-                       plan.id === '3-month' ? '/3 tháng' :
-                       plan.id === '6-month' ? '/6 tháng' : '/năm'}
-                    </div>
-                  </div>
-                  
-                  <div className="flex-grow">
-                    <ul className="text-left space-y-2 text-sm">
-                      {plan.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <Check className="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-                          <span className="text-gray-600">{feature}</span>
+
+                    <ul className="space-y-3 mb-6">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-gray-700">{feature}</span>
                         </li>
                       ))}
                     </ul>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+
+                    <Button 
+                      className={`w-full ${
+                        isSelected 
+                          ? 'bg-purple-600 hover:bg-purple-700' 
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                      onClick={() => handlePlanSelect(plan.id)}
+                    >
+                      {isSelected ? 'Selected' : 'Select Plan'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Featured Add-on */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="max-w-2xl mx-auto mb-8"
+        <motion.div 
+          className="max-w-2xl mx-auto"
+          whileHover={{ scale: 1.02 }}
         >
           <Card 
-            className={`cursor-pointer transition-all duration-300 ${
-              isFeatured 
-                ? 'ring-4 ring-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50' 
-                : 'bg-gradient-to-br from-yellow-50 to-amber-50 hover:shadow-lg'
+            className={`cursor-pointer transition-all duration-300 bg-gradient-to-r from-yellow-50 to-amber-50 border-2 ${
+              featuredAddOn ? 'border-yellow-400 shadow-lg' : 'border-yellow-200'
             }`}
-            onClick={handleFeaturedToggle}
+            onClick={handleFeaturedAddOnToggle}
           >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  {isFeatured && (
-                    <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center mr-4">
-                      <Check className="w-4 h-4 text-white" />
-                    </div>
-                  )}
-                  <Star className="w-8 h-8 text-yellow-500 mr-4" />
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center w-12 h-12 bg-yellow-400 rounded-full">
+                    <Star className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">
-                      Featured Listing Add-on
-                    </h3>
-                    <p className="text-gray-600">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Featured Add-on</h3>
+                    <p className="text-sm text-gray-600 mb-2">
                       + $10 (one-time, applies to any plan)
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs text-gray-500">
                       + $10 (một lần duy nhất cho bất kỳ gói nào)
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-yellow-600">+$10</div>
-                  <div className="text-sm text-gray-500">one-time</div>
+                <div className="flex items-center gap-3">
+                  <Badge variant={featuredAddOn ? "default" : "outline"}>
+                    {featuredAddOn ? "Added" : "Add"}
+                  </Badge>
                 </div>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-yellow-200">
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Premium listing badge
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Priority in search results
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Featured placement
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Highlighted appearance
+                  </li>
+                </ul>
               </div>
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* Navigation */}
-        <div className="flex justify-between items-center">
-          <Button
-            variant="outline"
-            onClick={onPrevious}
-            className="px-8 py-3 text-lg border-pink-200 text-pink-600 hover:bg-pink-50"
-          >
-            Previous
-          </Button>
-          
-          <div className="text-center">
-            <p className="text-gray-600 mb-2">
-              Step 5 of 6: Choose Your Package
-            </p>
-            <div className="flex space-x-2">
-              {[1, 2, 3, 4, 5, 6].map((step) => (
-                <div
-                  key={step}
-                  className={`w-3 h-3 rounded-full ${
-                    step <= 5 ? 'bg-pink-500' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-          
-          <Button
-            onClick={handleNext}
-            className="px-8 py-3 text-lg bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-          >
-            Continue to Review
-          </Button>
-        </div>
       </div>
     </div>
   );

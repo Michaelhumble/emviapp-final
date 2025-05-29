@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import SalonDetailsStep from './steps/SalonDetailsStep';
-import SalonLocationStep from './steps/SalonLocationStep';
+import { SalonDetailsStep } from './steps/SalonDetailsStep';
+import { SalonLocationStep } from './steps/SalonLocationStep';
 import SalonPhotoUpload from './SalonPostPhotoUpload';
 import SalonPricingStep from './steps/SalonPricingStep';
 
@@ -27,7 +28,7 @@ const SalonListingWizard: React.FC = () => {
   const [salonDetails, setSalonDetails] = useState({});
   const [salonLocation, setSalonLocation] = useState({});
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [salonPricing, setSalonPricing] = useState({});
+  const [pricingOptions, setPricingOptions] = useState({});
 
   const totalSteps = steps.length;
 
@@ -70,7 +71,7 @@ const SalonListingWizard: React.FC = () => {
               {currentStep === 1 && <SalonDetailsStep salonDetails={salonDetails} setSalonDetails={setSalonDetails} />}
               {currentStep === 2 && <SalonLocationStep salonLocation={salonLocation} setSalonLocation={setSalonLocation} />}
               {currentStep === 3 && <SalonPhotoUpload photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />}
-              {currentStep === 4 && <SalonPricingStep salonPricing={salonPricing} setSalonPricing={setSalonPricing} />}
+              {currentStep === 4 && <SalonPricingStep pricingOptions={pricingOptions} setPricingOptions={setPricingOptions} />}
             </motion.div>
           </AnimatePresence>
         </div>
