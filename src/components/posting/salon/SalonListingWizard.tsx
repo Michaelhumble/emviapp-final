@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { SalonFormValues, salonFormSchema } from './salonFormSchema';
 import { SalonIdentitySection } from './SalonIdentitySection';
 import { SalonLocationSection } from './SalonLocationSection';
@@ -134,39 +134,63 @@ const SalonListingWizard = () => {
     <PostWizardLayout currentStep={currentStep} totalSteps={totalSteps}>
       <Form {...form}>
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-center mb-2">
-              List Your Salon for Sale
-            </h2>
-            <p className="text-center text-gray-600 mb-4">
-              {getStepTitle()} - Step {currentStep} of {totalSteps}
+          <div className="mb-10 text-center">
+            <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 bg-clip-text text-transparent">
+              <h2 className="text-4xl font-bold mb-3 flex items-center justify-center gap-3">
+                <Sparkles className="h-8 w-8 text-purple-600" />
+                Sell Your Salon Like a Pro
+              </h2>
+            </div>
+            <p className="text-xl text-gray-600 mb-4 max-w-2xl mx-auto leading-relaxed">
+              Join the <span className="font-semibold text-purple-600">most trusted marketplace</span> for salon owners. 
+              Your success story starts here.
             </p>
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-200 max-w-lg mx-auto">
+              <p className="text-purple-700 font-medium">
+                {getStepTitle()} - Step {currentStep} of {totalSteps}
+              </p>
+              <div className="w-full bg-purple-200 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                ></div>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 p-10 mb-10">
             {renderStep()}
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <Button
               type="button"
               variant="outline"
               onClick={prevStep}
               disabled={currentStep === 1}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 h-12 px-6 text-base border-2 border-gray-300 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 disabled:opacity-50"
             >
               <ArrowLeft className="h-4 w-4" />
-              Previous
+              Previous Step
             </Button>
 
             {!isLastStep && (
               <Button
                 type="button"
                 onClick={nextStep}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                className="flex items-center gap-2 h-12 px-8 text-base bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
-                {isPreviewStep ? 'Continue to Payment' : 'Next'}
-                <ArrowRight className="h-4 w-4" />
+                {isPreviewStep ? (
+                  <>
+                    Complete Your Listing
+                    <Sparkles className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    Continue
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
             )}
           </div>
