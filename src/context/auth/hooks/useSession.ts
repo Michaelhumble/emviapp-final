@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useSession = () => {
@@ -21,12 +21,12 @@ export const useSession = () => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (event: AuthChangeEvent, session: Session | null) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Fix: Use string comparison for event type
+        // Fix: Use proper enum comparison for AuthChangeEvent
         if (event === 'SIGNED_UP') {
           setIsNewUser(true);
         }

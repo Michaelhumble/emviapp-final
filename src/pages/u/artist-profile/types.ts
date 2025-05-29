@@ -8,12 +8,12 @@ export interface PortfolioImage {
 
 export interface Service {
   id: string;
-  name?: string; // Made optional since Supabase uses 'title'
+  name: string; // Required for consistency
   title: string;
   description: string;
   price: number;
-  price_type: string;
-  duration: string;
+  price_type: string; // Added missing property
+  duration: string; // Added missing property
   duration_minutes: number;
   image_url?: string;
   category?: string;
