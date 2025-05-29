@@ -1,294 +1,211 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { UseFormReturn } from 'react-hook-form';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Crown, Diamond, Zap, Check, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Star, Crown, Zap, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { SalonFormValues } from '../salonFormSchema';
 
 interface SalonPricingStepProps {
   form: UseFormReturn<SalonFormValues>;
-  onNext: () => void;
 }
 
-type PricingTier = 'basic' | 'gold' | 'premium' | 'diamond';
+const pricingPlans = [
+  {
+    id: 'basic',
+    name: 'Basic Listing',
+    price: '$19.99',
+    period: '/month',
+    originalPrice: '$24.99',
+    icon: Star,
+    color: 'from-blue-500 to-blue-600',
+    badgeColor: 'bg-blue-100 text-blue-700',
+    features: [
+      'Standard listing visibility',
+      'Visible to qualified buyers',
+      'Basic contact features',
+      'Standard support'
+    ],
+    popular: false
+  },
+  {
+    id: 'gold',
+    name: 'Gold Featured',
+    price: '$49.99',
+    period: '/3 months',
+    originalPrice: '$74.99',
+    icon: Crown,
+    color: 'from-yellow-500 to-orange-500',
+    badgeColor: 'bg-yellow-100 text-yellow-700',
+    features: [
+      'Featured badge & enhanced visibility',
+      'Higher placement in search results',
+      'Premium contact features',
+      'Priority support'
+    ],
+    popular: true
+  },
+  {
+    id: 'premium',
+    name: 'Premium Listing',
+    price: '$99.99',
+    period: '/6 months',
+    originalPrice: '$150',
+    icon: Zap,
+    color: 'from-purple-500 to-purple-600',
+    badgeColor: 'bg-purple-100 text-purple-700',
+    features: [
+      'Premium badge & maximum visibility',
+      'Top placement in search results',
+      'Advanced analytics dashboard',
+      'VIP support & dedicated assistance'
+    ],
+    popular: false
+  }
+];
 
-interface PricingPlan {
-  id: PricingTier;
-  name: string;
-  price: string;
-  originalPrice?: string;
-  duration: string;
-  durationMonths: number;
-  description: string;
-  features: string[];
-  icon: React.ReactNode;
-  gradient: string;
-  badgeColor: string;
-  popular?: boolean;
-  savings?: string;
-  allowsFeature?: boolean;
-}
+export const SalonPricingStep = ({ form }: SalonPricingStepProps) => {
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [featuredAddon, setFeaturedAddon] = useState(false);
 
-const SalonPricingStep: React.FC<SalonPricingStepProps> = ({ form, onNext }) => {
-  const [selectedTier, setSelectedTier] = useState<PricingTier>('basic');
-  const [addFeatured, setAddFeatured] = useState(false);
-
-  const pricingPlans: PricingPlan[] = [
-    {
-      id: 'basic',
-      name: 'Basic Listing',
-      price: '$19.99',
-      duration: 'Monthly',
-      durationMonths: 1,
-      description: 'Perfect for getting started',
-      features: [
-        'Standard listing visibility',
-        'Basic salon profile',
-        'Contact information display',
-        'Mobile-optimized listing'
-      ],
-      icon: <Star className="h-6 w-6" />,
-      gradient: 'from-blue-500 to-blue-600',
-      badgeColor: 'bg-blue-100 text-blue-700',
-      allowsFeature: true
-    },
-    {
-      id: 'gold',
-      name: 'Gold Featured',
-      price: '$49.99',
-      originalPrice: '$74.99',
-      duration: '3 Months',
-      durationMonths: 3,
-      description: 'Enhanced visibility & features',
-      features: [
-        'Featured badge & placement',
-        'Enhanced visibility in search',
-        'Priority customer support',
-        'Detailed analytics dashboard',
-        'Social media integration'
-      ],
-      icon: <Crown className="h-6 w-6" />,
-      gradient: 'from-amber-500 to-yellow-600',
-      badgeColor: 'bg-amber-100 text-amber-700',
-      popular: true,
-      savings: 'Save $25',
-      allowsFeature: true
-    },
-    {
-      id: 'premium',
-      name: 'Premium Listing',
-      price: '$99.99',
-      originalPrice: '$150',
-      duration: '6 Months',
-      durationMonths: 6,
-      description: 'Maximum exposure & tools',
-      features: [
-        'Premium badge & top placement',
-        'Advanced analytics & insights',
-        'Lead generation tools',
-        'Custom branding options',
-        'Priority listing support',
-        'Featured in newsletters'
-      ],
-      icon: <Diamond className="h-6 w-6" />,
-      gradient: 'from-purple-500 to-purple-600',
-      badgeColor: 'bg-purple-100 text-purple-700',
-      savings: 'Save $50',
-      allowsFeature: true
-    },
-    {
-      id: 'diamond',
-      name: 'Diamond Exclusive',
-      price: '$149',
-      originalPrice: '$300',
-      duration: '12 Months',
-      durationMonths: 12,
-      description: 'Ultimate visibility package',
-      features: [
-        'Diamond badge & exclusive placement',
-        'Maximum visibility guarantee',
-        'VIP support & account manager',
-        'Custom marketing materials',
-        'Featured across all platforms',
-        'Exclusive networking events',
-        'Advanced lead analytics'
-      ],
-      icon: <Sparkles className="h-6 w-6" />,
-      gradient: 'from-cyan-500 to-blue-600',
-      badgeColor: 'bg-cyan-100 text-cyan-700',
-      savings: 'Save $151',
-      allowsFeature: false
-    }
-  ];
-
-  const selectedPlan = pricingPlans.find(plan => plan.id === selectedTier);
-  const featuredCost = 10;
-  const totalCost = parseFloat(selectedPlan?.price.replace('$', '') || '0') + (addFeatured ? featuredCost : 0);
-
-  const handleSelectPlan = (tier: PricingTier) => {
-    setSelectedTier(tier);
-    // Reset featured add-on if diamond is selected
-    if (tier === 'diamond') {
-      setAddFeatured(false);
-    }
+  const handlePlanSelect = (planId: string) => {
+    setSelectedPlan(planId);
   };
 
-  const handleContinue = () => {
-    // Set form values for pricing
-    form.setValue('fastSalePackage', addFeatured);
-    onNext();
+  const toggleFeaturedAddon = () => {
+    setFeaturedAddon(!featuredAddon);
   };
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center"
-      >
-        <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg">
-          <Crown className="h-8 w-8 text-white" />
-        </div>
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-          Choose Your Salon Listing Plan
+      <div className="text-center">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          Choose Your Listing Plan
         </h2>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Select the perfect plan to showcase your salon to thousands of qualified buyers
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Select the perfect plan to showcase your salon to qualified buyers and maximize your reach
         </p>
-      </motion.div>
+      </div>
 
-      {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {pricingPlans.map((plan, index) => (
-          <motion.div
-            key={plan.id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
-            className="relative"
-          >
-            {plan.popular && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1 shadow-lg">
-                  Most Popular
-                </Badge>
-              </div>
-            )}
-            
-            <Card
-              className={`relative h-full cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 ${
-                selectedTier === plan.id
-                  ? 'border-purple-500 shadow-2xl ring-4 ring-purple-200'
-                  : 'border-gray-200 hover:border-purple-300'
-              } bg-white/80 backdrop-blur-sm`}
-              onClick={() => handleSelectPlan(plan.id)}
+      {/* Main Pricing Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {pricingPlans.map((plan, index) => {
+          const IconComponent = plan.icon;
+          return (
+            <motion.div
+              key={plan.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <CardHeader className="text-center pb-4">
-                <div className={`w-12 h-12 mx-auto mb-4 rounded-xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center text-white shadow-lg`}>
-                  {plan.icon}
-                </div>
-                
-                <CardTitle className="text-xl font-bold text-gray-800">
-                  {plan.name}
-                </CardTitle>
-                
-                <div className="space-y-1">
-                  <div className="flex items-center justify-center space-x-2">
-                    <span className="text-3xl font-bold text-gray-900">
-                      {plan.price}
-                    </span>
-                    {plan.originalPrice && (
-                      <span className="text-lg text-gray-500 line-through">
-                        {plan.originalPrice}
-                      </span>
-                    )}
+              <Card 
+                className={`relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 border-2 ${
+                  selectedPlan === plan.id 
+                    ? 'border-purple-500 shadow-xl ring-4 ring-purple-100' 
+                    : 'border-gray-200 hover:border-purple-300'
+                } ${plan.popular ? 'ring-2 ring-yellow-200' : ''}`}
+                onClick={() => handlePlanSelect(plan.id)}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 left-0 right-0">
+                    <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-center py-2 text-sm font-semibold">
+                      🔥 Most Popular
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600">{plan.duration}</p>
-                  {plan.savings && (
-                    <Badge className="bg-green-100 text-green-700 text-xs">
-                      {plan.savings}
-                    </Badge>
-                  )}
-                </div>
+                )}
                 
-                <p className="text-sm text-gray-600 mt-2">
-                  {plan.description}
-                </p>
-              </CardHeader>
+                <CardContent className={`p-8 ${plan.popular ? 'pt-12' : 'pt-8'}`}>
+                  <div className="text-center space-y-4">
+                    {/* Icon */}
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r ${plan.color} shadow-lg`}>
+                      <IconComponent className="h-8 w-8 text-white" />
+                    </div>
 
-              <CardContent className="pt-0">
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start space-x-2">
-                      <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-600">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                    {/* Plan Name */}
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                      <Badge className={`mt-2 ${plan.badgeColor}`}>
+                        {plan.name.split(' ')[0]} Plan
+                      </Badge>
+                    </div>
 
-                <Button
-                  className={`w-full ${
-                    selectedTier === plan.id
-                      ? `bg-gradient-to-r ${plan.gradient} text-white shadow-lg`
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  } rounded-xl h-12 font-semibold transition-all duration-200`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelectPlan(plan.id);
-                  }}
-                >
-                  {selectedTier === plan.id ? 'Selected' : 'Select Plan'}
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                    {/* Pricing */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center space-x-2">
+                        <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
+                        <span className="text-gray-500">{plan.period}</span>
+                      </div>
+                      <div className="text-sm text-gray-500 line-through">
+                        Originally {plan.originalPrice}
+                      </div>
+                    </div>
+
+                    {/* Features */}
+                    <div className="space-y-3 text-left">
+                      {plan.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-center space-x-2">
+                          <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Select Button */}
+                    <Button
+                      type="button"
+                      className={`w-full mt-6 transition-all duration-300 ${
+                        selectedPlan === plan.id
+                          ? `bg-gradient-to-r ${plan.color} text-white shadow-lg`
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                      onClick={() => handlePlanSelect(plan.id)}
+                    >
+                      {selectedPlan === plan.id ? 'Selected' : 'Select Plan'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Featured Add-on */}
-      {selectedPlan?.allowsFeature && (
+      {selectedPlan && selectedPlan !== 'premium' && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mt-8"
         >
-          <Card 
-            className={`cursor-pointer transition-all duration-300 hover:shadow-xl border-2 ${
-              addFeatured 
-                ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 shadow-lg' 
-                : 'border-gray-200 hover:border-yellow-300 bg-white/80'
-            } backdrop-blur-sm`}
-            onClick={() => setAddFeatured(!addFeatured)}
-          >
+          <Card className={`border-2 transition-all duration-300 ${
+            featuredAddon ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'
+          }`}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-lg">
-                    <Zap className="h-6 w-6 text-white" />
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg">
+                    <Star className="h-6 w-6 text-white fill-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800 flex items-center">
-                      Feature This Listing
-                      <Badge className="ml-2 bg-yellow-100 text-yellow-700 animate-pulse">
-                        +$10
-                      </Badge>
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Stand out with a golden badge and premium placement
-                    </p>
+                    <h3 className="text-lg font-bold text-gray-900">Featured Add-on</h3>
+                    <p className="text-sm text-gray-600">Make your listing stand out with a golden featured badge</p>
                   </div>
                 </div>
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  addFeatured 
-                    ? 'border-yellow-500 bg-yellow-500' 
-                    : 'border-gray-300'
-                }`}>
-                  {addFeatured && <Check className="h-4 w-4 text-white" />}
+                <div className="flex items-center space-x-4">
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-900">+$10</div>
+                    <div className="text-sm text-gray-500">one-time</div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant={featuredAddon ? "default" : "outline"}
+                    onClick={toggleFeaturedAddon}
+                    className={featuredAddon ? "bg-yellow-500 hover:bg-yellow-600" : ""}
+                  >
+                    {featuredAddon ? 'Added' : 'Add Feature'}
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -296,45 +213,26 @@ const SalonPricingStep: React.FC<SalonPricingStepProps> = ({ form, onNext }) => 
         </motion.div>
       )}
 
-      {/* Summary & Continue */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-        className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100"
-      >
-        <div className="text-center space-y-4">
-          <h3 className="text-xl font-bold text-gray-800">Order Summary</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center text-lg">
-              <span>{selectedPlan?.name} ({selectedPlan?.duration})</span>
-              <span className="font-semibold">{selectedPlan?.price}</span>
-            </div>
-            {addFeatured && (
-              <div className="flex justify-between items-center text-yellow-700">
-                <span>Feature This Listing</span>
-                <span className="font-semibold">+${featuredCost}</span>
-              </div>
-            )}
-            <hr className="border-gray-200" />
-            <div className="flex justify-between items-center text-xl font-bold text-gray-900">
-              <span>Total</span>
-              <span>${totalCost.toFixed(2)}</span>
-            </div>
+      {/* Trust Indicators */}
+      <div className="mt-12 text-center space-y-4">
+        <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
+          <div className="flex items-center space-x-2">
+            <Check className="h-4 w-4 text-green-500" />
+            <span>No setup fees</span>
           </div>
-          
-          <Button
-            onClick={handleContinue}
-            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            Continue to Payment
-          </Button>
-          
-          <p className="text-xs text-gray-500 mt-4">
-            Your listing will be live within 24 hours after payment confirmation
-          </p>
+          <div className="flex items-center space-x-2">
+            <Check className="h-4 w-4 text-green-500" />
+            <span>Cancel anytime</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Check className="h-4 w-4 text-green-500" />
+            <span>Qualified buyers only</span>
+          </div>
         </div>
-      </motion.div>
+        <p className="text-xs text-gray-400 max-w-md mx-auto">
+          All plans include access to our qualified buyer network and secure messaging system
+        </p>
+      </div>
     </div>
   );
 };
