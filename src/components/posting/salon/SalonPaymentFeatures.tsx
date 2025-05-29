@@ -3,9 +3,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CreditCard, Shield, Clock, CheckCircle, Crown } from 'lucide-react';
 import { SalonFormValues } from './salonFormSchema';
-import { SalonPricingOptions, calculateSalonPostPrice, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
+import { SalonPricingOptions, calculateSalonPostPrice, getSalonPostPricingSummary, DURATION_OPTIONS } from '@/utils/posting/salonPricing';
 
 interface SalonPaymentFeaturesProps {
   formData: SalonFormValues;
@@ -24,33 +24,15 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
   const pricingSummary = getSalonPostPricingSummary(selectedOptions);
   
   const getPlanName = () => {
-    const duration = selectedOptions.durationMonths || 1;
-    if (duration === 1) return 'Standard Listing';
-    if (duration === 6) return '6 Month Package';
-    if (duration === 12) return '12 Month Package';
-    return 'Standard Listing';
+    const duration = selectedOptions.durationMonths || 3;
+    return `Standard Listing - ${duration} months`;
   };
 
-  const getIncludedFeatures = () => {
-    const features = [];
-    
-    if (selectedOptions.isNationwide) {
-      features.push(`Nationwide Visibility (+$${pricingSummary.addOns.nationwide.toFixed(2)})`);
-    }
-    
-    if (selectedOptions.fastSalePackage || selectedOptions.featuredBoost) {
-      features.push(`Premium Promotion (+$${pricingSummary.addOns.fastSale.toFixed(2)})`);
-    }
-    
-    if (selectedOptions.showAtTop) {
-      features.push(`Featured Placement (+$${pricingSummary.addOns.showAtTop.toFixed(2)})`);
-    }
-    
-    if (selectedOptions.bundleWithJobPost) {
-      features.push(`Bundle with Job Post (+$${pricingSummary.addOns.bundleWithJobPost.toFixed(2)})`);
-    }
-    
-    return features;
+  const getSavingsText = () => {
+    const duration = selectedOptions.durationMonths || 3;
+    if (duration === 6) return 'Tiết kiệm 25% / Save 25%';
+    if (duration === 12) return 'Tiết kiệm 30% / Save 30%';
+    return '';
   };
 
   return (
@@ -60,7 +42,7 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            Listing Summary
+            Listing Summary / Tóm tắt đăng tin
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,11 +53,11 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-500">Asking Price:</span>
+                <span className="text-gray-500">Asking Price / Giá bán:</span>
                 <p className="font-medium">${formData.askingPrice}</p>
               </div>
               <div>
-                <span className="text-gray-500">Monthly Rent:</span>
+                <span className="text-gray-500">Monthly Rent / Tiền thuê:</span>
                 <p className="font-medium">${formData.monthlyRent}</p>
               </div>
             </div>
@@ -87,8 +69,8 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-purple-500" />
-            Selected Plan
+            <Clock className="h-5 w-5 text-blue-500" />
+            Selected Plan / Gói đã chọn
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -97,25 +79,37 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
               <div>
                 <h3 className="font-semibold">{getPlanName()}</h3>
                 <p className="text-sm text-gray-600">
-                  Active for {selectedOptions.durationMonths || 1} month{(selectedOptions.durationMonths || 1) > 1 ? 's' : ''}
+                  Active for {selectedOptions.durationMonths || 3} months / 
+                  Hoạt động trong {selectedOptions.durationMonths || 3} tháng
                 </p>
+                {getSavingsText() && (
+                  <p className="text-sm text-green-600 font-medium mt-1">
+                    {getSavingsText()}
+                  </p>
+                )}
               </div>
-              <Badge variant="outline" className="text-purple-600">
-                ${totalPrice.toFixed(2)}
+              <Badge variant="outline" className="text-blue-600">
+                ${pricingSummary.basePrice.toFixed(2)}
               </Badge>
             </div>
             
-            {getIncludedFeatures().length > 0 && (
-              <div>
-                <h4 className="font-medium text-sm text-gray-700 mb-2">Add-ons Included:</h4>
-                <ul className="space-y-1">
-                  {getIncludedFeatures().map((feature, index) => (
-                    <li key={index} className="flex items-center text-sm text-gray-600">
-                      <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+            {selectedOptions.featuredAddOn && (
+              <div className="border-t pt-3">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <Crown className="h-4 w-4 text-yellow-600 mr-2" />
+                    <span className="text-sm font-medium">
+                      Featured Add-On / Nổi bật
+                    </span>
+                  </div>
+                  <Badge variant="outline" className="text-yellow-600">
+                    +${pricingSummary.addOns.featured.toFixed(2)}
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">
+                  Highlighted placement and "Featured" badge / 
+                  Vị trí nổi bật và huy hiệu "Đặc biệt"
+                </p>
               </div>
             )}
           </div>
@@ -123,25 +117,55 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
       </Card>
 
       {/* Payment Summary */}
-      <Card className="border-purple-200 bg-purple-50">
+      <Card className="border-blue-200 bg-blue-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-700">
+          <CardTitle className="flex items-center gap-2 text-blue-700">
             <CreditCard className="h-5 w-5" />
-            Payment Summary
+            Payment Summary / Tóm tắt thanh toán
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex justify-between text-lg font-semibold">
-              <span>Total Amount:</span>
-              <span className="text-purple-600">${totalPrice.toFixed(2)}</span>
+            {/* Breakdown */}
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>Base Plan / Gói cơ bản:</span>
+                <span>${pricingSummary.basePrice.toFixed(2)}</span>
+              </div>
+              {selectedOptions.featuredAddOn && (
+                <div className="flex justify-between">
+                  <span>Featured Add-On / Nổi bật:</span>
+                  <span>+${pricingSummary.addOns.featured.toFixed(2)}</span>
+                </div>
+              )}
+              {pricingSummary.subtotal && (
+                <div className="flex justify-between border-t pt-2">
+                  <span>Subtotal / Tạm tính:</span>
+                  <span>${pricingSummary.subtotal.toFixed(2)}</span>
+                </div>
+              )}
+              {pricingSummary.discounts.autoRenew > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Auto-renew discount / Giảm giá tự động gia hạn:</span>
+                  <span>-${pricingSummary.discounts.autoRenew.toFixed(2)}</span>
+                </div>
+              )}
             </div>
+            
+            <div className="flex justify-between text-lg font-semibold border-t pt-3">
+              <span>Total Amount / Tổng tiền:</span>
+              <span className="text-blue-600">${totalPrice.toFixed(2)}</span>
+            </div>
+            
             <div className="text-sm text-gray-600">
               <div className="flex items-center gap-2 mb-2">
                 <Shield className="h-4 w-4 text-green-500" />
-                <span>Secure payment powered by Stripe</span>
+                <span>Secure payment powered by Stripe / Thanh toán an toàn bởi Stripe</span>
               </div>
-              <p>Your listing will be active immediately after payment confirmation.</p>
+              <p>
+                Your listing will be active immediately after payment confirmation. /
+                Đăng tin sẽ hoạt động ngay sau khi thanh toán thành công.
+              </p>
             </div>
           </div>
         </CardContent>
@@ -151,14 +175,14 @@ const SalonPaymentFeatures: React.FC<SalonPaymentFeaturesProps> = ({
       <div className="flex justify-between pt-4">
         <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" />
-          Back to Plan Selection
+          Back to Plan Selection / Quay lại chọn gói
         </Button>
         
         <Button 
           onClick={onPayment}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg font-semibold"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
         >
-          Pay ${totalPrice.toFixed(2)} & Publish Listing
+          Pay ${totalPrice.toFixed(2)} & Publish Listing / Thanh toán & Đăng tin
         </Button>
       </div>
     </div>

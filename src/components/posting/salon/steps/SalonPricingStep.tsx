@@ -7,10 +7,8 @@ import { SalonFormValues } from "../salonFormSchema";
 
 interface SalonPricingOptions {
   selectedPricingTier: SalonPricingTier;
-  isNationwide?: boolean;
-  fastSalePackage?: boolean;
-  showAtTop?: boolean;
-  bundleWithJobPost?: boolean;
+  durationMonths?: number;
+  featuredAddOn?: boolean;
   autoRenew?: boolean;
   isFirstPost?: boolean;
 }
