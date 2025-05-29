@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
 import { SalonIdentitySection } from './SalonIdentitySection';
 import { SalonLocationSection } from './SalonLocationSection';
+import { SalonBusinessStep } from './steps/SalonBusinessStep';
 import { SalonPostDescription } from './SalonPostDescription';
 import { SalonContactSection } from './SalonContactSection';
 import { SalonPhotosSection } from './SalonPhotosSection';
@@ -20,6 +20,7 @@ import SalonPreviewStep from './steps/SalonPreviewStep';
 const steps = [
   { id: 'identity', title: 'Salon Identity', component: 'identity' },
   { id: 'location', title: 'Location', component: 'location' },
+  { id: 'business', title: 'Business Details', component: 'business' },
   { id: 'description', title: 'Description', component: 'description' },
   { id: 'contact', title: 'Contact Info', component: 'contact' },
   { id: 'photos', title: 'Photos', component: 'photos' },
@@ -29,7 +30,6 @@ const steps = [
 
 const SalonListingWizard = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
 
   const form = useForm<SalonFormValues>({
@@ -46,12 +46,13 @@ const SalonListingWizard = () => {
       hideExactAddress: false,
       askingPrice: '',
       monthlyRent: '',
+      monthlyRevenue: '',
+      monthlyProfit: '',
       numberOfStaff: '',
       numberOfTables: '',
       numberOfChairs: '',
       squareFeet: '',
       revenue: '',
-      monthlyRevenue: '',
       yearlyRevenue: '',
       grossRevenue: '',
       netProfit: '',
@@ -59,9 +60,12 @@ const SalonListingWizard = () => {
       englishDescription: '',
       reasonForSelling: '',
       virtualTourUrl: '',
+      otherNotes: '',
       contactName: '',
       contactEmail: '',
       contactPhone: '',
+      contactFacebook: '',
+      contactZalo: '',
       contactNotes: '',
       willTrain: false,
       hasHousing: false,
@@ -72,6 +76,7 @@ const SalonListingWizard = () => {
       equipmentIncluded: false,
       leaseTransferable: false,
       sellerFinancing: false,
+      helpWithTransition: false,
       selectedPricingTier: 'basic',
       featuredAddon: false,
       termsAccepted: false
@@ -90,8 +95,6 @@ const SalonListingWizard = () => {
     }
   };
 
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
   const renderStepContent = () => {
     const step = steps[currentStep];
     
@@ -100,6 +103,8 @@ const SalonListingWizard = () => {
         return <SalonIdentitySection form={form} />;
       case 'location':
         return <SalonLocationSection form={form} />;
+      case 'business':
+        return <SalonBusinessStep form={form} />;
       case 'description':
         return <SalonPostDescription form={form} />;
       case 'contact':
@@ -109,77 +114,98 @@ const SalonListingWizard = () => {
           <SalonPhotosSection 
             photoUploads={photoUploads}
             setPhotoUploads={setPhotoUploads}
-            maxPhotos={7}
+            maxPhotos={8}
           />
         );
       case 'preview':
         return <SalonPreviewStep form={form} photoUploads={photoUploads} />;
       case 'payment':
-        return (
-          <SalonPaymentStep 
-            form={form}
-            onPaymentComplete={() => {
-              toast.success('Salon listing published successfully!');
-            }}
-          />
-        );
+        return <SalonPaymentStep form={form} />;
       default:
         return null;
     }
   };
 
+  const handlePaymentComplete = () => {
+    toast.success('Salon listing published successfully!');
+    // Navigate to success page or salon listing
+  };
+
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <Card className="shadow-xl">
-        <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-serif">List Your Salon for Sale</CardTitle>
-              <CardDescription className="text-lg">
-                Step {currentStep + 1} of {steps.length}: {steps[currentStep].title}
-              </CardDescription>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-600 mb-2">Progress</div>
-              <div className="w-32">
-                <Progress value={progress} className="h-2" />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex items-center">
+                <div className={`
+                  w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                  ${index <= currentStep 
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-gray-200 text-gray-500'
+                  }
+                `}>
+                  {index < currentStep ? (
+                    <CheckCircle className="w-5 h-5" />
+                  ) : (
+                    index + 1
+                  )}
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`
+                    h-1 w-16 mx-2
+                    ${index < currentStep ? 'bg-purple-600' : 'bg-gray-200'}
+                  `} />
+                )}
               </div>
-            </div>
+            ))}
           </div>
-        </CardHeader>
+          <p className="text-center text-gray-600">
+            Step {currentStep + 1} of {steps.length}: {steps[currentStep].title}
+          </p>
+        </div>
 
-        <CardContent className="p-8">
-          <Form {...form}>
-            <div className="min-h-[400px]">
-              {renderStepContent()}
-            </div>
-
-            <div className="flex justify-between items-center mt-8 pt-6 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Previous
-              </Button>
-
-              {currentStep < steps.length - 1 ? (
-                <Button
-                  type="button"
-                  onClick={nextStep}
-                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                >
-                  Next
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              ) : null}
-            </div>
-          </Form>
-        </CardContent>
-      </Card>
+        <Card className="shadow-xl border-0">
+          <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
+            <CardTitle className="text-2xl font-bold text-center">
+              Sell Your Salon
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-8">
+            <Form {...form}>
+              <form className="space-y-6">
+                {renderStepContent()}
+                
+                {/* Navigation Buttons */}
+                <div className="flex justify-between pt-8 border-t">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={prevStep}
+                    disabled={currentStep === 0}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Previous
+                  </Button>
+                  
+                  {currentStep < steps.length - 1 ? (
+                    <Button
+                      type="button"
+                      onClick={nextStep}
+                      className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    >
+                      Next
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  ) : null}
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

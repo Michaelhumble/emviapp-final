@@ -5,7 +5,7 @@ import { SalonFormValues } from "./salonFormSchema";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { FileText, Globe, Link } from "lucide-react";
+import { FileText, Globe, Link, MessageSquare } from "lucide-react";
 
 interface SalonPostDescriptionProps {
   form: UseFormReturn<SalonFormValues>;
@@ -16,10 +16,10 @@ export const SalonPostDescription = ({ form }: SalonPostDescriptionProps) => {
     <div className="space-y-8">
       <div className="text-center space-y-2">
         <h3 className="text-2xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-          Salon Description
+          Salon Description / Mô tả tiệm
         </h3>
         <p className="text-gray-600">
-          Describe your salon and why someone should consider buying it
+          Describe your salon and why someone should consider buying it / Mô tả tiệm của bạn và tại sao ai đó nên xem xét mua nó
         </p>
       </div>
 
@@ -31,7 +31,7 @@ export const SalonPostDescription = ({ form }: SalonPostDescriptionProps) => {
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <FileText className="h-4 w-4 text-purple-600" />
-                English Description
+                English Description / Mô tả bằng tiếng Anh
               </FormLabel>
               <FormControl>
                 <Textarea
@@ -52,7 +52,7 @@ export const SalonPostDescription = ({ form }: SalonPostDescriptionProps) => {
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <Globe className="h-4 w-4 text-purple-600" />
-                Vietnamese Description (Mô tả bằng tiếng Việt)
+                Vietnamese Description / Mô tả bằng tiếng Việt
               </FormLabel>
               <FormControl>
                 <Textarea
@@ -68,12 +68,33 @@ export const SalonPostDescription = ({ form }: SalonPostDescriptionProps) => {
 
         <FormField
           control={form.control}
+          name="otherNotes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-base font-medium flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-purple-600" />
+                Other Notes / Ghi chú khác
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Any additional information buyers should know / Bất kỳ thông tin bổ sung nào mà người mua nên biết"
+                  className="min-h-[100px] border-gray-200 focus:border-purple-500 focus:ring-purple-500/20"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="virtualTourUrl"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-base font-medium flex items-center gap-2">
                 <Link className="h-4 w-4 text-purple-600" />
-                Virtual Tour URL (Optional)
+                Virtual Tour URL / URL tham quan ảo (Optional / Tùy chọn)
               </FormLabel>
               <FormControl>
                 <Input

@@ -18,13 +18,14 @@ export const salonFormSchema = z.object({
 
   // Financial/Business details
   askingPrice: z.string().min(1, 'Asking price is required'),
-  monthlyRent: z.string().optional(),
+  monthlyRent: z.string().min(1, 'Monthly rent is required'),
+  monthlyRevenue: z.string().optional(),
+  monthlyProfit: z.string().optional(),
   numberOfStaff: z.string().optional(),
   numberOfTables: z.string().optional(),
   numberOfChairs: z.string().optional(),
   squareFeet: z.string().optional(),
   revenue: z.string().optional(),
-  monthlyRevenue: z.string().optional(),
   yearlyRevenue: z.string().optional(),
   grossRevenue: z.string().optional(),
   netProfit: z.string().optional(),
@@ -34,11 +35,14 @@ export const salonFormSchema = z.object({
   englishDescription: z.string().optional(),
   reasonForSelling: z.string().optional(),
   virtualTourUrl: z.string().optional(),
+  otherNotes: z.string().optional(),
   
   // Contact Information
   contactName: z.string().min(1, 'Contact name is required'),
   contactEmail: z.string().email('Valid email is required'),
   contactPhone: z.string().min(1, 'Phone number is required'),
+  contactFacebook: z.string().optional(),
+  contactZalo: z.string().optional(),
   contactNotes: z.string().optional(),
   
   // Features and amenities
@@ -51,6 +55,7 @@ export const salonFormSchema = z.object({
   equipmentIncluded: z.boolean().default(false),
   leaseTransferable: z.boolean().default(false),
   sellerFinancing: z.boolean().default(false),
+  helpWithTransition: z.boolean().default(false),
   
   // Pricing options
   selectedPricingTier: z.enum(['basic', 'gold', 'premium', 'annual']).default('basic'),
