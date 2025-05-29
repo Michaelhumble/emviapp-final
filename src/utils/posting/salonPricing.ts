@@ -1,4 +1,3 @@
-
 export type SalonPricingTier = 'standard' | 'featured';
 
 export interface SalonPricingPlan {
@@ -42,9 +41,38 @@ export interface SalonPricingSummary {
 }
 
 export const DURATION_OPTIONS = [
-  { months: 3, label: '3 Months', discount: 0, price: 19.99 },
-  { months: 6, label: '6 Months', discount: 0, price: 29.99 },
-  { months: 12, label: '12 Months', discount: 0, price: 49.99 }
+  { 
+    months: 1, 
+    label: "1 Month / 1 Tháng", 
+    discount: 20, 
+    price: 19.99, 
+    originalPrice: 24.99, 
+    fomoBadge: "Save 20%! / Tiết kiệm 20%!" 
+  },
+  { 
+    months: 3, 
+    label: "3 Months / 3 Tháng", 
+    discount: 27, 
+    price: 54.99, 
+    originalPrice: 74.99, 
+    fomoBadge: "Save 27%! / Tiết kiệm 27%!" 
+  },
+  { 
+    months: 6, 
+    label: "6 Months / 6 Tháng", 
+    discount: 33, 
+    price: 99.99, 
+    originalPrice: 149.99, 
+    fomoBadge: "Save 33%! / Tiết kiệm 33%!" 
+  },
+  { 
+    months: 12, 
+    label: "12 Months / 12 Tháng", 
+    discount: 51, 
+    price: 145.99, 
+    originalPrice: 300.00, 
+    fomoBadge: "Save 51%! / Tiết kiệm 51%!" 
+  }
 ];
 
 export const salonPricingPlans: SalonPricingPlan[] = [
