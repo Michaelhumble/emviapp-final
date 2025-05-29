@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -105,7 +106,7 @@ const SalonPlanSelectionSection: React.FC<SalonPlanSelectionSectionProps> = ({
               </ul>
 
               <Button
-                onClick={() => handleSelectPlan(plan)}
+                onClick={() => handleSelectPlan(plan.id)}
                 className={`w-full ${plan.buttonColor} text-white`}
                 disabled={selectedTier === plan.id}
               >
