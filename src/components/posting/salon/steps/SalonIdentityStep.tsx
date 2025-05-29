@@ -1,48 +1,49 @@
 
-import React from "react";
-import { UseFormReturn } from "react-hook-form";
-import { SalonFormValues } from "../salonFormSchema";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, Calendar, Sparkles } from "lucide-react";
+import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SalonFormValues } from '../salonFormSchema';
 
 interface SalonIdentityStepProps {
   form: UseFormReturn<SalonFormValues>;
 }
 
-const beautyIndustryOptions = [
-  { value: "Nails", label: "Nails" },
-  { value: "Hair", label: "Hair" },
-  { value: "Lashes", label: "Lashes" },
-  { value: "Barber", label: "Barber" },
-  { value: "Massage", label: "Massage" },
-  { value: "Skincare", label: "Skincare" },
-  { value: "Tattoo", label: "Tattoo" },
-  { value: "Makeup", label: "Makeup" },
-  { value: "Spa", label: "Spa" },
-  { value: "Other", label: "Other" }
-];
+export const SalonIdentityStep: React.FC<SalonIdentityStepProps> = ({ form }) => {
+  const businessTypes = [
+    'Hair Salon / Salon Tóc',
+    'Nail Salon / Salon Nails', 
+    'Spa / Spa',
+    'Barbershop / Tiệm cắt tóc nam',
+    'Beauty Salon / Salon làm đẹp',
+    'Massage / Massage',
+    'Eyebrow/Lash / Chân mày/Mi',
+    'Mixed Services / Dịch vụ hỗn hợp'
+  ];
 
-export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
-  // Set default beauty industry to "Nails" if not already set
-  React.useEffect(() => {
-    if (!form.getValues("beautyIndustry")) {
-      form.setValue("beautyIndustry", "Nails");
-    }
-  }, [form]);
+  const beautyIndustries = [
+    'Nails',
+    'Hair', 
+    'Spa',
+    'Massage',
+    'Eyebrows',
+    'Eyelashes',
+    'Facials',
+    'Waxing',
+    'Other'
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Building2 className="w-5 h-5 text-purple-600" />
+      <div className="mb-6">
         <h2 className="text-2xl font-playfair font-medium">Salon Information / Thông Tin Salon</h2>
+        <p className="text-gray-600 mt-2">
+          Tell us about your salon business / Cho chúng tôi biết về doanh nghiệp salon của bạn
+        </p>
       </div>
-      <p className="text-gray-600 mb-6">
-        Tell us about your salon business / Hãy cho chúng tôi biết về doanh nghiệp salon của bạn
-      </p>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
           name="salonName"
@@ -50,36 +51,11 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
             <FormItem>
               <FormLabel>Salon Name / Tên Salon *</FormLabel>
               <FormControl>
-                <Input placeholder="Beautiful Nails & Spa" {...field} />
+                <Input 
+                  placeholder="Enter your salon name / Nhập tên salon"
+                  {...field} 
+                />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="beautyIndustry"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Beauty Industry / Ngành Làm Đẹp *
-              </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value || "Nails"}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select industry / Chọn ngành" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {beautyIndustryOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -91,9 +67,45 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Business Type / Loại Hình Kinh Doanh *</FormLabel>
-              <FormControl>
-                <Input placeholder="Nail Salon, Hair Salon, Spa, etc." {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select business type / Chọn loại hình" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {businessTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="beautyIndustry"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Primary Service / Dịch Vụ Chính</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select primary service / Chọn dịch vụ chính" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {beautyIndustries.map((industry) => (
+                    <SelectItem key={industry} value={industry}>
+                      {industry}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -104,12 +116,15 @@ export const SalonIdentityStep = ({ form }: SalonIdentityStepProps) => {
           name="establishedYear"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Year Established / Năm Thành Lập
-              </FormLabel>
+              <FormLabel>Established Year / Năm Thành Lập</FormLabel>
               <FormControl>
-                <Input placeholder="2020" {...field} />
+                <Input 
+                  placeholder="e.g., 2020"
+                  type="number"
+                  min="1900"
+                  max={new Date().getFullYear()}
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

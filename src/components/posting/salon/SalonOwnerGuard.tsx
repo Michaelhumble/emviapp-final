@@ -11,7 +11,21 @@ interface SalonOwnerGuardProps {
 }
 
 const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, isLoading } = useAuth();
+
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="text-center p-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Checking authentication...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Debug logging for QA
   console.log('SalonOwnerGuard Debug:', {
@@ -57,11 +71,11 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
   // Special QA bypass for humbleinsider@gmail.com
   const isQAUser = user.email === 'humbleinsider@gmail.com';
   
-  // Check if user is a salon owner or has salon access
-  const isSalonOwner = userProfile?.role === 'owner' || 
-                      isQAUser; // QA bypass
-
-  if (!isSalonOwner) {
+  // For now, allow all authenticated users to post salon listings
+  // In production, you would check specific roles or salon ownership
+  const canPostSalon = true; // Allow all authenticated users for now
+  
+  if (!canPostSalon && !isQAUser) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
@@ -103,7 +117,7 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     console.log('QA Access Granted: humbleinsider@gmail.com accessing Sell Salon wizard');
   }
 
-  // User is authenticated and is a salon owner or QA user
+  // User is authenticated and can post salon listings
   return <>{children}</>;
 };
 

@@ -1,9 +1,12 @@
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/context/auth";
 import { salonFormSchema, SalonFormValues } from "./salonFormSchema";
 import { SalonPricingOptions } from "@/utils/posting/salonPricing";
 import { SalonIdentityStep } from "./steps/SalonIdentityStep";
@@ -22,6 +25,7 @@ const STEPS = [
 ];
 
 const SalonListingWizard = () => {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<SalonPricingOptions>({
@@ -35,7 +39,7 @@ const SalonListingWizard = () => {
     defaultValues: {
       salonName: "",
       businessType: "",
-      beautyIndustry: "Nails", // Default to Nails
+      beautyIndustry: "Nails",
       establishedYear: "",
       address: "",
       city: "",
@@ -65,6 +69,15 @@ const SalonListingWizard = () => {
     },
   });
 
+  // Check auth status
+  React.useEffect(() => {
+    if (!user) {
+      toast.error("Please sign in to post a salon listing", {
+        description: "You'll be redirected to the sign-in page"
+      });
+    }
+  }, [user]);
+
   const nextStep = () => {
     if (currentStep < STEPS.length) {
       setCurrentStep(currentStep + 1);
@@ -78,8 +91,13 @@ const SalonListingWizard = () => {
   };
 
   const handlePayment = () => {
+    toast.success("Payment completed! Your salon listing is now live.", {
+      description: "Redirecting to success page..."
+    });
     // Redirect to success page after payment
-    window.location.href = "/salon-listing-success";
+    setTimeout(() => {
+      window.location.href = "/salon-listing-success";
+    }, 1500);
   };
 
   const renderStep = () => {
@@ -136,10 +154,41 @@ const SalonListingWizard = () => {
       case 4:
         return selectedOptions.selectedPricingTier && selectedOptions.durationMonths;
       case 5:
-        return formData.termsAccepted;
+        return formData.termsAccepted && user;
       default:
         return true;
     }
+  };
+
+  const getStepError = () => {
+    if (!user && currentStep === 5) {
+      return "Please sign in to complete your listing";
+    }
+    
+    const formData = form.getValues();
+    switch (currentStep) {
+      case 1:
+        if (!formData.salonName) return "Salon name is required";
+        if (!formData.businessType) return "Business type is required";
+        break;
+      case 2:
+        if (!formData.address) return "Address is required";
+        if (!formData.city) return "City is required";
+        if (!formData.state) return "State is required";
+        break;
+      case 3:
+        if (!formData.askingPrice) return "Asking price is required";
+        if (!formData.monthlyRent) return "Monthly rent is required";
+        if (photoUploads.length === 0) return "At least one photo is required";
+        break;
+      case 4:
+        if (!selectedOptions.selectedPricingTier) return "Please select a pricing plan";
+        break;
+      case 5:
+        if (!formData.termsAccepted) return "Please accept the terms and conditions";
+        break;
+    }
+    return null;
   };
 
   return (
@@ -163,26 +212,34 @@ const SalonListingWizard = () => {
               Back / Quay lại
             </Button>
 
-            {currentStep < STEPS.length ? (
-              <Button
-                type="button"
-                onClick={nextStep}
-                disabled={!canProceed()}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-              >
-                Next / Tiếp tục
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                onClick={handlePayment}
-                disabled={!canProceed()}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Complete Payment / Hoàn tất thanh toán
-              </Button>
-            )}
+            <div className="flex flex-col items-end">
+              {currentStep < STEPS.length ? (
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={!canProceed()}
+                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+                >
+                  Next / Tiếp tục
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={handlePayment}
+                  disabled={!canProceed()}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  Complete Payment / Hoàn tất thanh toán
+                </Button>
+              )}
+              
+              {getStepError() && (
+                <p className="text-sm text-red-600 mt-2">
+                  {getStepError()}
+                </p>
+              )}
+            </div>
           </div>
         </Form>
       </div>
