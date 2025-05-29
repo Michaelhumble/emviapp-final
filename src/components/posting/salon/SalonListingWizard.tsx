@@ -1,278 +1,187 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { Progress } from "@/components/ui/progress";
-import { salonFormSchema, type SalonFormValues } from "./salonFormSchema";
-import { SalonIdentityStep } from "./steps/SalonIdentityStep";
-import { SalonLocationStep } from "./steps/SalonLocationStep";
-import { SalonDetailsStep } from "./steps/SalonDetailsStep";
-import { SalonReviewStep } from "./steps/SalonReviewStep";
-import { SalonPhotosSection } from "./SalonPhotosSection";
-import { SalonPricingStep } from "./steps/SalonPricingStep";
-import { type SalonPricingOptions } from "@/utils/posting/salonPricing";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
+import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
+import { SalonBasicInfoStep } from './steps/SalonBasicInfoStep';
+import { SalonDescriptionStep } from './steps/SalonDescriptionStep';
+import { SalonPhotoStep } from './steps/SalonPhotoStep';
+import { SalonPricingStep } from './steps/SalonPricingStep';
+import { SalonReviewStep } from './steps/SalonReviewStep';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { type SalonPricingOptions, type SalonPricingTier } from '@/utils/posting/salonPricing';
 
 interface SalonListingWizardProps {
-  onComplete: (data: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
+  onComplete: (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
 }
 
 const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<SalonPricingOptions>({
-    selectedPricingTier: 'standard',
+    selectedPricingTier: 'standard' as SalonPricingTier,
     durationMonths: 1,
     featuredAddOn: false,
-    autoRenew: false
+    autoRenew: false,
+    isFirstPost: false
   });
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
-    mode: "onChange",
     defaultValues: {
-      salonName: "",
-      businessType: "",
-      beautyIndustry: "Nails",
-      establishedYear: "",
-      address: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      neighborhood: "",
-      hideExactAddress: false,
-      askingPrice: "",
-      monthlyRent: "",
-      monthlyProfit: "",
-      employeeCount: "",
-      numberOfStaff: "",
-      numberOfTables: "",
-      numberOfChairs: "",
-      squareFeet: "",
-      revenue: "",
-      monthlyRevenue: "",
-      yearlyRevenue: "",
-      vietnameseDescription: "",
-      englishDescription: "",
-      reasonForSelling: "",
-      virtualTourUrl: "",
-      willTrain: false,
-      hasHousing: false,
-      hasWaxRoom: false,
-      hasDiningRoom: false,
-      hasLaundry: false,
-      hasParking: false,
-      isNationwide: false,
-      fastSalePackage: false,
-      autoRenew: false,
-      termsAccepted: false,
-    },
+      businessName: '',
+      location: '',
+      price: '',
+      description: '',
+      features: [],
+      contactName: '',
+      contactPhone: '',
+      contactEmail: '',
+      autoRenew: false
+    }
   });
+
+  const handlePricingChange = (options: SalonPricingOptions) => {
+    setPricingOptions(options);
+    form.setValue('autoRenew', options.autoRenew || false);
+  };
 
   const steps = [
     {
-      title: "Identity / Danh tính",
-      description: "Salon details / Chi tiết salon",
-      component: <SalonIdentityStep form={form} />
+      title: 'Basic Information',
+      component: <SalonBasicInfoStep form={form} />
     },
     {
-      title: "Location / Vị trí", 
-      description: "Where is your salon / Salon ở đâu",
-      component: <SalonLocationStep form={form} />
+      title: 'Description & Features',
+      component: <SalonDescriptionStep form={form} />
     },
     {
-      title: "Details / Chi tiết",
-      description: "Business information / Thông tin kinh doanh", 
-      component: <SalonDetailsStep form={form} />
+      title: 'Photos',
+      component: <SalonPhotoStep photos={photos} onPhotosChange={setPhotos} />
     },
     {
-      title: "Photos / Ảnh",
-      description: "Show your salon / Hiển thị salon",
-      component: <SalonPhotosSection photoUploads={photos} setPhotoUploads={setPhotos} />
+      title: 'Pricing Plan',
+      component: (
+        <SalonPricingStep
+          selectedOptions={pricingOptions}
+          onOptionsChange={handlePricingChange}
+          form={form}
+        />
+      )
     },
     {
-      title: "Pricing / Giá cả",
-      description: "Choose your plan / Chọn gói",
-      component: <SalonPricingStep selectedOptions={pricingOptions} onOptionsChange={handlePricingChange} form={form} />
-    },
-    {
-      title: "Review / Xem lại",
-      description: "Final check / Kiểm tra cuối",
-      component: <SalonReviewStep form={form} photoUploads={photos} />
+      title: 'Review & Submit',
+      component: (
+        <SalonReviewStep
+          formData={form.getValues()}
+          photos={photos}
+          pricingOptions={pricingOptions}
+          onComplete={() => onComplete(form.getValues(), photos, pricingOptions)}
+        />
+      )
     }
   ];
 
-  const validateCurrentStep = async () => {
-    const values = form.getValues();
-    
+  const nextStep = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const isStepValid = () => {
     switch (currentStep) {
-      case 0: // Identity
-        const identityFields = ['salonName', 'businessType'] as const;
-        const identityValid = await form.trigger(identityFields);
-        return identityValid;
-        
-      case 1: // Location  
-        const locationFields = ['address', 'city', 'state'] as const;
-        const locationValid = await form.trigger(locationFields);
-        return locationValid;
-        
-      case 2: // Details
-        const detailFields = ['askingPrice', 'monthlyRent'] as const;
-        const detailValid = await form.trigger(detailFields);
-        return detailValid;
-        
-      case 3: // Photos
-        if (photos.length === 0) {
-          // Show error for missing photos
-          return false;
-        }
-        return true;
-        
-      case 4: // Pricing
-        return !!pricingOptions.selectedPricingTier;
-        
-      case 5: // Review
-        return true;
-        
+      case 0:
+        const basicFields = ['businessName', 'location', 'price'] as const;
+        return basicFields.every(field => {
+          const value = form.getValues(field);
+          return value && value.trim().length > 0;
+        });
+      case 1:
+        const description = form.getValues('description');
+        return description && description.trim().length >= 10;
+      case 2:
+        return photos.length > 0;
+      case 3:
+        return true; // Pricing step is always valid with defaults
       default:
         return true;
     }
   };
 
-  const handleNext = async () => {
-    const isValid = await validateCurrentStep();
-    
-    if (!isValid) {
-      // Show error message based on current step
-      if (currentStep === 3 && photos.length === 0) {
-        // Could show a toast or inline error here
-        console.log("At least one photo is required / Cần ít nhất một ảnh");
-        return;
-      }
-      return;
-    }
-
-    if (currentStep === steps.length - 1) {
-      // Final submission
-      handleSubmit();
-    } else {
-      setCurrentStep(prev => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
-  const handlePricingChange = (options: SalonPricingOptions) => {
-    setPricingOptions(options);
-  };
-
-  const handleSubmit = async () => {
-    if (!form.getValues('termsAccepted')) {
-      form.setError('termsAccepted', {
-        type: 'manual',
-        message: 'You must accept the terms and conditions / Bạn phải chấp nhận các điều khoản và điều kiện'
-      });
-      return;
-    }
-
-    const formData = form.getValues();
-    onComplete(formData, photos, pricingOptions);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="font-playfair text-4xl font-bold text-gray-900 mb-2">
-            Sell Your Salon / Bán Salon Của Bạn
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Connect with serious buyers and get the best value / Kết nối với người mua nghiêm túc và nhận giá trị tốt nhất
-          </p>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium text-gray-600">
-              Step {currentStep + 1} of {steps.length}
-            </span>
-            <span className="text-sm font-medium text-purple-600">
-              {Math.round(progress)}% Complete / Hoàn thành
-            </span>
-          </div>
-          <Progress value={progress} className="h-3 bg-gray-200" />
-          
-          {/* Step indicators */}
-          <div className="flex justify-between mt-4">
-            {steps.map((step, index) => (
-              <div key={index} className={`text-center flex-1 ${index <= currentStep ? 'text-purple-600' : 'text-gray-400'}`}>
-                <div className={`w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center text-sm font-bold ${
-                  index <= currentStep ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {index + 1}
-                </div>
-                <div className="text-xs font-medium">{step.title}</div>
-                <div className="text-xs text-gray-500">{step.description}</div>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Progress indicator */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          {steps.map((step, index) => (
+            <div
+              key={index}
+              className={`flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}
+            >
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  index <= currentStep
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-200 text-gray-600'
+                }`}
+              >
+                {index + 1}
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Form Content */}
-        <Form {...form}>
-          <form className="space-y-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                {steps[currentStep].component}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between pt-8 border-t border-gray-200">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePrevious}
-                disabled={currentStep === 0}
-                className="flex items-center gap-2 h-12 px-6"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous / Trước
-              </Button>
-              
-              <Button
-                type="button"
-                onClick={handleNext}
-                className="flex items-center gap-2 h-12 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                {currentStep === steps.length - 1 ? (
-                  "Complete Listing / Hoàn thành tin đăng"
-                ) : (
-                  <>
-                    Next / Tiếp theo
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                )}
-              </Button>
+              {index < steps.length - 1 && (
+                <div
+                  className={`flex-1 h-0.5 mx-2 ${
+                    index < currentStep ? 'bg-primary' : 'bg-gray-200'
+                  }`}
+                />
+              )}
             </div>
-          </form>
-        </Form>
+          ))}
+        </div>
+        <h2 className="text-xl font-semibold">{steps[currentStep].title}</h2>
+      </div>
+
+      {/* Step content */}
+      <motion.div
+        key={currentStep}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.3 }}
+        className="mb-8"
+      >
+        {steps[currentStep].component}
+      </motion.div>
+
+      {/* Navigation buttons */}
+      <div className="flex justify-between">
+        <Button
+          variant="outline"
+          onClick={prevStep}
+          disabled={currentStep === 0}
+          className="flex items-center"
+        >
+          <ChevronLeft className="w-4 h-4 mr-2" />
+          Previous
+        </Button>
+
+        {currentStep < steps.length - 1 ? (
+          <Button
+            onClick={nextStep}
+            disabled={!isStepValid()}
+            className="flex items-center"
+          >
+            Next
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        ) : null}
       </div>
     </div>
   );
