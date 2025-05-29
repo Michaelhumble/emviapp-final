@@ -1,51 +1,63 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
-import { salonFormSchema, SalonFormValues } from "./salonFormSchema";
-import { SalonIdentityStep } from "./steps/SalonIdentityStep";
-import { SalonDetailsStep } from "./steps/SalonDetailsStep";
-import { SalonLocationStep } from "./steps/SalonLocationStep";
-import SalonPhotoUpload from "./SalonPostPhotoUpload";
-import SalonPricingStep from "./steps/SalonPricingStep";
-import PostWizardLayout from "@/components/posting/PostWizardLayout";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, CheckCircle, Sparkles } from 'lucide-react';
+
+import { Form } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
+
+import { SalonIdentityStep } from './steps/SalonIdentityStep';
+import { SalonDetailsStep } from './steps/SalonDetailsStep';
+import { SalonLocationStep } from './steps/SalonLocationStep';
+import { SalonPostPhotoUpload } from './SalonPostPhotoUpload';
+import { SalonPricingStep } from './steps/SalonPricingStep';
+
+const STEPS = [
+  { id: 1, name: 'Identity', component: SalonIdentityStep },
+  { id: 2, name: 'Details', component: SalonDetailsStep },
+  { id: 3, name: 'Location', component: SalonLocationStep },
+  { id: 4, name: 'Photos', component: SalonPostPhotoUpload },
+  { id: 5, name: 'Pricing', component: SalonPricingStep },
+];
 
 const SalonListingWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
     defaultValues: {
-      salonName: "",
-      businessType: "",
-      establishedYear: "",
-      address: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      neighborhood: "",
+      salonName: '',
+      businessType: '',
+      establishedYear: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      neighborhood: '',
       hideExactAddress: false,
-      askingPrice: "",
-      monthlyRent: "",
-      numberOfStaff: "",
-      numberOfTables: "",
-      numberOfChairs: "",
-      squareFeet: "",
-      revenue: "",
-      monthlyRevenue: "",
-      yearlyRevenue: "",
-      grossRevenue: "",
-      netProfit: "",
-      vietnameseDescription: "",
-      englishDescription: "",
-      reasonForSelling: "",
-      virtualTourUrl: "",
+      askingPrice: '',
+      monthlyRent: '',
+      numberOfStaff: '',
+      numberOfTables: '',
+      numberOfChairs: '',
+      squareFeet: '',
+      revenue: '',
+      monthlyRevenue: '',
+      yearlyRevenue: '',
+      grossRevenue: '',
+      netProfit: '',
+      vietnameseDescription: '',
+      englishDescription: '',
+      reasonForSelling: '',
+      virtualTourUrl: '',
       willTrain: false,
       hasHousing: false,
       hasWaxRoom: false,
@@ -62,16 +74,30 @@ const SalonListingWizard = () => {
     },
   });
 
-  const steps = [
-    { id: 1, title: "Identity", component: SalonIdentityStep },
-    { id: 2, title: "Details", component: SalonDetailsStep },
-    { id: 3, title: "Location", component: SalonLocationStep },
-    { id: 4, title: "Photos", component: SalonPhotoUpload },
-    { id: 5, title: "Pricing", component: SalonPricingStep },
-  ];
+  const nextStep = async () => {
+    let isValid = false;
 
-  const nextStep = () => {
-    if (currentStep < steps.length) {
+    switch (currentStep) {
+      case 1:
+        isValid = await form.trigger(['salonName', 'businessType']);
+        break;
+      case 2:
+        isValid = await form.trigger(['askingPrice', 'monthlyRent']);
+        break;
+      case 3:
+        isValid = await form.trigger(['address', 'city', 'state']);
+        break;
+      case 4:
+        isValid = true;
+        break;
+      case 5:
+        isValid = true;
+        break;
+      default:
+        isValid = true;
+    }
+
+    if (isValid && currentStep < STEPS.length) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -82,164 +108,214 @@ const SalonListingWizard = () => {
     }
   };
 
-  const onSubmit = (data: SalonFormValues) => {
-    console.log("Form submitted:", { data, photoUploads, pricingOptions });
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('🎉 Salon listing created successfully!');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error submitting salon listing:', error);
+      toast.error('Failed to create salon listing. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const renderCurrentStep = () => {
-    const CurrentStepComponent = steps[currentStep - 1].component;
+  const renderStepContent = () => {
+    const StepComponent = STEPS[currentStep - 1]?.component;
     
-    const stepProps: any = {};
-    
-    if (currentStep <= 3) {
-      stepProps.form = form;
-    }
-    
+    if (!StepComponent) return null;
+
+    const stepProps: any = { form };
+
     if (currentStep === 4) {
-      stepProps.photoUploads = photoUploads;
-      stepProps.setPhotoUploads = setPhotoUploads;
+      return (
+        <SalonPostPhotoUpload
+          photoUploads={photoUploads}
+          setPhotoUploads={setPhotoUploads}
+          maxPhotos={15}
+        />
+      );
     }
-    
+
     if (currentStep === 5) {
-      stepProps.pricingOptions = pricingOptions;
-      stepProps.setPricingOptions = setPricingOptions;
+      return (
+        <SalonPricingStep
+          form={form}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+      );
     }
 
-    return <CurrentStepComponent {...stepProps} />;
+    return <StepComponent {...stepProps} />;
   };
 
-  const canProceed = () => {
-    if (currentStep === 4) {
-      return photoUploads.length > 0;
-    }
-    return true;
-  };
-
-  const pageVariants = {
-    initial: { opacity: 0, x: 50 },
-    in: { opacity: 1, x: 0 },
-    out: { opacity: 0, x: -50 }
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.95
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.95
+    })
   };
 
   const pageTransition = {
     type: "tween",
     ease: "anticipate",
-    duration: 0.4
+    duration: 0.6
   };
 
   return (
-    <PostWizardLayout currentStep={currentStep} totalSteps={steps.length}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            {/* Premium Step Indicator */}
-            <div className="mb-12">
-              <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between mb-6">
-                  {steps.map((step, index) => (
-                    <React.Fragment key={step.id}>
-                      <div className="flex flex-col items-center">
-                        <motion.div
-                          className={`w-12 h-12 rounded-full border-4 flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                            currentStep === step.id
-                              ? 'bg-gradient-to-br from-purple-500 to-purple-600 border-purple-300 text-white shadow-lg scale-110'
-                              : currentStep > step.id
-                              ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-300 text-white shadow-md'
-                              : 'bg-white border-gray-300 text-gray-500'
-                          }`}
-                          whileHover={{ scale: 1.05 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          {currentStep > step.id ? (
-                            <CheckCircle className="w-6 h-6" />
-                          ) : (
-                            step.id
-                          )}
-                        </motion.div>
-                        <span className={`mt-2 text-sm font-medium ${
-                          currentStep === step.id ? 'text-purple-600' : 
-                          currentStep > step.id ? 'text-green-600' : 'text-gray-500'
-                        }`}>
-                          {step.title}
-                        </span>
-                      </div>
-                      {index < steps.length - 1 && (
-                        <div className={`flex-1 h-1 mx-4 rounded-full transition-all duration-500 ${
-                          currentStep > step.id ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gray-200'
-                        }`} />
-                      )}
-                    </React.Fragment>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
+      <Form {...form}>
+        <div className="relative">
+          {/* Step Content */}
+          <AnimatePresence mode="wait" custom={currentStep}>
+            <motion.div
+              key={currentStep}
+              custom={currentStep}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={pageTransition}
+              className="w-full"
+            >
+              {renderStepContent()}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation - Only show if not on final step or submitting */}
+          {currentStep < 5 && (
+            <motion.div 
+              className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50"
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-4 flex items-center gap-4">
+                {/* Previous Button */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={prevStep}
+                    disabled={currentStep === 1}
+                    className="h-12 px-6 rounded-xl border-2 border-gray-300 hover:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    <ChevronLeft className="w-5 h-5 mr-2" />
+                    Back
+                  </Button>
+                </motion.div>
+
+                {/* Step Indicator */}
+                <div className="flex items-center gap-2 mx-4">
+                  {STEPS.map((step, index) => (
+                    <motion.div
+                      key={step.id}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        index + 1 === currentStep
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 scale-125 shadow-lg'
+                          : index + 1 < currentStep
+                          ? 'bg-green-400 shadow-md'
+                          : 'bg-gray-300'
+                      }`}
+                      initial={{ scale: 0.8 }}
+                      animate={{ 
+                        scale: index + 1 === currentStep ? 1.25 : 1,
+                        backgroundColor: index + 1 === currentStep 
+                          ? '#a855f7' 
+                          : index + 1 < currentStep 
+                          ? '#4ade80' 
+                          : '#d1d5db'
+                      }}
+                      transition={{ duration: 0.3 }}
+                    />
                   ))}
                 </div>
-              </div>
-            </div>
 
-            {/* Step Content with Animation */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-                className="min-h-[600px]"
-              >
-                {renderCurrentStep()}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Premium Navigation */}
-            <div className="max-w-4xl mx-auto pt-12">
-              <div className="flex justify-between items-center bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className="h-12 px-6 text-lg font-semibold rounded-xl border-2 hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
+                {/* Next Button */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <ArrowLeft className="w-5 h-5 mr-2" />
-                  Previous
-                </Button>
-
-                <div className="text-center">
-                  <div className="text-sm text-gray-500 mb-1">Step {currentStep} of {steps.length}</div>
-                  <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(currentStep / steps.length) * 100}%` }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                    />
-                  </div>
-                </div>
-
-                {currentStep < steps.length ? (
                   <Button
                     type="button"
                     onClick={nextStep}
-                    disabled={!canProceed()}
-                    className="h-12 px-6 text-lg font-semibold rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                    className="h-12 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl shadow-lg transition-all duration-200 border-0"
                   >
                     Next
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ChevronRight className="w-5 h-5 ml-2" />
                   </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    className="h-12 px-8 text-lg font-semibold rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                  >
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Complete Listing
-                  </Button>
-                )}
+                </motion.div>
               </div>
-            </div>
-          </form>
-        </Form>
-      </div>
-    </PostWizardLayout>
+            </motion.div>
+          )}
+
+          {/* Floating Success Animation for Completed Steps */}
+          <AnimatePresence>
+            {currentStep > 1 && (
+              <motion.div
+                className="fixed top-8 right-8 z-50"
+                initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={{ opacity: 0, scale: 0, rotate: 180 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <div className="bg-green-500 text-white rounded-full p-3 shadow-xl">
+                  <CheckCircle className="w-6 h-6" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Floating Sparkles */}
+          <div className="fixed inset-0 pointer-events-none z-10">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${20 + i * 15}%`,
+                  top: `${10 + i * 12}%`
+                }}
+                animate={{
+                  y: [-10, 10, -10],
+                  rotate: [0, 360],
+                  scale: [0.8, 1.2, 0.8]
+                }}
+                transition={{
+                  duration: 4 + i,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.5
+                }}
+              >
+                <Sparkles className="w-4 h-4 text-purple-400/30" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </Form>
+    </div>
   );
 };
 
