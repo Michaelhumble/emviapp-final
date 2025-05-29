@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,15 +21,12 @@ interface SalonListingWizardProps {
 
 const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
+  const [photos, setPhotos] = useState<File[]>([]);
   const [pricingOptions, setPricingOptions] = useState<SalonPricingOptions>({
     selectedPricingTier: 'standard',
-    isNationwide: false,
-    fastSalePackage: false,
-    showAtTop: false,
-    bundleWithJobPost: false,
-    autoRenew: false,
-    isFirstPost: false
+    durationMonths: 1,
+    featuredAddOn: false,
+    autoRenew: false
   });
 
   const form = useForm<SalonFormValues>({
@@ -94,17 +90,17 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
     {
       title: "Photos / Ảnh",
       description: "Show your salon / Hiển thị salon",
-      component: <SalonPhotosSection photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />
+      component: <SalonPhotosSection photoUploads={photos} setPhotoUploads={setPhotos} />
     },
     {
       title: "Pricing / Giá cả",
       description: "Choose your plan / Chọn gói",
-      component: <SalonPricingStep selectedOptions={pricingOptions} onOptionsChange={setPricingOptions} form={form} />
+      component: <SalonPricingStep selectedOptions={pricingOptions} onOptionsChange={handlePricingChange} form={form} />
     },
     {
       title: "Review / Xem lại",
       description: "Final check / Kiểm tra cuối",
-      component: <SalonReviewStep form={form} photoUploads={photoUploads} />
+      component: <SalonReviewStep form={form} photoUploads={photos} />
     }
   ];
 
@@ -128,7 +124,7 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
         return detailValid;
         
       case 3: // Photos
-        if (photoUploads.length === 0) {
+        if (photos.length === 0) {
           // Show error for missing photos
           return false;
         }
@@ -150,7 +146,7 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
     
     if (!isValid) {
       // Show error message based on current step
-      if (currentStep === 3 && photoUploads.length === 0) {
+      if (currentStep === 3 && photos.length === 0) {
         // Could show a toast or inline error here
         console.log("At least one photo is required / Cần ít nhất một ảnh");
         return;
@@ -160,8 +156,7 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
 
     if (currentStep === steps.length - 1) {
       // Final submission
-      const formData = form.getValues();
-      onComplete(formData, photoUploads, pricingOptions);
+      handleSubmit();
     } else {
       setCurrentStep(prev => prev + 1);
     }
@@ -174,6 +169,23 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   };
 
   const progress = ((currentStep + 1) / steps.length) * 100;
+
+  const handlePricingChange = (options: SalonPricingOptions) => {
+    setPricingOptions(options);
+  };
+
+  const handleSubmit = async () => {
+    if (!form.getValues('termsAccepted')) {
+      form.setError('termsAccepted', {
+        type: 'manual',
+        message: 'You must accept the terms and conditions / Bạn phải chấp nhận các điều khoản và điều kiện'
+      });
+      return;
+    }
+
+    const formData = form.getValues();
+    onComplete(formData, photos, pricingOptions);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
