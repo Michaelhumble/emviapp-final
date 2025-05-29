@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
@@ -31,15 +31,41 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
     defaultValues: {
-      businessName: '',
-      location: '',
-      price: '',
-      description: '',
-      features: [],
-      contactName: '',
-      contactPhone: '',
-      contactEmail: '',
-      autoRenew: false
+      salonName: '',
+      businessType: '',
+      beautyIndustry: 'Nails',
+      establishedYear: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      neighborhood: '',
+      hideExactAddress: false,
+      askingPrice: '',
+      monthlyRent: '',
+      monthlyProfit: '',
+      employeeCount: '',
+      numberOfStaff: '',
+      numberOfTables: '',
+      numberOfChairs: '',
+      squareFeet: '',
+      revenue: '',
+      monthlyRevenue: '',
+      yearlyRevenue: '',
+      vietnameseDescription: '',
+      englishDescription: '',
+      reasonForSelling: '',
+      virtualTourUrl: '',
+      willTrain: false,
+      hasHousing: false,
+      hasWaxRoom: false,
+      hasDiningRoom: false,
+      hasLaundry: false,
+      hasParking: false,
+      isNationwide: false,
+      fastSalePackage: false,
+      autoRenew: false,
+      termsAccepted: false
     }
   });
 
@@ -99,14 +125,13 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   const isStepValid = () => {
     switch (currentStep) {
       case 0:
-        const basicFields = ['businessName', 'location', 'price'] as const;
+        const basicFields = ['salonName', 'businessType', 'address', 'city', 'state', 'askingPrice'] as const;
         return basicFields.every(field => {
           const value = form.getValues(field);
           return value && value.trim().length > 0;
         });
       case 1:
-        const description = form.getValues('description');
-        return description && description.trim().length >= 10;
+        return true; // Description step is optional
       case 2:
         return photos.length > 0;
       case 3:
@@ -117,73 +142,75 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Progress indicator */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          {steps.map((step, index) => (
-            <div
-              key={index}
-              className={`flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}
-            >
+    <FormProvider {...form}>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Progress indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            {steps.map((step, index) => (
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  index <= currentStep
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
+                key={index}
+                className={`flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}
               >
-                {index + 1}
-              </div>
-              {index < steps.length - 1 && (
                 <div
-                  className={`flex-1 h-0.5 mx-2 ${
-                    index < currentStep ? 'bg-primary' : 'bg-gray-200'
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    index <= currentStep
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-200 text-gray-600'
                   }`}
-                />
-              )}
-            </div>
-          ))}
+                >
+                  {index + 1}
+                </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`flex-1 h-0.5 mx-2 ${
+                      index < currentStep ? 'bg-primary' : 'bg-gray-200'
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <h2 className="text-xl font-semibold">{steps[currentStep].title}</h2>
         </div>
-        <h2 className="text-xl font-semibold">{steps[currentStep].title}</h2>
-      </div>
 
-      {/* Step content */}
-      <motion.div
-        key={currentStep}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        transition={{ duration: 0.3 }}
-        className="mb-8"
-      >
-        {steps[currentStep].component}
-      </motion.div>
-
-      {/* Navigation buttons */}
-      <div className="flex justify-between">
-        <Button
-          variant="outline"
-          onClick={prevStep}
-          disabled={currentStep === 0}
-          className="flex items-center"
+        {/* Step content */}
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+          className="mb-8"
         >
-          <ChevronLeft className="w-4 h-4 mr-2" />
-          Previous
-        </Button>
+          {steps[currentStep].component}
+        </motion.div>
 
-        {currentStep < steps.length - 1 ? (
+        {/* Navigation buttons */}
+        <div className="flex justify-between">
           <Button
-            onClick={nextStep}
-            disabled={!isStepValid()}
+            variant="outline"
+            onClick={prevStep}
+            disabled={currentStep === 0}
             className="flex items-center"
           >
-            Next
-            <ChevronRight className="w-4 h-4 ml-2" />
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Previous
           </Button>
-        ) : null}
+
+          {currentStep < steps.length - 1 ? (
+            <Button
+              onClick={nextStep}
+              disabled={!isStepValid()}
+              className="flex items-center"
+            >
+              Next
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </FormProvider>
   );
 };
 
