@@ -1,35 +1,40 @@
 
-import { useAuth } from '@/context/auth';
+import { useMemo } from 'react';
+import { getLanguagePreference, setLanguagePreference } from '@/utils/languagePreference';
 
-export interface TranslatableContent {
+export interface Translation {
   english: string;
   vietnamese: string;
 }
 
-export type Translation = TranslatableContent;
+export const useTranslation = () => {
+  const currentLanguage = getLanguagePreference();
+  const isVietnamese = currentLanguage === 'vi';
 
-export function useTranslation() {
-  const { userProfile } = useAuth();
-  
-  // Get the user's preferred language, defaulting to English
-  const preferredLanguage = userProfile?.preferred_language?.toLowerCase() === 'vietnamese'
-    ? 'vietnamese'
-    : 'english';
-  
-  const isVietnamese = preferredLanguage === 'vietnamese';
-  
-  const t = (content: TranslatableContent | string) => {
-    if (typeof content === 'string') {
-      return content;
-    }
-    
-    return content[preferredLanguage] || content.english;
-  };
-  
+  const t = useMemo(() => {
+    return (content: Translation | string) => {
+      // Handle string inputs by creating a Translation object
+      if (typeof content === 'string') {
+        return content;
+      }
+      
+      if (currentLanguage === 'vi') {
+        return content.vietnamese;
+      }
+      return content.english;
+    };
+  }, [currentLanguage]);
+
   const toggleLanguage = () => {
-    // This would be implemented if needed, for now it's a placeholder
-    console.log('Language toggle functionality would go here');
+    const newLanguage = currentLanguage === 'en' ? 'vi' : 'en';
+    setLanguagePreference(newLanguage);
+    window.location.reload(); // Simple refresh to apply language change
   };
-  
-  return { t, preferredLanguage, isVietnamese, toggleLanguage };
-}
+
+  return { 
+    t, 
+    isVietnamese,
+    toggleLanguage,
+    currentLanguage 
+  };
+};

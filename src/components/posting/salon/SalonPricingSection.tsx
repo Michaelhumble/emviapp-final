@@ -1,173 +1,182 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Star } from 'lucide-react';
-import { getSalonPostPricingSummary, SalonPricingOptions } from '@/utils/posting/salonPricing';
+import { Check, Crown, Star, Zap, ArrowLeft } from 'lucide-react';
+import { SalonPricingOptions, SalonPricingTier, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonPricingSectionProps {
   selectedOptions: SalonPricingOptions;
+  onOptionsChange: (options: SalonPricingOptions) => void;
+  onNext: () => void;
+  onBack: () => void;
+  hideNavigation?: boolean;
 }
 
-const SalonPricingSection = ({ selectedOptions }: SalonPricingSectionProps) => {
+const SalonPricingSection: React.FC<SalonPricingSectionProps> = ({
+  selectedOptions,
+  onOptionsChange,
+  onNext,
+  onBack,
+  hideNavigation = false,
+}) => {
   const { t } = useTranslation();
-  const summary = getSalonPostPricingSummary(selectedOptions);
+
+  const plans = [
+    {
+      id: 'basic' as SalonPricingTier,
+      name: t({ english: 'Basic Listing', vietnamese: 'Tin đăng cơ bản' }),
+      price: 19.99,
+      duration: 30,
+      icon: <Star className="h-5 w-5" />,
+      features: [
+        t({ english: 'Basic salon listing', vietnamese: 'Tin đăng salon cơ bản' }),
+        t({ english: '30-day visibility', vietnamese: 'Hiển thị 30 ngày' }),
+        t({ english: 'Contact information', vietnamese: 'Thông tin liên hệ' })
+      ]
+    },
+    {
+      id: 'standard' as SalonPricingTier,
+      name: t({ english: 'Standard Listing', vietnamese: 'Tin đăng tiêu chuẩn' }),
+      price: 24.99,
+      duration: 30,
+      icon: <Zap className="h-5 w-5" />,
+      popular: true,
+      features: [
+        t({ english: 'Enhanced salon listing', vietnamese: 'Tin đăng salon nâng cao' }),
+        t({ english: '30-day priority visibility', vietnamese: 'Hiển thị ưu tiên 30 ngày' }),
+        t({ english: 'Photo gallery', vietnamese: 'Thư viện ảnh' }),
+        t({ english: 'Detailed description', vietnamese: 'Mô tả chi tiết' })
+      ]
+    },
+    {
+      id: 'featured' as SalonPricingTier,
+      name: t({ english: 'Featured Listing', vietnamese: 'Tin đăng nổi bật' }),
+      price: 39.99,
+      duration: 30,
+      icon: <Crown className="h-5 w-5" />,
+      features: [
+        t({ english: 'Premium salon listing', vietnamese: 'Tin đăng salon cao cấp' }),
+        t({ english: 'Top placement', vietnamese: 'Vị trí hàng đầu' }),
+        t({ english: 'Featured badge', vietnamese: 'Huy hiệu nổi bật' }),
+        t({ english: 'Social media promotion', vietnamese: 'Quảng bá mạng xã hội' })
+      ]
+    }
+  ];
+
+  const handlePlanSelect = (planId: SalonPricingTier) => {
+    onOptionsChange({
+      ...selectedOptions,
+      selectedPricingTier: planId
+    });
+  };
+
+  // Get pricing summary for display
+  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-playfair font-bold mb-2">
-          {t({
-            english: 'Your Selected Plan',
-            vietnamese: 'Gói Bạn Đã Chọn'
-          })}
-        </h2>
-        <p className="text-gray-600">
-          {t({
-            english: 'Review your salon listing plan and pricing details',
-            vietnamese: 'Xem lại gói tin đăng salon và chi tiết giá cả'
-          })}
+        <h2 className="text-2xl font-bold">{t({ english: 'Choose Your Plan', vietnamese: 'Chọn gói của bạn' })}</h2>
+        <p className="text-gray-600 mt-2">
+          {t({ english: 'Select the best plan for your salon listing', vietnamese: 'Chọn gói tốt nhất cho tin đăng salon của bạn' })}
         </p>
       </div>
 
-      <Card className="border-purple-200">
-        <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50">
-          <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5 text-purple-600" />
-            {summary.planName}
-            {summary.savingsPercent && summary.savingsPercent > 0 && (
-              <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                {t({
-                  english: `Save ${summary.savingsPercent}%!`,
-                  vietnamese: `Tiết kiệm ${summary.savingsPercent}%!`
-                })}
+      <div className="grid gap-6 md:grid-cols-3">
+        {plans.map((plan) => (
+          <Card 
+            key={plan.id}
+            className={`relative cursor-pointer transition-all ${
+              selectedOptions.selectedPricingTier === plan.id 
+                ? 'ring-2 ring-purple-500 border-purple-500' 
+                : 'hover:shadow-lg'
+            } ${plan.popular ? 'border-purple-200' : ''}`}
+            onClick={() => handlePlanSelect(plan.id)}
+          >
+            {plan.popular && (
+              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500">
+                {t({ english: 'Most Popular', vietnamese: 'Phổ biến nhất' })}
               </Badge>
             )}
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            {/* Plan Features */}
-            <div>
-              <h4 className="font-medium mb-3">
-                {t({
-                  english: 'Included Features',
-                  vietnamese: 'Tính Năng Bao Gồm'
-                })}
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {summary.features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                    <span className="text-sm text-gray-600">{feature}</span>
-                  </div>
-                ))}
+            
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-2">
+                {plan.icon}
               </div>
-            </div>
+              <CardTitle className="text-lg">{plan.name}</CardTitle>
+              <div className="text-3xl font-bold text-purple-600">
+                ${plan.price}
+                <span className="text-sm font-normal text-gray-500">/{plan.duration} days</span>
+              </div>
+            </CardHeader>
+            
+            <CardContent>
+              <ul className="space-y-2">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-center text-sm">
+                    <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-            {/* Add-ons */}
-            {selectedOptions.featuredAddOn && (
-              <div className="bg-yellow-50 p-4 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  <span className="font-medium">
-                    {t({
-                      english: 'Featured Placement Add-On',
-                      vietnamese: 'Gói Gắn Nổi Bật'
-                    })}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">
-                  {t({
-                    english: 'Your salon will appear at the top of search results with a featured badge.',
-                    vietnamese: 'Salon của bạn sẽ xuất hiện ở đầu kết quả tìm kiếm với huy hiệu nổi bật.'
-                  })}
-                </p>
+      {/* Pricing Summary */}
+      {selectedOptions.selectedPricingTier && (
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-medium mb-2">Pricing Summary</h3>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span>Base Price:</span>
+              <span>${pricingSummary.basePrice}</span>
+            </div>
+            {pricingSummary.addOns.nationwide > 0 && (
+              <div className="flex justify-between">
+                <span>Nationwide:</span>
+                <span>+${pricingSummary.addOns.nationwide}</span>
               </div>
             )}
-
-            {/* Pricing Breakdown */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="font-medium mb-3">
-                {t({
-                  english: 'Pricing Breakdown',
-                  vietnamese: 'Chi Tiết Giá'
-                })}
-              </h4>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>
-                    {t({
-                      english: 'Standard Listing',
-                      vietnamese: 'Đăng Tin Cơ Bản'
-                    })} ({summary.duration} {t({ english: 'month(s)', vietnamese: 'tháng' })})
-                  </span>
-                  <span>${summary.basePrice.toFixed(2)}</span>
-                </div>
-
-                {summary.duration > 1 && summary.perMonthPrice && (
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>
-                      {t({
-                        english: 'Per month',
-                        vietnamese: 'Mỗi tháng'
-                      })}
-                    </span>
-                    <span>${summary.perMonthPrice.toFixed(2)}/month</span>
-                  </div>
-                )}
-
-                {summary.addOns.featured > 0 && (
-                  <div className="flex justify-between">
-                    <span>
-                      {t({
-                        english: 'Featured Add-On',
-                        vietnamese: 'Gói Gắn Nổi Bật'
-                      })} ({summary.duration} × $10)
-                    </span>
-                    <span>${summary.addOns.featured.toFixed(2)}</span>
-                  </div>
-                )}
-
-                {summary.autoRenewDiscount > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>
-                      {t({
-                        english: 'Auto-Renew Discount (5%)',
-                        vietnamese: 'Giảm Giá Tự Động Gia Hạn (5%)'
-                      })}
-                    </span>
-                    <span>-${summary.autoRenewDiscount.toFixed(2)}</span>
-                  </div>
-                )}
-
-                <div className="border-t pt-2 mt-3">
-                  <div className="flex justify-between font-bold text-lg">
-                    <span>
-                      {t({
-                        english: 'Total',
-                        vietnamese: 'Tổng Cộng'
-                      })}
-                    </span>
-                    <span className="text-purple-600">${summary.finalPrice.toFixed(2)}</span>
-                  </div>
-                </div>
+            {pricingSummary.discounts.firstPost > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>First Post Discount:</span>
+                <span>-${pricingSummary.discounts.firstPost}</span>
               </div>
-            </div>
-
-            {/* Duration Info */}
-            <div className="text-sm text-gray-500 text-center">
-              {t({
-                english: `Your salon listing will be active for ${summary.duration} month${summary.duration > 1 ? 's' : ''}.`,
-                vietnamese: `Tin đăng salon của bạn sẽ hoạt động trong ${summary.duration} tháng.`
-              })}
+            )}
+            {pricingSummary.discounts.autoRenewDiscount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Auto-Renew Discount:</span>
+                <span>-${pricingSummary.discounts.autoRenewDiscount}</span>
+              </div>
+            )}
+            <div className="border-t pt-2 flex justify-between font-medium">
+              <span>Total:</span>
+              <span>${pricingSummary.finalPrice}</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
+
+      {!hideNavigation && (
+        <div className="flex justify-between pt-4">
+          <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Details
+          </Button>
+          
+          <Button 
+            onClick={onNext}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-8"
+          >
+            Continue to Review
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

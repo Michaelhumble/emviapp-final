@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { calculateSalonPostPrice, SalonPricingOptions, SalonPricingTier } from '@/utils/posting/salonPricing';
@@ -17,17 +17,23 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
   isFirstPost = false
 }) => {
   const { t } = useTranslation();
+  const [localOptions, setLocalOptions] = useState<SalonPricingOptions>({
+    ...options,
+    isFirstPost,
+    selectedPricingTier: 'standard' as SalonPricingTier
+  });
 
   const handleOptionChange = (option: keyof SalonPricingOptions, value: boolean) => {
     const updatedOptions = {
-      ...options,
+      ...localOptions,
       [option]: value
     };
+    setLocalOptions(updatedOptions);
     onOptionsChange(updatedOptions);
   };
 
   // Calculate the current price based on selected options
-  const price = calculateSalonPostPrice(options);
+  const price = calculateSalonPostPrice(localOptions);
 
   return (
     <div className="space-y-4">
@@ -45,17 +51,63 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
       <div className="space-y-3 pt-2">
         <div className="flex items-start space-x-2">
           <Checkbox
-            id="featuredAddOn"
-            checked={options.featuredAddOn || false}
-            onCheckedChange={(checked) => handleOptionChange('featuredAddOn', checked === true)}
+            id="isNationwide"
+            checked={localOptions.isNationwide || false}
+            onCheckedChange={(checked) => handleOptionChange('isNationwide', checked === true)}
           />
           <div className="grid gap-1.5 leading-none">
-            <Label htmlFor="featuredAddOn" className="text-sm font-medium">
+            <Label htmlFor="isNationwide" className="text-sm font-medium">
+              {t({
+                english: 'Nationwide Visibility',
+                vietnamese: 'Hiển thị toàn quốc'
+              })}
+              <span className="ml-2 text-sm font-normal text-gray-500">+$10</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t({
+                english: 'Show your salon to clients across the country',
+                vietnamese: 'Hiển thị salon của bạn cho khách hàng trên toàn quốc'
+              })}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="fastSalePackage"
+            checked={localOptions.fastSalePackage || false}
+            onCheckedChange={(checked) => handleOptionChange('fastSalePackage', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="fastSalePackage" className="text-sm font-medium">
+              {t({
+                english: 'Premium Promotion',
+                vietnamese: 'Quảng cáo cao cấp'
+              })}
+              <span className="ml-2 text-sm font-normal text-gray-500">+$20</span>
+            </Label>
+            <p className="text-sm text-gray-500">
+              {t({
+                english: 'Boost visibility with premium placement and promotion',
+                vietnamese: 'Tăng khả năng hiển thị với vị trí và quảng cáo cao cấp'
+              })}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="showAtTop"
+            checked={localOptions.showAtTop || false}
+            onCheckedChange={(checked) => handleOptionChange('showAtTop', checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <Label htmlFor="showAtTop" className="text-sm font-medium">
               {t({
                 english: 'Featured Placement',
-                vietnamese: 'Gắn Nổi Bật'
+                vietnamese: 'Vị trí nổi bật'
               })}
-              <span className="ml-2 text-sm font-normal text-gray-500">+$10/month</span>
+              <span className="ml-2 text-sm font-normal text-gray-500">+$15</span>
             </Label>
             <p className="text-sm text-gray-500">
               {t({
@@ -68,22 +120,22 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({
 
         <div className="flex items-start space-x-2">
           <Checkbox
-            id="autoRenew"
-            checked={options.autoRenew || false}
-            onCheckedChange={(checked) => handleOptionChange('autoRenew', checked === true)}
+            id="bundleWithJobPost"
+            checked={localOptions.bundleWithJobPost || false}
+            onCheckedChange={(checked) => handleOptionChange('bundleWithJobPost', checked === true)}
           />
           <div className="grid gap-1.5 leading-none">
-            <Label htmlFor="autoRenew" className="text-sm font-medium">
+            <Label htmlFor="bundleWithJobPost" className="text-sm font-medium">
               {t({
-                english: 'Auto-Renew',
-                vietnamese: 'Tự động gia hạn'
+                english: 'Bundle with Job Post',
+                vietnamese: 'Gói với tin tuyển dụng'
               })}
-              <span className="ml-2 text-sm font-normal text-green-600">Save 5%</span>
+              <span className="ml-2 text-sm font-normal text-gray-500">+$15</span>
             </Label>
             <p className="text-sm text-gray-500">
               {t({
-                english: 'Automatically renew your listing and save 5%',
-                vietnamese: 'Tự động gia hạn tin đăng và tiết kiệm 5%'
+                english: 'Add a job posting to find staff for your salon',
+                vietnamese: 'Thêm tin tuyển dụng để tìm nhân viên cho salon của bạn'
               })}
             </p>
           </div>
