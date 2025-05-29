@@ -1,3 +1,4 @@
+
 export type SalonPricingTier = 'standard' | 'featured';
 
 export interface SalonPricingPlan {
@@ -19,6 +20,8 @@ export interface SalonPricingOptions {
   isFirstPost?: boolean;
   isNationwide: boolean;
   fastSalePackage: boolean;
+  showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
 }
 
 export interface SalonPricingSummary {
@@ -33,6 +36,7 @@ export interface SalonPricingSummary {
   autoRenewDiscount?: number;
   addOns: {
     featured: number;
+    nationwide?: number;
   };
   discounts: {
     duration: number;

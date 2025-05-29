@@ -1,5 +1,6 @@
+
 import React, { useState, useCallback } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { salonFormSchema, SalonFormValues } from '../salon/salonFormSchema';
 import { SalonDetailsStep } from '../salon/steps/SalonDetailsStep';
@@ -18,7 +19,7 @@ import { generateUniqueId } from '@/utils';
 import { SalonPricingOptions, SalonPricingTier } from '@/utils/posting';
 
 interface StepProps {
-  form: UseFormType;
+  form: UseFormReturn<SalonFormValues>;
   onNext: () => void;
   onPrev: () => void;
   photos: File[];
@@ -26,8 +27,6 @@ interface StepProps {
   selectedOptions: SalonPricingOptions;
   onOptionsChange: (options: SalonPricingOptions) => void;
 }
-
-type UseFormType = UseForm<SalonFormValues>;
 
 interface SalonListingWizardProps {
   onComplete: (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
@@ -163,15 +162,6 @@ const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) =
             </Button>
           )}
         </div>
-
-        {currentStep === 'review' && (
-          <SalonReviewStep 
-            form={form} 
-            photos={photos}
-            formData={form.getValues()}
-            selectedOptions={selectedOptions}
-          />
-        )}
       </form>
     </FormProvider>
   );
