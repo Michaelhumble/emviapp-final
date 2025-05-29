@@ -1,30 +1,38 @@
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { Progress } from "@/components/ui/progress";
-import { salonFormSchema, type SalonFormValues } from "./salonFormSchema";
-import { SalonIdentityStep } from "./steps/SalonIdentityStep";
-import { SalonLocationStep } from "./steps/SalonLocationStep";
-import { SalonDetailsStep } from "./steps/SalonDetailsStep";
-import { SalonReviewStep } from "./steps/SalonReviewStep";
-import { SalonPhotosSection } from "./SalonPhotosSection";
-import { SalonPricingStep } from "./steps/SalonPricingStep";
-import { type SalonPricingOptions } from "@/utils/posting/salonPricing";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
+import { SalonPricingOptions, type SalonPricingTier } from '@/utils/posting/salonPricing';
+import { SalonBasicInfoStep } from './steps/SalonBasicInfoStep';
+import { SalonDescriptionStep } from './steps/SalonDescriptionStep';
+import { SalonPhotoStep } from './steps/SalonPhotoStep';
+import { SalonPricingStep } from './steps/SalonPricingStep';
+import { SalonReviewStep } from './steps/SalonReviewStep';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonListingWizardProps {
-  onComplete: (data: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
+  onComplete: (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
 }
 
-const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
+const STEPS = [
+  { id: 'basic', title: 'Basic Information' },
+  { id: 'description', title: 'Description' },
+  { id: 'photos', title: 'Photos' },
+  { id: 'pricing', title: 'Pricing' },
+  { id: 'review', title: 'Review' }
+];
+
+const SalonListingWizard: React.FC<SalonListingWizardProps> = ({ onComplete }) => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
-  const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<SalonPricingOptions>({
-    selectedPricingTier: 'standard',
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<SalonPricingOptions>({
+    selectedPricingTier: 'standard' as SalonPricingTier,
+    durationMonths: 1,
     isNationwide: false,
     fastSalePackage: false,
     showAtTop: false,
@@ -35,33 +43,9 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
-    mode: "onChange",
     defaultValues: {
-      salonName: "",
-      businessType: "",
       beautyIndustry: "Nails",
-      establishedYear: "",
-      address: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      neighborhood: "",
       hideExactAddress: false,
-      askingPrice: "",
-      monthlyRent: "",
-      monthlyProfit: "",
-      employeeCount: "",
-      numberOfStaff: "",
-      numberOfTables: "",
-      numberOfChairs: "",
-      squareFeet: "",
-      revenue: "",
-      monthlyRevenue: "",
-      yearlyRevenue: "",
-      vietnameseDescription: "",
-      englishDescription: "",
-      reasonForSelling: "",
-      virtualTourUrl: "",
       willTrain: false,
       hasHousing: false,
       hasWaxRoom: false,
@@ -75,189 +59,163 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
     },
   });
 
-  const steps = [
-    {
-      title: "Identity / Danh tính",
-      description: "Salon details / Chi tiết salon",
-      component: <SalonIdentityStep form={form} />
-    },
-    {
-      title: "Location / Vị trí", 
-      description: "Where is your salon / Salon ở đâu",
-      component: <SalonLocationStep form={form} />
-    },
-    {
-      title: "Details / Chi tiết",
-      description: "Business information / Thông tin kinh doanh", 
-      component: <SalonDetailsStep form={form} />
-    },
-    {
-      title: "Photos / Ảnh",
-      description: "Show your salon / Hiển thị salon",
-      component: <SalonPhotosSection photoUploads={photoUploads} setPhotoUploads={setPhotoUploads} />
-    },
-    {
-      title: "Pricing / Giá cả",
-      description: "Choose your plan / Chọn gói",
-      component: <SalonPricingStep selectedOptions={pricingOptions} onOptionsChange={setPricingOptions} form={form} />
-    },
-    {
-      title: "Review / Xem lại",
-      description: "Final check / Kiểm tra cuối",
-      component: <SalonReviewStep form={form} photoUploads={photoUploads} />
-    }
-  ];
-
-  const validateCurrentStep = async () => {
-    const values = form.getValues();
-    
-    switch (currentStep) {
-      case 0: // Identity
-        const identityFields = ['salonName', 'businessType'] as const;
-        const identityValid = await form.trigger(identityFields);
-        return identityValid;
-        
-      case 1: // Location  
-        const locationFields = ['address', 'city', 'state'] as const;
-        const locationValid = await form.trigger(locationFields);
-        return locationValid;
-        
-      case 2: // Details
-        const detailFields = ['askingPrice', 'monthlyRent'] as const;
-        const detailValid = await form.trigger(detailFields);
-        return detailValid;
-        
-      case 3: // Photos
-        if (photoUploads.length === 0) {
-          // Show error for missing photos
-          return false;
-        }
-        return true;
-        
-      case 4: // Pricing
-        return !!pricingOptions.selectedPricingTier;
-        
-      case 5: // Review
-        return true;
-        
-      default:
-        return true;
-    }
-  };
-
   const handleNext = async () => {
-    const isValid = await validateCurrentStep();
+    const currentStepData = getCurrentStepFields();
+    const isValid = await form.trigger(currentStepData);
     
-    if (!isValid) {
-      // Show error message based on current step
-      if (currentStep === 3 && photoUploads.length === 0) {
-        // Could show a toast or inline error here
-        console.log("At least one photo is required / Cần ít nhất một ảnh");
-        return;
+    if (isValid) {
+      if (currentStep < STEPS.length - 1) {
+        setCurrentStep(currentStep + 1);
       }
-      return;
-    }
-
-    if (currentStep === steps.length - 1) {
-      // Final submission
-      const formData = form.getValues();
-      onComplete(formData, photoUploads, pricingOptions);
-    } else {
-      setCurrentStep(prev => prev + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(currentStep - 1);
     }
   };
 
-  const progress = ((currentStep + 1) / steps.length) * 100;
+  const getCurrentStepFields = (): (keyof SalonFormValues)[] => {
+    switch (currentStep) {
+      case 0: // Basic Info
+        return ['salonName', 'address', 'city', 'state', 'askingPrice', 'monthlyRent'];
+      case 1: // Description
+        return ['description', 'englishDescription', 'vietnameseDescription'];
+      case 2: // Photos
+        return [];
+      case 3: // Pricing
+        return [];
+      case 4: // Review
+        return ['termsAccepted'];
+      default:
+        return [];
+    }
+  };
+
+  const handleComplete = () => {
+    const formData = form.getValues();
+    onComplete(formData, photos, selectedOptions);
+  };
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 0:
+        return <SalonBasicInfoStep form={form} />;
+      case 1:
+        return <SalonDescriptionStep form={form} />;
+      case 2:
+        return <SalonPhotoStep photos={photos} onPhotosChange={setPhotos} />;
+      case 3:
+        return (
+          <SalonPricingStep
+            selectedOptions={selectedOptions}
+            onOptionsChange={setSelectedOptions}
+            form={form}
+          />
+        );
+      case 4:
+        return (
+          <SalonReviewStep
+            formData={form.getValues()}
+            photos={photos}
+            selectedOptions={selectedOptions}
+            form={form}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="font-playfair text-4xl font-bold text-gray-900 mb-2">
-            Sell Your Salon / Bán Salon Của Bạn
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Connect with serious buyers and get the best value / Kết nối với người mua nghiêm túc và nhận giá trị tốt nhất
-          </p>
-        </div>
-
-        {/* Progress Bar */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium text-gray-600">
-              Step {currentStep + 1} of {steps.length}
-            </span>
-            <span className="text-sm font-medium text-purple-600">
-              {Math.round(progress)}% Complete / Hoàn thành
-            </span>
-          </div>
-          <Progress value={progress} className="h-3 bg-gray-200" />
-          
-          {/* Step indicators */}
-          <div className="flex justify-between mt-4">
-            {steps.map((step, index) => (
-              <div key={index} className={`text-center flex-1 ${index <= currentStep ? 'text-purple-600' : 'text-gray-400'}`}>
-                <div className={`w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center text-sm font-bold ${
-                  index <= currentStep ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'
-                }`}>
+          <div className="flex items-center justify-between">
+            {STEPS.map((step, index) => (
+              <div
+                key={step.id}
+                className={`flex items-center ${
+                  index < STEPS.length - 1 ? 'flex-1' : ''
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
+                    index <= currentStep
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-200 text-gray-600'
+                  }`}
+                >
                   {index + 1}
                 </div>
-                <div className="text-xs font-medium">{step.title}</div>
-                <div className="text-xs text-gray-500">{step.description}</div>
+                <div className="ml-3">
+                  <p
+                    className={`text-sm font-medium ${
+                      index <= currentStep ? 'text-purple-600' : 'text-gray-500'
+                    }`}
+                  >
+                    {step.title}
+                  </p>
+                </div>
+                {index < STEPS.length - 1 && (
+                  <div
+                    className={`flex-1 h-0.5 mx-4 ${
+                      index < currentStep ? 'bg-purple-600' : 'bg-gray-200'
+                    }`}
+                  />
+                )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Form Content */}
+        {/* Step Content */}
         <Form {...form}>
-          <form className="space-y-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                {steps[currentStep].component}
-              </motion.div>
-            </AnimatePresence>
+          <form className="space-y-6">
+            {renderCurrentStep()}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between pt-8 border-t border-gray-200">
+            <div className="flex justify-between pt-6">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={currentStep === 0}
-                className="flex items-center gap-2 h-12 px-6"
+                className="flex items-center gap-2"
               >
-                <ChevronLeft className="w-4 h-4" />
-                Previous / Trước
+                <ArrowLeft className="w-4 h-4" />
+                {t({
+                  english: 'Previous',
+                  vietnamese: 'Quay lại'
+                })}
               </Button>
-              
-              <Button
-                type="button"
-                onClick={handleNext}
-                className="flex items-center gap-2 h-12 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                {currentStep === steps.length - 1 ? (
-                  "Complete Listing / Hoàn thành tin đăng"
-                ) : (
-                  <>
-                    Next / Tiếp theo
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                )}
-              </Button>
+
+              {currentStep === STEPS.length - 1 ? (
+                <Button
+                  type="button"
+                  onClick={handleComplete}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8"
+                >
+                  {t({
+                    english: 'Complete Listing',
+                    vietnamese: 'Hoàn thành đăng tin'
+                  })}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
+                >
+                  {t({
+                    english: 'Next',
+                    vietnamese: 'Tiếp theo'
+                  })}
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           </form>
         </Form>
