@@ -17,6 +17,10 @@ export interface SalonPricingOptions {
   featuredAddOn?: boolean;
   autoRenew?: boolean;
   isFirstPost?: boolean;
+  isNationwide?: boolean;
+  fastSalePackage?: boolean;
+  showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
 }
 
 export interface SalonPricingSummary {
@@ -31,6 +35,7 @@ export interface SalonPricingSummary {
   autoRenewDiscount?: number;
   addOns: {
     featured: number;
+    nationwide?: number;
   };
   discounts: {
     duration: number;
@@ -120,14 +125,16 @@ export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonP
   
   // Calculate add-on costs
   const featuredCost = options.featuredAddOn ? duration * 10 : 0;
+  const nationwideCost = options.isNationwide ? duration * 5 : 0;
   const addOns = {
-    featured: featuredCost
+    featured: featuredCost,
+    nationwide: nationwideCost
   };
   
   // Calculate discounts
   const autoRenewDiscount = options.autoRenew ? basePrice * 0.05 : 0;
   
-  const subtotal = basePrice + featuredCost;
+  const subtotal = basePrice + featuredCost + nationwideCost;
   
   return {
     planName: `Standard Listing - ${duration} months`,

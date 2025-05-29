@@ -10,14 +10,14 @@ import { SalonPricingOptions, SalonPricingTier } from '@/utils/posting/salonPric
 import { useStripe } from '@/hooks/useStripe';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
 
-import SalonDetailsStep from './steps/SalonDetailsStep';
+import { SalonDetailsStep } from './steps/SalonDetailsStep';
 import LocationDetailsStep from './steps/LocationDetailsStep';
 import FinancialDetailsStep from './steps/FinancialDetailsStep';
 import DescriptionDetailsStep from './steps/DescriptionDetailsStep';
 import FeaturesDetailsStep from './steps/FeaturesDetailsStep';
 import { SalonPricingStep } from './steps/SalonPricingStep';
 import PhotoUpload from '../PhotoUpload';
-import SalonReviewStep from './steps/SalonReviewStep';
+import { SalonReviewStep } from './steps/SalonReviewStep';
 import TermsAndConditionsStep from './steps/TermsAndConditionsStep';
 
 interface StepProps {
