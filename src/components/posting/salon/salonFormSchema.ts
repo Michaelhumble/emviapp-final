@@ -20,6 +20,8 @@ export const salonFormSchema = z.object({
   // Financial/Business details
   askingPrice: z.string().min(1, "Asking price is required"),
   monthlyRent: z.string().min(1, "Monthly rent is required"),
+  monthlyProfit: z.string().optional(),
+  employeeCount: z.string().optional(),
   numberOfStaff: z.string().optional(),
   numberOfTables: z.string().optional(),
   numberOfChairs: z.string().optional(),

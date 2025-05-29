@@ -1,293 +1,346 @@
 
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { SalonFormValues } from '../salonFormSchema';
-import { Building2, MapPin, DollarSign, Users, FileText, Camera, Crown, Zap, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { SalonFormValues } from "../salonFormSchema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Building, 
+  MapPin, 
+  DollarSign, 
+  Users, 
+  Camera, 
+  CheckCircle, 
+  Star, 
+  TrendingUp,
+  Award,
+  Eye,
+  Target
+} from "lucide-react";
 
 interface SalonReviewStepProps {
   form: UseFormReturn<SalonFormValues>;
   photoUploads: File[];
 }
 
-export const SalonReviewStep: React.FC<SalonReviewStepProps> = ({ form, photoUploads }) => {
-  const formData = form.getValues();
-
-  const formatCurrency = (amount: string | number) => {
-    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return isNaN(num) ? '$0' : `$${num.toLocaleString()}`;
-  };
+export const SalonReviewStep = ({ form, photoUploads }: SalonReviewStepProps) => {
+  const formData = form.watch();
 
   return (
     <div className="space-y-8">
-      {/* Hero Section */}
-      <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 border-0 shadow-xl">
-        <CardContent className="p-8 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 via-pink-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
-              <Crown className="h-10 w-10 text-white" />
-            </div>
-          </div>
-          <h2 className="text-4xl font-playfair font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-600 bg-clip-text text-transparent mb-4">
-            Your Salon Listing Preview
-          </h2>
-          <p className="text-gray-600 text-xl leading-relaxed max-w-3xl mx-auto mb-6">
-            This is how your salon will appear to thousands of qualified investors and buyers
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-purple-600 bg-purple-100 px-4 py-2 rounded-full">
-              <TrendingUp className="h-4 w-4" />
-              <span className="font-medium">Premium listings get 10x more views</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-pink-600 bg-pink-100 px-4 py-2 rounded-full">
-              <Zap className="h-4 w-4" />
-              <span className="font-medium">Average sale time: 30-60 days</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Listing Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Details */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Basic Information */}
-          <Card className="shadow-lg border-0">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg">
-              <CardTitle className="flex items-center gap-3">
-                <Building2 className="h-6 w-6" />
-                {formData.salonName || 'Your Salon Name'}
-                <Badge variant="secondary" className="bg-white/20 text-white border-0">
-                  {formData.businessType || 'Business Type'}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-blue-500" />
-                    <div>
-                      <p className="font-medium">Location</p>
-                      <p className="text-gray-600">
-                        {formData.hideExactAddress 
-                          ? `${formData.city || 'City'}, ${formData.state || 'State'}`
-                          : `${formData.address || 'Address'}, ${formData.city || 'City'}, ${formData.state || 'State'}`
-                        }
-                      </p>
-                      {formData.neighborhood && (
-                        <p className="text-sm text-gray-500">{formData.neighborhood}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-green-500" />
-                    <div>
-                      <p className="font-medium">Asking Price</p>
-                      <p className="text-2xl font-bold text-green-600">
-                        {formatCurrency(formData.askingPrice || 0)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {formData.monthlyRevenue && (
-                    <div className="flex items-center gap-3">
-                      <TrendingUp className="h-5 w-5 text-purple-500" />
-                      <div>
-                        <p className="font-medium">Monthly Revenue</p>
-                        <p className="text-lg font-semibold text-purple-600">
-                          {formatCurrency(formData.monthlyRevenue)}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {formData.employeeCount && (
-                    <div className="flex items-center gap-3">
-                      <Users className="h-5 w-5 text-orange-500" />
-                      <div>
-                        <p className="font-medium">Team Size</p>
-                        <p className="text-lg font-semibold text-orange-600">
-                          {formData.employeeCount} employees
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {formData.establishedYear && (
-                    <div className="flex items-center gap-3">
-                      <Badge variant="outline" className="border-blue-200 text-blue-600">
-                        Established {formData.establishedYear}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Description */}
-          {formData.englishDescription && (
-            <Card className="shadow-lg border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-purple-500" />
-                  Business Description
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {formData.englishDescription}
-                </p>
-                {formData.vietnameseDescription && (
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {formData.vietnameseDescription}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Reason for Selling */}
-          {formData.reasonForSelling && (
-            <Card className="shadow-lg border-0 bg-blue-50 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-blue-800 mb-2">Why This Opportunity is Available</h3>
-                <p className="text-blue-700 leading-relaxed">
-                  {formData.reasonForSelling}
-                </p>
-              </CardContent>
-            </Card>
-          )}
+      {/* Header Section */}
+      <div className="text-center space-y-4 pb-8 border-b border-purple-100">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-blue-500 text-white shadow-lg">
+          <CheckCircle className="w-8 h-8" />
         </div>
+        <h2 className="text-3xl font-playfair font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+          Review Your Listing
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Your salon listing is ready to go live! Review all details below to ensure maximum buyer appeal.
+          <span className="block text-green-600 font-medium mt-2">🚀 You're about to reach 1,000+ qualified buyers!</span>
+        </p>
+      </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Photos */}
-          <Card className="shadow-lg border-0">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Camera className="h-5 w-5 text-green-500" />
-                Photos ({photoUploads.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {photoUploads.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2">
-                  {photoUploads.slice(0, 4).map((photo, index) => (
-                    <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Salon photo ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                  {photoUploads.length > 4 && (
-                    <div className="aspect-square rounded-lg bg-gray-100 flex items-center justify-center">
-                      <span className="text-gray-500 font-medium">
-                        +{photoUploads.length - 4} more
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Camera className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>No photos uploaded</p>
-                  <p className="text-sm">Photos increase interest by 500%!</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Financial Snapshot */}
-          {(formData.monthlyRevenue || formData.monthlyProfit) && (
-            <Card className="shadow-lg border-0 bg-green-50 border-green-200">
-              <CardHeader>
-                <CardTitle className="text-green-800">Financial Snapshot</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {formData.monthlyRevenue && (
-                  <div className="flex justify-between">
-                    <span className="text-green-700">Monthly Revenue:</span>
-                    <span className="font-semibold text-green-800">
-                      {formatCurrency(formData.monthlyRevenue)}
-                    </span>
-                  </div>
-                )}
-                {formData.monthlyProfit && (
-                  <div className="flex justify-between">
-                    <span className="text-green-700">Monthly Profit:</span>
-                    <span className="font-semibold text-green-800">
-                      {formatCurrency(formData.monthlyProfit)}
-                    </span>
-                  </div>
-                )}
-                {formData.monthlyRevenue && formData.monthlyProfit && (
-                  <div className="pt-2 border-t border-green-200">
-                    <div className="flex justify-between">
-                      <span className="text-green-700">Profit Margin:</span>
-                      <span className="font-semibold text-green-800">
-                        {Math.round((parseFloat(formData.monthlyProfit) / parseFloat(formData.monthlyRevenue)) * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Call to Action */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-500 to-pink-500 text-white">
-            <CardContent className="p-6 text-center">
-              <Crown className="h-8 w-8 mx-auto mb-3" />
-              <h3 className="font-bold text-lg mb-2">Premium Listing Benefits</h3>
-              <ul className="text-sm space-y-1 text-purple-100">
-                <li>• Featured placement in search results</li>
-                <li>• Professional listing badge</li>
-                <li>• Priority in buyer notifications</li>
-                <li>• Enhanced contact form</li>
-                <li>• Detailed analytics dashboard</li>
-              </ul>
-            </CardContent>
-          </Card>
+      {/* Success Metrics Banner */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div className="flex items-center justify-center gap-3">
+            <Eye className="w-6 h-6 text-green-600" />
+            <div>
+              <div className="text-2xl font-bold text-green-700">1,000+</div>
+              <div className="text-sm text-green-600">Monthly Viewers</div>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <Target className="w-6 h-6 text-blue-600" />
+            <div>
+              <div className="text-2xl font-bold text-blue-700">85%</div>
+              <div className="text-sm text-blue-600">Serious Buyers</div>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <Award className="w-6 h-6 text-purple-600" />
+            <div>
+              <div className="text-2xl font-bold text-purple-700">30 Days</div>
+              <div className="text-sm text-purple-600">Average Sale Time</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Final CTA */}
-      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-        <CardContent className="p-8 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h3 className="text-2xl font-bold text-green-800 mb-4">
-              Ready to Connect with Serious Buyers?
-            </h3>
-            <p className="text-green-700 text-lg mb-6">
-              Your salon listing will be live within minutes and visible to over 5,000 active investors looking for beauty businesses just like yours.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-              <div className="bg-white/50 p-4 rounded-lg">
-                <div className="font-semibold text-green-800">Instant Visibility</div>
-                <div className="text-green-600">Seen by qualified buyers immediately</div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Salon Identity Card */}
+        <Card className="border-2 border-purple-100 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-3 text-purple-700">
+              <Building className="w-6 h-6" />
+              Salon Identity
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-700">Salon Name:</span>
+                <span className="text-lg font-semibold text-purple-600">{formData.salonName || "Not specified"}</span>
               </div>
-              <div className="bg-white/50 p-4 rounded-lg">
-                <div className="font-semibold text-green-800">Professional Support</div>
-                <div className="text-green-600">Dedicated team helps through sale</div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-700">Business Type:</span>
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                  {formData.businessType || "Not specified"}
+                </Badge>
               </div>
-              <div className="bg-white/50 p-4 rounded-lg">
-                <div className="font-semibold text-green-800">Secure Process</div>
-                <div className="text-green-600">Protected contact & verified buyers</div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-700">Industry:</span>
+                <span className="text-purple-600">{formData.beautyIndustry || "Nails"}</span>
               </div>
+              {formData.establishedYear && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">Established:</span>
+                  <span className="text-purple-600">{formData.establishedYear}</span>
+                </div>
+              )}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Location Card */}
+        <Card className="border-2 border-blue-100 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
+            <CardTitle className="flex items-center gap-3 text-blue-700">
+              <MapPin className="w-6 h-6" />
+              Location Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="space-y-3">
+              <div>
+                <span className="font-medium text-gray-700 block">Address:</span>
+                <p className="text-blue-600 mt-1">
+                  {formData.hideExactAddress 
+                    ? `${formData.city}, ${formData.state} (Exact address hidden for privacy)`
+                    : `${formData.address || ""}, ${formData.city || ""}, ${formData.state || ""} ${formData.zipCode || ""}`
+                  }
+                </p>
+              </div>
+              {formData.neighborhood && (
+                <div>
+                  <span className="font-medium text-gray-700 block">Neighborhood:</span>
+                  <span className="text-blue-600">{formData.neighborhood}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Financial Information Card */}
+        <Card className="border-2 border-green-100 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50">
+            <CardTitle className="flex items-center gap-3 text-green-700">
+              <DollarSign className="w-6 h-6" />
+              Financial Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-700">Asking Price:</span>
+                <span className="text-2xl font-bold text-green-600">{formData.askingPrice || "Not specified"}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-700">Monthly Rent:</span>
+                <span className="text-lg text-green-600">{formData.monthlyRent || "Not specified"}</span>
+              </div>
+              {formData.monthlyProfit && (
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                  <span className="font-medium text-gray-700 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-green-500" />
+                    Monthly Profit:
+                  </span>
+                  <span className="text-lg font-semibold text-green-600">{formData.monthlyProfit}</span>
+                </div>
+              )}
+              {formData.monthlyRevenue && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">Monthly Revenue:</span>
+                  <span className="text-green-600">{formData.monthlyRevenue}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Business Metrics Card */}
+        <Card className="border-2 border-orange-100 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
+            <CardTitle className="flex items-center gap-3 text-orange-700">
+              <Users className="w-6 h-6" />
+              Business Metrics
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="space-y-3">
+              {formData.employeeCount && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">Employees:</span>
+                  <Badge variant="outline" className="border-orange-300 text-orange-700">
+                    {formData.employeeCount}
+                  </Badge>
+                </div>
+              )}
+              {formData.numberOfTables && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">Manicure Tables:</span>
+                  <span className="text-orange-600">{formData.numberOfTables}</span>
+                </div>
+              )}
+              {formData.numberOfChairs && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">Pedicure Chairs:</span>
+                  <span className="text-orange-600">{formData.numberOfChairs}</span>
+                </div>
+              )}
+              {formData.squareFeet && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">Square Footage:</span>
+                  <span className="text-orange-600">{formData.squareFeet}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Premium Features Section */}
+      <Card className="border-2 border-purple-200 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-purple-100 to-pink-100">
+          <CardTitle className="flex items-center gap-3 text-purple-700">
+            <Star className="w-6 h-6" />
+            Premium Features & Amenities
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {formData.willTrain && (
+              <Badge variant="secondary" className="bg-green-100 text-green-700 p-3 justify-center">
+                🎓 Training Included
+              </Badge>
+            )}
+            {formData.hasHousing && (
+              <Badge variant="secondary" className="bg-blue-100 text-blue-700 p-3 justify-center">
+                🏠 Housing Available
+              </Badge>
+            )}
+            {formData.hasWaxRoom && (
+              <Badge variant="secondary" className="bg-purple-100 text-purple-700 p-3 justify-center">
+                💆‍♀️ Wax Room
+              </Badge>
+            )}
+            {formData.hasDiningRoom && (
+              <Badge variant="secondary" className="bg-orange-100 text-orange-700 p-3 justify-center">
+                🍽️ Dining Area
+              </Badge>
+            )}
+            {formData.hasLaundry && (
+              <Badge variant="secondary" className="bg-cyan-100 text-cyan-700 p-3 justify-center">
+                🧺 Laundry
+              </Badge>
+            )}
+            {formData.hasParking && (
+              <Badge variant="secondary" className="bg-gray-100 text-gray-700 p-3 justify-center">
+                🚗 Parking
+              </Badge>
+            )}
           </div>
+          {![formData.willTrain, formData.hasHousing, formData.hasWaxRoom, formData.hasDiningRoom, formData.hasLaundry, formData.hasParking].some(Boolean) && (
+            <p className="text-gray-500 text-center py-4">No premium features selected</p>
+          )}
         </CardContent>
       </Card>
+
+      {/* Photos Section */}
+      <Card className="border-2 border-indigo-100 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+          <CardTitle className="flex items-center gap-3 text-indigo-700">
+            <Camera className="w-6 h-6" />
+            Photos ({photoUploads.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {photoUploads.length > 0 ? (
+            <div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                {photoUploads.slice(0, 4).map((file, index) => (
+                  <div key={index} className="aspect-square rounded-lg overflow-hidden border-2 border-indigo-200">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Salon photo ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              {photoUploads.length > 4 && (
+                <p className="text-indigo-600 text-center">
+                  +{photoUploads.length - 4} more photos
+                </p>
+              )}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+                <p className="text-green-700 font-medium">✨ Great choice!</p>
+                <p className="text-green-600 text-sm">Listings with 5+ photos get 3x more buyer inquiries</p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+              <Camera className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+              <p className="text-gray-500">No photos uploaded</p>
+              <p className="text-sm text-gray-400 mt-1">Add photos to increase buyer interest by 300%!</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Descriptions Section */}
+      {(formData.englishDescription || formData.vietnameseDescription || formData.reasonForSelling) && (
+        <Card className="border-2 border-pink-100 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-pink-50 to-purple-50">
+            <CardTitle className="text-pink-700">Descriptions & Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            {formData.englishDescription && (
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">English Description:</h4>
+                <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{formData.englishDescription}</p>
+              </div>
+            )}
+            {formData.vietnameseDescription && (
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Vietnamese Description:</h4>
+                <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{formData.vietnameseDescription}</p>
+              </div>
+            )}
+            {formData.reasonForSelling && (
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Reason for Selling:</h4>
+                <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{formData.reasonForSelling}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Call to Action Footer */}
+      <div className="text-center p-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl shadow-xl">
+        <h3 className="text-2xl font-bold mb-2">🎉 Your Listing Looks Amazing!</h3>
+        <p className="text-lg opacity-90 mb-4">
+          Ready to connect with serious buyers who are actively searching for salons like yours?
+        </p>
+        <div className="bg-white/20 rounded-lg p-4 inline-block">
+          <p className="text-sm font-medium">
+            ⚡ Premium listings get contacted within 48 hours on average
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
