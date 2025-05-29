@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SalonPricingOptions } from "@/utils/posting/salonPricing";
 import { Form } from "@/components/ui/form";
+import { useStripe } from "@/hooks/useStripe";
 
 const STEPS = [
   { id: 1, title: "Basic Information", component: SalonBasicInfoStep },
@@ -29,6 +30,8 @@ export const SalonListingWizard = () => {
     featuredAddon: false
   });
 
+  const { initiatePayment, isLoading } = useStripe();
+
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
     defaultValues: {
@@ -40,17 +43,29 @@ export const SalonListingWizard = () => {
       contactName: "",
       contactEmail: "",
       contactPhone: "",
+      contactNotes: "",
+      neighborhood: "",
+      businessType: "",
+      establishedYear: "",
+      logo: "",
       askingPrice: "",
       monthlyRent: "",
+      revenue: "",
       numberOfStaff: "",
+      squareFeet: "",
       englishDescription: "",
       vietnameseDescription: "",
+      reasonForSelling: "",
+      virtualTourUrl: "",
       willTrain: false,
       hasHousing: false,
       hasParking: false,
       equipmentIncluded: false,
       leaseTransferable: false,
       sellerFinancing: false,
+      hasWaxRoom: false,
+      hasDiningRoom: false,
+      hasLaundry: false,
     },
   });
 
@@ -70,10 +85,20 @@ export const SalonListingWizard = () => {
     }
   };
 
-  const handleSubmit = form.handleSubmit((data) => {
-    console.log("Form submitted:", data);
-    console.log("Pricing options:", pricingOptions);
-  });
+  const handleSubmit = async () => {
+    const formData = form.getValues();
+    
+    if (!pricingOptions.selectedPricingTier) {
+      console.error("No pricing tier selected");
+      return;
+    }
+
+    // Initiate Stripe payment
+    const success = await initiatePayment(pricingOptions, formData);
+    if (success) {
+      console.log("Payment initiated successfully");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -95,8 +120,10 @@ export const SalonListingWizard = () => {
           <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
             <CurrentStepComponent 
               form={form} 
-              pricingOptions={pricingOptions}
-              onPricingChange={setPricingOptions}
+              {...(currentStep === 5 && {
+                pricingOptions,
+                onPricingChange: setPricingOptions
+              })}
             />
           </div>
         </Form>
@@ -127,9 +154,10 @@ export const SalonListingWizard = () => {
             <Button
               type="submit"
               onClick={handleSubmit}
+              disabled={isLoading || !pricingOptions.selectedPricingTier}
               className="flex items-center gap-2"
             >
-              Submit Listing
+              {isLoading ? "Processing..." : "Submit Listing"}
             </Button>
           )}
         </div>
