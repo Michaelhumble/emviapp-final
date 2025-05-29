@@ -1,2 +1,7 @@
 
-export type TranslatableContent = string | { english: string; vietnamese: string };
+export interface TranslatableContent {
+  english: string;
+  vietnamese: string;
+}
+
+export type Translation = TranslatableContent;

@@ -1,6 +1,12 @@
 
 import { useAuth } from '@/context/auth';
-import { TranslatableContent } from '@/types/translation';
+
+export interface TranslatableContent {
+  english: string;
+  vietnamese: string;
+}
+
+export type Translation = TranslatableContent;
 
 export function useTranslation() {
   const { userProfile } = useAuth();
@@ -10,7 +16,9 @@ export function useTranslation() {
     ? 'vietnamese'
     : 'english';
   
-  const t = (content: TranslatableContent) => {
+  const isVietnamese = preferredLanguage === 'vietnamese';
+  
+  const t = (content: TranslatableContent | string) => {
     if (typeof content === 'string') {
       return content;
     }
@@ -18,5 +26,10 @@ export function useTranslation() {
     return content[preferredLanguage] || content.english;
   };
   
-  return { t, preferredLanguage };
+  const toggleLanguage = () => {
+    // This would be implemented if needed, for now it's a placeholder
+    console.log('Language toggle functionality would go here');
+  };
+  
+  return { t, preferredLanguage, isVietnamese, toggleLanguage };
 }
