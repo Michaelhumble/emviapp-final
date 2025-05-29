@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -133,7 +134,9 @@ const SalonListingWizard: React.FC<{ onComplete: (formData: SalonFormValues, pho
     <PostWizardLayout currentStep={currentStep} totalSteps={steps.length}>
       <Card>
         <CardContent className="relative">
-          {renderStepContent(currentStep)}
+          <FormProvider {...form}>
+            {renderStepContent(currentStep)}
+          </FormProvider>
         </CardContent>
       </Card>
 
