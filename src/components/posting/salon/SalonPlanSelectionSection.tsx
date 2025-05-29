@@ -1,216 +1,138 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle } from 'lucide-react';
-import { SalonPricingOptions, SalonPricingTier, DURATION_OPTIONS, getSalonPostPricingSummary } from '@/utils/posting/salonPricing';
+import { Check, Star, Crown, Zap, Sparkles } from 'lucide-react';
+import { salonPricingPlans, type SalonPricingTier, getSalonPostPricingSummary, DURATION_OPTIONS } from '@/utils/posting/salonPricing';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SalonPlanSelectionSectionProps {
-  selectedOptions: SalonPricingOptions;
-  onOptionsChange: (options: SalonPricingOptions) => void;
-  onNext?: () => void;
-  onBack?: () => void;
-  hideNavigation?: boolean;
+  selectedTier: SalonPricingTier;
+  onTierChange: (tier: SalonPricingTier) => void;
+  durationMonths?: number;
+  onDurationChange?: (months: number) => void;
+  autoRenew?: boolean;
+  onAutoRenewChange?: (enabled: boolean) => void;
 }
 
 const SalonPlanSelectionSection: React.FC<SalonPlanSelectionSectionProps> = ({
-  selectedOptions,
-  onOptionsChange,
-  onNext,
-  onBack,
-  hideNavigation = false
+  selectedTier,
+  onTierChange,
+  durationMonths = 1,
+  onDurationChange,
+  autoRenew = false,
+  onAutoRenewChange
 }) => {
-  const handleTierChange = (tier: SalonPricingTier) => {
-    onOptionsChange({
-      ...selectedOptions,
-      selectedPricingTier: tier
-    });
-  };
+  const { t } = useTranslation();
 
-  const handleDurationChange = (months: number) => {
-    onOptionsChange({
-      ...selectedOptions,
-      durationMonths: months
-    });
-  };
-
-  const handleAutoRenewChange = (autoRenew: boolean) => {
-    onOptionsChange({
-      ...selectedOptions,
-      autoRenew
-    });
-  };
-
-  const pricingSummary = getSalonPostPricingSummary(selectedOptions);
-
-  const tiers: { id: SalonPricingTier; name: string; vietnameseName: string; features: string[] }[] = [
-    {
-      id: 'basic',
-      name: 'Basic Listing',
-      vietnameseName: 'Gói Cơ Bản',
-      features: ['Standard visibility', 'Basic support', 'Photo gallery']
-    },
-    {
-      id: 'standard', 
-      name: 'Standard Listing',
-      vietnameseName: 'Gói Tiêu Chuẩn',
-      features: ['Enhanced visibility', 'Priority support', 'Featured photos', 'Social media promotion']
-    },
-    {
-      id: 'featured',
-      name: 'Featured Listing', 
-      vietnameseName: 'Gói Nổi Bật',
-      features: ['Premium placement', 'Dedicated support', 'Professional photos', 'Marketing boost', 'Top search results']
+  const getIcon = (tier: SalonPricingTier) => {
+    switch (tier) {
+      case 'free': return <Zap className="h-6 w-6" />;
+      case 'standard': return <Star className="h-6 w-6" />;
+      case 'premium': return <Crown className="h-6 w-6" />;
+      case 'featured': return <Sparkles className="h-6 w-6" />;
+      default: return <Zap className="h-6 w-6" />;
     }
-  ];
+  };
+
+  const handleSelectPlan = (tier: SalonPricingTier) => {
+    onTierChange(tier);
+  };
 
   return (
     <div className="space-y-6">
-      {/* Plan Selection */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Chọn Gói Đăng Tin / Select Plan</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {tiers.map((tier) => (
-            <Card 
-              key={tier.id}
-              className={`cursor-pointer transition-all ${
-                selectedOptions.selectedPricingTier === tier.id 
-                  ? 'border-purple-500 bg-purple-50' 
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-              onClick={() => handleTierChange(tier.id)}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-sm font-medium">{tier.vietnameseName}</CardTitle>
-                    <p className="text-xs text-gray-600">{tier.name}</p>
-                  </div>
-                  {selectedOptions.selectedPricingTier === tier.id && (
-                    <CheckCircle className="h-5 w-5 text-purple-600" />
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-1 text-xs text-gray-600">
-                  {tier.features.map((feature, index) => (
-                    <li key={index} className="flex items-center">
-                      <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 font-playfair">
+          {t({
+            english: 'Choose Your Listing Plan',
+            vietnamese: 'Chọn Gói Đăng Tin'
+          })}
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          {t({
+            english: 'Select the right plan to reach your target buyers effectively.',
+            vietnamese: 'Chọn gói phù hợp để salon của bạn tiếp cận đúng đối tượng khách hàng.'
+          })}
+        </p>
       </div>
 
-      {/* Duration Selection */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Thời Hạn Đăng Tin / Duration</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {DURATION_OPTIONS.map((option) => (
-            <Card 
-              key={option.months}
-              className={`cursor-pointer transition-all ${
-                selectedOptions.durationMonths === option.months 
-                  ? 'border-purple-500 bg-purple-50' 
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-              onClick={() => handleDurationChange(option.months)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="font-medium text-sm">{option.label}</p>
-                    <p className="text-xs text-gray-600">{option.days} ngày / {option.days} days</p>
-                  </div>
-                  {selectedOptions.durationMonths === option.months && (
-                    <CheckCircle className="h-4 w-4 text-purple-600" />
-                  )}
-                </div>
-                {option.discount > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    Tiết kiệm {option.discount}% / Save {option.discount}%
-                  </Badge>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Auto-Renew Option */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-          <div>
-            <h4 className="font-medium">Tự Động Gia Hạn / Auto-Renew</h4>
-            <p className="text-sm text-gray-600">
-              Tiết kiệm thêm 5% khi bật tự động gia hạn / Save an additional 5% with auto-renew
-            </p>
-          </div>
-          <Switch
-            checked={selectedOptions.autoRenew || false}
-            onCheckedChange={handleAutoRenewChange}
-          />
-        </div>
-      </div>
-
-      {/* Pricing Summary */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-800">
-            Tổng Kết Giá / Pricing Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Gói cơ bản / Base price:</span>
-              <span>${pricingSummary.basePrice.toFixed(2)}/tháng</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Thời hạn / Duration:</span>
-              <span>{pricingSummary.durationMonths} tháng / {pricingSummary.durationMonths} months</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Tổng phụ / Subtotal:</span>
-              <span>${pricingSummary.subtotal.toFixed(2)}</span>
-            </div>
-            {pricingSummary.durationDiscount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Giảm giá thời hạn / Duration discount:</span>
-                <span>-${pricingSummary.durationDiscount.toFixed(2)}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {salonPricingPlans.map((plan) => (
+          <Card 
+            key={plan.id} 
+            className={`relative ${plan.color} ${plan.popular ? 'ring-2 ring-purple-500 scale-105' : ''} ${
+              selectedTier === plan.id ? 'ring-2 ring-green-500' : ''
+            } hover:shadow-lg transition-all duration-200`}
+          >
+            {plan.popular && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-purple-600 text-white">
+                  {t({
+                    english: 'Most Popular',
+                    vietnamese: 'Phổ Biến'
+                  })}
+                </Badge>
               </div>
             )}
-            {pricingSummary.autoRenewDiscount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Giảm giá tự động gia hạn / Auto-renew discount:</span>
-                <span>-${pricingSummary.autoRenewDiscount.toFixed(2)}</span>
+            
+            <CardHeader className="text-center pb-4">
+              <div className="flex justify-center mb-2">
+                {getIcon(plan.id)}
               </div>
-            )}
-            <div className="border-t pt-2 flex justify-between font-semibold text-lg">
-              <span>Tổng cộng / Total:</span>
-              <span className="text-purple-600">${pricingSummary.finalPrice.toFixed(2)}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              <CardTitle className="text-lg font-bold">{plan.name}</CardTitle>
+              <div className="text-2xl font-bold text-gray-900">
+                {plan.price === 0 ? t({
+                  english: 'Free',
+                  vietnamese: 'Miễn Phí'
+                }) : `$${plan.price}`}
+              </div>
+              <div className="text-sm text-gray-600">
+                {t({
+                  english: `${plan.duration} month${plan.duration > 1 ? 's' : ''}`,
+                  vietnamese: `${plan.duration} tháng`
+                })}
+              </div>
+            </CardHeader>
 
-      {/* Navigation */}
-      {!hideNavigation && (
-        <div className="flex justify-between pt-6">
-          <Button variant="outline" onClick={onBack}>
-            Quay lại / Back
-          </Button>
-          <Button onClick={onNext} className="bg-purple-600 hover:bg-purple-700">
-            Tiếp tục / Continue
-          </Button>
-        </div>
-      )}
+            <CardContent className="pt-0">
+              <ul className="space-y-2 mb-6">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start">
+                    <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                onClick={() => handleSelectPlan(plan)}
+                className={`w-full ${plan.buttonColor} text-white`}
+                disabled={selectedTier === plan.id}
+              >
+                {selectedTier === plan.id ? t({
+                  english: 'Selected',
+                  vietnamese: 'Đã Chọn'
+                }) : t({
+                  english: 'Select Plan',
+                  vietnamese: 'Chọn Gói'
+                })}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="mt-8 text-center text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
+        <p className="mb-2">
+          💡 <strong>{t({
+            english: 'Tip:',
+            vietnamese: 'Lời khuyên:'
+          })}</strong> {t({
+            english: 'Premium plans help your salon appear at the top and attract more serious buyers.',
+            vietnamese: 'Gói cao cấp giúp salon của bạn xuất hiện ở vị trí đầu và thu hút nhiều người mua hơn.'
+          })}
+        </p>
+      </div>
     </div>
   );
 };
