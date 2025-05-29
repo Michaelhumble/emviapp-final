@@ -1,24 +1,27 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const Terms = () => {
+const JobDetail = () => {
+  const { id } = useParams();
+  
   return (
     <Layout>
       <Helmet>
-        <title>Terms of Service | EmviApp</title>
-        <meta name="description" content="EmviApp Terms of Service" />
+        <title>Job Detail | EmviApp</title>
+        <meta name="description" content="View job details on EmviApp" />
       </Helmet>
       
       <div className="container py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Terms of Service</CardTitle>
+            <CardTitle>Job Detail - {id}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Terms of Service content coming soon...</p>
+            <p>Job detail functionality coming soon...</p>
           </CardContent>
         </Card>
       </div>
@@ -26,4 +29,4 @@ const Terms = () => {
   );
 };
 
-export default Terms;
+export default JobDetail;

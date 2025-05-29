@@ -4,21 +4,21 @@ import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const Terms = () => {
+const EditProfile = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Terms of Service | EmviApp</title>
-        <meta name="description" content="EmviApp Terms of Service" />
+        <title>Edit Profile | EmviApp</title>
+        <meta name="description" content="Edit your EmviApp profile" />
       </Helmet>
       
-      <div className="container py-8">
+      <div className="container max-w-4xl py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Terms of Service</CardTitle>
+            <CardTitle>Edit Profile</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Terms of Service content coming soon...</p>
+            <p>Profile editing functionality coming soon...</p>
           </CardContent>
         </Card>
       </div>
@@ -26,4 +26,4 @@ const Terms = () => {
   );
 };
 
-export default Terms;
+export default EditProfile;
