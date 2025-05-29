@@ -1,112 +1,116 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, Circle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Form } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SalonFormValues, salonFormSchema } from './salonFormSchema';
 import { SalonIdentityStep } from './steps/SalonIdentityStep';
-import { SalonLocationStep } from './steps/SalonLocationStep';
-import { SalonDetailsStep } from './steps/SalonDetailsStep';
-import SalonPostPhotoUpload from './SalonPostPhotoUpload';
-import { SalonPricingStep } from './steps/SalonPricingStep';
+import SalonDetailsStep from './steps/SalonDetailsStep';
+import SalonLocationStep from './steps/SalonLocationStep';
+import SalonPhotoUpload from './SalonPostPhotoUpload';
+import SalonPricingStep from './steps/SalonPricingStep';
 
 const SalonListingWizard = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [salonDetails, setSalonDetails] = useState({});
-  const [salonLocation, setSalonLocation] = useState({});
+  const [currentStep, setCurrentStep] = useState(0);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState({});
+  const [pricingOptions, setPricingOptions] = useState<any>({});
+
+  const form = useForm<SalonFormValues>({
+    resolver: zodResolver(salonFormSchema),
+    defaultValues: {
+      salonName: '',
+      businessType: '',
+      establishedYear: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      neighborhood: '',
+      hideExactAddress: false,
+      englishDescription: '',
+      vietnameseDescription: '',
+      reasonForSelling: '',
+      askingPrice: '',
+      grossRevenue: '',
+      netProfit: '',
+      equipmentIncluded: false,
+      leaseTransferable: false,
+      sellerFinancing: false
+    }
+  });
 
   const steps = [
-    { 
-      id: 1, 
-      title: 'Salon Identity', 
-      subtitle: 'Thông tin cơ bản',
+    {
+      id: 'identity',
+      title: 'Salon Information',
+      subtitle: 'Thông Tin Salon',
       description: 'Tell us about your salon business',
-      isCompleted: currentStep > 1 
+      icon: '🏢'
     },
-    { 
-      id: 2, 
-      title: 'Location', 
-      subtitle: 'Địa điểm',
+    {
+      id: 'location',
+      title: 'Location Details',
+      subtitle: 'Thông Tin Vị Trí',
       description: 'Where is your salon located?',
-      isCompleted: currentStep > 2 
+      icon: '📍'
     },
-    { 
-      id: 3, 
-      title: 'Business Details', 
-      subtitle: 'Chi tiết kinh doanh',
-      description: 'Financial and operational information',
-      isCompleted: currentStep > 3 
+    {
+      id: 'details',
+      title: 'Business Details',
+      subtitle: 'Chi Tiết Kinh Doanh',
+      description: 'Financial and operational details',
+      icon: '💼'
     },
-    { 
-      id: 4, 
-      title: 'Photos', 
-      subtitle: 'Hình ảnh',
-      description: 'Upload beautiful salon photos',
-      isCompleted: currentStep > 4 
+    {
+      id: 'photos',
+      title: 'Salon Photos',
+      subtitle: 'Hình Ảnh Salon',
+      description: 'Upload beautiful photos of your salon',
+      icon: '📸'
     },
-    { 
-      id: 5, 
-      title: 'Pricing & Payment', 
-      subtitle: 'Thanh toán',
-      description: 'Choose your listing plan',
-      isCompleted: currentStep > 5 
+    {
+      id: 'pricing',
+      title: 'Choose Plan',
+      subtitle: 'Chọn Gói Đăng Tin',
+      description: 'Select your listing duration and features',
+      icon: '💎'
     }
   ];
 
-  const totalSteps = steps.length;
-  const progressPercentage = (currentStep / totalSteps) * 100;
-
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
+  const nextStep = () => {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentStep > 1) {
+  const prevStep = () => {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleStepClick = (stepId: number) => {
-    setCurrentStep(stepId);
-  };
-
   const renderStepContent = () => {
     switch (currentStep) {
+      case 0:
+        return <SalonIdentityStep form={form} />;
       case 1:
-        return (
-          <SalonIdentityStep 
-            salonDetails={salonDetails}
-            setSalonDetails={setSalonDetails}
-          />
-        );
+        return <SalonLocationStep form={form} />;
       case 2:
-        return (
-          <SalonLocationStep 
-            salonLocation={salonLocation}
-            setSalonLocation={setSalonLocation}
-          />
-        );
+        return <SalonDetailsStep form={form} />;
       case 3:
         return (
-          <SalonDetailsStep 
-            salonDetails={salonDetails}
-            setSalonDetails={setSalonDetails}
-          />
-        );
-      case 4:
-        return (
-          <SalonPostPhotoUpload 
+          <SalonPhotoUpload
             photoUploads={photoUploads}
             setPhotoUploads={setPhotoUploads}
           />
         );
-      case 5:
+      case 4:
         return (
-          <SalonPricingStep 
+          <SalonPricingStep
             pricingOptions={pricingOptions}
             setPricingOptions={setPricingOptions}
           />
@@ -117,112 +121,112 @@ const SalonListingWizard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            💎 Sell Your Salon | Bán Salon Của Bạn
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            💎 Sell Your Salon / Bán Salon Của Bạn
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            List your salon business for sale and reach thousands of qualified buyers
+            List your salon for sale and reach thousands of qualified buyers looking for established beauty businesses.
             <br />
-            <span className="text-purple-600">Đăng tin bán salon và tiếp cận hàng nghìn người mua tiềm năng</span>
+            <span className="text-purple-600 font-medium">
+              Đăng tin bán salon và tiếp cận hàng nghìn người mua tiềm năng đang tìm kiếm doanh nghiệp làm đẹp.
+            </span>
           </p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium text-purple-600">
-              Step {currentStep} of {totalSteps}
-            </span>
-            <span className="text-sm text-gray-500">
-              {Math.round(progressPercentage)}% Complete
-            </span>
-          </div>
-          <Progress 
-            value={progressPercentage} 
-            className="h-3 bg-purple-100"
-          />
-        </div>
-
-        {/* Step Indicators */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          {steps.map((step) => (
-            <Card 
-              key={step.id}
-              className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                currentStep === step.id
-                  ? 'ring-2 ring-purple-500 bg-gradient-to-br from-purple-50 to-pink-50'
-                  : step.isCompleted
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-white hover:bg-gray-50'
-              }`}
-              onClick={() => handleStepClick(step.id)}
-            >
-              <CardContent className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  {step.isCompleted ? (
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                  ) : (
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                      currentStep === step.id
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-gray-200 text-gray-600'
+        {/* Progress Steps */}
+        <Card className="mb-8 border-2 border-purple-100 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              {steps.map((step, index) => (
+                <div key={step.id} className="flex items-center">
+                  <div className="flex flex-col items-center">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-semibold transition-all ${
+                      index <= currentStep 
+                        ? 'bg-purple-600 text-white shadow-lg' 
+                        : 'bg-gray-200 text-gray-500'
                     }`}>
-                      {step.id}
+                      {index < currentStep ? (
+                        <CheckCircle className="w-6 h-6" />
+                      ) : (
+                        <span>{step.icon}</span>
+                      )}
                     </div>
+                    <div className="text-center mt-2">
+                      <p className={`text-sm font-medium ${
+                        index <= currentStep ? 'text-purple-600' : 'text-gray-500'
+                      }`}>
+                        {step.title}
+                      </p>
+                      <p className="text-xs text-gray-500">{step.subtitle}</p>
+                    </div>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div className={`w-16 h-1 mx-4 rounded transition-all ${
+                      index < currentStep ? 'bg-purple-600' : 'bg-gray-200'
+                    }`} />
                   )}
                 </div>
-                <h3 className="font-semibold text-sm text-gray-900 mb-1">
-                  {step.title}
-                </h3>
-                <p className="text-xs text-purple-600 mb-1">
-                  {step.subtitle}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {step.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Main Content */}
-        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardContent className="p-8">
-            {renderStepContent()}
+              ))}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-8">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className="flex items-center gap-2"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Previous
-          </Button>
+        {/* Main Form */}
+        <Form {...form}>
+          <Card className="border-2 border-purple-100 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    {steps[currentStep].icon} {steps[currentStep].title}
+                  </CardTitle>
+                  <p className="text-purple-100 mt-1">
+                    {steps[currentStep].description}
+                  </p>
+                </div>
+                <Badge variant="secondary" className="bg-white/20 text-white">
+                  Step {currentStep + 1} of {steps.length}
+                </Badge>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="p-8">
+              {renderStepContent()}
+            </CardContent>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-500">
-              Step {currentStep} of {totalSteps}
-            </p>
-          </div>
+            {/* Navigation Buttons */}
+            <div className="flex justify-between items-center p-6 bg-gray-50 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 0}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Previous / Quay lại
+              </Button>
 
-          <Button
-            onClick={handleNext}
-            disabled={currentStep === totalSteps}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-          >
-            {currentStep === totalSteps ? 'Complete' : 'Next'}
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
+              <div className="text-sm text-gray-500">
+                Step {currentStep + 1} of {steps.length}
+              </div>
+
+              <Button
+                type="button"
+                onClick={nextStep}
+                disabled={currentStep === steps.length - 1}
+                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+              >
+                Next / Tiếp theo
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </Card>
+        </Form>
       </div>
     </div>
   );
