@@ -3,23 +3,29 @@ import React from 'react';
 import { useAuth } from '@/context/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, Building } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Shield, Building } from 'lucide-react';
+import { Link, Navigate } from 'react-router-dom';
 
 interface SalonOwnerGuardProps {
   children: React.ReactNode;
 }
 
 const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, loading } = useAuth();
 
-  // Debug logging for QA
-  console.log('SalonOwnerGuard Debug:', {
-    user: user?.email,
-    userProfile: userProfile,
-    role: userProfile?.role,
-    isHumbleInsider: user?.email === 'humbleinsider@gmail.com'
-  });
+  // Show loading state while auth is being determined
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="text-center p-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Check if user is authenticated
   if (!user) {
@@ -30,21 +36,21 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
             <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
               <Shield className="h-6 w-6 text-purple-600" />
             </div>
-            <CardTitle>Yêu Cầu Đăng Nhập / Login Required</CardTitle>
+            <CardTitle>Authentication Required</CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-gray-600">
-              Bạn cần đăng nhập để đăng tin bán salon / You need to login to post a salon listing
+              You need to login to post a salon listing
             </p>
             <div className="space-y-2">
               <Button asChild className="w-full">
                 <Link to="/auth/signin">
-                  Đăng nhập / Sign In
+                  Sign In
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
                 <Link to="/auth/signup">
-                  Đăng ký / Sign Up
+                  Sign Up
                 </Link>
               </Button>
             </div>
@@ -54,41 +60,35 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     );
   }
 
-  // Special QA bypass for humbleinsider@gmail.com
-  const isQAUser = user.email === 'humbleinsider@gmail.com';
-  
-  // Check if user is a salon owner or has salon access
-  const isSalonOwner = userProfile?.role === 'owner' || 
-                      isQAUser; // QA bypass
+  // Check if user is a salon owner
+  const isSalonOwner = userProfile?.role === 'owner' || userProfile?.role === 'salon_owner';
 
   if (!isSalonOwner) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-              <Building className="h-6 w-6 text-orange-600" />
+            <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+              <Building className="h-6 w-6 text-red-600" />
             </div>
-            <CardTitle>Chỉ Dành Cho Chủ Salon / Salon Owners Only</CardTitle>
+            <CardTitle>Salon Owners Only</CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-gray-600">
-              Tính năng này chỉ dành cho các chủ salon đã được xác minh / This feature is only available to verified salon owners
+              You are not authorized to post a salon. This feature is only available to salon owners.
             </p>
-            {isQAUser && (
-              <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-                QA Mode: Role detected as "{userProfile?.role}". Contact support if access issues persist.
-              </p>
-            )}
+            <p className="text-sm text-gray-500">
+              Current role: {userProfile?.role || 'No role assigned'}
+            </p>
             <div className="space-y-2">
               <Button asChild className="w-full">
                 <Link to="/dashboard">
-                  Về Dashboard / Go to Dashboard
+                  Go to Dashboard
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full">
                 <Link to="/contact">
-                  Liên hệ hỗ trợ / Contact Support
+                  Contact Support
                 </Link>
               </Button>
             </div>
@@ -98,12 +98,7 @@ const SalonOwnerGuard: React.FC<SalonOwnerGuardProps> = ({ children }) => {
     );
   }
 
-  // Log successful access for QA
-  if (isQAUser) {
-    console.log('QA Access Granted: humbleinsider@gmail.com accessing Sell Salon wizard');
-  }
-
-  // User is authenticated and is a salon owner or QA user
+  // User is authenticated and is a salon owner
   return <>{children}</>;
 };
 
