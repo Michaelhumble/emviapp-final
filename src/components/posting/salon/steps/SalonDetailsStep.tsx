@@ -33,9 +33,9 @@ export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
 
       {/* Salon Identity Section */}
       <div className="bg-white border rounded-lg p-6">
-        <div className="flex items-center mb-4">
-          <Building className="w-5 h-5 text-purple-600 mr-2" />
-          <h3 className="text-lg font-medium">Salon Identity / Danh tính salon</h3>
+        <div className="flex items-center gap-2 mb-4">
+          <Building className="w-5 h-5 text-purple-600" />
+          <h3 className="text-lg font-medium text-purple-900">Salon Identity / Danh tính salon</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,7 +62,7 @@ export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Hair Salon / Salon Tóc" />
+                      <SelectValue placeholder="Select business type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -118,36 +118,36 @@ export const SalonDetailsStep = ({ form }: SalonDetailsStepProps) => {
             )}
           />
         </div>
+      </div>
 
-        {/* Pro Tips */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Star className="w-4 h-4 text-blue-600 mr-2" />
-              <span className="font-medium text-blue-900">Pro Tip:</span>
-            </div>
-            <p className="text-blue-800 text-sm">
-              A memorable salon name increases buyer interest by 40%!
-              <br />
-              <span className="text-blue-600">
-                Tên salon dễ nhớ tăng sự quan tâm của người mua lên 40%!
-              </span>
-            </p>
+      {/* Pro Tips */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center mb-2">
+            <Star className="w-4 h-4 text-blue-600 mr-2" />
+            <span className="font-medium text-blue-900">💡 Pro Tip:</span>
           </div>
+          <p className="text-blue-800 text-sm">
+            A memorable salon name increases buyer interest by 40%!
+            <br />
+            <span className="text-blue-600">
+            Tên salon dễ nhớ tăng sự quan tâm của người mua lên 40%!
+            </span>
+          </p>
+        </div>
 
-          <div className="bg-pink-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <Heart className="w-4 h-4 text-pink-600 mr-2" />
-              <span className="font-medium text-pink-900">Success Story:</span>
-            </div>
-            <p className="text-pink-800 text-sm">
-              "Adding our establishment year helped buyers trust our proven track record!"
-              <br />
-              <span className="text-pink-600">
-                "Thêm năm thành lập giúp người mua tin tưởng thành tích đã được chứng minh của chúng tôi!"
-              </span>
-            </p>
+        <div className="bg-pink-50 p-4 rounded-lg">
+          <div className="flex items-center mb-2">
+            <Heart className="w-4 h-4 text-pink-600 mr-2" />
+            <span className="font-medium text-pink-900">💖 Success Story:</span>
           </div>
+          <p className="text-pink-800 text-sm">
+            "Adding our establishment year helped buyers trust our proven track record!"
+            <br />
+            <span className="text-pink-600">
+            "Thêm năm thành lập giúp người mua tin tưởng thành tích đã được chứng minh của chúng tôi!"
+            </span>
+          </p>
         </div>
       </div>
     </div>
