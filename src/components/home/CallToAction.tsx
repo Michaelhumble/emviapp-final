@@ -38,6 +38,7 @@ const CallToAction = () => {
                 <Link to="/pricing">
                   <Button size="lg" variant="outline">View Premium Features</Button>
                 </Link>
+              </Link>
               )}
             </>
           )}

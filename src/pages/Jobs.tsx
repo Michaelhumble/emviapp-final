@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import JobsPage from './jobs';
 import { Helmet } from 'react-helmet';
-import Layout from '@/components/layout/Layout';
 import { Routes, Route } from 'react-router-dom';
 import CreateJobPosting from './jobs/CreateJobPosting';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -18,7 +17,7 @@ const Jobs = () => {
   }, [isVietnamese]);
 
   return (
-    <Layout>
+    <>
       <Helmet>
         <title>
           {isVietnamese ? "Việc Làm Ngành Làm Đẹp | EmviApp" : "Beauty Industry Jobs | EmviApp"}
@@ -38,7 +37,7 @@ const Jobs = () => {
         </Routes>
       </div>
       <MobileJobsNavBar />
-    </Layout>
+    </>
   );
 };
 
