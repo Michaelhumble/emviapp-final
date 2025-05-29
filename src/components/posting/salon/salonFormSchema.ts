@@ -1,24 +1,23 @@
-
 import { z } from "zod";
 
 export const salonFormSchema = z.object({
   // Identity fields
-  salonName: z.string().min(2, "Salon name must be at least 2 characters"),
-  businessType: z.string().min(1, "Business type is required"),
+  salonName: z.string().min(1, 'Salon name is required'),
+  businessType: z.string().min(1, 'Business type is required'),
   establishedYear: z.string().optional(),
   logo: z.any().optional(),
 
   // Location fields
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  zipCode: z.string().optional(),
+  address: z.string().min(1, 'Address is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
+  zipCode: z.string().min(1, 'Zip code is required'),
   neighborhood: z.string().optional(),
   hideExactAddress: z.boolean().default(false),
 
   // Financial/Business details
-  askingPrice: z.string().min(1, "Asking price is required"),
-  monthlyRent: z.string().min(1, "Monthly rent is required"),
+  askingPrice: z.string().min(1, 'Asking price is required'),
+  monthlyRent: z.string().optional(),
   numberOfStaff: z.string().optional(),
   numberOfTables: z.string().optional(),
   numberOfChairs: z.string().optional(),
@@ -47,9 +46,8 @@ export const salonFormSchema = z.object({
   sellerFinancing: z.boolean().default(false),
   
   // Pricing options
-  isNationwide: z.boolean().default(false),
-  fastSalePackage: z.boolean().default(false),
-  autoRenew: z.boolean().default(false),
+  selectedPricingTier: z.enum(['basic', 'gold', 'premium', 'annual']).default('basic'),
+  featuredAddon: z.boolean().default(false),
   
   // Terms acceptance for final step
   termsAccepted: z.boolean().default(false),
