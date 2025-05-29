@@ -1,52 +1,142 @@
 
-import React, { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { SalonFormValues } from "./salonFormSchema";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Star, Zap, Crown, Trophy, Plus } from "lucide-react";
-import { SalonPricingOptions, SalonPricingTier, SALON_PRICING_PLANS, calculateSalonPostPrice } from "@/utils/posting/salonPricing";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import SalonPaymentFeatures from "./SalonPaymentFeatures";
+import React, { useState } from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, Star, Zap, Crown, Shield } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import SalonPaymentFeatures from './SalonPaymentFeatures';
+
+export interface SalonPricingOptions {
+  planType: 'basic' | 'standard' | 'premium' | 'enterprise';
+  duration: number;
+  basePrice: number;
+  totalPrice: number;
+  features: string[];
+  addOns: {
+    featuredListing: boolean;
+  };
+}
 
 interface SalonPaymentOptionsProps {
-  form: UseFormReturn<SalonFormValues>;
+  form: UseFormReturn<any>;
   selectedOptions: SalonPricingOptions;
   onOptionsChange: (options: SalonPricingOptions) => void;
   onPaymentSuccess: () => void;
+  onPayment?: () => void;
 }
 
 const SalonPaymentOptions: React.FC<SalonPaymentOptionsProps> = ({
   form,
   selectedOptions,
   onOptionsChange,
-  onPaymentSuccess
+  onPaymentSuccess,
+  onPayment
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [showFeaturesModal, setShowFeaturesModal] = useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
 
-  const handlePlanSelect = (tier: SalonPricingTier) => {
-    onOptionsChange({
-      ...selectedOptions,
-      selectedPricingTier: tier
-    });
+  const pricingPlans = [
+    {
+      planType: 'basic' as const,
+      name: 'Basic Listing',
+      duration: 30,
+      basePrice: 99,
+      originalPrice: 149,
+      features: [
+        'Basic salon listing',
+        '30-day visibility',
+        'Contact form integration',
+        'Mobile-responsive design'
+      ],
+      badge: 'Most Popular',
+      badgeColor: 'bg-blue-500',
+      icon: CheckCircle2
+    },
+    {
+      planType: 'standard' as const,
+      name: 'Featured Listing',
+      duration: 60,
+      basePrice: 199,
+      originalPrice: 299,
+      features: [
+        'Everything in Basic',
+        '60-day featured placement',
+        'Priority in search results',
+        'Enhanced photo gallery',
+        'Business hours display'
+      ],
+      badge: 'Recommended',
+      badgeColor: 'bg-green-500',
+      icon: Star
+    },
+    {
+      planType: 'premium' as const,
+      name: 'Premium Showcase',
+      duration: 90,
+      basePrice: 299,
+      originalPrice: 449,
+      features: [
+        'Everything in Featured',
+        '90-day premium placement',
+        'Top banner positioning',
+        'Virtual tour integration',
+        'Customer review system',
+        'Social media integration'
+      ],
+      badge: 'Best Value',
+      badgeColor: 'bg-purple-500',
+      icon: Crown
+    },
+    {
+      planType: 'enterprise' as const,
+      name: 'Enterprise Plus',
+      duration: 120,
+      basePrice: 499,
+      originalPrice: 699,
+      features: [
+        'Everything in Premium',
+        '120-day maximum exposure',
+        'Dedicated account manager',
+        'Custom branding options',
+        'Analytics dashboard',
+        'Multiple location support'
+      ],
+      badge: 'Maximum Exposure',
+      badgeColor: 'bg-gold-500',
+      icon: Shield
+    }
+  ];
+
+  const handlePlanSelect = (plan: typeof pricingPlans[0]) => {
+    const newOptions: SalonPricingOptions = {
+      planType: plan.planType,
+      duration: plan.duration,
+      basePrice: plan.basePrice,
+      totalPrice: plan.basePrice + (selectedOptions.addOns.featuredListing ? 10 : 0),
+      features: plan.features,
+      addOns: selectedOptions.addOns
+    };
+    onOptionsChange(newOptions);
   };
 
-  const handleFeaturedToggle = (checked: boolean) => {
-    onOptionsChange({
+  const handleAddOnChange = (addOnKey: keyof SalonPricingOptions['addOns'], value: boolean) => {
+    const newAddOns = { ...selectedOptions.addOns, [addOnKey]: value };
+    const newOptions: SalonPricingOptions = {
       ...selectedOptions,
-      featuredAddon: checked
-    });
+      addOns: newAddOns,
+      totalPrice: selectedOptions.basePrice + (newAddOns.featuredListing ? 10 : 0)
+    };
+    onOptionsChange(newOptions);
   };
 
   const handlePayment = async () => {
     setIsLoading(true);
     
     try {
-      console.log('Initiating Stripe payment with options:', selectedOptions);
+      console.log('Initiating salon payment with options:', selectedOptions);
       console.log('Form data:', form.getValues());
       
       const { data, error } = await supabase.functions.invoke('create-salon-checkout', {
@@ -66,6 +156,11 @@ const SalonPaymentOptions: React.FC<SalonPaymentOptionsProps> = ({
       
       if (data?.url) {
         console.log('Redirecting to Stripe checkout:', data.url);
+        // Call onPayment if provided
+        if (onPayment) {
+          onPayment();
+        }
+        // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
         console.error('No checkout URL received:', data);
@@ -83,169 +178,161 @@ const SalonPaymentOptions: React.FC<SalonPaymentOptionsProps> = ({
     }
   };
 
-  const getPlanIcon = (tier: SalonPricingTier) => {
-    switch (tier) {
-      case 'basic': return <Zap className="h-6 w-6" />;
-      case 'gold': return <Star className="h-6 w-6" />;
-      case 'premium': return <Crown className="h-6 w-6" />;
-      case 'annual': return <Trophy className="h-6 w-6" />;
-      default: return <Zap className="h-6 w-6" />;
-    }
-  };
-
-  const getPlanGradient = (tier: SalonPricingTier) => {
-    switch (tier) {
-      case 'basic': return 'from-blue-500 to-blue-600';
-      case 'gold': return 'from-yellow-500 to-orange-500';
-      case 'premium': return 'from-purple-600 to-pink-600';
-      case 'annual': return 'from-green-500 to-emerald-600';
-      default: return 'from-blue-500 to-blue-600';
-    }
-  };
-
-  const totalPrice = calculateSalonPostPrice(selectedOptions);
-
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-4">
-        <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-          Choose Your Listing Plan
-        </h3>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Select the perfect plan to showcase your salon to thousands of potential buyers
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          Choose Your Listing Package
+        </h2>
+        <p className="text-lg text-gray-600">
+          Select the perfect plan to showcase your salon to potential buyers
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {SALON_PRICING_PLANS.map((plan) => {
-          const isSelected = selectedOptions.selectedPricingTier === plan.tier;
-          const isPopular = plan.tier === 'premium';
-          const gradient = getPlanGradient(plan.tier);
+        {pricingPlans.map((plan) => {
+          const Icon = plan.icon;
+          const isSelected = selectedOptions.planType === plan.planType;
           
           return (
             <Card 
-              key={plan.id}
-              className={`relative transition-all duration-300 cursor-pointer transform hover:scale-105 hover:shadow-2xl ${
-                isSelected 
-                  ? 'border-2 border-purple-500 shadow-2xl ring-4 ring-purple-200 scale-105' 
-                  : 'border border-gray-200 hover:border-purple-300 shadow-lg'
-              } backdrop-blur-sm bg-white/95`}
-              onClick={() => handlePlanSelect(plan.tier)}
+              key={plan.planType}
+              className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                isSelected ? 'ring-2 ring-purple-500 shadow-lg' : ''
+              }`}
+              onClick={() => handlePlanSelect(plan)}
             >
-              {isPopular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                  <Badge className={`bg-gradient-to-r ${gradient} text-white px-4 py-1 text-sm font-semibold shadow-lg`}>
-                    ⭐ Most Popular
+              {plan.badge && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className={`${plan.badgeColor} text-white px-3 py-1`}>
+                    {plan.badge}
                   </Badge>
                 </div>
               )}
               
-              <CardHeader className="text-center pb-4 pt-6">
-                <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center text-white mb-4 shadow-lg`}>
-                  {getPlanIcon(plan.tier)}
+              <CardHeader className="text-center pb-4">
+                <div className="flex justify-center mb-3">
+                  <Icon className="h-8 w-8 text-purple-600" />
                 </div>
-                
-                <CardTitle className="text-xl font-bold text-gray-900">{plan.name}</CardTitle>
-                
-                <div className="mt-4">
-                  <div className="flex items-center justify-center">
-                    <span className="text-4xl font-bold text-gray-900">
-                      ${plan.price}
+                <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center space-x-2">
+                    <span className="text-3xl font-bold text-gray-900">
+                      ${plan.basePrice}
                     </span>
-                    <span className="text-gray-600 ml-2">
-                      /{plan.duration === 1 ? 'mo' : `${plan.duration}mo`}
-                    </span>
+                    {plan.originalPrice > plan.basePrice && (
+                      <span className="text-lg text-gray-500 line-through">
+                        ${plan.originalPrice}
+                      </span>
+                    )}
                   </div>
-                  {plan.tier === 'annual' && (
-                    <div className="text-sm text-green-600 font-semibold mt-1">
-                      Save $89 vs monthly!
-                    </div>
-                  )}
+                  <p className="text-sm text-gray-600">{plan.duration} days visibility</p>
                 </div>
-                
-                <p className="text-sm text-gray-600 mt-3 leading-relaxed">{plan.description}</p>
               </CardHeader>
               
-              <CardContent className="pt-0 pb-6">
-                <ul className="space-y-3 mb-8">
+              <CardContent>
+                <ul className="space-y-2 mb-6">
                   {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start text-sm text-gray-700">
-                      <Star className="h-4 w-4 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                      <span className="leading-relaxed">{feature}</span>
+                    <li key={index} className="flex items-start text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
                 
-                <Button 
-                  className={`w-full py-3 font-semibold text-base transition-all duration-200 ${
-                    isSelected 
-                      ? `bg-gradient-to-r ${gradient} hover:opacity-90 text-white shadow-lg` 
-                      : `bg-gradient-to-r ${gradient} hover:opacity-90 text-white shadow-md hover:shadow-lg`
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlanSelect(plan.tier);
-                  }}
-                >
-                  {isSelected ? '✓ Selected' : 'Select Plan'}
-                </Button>
+                {isSelected && (
+                  <div className="text-center">
+                    <CheckCircle2 className="h-6 w-6 text-green-500 mx-auto" />
+                    <span className="text-sm text-green-600 font-medium">Selected</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );
         })}
       </div>
 
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-6 border border-purple-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-              <Plus className="h-6 w-6 text-white" />
-            </div>
+      {/* Add-ons Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-5 w-5 text-purple-600" />
+            Optional Add-ons
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between p-4 border rounded-lg">
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">VIP Featured Listing Add-on</h4>
-              <p className="text-sm text-gray-600">Premium placement with 5x more visibility</p>
+              <h4 className="font-medium">Featured Listing Boost</h4>
+              <p className="text-sm text-gray-600">
+                Get additional visibility with highlighted placement
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="font-bold text-lg">+$10</span>
+              <Button
+                variant={selectedOptions.addOns.featuredListing ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleAddOnChange('featuredListing', !selectedOptions.addOns.featuredListing)}
+              >
+                {selectedOptions.addOns.featuredListing ? 'Added' : 'Add'}
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-2xl font-bold text-gray-900">+$10.00</span>
-            <Checkbox
-              checked={selectedOptions.featuredAddon || false}
-              onCheckedChange={handleFeaturedToggle}
-              className="h-5 w-5"
-            />
-          </div>
-        </div>
-        
+        </CardContent>
+      </Card>
+
+      {/* Features Modal Button */}
+      <div className="text-center">
         <Button
           variant="outline"
-          onClick={() => setShowFeaturesModal(true)}
-          className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+          onClick={() => setShowFeatures(true)}
+          className="mb-6"
         >
-          Learn More About VIP Features
+          Compare All Features
         </Button>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-xl font-semibold text-gray-900">Order Summary</h4>
-          <div className="text-right">
-            <div className="text-3xl font-bold text-gray-900">${totalPrice.toFixed(2)}</div>
-            <div className="text-sm text-gray-600">Total</div>
+      {/* Total and Payment */}
+      <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+        <CardContent className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">
+                Total: ${selectedOptions.totalPrice}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {selectedOptions.duration} days of visibility
+              </p>
+            </div>
+            <Button
+              onClick={handlePayment}
+              disabled={isLoading}
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            >
+              {isLoading ? 'Processing...' : 'Proceed to Payment'}
+            </Button>
           </div>
-        </div>
-        
-        <Button
-          onClick={handlePayment}
-          disabled={isLoading || !selectedOptions.selectedPricingTier}
-          className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-        >
-          {isLoading ? 'Processing...' : `Complete Payment - $${totalPrice.toFixed(2)}`}
-        </Button>
-      </div>
+          
+          <div className="text-xs text-gray-500 text-center">
+            Secure payment processing • 30-day money-back guarantee
+          </div>
+        </CardContent>
+      </Card>
 
+      {/* Features Modal */}
       <SalonPaymentFeatures
-        isOpen={showFeaturesModal}
-        onClose={() => setShowFeaturesModal(false)}
+        isOpen={showFeatures}
+        onClose={() => setShowFeatures(false)}
+        onSelect={(planType) => {
+          const plan = pricingPlans.find(p => p.planType === planType);
+          if (plan) handlePlanSelect(plan);
+          setShowFeatures(false);
+        }}
+        onProceedToPayment={handlePayment}
+        currentPlan={selectedOptions.planType}
+        basePrice={selectedOptions.basePrice}
       />
     </div>
   );

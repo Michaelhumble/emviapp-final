@@ -15,7 +15,7 @@ const Profile = () => {
         <meta name="description" content="View profile on EmviApp" />
       </Helmet>
       
-      <ArtistProfile artistId={id} />
+      <ArtistProfile />
     </Layout>
   );
 };
