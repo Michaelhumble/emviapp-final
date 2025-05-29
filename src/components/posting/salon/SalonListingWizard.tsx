@@ -1,23 +1,23 @@
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Circle, ArrowLeft, ArrowRight } from 'lucide-react';
-import { Form } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SalonFormValues, salonFormSchema } from './salonFormSchema';
-import { SalonIdentityStep } from './steps/SalonIdentityStep';
-import SalonDetailsStep from './steps/SalonDetailsStep';
-import SalonLocationStep from './steps/SalonLocationStep';
-import SalonPhotoUpload from './SalonPostPhotoUpload';
-import SalonPricingStep from './steps/SalonPricingStep';
+import { salonFormSchema, SalonFormValues } from "./salonFormSchema";
+import { SalonIdentityStep } from "./steps/SalonIdentityStep";
+import { SalonDetailsStep } from "./steps/SalonDetailsStep";
+import { SalonLocationStep } from "./steps/SalonLocationStep";
+import SalonPhotoUpload from "./SalonPostPhotoUpload";
+import SalonPricingStep from "./steps/SalonPricingStep";
+import PostWizardLayout from "@/components/posting/PostWizardLayout";
 
 const SalonListingWizard = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [photoUploads, setPhotoUploads] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<any>({});
+  const [pricingOptions, setPricingOptions] = useState({});
 
   const form = useForm<SalonFormValues>({
     resolver: zodResolver(salonFormSchema),
@@ -63,191 +63,183 @@ const SalonListingWizard = () => {
   });
 
   const steps = [
-    {
-      id: 'identity',
-      title: 'Salon Information',
-      subtitle: 'Thông Tin Salon',
-      description: 'Tell us about your salon business',
-      icon: '🏢'
-    },
-    {
-      id: 'location',
-      title: 'Location Details',
-      subtitle: 'Thông Tin Vị Trí',
-      description: 'Where is your salon located?',
-      icon: '📍'
-    },
-    {
-      id: 'details',
-      title: 'Business Details',
-      subtitle: 'Chi Tiết Kinh Doanh',
-      description: 'Financial and operational details',
-      icon: '💼'
-    },
-    {
-      id: 'photos',
-      title: 'Salon Photos',
-      subtitle: 'Hình Ảnh Salon',
-      description: 'Upload beautiful photos of your salon',
-      icon: '📸'
-    },
-    {
-      id: 'pricing',
-      title: 'Choose Plan',
-      subtitle: 'Chọn Gói Đăng Tin',
-      description: 'Select your listing duration and features',
-      icon: '💎'
-    }
+    { id: 1, title: "Identity", component: SalonIdentityStep },
+    { id: 2, title: "Details", component: SalonDetailsStep },
+    { id: 3, title: "Location", component: SalonLocationStep },
+    { id: 4, title: "Photos", component: SalonPhotoUpload },
+    { id: 5, title: "Pricing", component: SalonPricingStep },
   ];
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const prevStep = () => {
-    if (currentStep > 0) {
+    if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
-        return <SalonIdentityStep form={form} />;
-      case 1:
-        return <SalonLocationStep form={form} />;
-      case 2:
-        return <SalonDetailsStep form={form} />;
-      case 3:
-        return (
-          <SalonPhotoUpload
-            photoUploads={photoUploads}
-            setPhotoUploads={setPhotoUploads}
-          />
-        );
-      case 4:
-        return (
-          <SalonPricingStep
-            pricingOptions={pricingOptions}
-            setPricingOptions={setPricingOptions}
-          />
-        );
-      default:
-        return null;
+  const onSubmit = (data: SalonFormValues) => {
+    console.log("Form submitted:", { data, photoUploads, pricingOptions });
+  };
+
+  const renderCurrentStep = () => {
+    const CurrentStepComponent = steps[currentStep - 1].component;
+    
+    const stepProps: any = {};
+    
+    if (currentStep <= 3) {
+      stepProps.form = form;
     }
+    
+    if (currentStep === 4) {
+      stepProps.photoUploads = photoUploads;
+      stepProps.setPhotoUploads = setPhotoUploads;
+    }
+    
+    if (currentStep === 5) {
+      stepProps.pricingOptions = pricingOptions;
+      stepProps.setPricingOptions = setPricingOptions;
+    }
+
+    return <CurrentStepComponent {...stepProps} />;
+  };
+
+  const canProceed = () => {
+    if (currentStep === 4) {
+      return photoUploads.length > 0;
+    }
+    return true;
+  };
+
+  const pageVariants = {
+    initial: { opacity: 0, x: 50 },
+    in: { opacity: 1, x: 0 },
+    out: { opacity: 0, x: -50 }
+  };
+
+  const pageTransition = {
+    type: "tween",
+    ease: "anticipate",
+    duration: 0.4
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            💎 Sell Your Salon / Bán Salon Của Bạn
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            List your salon for sale and reach thousands of qualified buyers looking for established beauty businesses.
-            <br />
-            <span className="text-purple-600 font-medium">
-              Đăng tin bán salon và tiếp cận hàng nghìn người mua tiềm năng đang tìm kiếm doanh nghiệp làm đẹp.
-            </span>
-          </p>
-        </div>
-
-        {/* Progress Steps */}
-        <Card className="mb-8 border-2 border-purple-100 shadow-lg">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex flex-col items-center">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-semibold transition-all ${
-                      index <= currentStep 
-                        ? 'bg-purple-600 text-white shadow-lg' 
-                        : 'bg-gray-200 text-gray-500'
-                    }`}>
-                      {index < currentStep ? (
-                        <CheckCircle className="w-6 h-6" />
-                      ) : (
-                        <span>{step.icon}</span>
-                      )}
-                    </div>
-                    <div className="text-center mt-2">
-                      <p className={`text-sm font-medium ${
-                        index <= currentStep ? 'text-purple-600' : 'text-gray-500'
-                      }`}>
-                        {step.title}
-                      </p>
-                      <p className="text-xs text-gray-500">{step.subtitle}</p>
-                    </div>
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div className={`w-16 h-1 mx-4 rounded transition-all ${
-                      index < currentStep ? 'bg-purple-600' : 'bg-gray-200'
-                    }`} />
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Main Form */}
+    <PostWizardLayout currentStep={currentStep} totalSteps={steps.length}>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
         <Form {...form}>
-          <Card className="border-2 border-purple-100 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-2xl flex items-center gap-2">
-                    {steps[currentStep].icon} {steps[currentStep].title}
-                  </CardTitle>
-                  <p className="text-purple-100 mt-1">
-                    {steps[currentStep].description}
-                  </p>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {/* Premium Step Indicator */}
+            <div className="mb-12">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex items-center justify-between mb-6">
+                  {steps.map((step, index) => (
+                    <React.Fragment key={step.id}>
+                      <div className="flex flex-col items-center">
+                        <motion.div
+                          className={`w-12 h-12 rounded-full border-4 flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                            currentStep === step.id
+                              ? 'bg-gradient-to-br from-purple-500 to-purple-600 border-purple-300 text-white shadow-lg scale-110'
+                              : currentStep > step.id
+                              ? 'bg-gradient-to-br from-green-500 to-green-600 border-green-300 text-white shadow-md'
+                              : 'bg-white border-gray-300 text-gray-500'
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {currentStep > step.id ? (
+                            <CheckCircle className="w-6 h-6" />
+                          ) : (
+                            step.id
+                          )}
+                        </motion.div>
+                        <span className={`mt-2 text-sm font-medium ${
+                          currentStep === step.id ? 'text-purple-600' : 
+                          currentStep > step.id ? 'text-green-600' : 'text-gray-500'
+                        }`}>
+                          {step.title}
+                        </span>
+                      </div>
+                      {index < steps.length - 1 && (
+                        <div className={`flex-1 h-1 mx-4 rounded-full transition-all duration-500 ${
+                          currentStep > step.id ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gray-200'
+                        }`} />
+                      )}
+                    </React.Fragment>
+                  ))}
                 </div>
-                <Badge variant="secondary" className="bg-white/20 text-white">
-                  Step {currentStep + 1} of {steps.length}
-                </Badge>
               </div>
-            </CardHeader>
-            
-            <CardContent className="p-8">
-              {renderStepContent()}
-            </CardContent>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between items-center p-6 bg-gray-50 border-t">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Previous / Quay lại
-              </Button>
-
-              <div className="text-sm text-gray-500">
-                Step {currentStep + 1} of {steps.length}
-              </div>
-
-              <Button
-                type="button"
-                onClick={nextStep}
-                disabled={currentStep === steps.length - 1}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-              >
-                Next / Tiếp theo
-                <ArrowRight className="w-4 h-4" />
-              </Button>
             </div>
-          </Card>
+
+            {/* Step Content with Animation */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={pageTransition}
+                className="min-h-[600px]"
+              >
+                {renderCurrentStep()}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Premium Navigation */}
+            <div className="max-w-4xl mx-auto pt-12">
+              <div className="flex justify-between items-center bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className="h-12 px-6 text-lg font-semibold rounded-xl border-2 hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  Previous
+                </Button>
+
+                <div className="text-center">
+                  <div className="text-sm text-gray-500 mb-1">Step {currentStep} of {steps.length}</div>
+                  <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(currentStep / steps.length) * 100}%` }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    />
+                  </div>
+                </div>
+
+                {currentStep < steps.length ? (
+                  <Button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!canProceed()}
+                    className="h-12 px-6 text-lg font-semibold rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                  >
+                    Next
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="h-12 px-8 text-lg font-semibold rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Complete Listing
+                  </Button>
+                )}
+              </div>
+            </div>
+          </form>
         </Form>
       </div>
-    </div>
+    </PostWizardLayout>
   );
 };
 
