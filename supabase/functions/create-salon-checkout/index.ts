@@ -91,7 +91,7 @@ serve(async (req) => {
           currency: 'usd',
           product_data: {
             name: 'Featured Listing Add-on',
-            description: 'Get 5x more views and inquiries'
+            description: 'Get 5x more views and premium placement'
           },
           unit_amount: 1000, // $10.00
         },
