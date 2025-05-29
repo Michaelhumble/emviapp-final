@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import SalonsFinal from './SalonsFinal';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -25,7 +26,7 @@ const StableSalonPage: React.FC = () => {
   };
 
   return (
-    <>
+    <Layout>
       <Helmet>
         <title>Salons | EmviApp</title>
         <meta 
@@ -67,7 +68,7 @@ const StableSalonPage: React.FC = () => {
           </ErrorBoundary>
         </React.Suspense>
       )}
-    </>
+    </Layout>
   );
 };
 
