@@ -4,282 +4,345 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { DollarSign, Users, Building, FileText, TrendingUp, Star } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { DollarSign, Users, Briefcase, Home, TrendingUp, Star } from 'lucide-react';
 
 interface SalonDetailsStepProps {
   salonDetails: any;
   setSalonDetails: React.Dispatch<React.SetStateAction<any>>;
 }
 
-export const SalonDetailsStep: React.FC<SalonDetailsStepProps> = ({ 
-  salonDetails, 
-  setSalonDetails 
+export const SalonDetailsStep: React.FC<SalonDetailsStepProps> = ({
+  salonDetails,
+  setSalonDetails
 }) => {
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setSalonDetails((prev: any) => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleCheckboxChange = (field: string, checked: boolean) => {
-    setSalonDetails((prev: any) => ({
-      ...prev,
-      [field]: checked
-    }));
-  };
-
   return (
     <div className="space-y-8">
-      {/* Show Your Value Section */}
-      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900">
-              💰 Show Your Value / Thể hiện giá trị của bạn
-            </h2>
-          </div>
-          <p className="text-gray-700 mb-2">
-            Detailed financials and business metrics attract serious buyers willing to pay premium prices!
-          </p>
-          <p className="text-green-600 font-medium">
-            Tài chính chi tiết và số liệu kinh doanh thu hút người mua nghiêm túc sẵn sàng trả giá cao!
-          </p>
-        </CardContent>
-      </Card>
+      {/* Header */}
+      <div className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Briefcase className="w-8 h-8 text-white" />
+        </div>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+          💼 Business Details | Chi Tiết Kinh Doanh
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Provide detailed information about your salon business to attract serious buyers
+          <br />
+          <span className="text-purple-600">Cung cấp thông tin chi tiết về salon để thu hút người mua nghiêm túc</span>
+        </p>
+      </div>
 
-      {/* Business Details Section */}
-      <Card>
+      {/* Financial Information */}
+      <Card className="border-purple-100 shadow-lg">
         <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-              <Building className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900">
-              Business Details / Chi tiết kinh doanh
-            </h2>
+          <div className="flex items-center gap-2 mb-4">
+            <DollarSign className="w-5 h-5 text-green-500" />
+            <h3 className="text-xl font-semibold text-gray-900">
+              Financial Information | Thông Tin Tài Chính
+            </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Asking Price */}
             <div>
-              <Label htmlFor="askingPrice" className="flex items-center gap-2 text-sm font-medium mb-2">
-                <DollarSign className="w-4 h-4 text-green-500" />
-                Asking Price / Giá yêu cầu *
+              <Label htmlFor="askingPrice" className="text-base font-medium text-gray-900 mb-2 block">
+                Asking Price | Giá Yêu Cầu <span className="text-red-500">*</span>
               </Label>
-              <Input
-                id="askingPrice"
-                value={salonDetails.askingPrice || ''}
-                onChange={(e) => handleInputChange('askingPrice', e.target.value)}
-                placeholder="200,000"
-                className="text-lg"
-              />
+              <div className="relative">
+                <Input
+                  id="askingPrice"
+                  type="text"
+                  placeholder="$150,000"
+                  value={salonDetails.askingPrice || ''}
+                  onChange={(e) => handleInputChange('askingPrice', e.target.value)}
+                  className="pl-8 h-12 rounded-xl border-gray-300"
+                />
+                <DollarSign className="w-4 h-4 text-gray-400 absolute left-3 top-4" />
+              </div>
             </div>
 
-            {/* Monthly Rent */}
             <div>
-              <Label htmlFor="monthlyRent" className="text-sm font-medium mb-2">
-                Monthly Rent / Tiền thuê hàng tháng *
+              <Label htmlFor="monthlyRent" className="text-base font-medium text-gray-900 mb-2 block">
+                Monthly Rent | Tiền Thuê Hàng Tháng <span className="text-red-500">*</span>
               </Label>
-              <Input
-                id="monthlyRent"
-                value={salonDetails.monthlyRent || ''}
-                onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
-                placeholder="50000"
-              />
+              <div className="relative">
+                <Input
+                  id="monthlyRent"
+                  type="text"
+                  placeholder="$3,500"
+                  value={salonDetails.monthlyRent || ''}
+                  onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
+                  className="pl-8 h-12 rounded-xl border-gray-300"
+                />
+                <DollarSign className="w-4 h-4 text-gray-400 absolute left-3 top-4" />
+              </div>
             </div>
 
-            {/* Monthly Profit */}
             <div>
-              <Label htmlFor="monthlyProfit" className="text-sm font-medium mb-2">
-                Monthly Profit / Lợi nhuận hàng tháng
+              <Label htmlFor="monthlyRevenue" className="text-base font-medium text-gray-900 mb-2 block">
+                Monthly Revenue | Doanh Thu Hàng Tháng
               </Label>
-              <Input
-                id="monthlyProfit"
-                value={salonDetails.monthlyProfit || ''}
-                onChange={(e) => handleInputChange('monthlyProfit', e.target.value)}
-                placeholder="$8,000 / 8.000$"
-              />
+              <div className="relative">
+                <Input
+                  id="monthlyRevenue"
+                  type="text"
+                  placeholder="$12,000"
+                  value={salonDetails.monthlyRevenue || ''}
+                  onChange={(e) => handleInputChange('monthlyRevenue', e.target.value)}
+                  className="pl-8 h-12 rounded-xl border-gray-300"
+                />
+                <TrendingUp className="w-4 h-4 text-gray-400 absolute left-3 top-4" />
+              </div>
             </div>
 
-            {/* Monthly Revenue */}
             <div>
-              <Label htmlFor="monthlyRevenue" className="text-sm font-medium mb-2">
-                Monthly Revenue / Doanh thu hàng tháng
+              <Label htmlFor="yearlyRevenue" className="text-base font-medium text-gray-900 mb-2 block">
+                Yearly Revenue | Doanh Thu Hàng Năm
               </Label>
-              <Input
-                id="monthlyRevenue"
-                value={salonDetails.monthlyRevenue || ''}
-                onChange={(e) => handleInputChange('monthlyRevenue', e.target.value)}
-                placeholder="$25,000 / 25.000$"
-              />
+              <div className="relative">
+                <Input
+                  id="yearlyRevenue"
+                  type="text"
+                  placeholder="$144,000"
+                  value={salonDetails.yearlyRevenue || ''}
+                  onChange={(e) => handleInputChange('yearlyRevenue', e.target.value)}
+                  className="pl-8 h-12 rounded-xl border-gray-300"
+                />
+                <TrendingUp className="w-4 h-4 text-gray-400 absolute left-3 top-4" />
+              </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            {/* Employee Count */}
+      {/* Physical Details */}
+      <Card className="border-purple-100 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Home className="w-5 h-5 text-blue-500" />
+            <h3 className="text-xl font-semibold text-gray-900">
+              Physical Details | Chi Tiết Cơ Sở Vật Chất
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <Label htmlFor="employeeCount" className="flex items-center gap-2 text-sm font-medium mb-2">
-                <Users className="w-4 h-4 text-blue-500" />
-                Employee Count / Số nhân viên
-              </Label>
-              <Input
-                id="employeeCount"
-                value={salonDetails.employeeCount || ''}
-                onChange={(e) => handleInputChange('employeeCount', e.target.value)}
-                placeholder="8"
-              />
-            </div>
-
-            {/* Number of Tables */}
-            <div>
-              <Label htmlFor="numberOfTables" className="text-sm font-medium mb-2">
-                Number of Tables / Số bàn
-              </Label>
-              <Input
-                id="numberOfTables"
-                value={salonDetails.numberOfTables || ''}
-                onChange={(e) => handleInputChange('numberOfTables', e.target.value)}
-                placeholder="12"
-              />
-            </div>
-
-            {/* Square Feet */}
-            <div className="md:col-span-1">
-              <Label htmlFor="squareFeet" className="text-sm font-medium mb-2">
-                Square Feet / Diện tích (ft²)
+              <Label htmlFor="squareFeet" className="text-base font-medium text-gray-900 mb-2 block">
+                Square Feet | Diện Tích
               </Label>
               <Input
                 id="squareFeet"
+                type="text"
+                placeholder="1,200 sq ft"
                 value={salonDetails.squareFeet || ''}
                 onChange={(e) => handleInputChange('squareFeet', e.target.value)}
-                placeholder="2,500 ft²"
+                className="h-12 rounded-xl border-gray-300"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="numberOfTables" className="text-base font-medium text-gray-900 mb-2 block">
+                Number of Tables | Số Bàn
+              </Label>
+              <Input
+                id="numberOfTables"
+                type="text"
+                placeholder="8"
+                value={salonDetails.numberOfTables || ''}
+                onChange={(e) => handleInputChange('numberOfTables', e.target.value)}
+                className="h-12 rounded-xl border-gray-300"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="numberOfChairs" className="text-base font-medium text-gray-900 mb-2 block">
+                Number of Chairs | Số Ghế
+              </Label>
+              <Input
+                id="numberOfChairs"
+                type="text"
+                placeholder="10"
+                value={salonDetails.numberOfChairs || ''}
+                onChange={(e) => handleInputChange('numberOfChairs', e.target.value)}
+                className="h-12 rounded-xl border-gray-300"
               />
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          {/* Descriptions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      {/* Staff Information */}
+      <Card className="border-purple-100 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Users className="w-5 h-5 text-purple-500" />
+            <h3 className="text-xl font-semibold text-gray-900">
+              Staff Information | Thông Tin Nhân Viên
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="englishDescription" className="flex items-center gap-2 text-sm font-medium mb-2">
-                <FileText className="w-4 h-4 text-purple-500" />
-                English Description
+              <Label htmlFor="numberOfStaff" className="text-base font-medium text-gray-900 mb-2 block">
+                Number of Staff | Số Nhân Viên
+              </Label>
+              <Input
+                id="numberOfStaff"
+                type="text"
+                placeholder="5 employees"
+                value={salonDetails.numberOfStaff || ''}
+                onChange={(e) => handleInputChange('numberOfStaff', e.target.value)}
+                className="h-12 rounded-xl border-gray-300"
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl">
+              <div>
+                <Label className="text-base font-medium text-gray-900">
+                  Will Train New Owner | Sẽ Đào Tạo Chủ Mới
+                </Label>
+                <p className="text-sm text-gray-600">
+                  Provide training to the new owner
+                </p>
+              </div>
+              <Switch
+                checked={Boolean(salonDetails.willTrain)}
+                onCheckedChange={(checked) => handleInputChange('willTrain', checked)}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Amenities */}
+      <Card className="border-purple-100 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Star className="w-5 h-5 text-yellow-500" />
+            <h3 className="text-xl font-semibold text-gray-900">
+              Amenities & Features | Tiện Ích & Tính Năng
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+              <div>
+                <Label className="text-base font-medium text-gray-900">
+                  Has Housing | Có Chỗ Ở
+                </Label>
+                <p className="text-sm text-gray-600">
+                  Includes housing for employees
+                </p>
+              </div>
+              <Switch
+                checked={Boolean(salonDetails.hasHousing)}
+                onCheckedChange={(checked) => handleInputChange('hasHousing', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
+              <div>
+                <Label className="text-base font-medium text-gray-900">
+                  Has Wax Room | Có Phòng Wax
+                </Label>
+                <p className="text-sm text-gray-600">
+                  Dedicated waxing room
+                </p>
+              </div>
+              <Switch
+                checked={Boolean(salonDetails.hasWaxRoom)}
+                onCheckedChange={(checked) => handleInputChange('hasWaxRoom', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-orange-50 rounded-xl">
+              <div>
+                <Label className="text-base font-medium text-gray-900">
+                  Has Dining Room | Có Phòng Ăn
+                </Label>
+                <p className="text-sm text-gray-600">
+                  Staff dining area
+                </p>
+              </div>
+              <Switch
+                checked={Boolean(salonDetails.hasDiningRoom)}
+                onCheckedChange={(checked) => handleInputChange('hasDiningRoom', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-xl">
+              <div>
+                <Label className="text-base font-medium text-gray-900">
+                  Has Parking | Có Bãi Đậu Xe
+                </Label>
+                <p className="text-sm text-gray-600">
+                  Parking available
+                </p>
+              </div>
+              <Switch
+                checked={Boolean(salonDetails.hasParking)}
+                onCheckedChange={(checked) => handleInputChange('hasParking', checked)}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Descriptions */}
+      <Card className="border-purple-100 shadow-lg">
+        <CardContent className="p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            Descriptions | Mô Tả
+          </h3>
+
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="englishDescription" className="text-base font-medium text-gray-900 mb-2 block">
+                English Description | Mô Tả Tiếng Anh
               </Label>
               <Textarea
                 id="englishDescription"
+                placeholder="Describe your salon business in English..."
+                rows={4}
                 value={salonDetails.englishDescription || ''}
                 onChange={(e) => handleInputChange('englishDescription', e.target.value)}
-                placeholder="Describe your salon's unique features, services, and what makes it special..."
-                rows={4}
+                className="rounded-xl border-gray-300 resize-none"
               />
             </div>
 
             <div>
-              <Label htmlFor="vietnameseDescription" className="flex items-center gap-2 text-sm font-medium mb-2">
-                <FileText className="w-4 h-4 text-purple-500" />
-                Vietnamese Description / Mô tả tiếng Việt
+              <Label htmlFor="vietnameseDescription" className="text-base font-medium text-gray-900 mb-2 block">
+                Vietnamese Description | Mô Tả Tiếng Việt
               </Label>
               <Textarea
                 id="vietnameseDescription"
+                placeholder="Mô tả salon của bạn bằng tiếng Việt..."
+                rows={4}
                 value={salonDetails.vietnameseDescription || ''}
                 onChange={(e) => handleInputChange('vietnameseDescription', e.target.value)}
-                placeholder="Mô tả các tính năng độc đáo, dịch vụ của salon và điều gì làm cho nó đặc biệt..."
-                rows={4}
+                className="rounded-xl border-gray-300 resize-none"
               />
             </div>
-          </div>
 
-          {/* Reason for Selling */}
-          <div className="mt-6">
-            <Label htmlFor="reasonForSelling" className="text-sm font-medium mb-2">
-              Reason for Selling / Lý do bán
-            </Label>
-            <Textarea
-              id="reasonForSelling"
-              value={salonDetails.reasonForSelling || ''}
-              onChange={(e) => handleInputChange('reasonForSelling', e.target.value)}
-              placeholder="Retirement, relocation, new business venture... / Nghỉ hưu, chuyển chỗ ở, khởi nghiệp mới..."
-              rows={3}
-            />
-          </div>
-
-          {/* Features & Amenities */}
-          <div className="mt-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Star className="w-5 h-5 text-blue-500" />
-              <h3 className="text-lg font-semibold">Features & Amenities / Tính năng & Tiện ích</h3>
-            </div>
-            
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="willTrain"
-                    checked={salonDetails.willTrain || false}
-                    onCheckedChange={(checked) => handleCheckboxChange('willTrain', checked)}
-                  />
-                  <Label htmlFor="willTrain" className="text-sm">
-                    Will Train / Sẽ đào tạo
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="waxRoom"
-                    checked={salonDetails.waxRoom || false}
-                    onCheckedChange={(checked) => handleCheckboxChange('waxRoom', checked)}
-                  />
-                  <Label htmlFor="waxRoom" className="text-sm">
-                    Wax Room / Phòng wax
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="parking"
-                    checked={salonDetails.parking || false}
-                    onCheckedChange={(checked) => handleCheckboxChange('parking', checked)}
-                  />
-                  <Label htmlFor="parking" className="text-sm">
-                    Parking / Bãi đỗ xe
-                  </Label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tips */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="flex items-start gap-2">
-                <TrendingUp className="w-5 h-5 text-green-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-green-800 mb-1">💡 Value Tip:</h4>
-                  <p className="text-sm text-green-700">
-                    Salons with detailed financials sell 60% faster than those without!
-                  </p>
-                  <p className="text-sm text-green-600 italic">
-                    Salon có tài chính chi tiết bán nhanh hơn 60% so với những salon không có!
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start gap-2">
-                <Star className="w-5 h-5 text-blue-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-blue-800 mb-1">🌟 Success Factor:</h4>
-                  <p className="text-sm text-blue-700">
-                    High monthly profit margins attract premium buyers instantly.
-                  </p>
-                  <p className="text-sm text-blue-600 italic">
-                    Tỷ suất lợi nhuận hàng tháng cao thu hút người mua cao cấp ngay lập tức.
-                  </p>
-                </div>
-              </div>
+            <div>
+              <Label htmlFor="reasonForSelling" className="text-base font-medium text-gray-900 mb-2 block">
+                Reason for Selling | Lý Do Bán
+              </Label>
+              <Textarea
+                id="reasonForSelling"
+                placeholder="Why are you selling your salon?"
+                rows={3}
+                value={salonDetails.reasonForSelling || ''}
+                onChange={(e) => handleInputChange('reasonForSelling', e.target.value)}
+                className="rounded-xl border-gray-300 resize-none"
+              />
             </div>
           </div>
         </CardContent>
