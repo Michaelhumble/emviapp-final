@@ -30,7 +30,8 @@ export const salonFormSchema = z.object({
   revenue: z.string().optional(),
   yearlyRevenue: z.string().optional(),
   
-  // Descriptions and details
+  // Descriptions and details - FIXED: Added description field
+  description: z.string().optional(),
   vietnameseDescription: z.string().optional(),
   englishDescription: z.string().optional(),
   reasonForSelling: z.string().optional(),
@@ -43,6 +44,9 @@ export const salonFormSchema = z.object({
   hasDiningRoom: z.boolean().default(false),
   hasLaundry: z.boolean().default(false),
   hasParking: z.boolean().default(false),
+  hasWaitingArea: z.boolean().default(false),
+  hasPrivateRooms: z.boolean().default(false),
+  equipment: z.array(z.string()).default([]),
   
   // Pricing options
   isNationwide: z.boolean().default(false),

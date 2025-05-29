@@ -21,7 +21,7 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<SalonFormValues>({
     salonName: '',
-    description: '',
+    businessType: '',
     address: '',
     city: '',
     state: '',
@@ -34,7 +34,8 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
     hasParking: false,
     hasWaitingArea: false,
     hasPrivateRooms: false,
-    equipment: []
+    equipment: [],
+    description: ''
   });
   const [photos, setPhotos] = useState<File[]>([]);
   const [pricing, setPricing] = useState<SalonPricingOptions>({

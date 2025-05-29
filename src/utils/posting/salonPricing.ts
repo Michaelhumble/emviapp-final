@@ -1,4 +1,3 @@
-
 export type SalonPricingTier = 'standard' | 'featured';
 
 export interface SalonPricingPlan {
@@ -104,9 +103,9 @@ export const calculateSalonPostPrice = (options: SalonPricingOptions): number =>
   const durationOption = DURATION_OPTIONS.find(d => d.months === (options.durationMonths || 3));
   let price = durationOption?.price || 19.99;
   
-  // Add featured add-on as ONE-TIME fee (NOT per month)
+  // Add featured add-on as ONE-TIME fee (NOT per month) - FIXED
   if (options.featuredAddOn) {
-    price += 10; // One-time $10 fee
+    price += 10.00; // One-time $10.00 fee (exactly 2 decimal places)
   }
   
   // Auto-renew discount (5%)
@@ -114,7 +113,7 @@ export const calculateSalonPostPrice = (options: SalonPricingOptions): number =>
     price = price * 0.95;
   }
   
-  return Number(price.toFixed(2)); // Ensure 2 decimal places
+  return Number(price.toFixed(2)); // Ensure exactly 2 decimal places
 };
 
 export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonPricingSummary => {
@@ -123,12 +122,12 @@ export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonP
   const duration = durationOption?.months || 3;
   const finalPrice = calculateSalonPostPrice(options);
   
-  // Calculate add-on costs
-  const featuredCost = options.featuredAddOn ? 10 : 0; // One-time $10 fee
+  // Calculate add-on costs - FIXED: Featured is one-time $10.00
+  const featuredCost = options.featuredAddOn ? 10.00 : 0; // One-time $10.00 fee (exactly 2 decimal places)
   const nationwideCost = options.isNationwide ? duration * 5 : 0;
   const addOns = {
-    featured: featuredCost,
-    nationwide: nationwideCost
+    featured: Number(featuredCost.toFixed(2)), // Ensure 2 decimal places
+    nationwide: Number(nationwideCost.toFixed(2))
   };
   
   // Calculate discounts
