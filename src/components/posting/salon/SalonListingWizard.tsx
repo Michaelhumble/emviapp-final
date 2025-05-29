@@ -1,16 +1,15 @@
-
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import SalonDetailsStep from './steps/SalonDetailsStep';
-import LocationDetailsStep from './steps/LocationDetailsStep';
-import FinancialDetailsStep from './steps/FinancialDetailsStep';
-import FeaturesDetailsStep from './steps/FeaturesDetailsStep';
+import { SalonDetailsStep } from './steps/SalonDetailsStep';
+import { LocationDetailsStep } from './steps/LocationDetailsStep';
+import { FinancialDetailsStep } from './steps/FinancialDetailsStep';
+import { FeaturesDetailsStep } from './steps/FeaturesDetailsStep';
 import SalonPricingStep from './steps/SalonPricingStep';
-import SalonReviewStep from './steps/SalonReviewStep';
+import { SalonReviewStep } from './steps/SalonReviewStep';
 import { SalonFormValues, salonFormSchema } from './salonFormSchema';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 
@@ -27,11 +26,11 @@ const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
     city: '',
     state: '',
     zipCode: '',
-    askingPrice: 0,
-    monthlyRent: 0,
-    monthlyRevenue: 0,
-    yearEstablished: 2020,
-    numberOfChairs: 1,
+    askingPrice: '0',
+    monthlyRent: '0',
+    monthlyRevenue: '0',
+    yearEstablished: '2020',
+    numberOfChairs: '1',
     hasParking: false,
     hasWaitingArea: false,
     hasPrivateRooms: false,
