@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import PhotoUploader from '@/components/posting/PhotoUploader';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Camera } from 'lucide-react';
 
 interface SalonPhotoUploadProps {
   photoUploads: File[];
@@ -20,16 +21,38 @@ const SalonPhotoUpload: React.FC<SalonPhotoUploadProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+              <Camera className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              📸 Hình Ảnh Salon / Salon Photos
+            </h2>
+          </div>
+          <p className="text-gray-700 mb-2">
+            Tải lên hình ảnh đẹp để thu hút người mua. Hình ảnh chất lượng cao sẽ giúp salon của bạn nổi bật!
+          </p>
+          <p className="text-purple-600 font-medium">
+            Upload beautiful photos to attract buyers. High-quality images will make your salon stand out!
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Photo Upload Area */}
-      <div>
-        <PhotoUploader
-          files={photoUploads}
-          onChange={handlePhotoChange}
-          maxFiles={maxPhotos}
-          accept="image/*"
-        />
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <PhotoUploader
+            files={photoUploads}
+            onChange={handlePhotoChange}
+            maxFiles={maxPhotos}
+            accept="image/*"
+          />
+        </CardContent>
+      </Card>
 
       {/* Photo Tips */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
