@@ -11,6 +11,7 @@ export function useStripe() {
     
     try {
       console.log('Initiating Stripe payment with options:', pricingOptions);
+      console.log('Form data:', formData);
       
       const { data, error } = await supabase.functions.invoke('create-salon-checkout', {
         body: { 
@@ -21,26 +22,28 @@ export function useStripe() {
       
       if (error) {
         console.error('Error creating checkout session:', error);
-        toast.error("Payment Error / Lỗi Thanh Toán", {
-          description: "Unable to process payment. Please try again. / Không thể xử lý thanh toán. Vui lòng thử lại."
+        toast.error("Payment Error", {
+          description: "Unable to process payment. Please try again."
         });
         return false;
       }
       
       if (data?.url) {
+        console.log('Redirecting to Stripe checkout:', data.url);
         // Redirect to Stripe Checkout
         window.location.href = data.url;
         return true;
       } else {
-        toast.error("Payment Error / Lỗi Thanh Toán", {
-          description: "No checkout URL received. Please try again. / Không nhận được URL thanh toán. Vui lòng thử lại."
+        console.error('No checkout URL received:', data);
+        toast.error("Payment Error", {
+          description: "No checkout URL received. Please try again."
         });
         return false;
       }
     } catch (error) {
       console.error('Error initiating payment:', error);
-      toast.error("Payment Error / Lỗi Thanh Toán", {
-        description: "Failed to initialize payment. Please try again. / Không thể khởi tạo thanh toán. Vui lòng thử lại."
+      toast.error("Payment Error", {
+        description: "Failed to initialize payment. Please try again."
       });
       return false;
     } finally {

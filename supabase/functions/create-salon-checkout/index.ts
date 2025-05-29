@@ -17,6 +17,7 @@ serve(async (req) => {
     const { pricingOptions, formData } = await req.json()
     
     console.log('Creating salon checkout session for:', pricingOptions)
+    console.log('Form data received:', formData)
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
@@ -47,8 +48,11 @@ serve(async (req) => {
       annual: 14900   // $149.00
     }
 
-    let unitAmount = planPrices[pricingOptions.selectedPricingTier] || planPrices.basic
+    let baseAmount = planPrices[pricingOptions.selectedPricingTier] || planPrices.basic
     let productName = `${pricingOptions.selectedPricingTier?.charAt(0).toUpperCase() + pricingOptions.selectedPricingTier?.slice(1)} Salon Listing`
+
+    console.log('Base amount calculated:', baseAmount)
+    console.log('Featured addon selected:', pricingOptions.featuredAddon)
 
     // Check for existing Stripe customer
     const customers = await stripe.customers.list({
@@ -78,26 +82,33 @@ serve(async (req) => {
             name: productName,
             description: `Salon listing for ${formData?.salonName || 'your salon'}`
           },
-          unit_amount: unitAmount,
+          unit_amount: baseAmount,
         },
         quantity: 1,
       },
     ]
 
     // Add featured addon if selected
-    if (pricingOptions.featuredAddon) {
+    if (pricingOptions.featuredAddon === true) {
+      console.log('Adding featured addon to line items')
       lineItems.push({
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'Featured Listing Add-on',
-            description: 'Get 5x more views and premium placement'
+            name: 'VIP Featured Listing Add-on',
+            description: 'Premium placement with 5x more visibility'
           },
           unit_amount: 1000, // $10.00
         },
         quantity: 1,
       })
     }
+
+    console.log('Final line items:', lineItems)
+
+    // Calculate total for logging
+    const totalAmount = lineItems.reduce((sum, item) => sum + item.price_data.unit_amount, 0)
+    console.log('Total amount to charge:', totalAmount, 'cents')
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -111,11 +122,13 @@ serve(async (req) => {
         pricing_tier: pricingOptions.selectedPricingTier,
         featured_addon: pricingOptions.featuredAddon ? 'true' : 'false',
         salon_name: formData?.salonName || '',
-        asking_price: formData?.askingPrice || ''
+        asking_price: formData?.askingPrice || '',
+        total_amount: totalAmount.toString()
       }
     })
 
-    console.log('Checkout session created:', session.id)
+    console.log('Checkout session created successfully:', session.id)
+    console.log('Session URL:', session.url)
 
     return new Response(
       JSON.stringify({ url: session.url }),
