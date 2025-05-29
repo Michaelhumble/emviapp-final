@@ -3,13 +3,7 @@ export type SalonPricingTier = 'basic' | 'gold' | 'premium' | 'annual';
 
 export interface SalonPricingOptions {
   selectedPricingTier?: SalonPricingTier;
-  featuredAddon?: boolean;
-  planType: 'basic' | 'standard' | 'premium' | 'enterprise';
-  duration: number;
-  basePrice: number;
-  totalPrice: number;
-  features: string[];
-  planName: string;
+  featuredAddon?: boolean; // $10 add-on for enhanced visibility
 }
 
 export const SALON_PRICING_PLANS = [

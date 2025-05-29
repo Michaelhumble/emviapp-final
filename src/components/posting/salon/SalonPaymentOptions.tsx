@@ -1,340 +1,147 @@
 
 import React, { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import { SalonFormValues } from './salonFormSchema';
+import SalonPaymentFeatures from './SalonPaymentFeatures';
+import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Star, Zap, Crown, Shield } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import SalonPaymentFeatures from './SalonPaymentFeatures';
-
-export interface SalonPricingOptions {
-  planType: 'basic' | 'standard' | 'premium' | 'enterprise';
-  duration: number;
-  basePrice: number;
-  totalPrice: number;
-  features: string[];
-  addOns: {
-    featuredListing: boolean;
-  };
-}
+import { ArrowLeft, Diamond, Flame } from 'lucide-react';
 
 interface SalonPaymentOptionsProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<SalonFormValues>;
   selectedOptions: SalonPricingOptions;
-  onOptionsChange: (options: SalonPricingOptions) => void;
-  onPaymentSuccess: () => void;
-  onPayment?: () => void;
+  onPayment: () => void;
+  onBack: () => void;
 }
 
 const SalonPaymentOptions: React.FC<SalonPaymentOptionsProps> = ({
   form,
   selectedOptions,
-  onOptionsChange,
-  onPaymentSuccess,
-  onPayment
+  onPayment,
+  onBack
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [showFeatures, setShowFeatures] = useState(false);
+  const [showFeatureModal, setShowFeatureModal] = useState(false);
+  const [currentOptions, setCurrentOptions] = useState<SalonPricingOptions>(selectedOptions);
 
-  const pricingPlans = [
-    {
-      planType: 'basic' as const,
-      name: 'Basic Listing',
-      duration: 30,
-      basePrice: 99,
-      originalPrice: 149,
-      features: [
-        'Basic salon listing',
-        '30-day visibility',
-        'Contact form integration',
-        'Mobile-responsive design'
-      ],
-      badge: 'Most Popular',
-      badgeColor: 'bg-blue-500',
-      icon: CheckCircle2
-    },
-    {
-      planType: 'standard' as const,
-      name: 'Featured Listing',
-      duration: 60,
-      basePrice: 199,
-      originalPrice: 299,
-      features: [
-        'Everything in Basic',
-        '60-day featured placement',
-        'Priority in search results',
-        'Enhanced photo gallery',
-        'Business hours display'
-      ],
-      badge: 'Recommended',
-      badgeColor: 'bg-green-500',
-      icon: Star
-    },
-    {
-      planType: 'premium' as const,
-      name: 'Premium Showcase',
-      duration: 90,
-      basePrice: 299,
-      originalPrice: 449,
-      features: [
-        'Everything in Featured',
-        '90-day premium placement',
-        'Top banner positioning',
-        'Virtual tour integration',
-        'Customer review system',
-        'Social media integration'
-      ],
-      badge: 'Best Value',
-      badgeColor: 'bg-purple-500',
-      icon: Crown
-    },
-    {
-      planType: 'enterprise' as const,
-      name: 'Enterprise Plus',
-      duration: 120,
-      basePrice: 499,
-      originalPrice: 699,
-      features: [
-        'Everything in Premium',
-        '120-day maximum exposure',
-        'Dedicated account manager',
-        'Custom branding options',
-        'Analytics dashboard',
-        'Multiple location support'
-      ],
-      badge: 'Maximum Exposure',
-      badgeColor: 'bg-gold-500',
-      icon: Shield
+  // Show feature add-on modal if user just selected a plan and hasn't seen the modal yet
+  React.useEffect(() => {
+    if (selectedOptions.selectedPricingTier && !selectedOptions.featuredAddon && !showFeatureModal) {
+      setShowFeatureModal(true);
     }
-  ];
+  }, [selectedOptions.selectedPricingTier, selectedOptions.featuredAddon, showFeatureModal]);
 
-  const handlePlanSelect = (plan: typeof pricingPlans[0]) => {
-    const newOptions: SalonPricingOptions = {
-      planType: plan.planType,
-      duration: plan.duration,
-      basePrice: plan.basePrice,
-      totalPrice: plan.basePrice + (selectedOptions.addOns.featuredListing ? 10 : 0),
-      features: plan.features,
-      addOns: selectedOptions.addOns
-    };
-    onOptionsChange(newOptions);
+  const handleAddFeature = () => {
+    const updatedOptions = { ...currentOptions, featuredAddon: true };
+    setCurrentOptions(updatedOptions);
+    setShowFeatureModal(false);
   };
 
-  const handleAddOnChange = (addOnKey: keyof SalonPricingOptions['addOns'], value: boolean) => {
-    const newAddOns = { ...selectedOptions.addOns, [addOnKey]: value };
-    const newOptions: SalonPricingOptions = {
-      ...selectedOptions,
-      addOns: newAddOns,
-      totalPrice: selectedOptions.basePrice + (newAddOns.featuredListing ? 10 : 0)
-    };
-    onOptionsChange(newOptions);
+  const handleNoThanks = () => {
+    const updatedOptions = { ...currentOptions, featuredAddon: false };
+    setCurrentOptions(updatedOptions);
+    setShowFeatureModal(false);
   };
 
-  const handlePayment = async () => {
-    setIsLoading(true);
-    
-    try {
-      console.log('Initiating salon payment with options:', selectedOptions);
-      console.log('Form data:', form.getValues());
-      
-      const { data, error } = await supabase.functions.invoke('create-salon-checkout', {
-        body: { 
-          pricingOptions: selectedOptions,
-          formData: form.getValues()
-        }
-      });
-      
-      if (error) {
-        console.error('Error creating checkout session:', error);
-        toast.error("Payment Error", {
-          description: "Unable to process payment. Please try again."
-        });
-        return;
-      }
-      
-      if (data?.url) {
-        console.log('Redirecting to Stripe checkout:', data.url);
-        // Call onPayment if provided
-        if (onPayment) {
-          onPayment();
-        }
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        console.error('No checkout URL received:', data);
-        toast.error("Payment Error", {
-          description: "No checkout URL received. Please try again."
-        });
-      }
-    } catch (error) {
-      console.error('Error initiating payment:', error);
-      toast.error("Payment Error", {
-        description: "Failed to initialize payment. Please try again."
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          Choose Your Listing Package
-        </h2>
-        <p className="text-lg text-gray-600">
-          Select the perfect plan to showcase your salon to potential buyers
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {pricingPlans.map((plan) => {
-          const Icon = plan.icon;
-          const isSelected = selectedOptions.planType === plan.planType;
+  if (showFeatureModal) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center p-4">
+        <Card className="max-w-2xl w-full border-0 shadow-2xl bg-white/95 backdrop-blur-sm relative overflow-hidden">
+          {/* Premium gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-transparent to-purple-50/50 pointer-events-none" />
           
-          return (
-            <Card 
-              key={plan.planType}
-              className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                isSelected ? 'ring-2 ring-purple-500 shadow-lg' : ''
-              }`}
-              onClick={() => handlePlanSelect(plan)}
-            >
-              {plan.badge && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className={`${plan.badgeColor} text-white px-3 py-1`}>
-                    {plan.badge}
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-3">
-                  <Icon className="h-8 w-8 text-purple-600" />
-                </div>
-                <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-center space-x-2">
-                    <span className="text-3xl font-bold text-gray-900">
-                      ${plan.basePrice}
-                    </span>
-                    {plan.originalPrice > plan.basePrice && (
-                      <span className="text-lg text-gray-500 line-through">
-                        ${plan.originalPrice}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600">{plan.duration} days visibility</p>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <ul className="space-y-2 mb-6">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                {isSelected && (
-                  <div className="text-center">
-                    <CheckCircle2 className="h-6 w-6 text-green-500 mx-auto" />
-                    <span className="text-sm text-green-600 font-medium">Selected</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Add-ons Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-purple-600" />
-            Optional Add-ons
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between p-4 border rounded-lg">
+          <CardHeader className="text-center pb-6 pt-8 relative">
+            <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 flex items-center justify-center mb-6 shadow-2xl animate-pulse relative">
+              <Diamond className="h-12 w-12 text-white drop-shadow-lg" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-red-500 opacity-20 animate-ping" />
+            </div>
+            
+            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
+              💎 VIP Feature Upgrade
+            </CardTitle>
+            
+            <p className="text-lg text-gray-700 font-medium">
+              Stand Out Instantly. Get Noticed First.
+            </p>
+          </CardHeader>
+          
+          <CardContent className="space-y-8 text-center pb-8 relative">
             <div>
-              <h4 className="font-medium">Featured Listing Boost</h4>
-              <p className="text-sm text-gray-600">
-                Get additional visibility with highlighted placement
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                Get 5X More Views for Only $10
+              </h3>
+              <p className="text-xl text-gray-700 leading-relaxed font-medium">
+                Premium placement that puts your salon at the top of every search
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="font-bold text-lg">+$10</span>
-              <Button
-                variant={selectedOptions.addOns.featuredListing ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleAddOnChange('featuredListing', !selectedOptions.addOns.featuredListing)}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+              <div className="text-center p-6 bg-gray-50 rounded-2xl border">
+                <div className="text-5xl mb-4">👥</div>
+                <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">Standard Listing</p>
+                <p className="text-lg font-semibold text-gray-700">Regular Views</p>
+              </div>
+              <div className="text-center p-6 bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 rounded-2xl border-2 border-amber-200 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-100/30 to-red-100/30" />
+                <div className="text-5xl mb-4 relative">🔥</div>
+                <p className="text-sm font-medium text-amber-700 uppercase tracking-wide relative">VIP Featured</p>
+                <p className="text-xl font-bold text-red-700 relative">5X More Views!</p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 p-8 rounded-2xl border-2 border-amber-200 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-100/20 to-red-100/20 rounded-2xl" />
+              <div className="flex items-center justify-center gap-3 mb-6 relative">
+                <Flame className="h-6 w-6 text-red-600 animate-pulse" />
+                <span className="font-bold text-xl text-red-800">Exclusive VIP Benefits:</span>
+                <Flame className="h-6 w-6 text-red-600 animate-pulse" />
+              </div>
+              <ul className="text-lg text-red-700 space-y-3 font-medium relative">
+                <li>• 🥇 Top placement in all search results</li>
+                <li>• 💎 Premium badge that commands attention</li>
+                <li>• ⚡ Priority visibility to serious buyers</li>
+                <li>• 🎯 Enhanced listing with luxury styling</li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <Button 
+                onClick={handleAddFeature}
+                className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-white px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 relative overflow-hidden group"
               >
-                {selectedOptions.addOns.featuredListing ? 'Added' : 'Add'}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Diamond className="mr-3 h-6 w-6 animate-pulse" />
+                Add VIP Feature (+$10)
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={handleNoThanks}
+                className="px-10 py-6 text-xl border-2 hover:bg-gray-50 transition-all duration-200"
+              >
+                Continue Standard
               </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Features Modal Button */}
-      <div className="text-center">
-        <Button
-          variant="outline"
-          onClick={() => setShowFeatures(true)}
-          className="mb-6"
-        >
-          Compare All Features
-        </Button>
+        <div className="fixed bottom-4 left-4">
+          <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Plans
+          </Button>
+        </div>
       </div>
-
-      {/* Total and Payment */}
-      <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-        <CardContent className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900">
-                Total: ${selectedOptions.totalPrice}
-              </h3>
-              <p className="text-sm text-gray-600">
-                {selectedOptions.duration} days of visibility
-              </p>
-            </div>
-            <Button
-              onClick={handlePayment}
-              disabled={isLoading}
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-            >
-              {isLoading ? 'Processing...' : 'Proceed to Payment'}
-            </Button>
-          </div>
-          
-          <div className="text-xs text-gray-500 text-center">
-            Secure payment processing • 30-day money-back guarantee
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Features Modal */}
-      <SalonPaymentFeatures
-        isOpen={showFeatures}
-        onClose={() => setShowFeatures(false)}
-        onSelect={(planType) => {
-          const plan = pricingPlans.find(p => p.planType === planType);
-          if (plan) handlePlanSelect(plan);
-          setShowFeatures(false);
-        }}
-        onProceedToPayment={handlePayment}
-        currentPlan={selectedOptions.planType}
-        basePrice={selectedOptions.basePrice}
-      />
-    </div>
+    );
+  }
+  
+  return (
+    <SalonPaymentFeatures
+      formData={form.getValues()}
+      selectedOptions={currentOptions}
+      onPayment={onPayment}
+      onBack={onBack}
+    />
   );
 };
 
