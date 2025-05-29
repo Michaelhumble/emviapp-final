@@ -1,3 +1,4 @@
+
 export type SalonPricingTier = 'standard' | 'featured';
 
 export interface SalonPricingPlan {
@@ -103,10 +104,9 @@ export const calculateSalonPostPrice = (options: SalonPricingOptions): number =>
   const durationOption = DURATION_OPTIONS.find(d => d.months === (options.durationMonths || 3));
   let price = durationOption?.price || 19.99;
   
-  // Add featured add-on
+  // Add featured add-on as ONE-TIME fee (NOT per month)
   if (options.featuredAddOn) {
-    const featuredCost = (options.durationMonths || 3) * 10; // $10/month
-    price += featuredCost;
+    price += 10; // One-time $10 fee
   }
   
   // Auto-renew discount (5%)
@@ -124,7 +124,7 @@ export const getSalonPostPricingSummary = (options: SalonPricingOptions): SalonP
   const finalPrice = calculateSalonPostPrice(options);
   
   // Calculate add-on costs
-  const featuredCost = options.featuredAddOn ? duration * 10 : 0;
+  const featuredCost = options.featuredAddOn ? 10 : 0; // One-time $10 fee
   const nationwideCost = options.isNationwide ? duration * 5 : 0;
   const addOns = {
     featured: featuredCost,
