@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, Star, Zap } from "lucide-react";
+import { Check, Star, Zap, Loader2 } from "lucide-react";
 import { SALON_PRICING_PLANS } from "@/utils/posting/salonPricing";
 import { toast } from "sonner";
+import { useStripe } from "@/hooks/useStripe";
 
 interface SalonPaymentOptionsProps {
   form: UseFormReturn<SalonFormValues>;
@@ -19,6 +20,7 @@ export const SalonPaymentOptions = ({ form, onPaymentComplete }: SalonPaymentOpt
   const [isProcessing, setIsProcessing] = useState(false);
   const selectedTier = form.watch("selectedPricingTier");
   const featuredAddon = form.watch("featuredAddon");
+  const { initiatePayment } = useStripe();
 
   const handlePlanSelect = (tier: string) => {
     form.setValue("selectedPricingTier", tier as any);
@@ -38,12 +40,25 @@ export const SalonPaymentOptions = ({ form, onPaymentComplete }: SalonPaymentOpt
   const handlePayment = async () => {
     setIsProcessing(true);
     try {
-      // TODO: Implement Stripe checkout integration
-      toast.success("Payment processing initiated");
-      if (onPaymentComplete) {
+      // Get all form data
+      const formData = form.getValues();
+      
+      // Prepare pricing options
+      const pricingOptions = {
+        selectedPricingTier: selectedTier,
+        featuredAddon: featuredAddon
+      };
+
+      console.log('Initiating salon payment with:', { pricingOptions, formData });
+
+      // Use the Stripe hook to initiate payment
+      const success = await initiatePayment(pricingOptions, formData);
+      
+      if (success && onPaymentComplete) {
         onPaymentComplete();
       }
     } catch (error) {
+      console.error('Payment error:', error);
       toast.error("Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
@@ -154,8 +169,17 @@ export const SalonPaymentOptions = ({ form, onPaymentComplete }: SalonPaymentOpt
         className="w-full h-12 text-lg"
         size="lg"
       >
-        {isProcessing ? "Processing..." : `Pay $${calculateTotal().toFixed(2)} & Publish Listing`}
+        {isProcessing ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          `Pay $${calculateTotal().toFixed(2)} & Publish Listing`
+        )}
       </Button>
     </div>
   );
 };
+
+export default SalonPaymentOptions;
