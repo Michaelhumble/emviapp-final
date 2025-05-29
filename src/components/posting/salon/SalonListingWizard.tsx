@@ -15,8 +15,8 @@ import SalonDescriptionStep from './steps/SalonDescriptionStep';
 import SalonContactStep from './steps/SalonContactStep';
 import SalonPhotosStep from './steps/SalonPhotosStep';
 import SalonFeaturesStep from './steps/SalonFeaturesStep';
-import SalonPricingStep from './steps/SalonPricingStep';
-import SalonPreviewStep from './steps/SalonPreviewStep';
+import SalonPaymentOptions from "./SalonPaymentOptions";
+import SalonPreviewStep from "./steps/SalonPreviewStep";
 
 const steps = [
   { id: 'identity', title: 'Basic Information', component: SalonIdentityStep },
@@ -26,7 +26,7 @@ const steps = [
   { id: 'contact', title: 'Contact Information', component: SalonContactStep },
   { id: 'photos', title: 'Photos', component: SalonPhotosStep },
   { id: 'features', title: 'Features & Amenities', component: SalonFeaturesStep },
-  { id: 'pricing', title: 'Choose Your Plan', component: SalonPricingStep },
+  { id: 'pricing', title: 'Choose Your Plan', component: SalonPaymentOptions },
   { id: 'preview', title: 'Review & Submit', component: SalonPreviewStep }
 ];
 
