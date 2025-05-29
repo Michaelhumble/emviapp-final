@@ -8,7 +8,7 @@ interface SalonContactStepProps {
   form: UseFormReturn<SalonFormValues>;
 }
 
-const SalonContactStep = ({ form }: SalonContactStepProps) => {
+export const SalonContactStep = ({ form }: SalonContactStepProps) => {
   return <SalonContactSection form={form} />;
 };
 

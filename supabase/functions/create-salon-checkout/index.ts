@@ -40,22 +40,15 @@ serve(async (req) => {
     }
 
     // Calculate pricing based on options
-    let unitAmount = 4900 // Basic plan $49
-    let productName = 'Basic Salon Listing'
-
-    if (pricingOptions.selectedPricingTier === 'standard') {
-      unitAmount = 9900 // $99
-      productName = 'Standard Salon Listing'
-    } else if (pricingOptions.selectedPricingTier === 'featured') {
-      unitAmount = 19900 // $199
-      productName = 'Featured Salon Listing'
+    const planPrices = {
+      basic: 1999,    // $19.99
+      gold: 4999,     // $49.99
+      premium: 9999,  // $99.99
+      annual: 14900   // $149.00
     }
 
-    // Apply duration multiplier
-    if (pricingOptions.durationMonths > 1) {
-      unitAmount *= pricingOptions.durationMonths
-      productName += ` (${pricingOptions.durationMonths} months)`
-    }
+    let unitAmount = planPrices[pricingOptions.selectedPricingTier] || planPrices.basic
+    let productName = `${pricingOptions.selectedPricingTier?.charAt(0).toUpperCase() + pricingOptions.selectedPricingTier?.slice(1)} Salon Listing`
 
     // Check for existing Stripe customer
     const customers = await stripe.customers.list({
@@ -76,29 +69,47 @@ serve(async (req) => {
       customerId = customer.id
     }
 
+    // Create line items
+    const lineItems = [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: productName,
+            description: `Salon listing for ${formData?.salonName || 'your salon'}`
+          },
+          unit_amount: unitAmount,
+        },
+        quantity: 1,
+      },
+    ]
+
+    // Add featured addon if selected
+    if (pricingOptions.featuredAddon) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Featured Listing Add-on',
+            description: 'Get 5x more views and inquiries'
+          },
+          unit_amount: 1000, // $10.00
+        },
+        quantity: 1,
+      })
+    }
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: productName,
-              description: `Salon listing for ${formData?.salonName || 'your salon'}`
-            },
-            unit_amount: unitAmount,
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment',
       success_url: `${req.headers.get('origin')}/salon-listing-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/sell-salon`,
       metadata: {
         user_id: user.id,
         pricing_tier: pricingOptions.selectedPricingTier,
-        duration_months: pricingOptions.durationMonths.toString(),
+        featured_addon: pricingOptions.featuredAddon ? 'true' : 'false',
         salon_name: formData?.salonName || '',
         asking_price: formData?.askingPrice || ''
       }
