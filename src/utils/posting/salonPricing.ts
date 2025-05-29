@@ -12,6 +12,16 @@ export interface SalonPricingPlan {
   buttonColor: string;
 }
 
+export interface SalonPricingOptions {
+  selectedPricingTier: SalonPricingTier;
+  isNationwide?: boolean;
+  fastSalePackage?: boolean;
+  showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
+  autoRenew?: boolean;
+  isFirstPost?: boolean;
+}
+
 export const salonPricingPlans: SalonPricingPlan[] = [
   {
     id: 'free',
@@ -73,6 +83,46 @@ export const salonPricingPlans: SalonPricingPlan[] = [
     buttonColor: 'bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700'
   }
 ];
+
+export const calculateSalonPostPrice = (options: SalonPricingOptions): number => {
+  const basePlan = getSalonPricingPlan(options.selectedPricingTier);
+  let price = basePlan?.price || 0;
+  
+  if (options.isNationwide) price += 10;
+  if (options.fastSalePackage) price += 20;
+  if (options.showAtTop) price += 15;
+  if (options.bundleWithJobPost) price += 15;
+  
+  return price;
+};
+
+export const getSalonPostPricingSummary = (options: SalonPricingOptions) => {
+  const plan = getSalonPricingPlan(options.selectedPricingTier);
+  const finalPrice = calculateSalonPostPrice(options);
+  
+  return {
+    planName: plan?.name || 'Unknown',
+    basePrice: plan?.price || 0,
+    finalPrice,
+    duration: plan?.duration || 1,
+    features: plan?.features || []
+  };
+};
+
+export const validateSalonPricingOptions = (options: SalonPricingOptions): boolean => {
+  return !!(options.selectedPricingTier && getSalonPricingPlan(options.selectedPricingTier));
+};
+
+export const getStripeSalonPriceId = (tier: SalonPricingTier): string => {
+  // These would be actual Stripe price IDs in production
+  const priceIds: Record<SalonPricingTier, string> = {
+    free: 'price_free',
+    standard: 'price_salon_standard',
+    premium: 'price_salon_premium',
+    featured: 'price_salon_featured'
+  };
+  return priceIds[tier] || priceIds.free;
+};
 
 export const getSalonPricingPlan = (tier: SalonPricingTier): SalonPricingPlan | undefined => {
   return salonPricingPlans.find(plan => plan.id === tier);
