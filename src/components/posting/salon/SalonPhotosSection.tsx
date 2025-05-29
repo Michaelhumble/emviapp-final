@@ -1,9 +1,8 @@
 
-import React, { useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Upload, X, Camera, Star, Eye, TrendingUp, Zap } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Upload, Image as ImageIcon, X } from 'lucide-react';
+import { useDropzone } from 'react-dropzone';
 
 interface SalonPhotosSectionProps {
   photoUploads: File[];
@@ -11,190 +10,140 @@ interface SalonPhotosSectionProps {
   maxPhotos?: number;
 }
 
-export const SalonPhotosSection = ({ 
+export const SalonPhotosSection: React.FC<SalonPhotosSectionProps> = ({ 
   photoUploads, 
-  setPhotoUploads,
-  maxPhotos = 10
-}: SalonPhotosSectionProps) => {
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-    
-    const newFiles = Array.from(files);
+  setPhotoUploads, 
+  maxPhotos = 8 
+}) => {
+  const onDrop = React.useCallback((acceptedFiles: File[]) => {
     const remainingSlots = maxPhotos - photoUploads.length;
-    const filesToAdd = newFiles.slice(0, remainingSlots);
-    
+    const filesToAdd = acceptedFiles.slice(0, remainingSlots);
     setPhotoUploads(prev => [...prev, ...filesToAdd]);
-    
-    // Reset the input value to allow selecting the same file again
-    event.target.value = '';
-  }, [setPhotoUploads, photoUploads.length, maxPhotos]);
+  }, [photoUploads.length, maxPhotos, setPhotoUploads]);
 
-  const removePhoto = useCallback((index: number) => {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+    },
+    multiple: true,
+    maxFiles: maxPhotos,
+  });
+
+  const removePhoto = (index: number) => {
     setPhotoUploads(prev => prev.filter((_, i) => i !== index));
-  }, [setPhotoUploads]);
-
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const files = event.dataTransfer.files;
-    if (!files || files.length === 0) return;
-    
-    const newFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-    const remainingSlots = maxPhotos - photoUploads.length;
-    const filesToAdd = newFiles.slice(0, remainingSlots);
-    
-    setPhotoUploads(prev => [...prev, ...filesToAdd]);
-  }, [setPhotoUploads, photoUploads.length, maxPhotos]);
-
-  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  }, []);
+  };
 
   return (
-    <div className="space-y-8">
-      {/* Hero Section */}
-      <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-0 shadow-lg">
-        <CardContent className="p-8 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
-              <Camera className="h-8 w-8 text-white" />
-            </div>
-          </div>
-          <h2 className="text-3xl font-playfair font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
-            Showcase Your Salon's Beauty
-          </h2>
-          <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto mb-4">
-            High-quality photos are the #1 factor in attracting serious buyers and commanding premium prices
+    <div className="space-y-6">
+      <Card className="border-purple-100 shadow-sm">
+        <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+          <CardTitle className="flex items-center gap-2">
+            <ImageIcon className="h-5 w-5 text-purple-600" />
+            Hình Ảnh Salon / Salon Photos
+          </CardTitle>
+          <p className="text-sm text-gray-600 mt-2">
+            Tải lên hình ảnh đẹp để thu hút người mua. Hình ảnh chất lượng cao sẽ giúp salon của bạn nổi bật!
+            <br />
+            Upload beautiful photos to attract buyers. High-quality images will make your salon stand out!
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-indigo-600 bg-indigo-100 px-4 py-2 rounded-full">
-              <Eye className="h-4 w-4" />
-              <span className="font-medium">Photos increase views by 500%</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-purple-600 bg-purple-100 px-4 py-2 rounded-full">
-              <TrendingUp className="h-4 w-4" />
-              <span className="font-medium">Sell 3x faster with great photos</span>
-            </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          {/* Upload Area */}
+          <div
+            {...getRootProps()}
+            className={`
+              border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all
+              ${isDragActive 
+                ? 'border-purple-400 bg-purple-50' 
+                : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50/50'
+              }
+            `}
+          >
+            <input {...getInputProps()} />
+            <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            
+            {isDragActive ? (
+              <p className="text-purple-600 font-medium">
+                Thả hình ảnh vào đây... / Drop images here...
+              </p>
+            ) : (
+              <div>
+                <p className="text-gray-600 mb-2">
+                  <span className="font-medium text-purple-600">Nhấp để chọn</span> hoặc kéo thả hình ảnh
+                </p>
+                <p className="text-gray-500 text-sm">
+                  <span className="font-medium text-purple-600">Click to select</span> or drag and drop images
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  PNG, JPG, WEBP tối đa {maxPhotos} ảnh / up to {maxPhotos} photos
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* Photo Grid */}
+          {photoUploads.length > 0 && (
+            <div className="mt-6">
+              <h4 className="font-medium text-gray-900 mb-3">
+                Ảnh đã tải lên ({photoUploads.length}/{maxPhotos}) / 
+                Uploaded Photos ({photoUploads.length}/{maxPhotos})
+              </h4>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {photoUploads.map((file, index) => (
+                  <div key={index} className="relative group">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Upload ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    <button
+                      onClick={() => removePhoto(index)}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                    
+                    {index === 0 && (
+                      <div className="absolute bottom-2 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded">
+                        Ảnh chính / Main
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Photo Requirements */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h5 className="font-medium text-blue-900 mb-2">
+              💡 Mẹo chụp ảnh hiệu quả / Photo Tips
+            </h5>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li>• Chụp ảnh tổng quan không gian salon / Take overview shots of the salon space</li>
+              <li>• Chụp các khu vực làm việc và thiết bị / Capture work areas and equipment</li>
+              <li>• Đảm bảo ánh sáng tốt, tránh mờ / Ensure good lighting, avoid blur</li>
+              <li>• Ảnh đầu tiên sẽ là ảnh đại diện / First photo will be the main display image</li>
+            </ul>
+          </div>
+
+          {/* Upload Status */}
+          {photoUploads.length === 0 && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-amber-800 text-sm">
+                ⚠️ Cần ít nhất 1 hình ảnh để tiếp tục / At least 1 photo required to continue
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      {/* Upload Area */}
-      <div 
-        className="border-2 border-dashed border-indigo-300 rounded-xl p-12 text-center hover:border-indigo-400 hover:bg-indigo-50/50 transition-all duration-300 bg-gradient-to-br from-white to-indigo-50/30"
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-      >
-        <input
-          id="photo-upload"
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-        
-        <div className="flex flex-col items-center justify-center space-y-6">
-          <div className="h-20 w-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg">
-            <Upload className="h-10 w-10 text-white" />
-          </div>
-          <div>
-            <p className="font-bold text-gray-800 text-xl mb-2">Drag your stunning photos here</p>
-            <p className="text-gray-600 text-lg">or click below to select from your device</p>
-            <p className="text-sm text-gray-500 mt-4 max-w-md mx-auto">
-              Support: JPG, PNG, WEBP. Max 5MB each. Up to {maxPhotos} photos.
-            </p>
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
-              <span className="text-sm text-indigo-600 font-medium">
-                {photoUploads.length}/{maxPhotos} photos uploaded
-              </span>
-            </div>
-          </div>
-          <Button
-            type="button"
-            size="lg"
-            onClick={() => document.getElementById('photo-upload')?.click()}
-            disabled={photoUploads.length >= maxPhotos}
-            className="h-12 px-8 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium shadow-lg"
-          >
-            <Camera className="h-5 w-5 mr-2" />
-            {photoUploads.length === 0 ? 'Select Your Best Photos' : 'Add More Photos'}
-          </Button>
-        </div>
-      </div>
-
-      {/* Photo Gallery */}
-      {photoUploads.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold flex items-center gap-3">
-              <Star className="w-5 h-5 text-yellow-500" />
-              Your Salon Gallery ({photoUploads.length})
-            </h3>
-            <div className="text-sm text-gray-500">
-              {maxPhotos - photoUploads.length} slots remaining
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {photoUploads.map((file, index) => (
-              <div key={`${file.name}-${index}`} className="relative group">
-                <div className="aspect-square rounded-xl border-2 border-gray-200 bg-gray-100 overflow-hidden hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-lg">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Salon photo ${index + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removePhoto(index)}
-                  className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-                {index === 0 && (
-                  <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                    <Star className="h-3 w-3" />
-                    Cover
-                  </div>
-                )}
-                <p className="text-xs text-gray-500 mt-2 truncate text-center">{file.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Photo Tips */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Alert className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <Camera className="h-5 w-5 text-blue-600" />
-          <AlertDescription className="text-blue-800">
-            <strong className="block mb-2">📸 Photo Success Tips:</strong>
-            <ul className="text-sm space-y-1">
-              <li>• Bright, natural lighting works best</li>
-              <li>• Show exterior, reception, workstations, equipment</li>
-              <li>• Include before/after client work samples</li>
-              <li>• Capture busy periods to show popularity</li>
-            </ul>
-          </AlertDescription>
-        </Alert>
-
-        <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-          <Zap className="h-5 w-5 text-green-600" />
-          <AlertDescription className="text-green-800">
-            <strong className="block mb-2">💰 Value Impact:</strong>
-            <ul className="text-sm space-y-1">
-              <li>• Professional photos = 40% higher offers</li>
-              <li>• Multiple angles build buyer confidence</li>
-              <li>• Quality images reduce negotiation time</li>
-              <li>• Visual proof accelerates sale process</li>
-            </ul>
-          </AlertDescription>
-        </Alert>
-      </div>
     </div>
   );
 };
+
+export default SalonPhotosSection;
