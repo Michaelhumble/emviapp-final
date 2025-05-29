@@ -1,72 +1,63 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { getLanguagePreference } from '@/utils/languagePreference';
+import React from 'react';
+import { Heart, Sparkles } from 'lucide-react';
 
-const FounderMessage: React.FC = () => {
-  const [language] = useState(getLanguagePreference());
-
-  const getText = (en: string, vi: string) => {
-    return language === 'vi' ? vi : en;
-  };
-
+const FounderMessage = () => {
   return (
-    <section className="py-16 bg-gradient-to-br from-purple-50 to-indigo-50">
-      <div className="container max-w-6xl mx-auto px-4">
-        <motion.div 
-          className="flex flex-col md:flex-row items-center gap-8 md:gap-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-        >
-          <div className="md:w-1/3">
-            <div className="relative">
-              <div className="aspect-square rounded-lg overflow-hidden border-4 border-white shadow-lg">
-                <img 
-                  src="/lovable-uploads/fd96a86c-48b2-4b08-80dc-065fa45327f7.png" 
-                  alt="EmviApp Founder" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-4 -right-4 bg-white rounded-full p-3 shadow-lg">
-                <span className="text-3xl">✨</span>
-              </div>
-            </div>
+    <section className="py-20 bg-gradient-to-br from-purple-900 via-purple-800 to-blue-900 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
+            <Heart className="w-5 h-5 text-pink-300 mr-2" />
+            <span className="text-pink-100 font-medium">A Personal Message</span>
           </div>
-
-          <div className="md:w-2/3">
-            <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6">
-              {getText(
-                "We're Building a Better Beauty Industry Together",
-                "Chúng tôi đang xây dựng một ngành công nghiệp làm đẹp tốt hơn cùng nhau"
-              )}
-            </h2>
+          
+          <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
+            Why I Built EmviApp
+          </h2>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-12 mb-8">
+            <div className="text-xl md:text-2xl leading-relaxed space-y-6">
+              <p>
+                "I watched my sister struggle to find the right nail salon job for months. 
+                Endless applications, no responses, mismatched expectations."
+              </p>
+              
+              <p>
+                "That's when I realized the beauty industry needed something different. 
+                Not another job board, but a platform that truly understands what makes 
+                a perfect match between talent and opportunity."
+              </p>
+              
+              <p className="text-yellow-200 font-semibold">
+                "EmviApp isn't just a business to me—it's personal. Every artist who finds their dream job, 
+                every salon that discovers amazing talent, that's why we're here."
+              </p>
+            </div>
             
-            <div className="text-lg text-gray-700 space-y-4">
-              <p>
-                {getText(
-                  "EmviApp was born from a simple belief: nail artists, technicians, and salon owners deserve better tools to connect, grow, and thrive.",
-                  "EmviApp ra đời từ một niềm tin đơn giản: các nghệ sĩ làm móng, kỹ thuật viên và chủ salon xứng đáng có những công cụ tốt hơn để kết nối, phát triển và thịnh vượng."
-                )}
-              </p>
-              
-              <p>
-                {getText(
-                  "As someone who grew up in a family of nail salon entrepreneurs, I've witnessed firsthand the challenges that dedicated beauty professionals face every day. That's why we're creating a platform that truly understands and serves this community.",
-                  "Là người lớn lên trong một gia đình kinh doanh tiệm làm móng, tôi đã chứng kiến trực tiếp những thách thức mà các chuyên gia làm đẹp tận tâm phải đối mặt hàng ngày. Đó là lý do tại sao chúng tôi đang tạo ra một nền tảng thực sự hiểu và phục vụ cộng đồng này."
-                )}
-              </p>
-              
-              <p className="font-medium text-primary">
-                {getText(
-                  "— Founder, EmviApp",
-                  "— Người sáng lập, EmviApp"
-                )}
-              </p>
+            <div className="mt-8 pt-8 border-t border-white/20">
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-left">
+                  <div className="font-bold text-xl">Alex Chen</div>
+                  <div className="text-purple-200">Founder & CEO, EmviApp</div>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
+          
+          <div className="text-lg text-purple-100">
+            <p>
+              Every feature we build, every algorithm we train, every partnership we form—
+              it all comes back to making your career journey a little bit easier.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
