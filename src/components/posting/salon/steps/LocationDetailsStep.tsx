@@ -1,12 +1,18 @@
 
 import React from 'react';
 import { SalonFormValues } from '../salonFormSchema';
+import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 
 interface LocationDetailsStepProps {
   formData: SalonFormValues;
+  photos: File[];
+  pricing: SalonPricingOptions;
   updateFormData: (data: Partial<SalonFormValues>) => void;
+  updatePhotos: (photos: File[]) => void;
+  updatePricing: (pricing: SalonPricingOptions) => void;
   onNext: () => void;
   onPrev: () => void;
+  onComplete: () => void;
   isFirstStep: boolean;
   isLastStep: boolean;
 }

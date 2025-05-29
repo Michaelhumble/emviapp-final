@@ -1,13 +1,18 @@
 
 import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
 import { SalonFormValues } from '../salonFormSchema';
+import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 
 interface SalonDetailsStepProps {
   formData: SalonFormValues;
+  photos: File[];
+  pricing: SalonPricingOptions;
   updateFormData: (data: Partial<SalonFormValues>) => void;
+  updatePhotos: (photos: File[]) => void;
+  updatePricing: (pricing: SalonPricingOptions) => void;
   onNext: () => void;
   onPrev: () => void;
+  onComplete: () => void;
   isFirstStep: boolean;
   isLastStep: boolean;
 }
