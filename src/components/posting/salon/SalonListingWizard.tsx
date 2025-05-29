@@ -1,7 +1,5 @@
+
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { SalonFormValues } from './salonFormSchema';
 import { SalonPricingOptions } from '@/utils/posting/salonPricing';
 import { SalonDetailsStep } from './steps/SalonDetailsStep';
@@ -9,52 +7,45 @@ import { LocationDetailsStep } from './steps/LocationDetailsStep';
 import { FinancialDetailsStep } from './steps/FinancialDetailsStep';
 import { FeaturesDetailsStep } from './steps/FeaturesDetailsStep';
 import { PhotoUploadStep } from './steps/PhotoUploadStep';
-import SalonPricingStep from './steps/SalonPricingStep';
-import SalonReviewStep from './steps/SalonReviewStep';
+import { SalonPricingStep } from './steps/SalonPricingStep';
+import { SalonReviewStep } from './steps/SalonReviewStep';
+import { useStripe } from '@/hooks/useStripe';
+import { toast } from 'sonner';
 
 interface SalonListingWizardProps {
   onComplete: (formData: SalonFormValues, photos: File[], pricing: SalonPricingOptions) => void;
 }
 
-interface FormStep {
-  id: string;
-  title: string;
-  component: React.ComponentType<any>;
-}
-
-const initialFormData: SalonFormValues = {
-  salonName: '',
-  businessType: '',
-  address: '',
-  city: '',
-  state: '',
-  zipCode: '',
-  askingPrice: '',
-  monthlyRent: '',
-  monthlyRevenue: '',
-  numberOfChairs: '',
-  hasParking: false,
-  hasWaitingArea: false,
-  hasPrivateRooms: false,
-  equipment: [],
-  description: '',
-};
-
-const STEPS = [
-  { id: 'details', title: 'Salon Details', component: SalonDetailsStep },
-  { id: 'location', title: 'Location', component: LocationDetailsStep },
-  { id: 'financial', title: 'Financial Info', component: FinancialDetailsStep },
-  { id: 'features', title: 'Features', component: FeaturesDetailsStep },
-  { id: 'photos', title: 'Photos', component: PhotoUploadStep },
-  { id: 'pricing', title: 'Pricing', component: SalonPricingStep },
-  { id: 'review', title: 'Review', component: SalonReviewStep },
-];
-
 export const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<SalonFormValues>(initialFormData);
+  const [formData, setFormData] = useState<SalonFormValues>({
+    salonName: '',
+    businessType: '',
+    address: '',
+    city: '',
+    state: '',
+    askingPrice: '',
+    monthlyRent: ''
+  });
   const [photos, setPhotos] = useState<File[]>([]);
-  const [pricing, setPricing] = useState<SalonPricingOptions>('basic');
+  const [pricing, setPricing] = useState<SalonPricingOptions>({
+    selectedPricingTier: 'standard',
+    durationMonths: 3,
+    featuredAddOn: false,
+    autoRenew: false
+  });
+
+  const { initiatePayment, isLoading } = useStripe();
+
+  const steps = [
+    'Salon Details',
+    'Location',
+    'Financial Info',
+    'Features',
+    'Photos',
+    'Pricing',
+    'Review'
+  ];
 
   const updateFormData = (data: Partial<SalonFormValues>) => {
     setFormData(prev => ({ ...prev, ...data }));
@@ -69,7 +60,7 @@ export const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
   };
 
   const nextStep = () => {
-    if (currentStep < STEPS.length - 1) {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -80,120 +71,120 @@ export const SalonListingWizard = ({ onComplete }: SalonListingWizardProps) => {
     }
   };
 
-  const handleComplete = () => {
-    onComplete(formData, photos, pricing);
+  const handleComplete = async () => {
+    try {
+      const success = await initiatePayment(pricing, formData);
+      if (success) {
+        onComplete(formData, photos, pricing);
+        toast.success('Salon listing created successfully!');
+      }
+    } catch (error) {
+      console.error('Error completing salon listing:', error);
+      toast.error('Failed to complete salon listing. Please try again.');
+    }
   };
 
-  const CurrentStepComponent = STEPS[currentStep].component;
-  const isFirstStep = currentStep === 0;
-  const isLastStep = currentStep === STEPS.length - 1;
+  const stepProps = {
+    formData,
+    photos,
+    pricing,
+    updateFormData,
+    updatePhotos,
+    updatePricing,
+    onNext: nextStep,
+    onPrev: prevStep,
+    onComplete: handleComplete,
+    isFirstStep: currentStep === 0,
+    isLastStep: currentStep === steps.length - 1
+  };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 0:
+        return <SalonDetailsStep {...stepProps} />;
+      case 1:
+        return <LocationDetailsStep {...stepProps} />;
+      case 2:
+        return <FinancialDetailsStep {...stepProps} />;
+      case 3:
+        return <FeaturesDetailsStep {...stepProps} />;
+      case 4:
+        return <PhotoUploadStep {...stepProps} />;
+      case 5:
+        return <SalonPricingStep {...stepProps} setPricing={updatePricing} />;
+      case 6:
+        return <SalonReviewStep {...stepProps} />;
+      default:
+        return <SalonDetailsStep {...stepProps} />;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">List Your Salon for Sale</h1>
-          <p className="text-gray-600">Connect with serious buyers looking for salon businesses</p>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            {STEPS.map((step, index) => (
+    <div className="max-w-4xl mx-auto p-6">
+      {/* Progress Bar */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          {steps.map((step, index) => (
+            <div
+              key={step}
+              className={`flex items-center ${
+                index <= currentStep ? 'text-purple-600' : 'text-gray-400'
+              }`}
+            >
               <div
-                key={step.id}
-                className={`flex items-center ${index !== STEPS.length - 1 ? 'flex-1' : ''}`}
-              >
-                <div
-                  className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                    index < currentStep
-                      ? 'bg-purple-600 border-purple-600 text-white'
-                      : index === currentStep
-                      ? 'border-purple-600 bg-white text-purple-600'
-                      : 'border-gray-300 bg-white text-gray-400'
-                  }`}
-                >
-                  {index < currentStep ? (
-                    <Check className="w-5 h-5" />
-                  ) : (
-                    <span className="text-sm font-medium">{index + 1}</span>
-                  )}
-                </div>
-                {index !== STEPS.length - 1 && (
-                  <div
-                    className={`flex-1 h-1 mx-2 ${
-                      index < currentStep ? 'bg-purple-600' : 'bg-gray-300'
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between text-xs text-gray-500">
-            {STEPS.map((step, index) => (
-              <span
-                key={step.id}
-                className={`${
-                  index === currentStep ? 'text-purple-600 font-medium' : ''
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  index <= currentStep
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-200 text-gray-400'
                 }`}
               >
-                {step.title}
+                {index + 1}
+              </div>
+              <span className="ml-2 text-sm font-medium hidden md:block">
+                {step}
               </span>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+          />
+        </div>
+      </div>
 
-        {/* Step Content */}
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <CurrentStepComponent
-              formData={formData}
-              photos={photos}
-              pricing={pricing}
-              updateFormData={updateFormData}
-              updatePhotos={updatePhotos}
-              updatePricing={updatePricing}
-              setPricing={updatePricing}
-              onNext={nextStep}
-              onPrev={prevStep}
-              onComplete={handleComplete}
-              isFirstStep={isFirstStep}
-              isLastStep={isLastStep}
-            />
-          </CardContent>
-        </Card>
+      {/* Step Content */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        {renderStep()}
+      </div>
 
-        {/* Navigation */}
-        <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={isFirstStep}
-            className="flex items-center"
+      {/* Navigation */}
+      <div className="flex justify-between mt-6">
+        <button
+          onClick={prevStep}
+          disabled={currentStep === 0}
+          className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+        
+        {currentStep === steps.length - 1 ? (
+          <button
+            onClick={handleComplete}
+            disabled={isLoading}
+            className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Previous
-          </Button>
-          
-          {isLastStep ? (
-            <Button
-              onClick={handleComplete}
-              className="bg-purple-600 hover:bg-purple-700 flex items-center"
-            >
-              Complete Listing
-              <Check className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button
-              onClick={nextStep}
-              className="bg-purple-600 hover:bg-purple-700 flex items-center"
-            >
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-        </div>
+            {isLoading ? 'Processing...' : 'Complete & Pay'}
+          </button>
+        ) : (
+          <button
+            onClick={nextStep}
+            className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+          >
+            Next
+          </button>
+        )}
       </div>
     </div>
   );
