@@ -12,6 +12,7 @@ import { salonFormSchema, type SalonFormValues } from './salonFormSchema';
 import { SalonIdentitySection } from './SalonIdentitySection';
 import { SalonLocationSection } from './SalonLocationSection';
 import { SalonPostDescription } from './SalonPostDescription';
+import { SalonContactSection } from './SalonContactSection';
 import { SalonPhotosSection } from './SalonPhotosSection';
 import SalonPaymentStep from './steps/SalonPaymentStep';
 import SalonPreviewStep from './steps/SalonPreviewStep';
@@ -20,6 +21,7 @@ const steps = [
   { id: 'identity', title: 'Salon Identity', component: 'identity' },
   { id: 'location', title: 'Location', component: 'location' },
   { id: 'description', title: 'Description', component: 'description' },
+  { id: 'contact', title: 'Contact Info', component: 'contact' },
   { id: 'photos', title: 'Photos', component: 'photos' },
   { id: 'preview', title: 'Preview', component: 'preview' },
   { id: 'payment', title: 'Payment', component: 'payment' }
@@ -100,6 +102,8 @@ const SalonListingWizard = () => {
         return <SalonLocationSection form={form} />;
       case 'description':
         return <SalonPostDescription form={form} />;
+      case 'contact':
+        return <SalonContactSection form={form} />;
       case 'photos':
         return (
           <SalonPhotosSection 
