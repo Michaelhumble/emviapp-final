@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SalonPricingOptions } from "@/utils/posting/salonPricing";
+import { Form } from "@/components/ui/form";
 
 const STEPS = [
   { id: 1, title: "Basic Information", component: SalonBasicInfoStep },
@@ -44,7 +45,6 @@ export const SalonListingWizard = () => {
       numberOfStaff: "",
       englishDescription: "",
       vietnameseDescription: "",
-      photos: [],
       willTrain: false,
       hasHousing: false,
       hasParking: false,
@@ -91,13 +91,15 @@ export const SalonListingWizard = () => {
         </div>
 
         {/* Step Content */}
-        <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
-          <CurrentStepComponent 
-            form={form} 
-            pricingOptions={pricingOptions}
-            onPricingChange={setPricingOptions}
-          />
-        </div>
+        <Form {...form}>
+          <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
+            <CurrentStepComponent 
+              form={form} 
+              pricingOptions={pricingOptions}
+              onPricingChange={setPricingOptions}
+            />
+          </div>
+        </Form>
 
         {/* Navigation */}
         <div className="flex justify-between">
