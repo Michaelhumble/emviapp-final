@@ -25,15 +25,14 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
     setLoading(true);
     
     try {
-      const result = await signIn(email, password);
+      await signIn(email, password);
       
-      if (result) {
-        // Decode the redirect URL if it exists
-        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-        navigate(decodedRedirect);
-      }
+      // If we get here, sign in was successful
+      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+      navigate(decodedRedirect);
     } catch (error) {
       // Error handling is done in the signIn method
+      console.error('Sign in failed:', error);
     } finally {
       setLoading(false);
     }

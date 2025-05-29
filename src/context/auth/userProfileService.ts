@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
@@ -22,6 +21,12 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     if (error) throw error;
     
     if (!data) return null;
+    
+    // Helper function to safely convert Json[] to string[]
+    const safeJsonArrayToStringArray = (jsonArray: any): string[] => {
+      if (!Array.isArray(jsonArray)) return [];
+      return jsonArray.filter(item => typeof item === 'string');
+    };
     
     // Transform database record to UserProfile type with safe fallbacks
     // Use type assertion and optional chaining to safely access properties
@@ -53,17 +58,23 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       referral_count: typeof (data as any).referral_count === 'number' ? (data as any).referral_count : 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      skills: Array.isArray((data as any).skills) ? (data as any).skills : [],
-      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
+      skills: safeJsonArrayToStringArray((data as any).skills),
+      portfolio_urls: safeJsonArrayToStringArray(data.portfolio_urls),
       credits: typeof data.credits === 'number' ? data.credits : 0,
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      badges: Array.isArray(data.badges) ? data.badges : [],
+      badges: safeJsonArrayToStringArray(data.badges),
       accepts_bookings: Boolean(data.accepts_bookings),
-      preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
+      preferences: safeJsonArrayToStringArray(data.preferences),
+      completed_profile_tasks: safeJsonArrayToStringArray(data.completed_profile_tasks),
       years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : 0,
-      professional_name: (data as any).professional_name || ''
+      professional_name: (data as any).professional_name || '',
+      
+      // NEW PROPERTIES WITH SAFE DEFAULTS
+      bookings_count: typeof (data as any).bookings_count === 'number' ? (data as any).bookings_count : 0,
+      reviews_count: typeof (data as any).reviews_count === 'number' ? (data as any).reviews_count : 0,
+      last_booking_date: (data as any).last_booking_date || null,
+      gender: (data as any).gender || '',
     };
     
     // Also update the cache for faster subsequent access

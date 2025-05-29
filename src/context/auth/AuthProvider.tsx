@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isSignedIn = !!user;
   const userProfile = null; // This will be enhanced later with actual profile fetching
   const userRole = user?.user_metadata?.role || null;
+  const isError = false; // Added missing property
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
@@ -63,6 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isSignedIn,
     loading,
     isNewUser,
+    isError,
     clearIsNewUser,
     login,
     logout,

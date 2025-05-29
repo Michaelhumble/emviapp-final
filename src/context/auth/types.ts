@@ -12,6 +12,8 @@ export type UserRole =
   | 'beauty supplier'
   | 'manager'
   | 'renter'
+  | 'vendor'
+  | 'admin'
   | 'other';
 
 export interface UserProfile {
@@ -61,6 +63,12 @@ export interface UserProfile {
   communication_preferences?: string[];
   commPrefs?: string[];
   is_premium?: boolean; // Added for compatibility
+  
+  // NEW PROPERTIES FOR MISSING FIELDS
+  bookings_count?: number;
+  reviews_count?: number;
+  last_booking_date?: string | null;
+  gender?: string;
 }
 
 export interface AuthContextType {
@@ -70,6 +78,7 @@ export interface AuthContextType {
   isSignedIn: boolean;
   loading: boolean;
   isNewUser: boolean;
+  isError?: boolean; // Added missing property
   clearIsNewUser: () => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;

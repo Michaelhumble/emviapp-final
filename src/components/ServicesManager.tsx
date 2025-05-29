@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -60,10 +59,10 @@ const ServicesManager = () => {
 
       if (error) throw error;
 
-      // Map database fields to component interface
+      // Map database fields to component interface with proper fallbacks
       const mappedServices = data.map(service => ({
         ...service,
-        name: service.title || service.name || ''
+        name: service.title || service.name || service.title || '' // Use title as fallback for name
       }));
 
       setServices(mappedServices);

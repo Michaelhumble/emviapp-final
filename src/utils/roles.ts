@@ -50,6 +50,10 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
     case 'booth renter':
     case 'chair renter':
       return 'renter';
+
+    case 'admin':
+    case 'administrator':
+      return 'admin';
       
     default:
       // If it's already a valid UserRole, return it

@@ -8,7 +8,7 @@ export interface PortfolioImage {
 
 export interface Service {
   id: string;
-  name: string;
+  name: string; // This was missing and causing errors
   title: string;
   description: string; // Changed from optional to required
   price: number;
