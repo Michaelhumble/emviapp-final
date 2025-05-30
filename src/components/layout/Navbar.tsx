@@ -6,10 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import Logo from '@/components/ui/Logo';
-import MobileMenu from './navbar/MobileMenu';
-import DesktopNavItems from './navbar/DesktopNavItems';
 import AuthButtons from './navbar/AuthButtons';
-import UserProfileDropdown from './navbar/UserProfileDropdown';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,8 +30,6 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <DesktopNavItems />
-            
             {/* Desktop Post Job/Salon CTA with Dropdown */}
             <div className="relative">
               <Button
@@ -88,12 +83,22 @@ const Navbar = () => {
             </div>
 
             {/* Auth Section */}
-            {user ? <UserProfileDropdown /> : <AuthButtons />}
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700">Welcome back!</span>
+              </div>
+            ) : (
+              <AuthButtons />
+            )}
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            {user && <UserProfileDropdown />}
+            {user && (
+              <div className="flex items-center space-x-2 mr-2">
+                <span className="text-sm text-gray-700">Welcome!</span>
+              </div>
+            )}
             <button
               onClick={toggleMenu}
               className="ml-2 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
@@ -105,7 +110,13 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
-      <MobileMenu isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      {isOpen && (
+        <div className="md:hidden bg-white border-t border-gray-200">
+          <div className="px-4 py-4 space-y-3">
+            {!user && <AuthButtons />}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
