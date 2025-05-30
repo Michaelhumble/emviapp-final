@@ -10,7 +10,6 @@ export const sampleSalonsForSale: Job[] = [
     type: 'salon',
     description: 'Profitable nail salon in prime downtown location. 8 stations, loyal clientele, fully equipped.',
     requirements: ['Business license transfer', 'Cash or financing available', 'Immediate possession'],
-    posted: '2 days ago',
     logo: '/lovable-uploads/salon-logo-1.png',
     featured: true,
     category: 'salon-for-sale'
@@ -23,7 +22,6 @@ export const sampleSalonsForSale: Job[] = [
     type: 'salon',
     description: 'Premium location with established VIP clientele. 12 stations, luxury finishes, parking included.',
     requirements: ['Serious buyers only', 'Proof of funds required', 'Owner financing possible'],
-    posted: '5 days ago',
     logo: '/lovable-uploads/salon-logo-2.png',
     featured: false,
     category: 'salon-for-sale'
@@ -36,7 +34,6 @@ export const sampleSalonsForSale: Job[] = [
     type: 'salon',
     description: 'Well-established family business. 6 stations, steady customers, easy to operate.',
     requirements: ['Quick sale needed', 'Training included', 'Equipment included'],
-    posted: '1 week ago',
     logo: '/lovable-uploads/salon-logo-3.png',
     featured: false,
     category: 'salon-for-sale'

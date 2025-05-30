@@ -6,11 +6,11 @@ import { PlusCircle, Store, Menu, X } from 'lucide-react';
 import EmviLogo from '@/components/branding/EmviLogo';
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/ui/LanguageToggle';
-import UserMenu from './navbar/UserMenu';
+import { UserMenu } from './navbar/UserMenu';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isSignedIn, user, logout } = useAuth();
+  const { isSignedIn, user, signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -23,7 +23,7 @@ const Navbar = () => {
   };
 
   const handleLogout = async () => {
-    await logout();
+    await signOut();
     navigate('/');
   };
 
