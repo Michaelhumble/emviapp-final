@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -12,10 +13,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 import MobileMenu from "@/components/layout/MobileMenu";
+import { ChevronDown, Briefcase, Store } from "lucide-react";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -66,9 +73,69 @@ const Navbar = () => {
           </nav>
         </div>
 
-        {/* Auth buttons or user menu with language toggle and Post Job button */}
+        {/* Auth buttons or user menu with language toggle and Post Job/Salon button */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Post Job Button - only visible on desktop */}
+          {/* Post Job/Salon CTA Button - only visible on desktop */}
+          <div className="hidden md:block">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg flex items-center gap-2">
+                  {t({
+                    english: "Post Job/Salon",
+                    vietnamese: "Đăng Tin Tuyển/Bán Tiệm"
+                  })}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-3 bg-white border border-gray-200 shadow-lg z-50">
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={() => navigate("/post-job")}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 flex items-center gap-2 justify-start"
+                  >
+                    <Briefcase className="h-5 w-5" />
+                    <div className="text-left">
+                      <div className="font-medium">
+                        {t({
+                          english: "Post a Job",
+                          vietnamese: "Tìm Thợ"
+                        })}
+                      </div>
+                      <div className="text-xs opacity-90">
+                        {t({
+                          english: "Find nail technicians",
+                          vietnamese: "Tuyển thợ nail"
+                        })}
+                      </div>
+                    </div>
+                  </Button>
+                  
+                  <Button
+                    onClick={() => navigate("/posting/salon")}
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white rounded-lg py-3 flex items-center gap-2 justify-start"
+                  >
+                    <Store className="h-5 w-5" />
+                    <div className="text-left">
+                      <div className="font-medium">
+                        {t({
+                          english: "List Your Salon",
+                          vietnamese: "Bán Tiệm"
+                        })}
+                      </div>
+                      <div className="text-xs opacity-90">
+                        {t({
+                          english: "Sell your salon",
+                          vietnamese: "Đăng bán tiệm"
+                        })}
+                      </div>
+                    </div>
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Original Post Job Button - only visible on desktop */}
           <div className="hidden md:block">
             <TooltipProvider>
               <Tooltip delayDuration={300}>
