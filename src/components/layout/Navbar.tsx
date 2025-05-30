@@ -1,123 +1,122 @@
-
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
-import { useTranslation } from '@/hooks/useTranslation';
-import Logo from '@/components/ui/Logo';
-import AuthButtons from './navbar/AuthButtons';
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
+import { toast } from "sonner";
+import Logo from "@/components/ui/Logo";
+import { UserMenu } from "./navbar/UserMenu";
+import AuthButtons from "./navbar/AuthButtons";
+import LanguageToggle from "@/components/layout/LanguageToggle";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
+import MobileMenu from "@/components/layout/MobileMenu";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isPostDropdownOpen, setIsPostDropdownOpen] = useState(false);
-  const { user } = useAuth();
-  const { isVietnamese } = useTranslation();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+    toast.success("You've been signed out successfully");
+  };
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const onPostJobClick = () => {
+    navigate("/post-job");
+  };
+
+  const tooltipText = t("Was $29.99 – Free for a limited time!");
 
   return (
-    <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <Logo size="small" />
-            </Link>
-          </div>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <div className="container flex items-center justify-between mx-auto h-16 px-4">
+        {/* Logo - using large size to match the footer */}
+        <Link to="/" className="flex items-center">
+          <Logo size="large" showText={true} />
+        </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {/* Desktop Post Job/Salon CTA with Dropdown */}
-            <div className="relative">
-              <Button
-                variant="outline"
-                className="flex items-center space-x-1 border-purple-200 text-purple-700 hover:bg-purple-50"
-                onClick={() => setIsPostDropdownOpen(!isPostDropdownOpen)}
+        {/* Main navigation - centered (hidden on mobile) */}
+        <div className="hidden md:flex justify-center flex-grow">
+          <nav className="flex items-center space-x-1">
+            {mainNavigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === item.path
+                    ? "text-purple-700 bg-purple-50"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
               >
-                <span>{isVietnamese ? 'Đăng Tin' : 'Post Job/Salon'}</span>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-              
-              {isPostDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  <Link
-                    to="/post-job"
-                    className="block px-4 py-3 hover:bg-purple-50 transition-colors"
-                    onClick={() => setIsPostDropdownOpen(false)}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <div>
-                        <div className="font-medium text-purple-700">
-                          {isVietnamese ? 'Tìm Thợ' : 'Post a Job'}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {isVietnamese ? 'Tìm thợ nails, tóc, spa' : 'Hire qualified professionals'}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                  
-                  <Link
-                    to="/posting/salon"
-                    className="block px-4 py-3 hover:bg-amber-50 transition-colors"
-                    onClick={() => setIsPostDropdownOpen(false)}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
-                      <div>
-                        <div className="font-medium text-amber-700">
-                          {isVietnamese ? 'Bán Tiệm' : 'List Your Salon'}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {isVietnamese ? 'Bán tiệm, sang tiệm' : 'Sell your business'}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              )}
-            </div>
+                {t({
+                  english: item.title,
+                  vietnamese: item.vietnameseTitle || item.title
+                })}
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-            {/* Auth Section */}
+        {/* Auth buttons or user menu with language toggle and Post Job button */}
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Post Job Button - only visible on desktop */}
+          <div className="hidden md:block">
+            <TooltipProvider>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  {user ? (
+                    <Button 
+                      onClick={onPostJobClick} 
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => navigate("/sign-in")}
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
+                    </Button>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                  <p>{tooltipText}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
+          {/* Language toggle always visible on desktop */}
+          <div className="hidden md:block">
+            <LanguageToggle minimal={true} className="mr-1" />
+          </div>
+          
+          {/* Auth buttons or user menu (hidden on mobile) */}
+          <div className="hidden md:block">
             {user ? (
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700">Welcome back!</span>
-              </div>
+              <UserMenu />
             ) : (
               <AuthButtons />
             )}
           </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            {user && (
-              <div className="flex items-center space-x-2 mr-2">
-                <span className="text-sm text-gray-700">Welcome!</span>
-              </div>
-            )}
-            <button
-              onClick={toggleMenu}
-              className="ml-2 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+          
+          {/* Mobile menu hamburger button - always visible on mobile */}
+          <div className="md:hidden">
+            <MobileMenu />
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <div className="px-4 py-4 space-y-3">
-            {!user && <AuthButtons />}
-          </div>
-        </div>
-      )}
-    </nav>
+    </header>
   );
 };
 
