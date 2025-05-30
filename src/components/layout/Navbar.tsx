@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -17,7 +16,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 import MobileMenu from "@/components/layout/MobileMenu";
-import ListYourSalonCta from "@/components/common/ListYourSalonCta";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -68,10 +66,10 @@ const Navbar = () => {
           </nav>
         </div>
 
-        {/* Auth buttons or user menu with language toggle and CTA buttons */}
+        {/* Auth buttons or user menu with language toggle and Post Job button */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* CTA Buttons - only visible on desktop */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Post Job Button - only visible on desktop */}
+          <div className="hidden md:block">
             <TooltipProvider>
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
@@ -80,20 +78,14 @@ const Navbar = () => {
                       onClick={onPostJobClick} 
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      {t({
-                        english: "Post a Job",
-                        vietnamese: "Tìm Thợ"
-                      })}
+                      {t("Post a Job for Free")}
                     </Button>
                   ) : (
                     <Button 
                       onClick={() => navigate("/sign-in")}
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      {t({
-                        english: "Post a Job",
-                        vietnamese: "Tìm Thợ"
-                      })}
+                      {t("Post a Job for Free")}
                     </Button>
                   )}
                 </TooltipTrigger>
@@ -102,8 +94,6 @@ const Navbar = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            
-            <ListYourSalonCta variant="navbar" />
           </div>
           
           {/* Language toggle always visible on desktop */}

@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import ListYourSalonCta from '@/components/common/ListYourSalonCta';
 
 /**
  * Call-to-action component displayed at the bottom of salon detail pages
@@ -23,7 +22,9 @@ const SalonListingCta = () => {
                 List your salon on EmviApp and connect with qualified buyers. Our platform helps salon owners find the right buyers quickly.
               </p>
               <div className="flex flex-wrap gap-4">
-                <ListYourSalonCta />
+                <Button asChild size="lg" className="bg-orange-500 hover:bg-orange-600">
+                  <Link to="/signup">List Your Salon</Link>
+                </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link to="/salons">View Other Listings</Link>
                 </Button>
