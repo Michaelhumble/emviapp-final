@@ -766,6 +766,7 @@ export type Database = {
           status: string | null
           title: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           compensation_details?: string | null
@@ -782,6 +783,7 @@ export type Database = {
           status?: string | null
           title: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           compensation_details?: string | null
@@ -798,6 +800,7 @@ export type Database = {
           status?: string | null
           title?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1514,6 +1517,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      salon_listings: {
+        Row: {
+          address: string | null
+          boost_level: number | null
+          business_hours: Json | null
+          contact_info: Json | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          expires_at: string | null
+          featured_until: string | null
+          id: string
+          instagram: string | null
+          is_featured: boolean | null
+          location: string | null
+          phone: string | null
+          pricing_tier: string | null
+          salon_name: string
+          services: Json | null
+          specialties: string[] | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          boost_level?: number | null
+          business_hours?: Json | null
+          contact_info?: Json | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          expires_at?: string | null
+          featured_until?: string | null
+          id?: string
+          instagram?: string | null
+          is_featured?: boolean | null
+          location?: string | null
+          phone?: string | null
+          pricing_tier?: string | null
+          salon_name: string
+          services?: Json | null
+          specialties?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          boost_level?: number | null
+          business_hours?: Json | null
+          contact_info?: Json | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          expires_at?: string | null
+          featured_until?: string | null
+          id?: string
+          instagram?: string | null
+          is_featured?: boolean | null
+          location?: string | null
+          phone?: string | null
+          pricing_tier?: string | null
+          salon_name?: string
+          services?: Json | null
+          specialties?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
       }
       salon_photos: {
         Row: {
