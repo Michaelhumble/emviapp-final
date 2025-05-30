@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -95,6 +96,14 @@ const Navbar = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+          </div>
+
+          {/* Post Your Salon Button - only visible on desktop */}
+          <div className="hidden md:block">
+            <PostYourSalonButton 
+              variant="outline" 
+              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+            />
           </div>
           
           {/* Language toggle always visible on desktop */}
