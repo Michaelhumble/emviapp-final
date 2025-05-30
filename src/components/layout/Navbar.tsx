@@ -17,7 +17,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 import MobileMenu from "@/components/layout/MobileMenu";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Store } from "lucide-react";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -36,7 +36,12 @@ const Navbar = () => {
     navigate("/post-job");
   };
 
-  const tooltipText = t("Was $29.99 – Free for a limited time!");
+  const onListSalonClick = () => {
+    navigate("/post-salon");
+  };
+
+  const jobTooltipText = t("Was $29.99 – Free for a limited time!");
+  const salonTooltipText = t("List your salon for sale on EmviApp!");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
@@ -68,33 +73,62 @@ const Navbar = () => {
           </nav>
         </div>
 
-        {/* Auth buttons or user menu with language toggle and Post Job button */}
+        {/* Auth buttons or user menu with language toggle and Both CTA buttons */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Post Job Button - only visible on desktop */}
-          <div className="hidden md:block">
+          {/* Both CTA Buttons - side by side on desktop */}
+          <div className="hidden md:flex items-center gap-2">
             <TooltipProvider>
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
                   {user ? (
                     <Button 
                       onClick={onPostJobClick} 
-                      className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white hover:from-[#8A6B59] hover:to-[#A8855A] shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-6 py-2.5 flex items-center gap-2 border border-[#8A6B59]/20"
+                      className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white hover:from-[#8A6B59] hover:to-[#A8855A] shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-4 py-2.5 flex items-center gap-2 border border-[#8A6B59]/20 text-sm"
                     >
                       <PlusCircle className="h-4 w-4" />
-                      {t("Post a Job for Free")}
+                      {t("Post Job")}
                     </Button>
                   ) : (
                     <Button 
                       onClick={() => navigate("/sign-in")}
-                      className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white hover:from-[#8A6B59] hover:to-[#A8855A] shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-6 py-2.5 flex items-center gap-2 border border-[#8A6B59]/20"
+                      className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white hover:from-[#8A6B59] hover:to-[#A8855A] shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-4 py-2.5 flex items-center gap-2 border border-[#8A6B59]/20 text-sm"
                     >
                       <PlusCircle className="h-4 w-4" />
-                      {t("Post a Job for Free")}
+                      {t("Post Job")}
                     </Button>
                   )}
                 </TooltipTrigger>
                 <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
-                  <p>{tooltipText}</p>
+                  <p>{jobTooltipText}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  {user ? (
+                    <Button 
+                      onClick={onListSalonClick} 
+                      variant="outline"
+                      className="border-[#9A7B69] text-[#9A7B69] hover:bg-[#9A7B69] hover:text-white shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-4 py-2.5 flex items-center gap-2 text-sm"
+                    >
+                      <Store className="h-4 w-4" />
+                      {t("List Salon")}
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => navigate("/sign-in")}
+                      variant="outline"
+                      className="border-[#9A7B69] text-[#9A7B69] hover:bg-[#9A7B69] hover:text-white shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-4 py-2.5 flex items-center gap-2 text-sm"
+                    >
+                      <Store className="h-4 w-4" />
+                      {t("List Salon")}
+                    </Button>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                  <p>{salonTooltipText}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
