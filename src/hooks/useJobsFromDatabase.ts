@@ -42,25 +42,43 @@ export const useJobsFromDatabase = () => {
         }
 
         // Transform database jobs to match Job interface
-        const transformedJobs: Job[] = (data || []).map((dbJob: DatabaseJob) => ({
-          id: dbJob.id,
-          title: dbJob.title,
-          company: 'Posted via EmviApp', // Default company name for database jobs
-          location: dbJob.location || 'Location not specified',
-          description: dbJob.description || '',
-          created_at: dbJob.created_at,
-          salary_range: dbJob.compensation_details || dbJob.compensation_type || 'Contact for details',
-          employment_type: 'Full-time', // Default employment type
-          pricingTier: dbJob.pricing_tier || 'free',
-          contact_info: dbJob.contact_info || {},
-          requirements: dbJob.requirements,
-          status: dbJob.status || 'active',
-          user_id: dbJob.user_id,
-          // Add default properties to match Job interface
-          experience_level: 'Entry Level',
-          is_featured: dbJob.pricing_tier === 'diamond' || dbJob.pricing_tier === 'premium',
-          is_vietnamese_listing: false // Database jobs are not Vietnamese protected listings
-        }));
+        const transformedJobs: Job[] = (data || []).map((dbJob: DatabaseJob) => {
+          // Normalize pricing tier to match union type
+          const normalizePricingTier = (tier: string | null): Job['pricingTier'] => {
+            if (!tier) return 'free';
+            const lowerTier = tier.toLowerCase();
+            switch (lowerTier) {
+              case 'diamond': return 'diamond';
+              case 'premium': return 'premium';
+              case 'gold': return 'gold';
+              case 'featured': return 'featured';
+              case 'standard': return 'standard';
+              case 'starter': return 'starter';
+              case 'expired': return 'expired';
+              default: return 'free';
+            }
+          };
+
+          return {
+            id: dbJob.id,
+            title: dbJob.title,
+            company: 'Posted via EmviApp', // Default company name for database jobs
+            location: dbJob.location || 'Location not specified',
+            description: dbJob.description || '',
+            created_at: dbJob.created_at,
+            salary_range: dbJob.compensation_details || dbJob.compensation_type || 'Contact for details',
+            employment_type: 'Full-time', // Default employment type
+            pricingTier: normalizePricingTier(dbJob.pricing_tier),
+            contact_info: dbJob.contact_info || {},
+            requirements: dbJob.requirements,
+            status: dbJob.status || 'active',
+            user_id: dbJob.user_id,
+            // Add default properties to match Job interface
+            experience_level: 'Entry Level',
+            is_featured: dbJob.pricing_tier === 'diamond' || dbJob.pricing_tier === 'premium',
+            is_vietnamese_listing: false // Database jobs are not Vietnamese protected listings
+          };
+        });
 
         console.log(`Successfully fetched ${transformedJobs.length} active jobs from database`);
         setJobs(transformedJobs);
