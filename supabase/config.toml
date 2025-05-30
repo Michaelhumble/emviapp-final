@@ -1,5 +1,5 @@
 
-project_id = "lklqotqxdvdrhtxkwysi"
+project_id = "wwhqbjrhbajpabfdwnip"
 
 [api]
 enabled = true
@@ -28,4 +28,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.webhook-credit-purchase]
+verify_jwt = false
+
+[functions.stripe-webhook-handler]
 verify_jwt = false

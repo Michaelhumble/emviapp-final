@@ -1,252 +1,111 @@
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.24.0";
-import Stripe from "https://esm.sh/stripe@12.1.1";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
 
-// Configure CORS headers for the function
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-// Helper function to log webhook events
-async function logWebhookEvent(supabase, event, status, details = {}) {
-  try {
-    await supabase
-      .from('webhook_logs')
-      .insert({
-        event_type: event.type,
-        event_id: event.id,
-        status: status,
-        details: JSON.stringify({
-          ...details,
-          timestamp: new Date().toISOString()
-        })
-      });
-  } catch (logError) {
-    // If webhook_logs table doesn't exist, just log to console
-    console.error('Could not log webhook event:', logError);
-  }
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     // Get the request body and signature header
     const body = await req.text();
-    const signature = req.headers.get('stripe-signature');
+    const signature = req.headers.get('stripe-signature') || '';
     
-    if (!signature) {
-      throw new Error('No Stripe signature found in request headers');
-    }
+    console.log("🎯 Webhook received - PHASE 1 LISTEN-ONLY MODE");
 
-    // Initialize Stripe with the secret key
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16", 
-    });
-    
-    // Verify the webhook signature
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(
-        body,
-        signature,
-        Deno.env.get("STRIPE_WEBHOOK_SECRET") || ""
-      );
-    } catch (err) {
-      console.error(`Webhook signature verification failed: ${err.message}`);
-      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    // Get environment variables
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+    const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+
+    if (!stripeSecretKey || !webhookSecret) {
+      console.error("❌ Missing Stripe configuration");
+      return new Response(JSON.stringify({ error: 'Missing Stripe configuration' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log(`Webhook received: ${event.type}`);
-    
-    // Initialize Supabase client with service role key to bypass RLS
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
-    );
-    
-    // Handle specific event types
-    switch (event.type) {
-      case 'payment_intent.succeeded': {
-        const paymentIntent = event.data.object;
-        const metadata = paymentIntent.metadata || {};
-        const userId = metadata.user_id;
-        
-        if (userId && paymentIntent.id) {
-          await supabaseAdmin
-            .from('payment_logs')
-            .update({ payment_status: 'success' })
-            .eq('stripe_payment_id', paymentIntent.id);
-            
-          await logWebhookEvent(supabaseAdmin, event, 'processed', { userId });
-        }
-        break;
-      }
-      
-      case 'payment_intent.payment_failed': {
-        const paymentIntent = event.data.object;
-        const metadata = paymentIntent.metadata || {};
-        const userId = metadata.user_id;
-        
-        if (userId && paymentIntent.id) {
-          await supabaseAdmin
-            .from('payment_logs')
-            .update({ payment_status: 'payment_failed' })
-            .eq('stripe_payment_id', paymentIntent.id);
-            
-          await logWebhookEvent(supabaseAdmin, event, 'processed', { userId });
-        }
-        break;
-      }
-      
-      case 'charge.refunded': {
-        const charge = event.data.object;
-        const paymentIntentId = charge.payment_intent;
-        
-        if (paymentIntentId) {
-          // Find associated payment logs
-          const { data: paymentLogs, error } = await supabaseAdmin
-            .from('payment_logs')
-            .select('id, user_id')
-            .eq('stripe_payment_id', paymentIntentId)
-            .maybeSingle();
-            
-          if (paymentLogs) {
-            // Update payment status
-            await supabaseAdmin
-              .from('payment_logs')
-              .update({ payment_status: 'refunded' })
-              .eq('stripe_payment_id', paymentIntentId);
-              
-            // Flag user if this is their second+ refund
-            await checkAndFlagUser(supabaseAdmin, paymentLogs.user_id, 'refund');
-            
-            await logWebhookEvent(supabaseAdmin, event, 'processed', { 
-              userId: paymentLogs.user_id,
-              paymentIntentId
-            });
-          }
-        }
-        break;
-      }
-      
-      case 'charge.dispute.created': {
-        const dispute = event.data.object;
-        const paymentIntentId = dispute.payment_intent;
-        
-        if (paymentIntentId) {
-          const { data: paymentLogs, error } = await supabaseAdmin
-            .from('payment_logs')
-            .select('id, user_id')
-            .eq('stripe_payment_id', paymentIntentId)
-            .maybeSingle();
-            
-          if (paymentLogs) {
-            await supabaseAdmin
-              .from('payment_logs')
-              .update({ payment_status: 'dispute_open' })
-              .eq('stripe_payment_id', paymentIntentId);
-              
-            // Flag user if this is their second+ dispute
-            await checkAndFlagUser(supabaseAdmin, paymentLogs.user_id, 'dispute');
-            
-            await logWebhookEvent(supabaseAdmin, event, 'processed', { 
-              userId: paymentLogs.user_id,
-              paymentIntentId,
-              disputeId: dispute.id
-            });
-          }
-        }
-        break;
-      }
-      
-      case 'charge.dispute.closed': {
-        const dispute = event.data.object;
-        const paymentIntentId = dispute.payment_intent;
-        const status = dispute.status; // 'won', 'lost', 'warning_closed', etc.
-        
-        if (paymentIntentId) {
-          const { data: paymentLogs, error } = await supabaseAdmin
-            .from('payment_logs')
-            .select('id, user_id')
-            .eq('stripe_payment_id', paymentIntentId)
-            .maybeSingle();
-            
-          if (paymentLogs) {
-            let paymentStatus = 'dispute_closed';
-            
-            // Determine payment status based on dispute outcome
-            if (status === 'won') {
-              paymentStatus = 'dispute_won';
-            } else if (status === 'lost') {
-              paymentStatus = 'dispute_lost';
-            }
-            
-            await supabaseAdmin
-              .from('payment_logs')
-              .update({ payment_status: paymentStatus })
-              .eq('stripe_payment_id', paymentIntentId);
-              
-            await logWebhookEvent(supabaseAdmin, event, 'processed', { 
-              userId: paymentLogs.user_id,
-              paymentIntentId,
-              disputeId: dispute.id,
-              disputeStatus: status
-            });
-          }
-        }
-        break;
-      }
-      
-      default:
-        await logWebhookEvent(supabaseAdmin, event, 'unhandled');
-        console.log(`Unhandled event type: ${event.type}`);
+    // Initialize Stripe
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-10-16',
+    });
+
+    // Verify webhook signature
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      console.log("✅ Webhook signature verified successfully");
+    } catch (err) {
+      console.error(`❌ Webhook signature verification failed: ${err.message}`);
+      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
-    
-    return new Response(JSON.stringify({ received: true }), {
+
+    // PHASE 1: LISTEN-ONLY - Process checkout.session.completed events
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      
+      console.log("🎉 PAYMENT SUCCESS EVENT DETECTED");
+      console.log("📊 Session ID:", session.id);
+      console.log("💰 Amount Total:", session.amount_total);
+      console.log("💳 Payment Status:", session.payment_status);
+      console.log("📧 Customer Email:", session.customer_email);
+      
+      // Parse metadata for both job and salon payments
+      const metadata = session.metadata;
+      console.log("🏷️ Payment Metadata:", JSON.stringify(metadata, null, 2));
+      
+      // Identify payment type and extract relevant data
+      if (metadata.pricing_tier || metadata.tier) {
+        const paymentType = metadata.salon_name ? 'SALON' : 'JOB';
+        const tier = metadata.pricing_tier || metadata.tier;
+        
+        console.log(`🎯 PAYMENT TYPE: ${paymentType}`);
+        console.log(`🏆 TIER/PLAN: ${tier}`);
+        
+        if (paymentType === 'SALON') {
+          console.log("🏢 SALON PAYMENT DETAILS:");
+          console.log("  - Salon Name:", metadata.salon_name);
+          console.log("  - Asking Price:", metadata.asking_price);
+          console.log("  - Featured Addon:", metadata.featured_addon);
+          console.log("  - Total Amount:", metadata.total_amount);
+        } else if (paymentType === 'JOB') {
+          console.log("💼 JOB PAYMENT DETAILS:");
+          console.log("  - Job Title:", metadata.jobTitle);
+          console.log("  - Duration Months:", metadata.durationMonths);
+          console.log("  - User ID:", metadata.userId);
+        }
+        
+        // PHASE 1 SAFETY: Log successful parsing but DO NOT create/update any listings
+        console.log("✅ PHASE 1 SUCCESS: Payment data parsed and logged");
+        console.log("🛡️ SAFETY MODE: No listings created or updated (waiting for Phase 2 approval)");
+        
+      } else {
+        console.log("⚠️ No tier/pricing metadata found in payment");
+      }
+      
+    } else {
+      console.log(`ℹ️ Received event type: ${event.type} (not processing in Phase 1)`);
+    }
+
+    return new Response(JSON.stringify({ received: true, phase: "LISTEN_ONLY" }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
     });
 
   } catch (error) {
-    console.error('Error handling webhook:', error);
+    console.error('💥 Error processing webhook:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
-
-// Helper function to check for repeated issues and flag users
-async function checkAndFlagUser(supabase, userId, issueType) {
-  if (!userId) return;
-  
-  try {
-    // Count previous issues of this type
-    const { count, error } = await supabase
-      .from('payment_logs')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('payment_status', issueType === 'refund' ? 'refunded' : 'dispute_open');
-      
-    if (!error && count && count >= 2) {
-      // Flag the user after multiple issues
-      await supabase
-        .from('users')
-        .update({ flagged: true })
-        .eq('id', userId);
-        
-      console.log(`User ${userId} flagged due to multiple ${issueType}s`);
-    }
-  } catch (err) {
-    console.error(`Error checking/flagging user: ${err.message}`);
-  }
-}
