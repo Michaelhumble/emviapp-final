@@ -1,182 +1,183 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, PlusCircle, Store } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PlusCircle, Store, Menu, X } from 'lucide-react';
+import { EmviLogo } from '@/components/branding/EmviLogo';
+import { UserMenu } from '@/components/layout/navbar/UserMenu';
+import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { useAuth } from '@/context/auth';
-import { UserMenu } from './UserMenu';
-import LanguageSelector from './LanguageSelector';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const { user, isSignedIn } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const location = useLocation();
+  const isMobile = useIsMobile();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleAuthAction = (path: string) => {
+  const handlePostJobClick = () => {
     if (isSignedIn) {
-      navigate(path);
+      navigate('/post-job');
     } else {
-      navigate('/sign-in');
+      navigate('/auth/signin?redirect=/post-job');
     }
-    setIsOpen(false);
   };
 
+  const handleListSalonClick = () => {
+    if (isSignedIn) {
+      navigate('/post-salon');
+    } else {
+      navigate('/auth/signin?redirect=/post-salon');
+    }
+  };
+
+  const navItems = [
+    { label: 'Jobs', path: '/jobs' },
+    { label: 'Salons', path: '/salons' },
+    { label: 'Artists', path: '/artists' },
+  ];
+
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-100 fixed top-0 left-0 right-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-[#9A7B69] font-playfair">EmviApp</span>
+              <EmviLogo className="h-8 w-auto" />
             </Link>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-[#9A7B69] font-medium transition-colors">
-              {t('Home')}
-            </Link>
-            <Link to="/jobs" className="text-gray-700 hover:text-[#9A7B69] font-medium transition-colors">
-              {t('Jobs')}
-            </Link>
-            <Link to="/salons" className="text-gray-700 hover:text-[#9A7B69] font-medium transition-colors">
-              {t('Salons')}
-            </Link>
-            <Link to="/artists" className="text-gray-700 hover:text-[#9A7B69] font-medium transition-colors">
-              {t('Artists')}
-            </Link>
-          </div>
-
-          {/* Desktop CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-3">
-            <Button
-              onClick={() => handleAuthAction('/post-job')}
-              className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold border border-[#8A6B59]/20"
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              {t('Post a Job')}
-            </Button>
-            
-            <Button
-              onClick={() => handleAuthAction('/post-salon')}
-              className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold border border-[#8A6B59]/20"
-            >
-              <Store className="mr-2 h-4 w-4" />
-              {t('List Salon')}
-            </Button>
-
-            <LanguageSelector />
-            
-            {isSignedIn ? (
-              <UserMenu user={user} />
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Link to="/sign-in">
-                  <Button variant="ghost" className="text-gray-700 hover:text-[#9A7B69]">
-                    {t('Sign In')}
-                  </Button>
-                </Link>
-                <Link to="/sign-up">
-                  <Button className="bg-[#9A7B69] hover:bg-[#8A6B59] text-white">
-                    {t('Sign Up')}
-                  </Button>
-                </Link>
+          {/* Desktop Navigation */}
+          {!isMobile && (
+            <>
+              {/* Center Navigation */}
+              <div className="hidden md:flex items-center space-x-8">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`text-sm font-medium transition-colors hover:text-[#9A7B69] ${
+                      location.pathname === item.path ? 'text-[#9A7B69]' : 'text-gray-700'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
-            )}
-          </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-3">
-            <LanguageSelector />
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-[#9A7B69] transition-colors"
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
-              <Link
-                to="/"
-                className="block px-3 py-2 text-gray-700 hover:text-[#9A7B69] font-medium transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('Home')}
-              </Link>
-              <Link
-                to="/jobs"
-                className="block px-3 py-2 text-gray-700 hover:text-[#9A7B69] font-medium transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('Jobs')}
-              </Link>
-              <Link
-                to="/salons"
-                className="block px-3 py-2 text-gray-700 hover:text-[#9A7B69] font-medium transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('Salons')}
-              </Link>
-              <Link
-                to="/artists"
-                className="block px-3 py-2 text-gray-700 hover:text-[#9A7B69] font-medium transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('Artists')}
-              </Link>
-              
-              {/* Mobile CTA Buttons */}
-              <div className="pt-4 space-y-2">
+              {/* Right Side Actions */}
+              <div className="flex items-center space-x-3">
+                {/* Post Job CTA */}
                 <Button
-                  onClick={() => handleAuthAction('/post-job')}
-                  className="w-full bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold border border-[#8A6B59]/20"
+                  onClick={handlePostJobClick}
+                  className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold px-6 py-2 rounded-lg border border-[#8A6B59]/20"
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  {t('Post a Job')}
+                  Post a Job
                 </Button>
-                
+
+                {/* List Salon CTA */}
                 <Button
-                  onClick={() => handleAuthAction('/post-salon')}
-                  className="w-full bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold border border-[#8A6B59]/20"
+                  onClick={handleListSalonClick}
+                  className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold px-6 py-2 rounded-lg border border-[#8A6B59]/20"
                 >
                   <Store className="mr-2 h-4 w-4" />
-                  {t('List Salon')}
+                  List Your Salon
                 </Button>
-              </div>
 
-              {/* Mobile Auth Section */}
-              <div className="pt-4 border-t border-gray-100">
-                {isSignedIn ? (
-                  <div className="px-3 py-2">
-                    <UserMenu user={user} />
-                  </div>
+                <LanguageToggle />
+                
+                {user ? (
+                  <UserMenu />
                 ) : (
-                  <div className="space-y-2">
-                    <Link
-                      to="/sign-in"
-                      className="block px-3 py-2 text-gray-700 hover:text-[#9A7B69] font-medium transition-colors"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {t('Sign In')}
-                    </Link>
-                    <Link
-                      to="/sign-up"
-                      className="block px-3 py-2 text-[#9A7B69] hover:text-[#8A6B59] font-medium transition-colors"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {t('Sign Up')}
-                    </Link>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="ghost" asChild>
+                      <Link to="/auth/signin">Sign In</Link>
+                    </Button>
+                    <Button asChild className="bg-[#9A7B69] hover:bg-[#8A6B59]">
+                      <Link to="/auth/signup">Sign Up</Link>
+                    </Button>
                   </div>
                 )}
               </div>
+            </>
+          )}
+
+          {/* Mobile Menu Button */}
+          {isMobile && (
+            <div className="flex items-center space-x-2">
+              <LanguageToggle />
+              {user ? (
+                <UserMenu />
+              ) : (
+                <Button variant="ghost" asChild size="sm">
+                  <Link to="/auth/signin">Sign In</Link>
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Menu */}
+        {isMobile && isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 py-4">
+            <div className="flex flex-col space-y-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-[#9A7B69] hover:bg-gray-50 ${
+                    location.pathname === item.path ? 'text-[#9A7B69] bg-gray-50' : 'text-gray-700'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              
+              <div className="pt-3 border-t border-gray-200 space-y-2">
+                <Button
+                  onClick={() => {
+                    handlePostJobClick();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold rounded-lg border border-[#8A6B59]/20"
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Post a Job
+                </Button>
+                
+                <Button
+                  onClick={() => {
+                    handleListSalonClick();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold rounded-lg border border-[#8A6B59]/20"
+                >
+                  <Store className="mr-2 h-4 w-4" />
+                  List Your Salon
+                </Button>
+              </div>
+
+              {!user && (
+                <div className="pt-2 space-y-2">
+                  <Button variant="outline" asChild className="w-full">
+                    <Link to="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                      Sign Up
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
