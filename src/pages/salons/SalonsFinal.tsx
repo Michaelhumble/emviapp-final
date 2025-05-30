@@ -1,197 +1,156 @@
-import React, { useState } from "react";
-import { Helmet } from "react-helmet";
-import { Container } from "@/components/ui/container";
-import { Job } from "@/types/job";
-import { JobDetailModal } from "@/components/jobs/JobDetailModal";
-import SalonImageBanner from "@/components/salons/SalonImageBanner";
-import DatabaseSalonListingsSection from "@/components/salons/DatabaseSalonListingsSection";
 
-const SalonsFinal: React.FC = () => {
-  const [selectedSalon, setSelectedSalon] = useState<Job | null>(null);
+import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { salonListings, vietnameseSalonListings } from '@/data/salonData';
+import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
+import { Plus, Search } from 'lucide-react';
+import HairBarberListingsSection from '@/components/salons/HairBarberListingsSection';
 
-  // EXISTING STATIC/PROTECTED SALON DATA - PRESERVED 100%
-  const salonsForSale: Job[] = [
-    {
-      id: "101",
-      title: "Established Nail Salon in Westminster, CA",
-      company: "Westminster Nails & Spa",
-      location: "Westminster, CA",
-      description: "Profitable nail salon in prime location. Established clientele, modern equipment. Perfect investment opportunity.",
-      price: "$85,000",
-      square_feet: "1,200 sq ft",
-      created_at: new Date("2024-01-15").toISOString(),
-      salary_range: "$85,000",
-      employment_type: "Business Sale",
-      contact_info: {
-        phone: "(714) 555-0123",
-        email: "contact@westminsternails.com"
-      },
-      image: "/lovable-uploads/7af46f7a-c8f1-497f-a8e6-271856b882eb.png"
-    },
-    {
-      id: "102", 
-      title: "Luxury Salon & Spa in Beverly Hills",
-      company: "Beverly Hills Beauty Lounge",
-      location: "Beverly Hills, CA",
-      description: "High-end salon and spa serving celebrity clientele. Premium location on Rodeo Drive with established reputation.",
-      price: "$450,000",
-      square_feet: "2,800 sq ft",
-      created_at: new Date("2024-01-10").toISOString(),
-      salary_range: "$450,000",
-      employment_type: "Business Sale",
-      contact_info: {
-        phone: "(310) 555-0456",
-        email: "info@bhbeautylounge.com"
-      },
-      image: "/lovable-uploads/b8dd2904-7dc6-412d-89be-c962ca4ae5f8.png"
-    },
-    {
-      id: "103",
-      title: "Hair Salon with Loyal Customers",
-      company: "Scissors & Style",
-      location: "San Jose, CA", 
-      description: "Established hair salon with 15+ years of loyal customers. Great opportunity for experienced stylist to take over.",
-      price: "$65,000",
-      square_feet: "900 sq ft",
-      created_at: new Date("2024-01-08").toISOString(),
-      salary_range: "$65,000",
-      employment_type: "Business Sale",
-      contact_info: {
-        phone: "(408) 555-0789",
-        email: "sales@scissorsandstyle.com"
-      },
-      image: "/lovable-uploads/d98977ed-9565-4629-b2e7-fc4cf3f93a7f.png"
-    },
-    {
-      id: "104",
-      title: "Modern Barbershop in Downtown LA",
-      company: "Metro Cuts Barbershop",
-      location: "Los Angeles, CA",
-      description: "Trendy barbershop in busy downtown location. Modern fixtures, great foot traffic, established customer base.",
-      price: "$95,000",
-      square_feet: "1,100 sq ft", 
-      created_at: new Date("2024-01-05").toISOString(),
-      salary_range: "$95,000",
-      employment_type: "Business Sale",
-      contact_info: {
-        phone: "(213) 555-0321",
-        email: "info@metrocuts.com"
-      },
-      image: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png"
-    },
-    {
-      id: "105",
-      title: "Full-Service Beauty Salon",
-      company: "Glamour Palace",
-      location: "Orange County, CA",
-      description: "Complete beauty destination offering hair, nails, skincare, and spa services. Turn-key operation ready for new owner.",
-      price: "$175,000",
-      square_feet: "2,000 sq ft",
-      created_at: new Date("2024-01-03").toISOString(),
-      salary_range: "$175,000", 
-      employment_type: "Business Sale",
-      contact_info: {
-        phone: "(714) 555-0654",
-        email: "contact@glamourpalace.com"
-      },
-      image: "/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png"
-    },
-    {
-      id: "106",
-      title: "Boutique Spa & Wellness Center",
-      company: "Serenity Spa",
-      location: "Malibu, CA",
-      description: "Peaceful spa retreat offering massage, facials, and wellness treatments. Established clientele in upscale area.",
-      price: "$225,000",
-      square_feet: "1,800 sq ft",
-      created_at: new Date("2024-01-01").toISOString(),
-      salary_range: "$225,000",
-      employment_type: "Business Sale", 
-      contact_info: {
-        phone: "(310) 555-0987",
-        email: "hello@serenityspa.com"
-      },
-      image: "/lovable-uploads/362c9477-1040-49d9-a35a-639dc7d4d856.png"
-    }
-  ];
-
-  const handleViewDetails = (salon: Job) => {
-    setSelectedSalon(salon);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedSalon(null);
-  };
+const SalonsFinalsPage = () => {
+  useEffect(() => {
+    // Simple debug log to confirm rendering
+    console.log('SalonsFinal page rendered - timestamp:', new Date().toISOString());
+    
+    // Add an image loading debug
+    const img = new Image();
+    img.onload = () => console.log('✅ Salon banner image loaded successfully');
+    img.onerror = () => console.error('❌ Failed to load salon banner image');
+    img.src = '/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png';
+  }, []);
 
   return (
-    <>
+    <Layout>
       <Helmet>
-        <title>Salons for Sale | EmviApp</title>
+        <title>Premium Salon Listings | EmviApp</title>
         <meta 
           name="description" 
-          content="Browse salon businesses for sale. Find profitable nail salons, hair salons, spas and beauty businesses for purchase."
+          content="Browse our curated selection of premium salons for sale. Find your next business opportunity with EmviApp." 
         />
       </Helmet>
 
-      <Container className="py-8 max-w-7xl">
-        {/* Hero Banner */}
-        <SalonImageBanner />
+      {/* Hero banner with overlay, text and buttons - increased height */}
+      <div className="w-full relative h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden">
+        {/* Main image with object-cover to fill the space while maintaining aspect ratio */}
+        <img 
+          src="/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png" 
+          alt="Luxury salon interior" 
+          className="w-full h-full object-cover"
+        />
         
-        {/* Page Title */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Salons for Sale</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Discover profitable beauty business opportunities. Browse established salons, 
-            spas, and beauty centers ready for new ownership.
+        {/* Dark gradient overlay */}
+        <div 
+          className="absolute inset-0" 
+          style={{ 
+            background: 'linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35))',
+          }} 
+        />
+        
+        {/* Hero content - centered both vertically and horizontally */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-white mb-3">
+            Premium Salons for Sale — Ready to Own
+          </h1>
+          <p className="text-white text-lg md:text-xl mb-8 max-w-2xl opacity-90">
+            Discover, list, and buy high-end beauty businesses with EmviApp
           </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link to="/sell-salon">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800"
+              >
+                <Plus className="w-5 h-5 mr-1" /> Post Your Salon
+              </Button>
+            </Link>
+            <Link to="#listings">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-2 border-white text-white bg-transparent hover:bg-white/10"
+              >
+                <Search className="w-5 h-5 mr-1" /> Browse Listings
+              </Button>
+            </Link>
+          </div>
         </div>
+      </div>
 
-        {/* EXISTING STATIC SALON LISTINGS - PRESERVED 100% */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {salonsForSale.map((salon) => (
-            <div key={salon.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="aspect-video bg-gray-100">
-                <img
-                  src={salon.image || '/placeholder.svg'}
-                  alt={salon.company}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2">{salon.company}</h3>
-                <p className="text-gray-600 mb-3 flex items-center">
-                  📍 {salon.location}
-                </p>
-                <p className="text-gray-700 mb-4 line-clamp-3">{salon.description}</p>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-2xl font-bold text-green-600">{salon.price}</span>
-                  <span className="text-sm text-gray-500">{salon.square_feet}</span>
-                </div>
-                <button
-                  onClick={() => handleViewDetails(salon)}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors"
-                >
-                  View Details
-                </button>
-              </div>
+      <div className="container mx-auto px-4 py-12" id="listings">
+        <div className="max-w-7xl mx-auto">
+          {/* Premium Listings Section */}
+          <div className="mb-16">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-6">
+              Premium Salon Listings
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {salonListings.map((salon) => (
+                <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
-        {/* NEW: DATABASE SALON LISTINGS SECTION - ADDED BELOW ALL STATIC CONTENT */}
-        <DatabaseSalonListingsSection onViewDetails={handleViewDetails} />
-        
-        {/* Salon Detail Modal */}
-        {selectedSalon && (
-          <JobDetailModal
-            job={selectedSalon}
-            isOpen={!!selectedSalon}
-            onClose={handleCloseModal}
-          />
-        )}
-      </Container>
-    </>
+          {/* Hair & Barber Listings Section - New section */}
+          <HairBarberListingsSection />
+
+          {/* Vietnamese Nail Listings Section - Restored section */}
+          <div className="mb-16 border-t pt-12">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-2">
+              💅 Tin Rao Vặt Tiệm Nail – Cộng Đồng Người Việt
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Vietnamese nail salon listings for our community
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vietnameseSalonListings.map((salon) => (
+                <ValidatedSalonCard 
+                  key={salon.id} 
+                  salon={salon} 
+                  listingType="salon" 
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 mb-8">
+            <Button variant="outline" className="rounded-full">
+              All Locations
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Under $200K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              $200K - $500K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Over $500K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Recently Added
+            </Button>
+          </div>
+          
+          <div className="mt-16 text-center">
+            <h2 className="font-playfair text-2xl font-semibold mb-4">
+              Have a salon you want to sell?
+            </h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              List your salon with EmviApp to reach thousands of potential buyers in the beauty industry.
+            </p>
+            <Link to="/sell-salon">
+              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800">
+                List Your Salon
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
-export default SalonsFinal;
+export default SalonsFinalsPage;

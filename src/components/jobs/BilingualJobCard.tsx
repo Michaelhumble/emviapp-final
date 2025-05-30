@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, MapPinIcon, DollarSign, LockIcon, ShieldCheck } from "lucide-react";
+import { CalendarIcon, MapPinIcon, Phone, LockIcon } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { Job } from '@/types/job';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
@@ -48,134 +48,79 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
     })();
   };
 
-  // Extract teaser from description (first 2-3 compelling details)
-  const getTeaserText = () => {
-    const description = job.vietnamese_description || job.description || '';
-    if (!description) return null;
-    
-    // Take first 120 characters for teaser
-    const teaser = description.length > 120 
-      ? description.substring(0, 120) + '...' 
-      : description;
-    
-    return teaser;
-  };
-
-  // Get city/state from location
-  const getLocationTeaser = () => {
-    if (!job.location) return 'Location available after sign-in';
-    
-    // Show only city and state, hide full address
-    const locationParts = job.location.split(',');
-    if (locationParts.length >= 2) {
-      return `${locationParts[0].trim()}, ${locationParts[1].trim()}`;
-    }
-    return job.location;
-  };
-
-  // Get pricing tier badge styling
-  const getTierBadgeStyle = () => {
-    switch (job.pricingTier) {
-      case 'diamond':
-        return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0';
-      case 'premium':
-        return 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0';
-      case 'gold':
-        return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  // Get tier display name
-  const getTierName = () => {
-    switch (job.pricingTier) {
-      case 'diamond': return '💎 Premium';
-      case 'premium': return '⭐ Featured';
-      case 'gold': return '🥇 Popular';
-      default: return '📝 Standard';
-    }
-  };
+  // Check if this is a free or starter tier listing to show contact info without login
+  const isFreeOrStarterListing = job.pricingTier === 'free' || job.pricingTier === 'starter';
 
   return (
-    <Card className={`overflow-hidden h-full flex flex-col hover:shadow-xl transition-all duration-300 ${isExpired() ? 'opacity-80' : 'hover:-translate-y-1'}`}>
-      {/* Hero Image */}
+    <Card className={`overflow-hidden h-full flex flex-col ${isExpired() ? 'opacity-80' : ''}`}>
       <div className="aspect-video relative">
         <ImageWithFallback
           src={job.image || ''}
-          alt={job.title || 'Job opportunity'}
+          alt={job.title || 'Job listing'}
           className="w-full h-full object-cover"
         />
-        
-        {/* Tier Badge - Top Left */}
-        <Badge className={`absolute top-3 left-3 font-medium ${getTierBadgeStyle()}`}>
-          {getTierName()}
-        </Badge>
-        
-        {/* Verified Badge - Top Right */}
-        <Badge className="absolute top-3 right-3 bg-green-500 text-white border-0 flex items-center gap-1">
-          <ShieldCheck className="h-3 w-3" />
-          Verified by EmviApp
-        </Badge>
-        
-        {/* Expired Overlay */}
-        {isExpired() && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <Badge variant="outline" className="border-red-200 text-red-600 bg-white">
-              Opportunity Expired
-            </Badge>
-          </div>
+        {job.is_featured && (
+          <Badge className="absolute top-2 left-2 bg-amber-500 text-white border-0">
+            Featured
+          </Badge>
         )}
       </div>
       
-      <CardContent className="p-5 flex flex-col flex-grow">
-        {/* Job Title & Company */}
-        <div className="mb-4">
-          <h3 className="font-bold text-lg line-clamp-2 mb-1">{job.title}</h3>
-          <p className="text-gray-600 font-medium">{job.company}</p>
-        </div>
-        
-        {/* Location */}
-        <div className="flex items-center text-gray-600 mb-3">
-          <MapPinIcon className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span className="text-sm">{getLocationTeaser()}</span>
-        </div>
-        
-        {/* Compensation (if available) */}
-        {job.salary_range && (
-          <div className="flex items-center text-green-600 mb-3">
-            <DollarSign className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span className="text-sm font-medium">{job.salary_range}</span>
+      <CardContent className="p-4 flex flex-col flex-grow">
+        <div className="mb-3">
+          <h3 className="font-bold text-lg line-clamp-2">{job.title}</h3>
+          
+          <div className="flex items-center text-sm text-gray-500 mt-1">
+            <MapPinIcon className="h-3.5 w-3.5 mr-1" />
+            <span className="truncate">{job.location}</span>
           </div>
+        </div>
+        
+        {(job.vietnamese_description || job.description) && (
+          <p className="text-sm text-gray-600 line-clamp-3 mb-3">
+            {job.vietnamese_description || job.description}
+          </p>
         )}
         
-        {/* Teaser Description */}
-        {getTeaserText() && (
-          <div className="mb-4">
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {getTeaserText()}
-            </p>
-          </div>
-        )}
-        
-        {/* Posted Date */}
-        <div className="flex items-center text-xs text-gray-500 mb-4">
-          <CalendarIcon className="h-3 w-3 mr-1" />
-          <span>{getPostedDate()}</span>
-        </div>
-        
-        {/* CTA Section */}
         <div className="mt-auto space-y-3">
-          {/* Contact Gating Message */}
-          {!isExpired() && (
-            <div className="text-xs text-gray-500 italic flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
-              <LockIcon className="h-3 w-3 flex-shrink-0" />
-              <span>Full details, contact info, and location available after sign-in</span>
+          <div className="flex items-center text-xs text-gray-500">
+            <CalendarIcon className="h-3 w-3 mr-1" />
+            <span>{getPostedDate()}</span>
+            {isExpired() && (
+              <Badge variant="outline" className="ml-2 text-xs border-red-200 text-red-600">
+                Expired
+              </Badge>
+            )}
+          </div>
+          
+          {job.contact_info?.phone && (
+            <div className="border-t border-gray-100 pt-3">
+              {isExpired() ? (
+                <div className="text-xs text-gray-500 italic flex items-center gap-1 p-2 bg-gray-50 rounded-md">
+                  <LockIcon className="h-3 w-3" />
+                  <span>This opportunity has expired. Want to get new job leads like this? Sign up to post or find your next opportunity on EmviApp.</span>
+                </div>
+              ) : isSignedIn || isFreeOrStarterListing ? (
+                <div className="flex items-center">
+                  <Phone className="h-3.5 w-3.5 mr-1 text-gray-500" />
+                  <span className="text-sm">{job.contact_info.phone}</span>
+                </div>
+              ) : (
+                <AuthAction
+                  customTitle="Sign in to see contact details"
+                  onAction={() => true}
+                  fallbackContent={
+                    <div className="text-xs text-gray-500 italic flex items-center gap-1">
+                      <LockIcon className="h-3 w-3" />
+                      <span>Sign in to see contact details</span>
+                    </div>
+                  }
+                />
+              )}
             </div>
           )}
           
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-2">
             {isExpired() && onRenew ? (
               <Button 
                 size="sm" 
@@ -193,29 +138,13 @@ const BilingualJobCard: React.FC<BilingualJobCardProps> = ({
               <span></span>
             )}
             
-            {isSignedIn ? (
-              <Button 
-                size="sm" 
-                onClick={onViewDetails}
-                className="text-xs bg-blue-600 hover:bg-blue-700"
-              >
-                View Full Details
-              </Button>
-            ) : (
-              <AuthAction
-                customTitle="Sign in to view full details"
-                onAction={() => true}
-                fallbackContent={
-                  <Button 
-                    size="sm" 
-                    onClick={onViewDetails}
-                    className="text-xs bg-blue-600 hover:bg-blue-700"
-                  >
-                    Sign In to View Details
-                  </Button>
-                }
-              />
-            )}
+            <Button 
+              size="sm" 
+              onClick={onViewDetails}
+              className="text-xs"
+            >
+              View Details
+            </Button>
           </div>
         </div>
       </CardContent>
