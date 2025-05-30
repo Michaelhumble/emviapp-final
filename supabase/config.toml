@@ -8,27 +8,80 @@ schemas = ["public", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
-[auth]
-enabled = true
-port = 54324
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["https://localhost:3000"]
-jwt_expiry = 3600
-enable_signup = true
-enable_email_confirmations = false
-
 [db]
 port = 54322
-major_version = 15
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[realtime]
+enabled = true
+port = 54323
+max_header_length = 4096
+
+[studio]
+enabled = true
+port = 54324
+api_url = "http://localhost"
+
+[inbucket]
+enabled = true
+port = 54325
+smtp_port = 54326
+pop3_port = 54327
+
+[storage]
+enabled = true
+port = 54326
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+port = 54327
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://lovable.dev"]
+jwt_expiry = 3600
+enable_signup = true
+enable_anonymous_sign_ins = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[functions.webhook-credit-purchase]
+verify_jwt = false
+
+[functions.webhook-job-posting]
+verify_jwt = false
+
+[functions.webhook-salon-posting]
+verify_jwt = false
 
 [functions.create-job-checkout]
+verify_jwt = true
+
+[functions.create-salon-checkout]
 verify_jwt = true
 
 [functions.verify-checkout-session]
 verify_jwt = true
 
-[functions.webhook-credit-purchase]
-verify_jwt = false
+[functions.diamond-tier-request]
+verify_jwt = true
+
+[functions.handle-credit-purchase]
+verify_jwt = true
 
 [functions.stripe-webhook-handler]
 verify_jwt = false
+
+[functions.toggle-auto-renew]
+verify_jwt = true
+
+[functions.create-free-post]
+verify_jwt = true
