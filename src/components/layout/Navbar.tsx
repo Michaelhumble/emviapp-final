@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -66,10 +67,10 @@ const Navbar = () => {
           </nav>
         </div>
 
-        {/* Auth buttons or user menu with language toggle and Post Job button */}
+        {/* Auth buttons or user menu with language toggle and CTA buttons */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Post Job Button - only visible on desktop */}
-          <div className="hidden md:block">
+          {/* CTA Buttons - only visible on desktop */}
+          <div className="hidden md:flex items-center gap-2">
             <TooltipProvider>
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
@@ -78,14 +79,14 @@ const Navbar = () => {
                       onClick={onPostJobClick} 
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      {t("Post a Job for Free")}
+                      Tìm Thợ
                     </Button>
                   ) : (
                     <Button 
                       onClick={() => navigate("/sign-in")}
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      {t("Post a Job for Free")}
+                      Tìm Thợ
                     </Button>
                   )}
                 </TooltipTrigger>
@@ -94,6 +95,10 @@ const Navbar = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            
+            <Button asChild size="default" className="bg-orange-500 hover:bg-orange-600 rounded-lg">
+              <Link to="/signup">Bán Tiệm</Link>
+            </Button>
           </div>
           
           {/* Language toggle always visible on desktop */}
