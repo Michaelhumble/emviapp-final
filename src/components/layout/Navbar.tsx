@@ -6,6 +6,7 @@ import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 import { Button } from "@/components/ui/button";
+import PostYourSalonButton from "@/components/buttons/PostYourSalonButton";
 import {
   Tooltip,
   TooltipContent,

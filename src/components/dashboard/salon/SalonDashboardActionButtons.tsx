@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Store, TrendingUp, RefreshCw } from "lucide-react";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/context/auth";
 import { validateRoute } from "@/utils/routeValidator";
+import PostYourSalonButton from "@/components/buttons/PostYourSalonButton";
 
 const SalonDashboardActionButtons = () => {
   const { t } = useTranslation();
@@ -60,20 +62,18 @@ const SalonDashboardActionButtons = () => {
           </div>
         </Button>
         
-        <Button 
-          className="bg-indigo-600 hover:bg-indigo-700 h-auto py-3 px-4 flex flex-col items-center justify-center gap-2 transition-colors"
-          onClick={() => handleButtonClick("/sell-salon/new", "List Salon for Sale")}
-        >
-          <Store className="h-8 w-8 mb-1" />
+        <div className="bg-indigo-600 hover:bg-indigo-700 h-auto py-3 px-4 flex flex-col items-center justify-center gap-2 transition-colors rounded-md">
+          <Store className="h-8 w-8 mb-1 text-white" />
           <div className="flex flex-col items-center text-center">
-            <span className="font-semibold">
-              {isVietnamese ? "Đăng Bán Tiệm" : t("List Salon for Sale")}
-            </span>
-            <span className="text-xs font-normal opacity-90">
+            <PostYourSalonButton 
+              variant="ghost" 
+              className="text-white hover:bg-indigo-800 p-0 h-auto font-semibold"
+            />
+            <span className="text-xs font-normal opacity-90 text-white">
               {isVietnamese ? "Đăng bán tiệm của bạn" : t("List your salon")}
             </span>
           </div>
-        </Button>
+        </div>
         
         <Button 
           className="bg-purple-600 hover:bg-purple-700 h-auto py-3 px-4 flex flex-col items-center justify-center gap-2 transition-colors"
