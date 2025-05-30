@@ -72,7 +72,7 @@ const DatabaseSalonListingsSection: React.FC<DatabaseSalonListingsSectionProps> 
               salon.pricingTier === 'gold' ? 'bg-orange-100 text-orange-800' :
               'bg-gray-100 text-gray-800'
             }`}>
-              {salon.pricingTier || 'Basic'}
+              {salon.pricingTier === 'free' ? 'Basic' : salon.pricingTier || 'Basic'}
             </span>
           </div>
           
@@ -132,12 +132,12 @@ const DatabaseSalonListingsSection: React.FC<DatabaseSalonListingsSectionProps> 
         </div>
       )}
 
-      {/* Basic Tier Database Listings */}
-      {listingsByTier.basic.length > 0 && (
+      {/* Free Tier Database Listings (displayed as "Basic Listings") */}
+      {listingsByTier.free.length > 0 && (
         <div className="space-y-6">
           <h3 className="text-xl font-semibold text-center">📝 Basic Listings</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {listingsByTier.basic.map((salon) => (
+            {listingsByTier.free.map((salon) => (
               <SalonCard key={salon.id} salon={salon} />
             ))}
           </div>
