@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 import MobileMenu from "@/components/layout/MobileMenu";
+import { PlusCircle } from "lucide-react";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -76,15 +78,17 @@ const Navbar = () => {
                   {user ? (
                     <Button 
                       onClick={onPostJobClick} 
-                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                      className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white hover:from-[#8A6B59] hover:to-[#A8855A] shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-6 py-2.5 flex items-center gap-2 border border-[#8A6B59]/20"
                     >
+                      <PlusCircle className="h-4 w-4" />
                       {t("Post a Job for Free")}
                     </Button>
                   ) : (
                     <Button 
                       onClick={() => navigate("/sign-in")}
-                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                      className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white hover:from-[#8A6B59] hover:to-[#A8855A] shadow-md hover:shadow-lg transition-all duration-300 rounded-lg font-playfair font-semibold px-6 py-2.5 flex items-center gap-2 border border-[#8A6B59]/20"
                     >
+                      <PlusCircle className="h-4 w-4" />
                       {t("Post a Job for Free")}
                     </Button>
                   )}

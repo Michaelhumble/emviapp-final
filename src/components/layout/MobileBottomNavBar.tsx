@@ -36,10 +36,10 @@ const MobileBottomNavBar = () => {
         </button>
       ))}
       
-      {/* Post Job floating button */}
+      {/* Post Job floating button - Enhanced with EmviApp branding */}
       <button 
         onClick={() => navigate('/post-job')}
-        className="absolute -top-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full p-3 shadow-lg"
+        className="absolute -top-6 bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 border-white"
         aria-label="Post a job"
       >
         <PlusCircle className="h-6 w-6" />
