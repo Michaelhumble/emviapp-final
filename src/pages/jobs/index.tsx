@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from "react";
 import { Container } from "@/components/ui/container";
 import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
 import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
 import FeaturedGoldListings from "@/components/jobs/FeaturedGoldListings";
-import JobsGrid from "@/components/jobs/JobsGrid";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
 import { JobDetailModal } from "@/components/jobs/JobDetailModal";
 import useJobsData from "@/hooks/useJobsData";
@@ -18,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import SalonSalesSection from "@/components/jobs/SalonSalesSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
+import DatabaseJobsSection from "@/components/jobs/DatabaseJobsSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -73,6 +72,8 @@ const JobsPage: React.FC = () => {
         placeholder="Tìm kiếm việc làm theo thành phố, bang, hoặc từ khóa..."
       />
       
+      {/* EXISTING STATIC/PROTECTED CONTENT - PRESERVED 100% */}
+      
       {/* Diamond jobs at the top - 2 cards per row, 6 total */}
       <TopDiamondFeaturedSection 
         featuredJobs={diamondJobs} 
@@ -108,14 +109,14 @@ const JobsPage: React.FC = () => {
         onViewDetails={viewJobDetails}
       />
 
+      {/* NEW: DATABASE JOBS SECTION - ADDED BELOW ALL STATIC CONTENT */}
+      <DatabaseJobsSection onViewDetails={viewJobDetails} />
+
       {error && (
         <Alert className="mb-8 bg-red-50 border-red-200">
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
-
-      {/* Remove the outdated jobs grid that's showing expired jobs */}
-      {/* This was likely the source of the duplicate expired listings */}
       
       {selectedJob && (
         <JobDetailModal
