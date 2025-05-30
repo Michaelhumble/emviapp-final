@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
     <div className="min-h-screen flex flex-col">
       {!hideNavbar && <Navbar />}
       
-      <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-20' : ''}`}>
+      <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
         {children}
       </main>
       

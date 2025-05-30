@@ -1,127 +1,121 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
-import { PlusCircle, Store, Menu, X } from 'lucide-react';
-import EmviLogo from '@/components/branding/EmviLogo';
-import { useTranslation } from '@/hooks/useTranslation';
-import LanguageToggle from '@/components/ui/LanguageToggle';
-import { UserMenu } from './navbar/UserMenu';
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
+import { toast } from "sonner";
+import Logo from "@/components/ui/Logo";
+import { UserMenu } from "./navbar/UserMenu";
+import AuthButtons from "./navbar/AuthButtons";
+import LanguageToggle from "@/components/layout/LanguageToggle";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
+import MobileMenu from "@/components/layout/MobileMenu";
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isSignedIn, user, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
-  const handleLogout = async () => {
+  const isMobile = useIsMobile();
+  
+  const handleSignOut = async () => {
     await signOut();
-    navigate('/');
+    navigate("/");
+    toast.success("You've been signed out successfully");
   };
+
+  const onPostJobClick = () => {
+    navigate("/post-job");
+  };
+
+  const tooltipText = t("Was $29.99 – Free for a limited time!");
 
   return (
-    <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo Section */}
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <div className="container flex items-center justify-between mx-auto h-16 px-4">
+        {/* Logo - using large size to match the footer */}
         <Link to="/" className="flex items-center">
-          <EmviLogo size="medium" showText />
+          <Logo size="large" showText={true} />
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-gray-700 hover:text-primary transition-colors">
-            {t('Home')}
-          </Link>
-          <Link to="/jobs" className="text-gray-700 hover:text-primary transition-colors">
-            {t('Jobs')}
-          </Link>
-          <Link to="/salons" className="text-gray-700 hover:text-primary transition-colors">
-            {t('Salons')}
-          </Link>
-          <Link to="/artists" className="text-gray-700 hover:text-primary transition-colors">
-            {t('Artists')}
-          </Link>
-        </nav>
-
-        {/* Action Buttons / Auth Section */}
-        <div className="hidden md:flex items-center space-x-4">
-          {isSignedIn ? (
-            <>
-              <Link to="/post-job">
-                <Button variant="outline" size="sm" className="font-normal">
-                  {t('Post a Job')}
-                </Button>
+        {/* Main navigation - centered (hidden on mobile) */}
+        <div className="hidden md:flex justify-center flex-grow">
+          <nav className="flex items-center space-x-1">
+            {mainNavigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === item.path
+                    ? "text-purple-700 bg-purple-50"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {t({
+                  english: item.title,
+                  vietnamese: item.vietnameseTitle || item.title
+                })}
               </Link>
-              <UserMenu />
-            </>
-          ) : (
-            <>
-              <Link to="/sign-in">
-                <Button variant="ghost" size="sm">
-                  {t('Sign In')}
-                </Button>
-              </Link>
-              <Link to="/sign-up">
-                <Button size="sm">{t('Sign Up')}</Button>
-              </Link>
-            </>
-          )}
-          <LanguageToggle />
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button onClick={toggleMobileMenu} className="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none">
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 z-30">
-          <nav className="px-4 py-3 flex flex-col space-y-3">
-            <Link to="/" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
-              {t('Home')}
-            </Link>
-            <Link to="/jobs" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
-              {t('Jobs')}
-            </Link>
-            <Link to="/salons" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
-              {t('Salons')}
-            </Link>
-             <Link to="/artists" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
-              {t('Artists')}
-            </Link>
-            {isSignedIn ? (
-              <>
-                <Link to="/post-job" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
-                  {t('Post a Job')}
-                </Link>
-                <Button variant="destructive" size="sm" className="w-full" onClick={handleLogout}>
-                  {t('Logout')}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link to="/sign-in" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
-                  {t('Sign In')}
-                </Link>
-                <Link to="/sign-up" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
-                  {t('Sign Up')}
-                </Link>
-              </>
-            )}
-            <LanguageToggle className="mt-2" />
+            ))}
           </nav>
         </div>
-      )}
+
+        {/* Auth buttons or user menu with language toggle and Post Job button */}
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Post Job Button - only visible on desktop */}
+          <div className="hidden md:block">
+            <TooltipProvider>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  {user ? (
+                    <Button 
+                      onClick={onPostJobClick} 
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => navigate("/sign-in")}
+                      className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
+                    >
+                      {t("Post a Job for Free")}
+                    </Button>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-[#FEF7CD] text-[#333] text-xs px-3 py-1.5 shadow-sm rounded-md border border-amber-200">
+                  <p>{tooltipText}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
+          {/* Language toggle always visible on desktop */}
+          <div className="hidden md:block">
+            <LanguageToggle minimal={true} className="mr-1" />
+          </div>
+          
+          {/* Auth buttons or user menu (hidden on mobile) */}
+          <div className="hidden md:block">
+            {user ? (
+              <UserMenu />
+            ) : (
+              <AuthButtons />
+            )}
+          </div>
+          
+          {/* Mobile menu hamburger button - always visible on mobile */}
+          <div className="md:hidden">
+            <MobileMenu />
+          </div>
+        </div>
+      </div>
     </header>
   );
 };
