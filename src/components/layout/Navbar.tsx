@@ -1,4 +1,5 @@
 
+
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -131,3 +132,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
