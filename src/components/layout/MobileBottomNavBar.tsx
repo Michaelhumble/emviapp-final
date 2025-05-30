@@ -28,7 +28,7 @@ const MobileBottomNavBar = () => {
           onClick={() => navigate(item.path)}
           className={cn(
             "flex flex-col items-center justify-center w-16 h-full",
-            isActive(item.path) ? "text-purple-600" : "text-gray-500"
+            isActive(item.path) ? "text-[#9A7B69]" : "text-gray-500"
           )}
         >
           <item.icon className="h-5 w-5" />
@@ -48,7 +48,7 @@ const MobileBottomNavBar = () => {
         
         <button 
           onClick={() => navigate('/post-salon')}
-          className="bg-gradient-to-r from-[#B8956A] to-[#9A7B69] text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 border-white"
+          className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 border-white"
           aria-label="List your salon"
         >
           <Store className="h-5 w-5" />
