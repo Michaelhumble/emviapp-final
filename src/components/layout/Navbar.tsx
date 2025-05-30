@@ -1,188 +1,128 @@
-
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Store, Menu, X } from 'lucide-react';
-import { EmviLogo } from '@/components/branding/EmviLogo';
-import { UserMenu } from '@/components/layout/navbar/UserMenu';
-import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { useAuth } from '@/context/auth';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { toast } from 'sonner';
+import { PlusCircle, Store, Menu, X } from 'lucide-react';
+import EmviLogo from '@/components/branding/EmviLogo';
+import { useTranslation } from '@/hooks/useTranslation';
+import LanguageToggle from '@/components/ui/LanguageToggle';
+import UserMenu from './navbar/UserMenu';
 
 const Navbar = () => {
-  const { user, isSignedIn } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isSignedIn, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const handlePostJobClick = () => {
-    if (isSignedIn) {
-      navigate('/post-job');
-    } else {
-      navigate('/auth/signin?redirect=/post-job');
-    }
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleListSalonClick = () => {
-    if (isSignedIn) {
-      navigate('/post-salon');
-    } else {
-      navigate('/auth/signin?redirect=/post-salon');
-    }
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
-  const navItems = [
-    { label: 'Jobs', path: '/jobs' },
-    { label: 'Salons', path: '/salons' },
-    { label: 'Artists', path: '/artists' },
-  ];
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
-    <nav className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center">
-              <EmviLogo className="h-8 w-auto" />
-            </Link>
-          </div>
+    <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        {/* Logo Section */}
+        <Link to="/" className="flex items-center">
+          <EmviLogo size="medium" showText />
+        </Link>
 
-          {/* Desktop Navigation */}
-          {!isMobile && (
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link to="/" className="text-gray-700 hover:text-primary transition-colors">
+            {t('Home')}
+          </Link>
+          <Link to="/jobs" className="text-gray-700 hover:text-primary transition-colors">
+            {t('Jobs')}
+          </Link>
+          <Link to="/salons" className="text-gray-700 hover:text-primary transition-colors">
+            {t('Salons')}
+          </Link>
+          <Link to="/artists" className="text-gray-700 hover:text-primary transition-colors">
+            {t('Artists')}
+          </Link>
+        </nav>
+
+        {/* Action Buttons / Auth Section */}
+        <div className="hidden md:flex items-center space-x-4">
+          {isSignedIn ? (
             <>
-              {/* Center Navigation */}
-              <div className="hidden md:flex items-center space-x-8">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`text-sm font-medium transition-colors hover:text-[#9A7B69] ${
-                      location.pathname === item.path ? 'text-[#9A7B69]' : 'text-gray-700'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Right Side Actions */}
-              <div className="flex items-center space-x-3">
-                {/* Post Job CTA */}
-                <Button
-                  onClick={handlePostJobClick}
-                  className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold px-6 py-2 rounded-lg border border-[#8A6B59]/20"
-                >
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Post a Job
+              <Link to="/post-job">
+                <Button variant="outline" size="sm" className="font-normal">
+                  {t('Post a Job')}
                 </Button>
-
-                {/* List Salon CTA */}
-                <Button
-                  onClick={handleListSalonClick}
-                  className="bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold px-6 py-2 rounded-lg border border-[#8A6B59]/20"
-                >
-                  <Store className="mr-2 h-4 w-4" />
-                  List Your Salon
+              </Link>
+              <UserMenu />
+            </>
+          ) : (
+            <>
+              <Link to="/sign-in">
+                <Button variant="ghost" size="sm">
+                  {t('Sign In')}
                 </Button>
-
-                <LanguageToggle />
-                
-                {user ? (
-                  <UserMenu />
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <Button variant="ghost" asChild>
-                      <Link to="/auth/signin">Sign In</Link>
-                    </Button>
-                    <Button asChild className="bg-[#9A7B69] hover:bg-[#8A6B59]">
-                      <Link to="/auth/signup">Sign Up</Link>
-                    </Button>
-                  </div>
-                )}
-              </div>
+              </Link>
+              <Link to="/sign-up">
+                <Button size="sm">{t('Sign Up')}</Button>
+              </Link>
             </>
           )}
-
-          {/* Mobile Menu Button */}
-          {isMobile && (
-            <div className="flex items-center space-x-2">
-              <LanguageToggle />
-              {user ? (
-                <UserMenu />
-              ) : (
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/auth/signin">Sign In</Link>
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
-          )}
+          <LanguageToggle />
         </div>
 
-        {/* Mobile Menu */}
-        {isMobile && isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
-            <div className="flex flex-col space-y-3">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-[#9A7B69] hover:bg-gray-50 ${
-                    location.pathname === item.path ? 'text-[#9A7B69] bg-gray-50' : 'text-gray-700'
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              
-              <div className="pt-3 border-t border-gray-200 space-y-2">
-                <Button
-                  onClick={() => {
-                    handlePostJobClick();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold rounded-lg border border-[#8A6B59]/20"
-                >
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Post a Job
-                </Button>
-                
-                <Button
-                  onClick={() => {
-                    handleListSalonClick();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-[#9A7B69] to-[#B8956A] hover:from-[#8A6B59] hover:to-[#A8855A] text-white shadow-md hover:shadow-lg transition-all duration-300 font-playfair font-semibold rounded-lg border border-[#8A6B59]/20"
-                >
-                  <Store className="mr-2 h-4 w-4" />
-                  List Your Salon
-                </Button>
-              </div>
-
-              {!user && (
-                <div className="pt-2 space-y-2">
-                  <Button variant="outline" asChild className="w-full">
-                    <Link to="/auth/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign Up
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        {/* Mobile Menu Button */}
+        <button onClick={toggleMobileMenu} className="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none">
+          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
-    </nav>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 z-30">
+          <nav className="px-4 py-3 flex flex-col space-y-3">
+            <Link to="/" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
+              {t('Home')}
+            </Link>
+            <Link to="/jobs" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
+              {t('Jobs')}
+            </Link>
+            <Link to="/salons" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
+              {t('Salons')}
+            </Link>
+             <Link to="/artists" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
+              {t('Artists')}
+            </Link>
+            {isSignedIn ? (
+              <>
+                <Link to="/post-job" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
+                  {t('Post a Job')}
+                </Link>
+                <Button variant="destructive" size="sm" className="w-full" onClick={handleLogout}>
+                  {t('Logout')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/sign-in" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
+                  {t('Sign In')}
+                </Link>
+                <Link to="/sign-up" className="block py-2 text-gray-700 hover:text-primary transition-colors" onClick={closeMobileMenu}>
+                  {t('Sign Up')}
+                </Link>
+              </>
+            )}
+            <LanguageToggle className="mt-2" />
+          </nav>
+        </div>
+      )}
+    </header>
   );
 };
 
