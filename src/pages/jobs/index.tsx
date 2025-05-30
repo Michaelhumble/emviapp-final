@@ -1,27 +1,42 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container } from "@/components/ui/container";
 import TopDiamondFeaturedSection from "@/components/jobs/TopDiamondFeaturedSection";
 import PremiumListingsSection from "@/components/jobs/PremiumListingsSection";
 import FeaturedGoldListings from "@/components/jobs/FeaturedGoldListings";
+import JobsGrid from "@/components/jobs/JobsGrid";
 import JobSearchBar from "@/components/jobs/JobSearchBar";
 import { JobDetailModal } from "@/components/jobs/JobDetailModal";
+import useJobsData from "@/hooks/useJobsData";
 import { Job } from "@/types/job";
+import { diamondJobs } from "@/data/jobs/diamondJobs";
+import { premiumJobs } from "@/data/jobs/premiumJobs";
+import { goldJobs } from "@/data/protected/vietnameseJobs";
+import { vietnameseSalonSales } from "@/data/jobs/vietnameseSalonSales";
+import { freeJobs } from "@/data/jobs/freeJobs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import SalonSalesSection from "@/components/jobs/SalonSalesSection";
 import FreeListingsSection from "@/components/jobs/FreeListingsSection";
 import ExpiredListingsSection from "@/components/jobs/ExpiredListingsSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useJobsFromDatabase } from "@/hooks/useJobsFromDatabase";
 
 const JobsPage: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { jobs, loading, error } = useJobsFromDatabase();
+  const { 
+    jobs, 
+    loading, 
+    error, 
+    searchTerm, 
+    updateSearchTerm,
+    renewalJobId,
+    setActiveRenewalJobId
+  } = useJobsData();
+  
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
@@ -32,33 +47,8 @@ const JobsPage: React.FC = () => {
   };
 
   const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
+    updateSearchTerm(value);
   };
-
-  // Filter jobs by search term
-  const filteredJobs = jobs.filter(job => 
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Organize jobs by pricing tier
-  const diamondJobs = filteredJobs.filter(job => job.pricing_tier === 'diamond');
-  const premiumJobs = filteredJobs.filter(job => job.pricing_tier === 'premium');
-  const goldJobs = filteredJobs.filter(job => job.pricing_tier === 'gold');
-  const freeJobs = filteredJobs.filter(job => job.pricing_tier === 'free' || job.pricing_tier === 'basic');
-
-  if (loading) {
-    return (
-      <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading job listings...</p>
-        </div>
-      </Container>
-    );
-  }
 
   return (
     <Container className={`py-8 max-w-7xl ${isMobile ? 'pb-20' : ''}`}>
@@ -83,58 +73,49 @@ const JobsPage: React.FC = () => {
         placeholder="Tìm kiếm việc làm theo thành phố, bang, hoặc từ khóa..."
       />
       
-      {error && (
-        <Alert className="mb-8 bg-red-50 border-red-200">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Diamond jobs at the top - 2 cards per row */}
-      {diamondJobs.length > 0 && (
-        <TopDiamondFeaturedSection 
-          featuredJobs={diamondJobs} 
-          onViewDetails={viewJobDetails} 
-        />
-      )}
+      {/* Diamond jobs at the top - 2 cards per row, 6 total */}
+      <TopDiamondFeaturedSection 
+        featuredJobs={diamondJobs} 
+        onViewDetails={viewJobDetails} 
+      />
       
-      {/* Premium Jobs Section - 3 cards per row */}
-      {premiumJobs.length > 0 && (
-        <PremiumListingsSection 
-          jobs={premiumJobs}
-          onViewDetails={viewJobDetails}
-        />
-      )}
+      {/* Premium Jobs Section - 3 cards per row, 9 total */}
+      <PremiumListingsSection 
+        jobs={premiumJobs}
+        onViewDetails={viewJobDetails}
+      />
 
-      {/* Gold Jobs Section - 4 cards per row */}
-      {goldJobs.length > 0 && (
-        <FeaturedGoldListings
-          jobs={goldJobs}
-          onViewDetails={viewJobDetails}
-        />
-      )}
+      {/* Gold Jobs Section - 4 cards per row, 16 total */}
+      <FeaturedGoldListings
+        jobs={goldJobs}
+        onViewDetails={viewJobDetails}
+      />
+
+      {/* Salon Sales Section - 4 cards in total */}
+      <SalonSalesSection
+        listings={vietnameseSalonSales}
+        onViewDetails={viewJobDetails}
+      />
 
       {/* Free Listings Section - 5 cards per row */}
-      {freeJobs.length > 0 && (
-        <FreeListingsSection
-          jobs={freeJobs}
-          onViewDetails={viewJobDetails}
-        />
-      )}
+      <FreeListingsSection
+        jobs={freeJobs}
+        onViewDetails={viewJobDetails}
+      />
 
-      {/* Expired Listings Section */}
+      {/* Expired Listings Section - our new unified section with 5 cards per row */}
       <ExpiredListingsSection
         onViewDetails={viewJobDetails}
       />
 
-      {/* Show message if no jobs found */}
-      {!loading && jobs.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">No job listings found.</p>
-          <Button onClick={() => navigate("/jobs/create")}>
-            Create Job Listing
-          </Button>
-        </div>
+      {error && (
+        <Alert className="mb-8 bg-red-50 border-red-200">
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
       )}
+
+      {/* Remove the outdated jobs grid that's showing expired jobs */}
+      {/* This was likely the source of the duplicate expired listings */}
       
       {selectedJob && (
         <JobDetailModal

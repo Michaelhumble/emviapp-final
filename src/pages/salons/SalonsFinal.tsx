@@ -1,129 +1,156 @@
 
-import React, { useState } from 'react';
-import { Container } from '@/components/ui/container';
+import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Job } from '@/types/job';
-import { useSalonListingsFromDatabase } from '@/hooks/useSalonListingsFromDatabase';
+import { Link } from 'react-router-dom';
+import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
+import { Plus, Search } from 'lucide-react';
+import HairBarberListingsSection from '@/components/salons/HairBarberListingsSection';
 
-const SalonsFinal: React.FC = () => {
-  const navigate = useNavigate();
-  const { salonListings, loading, error } = useSalonListingsFromDatabase();
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // Filter salon listings by search term
-  const filteredListings = salonListings.filter(salon => 
-    salon.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    salon.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    salon.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Organize salons by pricing tier
-  const diamondSalons = filteredListings.filter(salon => salon.pricing_tier === 'diamond');
-  const premiumSalons = filteredListings.filter(salon => salon.pricing_tier === 'premium');
-  const goldSalons = filteredListings.filter(salon => salon.pricing_tier === 'gold');
-  const basicSalons = filteredListings.filter(salon => salon.pricing_tier === 'basic' || salon.pricing_tier === 'free');
-
-  const renderSalonSection = (title: string, salons: Job[], bgColor: string = 'bg-white') => {
-    if (salons.length === 0) return null;
-
-    return (
-      <section className={`py-8 ${bgColor}`}>
-        <Container>
-          <h2 className="text-2xl font-bold mb-6 text-center">{title}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {salons.map((salon) => (
-              <ValidatedSalonCard 
-                key={salon.id}
-                salon={salon} 
-                listingType="salon"
-              />
-            ))}
-          </div>
-        </Container>
-      </section>
-    );
-  };
-
-  if (loading) {
-    return (
-      <Container className="py-8">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading salon listings...</p>
-        </div>
-      </Container>
-    );
-  }
+const SalonsFinalsPage = () => {
+  useEffect(() => {
+    // Simple debug log to confirm rendering
+    console.log('SalonsFinal page rendered - timestamp:', new Date().toISOString());
+    
+    // Add an image loading debug
+    const img = new Image();
+    img.onload = () => console.log('✅ Salon banner image loaded successfully');
+    img.onerror = () => console.error('❌ Failed to load salon banner image');
+    img.src = '/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png';
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header with navigation */}
-      <Container className="py-6">
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft size={16} /> Back to Home
-          </Button>
-        </div>
+    <Layout>
+      <Helmet>
+        <title>Premium Salon Listings | EmviApp</title>
+        <meta 
+          name="description" 
+          content="Browse our curated selection of premium salons for sale. Find your next business opportunity with EmviApp." 
+        />
+      </Helmet>
+
+      {/* Hero banner with overlay, text and buttons - increased height */}
+      <div className="w-full relative h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden">
+        {/* Main image with object-cover to fill the space while maintaining aspect ratio */}
+        <img 
+          src="/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png" 
+          alt="Luxury salon interior" 
+          className="w-full h-full object-cover"
+        />
         
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-serif font-bold mb-4">Beauty Salon Directory</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover professional salons offering exceptional beauty services
+        {/* Dark gradient overlay */}
+        <div 
+          className="absolute inset-0" 
+          style={{ 
+            background: 'linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35))',
+          }} 
+        />
+        
+        {/* Hero content - centered both vertically and horizontally */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-white mb-3">
+            Premium Salons for Sale — Ready to Own
+          </h1>
+          <p className="text-white text-lg md:text-xl mb-8 max-w-2xl opacity-90">
+            Discover, list, and buy high-end beauty businesses with EmviApp
           </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link to="/sell-salon">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800"
+              >
+                <Plus className="w-5 h-5 mr-1" /> Post Your Salon
+              </Button>
+            </Link>
+            <Link to="#listings">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-2 border-white text-white bg-transparent hover:bg-white/10"
+              >
+                <Search className="w-5 h-5 mr-1" /> Browse Listings
+              </Button>
+            </Link>
+          </div>
         </div>
+      </div>
 
-        {/* Search bar */}
-        <div className="max-w-md mx-auto mb-8">
-          <input
-            type="text"
-            placeholder="Search salons by name, location, or services..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
+      <div className="container mx-auto px-4 py-12" id="listings">
+        <div className="max-w-7xl mx-auto">
+          {/* Premium Listings Section */}
+          <div className="mb-16">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-6">
+              Premium Salon Listings
+            </h2>
 
-        {error && (
-          <Alert className="mb-8 bg-red-50 border-red-200">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-      </Container>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {salonListings.map((salon) => (
+                <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
+              ))}
+            </div>
+          </div>
 
-      {/* Diamond Tier Salons */}
-      {renderSalonSection("💎 Diamond Tier Salons", diamondSalons, "bg-gradient-to-r from-purple-50 to-pink-50")}
+          {/* Hair & Barber Listings Section - New section */}
+          <HairBarberListingsSection />
 
-      {/* Premium Tier Salons */}
-      {renderSalonSection("⭐ Premium Salons", premiumSalons, "bg-gradient-to-r from-amber-50 to-orange-50")}
+          {/* Vietnamese Nail Listings Section - Restored section */}
+          <div className="mb-16 border-t pt-12">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-2">
+              💅 Tin Rao Vặt Tiệm Nail – Cộng Đồng Người Việt
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Vietnamese nail salon listings for our community
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vietnameseSalonListings.map((salon) => (
+                <ValidatedSalonCard 
+                  key={salon.id} 
+                  salon={salon} 
+                  listingType="salon" 
+                />
+              ))}
+            </div>
+          </div>
 
-      {/* Gold Tier Salons */}
-      {renderSalonSection("🥇 Gold Salons", goldSalons, "bg-gradient-to-r from-yellow-50 to-amber-50")}
-
-      {/* Basic/Free Tier Salons */}
-      {renderSalonSection("🏪 Featured Salons", basicSalons, "bg-gray-50")}
-
-      {/* Show message if no salons found */}
-      {!loading && salonListings.length === 0 && (
-        <Container className="py-12">
-          <div className="text-center">
-            <p className="text-gray-600 mb-4">No salon listings found.</p>
-            <Button onClick={() => navigate("/salon-owners")}>
-              List Your Salon
+          <div className="flex flex-wrap items-center gap-4 mb-8">
+            <Button variant="outline" className="rounded-full">
+              All Locations
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Under $200K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              $200K - $500K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Over $500K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Recently Added
             </Button>
           </div>
-        </Container>
-      )}
-    </div>
+          
+          <div className="mt-16 text-center">
+            <h2 className="font-playfair text-2xl font-semibold mb-4">
+              Have a salon you want to sell?
+            </h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              List your salon with EmviApp to reach thousands of potential buyers in the beauty industry.
+            </p>
+            <Link to="/sell-salon">
+              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800">
+                List Your Salon
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
-export default SalonsFinal;
+export default SalonsFinalsPage;
