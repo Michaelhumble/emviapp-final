@@ -9,6 +9,7 @@ import { mainNavigationItems } from '@/components/layout/navbar/config/navigatio
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import AuthButtons from '@/components/layout/navbar/AuthButtons';
 import { UserMenu } from '@/components/layout/navbar/UserMenu';
+import ListYourSalonCta from '@/components/common/ListYourSalonCta';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,13 +56,16 @@ const MobileMenu = () => {
 
             <div className="flex flex-col p-4 space-y-4">
               {/* CTA Buttons at the top of mobile menu */}
-              <div className="flex flex-col gap-3 pb-4 border-b">
+              <div className="flex flex-col gap-3 pb-4 border-b bg-gray-50 rounded-lg p-4">
                 {user ? (
                   <Button 
                     onClick={onPostJobClick} 
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg w-full"
                   >
-                    Tìm Thợ
+                    {t({
+                      english: "Post a Job",
+                      vietnamese: "Tìm Thợ"
+                    })}
                   </Button>
                 ) : (
                   <Button 
@@ -71,13 +75,16 @@ const MobileMenu = () => {
                     }}
                     className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg w-full"
                   >
-                    Tìm Thợ
+                    {t({
+                      english: "Post a Job",
+                      vietnamese: "Tìm Thợ"
+                    })}
                   </Button>
                 )}
                 
-                <Button asChild className="bg-orange-500 hover:bg-orange-600 rounded-lg w-full">
-                  <Link to="/signup" onClick={closeMenu}>Bán Tiệm</Link>
-                </Button>
+                <div onClick={closeMenu}>
+                  <ListYourSalonCta variant="mobile" />
+                </div>
               </div>
 
               {/* Navigation Links */}

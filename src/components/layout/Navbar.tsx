@@ -17,6 +17,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
 import MobileMenu from "@/components/layout/MobileMenu";
+import ListYourSalonCta from "@/components/common/ListYourSalonCta";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -79,14 +80,20 @@ const Navbar = () => {
                       onClick={onPostJobClick} 
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      Tìm Thợ
+                      {t({
+                        english: "Post a Job",
+                        vietnamese: "Tìm Thợ"
+                      })}
                     </Button>
                   ) : (
                     <Button 
                       onClick={() => navigate("/sign-in")}
                       className="bg-purple-600 text-white hover:bg-purple-700 rounded-lg"
                     >
-                      Tìm Thợ
+                      {t({
+                        english: "Post a Job",
+                        vietnamese: "Tìm Thợ"
+                      })}
                     </Button>
                   )}
                 </TooltipTrigger>
@@ -96,9 +103,7 @@ const Navbar = () => {
               </Tooltip>
             </TooltipProvider>
             
-            <Button asChild size="default" className="bg-orange-500 hover:bg-orange-600 rounded-lg">
-              <Link to="/signup">Bán Tiệm</Link>
-            </Button>
+            <ListYourSalonCta variant="navbar" />
           </div>
           
           {/* Language toggle always visible on desktop */}
