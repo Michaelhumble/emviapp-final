@@ -1,255 +1,194 @@
-
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, 
-  Home, 
-  Users, 
-  Building2, 
-  Briefcase, 
-  MessageCircle, 
-  Info, 
-  Mail, 
-  LayoutDashboard,
-  LogOut,
-  LogIn,
-  Globe,
-  Plus,
-  Store
-} from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
+import { Menu, X, PlusSquare, User, LogIn, UserPlus, LogOut } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
 import LanguageToggle from '@/components/layout/LanguageToggle';
-import EmviLogo from '@/components/branding/EmviLogo';
+import { cn } from '@/lib/utils';
+import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
+import Logo from '@/components/ui/Logo';
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user, signOut } = useAuth();
+const MobileMenu: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isSignedIn, signOut } = useAuth();
+  const [open, setOpen] = React.useState(false);
+  
+  // Close menu when navigating to a new route
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setOpen(false);
+  };
 
   const handleSignOut = async () => {
-    await signOut();
-    onClose();
-    navigate('/');
+    try {
+      await signOut();
+      setOpen(false);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
-
-  const handleNavigation = (path: string) => {
-    onClose();
-    navigate(path);
-  };
-
-  const menuVariants = {
-    closed: {
-      x: '100%',
-      transition: {
-        type: 'tween',
-        duration: 0.3,
-        ease: 'easeInOut'
-      }
+  
+  // Additional navigation items not in the main nav
+  const additionalNavItems = [
+    { 
+      title: 'Dashboard', 
+      path: '/dashboard',
+      icon: User,
+      vietnameseTitle: 'Bảng điều khiển'
     },
-    open: {
-      x: 0,
-      transition: {
-        type: 'tween',
-        duration: 0.3,
-        ease: 'easeInOut'
-      }
-    }
-  };
-
-  const overlayVariants = {
-    closed: {
-      opacity: 0,
-      transition: {
-        duration: 0.3,
-        ease: 'easeInOut'
-      }
-    },
-    open: {
-      opacity: 1,
-      transition: {
-        duration: 0.3,
-        ease: 'easeInOut'
-      }
-    }
-  };
-
-  const itemVariants = {
-    closed: { opacity: 0, x: 20 },
-    open: { 
-      opacity: 1, 
-      x: 0,
-      transition: {
-        type: 'tween',
-        duration: 0.2,
-        ease: 'easeOut'
-      }
-    }
-  };
-
-  const containerVariants = {
-    closed: {},
-    open: {
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.1
-      }
-    }
-  };
-
-  const navigationItems = [
-    ...(user ? [{ 
-      icon: LayoutDashboard, 
-      label: t({ english: 'Dashboard', vietnamese: 'Bảng Điều Khiển' }), 
-      path: '/dashboard' 
-    }] : []),
-    { icon: Home, label: t({ english: 'Home', vietnamese: 'Trang Chủ' }), path: '/' },
-    { icon: Users, label: t({ english: 'Artists', vietnamese: 'Thợ Làm Nail' }), path: '/artists' },
-    { icon: Building2, label: t({ english: 'Salons', vietnamese: 'Tiệm Nail' }), path: '/salons' },
-    { icon: Briefcase, label: t({ english: 'Jobs', vietnamese: 'Việc Làm' }), path: '/jobs' },
-    { icon: MessageCircle, label: t({ english: 'Community', vietnamese: 'Cộng Đồng' }), path: '/community' },
-    { icon: Info, label: t({ english: 'About', vietnamese: 'Giới Thiệu' }), path: '/about' },
-    { icon: Mail, label: t({ english: 'Contact', vietnamese: 'Liên Hệ' }), path: '/contact' }
   ];
-
+  
+  // Combine all nav items, filtering out duplicates
+  const allNavItems = [...additionalNavItems, ...mainNavigationItems]
+    .filter((item, index, self) => 
+      index === self.findIndex((t) => t.path === item.path)
+    );
+    
+  // Check current route for active state
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
+  
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            variants={overlayVariants}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-            onClick={onClose}
-          />
-
-          {/* Menu */}
-          <motion.div
-            variants={menuVariants}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white/95 backdrop-blur-xl border-l border-gray-200/50 shadow-2xl z-50 flex flex-col"
+    <div className="relative z-50">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="flex md:hidden rounded-full p-2 h-10 w-10"
+            aria-label="Open menu"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200/50 bg-white/60 backdrop-blur-sm">
-              <EmviLogo size="medium" className="flex-shrink-0" />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="h-8 w-8 p-0 rounded-full hover:bg-gray-100/50 transition-colors"
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </SheetTrigger>
+        
+        <SheetContent side="right" className="w-[280px] sm:w-[350px] p-0 border-l shadow-lg">
+          <div className="flex flex-col h-full">
+            {/* Header with Logo */}
+            <div className="flex items-center justify-between border-b p-4">
+              <div onClick={() => handleNavigation('/')} className="cursor-pointer">
+                <Logo size="small" showText={true} />
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full h-8 w-8"
+                onClick={() => setOpen(false)}
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
+            
+            {/* Nav Links */}
+            <div className="flex-1 overflow-y-auto py-4">
+              <nav className="space-y-1 px-2">
+                {/* Authentication buttons - only show if not signed in */}
+                {!isSignedIn && (
+                  <div className="px-2 mb-6 space-y-3">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
+                      onClick={() => handleNavigation('/sign-up')}
+                    >
+                      <UserPlus size={18} />
+                      {t({
+                        english: 'Sign Up',
+                        vietnamese: 'Đăng ký'
+                      })}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="w-full flex gap-2"
+                      onClick={() => handleNavigation('/login')}
+                    >
+                      <LogIn size={18} />
+                      {t({
+                        english: 'Sign In',
+                        vietnamese: 'Đăng nhập'
+                      })}
+                    </Button>
+                  </div>
+                )}
 
-            {/* Content */}
-            <div className="flex-1 flex flex-col overflow-y-auto">
-              <motion.div
-                variants={containerVariants}
-                initial="closed"
-                animate="open"
-                className="flex-1 p-4 space-y-3"
-              >
-                {/* CTAs */}
-                <motion.div variants={itemVariants} className="space-y-2">
-                  <Button
-                    onClick={() => handleNavigation('/post-job')}
-                    className="w-full h-10 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 backdrop-blur-sm"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t({ english: 'Post a Job for Free', vietnamese: 'Đăng Tin Tuyển Dụng Miễn Phí' })}
-                  </Button>
-                  
-                  <Button
-                    onClick={() => handleNavigation('/posting/salon')}
-                    variant="outline"
-                    className="w-full h-10 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 font-medium rounded-lg transition-all duration-200 backdrop-blur-sm"
-                  >
-                    <Store className="h-4 w-4 mr-2" />
-                    {t({ english: 'Post Your Salon', vietnamese: 'Đăng Bán Tiệm' })}
-                  </Button>
-                </motion.div>
-
-                {/* Navigation */}
-                <motion.div variants={itemVariants} className="space-y-1 pt-2">
-                  {navigationItems.map((item) => (
-                    <motion.div key={item.path} variants={itemVariants}>
-                      <button
-                        onClick={() => handleNavigation(item.path)}
-                        className="w-full flex items-center px-3 py-2.5 text-gray-700 hover:text-purple-700 hover:bg-purple-50/50 rounded-lg transition-all duration-200 group"
-                      >
-                        <item.icon className="h-4 w-4 mr-3 text-gray-500 group-hover:text-purple-600 transition-colors" />
-                        <span className="font-medium">{item.label}</span>
-                      </button>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </motion.div>
-
-              {/* Bottom Section */}
-              <div className="border-t border-gray-200/50 bg-white/40 backdrop-blur-sm">
-                <div className="p-4 space-y-3">
-                  {/* Auth */}
-                  <motion.div variants={itemVariants}>
-                    {user ? (
-                      <Button
-                        onClick={handleSignOut}
-                        variant="ghost"
-                        className="w-full justify-start h-10 text-red-600 hover:text-red-700 hover:bg-red-50/50 rounded-lg transition-all duration-200"
-                      >
-                        <LogOut className="h-4 w-4 mr-3" />
-                        {t({ english: 'Sign Out', vietnamese: 'Đăng Xuất' })}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => handleNavigation('/sign-in')}
-                        variant="ghost"
-                        className="w-full justify-start h-10 text-purple-600 hover:text-purple-700 hover:bg-purple-50/50 rounded-lg transition-all duration-200"
-                      >
-                        <LogIn className="h-4 w-4 mr-3" />
-                        {t({ english: 'Sign In', vietnamese: 'Đăng Nhập' })}
-                      </Button>
+                {/* Post Job button (highlighted) - only for signed in users */}
+                {isSignedIn && (
+                  <div className="px-2 mb-6">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
+                      onClick={() => handleNavigation('/post-job')}
+                    >
+                      <PlusSquare size={18} />
+                      {t({
+                        english: 'Post a Job',
+                        vietnamese: 'Đăng việc làm'
+                      })}
+                    </Button>
+                  </div>
+                )}
+                
+                {/* Navigation Items */}
+                {allNavItems.map((item) => (
+                  <button
+                    key={item.path}
+                    onClick={() => handleNavigation(item.path)}
+                    className={cn(
+                      "flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors",
+                      isActive(item.path) 
+                        ? "bg-purple-100 text-purple-700 font-medium" 
+                        : "text-gray-700 hover:bg-gray-100"
                     )}
-                  </motion.div>
-
-                  {/* Language Toggle */}
-                  <motion.div variants={itemVariants} className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-600">
-                      {t({ english: 'Language', vietnamese: 'Ngôn Ngữ' })}
-                    </span>
-                    <LanguageToggle minimal />
-                  </motion.div>
-                </div>
-
-                {/* Footer */}
-                <div className="px-4 pb-4">
-                  <motion.div 
-                    variants={itemVariants}
-                    className="text-center py-2"
                   >
-                    <p className="text-xs text-amber-600 font-medium tracking-wide">
-                      Inspired by Sunshine ☀️
-                    </p>
-                  </motion.div>
-                </div>
+                    {item.icon && <item.icon className="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />}
+                    {t({
+                      english: item.title,
+                      vietnamese: item.vietnameseTitle || item.title
+                    })}
+                  </button>
+                ))}
+              </nav>
+            </div>
+            
+            {/* Footer section */}
+            <div className="border-t p-4 space-y-4">
+              {/* Sign Out button - only show if signed in */}
+              {isSignedIn && (
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors text-red-600 hover:bg-red-50"
+                >
+                  <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
+                  {t({
+                    english: 'Sign Out',
+                    vietnamese: 'Đăng xuất'
+                  })}
+                </button>
+              )}
+
+              {/* Language Toggle */}
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-gray-500">
+                  {t({
+                    english: 'Language',
+                    vietnamese: 'Ngôn ngữ'
+                  })}
+                </h4>
+                <LanguageToggle minimal={true} />
+              </div>
+              
+              {/* Sunshine credit */}
+              <div className="text-center pt-2">
+                <p className="text-sm bg-gradient-to-r from-yellow-500 to-pink-400 bg-clip-text text-transparent font-medium">
+                  Inspired by Sunshine ☀️
+                </p>
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 };
 
