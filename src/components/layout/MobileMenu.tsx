@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut, Home, Users, Store, Briefcase, Info, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   Sheet, 
@@ -14,7 +14,6 @@ import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
 import LanguageToggle from '@/components/layout/LanguageToggle';
-import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,6 +39,20 @@ const MobileMenu = () => {
 
   const closeMenu = () => setIsOpen(false);
 
+  // Get appropriate icon for each nav item
+  const getNavIcon = (path: string) => {
+    switch (path) {
+      case '/': return Home;
+      case '/artists': return Users;
+      case '/salons': return Store;
+      case '/jobs': return Briefcase;
+      case '/freelancers': return Users;
+      case '/about': return Info;
+      case '/contact': return MessageSquare;
+      default: return Home;
+    }
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
@@ -47,88 +60,123 @@ const MobileMenu = () => {
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-80">
+      <SheetContent side="right" className="w-full sm:w-80 flex flex-col h-full">
         <SheetHeader className="text-left mb-6">
           <SheetTitle className="text-xl font-semibold">Menu</SheetTitle>
         </SheetHeader>
         
-        <div className="flex flex-col space-y-4">
-          {/* Primary CTA Buttons */}
-          <div className="space-y-3 pb-4 border-b border-gray-200">
+        <div className="flex flex-col flex-1">
+          {/* Primary CTA Button */}
+          <div className="mb-6">
             <Button 
               onClick={handlePostJob}
-              className="w-full bg-purple-600 text-white hover:bg-purple-700"
+              className="w-full bg-purple-600 text-white hover:bg-purple-700 h-12 text-base font-medium"
             >
-              {t("Post a Job for Free")}
+              {t({
+                english: "Post a Job for Free",
+                vietnamese: "Đăng Việc Miễn Phí"
+              })}
             </Button>
-            
-            <PostYourSalonButton 
-              variant="outline" 
-              className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-            />
           </div>
 
-          {/* Navigation Links */}
-          <nav className="space-y-2">
-            {mainNavigationItems.map((item) => (
+          {/* Dashboard link for signed-in users */}
+          {user && (
+            <div className="mb-4">
               <Link
-                key={item.path}
-                to={item.path}
+                to="/dashboard"
                 onClick={closeMenu}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  location.pathname === item.path
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                  location.pathname === "/dashboard"
                     ? "text-purple-700 bg-purple-50"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
+                <User className="h-5 w-5" />
                 {t({
-                  english: item.title,
-                  vietnamese: item.vietnameseTitle || item.title
+                  english: "Dashboard",
+                  vietnamese: "Bảng Điều Khiển"
                 })}
               </Link>
-            ))}
+            </div>
+          )}
+
+          {/* Navigation Links */}
+          <nav className="space-y-1 mb-6">
+            {mainNavigationItems.map((item) => {
+              const IconComponent = getNavIcon(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={closeMenu}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    location.pathname === item.path
+                      ? "text-purple-700 bg-purple-50"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <IconComponent className="h-5 w-5" />
+                  {t({
+                    english: item.title,
+                    vietnamese: item.vietnameseTitle || item.title
+                  })}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Language Toggle */}
-          <div className="pt-4 border-t border-gray-200">
+          <div className="mb-6 px-2">
             <LanguageToggle minimal={false} className="w-full justify-center" />
           </div>
 
+          {/* Spacer to push auth section and footer to bottom */}
+          <div className="flex-1"></div>
+
           {/* Auth Section */}
-          <div className="pt-4 border-t border-gray-200 space-y-3">
+          <div className="mb-6 space-y-3">
             {user ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  onClick={closeMenu}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
-                >
-                  <User className="h-4 w-4" />
-                  {t("Dashboard")}
-                </Link>
-                <Button
-                  variant="ghost"
-                  onClick={handleSignOut}
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  {t("Sign Out")}
-                </Button>
-              </>
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="w-full justify-center text-red-600 border-red-200 hover:text-red-700 hover:bg-red-50"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                {t({
+                  english: "Sign Out",
+                  vietnamese: "Đăng Xuất"
+                })}
+              </Button>
             ) : (
-              <>
+              <div className="space-y-2">
                 <Link to="/sign-in" onClick={closeMenu}>
                   <Button variant="outline" className="w-full">
-                    {t("Sign In")}
+                    {t({
+                      english: "Sign In",
+                      vietnamese: "Đăng Nhập"
+                    })}
                   </Button>
                 </Link>
                 <Link to="/sign-up" onClick={closeMenu}>
-                  <Button className="w-full">
-                    {t("Sign Up")}
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    {t({
+                      english: "Sign Up",
+                      vietnamese: "Đăng Ký"
+                    })}
                   </Button>
                 </Link>
-              </>
+              </div>
             )}
+          </div>
+
+          {/* Sunshine Footer Credit */}
+          <div className="text-center py-4 border-t border-gray-100">
+            <p className="text-sm text-gray-500 font-light">
+              {t({
+                english: "Inspired by Sunshine ☀️",
+                vietnamese: "Lấy Cảm Hứng Từ Ánh Nắng ☀️"
+              })}
+            </p>
           </div>
         </div>
       </SheetContent>
