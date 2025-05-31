@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { X, LogOut, Globe } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X, User, LogOut, Globe } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { useLanguage } from '@/context/LanguageContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
 
 interface MobileMenuProps {
@@ -12,9 +11,9 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
-  const { isSignedIn, signOut } = useAuth();
-  const { isVietnamese, toggleLanguage } = useLanguage();
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { user, signOut } = useAuth();
+  const { isVietnamese, toggleLanguage } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -24,144 +23,112 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden">
-      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 lg:hidden">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl">
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b">
-            <span className="text-lg font-semibold text-gray-900">Menu</span>
-            <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
-              <X className="h-6 w-6" />
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-semibold">Menu</h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 px-4 py-6 space-y-6">
-            {/* Primary CTAs */}
-            <div className="space-y-3">
-              <Button asChild className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                <Link to="/posting/job" onClick={onClose}>
-                  {isVietnamese ? 'Đăng Việc Miễn Phí' : 'Post a Job for Free'}
-                </Link>
-              </Button>
+          {/* Navigation Links */}
+          <nav className="flex-1 p-4 space-y-2">
+            <Link
+              to="/artists"
+              onClick={onClose}
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              Find Artists
+            </Link>
+            <Link
+              to="/jobs"
+              onClick={onClose}
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              Browse Jobs
+            </Link>
+            <Link
+              to="/salons"
+              onClick={onClose}
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              Salons for Sale
+            </Link>
+
+            {/* Action Buttons */}
+            <div className="pt-4 space-y-3">
+              <Link
+                to="/posting/job"
+                onClick={onClose}
+                className="block w-full bg-purple-600 text-white text-center py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Post a Job
+              </Link>
               
               <div onClick={onClose}>
                 <PostYourSalonButton 
-                  variant="outline" 
-                  className="w-full border-purple-200 text-purple-700 hover:bg-purple-50"
+                  variant="outline"
+                  className="w-full"
                 />
               </div>
             </div>
+          </nav>
 
-            {/* Navigation Links */}
-            <nav className="space-y-1">
-              <Link 
-                to="/explore/artists" 
-                onClick={onClose}
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                {isVietnamese ? 'Khám Phá Nghệ Sĩ' : 'Explore Artists'}
-              </Link>
-              <Link 
-                to="/explore/salons" 
-                onClick={onClose}
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                {isVietnamese ? 'Khám Phá Salon' : 'Explore Salons'}
-              </Link>
-              <Link 
-                to="/jobs" 
-                onClick={onClose}
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                {isVietnamese ? 'Việc Làm' : 'Jobs'}
-              </Link>
-              <Link 
-                to="/booths" 
-                onClick={onClose}
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                {isVietnamese ? 'Thuê Booth' : 'Booth Rentals'}
-              </Link>
-              <Link 
-                to="/supplies" 
-                onClick={onClose}
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                {isVietnamese ? 'Vật Tư' : 'Supplies'}
-              </Link>
-              <Link 
-                to="/salons" 
-                onClick={onClose}
-                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                {isVietnamese ? 'Salon Bán' : 'Salons for Sale'}
-              </Link>
-            </nav>
+          {/* Bottom Section */}
+          <div className="border-t p-4 space-y-3">
+            {/* Language Toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Globe className="h-5 w-5 mr-3" />
+              {isVietnamese ? 'English' : 'Tiếng Việt'}
+            </button>
 
-            {/* Auth Section */}
-            <div className="border-t pt-6 space-y-3">
-              {isSignedIn ? (
-                <>
-                  <Link 
-                    to="/dashboard" 
-                    onClick={onClose}
-                    className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    {isVietnamese ? 'Bảng Điều Khiển' : 'Dashboard'}
-                  </Link>
-                  <Link 
-                    to="/profile" 
-                    onClick={onClose}
-                    className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    {isVietnamese ? 'Hồ Sơ' : 'Profile'}
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {isVietnamese ? 'Đăng Xuất' : 'Sign Out'}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link 
-                    to="/auth?tab=signin" 
-                    onClick={onClose}
-                    className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    {isVietnamese ? 'Đăng Nhập' : 'Sign In'}
-                  </Link>
-                  <Link 
-                    to="/auth?tab=signup" 
-                    onClick={onClose}
-                    className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    {isVietnamese ? 'Đăng Ký' : 'Sign Up'}
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* Language Switcher */}
-            <div className="border-t pt-6">
-              <button
-                onClick={toggleLanguage}
-                className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                <Globe className="h-4 w-4 mr-2" />
-                {isVietnamese ? 'English' : 'Tiếng Việt'}
-              </button>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="px-4 py-3 border-t">
-            <p className="text-xs text-gray-500 text-center">
-              Inspired by Sunshine ☀️
-            </p>
+            {/* Auth Actions */}
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  onClick={onClose}
+                  className="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <User className="h-5 w-5 mr-3" />
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <LogOut className="h-5 w-5 mr-3" />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/signin"
+                  onClick={onClose}
+                  className="block w-full text-center px-4 py-3 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={onClose}
+                  className="block w-full text-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
