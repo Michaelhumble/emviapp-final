@@ -15,6 +15,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   const { user, signOut } = useAuth();
   const { isVietnamese, toggleLanguage } = useTranslation();
 
+  // Debug logging
+  console.log('MobileMenu rendering, isOpen:', isOpen);
+  console.log('PostYourSalonButton component imported:', typeof PostYourSalonButton);
+
   if (!isOpen) return null;
 
   const handleSignOut = async () => {
@@ -40,6 +44,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
           {/* Action Buttons */}
           <div className="p-4 space-y-3 border-b">
+            {console.log('Rendering action buttons section')}
             <Link
               to="/posting/job"
               onClick={onClose}
@@ -49,11 +54,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               Post a Job
             </Link>
             
+            {console.log('About to render PostYourSalonButton')}
             <PostYourSalonButton 
               variant="outline"
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg shadow-md font-medium text-sm border-purple-600 text-purple-600 hover:bg-purple-50"
               onClose={onClose}
             />
+            {console.log('PostYourSalonButton should be rendered')}
           </div>
 
           {/* Navigation Links */}
