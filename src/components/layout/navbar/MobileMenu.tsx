@@ -43,18 +43,20 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             <Link
               to="/posting/job"
               onClick={onClose}
-              className="flex items-center justify-center gap-2 w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md font-medium"
+              className="flex items-center justify-center gap-2 w-full bg-purple-600 text-white py-2.5 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md font-medium text-sm"
             >
               <Briefcase className="h-4 w-4" />
               Post a Job
             </Link>
             
-            <div onClick={onClose}>
-              <PostYourSalonButton 
-                variant="outline"
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg shadow-md font-medium border-purple-600 text-purple-600 hover:bg-purple-50"
-              />
-            </div>
+            <Link
+              to="/posting/salon"
+              onClick={onClose}
+              className="flex items-center justify-center gap-2 w-full border border-purple-600 text-purple-600 py-2.5 px-4 rounded-lg hover:bg-purple-50 transition-colors shadow-md font-medium text-sm"
+            >
+              <Building className="h-4 w-4" />
+              Post Your Salon
+            </Link>
           </div>
 
           {/* Navigation Links */}
