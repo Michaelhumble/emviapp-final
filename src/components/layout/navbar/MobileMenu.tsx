@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { X, User, LogOut, Globe, Briefcase, Building } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
-import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -14,10 +12,6 @@ interface MobileMenuProps {
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   const { user, signOut } = useAuth();
   const { isVietnamese, toggleLanguage } = useTranslation();
-
-  // Debug logging
-  console.log('MobileMenu rendering, isOpen:', isOpen);
-  console.log('PostYourSalonButton component imported:', typeof PostYourSalonButton);
 
   if (!isOpen) return null;
 
@@ -29,10 +23,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl">
-        <div className="flex h-full flex-col">
+      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
+        <div className="flex h-full flex-col min-h-0">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
             <h2 className="text-lg font-semibold">Menu</h2>
             <button
               onClick={onClose}
@@ -43,7 +37,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="p-4 space-y-3 border-b">
+          <div className="p-4 space-y-3 border-b flex-shrink-0">
             <Link
               to="/posting/job"
               onClick={onClose}
@@ -64,7 +58,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             <Link
               to="/artists"
               onClick={onClose}
@@ -92,8 +86,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           </nav>
 
           {/* Bottom Section */}
-          <div className="border-t p-4 space-y-3">
-            {/* Language Toggle */}
+          <div className="border-t p-4 space-y-3 flex-shrink-0">
             <button
               onClick={toggleLanguage}
               className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -102,7 +95,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               {isVietnamese ? 'English' : 'Tiếng Việt'}
             </button>
 
-            {/* Auth Actions */}
             {user ? (
               <>
                 <Link
@@ -140,7 +132,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               </>
             )}
 
-            {/* Footer */}
             <div className="text-center pt-2 pb-1">
               <p className="text-xs text-gray-500">Inspired by Sunshine ☀️</p>
             </div>
