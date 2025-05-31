@@ -1,194 +1,314 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Home, Users, Store, Briefcase, Scissors, Info, Phone, LogIn, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
 import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
-import LanguageToggle from '@/components/layout/LanguageToggle';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { 
+  Menu, 
+  Home, 
+  Users, 
+  Building, 
+  Briefcase, 
+  MessageCircle, 
+  Info, 
+  Mail, 
+  LogIn, 
+  LogOut,
+  User,
+  LayoutDashboard,
+  Sun
+} from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
-import { toast } from 'sonner';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 
 const MobileMenu = () => {
-  const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
-    setOpen(false);
-    navigate("/");
-    toast.success("You've been signed out successfully");
+    setIsOpen(false);
+    navigate('/');
   };
 
-  const handlePostJob = () => {
-    setOpen(false);
-    if (user) {
-      navigate("/post-job");
-    } else {
-      navigate("/sign-in");
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsOpen(false);
+  };
+
+  const menuVariants = {
+    hidden: { opacity: 0, x: '100%' },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: {
+        type: 'spring',
+        damping: 20,
+        stiffness: 100,
+        when: 'beforeChildren',
+        staggerChildren: 0.05
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      x: '100%',
+      transition: {
+        type: 'spring',
+        damping: 25,
+        stiffness: 120
+      }
     }
   };
 
-  const handleLinkClick = () => {
-    setOpen(false);
+  const itemVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { type: 'spring', damping: 20, stiffness: 100 }
+    }
   };
 
   const navigationItems = [
     ...(user ? [{ 
-      title: t({ english: "Dashboard", vietnamese: "Bảng điều khiển" }), 
-      path: "/dashboard", 
-      icon: Home 
+      name: t('Dashboard'), 
+      path: '/dashboard', 
+      icon: LayoutDashboard,
+      isPremium: true 
     }] : []),
-    { 
-      title: t({ english: "Home", vietnamese: "Trang chủ" }), 
-      path: "/", 
-      icon: Home 
-    },
-    { 
-      title: t({ english: "Artists", vietnamese: "Nghệ sĩ" }), 
-      path: "/artists", 
-      icon: Scissors 
-    },
-    { 
-      title: t({ english: "Salons", vietnamese: "Tiệm Nail" }), 
-      path: "/salons", 
-      icon: Store 
-    },
-    { 
-      title: t({ english: "Jobs", vietnamese: "Công việc" }), 
-      path: "/jobs", 
-      icon: Briefcase 
-    },
-    { 
-      title: t({ english: "Community", vietnamese: "Cộng đồng" }), 
-      path: "/freelancers", 
-      icon: Users 
-    },
-    { 
-      title: t({ english: "About", vietnamese: "Giới thiệu" }), 
-      path: "/about", 
-      icon: Info 
-    },
-    { 
-      title: t({ english: "Contact", vietnamese: "Liên hệ" }), 
-      path: "/contact", 
-      icon: Phone 
-    }
+    { name: t('Home'), path: '/', icon: Home },
+    { name: t('Artists'), path: '/artists', icon: Users },
+    { name: t('Salons'), path: '/salons', icon: Building },
+    { name: t('Jobs'), path: '/jobs', icon: Briefcase },
+    { name: t('Community'), path: '/community', icon: MessageCircle },
+    { name: t('About'), path: '/about', icon: Info },
+    { name: t('Contact'), path: '/contact', icon: Mail },
   ];
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Open menu</span>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="relative p-2 hover:bg-purple-50/80 transition-all duration-200 hover:scale-105 active:scale-95"
+          aria-label="Open menu"
+        >
+          <Menu className="h-6 w-6 text-gray-700" />
         </Button>
-      </DrawerTrigger>
+      </SheetTrigger>
       
-      <DrawerContent className="h-[95vh] px-0">
-        <div className="flex flex-col h-full bg-white">
-          {/* Header with Logo */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-100">
-            <Logo size="medium" showText={true} />
-            <DrawerClose asChild>
-              <Button variant="ghost" size="icon">
-                <X className="h-6 w-6" />
-                <span className="sr-only">Close menu</span>
-              </Button>
-            </DrawerClose>
-          </div>
+      <SheetContent 
+        side="right" 
+        className="w-full max-w-sm p-0 bg-gradient-to-br from-white via-purple-50/30 to-blue-50/20 backdrop-blur-xl border-l border-purple-100/50 shadow-2xl"
+      >
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              variants={menuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="flex flex-col h-full"
+            >
+              {/* Premium Header with Logo */}
+              <motion.div 
+                variants={itemVariants}
+                className="px-6 py-8 bg-gradient-to-r from-white/90 to-purple-50/60 backdrop-blur-sm border-b border-purple-100/30"
+              >
+                <div className="flex justify-center">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 blur-lg rounded-full scale-110" />
+                    <Logo size="large" showText={true} className="relative z-10 drop-shadow-sm" />
+                  </div>
+                </div>
+              </motion.div>
 
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4 space-y-4">
-              {/* Main CTAs */}
-              <div className="space-y-3">
+              {/* Premium CTAs Section */}
+              <motion.div 
+                variants={itemVariants}
+                className="px-6 py-6 space-y-4 bg-gradient-to-r from-white/70 to-purple-50/40 backdrop-blur-sm border-b border-purple-100/20"
+              >
                 {/* Post a Job Button */}
-                <Button 
-                  onClick={handlePostJob}
-                  className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg h-12 text-base font-medium"
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative group"
                 >
-                  {t({ english: "Post a Job for Free", vietnamese: "Đăng việc miễn phí" })}
-                </Button>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl blur-sm opacity-50 group-hover:opacity-70 transition-opacity" />
+                  <Button
+                    onClick={() => handleNavigation('/post-job')}
+                    className="relative w-full h-14 bg-gradient-to-r from-purple-600 via-purple-500 to-purple-600 hover:from-purple-700 hover:via-purple-600 hover:to-purple-700 text-white font-semibold text-base rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-0"
+                  >
+                    <motion.span
+                      initial={{ opacity: 0.8 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center gap-3"
+                    >
+                      <Briefcase className="h-5 w-5" />
+                      {t("Post a Job for Free")}
+                    </motion.span>
+                  </Button>
+                </motion.div>
 
                 {/* Post Your Salon Button */}
-                <PostYourSalonButton 
-                  variant="outline" 
-                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 rounded-lg h-12 text-base font-medium"
-                />
-              </div>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-200 to-purple-300 rounded-xl blur-sm opacity-30 group-hover:opacity-50 transition-opacity" />
+                  <Button
+                    onClick={() => handleNavigation('/posting/salon')}
+                    variant="outline"
+                    className="relative w-full h-12 border-2 border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white/70 backdrop-blur-sm"
+                  >
+                    <motion.span
+                      initial={{ opacity: 0.8 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center gap-3"
+                    >
+                      <Building className="h-4 w-4" />
+                      {t({
+                        english: "Post Your Salon",
+                        vietnamese: "Đăng Bán Tiệm"
+                      })}
+                    </motion.span>
+                  </Button>
+                </motion.div>
+              </motion.div>
 
               {/* Navigation Items */}
-              <div className="space-y-1 pt-4">
-                {navigationItems.map((item) => {
+              <motion.div 
+                variants={itemVariants}
+                className="flex-1 px-4 py-4 space-y-1 overflow-y-auto"
+              >
+                {navigationItems.map((item, index) => {
                   const IconComponent = item.icon;
                   return (
-                    <Link
+                    <motion.div
                       key={item.path}
-                      to={item.path}
-                      onClick={handleLinkClick}
-                      className="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.02, x: 4 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="relative group"
                     >
-                      <IconComponent className="h-5 w-5 text-gray-500" />
-                      <span className="text-base font-medium">{item.title}</span>
-                    </Link>
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-50/50 to-blue-50/30 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                      <Link
+                        to={item.path}
+                        onClick={() => setIsOpen(false)}
+                        className={`relative flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-200 ${
+                          item.isPremium 
+                            ? 'text-purple-700 hover:text-purple-800' 
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-lg ${
+                          item.isPremium 
+                            ? 'bg-gradient-to-r from-purple-100 to-purple-200' 
+                            : 'bg-gray-100 group-hover:bg-gray-200'
+                        } transition-colors duration-200`}>
+                          <IconComponent className="h-5 w-5" />
+                        </div>
+                        <span className="font-medium">{item.name}</span>
+                        {item.isPremium && (
+                          <div className="ml-auto">
+                            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" />
+                          </div>
+                        )}
+                      </Link>
+                    </motion.div>
                   );
                 })}
-              </div>
-            </div>
-          </div>
+              </motion.div>
 
-          {/* Footer Section */}
-          <div className="border-t border-gray-100 p-4 space-y-4">
-            {/* Auth Section */}
-            <div className="flex flex-col space-y-2">
-              {user ? (
-                <Button 
-                  onClick={handleSignOut}
-                  variant="outline" 
-                  className="w-full flex items-center gap-2 justify-center h-11"
+              {/* Auth & Language Section */}
+              <motion.div 
+                variants={itemVariants}
+                className="px-6 py-6 space-y-4 bg-gradient-to-r from-white/80 to-purple-50/50 backdrop-blur-sm border-t border-purple-100/30"
+              >
+                {/* Auth Button */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <LogOut className="h-4 w-4" />
-                  {t({ english: "Sign Out", vietnamese: "Đăng xuất" })}
-                </Button>
-              ) : (
-                <div className="flex gap-2">
-                  <Link to="/sign-in" onClick={handleLinkClick} className="flex-1">
-                    <Button variant="outline" className="w-full flex items-center gap-2 justify-center h-11">
-                      <LogIn className="h-4 w-4" />
-                      {t({ english: "Sign In", vietnamese: "Đăng nhập" })}
+                  {user ? (
+                    <Button
+                      onClick={handleSignOut}
+                      variant="outline"
+                      className="w-full h-12 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white/70 backdrop-blur-sm"
+                    >
+                      <LogOut className="h-4 w-4 mr-3" />
+                      {t('Sign Out')}
                     </Button>
-                  </Link>
-                  <Link to="/sign-up" onClick={handleLinkClick} className="flex-1">
-                    <Button className="w-full h-11">
-                      {t({ english: "Sign Up", vietnamese: "Đăng ký" })}
+                  ) : (
+                    <Button
+                      onClick={() => handleNavigation('/sign-in')}
+                      variant="outline"
+                      className="w-full h-12 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 bg-white/70 backdrop-blur-sm"
+                    >
+                      <LogIn className="h-4 w-4 mr-3" />
+                      {t('Sign In')}
                     </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
+                  )}
+                </motion.div>
 
-            {/* Language Toggle */}
-            <div className="flex justify-center">
-              <LanguageToggle minimal={true} />
-            </div>
+                {/* Language Toggle */}
+                <motion.div 
+                  variants={itemVariants}
+                  className="flex justify-center"
+                >
+                  <div className="p-2 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
+                    <LanguageToggle minimal={true} />
+                  </div>
+                </motion.div>
+              </motion.div>
 
-            {/* Emotional Footer */}
-            <div className="text-center pt-2 border-t border-gray-50">
-              <p className="text-sm text-gray-400 font-light">
-                {t({ 
-                  english: "Inspired by Sunshine ☀️", 
-                  vietnamese: "Được truyền cảm hứng bởi ánh nắng ☀️" 
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-      </DrawerContent>
-    </Drawer>
+              {/* Premium Footer */}
+              <motion.div 
+                variants={itemVariants}
+                className="px-6 py-4 text-center bg-gradient-to-r from-amber-50/80 to-orange-50/60 backdrop-blur-sm border-t border-orange-100/30"
+              >
+                <motion.div
+                  initial={{ opacity: 0.7 }}
+                  animate={{ opacity: 1 }}
+                  className="relative inline-block"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-200/30 to-orange-200/30 blur-sm rounded-full scale-110" />
+                  <p className="relative text-sm font-medium bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
+                    Inspired by Sunshine
+                    <motion.span
+                      animate={{ 
+                        rotate: [0, 10, 0],
+                        scale: [1, 1.1, 1]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatType: 'reverse'
+                      }}
+                      className="text-amber-400 drop-shadow-sm"
+                    >
+                      <Sun className="h-4 w-4" />
+                    </motion.span>
+                  </p>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </SheetContent>
+    </Sheet>
   );
 };
 
