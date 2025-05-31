@@ -8,14 +8,22 @@ interface PostYourSalonButtonProps {
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
+  onClose?: () => void;
 }
 
 const PostYourSalonButton: React.FC<PostYourSalonButtonProps> = ({
   variant = 'default',
   size = 'default',
-  className = ''
+  className = '',
+  onClose
 }) => {
   const { t } = useTranslation();
+
+  const handleClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
 
   return (
     <Button 
@@ -24,7 +32,7 @@ const PostYourSalonButton: React.FC<PostYourSalonButtonProps> = ({
       size={size}
       className={className}
     >
-      <Link to="/posting/salon">
+      <Link to="/posting/salon" onClick={handleClick}>
         {t({
           english: "Post Your Salon",
           vietnamese: "Đăng Bán Tiệm"
