@@ -1,186 +1,194 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut, Home, Users, Store, Briefcase, Info, MessageSquare } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, Home, Users, Store, Briefcase, Scissors, Info, Phone, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetTrigger 
-} from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
 import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
-import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
 import LanguageToggle from '@/components/layout/LanguageToggle';
+import Logo from '@/components/ui/Logo';
+import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
+import { toast } from 'sonner';
 
 const MobileMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useTranslation();
 
   const handleSignOut = async () => {
     await signOut();
-    setIsOpen(false);
-    navigate('/');
+    setOpen(false);
+    navigate("/");
+    toast.success("You've been signed out successfully");
   };
 
   const handlePostJob = () => {
+    setOpen(false);
     if (user) {
-      navigate('/post-job');
+      navigate("/post-job");
     } else {
-      navigate('/sign-in');
-    }
-    setIsOpen(false);
-  };
-
-  const closeMenu = () => setIsOpen(false);
-
-  // Get appropriate icon for each nav item
-  const getNavIcon = (path: string) => {
-    switch (path) {
-      case '/': return Home;
-      case '/artists': return Users;
-      case '/salons': return Store;
-      case '/jobs': return Briefcase;
-      case '/freelancers': return Users;
-      case '/about': return Info;
-      case '/contact': return MessageSquare;
-      default: return Home;
+      navigate("/sign-in");
     }
   };
+
+  const handleLinkClick = () => {
+    setOpen(false);
+  };
+
+  const navigationItems = [
+    ...(user ? [{ 
+      title: t({ english: "Dashboard", vietnamese: "Bảng điều khiển" }), 
+      path: "/dashboard", 
+      icon: Home 
+    }] : []),
+    { 
+      title: t({ english: "Home", vietnamese: "Trang chủ" }), 
+      path: "/", 
+      icon: Home 
+    },
+    { 
+      title: t({ english: "Artists", vietnamese: "Nghệ sĩ" }), 
+      path: "/artists", 
+      icon: Scissors 
+    },
+    { 
+      title: t({ english: "Salons", vietnamese: "Tiệm Nail" }), 
+      path: "/salons", 
+      icon: Store 
+    },
+    { 
+      title: t({ english: "Jobs", vietnamese: "Công việc" }), 
+      path: "/jobs", 
+      icon: Briefcase 
+    },
+    { 
+      title: t({ english: "Community", vietnamese: "Cộng đồng" }), 
+      path: "/freelancers", 
+      icon: Users 
+    },
+    { 
+      title: t({ english: "About", vietnamese: "Giới thiệu" }), 
+      path: "/about", 
+      icon: Info 
+    },
+    { 
+      title: t({ english: "Contact", vietnamese: "Liên hệ" }), 
+      path: "/contact", 
+      icon: Phone 
+    }
+  ];
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-6 w-6" />
+          <span className="sr-only">Open menu</span>
         </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-80 flex flex-col h-full">
-        <SheetHeader className="text-left mb-6">
-          <SheetTitle className="text-xl font-semibold">Menu</SheetTitle>
-        </SheetHeader>
-        
-        <div className="flex flex-col flex-1">
-          {/* Primary CTA Button */}
-          <div className="mb-6">
-            <Button 
-              onClick={handlePostJob}
-              className="w-full bg-purple-600 text-white hover:bg-purple-700 h-12 text-base font-medium"
-            >
-              {t({
-                english: "Post a Job for Free",
-                vietnamese: "Đăng Việc Miễn Phí"
-              })}
-            </Button>
-          </div>
-
-          {/* Dashboard link for signed-in users */}
-          {user && (
-            <div className="mb-4">
-              <Link
-                to="/dashboard"
-                onClick={closeMenu}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                  location.pathname === "/dashboard"
-                    ? "text-purple-700 bg-purple-50"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <User className="h-5 w-5" />
-                {t({
-                  english: "Dashboard",
-                  vietnamese: "Bảng Điều Khiển"
-                })}
-              </Link>
-            </div>
-          )}
-
-          {/* Navigation Links */}
-          <nav className="space-y-1 mb-6">
-            {mainNavigationItems.map((item) => {
-              const IconComponent = getNavIcon(item.path);
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={closeMenu}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                    location.pathname === item.path
-                      ? "text-purple-700 bg-purple-50"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <IconComponent className="h-5 w-5" />
-                  {t({
-                    english: item.title,
-                    vietnamese: item.vietnameseTitle || item.title
-                  })}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Language Toggle */}
-          <div className="mb-6 px-2">
-            <LanguageToggle minimal={false} className="w-full justify-center" />
-          </div>
-
-          {/* Spacer to push auth section and footer to bottom */}
-          <div className="flex-1"></div>
-
-          {/* Auth Section */}
-          <div className="mb-6 space-y-3">
-            {user ? (
-              <Button
-                variant="outline"
-                onClick={handleSignOut}
-                className="w-full justify-center text-red-600 border-red-200 hover:text-red-700 hover:bg-red-50"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                {t({
-                  english: "Sign Out",
-                  vietnamese: "Đăng Xuất"
-                })}
+      </DrawerTrigger>
+      
+      <DrawerContent className="h-[95vh] px-0">
+        <div className="flex flex-col h-full bg-white">
+          {/* Header with Logo */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-100">
+            <Logo size="medium" showText={true} />
+            <DrawerClose asChild>
+              <Button variant="ghost" size="icon">
+                <X className="h-6 w-6" />
+                <span className="sr-only">Close menu</span>
               </Button>
-            ) : (
-              <div className="space-y-2">
-                <Link to="/sign-in" onClick={closeMenu}>
-                  <Button variant="outline" className="w-full">
-                    {t({
-                      english: "Sign In",
-                      vietnamese: "Đăng Nhập"
-                    })}
-                  </Button>
-                </Link>
-                <Link to="/sign-up" onClick={closeMenu}>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                    {t({
-                      english: "Sign Up",
-                      vietnamese: "Đăng Ký"
-                    })}
-                  </Button>
-                </Link>
-              </div>
-            )}
+            </DrawerClose>
           </div>
 
-          {/* Sunshine Footer Credit */}
-          <div className="text-center py-4 border-t border-gray-100">
-            <p className="text-sm text-gray-500 font-light">
-              {t({
-                english: "Inspired by Sunshine ☀️",
-                vietnamese: "Lấy Cảm Hứng Từ Ánh Nắng ☀️"
-              })}
-            </p>
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4 space-y-4">
+              {/* Main CTAs */}
+              <div className="space-y-3">
+                {/* Post a Job Button */}
+                <Button 
+                  onClick={handlePostJob}
+                  className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg h-12 text-base font-medium"
+                >
+                  {t({ english: "Post a Job for Free", vietnamese: "Đăng việc miễn phí" })}
+                </Button>
+
+                {/* Post Your Salon Button */}
+                <PostYourSalonButton 
+                  variant="outline" 
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 rounded-lg h-12 text-base font-medium"
+                />
+              </div>
+
+              {/* Navigation Items */}
+              <div className="space-y-1 pt-4">
+                {navigationItems.map((item) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={handleLinkClick}
+                      className="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <IconComponent className="h-5 w-5 text-gray-500" />
+                      <span className="text-base font-medium">{item.title}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Section */}
+          <div className="border-t border-gray-100 p-4 space-y-4">
+            {/* Auth Section */}
+            <div className="flex flex-col space-y-2">
+              {user ? (
+                <Button 
+                  onClick={handleSignOut}
+                  variant="outline" 
+                  className="w-full flex items-center gap-2 justify-center h-11"
+                >
+                  <LogOut className="h-4 w-4" />
+                  {t({ english: "Sign Out", vietnamese: "Đăng xuất" })}
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Link to="/sign-in" onClick={handleLinkClick} className="flex-1">
+                    <Button variant="outline" className="w-full flex items-center gap-2 justify-center h-11">
+                      <LogIn className="h-4 w-4" />
+                      {t({ english: "Sign In", vietnamese: "Đăng nhập" })}
+                    </Button>
+                  </Link>
+                  <Link to="/sign-up" onClick={handleLinkClick} className="flex-1">
+                    <Button className="w-full h-11">
+                      {t({ english: "Sign Up", vietnamese: "Đăng ký" })}
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Language Toggle */}
+            <div className="flex justify-center">
+              <LanguageToggle minimal={true} />
+            </div>
+
+            {/* Emotional Footer */}
+            <div className="text-center pt-2 border-t border-gray-50">
+              <p className="text-sm text-gray-400 font-light">
+                {t({ 
+                  english: "Inspired by Sunshine ☀️", 
+                  vietnamese: "Được truyền cảm hứng bởi ánh nắng ☀️" 
+                })}
+              </p>
+            </div>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
