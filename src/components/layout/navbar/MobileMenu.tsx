@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { X, User, LogOut, Globe } from 'lucide-react';
+import { X, User, LogOut, Globe, Briefcase, Building } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import PostYourSalonButton from '@/components/buttons/PostYourSalonButton';
@@ -38,47 +38,51 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
 
+          {/* Action Buttons */}
+          <div className="p-4 space-y-3 border-b">
+            <Link
+              to="/posting/job"
+              onClick={onClose}
+              className="flex items-center justify-center gap-2 w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md font-medium"
+            >
+              <Briefcase className="h-4 w-4" />
+              Post a Job
+            </Link>
+            
+            <div onClick={onClose}>
+              <PostYourSalonButton 
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg shadow-md font-medium border-purple-600 text-purple-600 hover:bg-purple-50"
+              />
+            </div>
+          </div>
+
           {/* Navigation Links */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-4 space-y-1">
             <Link
               to="/artists"
               onClick={onClose}
-              className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
+              <User className="h-5 w-5" />
               Find Artists
             </Link>
             <Link
               to="/jobs"
               onClick={onClose}
-              className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
+              <Briefcase className="h-5 w-5" />
               Browse Jobs
             </Link>
             <Link
               to="/salons"
               onClick={onClose}
-              className="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
+              <Building className="h-5 w-5" />
               Salons for Sale
             </Link>
-
-            {/* Action Buttons */}
-            <div className="pt-4 space-y-3">
-              <Link
-                to="/posting/job"
-                onClick={onClose}
-                className="block w-full bg-purple-600 text-white text-center py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Post a Job
-              </Link>
-              
-              <div onClick={onClose}>
-                <PostYourSalonButton 
-                  variant="outline"
-                  className="w-full"
-                />
-              </div>
-            </div>
           </nav>
 
           {/* Bottom Section */}
@@ -86,7 +90,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Globe className="h-5 w-5 mr-3" />
               {isVietnamese ? 'English' : 'Tiếng Việt'}
@@ -98,14 +102,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                 <Link
                   to="/dashboard"
                   onClick={onClose}
-                  className="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <User className="h-5 w-5 mr-3" />
                   Dashboard
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <LogOut className="h-5 w-5 mr-3" />
                   Sign Out
@@ -116,19 +120,24 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                 <Link
                   to="/signin"
                   onClick={onClose}
-                  className="block w-full text-center px-4 py-3 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                  className="block w-full text-center px-4 py-3 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/signup"
                   onClick={onClose}
-                  className="block w-full text-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  className="block w-full text-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-md"
                 >
                   Sign Up
                 </Link>
               </>
             )}
+
+            {/* Footer */}
+            <div className="text-center pt-2 pb-1">
+              <p className="text-xs text-gray-500">Inspired by Sunshine ☀️</p>
+            </div>
           </div>
         </div>
       </div>
