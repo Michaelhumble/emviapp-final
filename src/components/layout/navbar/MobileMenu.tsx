@@ -44,7 +44,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
           {/* Action Buttons */}
           <div className="p-4 space-y-3 border-b">
-            {console.log('Rendering action buttons section')}
             <Link
               to="/posting/job"
               onClick={onClose}
@@ -54,13 +53,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               Post a Job
             </Link>
             
-            {console.log('About to render PostYourSalonButton')}
-            <PostYourSalonButton 
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg shadow-md font-medium text-sm border-purple-600 text-purple-600 hover:bg-purple-50"
-              onClose={onClose}
-            />
-            {console.log('PostYourSalonButton should be rendered')}
+            <Link
+              to="/posting/salon"
+              onClick={onClose}
+              className="flex items-center justify-center gap-2 w-full border border-purple-600 text-purple-600 py-2.5 px-4 rounded-lg hover:bg-purple-50 transition-colors shadow-md font-medium text-sm"
+            >
+              <Building className="h-4 w-4" />
+              Post Your Salon
+            </Link>
           </div>
 
           {/* Navigation Links */}
