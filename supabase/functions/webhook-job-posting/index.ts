@@ -65,58 +65,113 @@ serve(async (req) => {
         const expiresAt = new Date();
         expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
         
-        // Create the job listing in the jobs table
-        const { data: jobData, error: jobError } = await supabase
-          .from('jobs')
-          .insert({
-            user_id: userId,
-            title: jobTitle,
-            description: session.metadata?.description || '',
-            location: session.metadata?.location || '',
-            pricing_tier: tier,
-            status: 'active',
-            expires_at: expiresAt.toISOString(),
-            contact_info: {
-              phone: session.metadata?.phone || '',
-              email: session.metadata?.email || '',
-            },
-            compensation_type: session.metadata?.compensationType || '',
-            compensation_details: session.metadata?.compensationDetails || '',
-            requirements: session.metadata?.requirements || ''
-          })
-          .select()
-          .single();
+        try {
+          // Create the job listing in the jobs table
+          const { data: jobData, error: jobError } = await supabase
+            .from('jobs')
+            .insert({
+              user_id: userId,
+              title: jobTitle,
+              description: session.metadata?.description || '',
+              location: session.metadata?.location || '',
+              pricing_tier: tier,
+              status: 'active',
+              expires_at: expiresAt.toISOString(),
+              contact_info: {
+                phone: session.metadata?.phone || '',
+                email: session.metadata?.email || '',
+              },
+              compensation_type: session.metadata?.compensationType || '',
+              compensation_details: session.metadata?.compensationDetails || '',
+              requirements: session.metadata?.requirements || ''
+            })
+            .select()
+            .single();
+            
+          if (jobError) {
+            console.error('Error creating job listing:', jobError);
+            
+            // Log the error for admin review
+            await supabase
+              .from('listing_validation_logs')
+              .insert({
+                listing_id: session.id,
+                listing_type: 'job_creation_error',
+                user_id: userId,
+                error_reason: jobError.message,
+                ip_address: 'webhook'
+              });
+              
+            return new Response(JSON.stringify({ error: 'Failed to create job listing' }), {
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+          }
           
-        if (jobError) {
-          console.error('Error creating job listing:', jobError);
-          return new Response(JSON.stringify({ error: 'Failed to create job listing' }), {
+          console.log('Job listing created successfully:', jobData);
+          
+          // Log the payment - THIS MUST HAPPEN AFTER JOB CREATION
+          const { error: paymentLogError } = await supabase
+            .from('payment_logs')
+            .insert({
+              user_id: userId,
+              plan_type: 'job_posting',
+              pricing_tier: tier,
+              listing_id: jobData.id, // Use the actual job ID
+              payment_status: 'success',
+              stripe_payment_id: session.id,
+              expires_at: expiresAt.toISOString()
+            });
+            
+          if (paymentLogError) {
+            console.error('Error logging payment:', paymentLogError);
+            
+            // Log the error but don't fail the whole process since job was created
+            await supabase
+              .from('listing_validation_logs')
+              .insert({
+                listing_id: jobData.id,
+                listing_type: 'payment_log_error',
+                user_id: userId,
+                error_reason: paymentLogError.message,
+                ip_address: 'webhook'
+              });
+          } else {
+            console.log(`Job posting payment logged successfully for user ${userId}`);
+          }
+          
+        } catch (error) {
+          console.error('Unexpected error in job creation:', error);
+          
+          // Log the error for admin review
+          await supabase
+            .from('listing_validation_logs')
+            .insert({
+              listing_id: session.id,
+              listing_type: 'job_webhook_error',
+              user_id: userId,
+              error_reason: error.message,
+              ip_address: 'webhook'
+            });
+            
+          return new Response(JSON.stringify({ error: 'Unexpected error in job creation' }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
-        
-        console.log('Job listing created successfully:', jobData);
-        
-        // Log the payment
-        const { error: paymentLogError } = await supabase
-          .from('payment_logs')
-          .insert({
-            user_id: userId,
-            plan_type: 'job_posting',
-            pricing_tier: tier,
-            listing_id: jobData.id,
-            payment_status: 'success',
-            stripe_payment_id: session.id,
-            expires_at: expiresAt.toISOString()
-          });
-          
-        if (paymentLogError) {
-          console.error('Error logging payment:', paymentLogError);
-        }
-        
-        console.log(`Job posting created and payment logged for user ${userId}`);
       } else {
         console.error('Missing required metadata:', { userId, tier, jobTitle });
+        
+        // Log the error for admin review
+        await supabase
+          .from('listing_validation_logs')
+          .insert({
+            listing_id: session.id,
+            listing_type: 'job_metadata_error',
+            error_reason: 'Missing required metadata: userId, tier, or jobTitle',
+            ip_address: 'webhook'
+          });
+          
         return new Response(JSON.stringify({ error: 'Missing required metadata' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -129,6 +184,26 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Error processing webhook:', error);
+    
+    // Log the error for admin review
+    try {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') || '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+      );
+      
+      await supabase
+        .from('listing_validation_logs')
+        .insert({
+          listing_id: 'unknown',
+          listing_type: 'job_webhook_fatal_error',
+          error_reason: error.message,
+          ip_address: 'webhook'
+        });
+    } catch (logError) {
+      console.error('Failed to log webhook error:', logError);
+    }
+    
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

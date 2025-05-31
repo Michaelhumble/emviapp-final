@@ -74,66 +74,121 @@ serve(async (req) => {
         // Set featured expiration (if featured addon was purchased)
         const featuredUntil = featuredAddon ? new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)) : null; // 30 days
         
-        // Create the salon listing in the salon_listings table
-        const { data: salonData, error: salonError } = await supabase
-          .from('salon_listings')
-          .insert({
-            user_id: userId,
-            salon_name: salonName,
-            description: session.metadata?.description || '',
-            location: session.metadata?.location || '',
-            address: session.metadata?.address || '',
-            phone: session.metadata?.phone || '',
-            email: session.metadata?.email || '',
-            website: session.metadata?.website || '',
-            instagram: session.metadata?.instagram || '',
-            pricing_tier: pricingTier,
-            status: 'active',
-            expires_at: expiresAt.toISOString(),
-            is_featured: featuredAddon,
-            featured_until: featuredUntil?.toISOString(),
-            contact_info: {
+        try {
+          // Create the salon listing in the salon_listings table
+          const { data: salonData, error: salonError } = await supabase
+            .from('salon_listings')
+            .insert({
+              user_id: userId,
+              salon_name: salonName,
+              description: session.metadata?.description || '',
+              location: session.metadata?.location || '',
+              address: session.metadata?.address || '',
               phone: session.metadata?.phone || '',
               email: session.metadata?.email || '',
-              owner_name: session.metadata?.owner_name || '',
-            },
-            services: JSON.parse(session.metadata?.services || '[]'),
-            business_hours: JSON.parse(session.metadata?.business_hours || '{}'),
-            specialties: JSON.parse(session.metadata?.specialties || '[]')
-          })
-          .select()
-          .single();
+              website: session.metadata?.website || '',
+              instagram: session.metadata?.instagram || '',
+              pricing_tier: pricingTier,
+              status: 'active',
+              expires_at: expiresAt.toISOString(),
+              is_featured: featuredAddon,
+              featured_until: featuredUntil?.toISOString(),
+              contact_info: {
+                phone: session.metadata?.phone || '',
+                email: session.metadata?.email || '',
+                owner_name: session.metadata?.owner_name || '',
+              },
+              services: JSON.parse(session.metadata?.services || '[]'),
+              business_hours: JSON.parse(session.metadata?.business_hours || '{}'),
+              specialties: JSON.parse(session.metadata?.specialties || '[]')
+            })
+            .select()
+            .single();
+            
+          if (salonError) {
+            console.error('Error creating salon listing:', salonError);
+            
+            // Log the error for admin review
+            await supabase
+              .from('listing_validation_logs')
+              .insert({
+                listing_id: session.id,
+                listing_type: 'salon_creation_error',
+                user_id: userId,
+                error_reason: salonError.message,
+                ip_address: 'webhook'
+              });
+              
+            return new Response(JSON.stringify({ error: 'Failed to create salon listing' }), {
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+          }
           
-        if (salonError) {
-          console.error('Error creating salon listing:', salonError);
-          return new Response(JSON.stringify({ error: 'Failed to create salon listing' }), {
+          console.log('Salon listing created successfully:', salonData);
+          
+          // Log the payment - THIS MUST HAPPEN AFTER SALON CREATION
+          const { error: paymentLogError } = await supabase
+            .from('payment_logs')
+            .insert({
+              user_id: userId,
+              plan_type: 'salon_listing',
+              pricing_tier: pricingTier,
+              listing_id: salonData.id, // Use the actual salon ID
+              payment_status: 'success',
+              stripe_payment_id: session.id,
+              expires_at: expiresAt.toISOString()
+            });
+            
+          if (paymentLogError) {
+            console.error('Error logging payment:', paymentLogError);
+            
+            // Log the error but don't fail the whole process since salon was created
+            await supabase
+              .from('listing_validation_logs')
+              .insert({
+                listing_id: salonData.id,
+                listing_type: 'payment_log_error',
+                user_id: userId,
+                error_reason: paymentLogError.message,
+                ip_address: 'webhook'
+              });
+          } else {
+            console.log(`Salon listing payment logged successfully for user ${userId}`);
+          }
+          
+        } catch (error) {
+          console.error('Unexpected error in salon creation:', error);
+          
+          // Log the error for admin review
+          await supabase
+            .from('listing_validation_logs')
+            .insert({
+              listing_id: session.id,
+              listing_type: 'salon_webhook_error',
+              user_id: userId,
+              error_reason: error.message,
+              ip_address: 'webhook'
+            });
+            
+          return new Response(JSON.stringify({ error: 'Unexpected error in salon creation' }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
-        
-        console.log('Salon listing created successfully:', salonData);
-        
-        // Log the payment
-        const { error: paymentLogError } = await supabase
-          .from('payment_logs')
-          .insert({
-            user_id: userId,
-            plan_type: 'salon_listing',
-            pricing_tier: pricingTier,
-            listing_id: salonData.id,
-            payment_status: 'success',
-            stripe_payment_id: session.id,
-            expires_at: expiresAt.toISOString()
-          });
-          
-        if (paymentLogError) {
-          console.error('Error logging payment:', paymentLogError);
-        }
-        
-        console.log(`Salon listing created and payment logged for user ${userId}`);
       } else {
         console.error('Missing required metadata:', { userId, pricingTier, salonName });
+        
+        // Log the error for admin review
+        await supabase
+          .from('listing_validation_logs')
+          .insert({
+            listing_id: session.id,
+            listing_type: 'salon_metadata_error',
+            error_reason: 'Missing required metadata: userId, pricingTier, or salonName',
+            ip_address: 'webhook'
+          });
+          
         return new Response(JSON.stringify({ error: 'Missing required metadata' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -146,6 +201,26 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Error processing webhook:', error);
+    
+    // Log the error for admin review
+    try {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') || '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+      );
+      
+      await supabase
+        .from('listing_validation_logs')
+        .insert({
+          listing_id: 'unknown',
+          listing_type: 'salon_webhook_fatal_error',
+          error_reason: error.message,
+          ip_address: 'webhook'
+        });
+    } catch (logError) {
+      console.error('Failed to log webhook error:', logError);
+    }
+    
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

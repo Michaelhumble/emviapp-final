@@ -1,11 +1,44 @@
 
+// @ts-nocheck
+// ^ This comment disables TypeScript checking for this file since it uses Deno types
+// that aren't available in the browser/Node.js environment
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.14.0";
+import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+// Helper function to wait for webhook processing with timeout
+const waitForWebhookProcessing = async (supabaseAdmin: any, sessionId: string, maxWaitMs = 30000) => {
+  const startTime = Date.now();
+  const pollInterval = 1000; // Poll every 1 second
+  
+  while (Date.now() - startTime < maxWaitMs) {
+    // Check if payment log exists (created by webhook)
+    const { data: paymentLog, error } = await supabaseAdmin
+      .from('payment_logs')
+      .select('*')
+      .eq('stripe_payment_id', sessionId)
+      .single();
+
+    if (paymentLog) {
+      console.log('Payment log found, webhook processing complete:', paymentLog.id);
+      return paymentLog;
+    }
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
+      console.error('Error checking payment log:', error);
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, pollInterval));
+  }
+  
+  return null;
 };
 
 serve(async (req) => {
@@ -71,9 +104,6 @@ serve(async (req) => {
       });
     }
 
-    // Get metadata from the session
-    const metadata = session.metadata || {};
-    
     // Check if payment is complete
     if (session.payment_status !== "paid") {
       return new Response(JSON.stringify({ 
@@ -84,91 +114,97 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    
-    // Find the related payment log
-    const { data: paymentLog, error: paymentLogError } = await supabaseAdmin
-      .from('payment_logs')
-      .select('*')
-      .eq('stripe_payment_id', session.id)
-      .single();
 
-    if (paymentLogError) {
-      console.error("Error fetching payment log:", paymentLogError);
+    console.log('Payment confirmed, waiting for webhook processing...');
+
+    // Wait for webhook to process and create payment log
+    const paymentLog = await waitForWebhookProcessing(supabaseAdmin, session.id);
+    
+    if (!paymentLog) {
+      console.error('Webhook processing timeout for session:', session.id);
+      
+      // Log the timeout for admin review
+      await supabaseAdmin
+        .from('listing_validation_logs')
+        .insert({
+          listing_id: session.id,
+          listing_type: 'stripe_verification_timeout',
+          user_id: user.id,
+          error_reason: 'Webhook processing timed out after 30 seconds',
+          ip_address: req.headers.get('x-forwarded-for') || 'unknown'
+        });
+
+      return new Response(JSON.stringify({ 
+        error: "Payment processing delayed", 
+        message: "Your payment was successful, but listing creation is still in progress. Please check back in a few minutes or contact support if the issue persists.",
+        session_id: session.id
+      }), {
+        status: 202, // Accepted but still processing
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Get post ID from metadata or payment log
-    let postId = metadata.post_id || paymentLog?.listing_id;
-    let job: any = null;
+    // Get metadata from the session for backward compatibility
+    const metadata = session.metadata || {};
     
-    // Check if post exists
-    if (postId) {
-      const { data: existingJob } = await supabaseAdmin
+    // Now that we know webhook processing is complete, verify the listing exists
+    let listingExists = false;
+    let listingType = paymentLog.plan_type;
+    
+    if (listingType === 'job_posting' && paymentLog.listing_id) {
+      const { data: job } = await supabaseAdmin
         .from('jobs')
-        .select('*')
-        .eq('id', postId)
+        .select('id, status')
+        .eq('id', paymentLog.listing_id)
         .single();
-        
-      job = existingJob;
-    }
-    
-    // If there's no job record yet, create one from the stored details
-    if (!job && metadata.post_type === 'job') {
-      try {
-        // Get details from payment log metadata if available
-        const postDetails = paymentLog?.metadata?.post_details || {};
-        
-        const { data: newJob, error: createError } = await supabaseAdmin
+      
+      listingExists = !!job;
+      
+      // Only update if job exists and needs status update
+      if (job && job.status !== 'active') {
+        const { error: updateJobError } = await supabaseAdmin
           .from('jobs')
-          .insert({
-            // Use available details or defaults
-            title: postDetails.title || 'Job Posting',
-            description: postDetails.description || '',
-            location: postDetails.location || '',
-            user_id: user.id,
-            pricing_tier: metadata.pricing_tier,
+          .update({ 
             status: 'active',
-            expires_at: metadata.expires_at,
-            post_type: metadata.post_type,
-            contact_info: postDetails.contact_info || { email: user.email }
+            expires_at: paymentLog.expires_at
           })
-          .select('id')
-          .single();
+          .eq('id', paymentLog.listing_id);
           
-        if (createError) {
-          console.error("Error creating job record:", createError);
+        if (updateJobError) {
+          console.error("Error updating job status:", updateJobError);
         } else {
-          postId = newJob.id;
-          
-          // Update payment log with job ID if it exists
-          if (paymentLog?.id) {
-            await supabaseAdmin
-              .from('payment_logs')
-              .update({ listing_id: postId })
-              .eq('id', paymentLog.id);
-          }
+          console.log('Job status updated to active:', paymentLog.listing_id);
         }
-      } catch (error) {
-        console.error("Error creating job record:", error);
+      }
+    } else if (listingType === 'salon_listing' && paymentLog.listing_id) {
+      const { data: salon } = await supabaseAdmin
+        .from('salon_listings')
+        .select('id, status')
+        .eq('id', paymentLog.listing_id)
+        .single();
+      
+      listingExists = !!salon;
+      
+      // Only update if salon exists and needs status update
+      if (salon && salon.status !== 'active') {
+        const { error: updateSalonError } = await supabaseAdmin
+          .from('salon_listings')
+          .update({ 
+            status: 'active',
+            expires_at: paymentLog.expires_at
+          })
+          .eq('id', paymentLog.listing_id);
+          
+        if (updateSalonError) {
+          console.error("Error updating salon status:", updateSalonError);
+        } else {
+          console.log('Salon status updated to active:', paymentLog.listing_id);
+        }
       }
     }
     
-    // If we have a post_id, update the job status
-    if (postId) {
-      const { error: updateJobError } = await supabaseAdmin
-        .from('jobs')
-        .update({ 
-          status: 'active',
-          expires_at: metadata.expires_at
-        })
-        .eq('id', postId);
-        
-      if (updateJobError) {
-        console.error("Error updating job status:", updateJobError);
-      }
-    }
-    
-    // Update payment log status
-    if (paymentLog?.id) {
+    // Update payment log status to success if not already
+    if (paymentLog.payment_status !== 'success') {
       const { error: updateLogError } = await supabaseAdmin
         .from('payment_logs')
         .update({ payment_status: 'success' })
@@ -179,14 +215,23 @@ serve(async (req) => {
       }
     }
 
+    // Log successful verification
+    console.log('Payment verification completed successfully:', {
+      session_id: session.id,
+      listing_id: paymentLog.listing_id,
+      listing_type: listingType,
+      listing_exists: listingExists
+    });
+
     return new Response(
       JSON.stringify({
         success: true,
-        post_id: postId,
-        expires_at: metadata.expires_at || paymentLog?.expires_at,
-        post_type: metadata.post_type || paymentLog?.plan_type,
-        pricing_tier: metadata.pricing_tier,
-        payment_log_id: paymentLog?.id
+        post_id: paymentLog.listing_id,
+        expires_at: paymentLog.expires_at,
+        post_type: listingType,
+        pricing_tier: metadata.pricing_tier || paymentLog.pricing_tier,
+        payment_log_id: paymentLog.id,
+        listing_active: listingExists
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -194,6 +239,27 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error verifying checkout session:", error);
+    
+    // Log the error for admin review
+    try {
+      const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL") || "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+        { auth: { persistSession: false } }
+      );
+      
+      await supabaseAdmin
+        .from('listing_validation_logs')
+        .insert({
+          listing_id: 'unknown',
+          listing_type: 'stripe_verification_error',
+          error_reason: error.message,
+          ip_address: req.headers.get('x-forwarded-for') || 'unknown'
+        });
+    } catch (logError) {
+      console.error("Failed to log verification error:", logError);
+    }
+    
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
