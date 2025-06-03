@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
@@ -50,19 +49,20 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : null,
       referral_code: data.referral_code || null,
       credits: typeof data.credits === 'number' ? data.credits : null,
-      profile_views: typeof data.profile_views === 'number' ? data.profile_views : null,
+      profile_views: typeof (data as any).profile_views === 'number' ? (data as any).profile_views : null,
       booking_url: data.booking_url || null,
       boosted_until: data.boosted_until || null,
       
-      // Salon-specific
-      salon_name: data.salon_name || null,
-      company_name: data.company_name || null,
-      professional_name: data.professional_name || null,
+      // Salon-specific - use safe access
+      salon_name: (data as any).salon_name || null,
+      company_name: (data as any).company_name || null,
+      professional_name: (data as any).professional_name || null,
+      address: (data as any).address || null,
       
-      // Experience and services
-      years_experience: typeof data.years_experience === 'number' ? data.years_experience : null,
-      services: Array.isArray(data.services) ? data.services : null,
-      gallery: Array.isArray(data.gallery) ? data.gallery : null,
+      // Experience and services - use safe access
+      years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : null,
+      services: Array.isArray((data as any).services) ? (data as any).services : null,
+      gallery: Array.isArray((data as any).gallery) ? (data as any).gallery : null,
       preferences: Array.isArray(data.preferences) ? data.preferences : null,
     };
     

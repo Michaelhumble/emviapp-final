@@ -10,7 +10,7 @@ const DashboardGreeting = ({ className = "" }: DashboardGreetingProps) => {
   const { userProfile, userRole } = useAuth();
   
   const name = userProfile?.full_name || "there";
-  const greeting = getPersonalizedGreeting(name, userRole);
+  const greeting = getPersonalizedGreeting(userRole, name);
   
   return (
     <div className={`mb-6 ${className}`}>
