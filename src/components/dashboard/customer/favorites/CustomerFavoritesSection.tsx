@@ -7,9 +7,16 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 
-const CustomerFavoritesSection: React.FC = () => {
-  const { favorites, loading } = useCustomerDashboard();
+interface CustomerFavoritesSectionProps {
+  favorites?: any[];
+}
+
+const CustomerFavoritesSection: React.FC<CustomerFavoritesSectionProps> = ({ favorites: propFavorites }) => {
+  const { favorites: hookFavorites, loading } = useCustomerDashboard();
   const navigate = useNavigate();
+  
+  // Use props if provided, otherwise fall back to hook data
+  const favorites = propFavorites || hookFavorites;
 
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 

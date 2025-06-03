@@ -9,7 +9,15 @@ import NextAppointmentCard from "./NextAppointmentCard";
 import SmartReminderCard from "./SmartReminderCard";
 import MissedAppointmentCard from "./MissedAppointmentCard";
 
-const CustomerBookingsSection: React.FC = () => {
+interface CustomerBookingsSectionProps {
+  upcomingBookings?: CustomerBooking[];
+  previousBookings?: CustomerBooking[];
+}
+
+const CustomerBookingsSection: React.FC<CustomerBookingsSectionProps> = ({ 
+  upcomingBookings: propUpcomingBookings, 
+  previousBookings: propPreviousBookings 
+}) => {
   const { bookings, loading, error } = useCustomerBookings();
 
   const { 
@@ -21,6 +29,11 @@ const CustomerBookingsSection: React.FC = () => {
     missedBookings,
     lastCompletedService
   } = useMemo(() => {
+    // Use props if provided, otherwise process hook data
+    const bookingsToProcess = propUpcomingBookings && propPreviousBookings 
+      ? [...propUpcomingBookings, ...propPreviousBookings]
+      : bookings;
+
     const now = new Date();
     const upcoming: CustomerBooking[] = [];
     const past: CustomerBooking[] = [];
@@ -32,7 +45,7 @@ const CustomerBookingsSection: React.FC = () => {
     let lastCompleted: CustomerBooking | null = null;
 
     // Process all bookings
-    bookings.forEach(booking => {
+    bookingsToProcess.forEach(booking => {
       const bookingDate = booking.date_requested ? new Date(booking.date_requested) : null;
       
       // Cancelled bookings
@@ -102,7 +115,7 @@ const CustomerBookingsSection: React.FC = () => {
       nextAppointment: next,
       lastCompletedService: lastCompleted
     };
-  }, [bookings]);
+  }, [bookings, propUpcomingBookings, propPreviousBookings]);
 
   // Determine if we should show the smart reminder
   const showSmartReminder = useMemo(() => {
