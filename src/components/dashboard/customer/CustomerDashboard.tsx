@@ -1,228 +1,196 @@
-
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Calendar, 
-  Heart, 
-  Users, 
-  Gift, 
-  Star, 
-  TrendingUp, 
-  Share2, 
-  Sparkles, 
-  Crown, 
-  Zap,
-  Lock,
-  Eye,
-  MessageCircle,
-  Award,
-  Target,
-  ChevronRight,
-  Copy,
-  Send
-} from 'lucide-react';
+import { useAuth } from '@/context/auth';
 import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
-import CustomerWelcomeHeader from './CustomerWelcomeHeader';
+import DashboardGreeting from '@/components/dashboard/common/DashboardGreeting';
 import CustomerBookingsSection from './CustomerBookingsSection';
 import CustomerFavoritesSection from './favorites/CustomerFavoritesSection';
-import CustomerReferralCard from './CustomerReferralCard';
-import CustomerLoyaltySection from './loyalty/CustomerLoyaltySection';
 import CustomerFeedbackCard from './feedback/CustomerFeedbackCard';
 import CustomerMilestonesCard from './milestones/CustomerMilestonesCard';
 import StickyInviteTracker from './viral/StickyInviteTracker';
 import ComingSoonVIPCard from './coming-soon/ComingSoonVIPCard';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { motion } from 'framer-motion';
+import { 
+  Heart, 
+  Calendar, 
+  Star, 
+  Crown, 
+  Gift, 
+  Users, 
+  Sparkles, 
+  Trophy,
+  TrendingUp,
+  Zap,
+  Target
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 const CustomerDashboard: React.FC = () => {
-  const { 
-    bookings, 
-    upcomingBookings, 
-    previousBookings, 
-    favorites, 
-    loading, 
-    error 
-  } = useCustomerDashboard();
+  const { userProfile } = useAuth();
+  const { upcomingBookings, favorites, loading } = useCustomerDashboard();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.3,
-        staggerChildren: 0.2,
-      },
-    },
+  const referralLink = `https://emviapp.com/join?ref=${userProfile?.referral_code || 'beauty2024'}`;
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Join me on EmviApp!',
+        text: 'I found the most amazing beauty platform! Join me and get credits 💎',
+        url: referralLink
+      });
+    } else {
+      navigator.clipboard.writeText(referralLink);
+      toast.success('Referral link copied to clipboard!');
+    }
   };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-    },
-  };
-
-  if (loading) {
-    return (
-      <div className="container mx-auto p-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Loading Dashboard...</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Fetching your data, please wait.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto p-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Error: {error}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
-    <>
-      <motion.div
-        className="container mx-auto p-4 space-y-4"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div variants={itemVariants}>
-          <CustomerWelcomeHeader />
-        </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        <DashboardGreeting />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Bookings Section */}
+            <CustomerBookingsSection upcomingBookings={upcomingBookings} />
+            
+            {/* Favorites Section */}
+            <CustomerFavoritesSection favorites={favorites} />
+            
+            {/* Milestones & Achievements */}
+            <CustomerMilestonesCard />
+            
+            {/* VIP Coming Soon Features */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ComingSoonVIPCard
+                title="Personal Beauty AI"
+                description="Get personalized recommendations based on your style, skin tone, and preferences."
+                features={[
+                  "AI-powered color matching",
+                  "Personalized product suggestions",
+                  "Style recommendations",
+                  "Trend forecasting"
+                ]}
+                type="vip"
+                estimatedLaunch="Q2 2024"
+              />
+              
+              <ComingSoonVIPCard
+                title="Beauty Marketplace"
+                description="Exclusive deals on premium beauty products from top brands."
+                features={[
+                  "Member-only discounts",
+                  "Early access to new products",
+                  "Professional-grade tools",
+                  "Free shipping perks"
+                ]}
+                type="early-access"
+                estimatedLaunch="Q1 2024"
+              />
+            </div>
+          </div>
 
-        <motion.div variants={itemVariants}>
-          <CustomerBookingsSection 
-            upcomingBookings={upcomingBookings} 
-            previousBookings={previousBookings}
-          />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <CustomerFavoritesSection favorites={favorites} />
-        </motion.div>
-
-        {/* New FOMO Features Grid */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CustomerFeedbackCard />
-          <CustomerMilestonesCard />
-        </motion.div>
-
-        {/* Coming Soon VIP Features */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ComingSoonVIPCard
-            title="AI Beauty Assistant"
-            description="Get personalized beauty recommendations powered by AI"
-            features={[
-              "Custom skincare routines",
-              "AI-powered style matching",
-              "Virtual consultations",
-              "Trend predictions"
-            ]}
-            estimatedLaunch="Q2 2024"
-            type="beta"
-          />
-          <ComingSoonVIPCard
-            title="VIP Concierge Service"
-            description="Personal beauty concierge for ultimate luxury experience"
-            features={[
-              "24/7 personal assistant",
-              "Exclusive salon access",
-              "Priority booking guarantee",
-              "Luxury gift packages"
-            ]}
-            estimatedLaunch="Coming Soon"
-            type="vip"
-          />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <CustomerReferralCard />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <CustomerLoyaltySection />
-        </motion.div>
-
-        {/* Achievement Share Card */}
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
-                    <Trophy className="h-6 w-6" />
-                    Share Your Beauty Journey
-                  </h3>
-                  <p className="text-emerald-100 mb-4">
-                    Inspire others and earn 10 credits for every share that gets engagement!
-                  </p>
-                  <Button 
-                    variant="secondary" 
-                    className="bg-white text-emerald-600 hover:bg-gray-100"
-                    onClick={() => toast.success('Shareable achievement card coming soon! 🎉')}
-                  >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Create Achievement Card
+          {/* Right Column - Engagement & FOMO */}
+          <div className="space-y-6">
+            {/* Feedback & Feature Voting */}
+            <CustomerFeedbackCard />
+            
+            {/* Profile Completion & Quick Actions */}
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Target className="h-5 w-5 text-blue-500" />
+                  Quick Wins
+                  <Badge variant="secondary" className="ml-auto bg-blue-100 text-blue-700">
+                    +Credits
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Complete your profile</span>
+                    <span className="text-blue-600 font-medium">+15 credits</span>
+                  </div>
+                  <Progress value={75} className="h-2 bg-blue-100" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                    Add Profile Photo (+5 credits)
+                  </Button>
+                  <Button size="sm" variant="outline" className="w-full border-blue-300">
+                    Write Bio (+10 credits)
                   </Button>
                 </div>
-                <motion.div
-                  animate={{ rotate: [0, 10, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="text-6xl"
-                >
-                  ✨
-                </motion.div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              </CardContent>
+            </Card>
 
-        {/* Motivational Quote with Special Offer */}
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0">
-            <CardContent className="p-6 text-center">
-              <motion.div
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Sparkles className="h-8 w-8 mx-auto mb-3" />
-                <h3 className="text-2xl font-bold mb-2">
-                  "Your beauty journey is just beginning..."
-                </h3>
-                <p className="text-pink-100 mb-4 text-lg">
-                  Every booking brings you closer to discovering your true radiance ✨
-                </p>
-                <Badge className="bg-white/20 text-white text-lg px-4 py-2">
-                  🔥 Limited Time: Book today & get 2x credits on your next service!
-                </Badge>
-              </motion.div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
+            {/* Social Proof & Community */}
+            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Users className="h-5 w-5 text-green-500" />
+                  Community Love
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">12,847</div>
+                  <div className="text-sm text-green-700">Happy customers this month</div>
+                </div>
+                
+                <div className="bg-white rounded-lg p-3 border border-green-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-3 w-3 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-600">Sarah M.</span>
+                  </div>
+                  <p className="text-xs text-gray-700">
+                    "Found my dream nail artist in 5 minutes! EmviApp changed my beauty routine completely! 💅✨"
+                  </p>
+                </div>
+                
+                <Button size="sm" variant="outline" className="w-full border-green-300">
+                  <Heart className="h-4 w-4 mr-2" />
+                  Share Your Story (+20 credits)
+                </Button>
+              </CardContent>
+            </Card>
 
-      {/* Sticky Invite Tracker */}
+            {/* Surprise & Delight */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+            >
+              <Card className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+                <CardContent className="p-4 text-center">
+                  <Sparkles className="h-8 w-8 mx-auto mb-2" />
+                  <h3 className="font-bold mb-1">Surprise Unlock!</h3>
+                  <p className="text-sm text-purple-100 mb-3">
+                    You've been amazing! Here's a special reward 🎁
+                  </p>
+                  <Button className="bg-white text-purple-600 hover:bg-gray-100">
+                    Claim Mystery Reward
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Invite Tracker - Bottom Right */}
       <StickyInviteTracker />
-    </>
+    </div>
   );
 };
 
