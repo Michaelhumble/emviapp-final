@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
@@ -53,11 +54,11 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       booking_url: data.booking_url || null,
       boosted_until: data.boosted_until || null,
       
-      // Salon-specific - use safe access
+      // Salon-specific - use safe access with proper typing
       salon_name: (data as any).salon_name || null,
       company_name: (data as any).company_name || null,
       professional_name: (data as any).professional_name || null,
-      address: (data as any).address || null,
+      address: data.location || null, // Use location field for address compatibility
       
       // Experience and services - use safe access
       years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : null,

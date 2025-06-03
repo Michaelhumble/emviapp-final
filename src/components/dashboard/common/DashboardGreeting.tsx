@@ -9,6 +9,7 @@ interface DashboardGreetingProps {
 const DashboardGreeting = ({ className = "" }: DashboardGreetingProps) => {
   const { userProfile, userRole } = useAuth();
   
+  // Defensive null check for full_name
   const name = userProfile?.full_name || "there";
   const greeting = getPersonalizedGreeting(userRole, name);
   

@@ -14,6 +14,15 @@ const ArtistPublicProfile: React.FC = () => {
   const { username } = useParams<{ username: string }>();
   const isMobile = useIsMobile();
   
+  // Defensive null check for username
+  if (!username) {
+    return (
+      <Layout>
+        <ArtistProfileError />
+      </Layout>
+    );
+  }
+  
   const {
     profile,
     services,
@@ -32,7 +41,7 @@ const ArtistPublicProfile: React.FC = () => {
     }
     
     // Set page title if profile is loaded
-    if (profile) {
+    if (profile?.full_name) {
       document.title = `${profile.full_name} | EmviApp Profile`;
     }
   }, [profile, loading, incrementViewCount]);

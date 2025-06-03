@@ -14,7 +14,11 @@ const PopulateProfileButton = ({ onComplete }: PopulateProfileButtonProps) => {
   const [loading, setLoading] = useState(false);
 
   const handlePopulateProfile = async () => {
-    if (!user?.id) return;
+    // Defensive null check for user.id
+    if (!user?.id) {
+      console.warn('User ID is not available');
+      return;
+    }
     
     setLoading(true);
     try {

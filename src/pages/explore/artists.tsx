@@ -50,7 +50,7 @@ const Artists = () => {
           salon_name: artist.salon_name || null,
           company_name: artist.company_name || null,
           professional_name: artist.professional_name || null,
-          address: artist.address || null, // Safe property access
+          address: artist.location || null, // Map location to address for compatibility
           years_experience: artist.years_experience || null,
           services: artist.services || null,
           gallery: artist.gallery || null,
@@ -118,7 +118,7 @@ const Artists = () => {
               
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">
-                  {artist.location || artist.address || 'Location not specified'}
+                  {artist.location || 'Location not specified'}
                 </span>
                 {artist.accepts_bookings && (
                   <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
