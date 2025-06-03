@@ -11,7 +11,7 @@ interface MobileMenuProps {
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, userRole } = useAuth();
   const { isVietnamese, toggleLanguage } = useTranslation();
 
   if (!isOpen) return null;
@@ -20,6 +20,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     await signOut();
     onClose();
   };
+
+  // Check if user should see job posting options
+  const canPostJobs = userRole && ['admin', 'salon', 'owner', 'manager'].includes(userRole);
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
@@ -37,26 +40,28 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="p-4 space-y-3 border-b flex-shrink-0">
-            <Link
-              to="/posting/job"
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 w-full bg-purple-600 text-white py-2.5 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md font-medium text-sm"
-            >
-              <Briefcase className="h-4 w-4" />
-              Post a Job
-            </Link>
-            
-            <Link
-              to="/posting/salon"
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 w-full border border-purple-600 text-purple-600 py-2.5 px-4 rounded-lg hover:bg-purple-50 transition-colors shadow-md font-medium text-sm"
-            >
-              <Building className="h-4 w-4" />
-              Post Your Salon
-            </Link>
-          </div>
+          {/* Action Buttons - Only show for authorized users */}
+          {canPostJobs && (
+            <div className="p-4 space-y-3 border-b flex-shrink-0">
+              <Link
+                to="/posting/job"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full bg-purple-600 text-white py-2.5 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md font-medium text-sm"
+              >
+                <Briefcase className="h-4 w-4" />
+                Post a Job
+              </Link>
+              
+              <Link
+                to="/posting/salon"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full border border-purple-600 text-purple-600 py-2.5 px-4 rounded-lg hover:bg-purple-50 transition-colors shadow-md font-medium text-sm"
+              >
+                <Building className="h-4 w-4" />
+                Post Your Salon
+              </Link>
+            </div>
+          )}
 
           {/* Navigation Links */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -98,6 +103,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
             {user ? (
               <>
+                <Link
+                  to="/profile"
+                  onClick={onClose}
+                  className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <User className="h-5 w-5 mr-3" />
+                  Profile
+                </Link>
                 <Link
                   to="/dashboard"
                   onClick={onClose}

@@ -33,6 +33,7 @@ import EnhancedPostJob from "@/pages/enhanced-post-job";
 import SellSalonPage from "@/pages/sell-salon";
 import PostSalon from "@/pages/PostSalon";
 import SalonListingSuccessPage from "@/pages/salon-listing-success";
+import CustomerProfilePage from "@/pages/customer/ProfilePage";
 
 function App() {
   const location = useLocation();
@@ -59,6 +60,9 @@ function App() {
                     <Route path="/login" element={<SignIn />} />
                     <Route path="/sign-up" element={<SignUp />} />
                     <Route path="/register" element={<SignUp />} />
+                    
+                    {/* Customer Profile route */}
+                    <Route path="/profile" element={<CustomerProfilePage />} />
                     
                     {/* Job posting routes - USE ENHANCED VERSION */}
                     <Route path="/post-job" element={<EnhancedPostJob />} />
@@ -91,7 +95,7 @@ function App() {
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&
                        route.path !== "/privacy" && route.path !== "/cookies" && route.path !== "/post-job" &&
-                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success") && (
+                       route.path !== "/sell-salon" && route.path !== "/salon-listing-success" && route.path !== "/profile") && (
                         <Route 
                           key={index}
                           path={route.path}

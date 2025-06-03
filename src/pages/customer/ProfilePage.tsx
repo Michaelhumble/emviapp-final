@@ -1,14 +1,11 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { useAuth } from "@/context/auth";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import Layout from "@/components/layout/Layout";
+import { Navigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { User, MapPin, Cake, Edit } from "lucide-react";
-import CustomerProfileEditPanel from "./CustomerProfileEditPanel";
-import { Badge } from "@/components/ui/badge";
-
-// Import the new beauty journey components
+import { User, Edit, Mail, Phone, MapPin } from "lucide-react";
 import BeautyJourneyStats from "@/components/customer/journey/BeautyJourneyStats";
 import CommunityImpactCard from "@/components/customer/journey/CommunityImpactCard";
 import WishlistPanel from "@/components/customer/journey/WishlistPanel";
@@ -16,126 +13,117 @@ import ShareJourneyCard from "@/components/customer/journey/ShareJourneyCard";
 import FeatureSuggestionWidget from "@/components/customer/journey/FeatureSuggestionWidget";
 import CustomizeProfileCard from "@/components/customer/journey/CustomizeProfileCard";
 
-const prettyCommPref = {
-  email: "Email",
-  sms: "SMS",
-  app: "App Notification",
-};
+const CustomerProfilePage = () => {
+  const { user, userProfile, loading } = useAuth();
 
-const prettyArtistTypes = {
-  "studio": "Studio",
-  "booth-renter": "Booth Renter",
-  "luxury-spa": "Luxury Spa"
-};
+  // Redirect if not logged in
+  if (!user && !loading) {
+    return <Navigate to="/auth/signin" replace />;
+  }
 
-const ProfilePage: React.FC = () => {
-  const { userProfile } = useAuth();
-  const [editOpen, setEditOpen] = useState(false);
-  if (!userProfile) return null;
-
-  // Prettify fallback
-  const getFallback = () => {
-    if (userProfile.full_name) {
-      return userProfile.full_name[0];
-    }
-    return <User className="w-6 h-6" />;
-  };
+  // Show loading state
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin h-8 w-8 border-t-2 border-primary rounded-full"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
-    <>
-      <div className="min-h-[90vh] bg-gradient-to-b from-white to-pink-50/40 py-6">
-        <div className="max-w-6xl mx-auto px-4">
-          {/* Beauty Journey Section - New */}
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+          {/* Page Header */}
           <div className="mb-8">
-            <BeautyJourneyStats />
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+            <p className="text-gray-600">Manage your beauty journey and preferences</p>
+            
+            {/* Zero Payment Messaging */}
+            <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+              <p className="text-green-800 font-medium text-center">
+                ✨ You'll never pay for core features. All rewards are free. Ultimate VIP is a one-time, optional upgrade only. ✨
+              </p>
+            </div>
           </div>
 
-          {/* Community Impact & Share Journey Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <CommunityImpactCard />
-            <ShareJourneyCard />
-          </div>
-
-          {/* Main Profile Card - Existing */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-1">
-              <Card className="rounded-3xl shadow-xl bg-white/95 px-3 sm:px-6 py-7">
-                <CardHeader className="flex flex-col items-center justify-center space-y-4 p-0 mb-6">
-                  <Avatar className="h-24 w-24 shadow-lg mb-2 border-2 border-emvi-accent">
-                    <AvatarImage src={userProfile.avatar_url || undefined} alt="Avatar" />
-                    <AvatarFallback className="text-3xl">{getFallback()}</AvatarFallback>
-                  </Avatar>
-                  <CardTitle className="text-2xl font-serif font-semibold tracking-tight">
-                    {userProfile.full_name}
-                  </CardTitle>
-                  <CardDescription className="text-base text-gray-600 text-center">
-                    {userProfile.email}
-                  </CardDescription>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Profile Info */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Basic Profile Card */}
+              <Card className="border-gray-100 shadow-sm">
+                <CardHeader className="text-center pb-2">
+                  <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gray-100">
+                    {userProfile?.avatar_url ? (
+                      <img 
+                        src={userProfile.avatar_url} 
+                        alt={userProfile.full_name || 'Profile'} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-full h-full p-6 text-gray-300" />
+                    )}
+                  </div>
+                  <CardTitle className="text-xl">{userProfile?.full_name || 'Beauty Lover'}</CardTitle>
+                  <p className="text-gray-600">Customer</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    {userProfile.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-primary" />
-                        <span className="text-base">{userProfile.location}</span>
-                      </div>
-                    )}
-                    {userProfile.birthday && (
-                      <div className="flex items-center gap-2">
-                        <Cake className="h-5 w-5 text-pink-400" />
-                        <span className="text-base">{userProfile.birthday}</span>
-                      </div>
-                    )}
-                    {(userProfile.favorite_artist_types && userProfile.favorite_artist_types.length > 0) && (
-                      <div>
-                        <div className="text-[1rem] font-medium mb-1 flex items-center gap-2">
-                          <span>🎯</span>Favorite Artist Types
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {userProfile.favorite_artist_types.map((ftype) => (
-                            <Badge variant="outline" key={ftype}>{prettyArtistTypes[ftype] || ftype}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {(userProfile.communication_preferences && userProfile.communication_preferences.length > 0) && (
-                      <div>
-                        <div className="text-[1rem] font-medium mb-1 flex items-center gap-2">
-                          <span>💬</span>Communication Preferences
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {userProfile.communication_preferences.map((cpref) => (
-                            <Badge key={cpref} variant="secondary">{prettyCommPref[cpref] || cpref}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="flex items-center gap-2 shadow-sm">
-                      <Edit className="h-4 w-4" />
-                      Edit Profile
-                    </Button>
-                  </div>
+                <CardContent className="space-y-3">
+                  {user?.email && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span>{user.email}</span>
+                    </div>
+                  )}
+                  
+                  {userProfile?.phone && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span>{userProfile.phone}</span>
+                    </div>
+                  )}
+                  
+                  {userProfile?.location && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <span>{userProfile.location}</span>
+                    </div>
+                  )}
+                  
+                  <Button className="w-full mt-4" variant="outline">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
                 </CardContent>
               </Card>
+
+              {/* Customize Profile Card */}
+              <CustomizeProfileCard />
             </div>
 
-            {/* Wishlist and Additional Features */}
+            {/* Right Column - Journey & Features */}
             <div className="lg:col-span-2 space-y-6">
-              <WishlistPanel />
-              
+              {/* Beauty Journey Stats */}
+              <BeautyJourneyStats />
+
+              {/* Community Impact & Wishlist */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CommunityImpactCard />
+                <WishlistPanel />
+              </div>
+
+              {/* Share Journey & Feature Suggestion */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ShareJourneyCard />
                 <FeatureSuggestionWidget />
-                <CustomizeProfileCard />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <CustomerProfileEditPanel open={editOpen} onOpenChange={setEditOpen} userProfile={userProfile} />
-    </>
+    </Layout>
   );
 };
 
-export default ProfilePage;
+export default CustomerProfilePage;
