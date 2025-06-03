@@ -19,10 +19,7 @@ const PostYourSalonButton: React.FC<PostYourSalonButtonProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  console.log('PostYourSalonButton rendering with props:', { variant, size, className, onClose: !!onClose });
-
   const handleClick = () => {
-    console.log('PostYourSalonButton clicked, onClose:', !!onClose);
     if (onClose) {
       onClose();
     }

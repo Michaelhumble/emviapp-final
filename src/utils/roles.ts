@@ -4,11 +4,11 @@ import { UserRole } from "@/context/auth/types";
 /**
  * Normalize different role naming conventions to a standard UserRole type
  */
-export const normalizeRole = (role: UserRole | string | null): UserRole => {
+export const normalizeRole = (role: UserRole | string | null | undefined): UserRole | null => {
   if (!role) return null;
   
   // Convert to lowercase for case-insensitive comparison
-  const lowercaseRole = typeof role === 'string' ? role.toLowerCase() : '';
+  const lowercaseRole = typeof role === 'string' ? role.toLowerCase().trim() : '';
   
   // Match to known roles with proper casing
   switch (lowercaseRole) {
@@ -21,6 +21,7 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
     case 'nail artist':
     case 'nail tech':
     case 'nail technician':
+    case 'nail technician/artist':
       return 'artist';
       
     case 'salon':
@@ -43,13 +44,17 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
     case 'vendor':
       return 'vendor';
       
-    case 'nail technician/artist':
-      return 'nail technician/artist';
-    
     case 'renter':
     case 'booth renter':
     case 'chair renter':
       return 'renter';
+
+    case 'manager':
+      return 'manager';
+
+    case 'admin':
+    case 'administrator':
+      return 'admin';
       
     default:
       // If it's already a valid UserRole, return it
@@ -69,8 +74,8 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
         return role as UserRole;
       }
       
-      // Default to "other" for unrecognized roles
-      return 'other';
+      // Default to null for unrecognized roles
+      return null;
   }
 };
 
@@ -110,4 +115,16 @@ export const getRoleLabel = (role: UserRole | null): string => {
     default:
       return 'User';
   }
+};
+
+/**
+ * Check if a role is valid
+ */
+export const isValidRole = (role: any): role is UserRole => {
+  const validRoles: UserRole[] = [
+    'customer', 'artist', 'salon', 'owner', 'manager', 'admin', 
+    'freelancer', 'nail technician/artist', 'beauty supplier', 
+    'supplier', 'vendor', 'renter', 'other'
+  ];
+  return validRoles.includes(role);
 };

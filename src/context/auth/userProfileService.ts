@@ -24,46 +24,46 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     if (!data) return null;
     
     // Transform database record to UserProfile type with safe fallbacks
-    // Use type assertion and optional chaining to safely access properties
     const profile: UserProfile = {
       id: data.id,
-      full_name: data.full_name || '',
       email: data.email || '',
-      phone: data.phone || '',
-      bio: data.bio || '',
-      specialty: data.specialty || '',
-      location: data.location || '',
-      avatar_url: data.avatar_url || '',
-      role: (data.role as UserRole) || 'customer',
-      created_at: data.created_at || '',
-      updated_at: data.updated_at || '',
+      full_name: data.full_name || null,
+      phone: data.phone || null,
+      role: (data.role as UserRole) || null,
+      avatar_url: data.avatar_url || null,
+      specialty: data.specialty || null,
+      location: data.location || null,
+      bio: data.bio || null,
+      instagram: data.instagram || null,
+      website: data.website || null,
+      created_at: data.created_at || null,
+      updated_at: data.updated_at || null,
       
-      // Social media fields
-      instagram: data.instagram || '',
-      website: data.website || '',
+      // Additional database fields
+      custom_role: data.custom_role || null,
+      contact_link: data.contact_link || null,
+      badges: Array.isArray(data.badges) ? data.badges : null,
+      accepts_bookings: data.accepts_bookings || null,
+      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : null,
       
-      // Additional fields with safe access using optional chaining and type casting
-      salon_name: (data as any).salon_name || '',
-      company_name: (data as any).company_name || '',
-      preferred_language: data.preferred_language || 'en',
-      profile_views: typeof (data as any).profile_views === 'number' ? (data as any).profile_views : 0,
-      account_type: (data as any).account_type || 'free',
-      referral_code: data.referral_code || '',
-      affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
-      referral_count: typeof (data as any).referral_count === 'number' ? (data as any).referral_count : 0,
-      booking_url: data.booking_url || '',
+      // Social and professional fields
+      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : null,
+      referral_code: data.referral_code || null,
+      credits: typeof data.credits === 'number' ? data.credits : null,
+      profile_views: typeof data.profile_views === 'number' ? data.profile_views : null,
+      booking_url: data.booking_url || null,
       boosted_until: data.boosted_until || null,
-      skills: Array.isArray((data as any).skills) ? (data as any).skills : [],
-      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-      credits: typeof data.credits === 'number' ? data.credits : 0,
-      custom_role: data.custom_role || '',
-      contact_link: data.contact_link || '',
-      badges: Array.isArray(data.badges) ? data.badges : [],
-      accepts_bookings: Boolean(data.accepts_bookings),
-      preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : 0,
-      professional_name: (data as any).professional_name || ''
+      
+      // Salon-specific
+      salon_name: data.salon_name || null,
+      company_name: data.company_name || null,
+      professional_name: data.professional_name || null,
+      
+      // Experience and services
+      years_experience: typeof data.years_experience === 'number' ? data.years_experience : null,
+      services: Array.isArray(data.services) ? data.services : null,
+      gallery: Array.isArray(data.gallery) ? data.gallery : null,
+      preferences: Array.isArray(data.preferences) ? data.preferences : null,
     };
     
     // Also update the cache for faster subsequent access
@@ -92,7 +92,7 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
   try {
     // Extract basic information from user object
     const email = user.email || '';
-    const fullName = user.user_metadata?.full_name || '';
+    const fullName = user.user_metadata?.full_name || null;
     const role = (user.user_metadata?.role as UserRole) || 'customer';
     
     // Default profile data

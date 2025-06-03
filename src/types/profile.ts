@@ -1,3 +1,4 @@
+
 export interface Location {
   lat: number | null;
   lng: number | null;
@@ -14,88 +15,8 @@ export interface OpeningTime {
   close: string;
 }
 
-export interface UserProfile {
-  // Required properties
-  id: string;
-  email: string;
-  
-  // Auth related properties from auth context
-  userId?: string;
-  user_id?: string;
-  firstName?: string;
-  lastName?: string;
-  full_name?: string;
-  avatar_url?: string;
-  avatarUrl?: string;
-  role?: string;
-  created_at?: string;
-  updated_at?: string;
-  
-  // Profile information
-  phone?: string;
-  bio?: string;
-  title?: string;
-  specialty?: string;
-  instagram?: string;
-  tiktok?: string;
-  youtube?: string;
-  website?: string;
-  
-  // Location data (can be string or object)
-  location?: Location | string;
-  
-  // Salon-specific properties
-  salonName?: string;
-  salon_name?: string;
-  company_name?: string;
-  boothRental?: boolean;
-  number_of_stations?: number;
-  professional_name?: string;
-  
-  // Additional salon properties
-  salon_type?: string;
-  phone_number?: string;
-  website_url?: string;
-  instagram_url?: string;
-  description?: string;
-  accepts_walk_ins?: boolean;
-  
-  // Professional information
-  specialties?: string[];
-  services?: string[] | any[];
-  gallery?: string[] | any[];
-  resume?: string;
-  certifications?: string[];
-  yearsOfExperience?: number;
-  years_experience?: number;
-  hourlyRate?: number;
-  openingTimes?: OpeningTime[];
-  
-  // Additional properties
-  profile_views?: number;
-  username?: string;
-  boosted_until?: string;
-  contact_link?: string;
-  badges?: any[];
-  accepts_bookings?: boolean;
-  booking_url?: string;
-  completed_profile_tasks?: string[];
-  preferences?: string[];
-  preferred_language?: string;
-  affiliate_code?: string;
-  referral_code?: string;
-  referral_count?: number;
-  credits?: number;
-  google_review_link?: string;
-  independent?: boolean;
-  profile_completion?: number;
-
-  // ✨ NEW CUSTOMER FIELDS
-  favorite_artist_types?: string[]; // E.g. ["studio", "booth-renter"]
-  artistTypes?: string[];           // Synonym for favorite_artist_types
-  birthday?: string | null;         // ISO date string or null
-  communication_preferences?: string[]; // E.g. ["email", "sms", "app"]
-}
+// Re-export UserProfile from auth context to maintain consistency
+export type { UserProfile } from '@/context/auth/types';
 
 // Helper function to safely get location as a string for display
 export function getLocationString(location: Location | string | undefined | null): string {
@@ -127,13 +48,22 @@ export interface ServiceItem {
 }
 
 // Helper function to safely get portfolio images
-export function getPortfolioImages(profile: UserProfile): PortfolioImage[] {
+export function getPortfolioImages(profile: any): PortfolioImage[] {
   if (!profile) return [];
   
   // Handle array of image URLs
   if (profile.gallery && Array.isArray(profile.gallery)) {
     return profile.gallery.map((url, index) => ({
       id: `gallery-${index}`,
+      url: typeof url === 'string' ? url : '',
+      alt: `Portfolio image ${index + 1}`
+    }));
+  }
+  
+  // Handle portfolio_urls
+  if (profile.portfolio_urls && Array.isArray(profile.portfolio_urls)) {
+    return profile.portfolio_urls.map((url, index) => ({
+      id: `portfolio-${index}`,
       url: typeof url === 'string' ? url : '',
       alt: `Portfolio image ${index + 1}`
     }));
