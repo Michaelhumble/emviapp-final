@@ -84,3 +84,37 @@ export const getRoleDashboardPath = (role: UserRole | null): string => {
       return '/dashboard';
   }
 };
+
+/**
+ * Check if user has access to a specific role
+ */
+export const hasRoleAccess = (userRole: UserRole | null, requiredRole: UserRole): boolean => {
+  return userRole === requiredRole;
+};
+
+/**
+ * Get personalized greeting based on user role and time
+ */
+export const getPersonalizedGreeting = (role: UserRole | null, name?: string): string => {
+  const hour = new Date().getHours();
+  let timeGreeting = 'Good day';
+  
+  if (hour < 12) timeGreeting = 'Good morning';
+  else if (hour < 18) timeGreeting = 'Good afternoon';
+  else timeGreeting = 'Good evening';
+  
+  const displayName = name || 'there';
+  
+  switch (role) {
+    case 'artist':
+    case 'nail technician/artist':
+      return `${timeGreeting}, ${displayName}! Ready to create beautiful nails?`;
+    case 'salon':
+    case 'owner':
+      return `${timeGreeting}, ${displayName}! How's your salon doing today?`;
+    case 'customer':
+      return `${timeGreeting}, ${displayName}! Looking for your next nail appointment?`;
+    default:
+      return `${timeGreeting}, ${displayName}!`;
+  }
+};

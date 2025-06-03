@@ -44,6 +44,7 @@ export interface UserProfile {
   salon_name?: string | null;
   company_name?: string | null;
   professional_name?: string | null;
+  address?: string | null;
   
   // Experience and services
   years_experience?: number | null;
