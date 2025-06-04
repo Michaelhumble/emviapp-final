@@ -96,7 +96,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
             <Label>Select Your Role *</Label>
             <RoleSelectionCards
               selectedRole={selectedRole}
-              onRoleSelect={setSelectedRole}
+              onChange={setSelectedRole}
             />
           </div>
 

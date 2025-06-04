@@ -51,9 +51,13 @@ export const useRoleSignUp = () => {
     setIsSubmitting(true);
 
     try {
-      console.log("Attempting sign up with:", { email, fullName, selectedRole });
+      console.log("Attempting sign up with:", { 
+        email, 
+        fullName: fullName.trim(), 
+        selectedRole 
+      });
       
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const signUpPayload = {
         email,
         password,
         options: {
@@ -64,7 +68,11 @@ export const useRoleSignUp = () => {
             ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
         },
-      });
+      };
+      
+      console.log("Sign up payload:", signUpPayload);
+      
+      const { data, error: signUpError } = await supabase.auth.signUp(signUpPayload);
       
       console.log("Sign up response:", { data, error: signUpError });
       
