@@ -6,10 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { UserRole } from "@/context/auth/types";
 import RoleSelectionCards from "./RoleSelectionCards";
-import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
@@ -22,30 +23,72 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
   const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [referralCode, setReferralCode] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  
-  const { signUp, loading } = useRoleBasedSignUp();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
     
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      setLoading(false);
       return;
     }
 
     try {
-      const result = await signUp(email, password, selectedRole);
+      console.log("Attempting to sign up with:", { email, role: selectedRole, fullName });
       
-      if (result) {
-        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-        navigate(decodedRedirect);
+      // Use Supabase auth directly for better debugging
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            role: selectedRole,
+            user_type: selectedRole, // For backward compatibility
+            ...(referralCode.trim() ? { referred_by_referral_code: referralCode.trim() } : {})
+          },
+        },
+      });
+
+      console.log("Supabase signUp response:", { data, error: signUpError });
+
+      if (signUpError) {
+        console.error("Sign up error:", signUpError);
+        setError(signUpError.message);
+        toast.error(signUpError.message);
+        return;
       }
+
+      if (!data.user) {
+        setError("Failed to create user account");
+        toast.error("Failed to create user account");
+        return;
+      }
+
+      console.log("User created successfully:", data.user);
+      toast.success("Account created successfully! Please check your email for verification.");
+      
+      // Redirect after successful signup
+      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+      navigate(decodedRedirect);
+
     } catch (err: any) {
-      console.error("Sign up error:", err);
-      setError(err.message || "An error occurred during sign up");
+      console.error("Unexpected sign up error:", err);
+      setError(err.message || "An unexpected error occurred during sign up");
+      toast.error(err.message || "Failed to create account");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,16 +96,16 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
     <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
       <CardHeader className="space-y-1 pb-6">
         <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
-          Join EmviApp
+          Create Your Account
         </CardTitle>
       </CardHeader>
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
           {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
           )}
 
           <div className="space-y-2">
@@ -92,7 +135,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               placeholder="your@email.com"
             />
           </div>
-
+          
           <div className="space-y-2">
             <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
             <Input
@@ -104,6 +147,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               disabled={loading}
               className="py-3 px-4"
               placeholder="••••••••"
+              minLength={6}
             />
           </div>
 
@@ -118,21 +162,20 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               disabled={loading}
               className="py-3 px-4"
               placeholder="••••••••"
+              minLength={6}
             />
-            {password !== confirmPassword && confirmPassword && (
-              <p className="text-sm text-red-600">Passwords do not match</p>
-            )}
           </div>
 
-          <RoleSelectionCards 
-            selectedRole={selectedRole} 
-            onChange={setSelectedRole}
-          />
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-gray-600">I am a...</Label>
+            <RoleSelectionCards 
+              selectedRole={selectedRole} 
+              onChange={setSelectedRole}
+            />
+          </div>
 
           <div className="space-y-2">
-            <Label htmlFor="referralCode" className="text-sm font-medium text-gray-600">
-              Referral Code <span className="text-gray-400">(Optional)</span>
-            </Label>
+            <Label htmlFor="referralCode" className="text-sm font-medium text-gray-600">Referral Code (Optional)</Label>
             <Input
               id="referralCode"
               type="text"
@@ -149,7 +192,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
           <Button 
             type="submit" 
             className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-            disabled={loading || password !== confirmPassword}
+            disabled={loading}
           >
             {loading ? (
               <>
