@@ -22,28 +22,30 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
   const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [referralCode, setReferralCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   
-  const { signUp, loading, error } = useRoleBasedSignUp();
+  const { signUp, loading } = useRoleBasedSignUp();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     
     if (password !== confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
 
-    const result = await signUp({
-      email,
-      password,
-      fullName,
-      role: selectedRole,
-      referralCode: referralCode.trim() || undefined
-    });
-
-    if (result) {
-      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-      navigate(decodedRedirect);
+    try {
+      const result = await signUp(email, password, selectedRole);
+      
+      if (result) {
+        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+        navigate(decodedRedirect);
+      }
+    } catch (err: any) {
+      console.error("Sign up error:", err);
+      setError(err.message || "An error occurred during sign up");
     }
   };
 
