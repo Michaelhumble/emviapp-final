@@ -1,4 +1,5 @@
 
+
 -- Drop and recreate the handle_new_user function with better error handling
 DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
 
@@ -94,3 +95,4 @@ CREATE POLICY "Users can insert their own profile"
   FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = id);
+
