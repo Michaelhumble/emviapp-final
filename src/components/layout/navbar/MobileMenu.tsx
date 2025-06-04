@@ -65,6 +65,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
           {/* Navigation Links */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            {/* Profile link for customers - at the top */}
+            {user && (
+              <Link
+                to="/profile"
+                onClick={onClose}
+                className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <User className="h-5 w-5" />
+                Profile
+              </Link>
+            )}
+            
             <Link
               to="/artists"
               onClick={onClose}
@@ -103,14 +115,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
             {user ? (
               <>
-                <Link
-                  to="/profile"
-                  onClick={onClose}
-                  className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <User className="h-5 w-5 mr-3" />
-                  Profile
-                </Link>
                 <Link
                   to="/dashboard"
                   onClick={onClose}
