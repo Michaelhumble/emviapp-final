@@ -21,8 +21,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  // Check if user should see job posting options
-  const canPostJobs = userRole && ['admin', 'salon', 'owner', 'manager'].includes(userRole);
+  // Check if user should see job posting options - ONLY for business roles, NOT customers
+  const canPostJobs = userRole && ['admin', 'salon', 'owner', 'manager'].includes(userRole) && userRole !== 'customer';
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
@@ -40,7 +40,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Action Buttons - Only show for authorized users */}
+          {/* Action Buttons - Only show for authorized business users, NOT customers */}
           {canPostJobs && (
             <div className="p-4 space-y-3 border-b flex-shrink-0">
               <Link
@@ -65,7 +65,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
           {/* Navigation Links */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            {/* Profile link for customers - at the top */}
+            {/* Profile link for all logged-in users - at the top */}
             {user && (
               <Link
                 to="/profile"
