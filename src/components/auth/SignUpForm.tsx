@@ -1,206 +1,194 @@
 
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import RoleSelectionCards from "./RoleSelectionCards";
 import { UserRole } from "@/context/auth/types";
+import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
 }
 
 const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
-    if (!fullName.trim()) {
-      toast.error("Please enter your full name");
-      return;
-    }
-
-    if (!email.trim()) {
-      toast.error("Please enter your email");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (!email || !password || !fullName || !selectedRole) {
+      setError("Please fill in all required fields");
       return;
     }
 
     setLoading(true);
-    console.log('Starting sign-up process...', { 
-      email: email.trim(), 
-      role: selectedRole, 
-      fullName: fullName.trim() 
-    });
+    setError("");
+    setSuccess("");
 
     try {
-      // Sign up with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: {
-            full_name: fullName.trim(),
-            role: selectedRole,
-          },
-          emailRedirectTo: `${window.location.origin}/dashboard`
+      console.log("Attempting sign up with:", {
+        email,
+        fullName,
+        role: selectedRole,
+        metadata: {
+          full_name: fullName,
+          role: selectedRole
         }
       });
 
-      console.log('Sign-up response:', { data, error });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            role: selectedRole
+          },
+          emailRedirectTo: `${window.location.origin}${redirectUrl || '/'}`
+        }
+      });
 
       if (error) {
-        console.error('Sign-up error:', error);
+        console.error("Sign up error:", error);
         
-        // Handle specific error cases
-        if (error.message.includes('User already registered')) {
-          toast.error("An account with this email already exists. Please sign in instead.");
-        } else if (error.message.includes('Invalid email')) {
-          toast.error("Please enter a valid email address.");
-        } else if (error.message.includes('Password')) {
-          toast.error("Password must be at least 6 characters long.");
-        } else if (error.message.includes('Database error')) {
-          toast.error("There was a problem creating your account. Please try again.");
-          console.error('Database error details:', error);
+        // Handle specific error messages
+        if (error.message.includes("User already registered")) {
+          setError("An account with this email already exists. Please sign in instead.");
+        } else if (error.message.includes("Password")) {
+          setError("Password is too weak. Please use at least 6 characters.");
+        } else if (error.message.includes("Email")) {
+          setError("Please enter a valid email address.");
         } else {
-          toast.error(error.message || "Failed to create account. Please try again.");
+          setError(error.message || "Failed to create account. Please try again.");
         }
         return;
       }
 
       if (data.user) {
-        console.log('User created successfully:', data.user);
+        console.log("User created successfully:", data.user);
         
-        // Check if email confirmation is required
-        if (!data.session) {
-          toast.success("Account created! Please check your email to verify your account before signing in.");
+        if (data.user.email_confirmed_at) {
+          // Email is confirmed, redirect immediately
+          setSuccess("Account created successfully! Redirecting...");
+          setTimeout(() => {
+            navigate(redirectUrl || "/");
+          }, 1500);
         } else {
-          toast.success("Account created successfully! Redirecting to dashboard...");
+          // Email confirmation required
+          setSuccess("Account created! Please check your email to confirm your account before signing in.");
         }
-        
-        // Navigate to sign-in with success message
-        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-        navigate(`/sign-in?redirect=${encodeURIComponent(decodedRedirect)}&message=account-created`);
-      } else {
-        toast.error("Failed to create account. Please try again.");
       }
+
     } catch (error: any) {
-      console.error('Unexpected sign-up error:', error);
-      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Unexpected error during sign up:", error);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
-      <CardHeader className="space-y-1 pb-6">
-        <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
-          Create Account
-        </CardTitle>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
+        <CardDescription className="text-center">
+          Join EmviApp and connect with beauty professionals
+        </CardDescription>
       </CardHeader>
+      <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
+        {success && (
+          <Alert className="mb-4 border-green-200 bg-green-50">
+            <AlertDescription className="text-green-800">{success}</AlertDescription>
+          </Alert>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">
-              Full Name *
-            </Label>
+            <Label htmlFor="fullName">Full Name *</Label>
             <Input
               id="fullName"
               type="text"
-              required
+              placeholder="Enter your full name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
+              required
               disabled={loading}
-              className="py-3 px-4"
-              placeholder="Enter your full name"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-600">
-              Email *
-            </Label>
+            <Label htmlFor="email">Email *</Label>
             <Input
               id="email"
               type="email"
-              required
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               disabled={loading}
-              className="py-3 px-4"
-              placeholder="your@email.com"
             />
           </div>
-          
+
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium text-gray-600">
-              Password *
-            </Label>
+            <Label htmlFor="password">Password *</Label>
             <Input
               id="password"
               type="password"
-              required
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
               disabled={loading}
-              className="py-3 px-4"
-              placeholder="••••••••"
               minLength={6}
             />
-            <p className="text-xs text-gray-500">Minimum 6 characters</p>
           </div>
 
-          <RoleSelectionCards 
-            selectedRole={selectedRole} 
-            onChange={setSelectedRole} 
-          />
-        </CardContent>
+          <div className="space-y-2">
+            <RoleSelectionCards
+              selectedRole={selectedRole}
+              onChange={setSelectedRole}
+            />
+          </div>
 
-        <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
           <Button 
             type="submit" 
-            className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            className="w-full" 
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Account...
-              </>
-            ) : (
-              "Create Account"
-            )}
+            {loading ? "Creating Account..." : "Create Account"}
           </Button>
+        </form>
 
-          <div className="text-sm text-center text-gray-500">
-            Already have an account?{" "}
-            <Link 
-              to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} 
-              className="text-indigo-600 hover:text-indigo-800 font-medium"
-            >
-              Sign in
-            </Link>
-          </div>
-        </CardFooter>
-      </form>
+        <div className="mt-4 text-center text-sm">
+          Already have an account?{" "}
+          <Link 
+            to={`/sign-in${location.search}`}
+            className="text-primary hover:underline"
+          >
+            Sign in
+          </Link>
+        </div>
+      </CardContent>
     </Card>
   );
 };
