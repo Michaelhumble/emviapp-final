@@ -16,18 +16,24 @@ export const useRoleBasedSignUp = () => {
     }
 
     setLoading(true);
+    console.log("Starting role-based sign-up...", { email, role });
+    
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            role: role
+            role: role,
+            user_type: role
           }
         }
       });
 
+      console.log("Auth sign-up response:", { data, error });
+
       if (error) {
+        console.error("Auth sign-up error:", error);
         if (error.message.includes('already')) {
           toast.error('This email is already registered. Please sign in instead.');
         } else {
@@ -37,6 +43,29 @@ export const useRoleBasedSignUp = () => {
       }
 
       if (data?.user) {
+        console.log("User created successfully:", data.user.id);
+        
+        // Try to manually ensure user exists in public.users
+        try {
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: data.user.id,
+              email: data.user.email,
+              role: role,
+              full_name: '',
+              created_at: new Date().toISOString()
+            });
+
+          if (insertError) {
+            console.error("Manual user insert failed:", insertError);
+          } else {
+            console.log("User successfully inserted into public.users");
+          }
+        } catch (insertErr) {
+          console.error("Manual insert error:", insertErr);
+        }
+
         toast.success('Account created successfully! Redirecting...');
         
         // Role-based redirect
@@ -58,7 +87,7 @@ export const useRoleBasedSignUp = () => {
         return true;
       }
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Unexpected signup error:', error);
       toast.error('An unexpected error occurred. Please try again.');
       return false;
     } finally {

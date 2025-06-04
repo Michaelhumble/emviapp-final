@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -41,8 +42,10 @@ export const useRoleSignUp = () => {
     }
     
     setIsSubmitting(true);
+    console.log("Starting sign-up process...");
 
     try {
+      // First, try to create the auth user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -55,7 +58,10 @@ export const useRoleSignUp = () => {
         },
       });
       
+      console.log("Sign-up response:", { data, error: signUpError });
+      
       if (signUpError) {
+        console.error("Sign-up error:", signUpError);
         setError(signUpError.message);
         toast.error(signUpError.message || "Failed to sign up");
         setIsSubmitting(false);
@@ -63,18 +69,35 @@ export const useRoleSignUp = () => {
       }
       
       if (!data.user) {
-        throw new Error("User creation failed");
+        throw new Error("User creation failed - no user returned");
       }
 
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ role: selectedRole })
-        .eq('id', data.user.id);
+      console.log("User created successfully:", data.user.id);
 
-      if (updateError) {
-        console.error("Error updating user role:", updateError);
+      // Try to manually insert into users table if trigger failed
+      try {
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            role: selectedRole,
+            full_name: '',
+            created_at: new Date().toISOString()
+          });
+
+        if (insertError) {
+          console.error("Manual user insert failed:", insertError);
+          // Don't fail the signup for this - user exists in auth
+        } else {
+          console.log("User manually inserted into public.users table");
+        }
+      } catch (manualInsertError) {
+        console.error("Manual insert attempt failed:", manualInsertError);
+        // Continue anyway - user exists in auth
       }
 
+      // Process referral if provided
       if (referrer && data.user) {
         try {
           const { data: referralData, error: referralError } = await supabase.rpc(
@@ -95,7 +118,9 @@ export const useRoleSignUp = () => {
         }
       }
 
+      // Store role and show success
       localStorage.setItem('emviapp_user_role', selectedRole);
+      console.log("Sign-up completed successfully");
       
       toast.success("Account created successfully! Redirecting to dashboard...");
       
@@ -104,9 +129,9 @@ export const useRoleSignUp = () => {
       }, 1500);
       
     } catch (err: any) {
+      console.error("Unexpected sign-up error:", err);
       setError(err.message || "An unexpected error occurred");
       toast.error(err.message || "Failed to sign up. Please try again.");
-      console.error("Sign up error:", err);
     } finally {
       setIsSubmitting(false);
     }
