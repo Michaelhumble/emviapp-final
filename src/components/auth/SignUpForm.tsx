@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
 import { UserRole } from "@/context/auth/types";
@@ -20,41 +20,76 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const [formError, setFormError] = useState<string | null>(null);
   const { signUp, loading } = useRoleBasedSignUp();
   const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     
+    console.log("Form submitted with:", { email, role: selectedRole });
+    
+    // Client-side validation
+    if (!email || !password || !confirmPassword) {
+      const error = "Please fill in all fields";
+      setFormError(error);
+      toast.error(error);
+      return;
+    }
+
     if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
+      const error = "Passwords don't match";
+      setFormError(error);
+      toast.error(error);
       return;
     }
 
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      const error = "Password must be at least 6 characters";
+      setFormError(error);
+      toast.error(error);
+      return;
+    }
+
+    if (!email.includes('@')) {
+      const error = "Please enter a valid email address";
+      setFormError(error);
+      toast.error(error);
       return;
     }
 
     console.log("Submitting signup form...");
-    const success = await signUp(email, password, selectedRole);
     
-    if (success) {
-      console.log("Signup successful, redirecting to:", redirectUrl || '/dashboard');
-      // Wait a moment before redirecting to allow auth state to update
-      setTimeout(() => {
-        // Decode the redirect URL if it exists
-        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-        
-        // Navigate to the appropriate dashboard based on role
-        let targetRoute = decodedRedirect;
-        if (decodedRedirect === '/dashboard') {
-          // If it's the default dashboard route, append the role
-          targetRoute = `/dashboard/${selectedRole.toLowerCase()}`;
-        }
-        
-        navigate(targetRoute);
-      }, 1000);
+    try {
+      const success = await signUp(email, password, selectedRole);
+      
+      if (success) {
+        console.log("Signup successful, redirecting to:", redirectUrl || '/dashboard');
+        // Wait a moment before redirecting to allow auth state to update
+        setTimeout(() => {
+          // Decode the redirect URL if it exists
+          const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+          
+          // Navigate to the appropriate dashboard based on role
+          let targetRoute = decodedRedirect;
+          if (decodedRedirect === '/dashboard') {
+            // If it's the default dashboard route, append the role
+            targetRoute = `/dashboard/${selectedRole.toLowerCase()}`;
+          }
+          
+          console.log("Navigating to:", targetRoute);
+          navigate(targetRoute);
+        }, 1000);
+      } else {
+        console.log("Signup failed");
+        setFormError("Sign up failed. Please try again.");
+      }
+    } catch (error: any) {
+      console.error("Form submission error:", error);
+      const errorMessage = error?.message || "An unexpected error occurred during sign up";
+      setFormError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -68,6 +103,13 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
+          {formError && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md text-red-800">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span className="text-sm">{formError}</span>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
             <Input
