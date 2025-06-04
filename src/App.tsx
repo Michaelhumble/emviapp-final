@@ -29,6 +29,7 @@ import PostJobBillion from "@/pages/PostJobBillion";
 import PostJobExperimental from "@/pages/PostJobExperimental";
 import SignIn from "@/pages/auth/SignIn";
 import SignUp from "@/pages/auth/SignUp";
+import NewSignUp from "@/pages/auth/NewSignUp";
 import EnhancedPostJob from "@/pages/enhanced-post-job";
 import SellSalonPage from "@/pages/sell-salon";
 import PostSalon from "@/pages/PostSalon";
@@ -58,8 +59,9 @@ function App() {
                   <Routes>
                     {/* Auth routes */}
                     <Route path="/login" element={<SignIn />} />
-                    <Route path="/sign-up" element={<SignUp />} />
-                    <Route path="/register" element={<SignUp />} />
+                    <Route path="/sign-in" element={<SignIn />} />
+                    <Route path="/sign-up" element={<NewSignUp />} />
+                    <Route path="/register" element={<NewSignUp />} />
                     
                     {/* Customer Profile route */}
                     <Route path="/profile" element={<CustomerProfilePage />} />
