@@ -44,28 +44,6 @@ export const useRoleBasedSignUp = () => {
 
       if (data?.user) {
         console.log("User created successfully:", data.user.id);
-        
-        // Try to manually ensure user exists in public.users
-        try {
-          const { error: insertError } = await supabase
-            .from('users')
-            .insert({
-              id: data.user.id,
-              email: data.user.email,
-              role: role,
-              full_name: '',
-              created_at: new Date().toISOString()
-            });
-
-          if (insertError) {
-            console.error("Manual user insert failed:", insertError);
-          } else {
-            console.log("User successfully inserted into public.users");
-          }
-        } catch (insertErr) {
-          console.error("Manual insert error:", insertErr);
-        }
-
         toast.success('Account created successfully! Redirecting...');
         
         // Role-based redirect

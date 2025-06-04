@@ -45,7 +45,7 @@ export const useRoleSignUp = () => {
     console.log("Starting sign-up process...");
 
     try {
-      // First, try to create the auth user
+      // Create the auth user - the database trigger will handle the public.users insert
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -73,29 +73,6 @@ export const useRoleSignUp = () => {
       }
 
       console.log("User created successfully:", data.user.id);
-
-      // Try to manually insert into users table if trigger failed
-      try {
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            role: selectedRole,
-            full_name: '',
-            created_at: new Date().toISOString()
-          });
-
-        if (insertError) {
-          console.error("Manual user insert failed:", insertError);
-          // Don't fail the signup for this - user exists in auth
-        } else {
-          console.log("User manually inserted into public.users table");
-        }
-      } catch (manualInsertError) {
-        console.error("Manual insert attempt failed:", manualInsertError);
-        // Continue anyway - user exists in auth
-      }
 
       // Process referral if provided
       if (referrer && data.user) {
