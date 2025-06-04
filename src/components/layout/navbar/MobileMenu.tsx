@@ -1,53 +1,74 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
-import { useTranslation } from '@/hooks/useTranslation';
-import { useUserRole } from '@/hooks/useUserRole';
-import { cn } from '@/lib/utils';
-import CustomerProfileSummary from '@/components/customer/mobile/CustomerProfileSummary';
-import ReferralTeaser from '@/components/customer/mobile/ReferralTeaser';
-import MysteryRewardClaim from '@/components/customer/mobile/MysteryRewardClaim';
-import BeautyJourneyShare from '@/components/customer/mobile/BeautyJourneyShare';
-import FeatureSuggestionButton from '@/components/customer/mobile/FeatureSuggestionButton';
-import SocialProofStats from '@/components/customer/mobile/SocialProofStats';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { X, User, LogOut } from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import LanguagePreference from "@/components/common/LanguagePreference";
+import { PostYourSalonButton } from "@/components/buttons/PostYourSalonButton";
+
+// Customer engagement components
+import { CustomerProfileSummary } from "@/components/customer/mobile/CustomerProfileSummary";
+import { ReferralTeaser } from "@/components/customer/mobile/ReferralTeaser";
+import { MysteryRewardClaim } from "@/components/customer/mobile/MysteryRewardClaim";
+import { BeautyJourneyShare } from "@/components/customer/mobile/BeautyJourneyShare";
+import { FeatureSuggestionButton } from "@/components/customer/mobile/FeatureSuggestionButton";
+import { SocialProofStats } from "@/components/customer/mobile/SocialProofStats";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+  const { user, userRole, signOut } = useAuth();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
-  const { t } = useTranslation();
-  const { userRole } = useUserRole(user?.id);
+
+  // Debug log to check user role
+  console.log("MobileMenu - Current user role:", userRole);
+  console.log("MobileMenu - Current user:", user?.email);
+
+  // More explicit customer detection
+  const isCustomer = userRole === 'customer' || userRole === 'Customer';
+  
+  // Debug log to verify customer detection
+  console.log("MobileMenu - Is customer:", isCustomer);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      onClose();
+      navigate('/');
+      toast.success("Signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Error signing out");
+    }
+  };
 
   const handleNavigation = (path: string) => {
     navigate(path);
     onClose();
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    onClose();
-  };
-
-  const isCustomer = userRole === 'customer';
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden">
-      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-lg overflow-y-auto">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Menu</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-6 w-6" />
-          </Button>
-        </div>
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
+      <div className="fixed inset-y-0 right-0 w-80 bg-white shadow-xl">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+            <button
+              onClick={onClose}
+              className="p-1 rounded-md text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
 
         <div className="flex flex-col">
           {/* Customer Test Banner and Engagement Sections - Only for customers */}
@@ -87,104 +108,91 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
           {/* Business Posting Actions - Only for non-customers */}
           {!isCustomer && (
-            <div className="px-4 py-2 border-b border-gray-100">
-              <Button
-                variant="outline"
-                className="w-full mb-2 justify-start"
-                onClick={() => handleNavigation('/post-job')}
-              >
-                Post a Job
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleNavigation('/sell-salon')}
-              >
-                Post Your Salon
-              </Button>
+            <div className="px-4 py-3 border-b border-gray-100">
+              <PostYourSalonButton />
             </div>
           )}
 
           {/* Navigation Links */}
-          <div className="py-2">
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/profile')}
-            >
-              Profile
-            </button>
-            
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/dashboard')}
-            >
-              Dashboard
-            </button>
+          <div className="flex-1 py-4">
+            <nav className="space-y-1">
+              <button
+                onClick={() => handleNavigation('/dashboard')}
+                className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+              >
+                <User className="h-5 w-5 mr-3" />
+                Dashboard
+              </button>
+              
+              <button
+                onClick={() => handleNavigation('/')}
+                className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+              >
+                <span className="h-5 w-5 mr-3">🏠</span>
+                Home
+              </button>
 
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/artists')}
-            >
-              Find Artists
-            </button>
+              <button
+                onClick={() => handleNavigation('/artists')}
+                className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+              >
+                <span className="h-5 w-5 mr-3">✨</span>
+                Artists
+              </button>
 
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/jobs')}
-            >
-              Browse Jobs
-            </button>
+              <button
+                onClick={() => handleNavigation('/salons')}
+                className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+              >
+                <span className="h-5 w-5 mr-3">🏢</span>
+                Salons
+              </button>
 
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/salons')}
-            >
-              Salons for Sale
-            </button>
+              <button
+                onClick={() => handleNavigation('/jobs')}
+                className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+              >
+                <span className="h-5 w-5 mr-3">💼</span>
+                Jobs
+              </button>
 
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/community')}
-            >
-              Community
-            </button>
+              <button
+                onClick={() => handleNavigation('/community')}
+                className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+              >
+                <span className="h-5 w-5 mr-3">👥</span>
+                Community
+              </button>
 
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/about')}
-            >
-              About
-            </button>
-
-            <button
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
-              onClick={() => handleNavigation('/contact')}
-            >
-              Contact
-            </button>
+              <button
+                onClick={() => handleNavigation('/about')}
+                className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+              >
+                <span className="h-5 w-5 mr-3">ℹ️</span>
+                About
+              </button>
+            </nav>
           </div>
 
           {/* Footer Actions */}
           <div className="mt-auto">
             <div className="px-4 py-3 border-t border-gray-100">
-              <button
-                className="w-full text-left py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                onClick={() => {/* Language toggle logic */}}
-              >
-                Language
-              </button>
-              
-              <button
-                className="w-full text-left py-2 text-red-600 hover:text-red-800 transition-colors"
+              <Button
                 onClick={handleSignOut}
+                variant="ghost"
+                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
               >
+                <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
-              </button>
+              </Button>
             </div>
 
-            {/* Inspired by Sunshine footer - Always visible */}
-            <div className="px-4 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-gray-100">
-              <p className="text-center text-xs text-gray-600 font-medium">
+            <div className="px-4 py-3 border-t border-gray-100">
+              <LanguagePreference />
+            </div>
+
+            <div className="px-4 py-2 bg-gradient-to-r from-yellow-50 to-orange-50 text-center">
+              <p className="text-xs text-orange-600 font-medium">
                 Inspired by Sunshine ☀️
               </p>
             </div>
