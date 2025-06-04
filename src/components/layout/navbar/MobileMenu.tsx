@@ -50,8 +50,40 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="flex flex-col">
-          {/* Customer Profile Summary - Only for customers */}
-          {isCustomer && <CustomerProfileSummary />}
+          {/* Customer Test Banner and Engagement Sections - Only for customers */}
+          {isCustomer && (
+            <>
+              {/* VISUAL TEST BANNER */}
+              <div className="px-4 py-4 bg-gradient-to-r from-purple-600 to-pink-600 border-b border-gray-100">
+                <div className="text-center">
+                  <h3 className="text-white font-bold text-sm uppercase tracking-wide">
+                    🚀 CUSTOMER VIRAL MENU TEST 🚀
+                  </h3>
+                  <p className="text-purple-100 text-xs mt-1">
+                    This is the new engagement section!
+                  </p>
+                </div>
+              </div>
+
+              {/* Customer Profile Summary */}
+              <CustomerProfileSummary />
+
+              {/* Referral Teaser */}
+              <ReferralTeaser />
+
+              {/* Mystery Reward Claim */}
+              <MysteryRewardClaim />
+
+              {/* Beauty Journey Share */}
+              <BeautyJourneyShare />
+
+              {/* Feature Suggestion Button */}
+              <FeatureSuggestionButton />
+
+              {/* Social Proof Stats */}
+              <SocialProofStats />
+            </>
+          )}
 
           {/* Business Posting Actions - Only for non-customers */}
           {!isCustomer && (
@@ -131,17 +163,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               Contact
             </button>
           </div>
-
-          {/* Customer Engagement Sections - Only for customers */}
-          {isCustomer && (
-            <>
-              <ReferralTeaser />
-              <MysteryRewardClaim />
-              <BeautyJourneyShare />
-              <FeatureSuggestionButton />
-              <SocialProofStats />
-            </>
-          )}
 
           {/* Footer Actions */}
           <div className="mt-auto">
