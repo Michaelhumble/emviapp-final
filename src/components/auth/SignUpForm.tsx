@@ -36,12 +36,25 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
       return;
     }
 
-    const result = await signUp(email, password, selectedRole);
+    console.log("Submitting signup form...");
+    const success = await signUp(email, password, selectedRole);
     
-    if (result) {
-      // Decode the redirect URL if it exists
-      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-      navigate(decodedRedirect);
+    if (success) {
+      console.log("Signup successful, redirecting to:", redirectUrl || '/dashboard');
+      // Wait a moment before redirecting to allow auth state to update
+      setTimeout(() => {
+        // Decode the redirect URL if it exists
+        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+        
+        // Navigate to the appropriate dashboard based on role
+        let targetRoute = decodedRedirect;
+        if (decodedRedirect === '/dashboard') {
+          // If it's the default dashboard route, append the role
+          targetRoute = `/dashboard/${selectedRole.toLowerCase()}`;
+        }
+        
+        navigate(targetRoute);
+      }, 1000);
     }
   };
 
