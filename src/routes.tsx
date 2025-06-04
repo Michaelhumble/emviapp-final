@@ -3,7 +3,7 @@ import React from 'react';
 
 // Import pages with error handling
 const Index = React.lazy(() => import('./pages/Index'));
-const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const Dashboard = React.lazy(() => import('./pages/dashboard/Dashboard'));
 const Customer = React.lazy(() => import('./pages/dashboard/Customer'));
 const Artist = React.lazy(() => import('./pages/dashboard/Artist'));
 const Salon = React.lazy(() => import('./pages/dashboard/Salon'));
