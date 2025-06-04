@@ -6,9 +6,22 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
 
+// Global error handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  // Prevent default browser error handling
+  event.preventDefault();
+});
+
 // Global error handler
 window.addEventListener('error', (event) => {
   console.error('Global error caught:', event.error);
+  console.error('Error details:', {
+    message: event.message,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno
+  });
 });
 
 // Create query client with optimized settings for mobile
@@ -81,6 +94,8 @@ if (!rootElement) {
   document.body.appendChild(fallbackDiv);
 } else {
   try {
+    console.log('Starting React application...');
+    
     ReactDOM.createRoot(rootElement).render(
       <React.StrictMode>
         <QueryClientProvider client={queryClient}>
@@ -90,6 +105,8 @@ if (!rootElement) {
         </QueryClientProvider>
       </React.StrictMode>,
     );
+    
+    console.log('React application started successfully');
   } catch (error) {
     console.error('Failed to render application:', error);
     rootElement.innerHTML = `
@@ -97,7 +114,7 @@ if (!rootElement) {
         <h2>Application Error</h2>
         <p>Something went wrong while rendering the application. Please refresh the page.</p>
         <div style="margin: 20px; padding: 10px; background: #ffebee; color: #c62828; text-align: left; overflow: auto;">
-          ${error instanceof Error ? error.message : 'Unknown error'}
+          <strong>Error:</strong> ${error instanceof Error ? error.message : 'Unknown error'}
         </div>
         <button onclick="window.location.reload()" style="padding: 8px 16px; background: #f97316; color: white; border: none; border-radius: 4px; cursor: pointer;">
           Reload Page
