@@ -12,6 +12,7 @@ const Supplier = React.lazy(() => import('./pages/dashboard/Supplier'));
 const Manager = React.lazy(() => import('./pages/dashboard/Manager'));
 const SignIn = React.lazy(() => import('./pages/auth/SignIn'));
 const SignUp = React.lazy(() => import('./pages/auth/SignUp'));
+const SignUp2 = React.lazy(() => import('./pages/auth/SignUp2'));
 
 const routes = [
   {
@@ -25,6 +26,10 @@ const routes = [
   {
     path: '/sign-up',
     element: <SignUp />,
+  },
+  {
+    path: '/sign-up2',
+    element: <SignUp2 />,
   },
   {
     path: '/dashboard',
