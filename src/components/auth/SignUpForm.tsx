@@ -1,130 +1,136 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
-import { useRoleSignUp } from "@/hooks/useRoleSignUp";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
+import { UserRole } from "@/context/auth/types";
 import RoleSelectionCards from "./RoleSelectionCards";
+import { toast } from "sonner";
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
 }
 
 const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
-  const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    fullName,
-    setFullName,
-    selectedRole,
-    setSelectedRole,
-    isSubmitting,
-    error,
-    handleSubmit
-  } = useRoleSignUp();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const { signUp, loading } = useRoleBasedSignUp();
+  const navigate = useNavigate();
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    const result = await signUp(email, password, selectedRole);
+    
+    if (result) {
+      // Decode the redirect URL if it exists
+      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+      navigate(decodedRedirect);
+    }
+  };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Create an account</CardTitle>
-        <CardDescription className="text-center">
-          Enter your details below to create your account
-        </CardDescription>
+    <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
+      <CardHeader className="space-y-1 pb-6">
+        <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
+          Create an Account
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name *</Label>
-            <Input
-              id="fullName"
-              type="text"
-              placeholder="Enter your full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-              disabled={isSubmitting}
-            />
-          </div>
 
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isSubmitting}
+              disabled={loading}
+              className="py-3 px-4"
+              placeholder="your@email.com"
             />
           </div>
-
+          
           <div className="space-y-2">
-            <Label htmlFor="password">Password *</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Create a password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isSubmitting}
-              minLength={6}
+              disabled={loading}
+              className="py-3 px-4"
+              placeholder="••••••••"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password *</Label>
+            <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-600">
+              Confirm Password
+            </Label>
             <Input
               id="confirmPassword"
               type="password"
-              placeholder="Confirm your password"
+              required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              disabled={isSubmitting}
-              minLength={6}
+              disabled={loading}
+              className="py-3 px-4"
+              placeholder="••••••••"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>Select Your Role *</Label>
+          <div className="pt-4">
             <RoleSelectionCards
               selectedRole={selectedRole}
               onChange={setSelectedRole}
             />
           </div>
+        </CardContent>
 
-          {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-              {error}
-            </div>
-          )}
-
+        <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
           <Button 
             type="submit" 
-            className="w-full" 
-            disabled={isSubmitting}
+            className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            disabled={loading}
           >
-            {isSubmitting ? "Creating Account..." : "Create Account"}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating Account...
+              </>
+            ) : (
+              "Sign Up"
+            )}
           </Button>
 
-          <div className="text-center text-sm">
-            <span className="text-muted-foreground">Already have an account? </span>
-            <Link 
-              to={redirectUrl ? `/sign-in?redirect=${encodeURIComponent(redirectUrl)}` : "/sign-in"} 
-              className="text-primary hover:underline"
-            >
+          <div className="text-sm text-center text-gray-500">
+            Already have an account?{" "}
+            <Link to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} className="text-indigo-600 hover:text-indigo-800 font-medium">
               Sign in
             </Link>
           </div>
-        </form>
-      </CardContent>
+        </CardFooter>
+      </form>
     </Card>
   );
 };

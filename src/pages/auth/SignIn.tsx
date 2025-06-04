@@ -1,10 +1,12 @@
 
 import SignInForm from "@/components/auth/SignInForm";
+import { Card } from "@/components/ui/card";
 import { useLocation } from "react-router-dom";
 import Logo from "@/components/ui/Logo";
 
 const SignIn = () => {
   const location = useLocation();
+  // Pass redirect URL to SignInForm
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get('redirect');
 

@@ -1,14 +1,19 @@
 
-import { UserRole } from "@/context/auth/types";
-import { NavigateFunction } from "react-router-dom";
+import { UserRole } from '@/context/auth/types';
 
 /**
- * Navigates to the appropriate dashboard based on user role
+ * Navigate to the appropriate dashboard based on user role
  */
-export function navigateToRoleDashboard(navigate: NavigateFunction, role: UserRole): void {
-  console.log("Navigating to dashboard for role:", role);
-  
-  switch (role.toLowerCase()) {
+export const navigateToRoleDashboard = (navigate: (path: string) => void, role: UserRole | null) => {
+  if (!role) {
+    console.warn('No role provided for dashboard navigation');
+    navigate('/dashboard');
+    return;
+  }
+
+  console.log('Navigating to dashboard for role:', role);
+
+  switch (role) {
     case 'artist':
     case 'nail technician/artist':
       navigate('/dashboard/artist');
@@ -17,73 +22,99 @@ export function navigateToRoleDashboard(navigate: NavigateFunction, role: UserRo
     case 'owner':
       navigate('/dashboard/salon');
       break;
-    case 'freelancer':
-      navigate('/dashboard/freelancer');
-      break;
     case 'customer':
       navigate('/dashboard/customer');
       break;
+    case 'freelancer':
+      navigate('/dashboard/freelancer');
+      break;
     case 'supplier':
     case 'beauty supplier':
+    case 'vendor':
       navigate('/dashboard/supplier');
       break;
+    case 'manager':
+      navigate('/dashboard/manager');
+      break;
+    case 'admin':
+      navigate('/dashboard/admin');
+      break;
+    case 'renter':
+      navigate('/dashboard/renter');
+      break;
+    case 'other':
+      navigate('/dashboard/other');
+      break;
     default:
+      console.warn('Unknown role for navigation:', role);
       navigate('/dashboard');
   }
-}
+};
 
 /**
- * Checks if a user has access to a specific role's content
- * @param userRole The current user's role
- * @param requiredRole The role required for access
- * @returns boolean indicating whether access should be granted
+ * Get the dashboard path for a given role without navigating
  */
-export function hasRoleAccess(userRole: UserRole | null | undefined, requiredRole: UserRole): boolean {
-  if (!userRole) return false;
-  
-  // Convert roles to lowercase for comparison
-  const currentRole = userRole.toLowerCase();
-  const required = requiredRole.toLowerCase();
-  
-  // Direct match
-  if (currentRole === required) return true;
-  
-  // Special cases for role aliases
-  if (required === 'artist' && (currentRole === 'nail technician/artist')) return true;
-  if (required === 'salon' && (currentRole === 'owner')) return true;
-  
-  // Admin has access to everything
-  if (currentRole === 'admin') return true;
-  
-  return false;
-}
+export const getRoleDashboardPath = (role: UserRole | null): string => {
+  if (!role) return '/dashboard';
 
-/**
- * Returns a personalized greeting based on user role
- * @param userRole The user's role
- * @param name The user's name
- * @returns A personalized greeting string
- */
-export function getPersonalizedGreeting(userRole: UserRole | null | undefined, name: string): string {
-  if (!userRole) return `Welcome, ${name}`;
-  
-  switch (userRole.toLowerCase()) {
+  switch (role) {
     case 'artist':
     case 'nail technician/artist':
-      return `Welcome to your studio, ${name}`;
+      return '/dashboard/artist';
     case 'salon':
     case 'owner':
-      return `Welcome to your salon dashboard, ${name}`;
-    case 'freelancer':
-      return `Ready for today's opportunities, ${name}?`;
+      return '/dashboard/salon';
     case 'customer':
-      return `Hello, ${name}`;
+      return '/dashboard/customer';
+    case 'freelancer':
+      return '/dashboard/freelancer';
     case 'supplier':
     case 'beauty supplier':
-      return `Welcome to your supplier portal, ${name}`;
+    case 'vendor':
+      return '/dashboard/supplier';
+    case 'manager':
+      return '/dashboard/manager';
     case 'admin':
-      return `Admin Dashboard: Welcome, ${name}`;
+      return '/dashboard/admin';
+    case 'renter':
+      return '/dashboard/renter';
+    case 'other':
+      return '/dashboard/other';
     default:
-      return `Welcome to EmviApp, ${name}`;
+      return '/dashboard';
   }
-}
+};
+
+/**
+ * Check if user has access to a specific role
+ */
+export const hasRoleAccess = (userRole: UserRole | null, requiredRole: UserRole): boolean => {
+  return userRole === requiredRole;
+};
+
+/**
+ * Get personalized greeting based on user role and time
+ */
+export const getPersonalizedGreeting = (role: UserRole | null, name?: string): string => {
+  const hour = new Date().getHours();
+  let timeGreeting = 'Good day';
+  
+  if (hour < 12) timeGreeting = 'Good morning';
+  else if (hour < 18) timeGreeting = 'Good afternoon';
+  else timeGreeting = 'Good evening';
+  
+  const displayName = name || 'there';
+  
+  switch (role) {
+    case 'artist':
+    case 'nail technician/artist':
+      return `${timeGreeting}, ${displayName}! Ready to create beautiful nails?`;
+    case 'salon':
+    case 'owner':
+      return `${timeGreeting}, ${displayName}! How's your salon doing today?`;
+    case 'customer':
+      return `${timeGreeting}, ${displayName}! Looking for your next nail appointment?`;
+    default:
+      return `${timeGreeting}, ${displayName}!`;
+  }
+};
