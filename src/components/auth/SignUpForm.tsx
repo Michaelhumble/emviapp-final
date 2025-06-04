@@ -1,191 +1,234 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
-import { UserRole } from "@/context/auth/types";
-import RoleSelectionCards from "./RoleSelectionCards";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { UserRole } from '@/context/auth/types';
+import { useRoleBasedSignUp } from '@/hooks/useRoleBasedSignUp';
+import RoleSelectionCards from './RoleSelectionCards';
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
 }
 
 const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
-  const [formError, setFormError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('customer');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [submitError, setSubmitError] = useState<string>('');
+  
   const { signUp, loading } = useRoleBasedSignUp();
   const navigate = useNavigate();
-  
+
+  const validateForm = (): boolean => {
+    const errors: string[] = [];
+    
+    // Email validation
+    if (!email) {
+      errors.push('Email is required');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Please enter a valid email address');
+    }
+    
+    // Password validation
+    if (!password) {
+      errors.push('Password is required');
+    } else if (password.length < 6) {
+      errors.push('Password must be at least 6 characters long');
+    }
+    
+    // Confirm password validation
+    if (!confirmPassword) {
+      errors.push('Please confirm your password');
+    } else if (password !== confirmPassword) {
+      errors.push('Passwords do not match');
+    }
+    
+    setValidationErrors(errors);
+    
+    if (errors.length > 0) {
+      console.error('Form validation errors:', errors);
+    }
+    
+    return errors.length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError(null);
+    setSubmitError('');
+    setValidationErrors([]);
     
-    console.log("Form submitted with:", { email, role: selectedRole });
+    console.log('Form submitted with:', {
+      email,
+      role: selectedRole
+    });
     
-    // Client-side validation
-    if (!email || !password || !confirmPassword) {
-      const error = "Please fill in all fields";
-      setFormError(error);
-      toast.error(error);
+    console.log('Submitting signup form...');
+    
+    // Frontend validation
+    if (!validateForm()) {
       return;
     }
-
-    if (password !== confirmPassword) {
-      const error = "Passwords don't match";
-      setFormError(error);
-      toast.error(error);
-      return;
-    }
-
-    if (password.length < 6) {
-      const error = "Password must be at least 6 characters";
-      setFormError(error);
-      toast.error(error);
-      return;
-    }
-
-    if (!email.includes('@')) {
-      const error = "Please enter a valid email address";
-      setFormError(error);
-      toast.error(error);
-      return;
-    }
-
-    console.log("Submitting signup form...");
     
     try {
       const success = await signUp(email, password, selectedRole);
       
       if (success) {
-        console.log("Signup successful, redirecting to:", redirectUrl || '/dashboard');
-        // Wait a moment before redirecting to allow auth state to update
-        setTimeout(() => {
-          // Decode the redirect URL if it exists
-          const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-          
-          // Navigate to the appropriate dashboard based on role
-          let targetRoute = decodedRedirect;
-          if (decodedRedirect === '/dashboard') {
-            // If it's the default dashboard route, append the role
-            targetRoute = `/dashboard/${selectedRole.toLowerCase()}`;
-          }
-          
-          console.log("Navigating to:", targetRoute);
-          navigate(targetRoute);
-        }, 1000);
+        console.log('Signup successful, redirecting...');
+        // Navigate to dashboard or redirect URL
+        if (redirectUrl) {
+          navigate(redirectUrl);
+        } else {
+          navigate('/dashboard');
+        }
       } else {
-        console.log("Signup failed");
-        setFormError("Sign up failed. Please try again.");
+        console.log('Signup failed');
+        // Error handling is done in the hook with toast notifications
+        // But we can also show it in the form for better UX
+        setSubmitError('Sign up failed. Please check the error message above and try again.');
       }
     } catch (error: any) {
-      console.error("Form submission error:", error);
-      const errorMessage = error?.message || "An unexpected error occurred during sign up";
-      setFormError(errorMessage);
-      toast.error(errorMessage);
+      console.error('Form submission error:', error);
+      const errorMessage = error?.message || 'An unexpected error occurred. Please try again.';
+      setSubmitError(errorMessage);
     }
   };
 
   return (
-    <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
-      <CardHeader className="space-y-1 pb-6">
-        <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
-          Create an Account
-        </CardTitle>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
+        <CardDescription className="text-center">
+          Enter your details to create your EmviApp account
+        </CardDescription>
       </CardHeader>
-
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-5">
-          {formError && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md text-red-800">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              <span className="text-sm">{formError}</span>
-            </div>
+      <CardContent className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Display validation errors */}
+          {validationErrors.length > 0 && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <ul className="list-disc list-inside space-y-1">
+                  {validationErrors.map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {/* Display submit errors */}
+          {submitError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{submitError}</AlertDescription>
+            </Alert>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
-              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-              className="py-3 px-4"
-              placeholder="your@email.com"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
-            <Input
-              id="password"
-              type="password"
+              placeholder="Enter your email"
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
-              className="py-3 px-4"
-              placeholder="••••••••"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-600">
-              Confirm Password
-            </Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={loading}
-              className="py-3 px-4"
-              placeholder="••••••••"
-            />
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                disabled={loading}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                disabled={loading}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-400" />
+                )}
+              </button>
+            </div>
           </div>
 
-          <div className="pt-4">
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your password"
+                required
+                disabled={loading}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                disabled={loading}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-400" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>I am a...</Label>
             <RoleSelectionCards
               selectedRole={selectedRole}
-              onChange={setSelectedRole}
+              onRoleChange={setSelectedRole}
+              disabled={loading}
             />
           </div>
-        </CardContent>
 
-        <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
-          <Button 
-            type="submit" 
-            className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </Button>
+        </form>
+
+        <div className="text-center text-sm">
+          <span className="text-gray-600">Already have an account? </span>
+          <Button
+            variant="link"
+            className="p-0 h-auto"
+            onClick={() => navigate('/sign-in')}
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Account...
-              </>
-            ) : (
-              "Sign Up"
-            )}
+            Sign in
           </Button>
-
-          <div className="text-sm text-center text-gray-500">
-            Already have an account?{" "}
-            <Link to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} className="text-indigo-600 hover:text-indigo-800 font-medium">
-              Sign in
-            </Link>
-          </div>
-        </CardFooter>
-      </form>
+        </div>
+      </CardContent>
     </Card>
   );
 };
