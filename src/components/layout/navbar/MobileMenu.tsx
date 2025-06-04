@@ -1,218 +1,171 @@
 
-import React, { useState } from "react";
-import { Menu, X, User, Home, Briefcase, Store, Users, Info, Mail, Globe, LogOut } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import { useUserRole } from "@/hooks/useUserRole";
-import { useTranslation } from "@/hooks/useTranslation";
-import { Button } from "@/components/ui/button";
-import PostYourSalonButton from "@/components/buttons/PostYourSalonButton";
-import LanguageToggle from "@/components/ui/LanguageToggle";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/auth';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useUserRole } from '@/hooks/useUserRole';
+import { cn } from '@/lib/utils';
+import CustomerProfileSummary from '@/components/customer/mobile/CustomerProfileSummary';
+import ReferralTeaser from '@/components/customer/mobile/ReferralTeaser';
+import MysteryRewardClaim from '@/components/customer/mobile/MysteryRewardClaim';
+import BeautyJourneyShare from '@/components/customer/mobile/BeautyJourneyShare';
+import FeatureSuggestionButton from '@/components/customer/mobile/FeatureSuggestionButton';
+import SocialProofStats from '@/components/customer/mobile/SocialProofStats';
 
-const MobileMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { user, signOut } = useAuth();
-  const { userRole } = useUserRole(user?.id);
-  const { t, currentLanguage, toggleLanguage } = useTranslation();
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { t } = useTranslation();
+  const { userRole } = useUserRole(user?.id);
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose();
+  };
 
   const handleSignOut = async () => {
     await signOut();
-    setIsOpen(false);
-    navigate("/");
+    onClose();
   };
 
-  const handleMenuItemClick = () => {
-    setIsOpen(false);
-  };
-
-  const onPostJobClick = () => {
-    navigate("/post-job");
-    setIsOpen(false);
-  };
-
-  // Strict role check - customers should NEVER see business posting actions
   const isCustomer = userRole === 'customer';
 
-  if (!isOpen) {
-    return (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setIsOpen(true)}
-        className="md:hidden"
-        aria-label="Open menu"
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
-    );
-  }
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden">
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50" onClick={() => setIsOpen(false)} />
-      
-      {/* Menu Panel */}
-      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl">
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-lg font-semibold">Menu</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-              aria-label="Close menu"
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden">
+      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-lg overflow-y-auto">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-semibold">Menu</h2>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-6 w-6" />
+          </Button>
+        </div>
 
-          {/* Menu Items */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-2">
-              {user ? (
-                <>
-                  {/* Business Actions (ONLY for non-customers) */}
-                  {!isCustomer && (
-                    <div className="space-y-2 pb-4 border-b border-gray-100">
-                      <Button 
-                        onClick={onPostJobClick} 
-                        className="w-full justify-start bg-purple-600 text-white hover:bg-purple-700"
-                      >
-                        <Briefcase className="h-4 w-4 mr-3" />
-                        {t("Post a Job for Free")}
-                      </Button>
-                      
-                      <PostYourSalonButton 
-                        variant="outline" 
-                        className="w-full justify-start border-purple-600 text-purple-600 hover:bg-purple-50"
-                        onClose={() => setIsOpen(false)}
-                      />
-                    </div>
-                  )}
+        <div className="flex flex-col">
+          {/* Customer Profile Summary - Only for customers */}
+          {isCustomer && <CustomerProfileSummary />}
 
-                  {/* User Menu Items (for all authenticated users) */}
-                  <Link
-                    to="/profile"
-                    onClick={handleMenuItemClick}
-                    className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <User className="h-4 w-4 mr-3" />
-                    {t("Profile")}
-                  </Link>
-
-                  <Link
-                    to="/dashboard"
-                    onClick={handleMenuItemClick}
-                    className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <Home className="h-4 w-4 mr-3" />
-                    {t("Dashboard")}
-                  </Link>
-                </>
-              ) : (
-                <>
-                  {/* Auth buttons for non-authenticated users */}
-                  <Link
-                    to="/login"
-                    onClick={handleMenuItemClick}
-                    className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <User className="h-4 w-4 mr-3" />
-                    {t("Sign In")}
-                  </Link>
-                  
-                  <Link
-                    to="/sign-up"
-                    onClick={handleMenuItemClick}
-                    className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <User className="h-4 w-4 mr-3" />
-                    {t("Sign Up")}
-                  </Link>
-                </>
-              )}
-
-              {/* Navigation Items (for all users) */}
-              <Link
-                to="/artists"
-                onClick={handleMenuItemClick}
-                className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+          {/* Business Posting Actions - Only for non-customers */}
+          {!isCustomer && (
+            <div className="px-4 py-2 border-b border-gray-100">
+              <Button
+                variant="outline"
+                className="w-full mb-2 justify-start"
+                onClick={() => handleNavigation('/post-job')}
               >
-                <Users className="h-4 w-4 mr-3" />
-                {t("Find Artists")}
-              </Link>
-
-              <Link
-                to="/jobs"
-                onClick={handleMenuItemClick}
-                className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+                Post a Job
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => handleNavigation('/sell-salon')}
               >
-                <Briefcase className="h-4 w-4 mr-3" />
-                {t("Browse Jobs")}
-              </Link>
-
-              <Link
-                to="/salons"
-                onClick={handleMenuItemClick}
-                className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <Store className="h-4 w-4 mr-3" />
-                {t("Salons for Sale")}
-              </Link>
-
-              <Link
-                to="/community"
-                onClick={handleMenuItemClick}
-                className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <Users className="h-4 w-4 mr-3" />
-                {t("Community")}
-              </Link>
-
-              <Link
-                to="/about"
-                onClick={handleMenuItemClick}
-                className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <Info className="h-4 w-4 mr-3" />
-                {t("About")}
-              </Link>
-
-              <Link
-                to="/contact"
-                onClick={handleMenuItemClick}
-                className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <Mail className="h-4 w-4 mr-3" />
-                {t("Contact")}
-              </Link>
-
-              {/* Language Toggle */}
-              <div className="flex items-center w-full p-3">
-                <Globe className="h-4 w-4 mr-3" />
-                <LanguageToggle minimal={true} />
-              </div>
-
-              {/* Sign Out (only for authenticated users) */}
-              {user && (
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center w-full p-3 text-left hover:bg-gray-50 rounded-lg transition-colors text-red-600"
-                >
-                  <LogOut className="h-4 w-4 mr-3" />
-                  {t("Sign Out")}
-                </button>
-              )}
+                Post Your Salon
+              </Button>
             </div>
+          )}
+
+          {/* Navigation Links */}
+          <div className="py-2">
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/profile')}
+            >
+              Profile
+            </button>
+            
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/dashboard')}
+            >
+              Dashboard
+            </button>
+
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/artists')}
+            >
+              Find Artists
+            </button>
+
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/jobs')}
+            >
+              Browse Jobs
+            </button>
+
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/salons')}
+            >
+              Salons for Sale
+            </button>
+
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/community')}
+            >
+              Community
+            </button>
+
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/about')}
+            >
+              About
+            </button>
+
+            <button
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+              onClick={() => handleNavigation('/contact')}
+            >
+              Contact
+            </button>
           </div>
 
-          {/* Footer */}
-          <div className="p-4 border-t border-gray-100">
-            <div className="text-center text-xs text-gray-500">
-              Inspired by Sunshine
+          {/* Customer Engagement Sections - Only for customers */}
+          {isCustomer && (
+            <>
+              <ReferralTeaser />
+              <MysteryRewardClaim />
+              <BeautyJourneyShare />
+              <FeatureSuggestionButton />
+              <SocialProofStats />
+            </>
+          )}
+
+          {/* Footer Actions */}
+          <div className="mt-auto">
+            <div className="px-4 py-3 border-t border-gray-100">
+              <button
+                className="w-full text-left py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                onClick={() => {/* Language toggle logic */}}
+              >
+                Language
+              </button>
+              
+              <button
+                className="w-full text-left py-2 text-red-600 hover:text-red-800 transition-colors"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </button>
+            </div>
+
+            {/* Inspired by Sunshine footer - Always visible */}
+            <div className="px-4 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 border-t border-gray-100">
+              <p className="text-center text-xs text-gray-600 font-medium">
+                Inspired by Sunshine ☀️
+              </p>
             </div>
           </div>
         </div>
