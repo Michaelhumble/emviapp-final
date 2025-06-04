@@ -1,12 +1,15 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Settings, Home, Briefcase, Store, Scissors, Users, Info, Mail, Globe, PlusCircle } from 'lucide-react';
-import { useAuth } from '@/context/auth';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import CustomerMobileMenu from './CustomerMobileMenu';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { 
+  Home, User, Search, Briefcase, Users, MessageCircle, 
+  Info, Phone, Globe, LogOut, Plus, Building 
+} from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
+import LanguageToggle from "@/components/ui/LanguageToggle";
+import CustomerMobileMenu from "./CustomerMobileMenu";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -14,172 +17,152 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+  const { signOut, userProfile } = useAuth();
   const navigate = useNavigate();
-  const { userProfile, userRole, signOut } = useAuth();
-  const { t, currentLanguage, setLanguage } = useTranslation();
+  const { t, toggleLanguage } = useTranslation();
 
-  console.log('MobileMenu - userRole:', userRole, 'userProfile:', userProfile);
+  console.log("MobileMenu - userProfile:", userProfile);
+  console.log("MobileMenu - userProfile.role:", userProfile?.role);
 
-  // Route customer users to isolated CustomerMobileMenu
-  if (userRole?.toLowerCase() === 'customer') {
+  // Route customers to their isolated menu
+  if (userProfile?.role?.toLowerCase() === 'customer') {
     return <CustomerMobileMenu isOpen={isOpen} onClose={onClose} />;
   }
-
-  const handleNavigate = (path: string) => {
-    navigate(path);
-    onClose();
-  };
 
   const handleSignOut = async () => {
     await signOut();
     onClose();
+    navigate('/');
   };
 
-  const toggleLanguage = () => {
-    setLanguage(currentLanguage === 'en' ? 'vi' : 'en');
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
-      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out overflow-y-auto">
-        <div className="p-6">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">{t('Menu')}</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              ✕
-            </button>
-          </div>
+    <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose}>
+      <div 
+        className="fixed right-0 top-0 h-full w-80 max-w-[90vw] bg-white shadow-xl overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Business Menu Header */}
+        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+        </div>
 
-          {/* Business/Artist Actions */}
-          <div className="space-y-3 mb-6">
-            <Button
-              onClick={() => handleNavigate('/post-job')}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              {t('Post a Job')}
-            </Button>
-            
-            <Button
-              onClick={() => handleNavigate('/sell-salon')}
-              variant="outline"
-              className="w-full border-purple-200 hover:bg-purple-50"
-            >
-              <Store className="h-4 w-4 mr-2" />
-              {t('Post Your Salon')}
-            </Button>
-          </div>
+        {/* Business Actions */}
+        <div className="p-4 space-y-3 border-b border-gray-100">
+          <Button
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+            onClick={() => handleNavigation('/post-job')}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Post a Job
+          </Button>
 
-          <Separator className="my-6" />
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => handleNavigation('/post-salon')}
+          >
+            <Building className="h-4 w-4 mr-2" />
+            Post Your Salon
+          </Button>
+        </div>
 
-          {/* Navigation Links */}
-          <div className="space-y-2">
-            <button
-              onClick={() => handleNavigate('/dashboard')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <User className="h-5 w-5 mr-3" />
-              {t('Dashboard')}
-            </button>
+        {/* Navigation Links */}
+        <div className="p-4 space-y-3">
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/dashboard')}
+          >
+            <Home className="h-4 w-4 mr-3" />
+            Dashboard
+          </Button>
 
-            <button
-              onClick={() => handleNavigate('/')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Home className="h-5 w-5 mr-3" />
-              {t('Home')}
-            </button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/')}
+          >
+            <Home className="h-4 w-4 mr-3" />
+            Home
+          </Button>
 
-            <button
-              onClick={() => handleNavigate('/artists')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Scissors className="h-5 w-5 mr-3" />
-              {t('Artists')}
-            </button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/artists')}
+          >
+            <User className="h-4 w-4 mr-3" />
+            Artists
+          </Button>
 
-            <button
-              onClick={() => handleNavigate('/salons')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Store className="h-5 w-5 mr-3" />
-              {t('Salons')}
-            </button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/salons')}
+          >
+            <Search className="h-4 w-4 mr-3" />
+            Salons
+          </Button>
 
-            <button
-              onClick={() => handleNavigate('/jobs')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Briefcase className="h-5 w-5 mr-3" />
-              {t('Jobs')}
-            </button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/jobs')}
+          >
+            <Briefcase className="h-4 w-4 mr-3" />
+            Jobs
+          </Button>
 
-            <button
-              onClick={() => handleNavigate('/community')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Users className="h-5 w-5 mr-3" />
-              {t('Community')}
-            </button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/messages')}
+          >
+            <MessageCircle className="h-4 w-4 mr-3" />
+            Messages
+          </Button>
 
-            <button
-              onClick={() => handleNavigate('/about')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Info className="h-5 w-5 mr-3" />
-              {t('About')}
-            </button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/about')}
+          >
+            <Info className="h-4 w-4 mr-3" />
+            About
+          </Button>
 
-            <button
-              onClick={() => handleNavigate('/contact')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Mail className="h-5 w-5 mr-3" />
-              {t('Contact')}
-            </button>
-          </div>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNavigation('/contact')}
+          >
+            <Phone className="h-4 w-4 mr-3" />
+            Contact
+          </Button>
+        </div>
 
-          <Separator className="my-6" />
+        {/* Language Toggle */}
+        <div className="px-4 py-3 border-t border-gray-100">
+          <LanguageToggle />
+        </div>
 
-          {/* Settings & Actions */}
-          <div className="space-y-2">
-            <button
-              onClick={toggleLanguage}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Globe className="h-5 w-5 mr-3" />
-              {currentLanguage === 'en' ? 'Tiếng Việt' : 'English'}
-            </button>
-
-            <button
-              onClick={() => handleNavigate('/settings')}
-              className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg"
-            >
-              <Settings className="h-5 w-5 mr-3" />
-              {t('Settings')}
-            </button>
-
-            <button
-              onClick={handleSignOut}
-              className="w-full flex items-center p-3 text-left hover:bg-red-50 text-red-600 rounded-lg"
-            >
-              <LogOut className="h-5 w-5 mr-3" />
-              {t('Sign Out')}
-            </button>
-          </div>
-
-          {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-500 text-center">
-              {t('Inspired by Sunshine')} ☀️
-            </p>
-          </div>
+        {/* Sign Out */}
+        <div className="px-4 py-3 border-t border-gray-100">
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            onClick={handleSignOut}
+          >
+            <LogOut className="h-4 w-4 mr-3" />
+            Sign Out
+          </Button>
         </div>
       </div>
     </div>
