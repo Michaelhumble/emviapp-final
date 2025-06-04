@@ -1,33 +1,32 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, UserRole } from "../types";
+import { UserRole } from "../types";
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
 
 /**
- * Fetch user profile from the database
+ * Get user profile data from auth user metadata
  */
-export const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
-  try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    if (data) {
-      // Cast data to UserProfile with type assertion
-      return data as unknown as UserProfile;
-    }
-    return null;
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
-    return null;
-  }
+export const getUserProfileFromMetadata = (user: User | null) => {
+  if (!user) return null;
+  
+  return {
+    id: user.id,
+    email: user.email || '',
+    full_name: user.user_metadata?.full_name || '',
+    role: user.user_metadata?.role || user.user_metadata?.user_type || 'customer',
+    created_at: user.created_at,
+    updated_at: user.updated_at,
+    // Add other fields as needed from metadata
+    phone: user.user_metadata?.phone || null,
+    location: user.user_metadata?.location || null,
+    bio: user.user_metadata?.bio || null,
+    website: user.user_metadata?.website || null,
+    instagram: user.user_metadata?.instagram || null,
+    credits: user.user_metadata?.credits || 0,
+    referral_code: user.user_metadata?.referral_code || null,
+    referred_by: user.user_metadata?.referred_by || null
+  };
 };
 
 /**
@@ -58,11 +57,18 @@ export const signInWithEmailPassword = async (email: string, password: string) =
 /**
  * Sign up with email and password
  */
-export const signUpWithEmailPassword = async (email: string, password: string) => {
+export const signUpWithEmailPassword = async (
+  email: string, 
+  password: string, 
+  userData: { role: UserRole; full_name?: string; [key: string]: any }
+) => {
   try {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: userData
+      }
     });
 
     if (error) {

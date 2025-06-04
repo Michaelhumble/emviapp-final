@@ -45,7 +45,7 @@ export const useRoleSignUp = () => {
     console.log("Starting sign-up process...");
 
     try {
-      // Create the auth user - the database trigger will handle the public.users insert
+      // Create the auth user with metadata
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -53,6 +53,7 @@ export const useRoleSignUp = () => {
           data: {
             role: selectedRole,
             user_type: selectedRole,
+            full_name: '',
             ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
         },
@@ -73,6 +74,7 @@ export const useRoleSignUp = () => {
       }
 
       console.log("User created successfully:", data.user.id);
+      console.log("User metadata:", data.user.user_metadata);
 
       // Process referral if provided
       if (referrer && data.user) {
