@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface SignInFormProps {
@@ -17,6 +18,7 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
   
@@ -36,6 +38,33 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
       // Error handling is done in the signIn method
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Please enter your email address first");
+      return;
+    }
+
+    setResetLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        console.error("Password reset error:", error);
+        toast.error(error.message || "Failed to send reset email");
+      } else {
+        toast.success("Password reset email sent! Check your inbox.");
+      }
+    } catch (error) {
+      console.error("Password reset error:", error);
+      toast.error("Failed to send reset email");
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -75,6 +104,16 @@ const SignInForm = ({ redirectUrl }: SignInFormProps) => {
               className="py-3 px-4"
               placeholder="••••••••"
             />
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={resetLoading}
+                className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition-colors disabled:opacity-50"
+              >
+                {resetLoading ? "Sending..." : "Forgot your password?"}
+              </button>
+            </div>
           </div>
         </CardContent>
 
