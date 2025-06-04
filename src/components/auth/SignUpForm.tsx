@@ -1,127 +1,42 @@
 
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import RoleSelectionCards from "./RoleSelectionCards";
-import { UserRole } from "@/context/auth/types";
-import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { useRoleSignUp } from "@/hooks/useRoleSignUp";
+import RoleSelectionCards from "./RoleSelectionCards";
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
 }
 
 const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !password || !fullName || !selectedRole) {
-      setError("Please fill in all required fields");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      console.log("Attempting sign up with:", {
-        email,
-        fullName,
-        role: selectedRole,
-        metadata: {
-          full_name: fullName,
-          role: selectedRole
-        }
-      });
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            role: selectedRole
-          },
-          emailRedirectTo: `${window.location.origin}${redirectUrl || '/'}`
-        }
-      });
-
-      if (error) {
-        console.error("Sign up error:", error);
-        
-        // Handle specific error messages
-        if (error.message.includes("User already registered")) {
-          setError("An account with this email already exists. Please sign in instead.");
-        } else if (error.message.includes("Password")) {
-          setError("Password is too weak. Please use at least 6 characters.");
-        } else if (error.message.includes("Email")) {
-          setError("Please enter a valid email address.");
-        } else {
-          setError(error.message || "Failed to create account. Please try again.");
-        }
-        return;
-      }
-
-      if (data.user) {
-        console.log("User created successfully:", data.user);
-        
-        if (data.user.email_confirmed_at) {
-          // Email is confirmed, redirect immediately
-          setSuccess("Account created successfully! Redirecting...");
-          setTimeout(() => {
-            navigate(redirectUrl || "/");
-          }, 1500);
-        } else {
-          // Email confirmation required
-          setSuccess("Account created! Please check your email to confirm your account before signing in.");
-        }
-      }
-
-    } catch (error: any) {
-      console.error("Unexpected error during sign up:", error);
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    fullName,
+    setFullName,
+    selectedRole,
+    setSelectedRole,
+    isSubmitting,
+    error,
+    handleSubmit
+  } = useRoleSignUp();
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
+        <CardTitle className="text-2xl text-center">Create an account</CardTitle>
         <CardDescription className="text-center">
-          Join EmviApp and connect with beauty professionals
+          Enter your details below to create your account
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        {success && (
-          <Alert className="mb-4 border-green-200 bg-green-50">
-            <AlertDescription className="text-green-800">{success}</AlertDescription>
-          </Alert>
-        )}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name *</Label>
@@ -132,7 +47,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
-              disabled={loading}
+              disabled={isSubmitting}
             />
           </div>
 
@@ -145,7 +60,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              disabled={loading}
+              disabled={isSubmitting}
             />
           </div>
 
@@ -154,40 +69,61 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              disabled={loading}
+              disabled={isSubmitting}
               minLength={6}
             />
           </div>
 
           <div className="space-y-2">
-            <RoleSelectionCards
-              selectedRole={selectedRole}
-              onChange={setSelectedRole}
+            <Label htmlFor="confirmPassword">Confirm Password *</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              disabled={isSubmitting}
+              minLength={6}
             />
           </div>
+
+          <div className="space-y-2">
+            <Label>Select Your Role *</Label>
+            <RoleSelectionCards
+              selectedRole={selectedRole}
+              onRoleSelect={setSelectedRole}
+            />
+          </div>
+
+          {error && (
+            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
+              {error}
+            </div>
+          )}
 
           <Button 
             type="submit" 
             className="w-full" 
-            disabled={loading}
+            disabled={isSubmitting}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {isSubmitting ? "Creating Account..." : "Create Account"}
           </Button>
-        </form>
 
-        <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link 
-            to={`/sign-in${location.search}`}
-            className="text-primary hover:underline"
-          >
-            Sign in
-          </Link>
-        </div>
+          <div className="text-center text-sm">
+            <span className="text-muted-foreground">Already have an account? </span>
+            <Link 
+              to={redirectUrl ? `/sign-in?redirect=${encodeURIComponent(redirectUrl)}` : "/sign-in"} 
+              className="text-primary hover:underline"
+            >
+              Sign in
+            </Link>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

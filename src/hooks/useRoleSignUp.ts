@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -9,6 +10,7 @@ export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,21 +41,32 @@ export const useRoleSignUp = () => {
       toast.error("Password must be at least 6 characters");
       return;
     }
+
+    if (!fullName.trim()) {
+      setError("Full name is required");
+      toast.error("Full name is required");
+      return;
+    }
     
     setIsSubmitting(true);
 
     try {
+      console.log("Attempting sign up with:", { email, fullName, selectedRole });
+      
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
+            full_name: fullName.trim(),
             role: selectedRole,
             user_type: selectedRole,
             ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
         },
       });
+      
+      console.log("Sign up response:", { data, error: signUpError });
       
       if (signUpError) {
         setError(signUpError.message);
@@ -66,6 +79,9 @@ export const useRoleSignUp = () => {
         throw new Error("User creation failed");
       }
 
+      console.log("User created successfully:", data.user.id);
+
+      // Try to update user role in the users table as backup
       const { error: updateError } = await supabase
         .from('users')
         .update({ role: selectedRole })
@@ -104,9 +120,9 @@ export const useRoleSignUp = () => {
       }, 1500);
       
     } catch (err: any) {
+      console.error("Sign up error:", err);
       setError(err.message || "An unexpected error occurred");
       toast.error(err.message || "Failed to sign up. Please try again.");
-      console.error("Sign up error:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -119,6 +135,8 @@ export const useRoleSignUp = () => {
     setPassword,
     confirmPassword,
     setConfirmPassword,
+    fullName,
+    setFullName,
     selectedRole,
     setSelectedRole,
     isSubmitting,
