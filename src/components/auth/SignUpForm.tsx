@@ -26,6 +26,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validation
     if (!fullName.trim()) {
       toast.error("Please enter your full name");
       return;
@@ -42,9 +43,14 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
     }
 
     setLoading(true);
-    console.log('Starting sign-up process...', { email, role: selectedRole, fullName });
+    console.log('Starting sign-up process...', { 
+      email: email.trim(), 
+      role: selectedRole, 
+      fullName: fullName.trim() 
+    });
 
     try {
+      // Sign up with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -61,17 +67,38 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
 
       if (error) {
         console.error('Sign-up error:', error);
-        toast.error(error.message || "Failed to create account");
+        
+        // Handle specific error cases
+        if (error.message.includes('User already registered')) {
+          toast.error("An account with this email already exists. Please sign in instead.");
+        } else if (error.message.includes('Invalid email')) {
+          toast.error("Please enter a valid email address.");
+        } else if (error.message.includes('Password')) {
+          toast.error("Password must be at least 6 characters long.");
+        } else if (error.message.includes('Database error')) {
+          toast.error("There was a problem creating your account. Please try again.");
+          console.error('Database error details:', error);
+        } else {
+          toast.error(error.message || "Failed to create account. Please try again.");
+        }
         return;
       }
 
       if (data.user) {
         console.log('User created successfully:', data.user);
-        toast.success("Account created successfully! Please check your email to verify your account.");
         
-        // Navigate to sign-in with a success message
+        // Check if email confirmation is required
+        if (!data.session) {
+          toast.success("Account created! Please check your email to verify your account before signing in.");
+        } else {
+          toast.success("Account created successfully! Redirecting to dashboard...");
+        }
+        
+        // Navigate to sign-in with success message
         const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
         navigate(`/sign-in?redirect=${encodeURIComponent(decodedRedirect)}&message=account-created`);
+      } else {
+        toast.error("Failed to create account. Please try again.");
       }
     } catch (error: any) {
       console.error('Unexpected sign-up error:', error);
@@ -92,7 +119,9 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">Full Name</Label>
+            <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">
+              Full Name *
+            </Label>
             <Input
               id="fullName"
               type="text"
@@ -106,7 +135,9 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-600">
+              Email *
+            </Label>
             <Input
               id="email"
               type="email"
@@ -120,7 +151,9 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-600">
+              Password *
+            </Label>
             <Input
               id="password"
               type="password"
@@ -132,6 +165,7 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               placeholder="••••••••"
               minLength={6}
             />
+            <p className="text-xs text-gray-500">Minimum 6 characters</p>
           </div>
 
           <RoleSelectionCards 
@@ -158,7 +192,10 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
 
           <div className="text-sm text-center text-gray-500">
             Already have an account?{" "}
-            <Link to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link 
+              to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} 
+              className="text-indigo-600 hover:text-indigo-800 font-medium"
+            >
               Sign in
             </Link>
           </div>

@@ -1,14 +1,13 @@
 
 import SignInForm from "@/components/auth/SignInForm";
-import { Card } from "@/components/ui/card";
 import { useLocation } from "react-router-dom";
 import Logo from "@/components/ui/Logo";
 
 const SignIn = () => {
   const location = useLocation();
-  // Pass redirect URL to SignInForm
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get('redirect');
+  const message = queryParams.get('message');
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
@@ -16,7 +15,7 @@ const SignIn = () => {
         <div className="flex justify-center mb-6">
           <Logo size="large" showText={true} />
         </div>
-        <SignInForm redirectUrl={redirectUrl} />
+        <SignInForm redirectUrl={redirectUrl} message={message} />
       </div>
     </div>
   );
