@@ -6,11 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import RoleSelectionList from "@/components/auth/roles/RoleSelectionList";
 import { UserRole } from "@/context/auth/types";
-import RoleSelectionCards from "./RoleSelectionCards";
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
@@ -22,7 +21,6 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
-  const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -31,62 +29,80 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    
+
+    console.log("Starting sign-up process...");
+
+    // Validation
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords don't match");
+      toast.error("Passwords don't match");
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
+      setLoading(false);
+      return;
+    }
+
+    if (!fullName.trim()) {
+      setError("Full name is required");
+      toast.error("Full name is required");
       setLoading(false);
       return;
     }
 
     try {
-      console.log("Attempting to sign up with:", { email, role: selectedRole, fullName });
-      
-      // Use Supabase auth directly for better debugging
+      console.log("Calling supabase.auth.signUp with:", {
+        email,
+        role: selectedRole,
+        full_name: fullName
+      });
+
+      // Use Supabase Auth directly with proper user metadata
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: fullName,
             role: selectedRole,
-            user_type: selectedRole, // For backward compatibility
-            ...(referralCode.trim() ? { referred_by_referral_code: referralCode.trim() } : {})
-          },
-        },
+            user_type: selectedRole // Fallback for the trigger
+          }
+        }
       });
 
-      console.log("Supabase signUp response:", { data, error: signUpError });
+      console.log("Sign-up response:", { data, error: signUpError });
 
       if (signUpError) {
-        console.error("Sign up error:", signUpError);
+        console.error("Sign-up error:", signUpError);
         setError(signUpError.message);
         toast.error(signUpError.message);
         return;
       }
 
-      if (!data.user) {
-        setError("Failed to create user account");
-        toast.error("Failed to create user account");
-        return;
+      if (data?.user) {
+        console.log("User created successfully:", data.user.id);
+        toast.success("Account created successfully! Please check your email to verify your account.");
+        
+        // Store role in localStorage for immediate access
+        localStorage.setItem('emviapp_user_role', selectedRole);
+        
+        // Navigate after successful signup
+        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+        navigate(decodedRedirect);
+      } else {
+        console.warn("No user returned from sign-up");
+        setError("Account creation failed. Please try again.");
+        toast.error("Account creation failed. Please try again.");
       }
-
-      console.log("User created successfully:", data.user);
-      toast.success("Account created successfully! Please check your email for verification.");
-      
-      // Redirect after successful signup
-      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-      navigate(decodedRedirect);
-
     } catch (err: any) {
-      console.error("Unexpected sign up error:", err);
-      setError(err.message || "An unexpected error occurred during sign up");
-      toast.error(err.message || "Failed to create account");
+      console.error("Unexpected error during sign-up:", err);
+      setError(err.message || "An unexpected error occurred");
+      toast.error(err.message || "Failed to create account. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -96,18 +112,12 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
     <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
       <CardHeader className="space-y-1 pb-6">
         <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
-          Create Your Account
+          Join EmviApp
         </CardTitle>
       </CardHeader>
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">Full Name</Label>
             <Input
@@ -168,24 +178,17 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
 
           <div className="space-y-3">
             <Label className="text-sm font-medium text-gray-600">I am a...</Label>
-            <RoleSelectionCards 
-              selectedRole={selectedRole} 
-              onChange={setSelectedRole}
+            <RoleSelectionList
+              selectedRole={selectedRole}
+              onRoleSelect={setSelectedRole}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="referralCode" className="text-sm font-medium text-gray-600">Referral Code (Optional)</Label>
-            <Input
-              id="referralCode"
-              type="text"
-              value={referralCode}
-              onChange={(e) => setReferralCode(e.target.value)}
-              disabled={loading}
-              className="py-3 px-4"
-              placeholder="Enter referral code"
-            />
-          </div>
+          {error && (
+            <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
+              {error}
+            </div>
+          )}
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
