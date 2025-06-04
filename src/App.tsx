@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -28,7 +27,6 @@ import PostCanceled from "@/pages/post-canceled";
 import PostJobBillion from "@/pages/PostJobBillion";
 import PostJobExperimental from "@/pages/PostJobExperimental";
 import SignIn from "@/pages/auth/SignIn";
-import SignUp from "@/pages/auth/SignUp";
 import NewSignUp from "@/pages/auth/NewSignUp";
 import EnhancedPostJob from "@/pages/enhanced-post-job";
 import SellSalonPage from "@/pages/sell-salon";
@@ -57,7 +55,7 @@ function App() {
                 <RouteLogger />
                 <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                   <Routes>
-                    {/* Auth routes */}
+                    {/* Auth routes - USE NEW SIGN UP */}
                     <Route path="/login" element={<SignIn />} />
                     <Route path="/sign-in" element={<SignIn />} />
                     <Route path="/sign-up" element={<NewSignUp />} />
@@ -93,6 +91,7 @@ function App() {
                     <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
                     <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
                     
+                    {/* ... keep existing code (other routes) the same */}
                     {routes.map((route, index) => (
                       (route.path !== "/salons" && route.path !== "/jobs" && route.path !== "/about" && 
                        route.path !== "/contact" && route.path !== "/terms" && route.path !== "/refund" &&

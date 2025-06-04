@@ -1,194 +1,140 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import Logo from "@/components/ui/Logo";
-import RoleSelectionCards from "@/components/auth/RoleSelectionCards";
-import { UserRole } from "@/context/auth/types";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import Logo from '@/components/ui/Logo';
 
 const NewSignUp = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('customer');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const redirectUrl = queryParams.get('redirect');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
-    console.log("=== SIGN UP ATTEMPT STARTED ===");
-    console.log("Full Name:", fullName);
-    console.log("Email:", email);
-    console.log("Selected Role:", selectedRole);
-    
-    // Validation
-    if (!fullName.trim()) {
-      const errorMsg = "Full name is required";
-      setError(errorMsg);
-      toast.error(errorMsg);
-      console.error("Validation failed:", errorMsg);
-      return;
-    }
-
-    if (!email.trim()) {
-      const errorMsg = "Email is required";
-      setError(errorMsg);
-      toast.error(errorMsg);
-      console.error("Validation failed:", errorMsg);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      const errorMsg = "Passwords don't match";
-      setError(errorMsg);
-      toast.error(errorMsg);
-      console.error("Validation failed:", errorMsg);
-      return;
-    }
-
-    if (password.length < 6) {
-      const errorMsg = "Password must be at least 6 characters";
-      setError(errorMsg);
-      toast.error(errorMsg);
-      console.error("Validation failed:", errorMsg);
-      return;
-    }
-    
     setIsSubmitting(true);
 
-    try {
-      // Prepare the sign-up payload
-      const signUpPayload = {
-        email: email.trim(),
-        password: password,
-        options: {
-          data: {
-            full_name: fullName.trim(),
-            role: selectedRole
-          }
+    // Validation
+    if (!fullName.trim()) {
+      setError('Full name is required');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!email.trim()) {
+      setError('Email is required');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setIsSubmitting(false);
+      return;
+    }
+
+    console.log('=== SIGN UP ATTEMPT STARTED ===');
+    console.log('Full Name:', fullName);
+    console.log('Email:', email);
+    console.log('Selected Role:', role);
+
+    const signUpPayload = {
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: fullName.trim(),
+          role: role
         }
-      };
-      
-      console.log("=== SUPABASE AUTH SIGNUP PAYLOAD ===");
-      console.log("Email:", signUpPayload.email);
-      console.log("Metadata:", signUpPayload.options.data);
-      
+      }
+    };
+
+    console.log('=== SUPABASE AUTH SIGNUP PAYLOAD ===');
+    console.log('Email:', signUpPayload.email);
+    console.log('Metadata:', signUpPayload.options.data);
+
+    try {
       const { data, error: signUpError } = await supabase.auth.signUp(signUpPayload);
       
-      console.log("=== SUPABASE AUTH SIGNUP RESPONSE ===");
-      console.log("Data:", data);
-      console.log("Error:", signUpError);
-      
+      console.log('=== SUPABASE AUTH SIGNUP RESPONSE ===');
+      console.log('Data:', data);
+      console.log('Error:', signUpError);
+
       if (signUpError) {
-        console.error("Supabase Auth Error Details:", {
+        console.error('Supabase Auth Error Details:', {
           message: signUpError.message,
           status: signUpError.status,
           name: signUpError.name,
-          cause: signUpError.cause
+          cause: signUpError.cause || 'undefined'
         });
         
-        let userFriendlyError = "Sign up failed";
-        
-        if (signUpError.message.includes("already")) {
-          userFriendlyError = "This email is already registered. Please use a different email or try signing in.";
-        } else if (signUpError.message.includes("password")) {
-          userFriendlyError = "Password is too weak. Please use a stronger password.";
-        } else if (signUpError.message.includes("email")) {
-          userFriendlyError = "Invalid email format. Please check your email address.";
-        } else if (signUpError.message.includes("Database error updating user")) {
-          userFriendlyError = "Account creation failed due to a database error. Please try again or contact support.";
-        } else {
-          userFriendlyError = `Sign up failed: ${signUpError.message}`;
+        // Show user-friendly error messages
+        let userMessage = signUpError.message;
+        if (signUpError.message.includes('already registered')) {
+          userMessage = 'This email is already registered. Please sign in instead.';
+        } else if (signUpError.message.includes('Database error')) {
+          userMessage = 'There was a problem creating your account. Please try again.';
+        } else if (signUpError.message.includes('Invalid email')) {
+          userMessage = 'Please enter a valid email address.';
+        } else if (signUpError.message.includes('Password')) {
+          userMessage = 'Password must be at least 6 characters long.';
         }
         
-        setError(userFriendlyError);
-        toast.error(userFriendlyError);
-        setIsSubmitting(false);
-        return;
-      }
-      
-      if (!data.user) {
-        const errorMsg = "User creation failed - no user returned";
-        console.error(errorMsg);
-        setError(errorMsg);
-        toast.error(errorMsg);
+        setError(userMessage);
+        toast.error(userMessage);
         setIsSubmitting(false);
         return;
       }
 
-      console.log("=== USER CREATED SUCCESSFULLY ===");
-      console.log("User ID:", data.user.id);
-      console.log("User Email:", data.user.email);
-      console.log("User Metadata:", data.user.user_metadata);
-      
-      // Check if user was created in public.users table
-      try {
-        console.log("=== CHECKING PUBLIC.USERS TABLE ===");
-        const { data: userProfile, error: profileError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
-          
-        console.log("Profile data:", userProfile);
-        console.log("Profile error:", profileError);
+      if (data?.user) {
+        console.log('=== SIGN UP SUCCESS ===');
+        console.log('User created:', data.user.id);
+        console.log('User metadata:', data.user.user_metadata);
         
-        if (profileError) {
-          console.error("Profile lookup error:", profileError);
-          toast.error("Account created but profile setup failed. Please contact support.");
-        } else if (userProfile) {
-          console.log("✅ User profile found in public.users:", userProfile);
-        } else {
-          console.warn("⚠️ User profile not found in public.users table");
-        }
-      } catch (profileCheckError) {
-        console.error("Error checking user profile:", profileCheckError);
+        toast.success('Account created successfully! Redirecting...');
+        
+        // Redirect based on role
+        setTimeout(() => {
+          switch (role) {
+            case 'artist':
+            case 'nail technician/artist':
+              navigate('/dashboard/artist');
+              break;
+            case 'salon':
+            case 'owner':
+              navigate('/dashboard/salon');
+              break;
+            case 'freelancer':
+              navigate('/dashboard/freelancer');
+              break;
+            case 'customer':
+            default:
+              navigate('/dashboard/customer');
+              break;
+          }
+        }, 1500);
+      } else {
+        console.error('No user returned from signup');
+        setError('Account creation failed. Please try again.');
+        setIsSubmitting(false);
       }
-
-      toast.success("Account created successfully! Redirecting...");
-      
-      // Redirect based on role
-      setTimeout(() => {
-        switch (selectedRole) {
-          case 'artist':
-          case 'nail technician/artist':
-            navigate('/dashboard/artist');
-            break;
-          case 'salon':
-          case 'owner':
-            navigate('/dashboard/salon');
-            break;
-          case 'customer':
-            navigate('/dashboard/customer');
-            break;
-          case 'freelancer':
-            navigate('/dashboard/freelancer');
-            break;
-          default:
-            navigate(redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard');
-        }
-      }, 1500);
       
     } catch (err: any) {
-      console.error("=== UNEXPECTED ERROR ===", err);
-      const errorMsg = err.message || "An unexpected error occurred";
-      setError(errorMsg);
-      toast.error(`Unexpected error: ${errorMsg}`);
-    } finally {
+      console.error('=== UNEXPECTED ERROR ===');
+      console.error('Error object:', err);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+      
+      setError('An unexpected error occurred. Please try again.');
+      toast.error('Sign up failed. Please try again.');
       setIsSubmitting(false);
     }
   };
@@ -205,17 +151,20 @@ const NewSignUp = () => {
             <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
               Create an Account
             </CardTitle>
-            {error && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-red-700 text-sm">{error}</p>
-              </div>
-            )}
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-5">
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">Full Name</Label>
+                <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">
+                  Full Name
+                </Label>
                 <Input
                   id="fullName"
                   type="text"
@@ -227,9 +176,11 @@ const NewSignUp = () => {
                   placeholder="Your full name"
                 />
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
+                <Label htmlFor="email" className="text-sm font-medium text-gray-600">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -243,7 +194,9 @@ const NewSignUp = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium text-gray-600">
+                  Password
+                </Label>
                 <Input
                   id="password"
                   type="password"
@@ -253,30 +206,26 @@ const NewSignUp = () => {
                   disabled={isSubmitting}
                   className="py-3 px-4"
                   placeholder="••••••••"
+                  minLength={6}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-600">
-                  Confirm Password
+                <Label htmlFor="role" className="text-sm font-medium text-gray-600">
+                  I am a
                 </Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                <select
+                  id="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
                   disabled={isSubmitting}
-                  className="py-3 px-4"
-                  placeholder="••••••••"
-                />
-              </div>
-
-              <div className="pt-4">
-                <RoleSelectionCards
-                  selectedRole={selectedRole}
-                  onChange={setSelectedRole}
-                />
+                  className="w-full py-3 px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                >
+                  <option value="customer">Customer</option>
+                  <option value="artist">Nail Artist</option>
+                  <option value="salon">Salon Owner</option>
+                  <option value="freelancer">Freelancer</option>
+                </select>
               </div>
             </CardContent>
 
@@ -292,15 +241,15 @@ const NewSignUp = () => {
                     Creating Account...
                   </>
                 ) : (
-                  "Sign Up"
+                  "Create Account"
                 )}
               </Button>
 
               <div className="text-sm text-center text-gray-500">
                 Already have an account?{" "}
-                <Link to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} className="text-indigo-600 hover:text-indigo-800 font-medium">
+                <a href="/sign-in" className="text-indigo-600 hover:text-indigo-800 font-medium">
                   Sign in
-                </Link>
+                </a>
               </div>
             </CardFooter>
           </form>
