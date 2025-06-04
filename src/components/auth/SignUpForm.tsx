@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
+import { UserRole } from "@/context/auth/types";
 import RoleSelectionCards from "./RoleSelectionCards";
+import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
@@ -18,53 +20,30 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [referralCode, setReferralCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const { signUp } = useAuth();
   const navigate = useNavigate();
+  
+  const { signUp, loading, error } = useRoleBasedSignUp();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    if (!selectedRole) {
-      setError("Please select a role.");
-      return;
-    }
-
+    
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
       return;
     }
 
-    setLoading(true);
+    const result = await signUp({
+      email,
+      password,
+      fullName,
+      role: selectedRole,
+      referralCode: referralCode.trim() || undefined
+    });
 
-    try {
-      const userData = {
-        full_name: fullName,
-        phone: phone,
-        location: location,
-        role: selectedRole,
-        referral_code: referralCode,
-      };
-
-      const result = await signUp(email, password, userData);
-
-      if (result && result.success) {
-        // Decode the redirect URL if it exists
-        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-        navigate(decodedRedirect);
-      } else if (result && result.error) {
-        setError(result.error.message || "Sign up failed");
-      }
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
-    } finally {
-      setLoading(false);
+    if (result) {
+      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+      navigate(decodedRedirect);
     }
   };
 
@@ -78,17 +57,12 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
-          {/* Role Selection */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium text-gray-600">Choose Your Role</Label>
-            <RoleSelectionCards
-              selectedRole={selectedRole}
-              onChange={setSelectedRole}
-              disabled={loading}
-            />
-          </div>
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-          {/* Form Fields */}
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">Full Name</Label>
             <Input
@@ -118,32 +92,6 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-sm font-medium text-gray-600">Phone Number</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              disabled={loading}
-              className="py-3 px-4"
-              placeholder="(555) 123-4567"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location" className="text-sm font-medium text-gray-600">Location</Label>
-            <Input
-              id="location"
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              disabled={loading}
-              className="py-3 px-4"
-              placeholder="City, State"
-            />
-          </div>
-          
-          <div className="space-y-2">
             <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
             <Input
               id="password"
@@ -169,12 +117,19 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               className="py-3 px-4"
               placeholder="••••••••"
             />
+            {password !== confirmPassword && confirmPassword && (
+              <p className="text-sm text-red-600">Passwords do not match</p>
+            )}
           </div>
 
-          {/* Referral Code */}
+          <RoleSelectionCards 
+            selectedRole={selectedRole} 
+            onChange={setSelectedRole}
+          />
+
           <div className="space-y-2">
             <Label htmlFor="referralCode" className="text-sm font-medium text-gray-600">
-              Referral Code (Optional)
+              Referral Code <span className="text-gray-400">(Optional)</span>
             </Label>
             <Input
               id="referralCode"
@@ -186,20 +141,13 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
               placeholder="Enter referral code"
             />
           </div>
-
-          {/* Error Display */}
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-800 text-sm font-medium">{error}</p>
-            </div>
-          )}
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
           <Button 
             type="submit" 
             className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-            disabled={loading}
+            disabled={loading || password !== confirmPassword}
           >
             {loading ? (
               <>
