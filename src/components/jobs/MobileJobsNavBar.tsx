@@ -6,13 +6,11 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { getLanguagePreference } from "@/utils/languagePreference";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/context/auth";
 
 const MobileJobsNavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { userRole } = useAuth();
   const [language, setLanguage] = useState(getLanguagePreference());
   const isMobile = useIsMobile();
 
@@ -58,9 +56,9 @@ const MobileJobsNavBar = () => {
       isCenter: false
     },
     { 
-      path: userRole === 'customer' ? "/pages/customer/profile" : "/contact", 
+      path: "/contact", 
       icon: User, 
-      label: userRole === 'customer' ? t("Profile") : t("Contact"),
+      label: t("Contact"),
       isCenter: false
     }
   ];
