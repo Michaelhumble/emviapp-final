@@ -15,9 +15,9 @@ export const SalonProfileCompletionCard = () => {
   
   // Generate color based on completion percentage
   const getProgressColor = () => {
-    if (completionPercentage >= 80) return "bg-green-500";
-    if (completionPercentage >= 50) return "bg-amber-500";
-    return "bg-rose-500";
+    if (completionPercentage >= 80) return "[&>div]:bg-green-500";
+    if (completionPercentage >= 50) return "[&>div]:bg-amber-500";
+    return "[&>div]:bg-rose-500";
   };
   
   // Generate message based on completion percentage
@@ -86,8 +86,7 @@ export const SalonProfileCompletionCard = () => {
         
         <Progress 
           value={completionPercentage} 
-          className="h-2 mb-3" 
-          indicatorClassName={getProgressColor()}
+          className={`h-2 mb-3 ${getProgressColor()}`}
         />
         
         <p className="text-sm text-muted-foreground mb-4">

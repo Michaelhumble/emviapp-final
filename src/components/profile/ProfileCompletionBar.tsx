@@ -44,8 +44,7 @@ const ProfileCompletionBar = () => {
         
         <Progress 
           value={completionPercentage} 
-          className="h-2 mb-3" 
-          indicatorClassName={getProgressColor()}
+          className={`h-2 mb-3 ${getProgressColor()}`}
         />
         
         <p className="text-sm text-muted-foreground text-center">

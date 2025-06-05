@@ -49,9 +49,9 @@ const ProfileProgressTracker = () => {
   };
   
   const getProgressColor = () => {
-    if (completionPercentage >= 80) return "bg-green-500";
-    if (completionPercentage >= 50) return "bg-amber-500";
-    return "bg-rose-500";
+    if (completionPercentage >= 80) return "[&>div]:bg-green-500";
+    if (completionPercentage >= 50) return "[&>div]:bg-amber-500";
+    return "[&>div]:bg-rose-500";
   };
   
   return (
@@ -67,8 +67,7 @@ const ProfileProgressTracker = () => {
         
         <Progress 
           value={completionPercentage} 
-          className="h-2 mb-4" 
-          indicatorClassName={getProgressColor()}
+          className={`h-2 mb-4 ${getProgressColor()}`}
         />
         
         <div className="space-y-2">

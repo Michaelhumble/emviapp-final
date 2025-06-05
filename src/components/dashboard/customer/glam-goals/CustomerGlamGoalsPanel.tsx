@@ -50,6 +50,13 @@ const getStatusText = (progress: number) => {
   return "Completed";
 };
 
+const getProgressBarColor = (goal: typeof glamGoals[0]) => {
+  if (goal.progress === 100) return "[&>div]:bg-green-400";
+  if (goal.id === "invite") return "[&>div]:bg-pink-400";
+  if (goal.id === "bookings") return "[&>div]:bg-yellow-400";
+  return "[&>div]:bg-violet-400";
+};
+
 // Card border and shadow, animated fill, icon, check on completed, beautiful gradients!
 const CustomerGlamGoalsPanel: React.FC = () => (
   <section className="mb-8 md:mb-12">
@@ -80,16 +87,7 @@ const CustomerGlamGoalsPanel: React.FC = () => (
             <div className="flex-1">
               <Progress
                 value={goal.progress}
-                className={`h-2 rounded-full transition-all`}
-                indicatorClassName={
-                  goal.progress === 100
-                    ? "bg-green-400"
-                    : goal.id === "invite"
-                    ? "bg-pink-400"
-                    : goal.id === "bookings"
-                    ? "bg-yellow-400"
-                    : "bg-violet-400"
-                }
+                className={`h-2 rounded-full transition-all ${getProgressBarColor(goal)}`}
               />
               <div className="flex justify-between items-center mt-2 text-xs sm:text-sm">
                 <span className={goal.progress === 100 ? "text-green-600 font-semibold" : "text-gray-700"}>

@@ -42,8 +42,7 @@ const WeeklyProgressTracker: React.FC = () => {
         <div className={cn("w-full max-w-[280px] xs:max-w-xs sm:max-w-sm mb-1", WEEKLY_PROGRESS_GRADIENT, "rounded-full p-[2px]")}>
           <Progress
             value={progressPercent}
-            indicatorClassName="!bg-gradient-to-r from-[#9b87f5] to-[#e7e7fa]"
-            className="h-2 bg-transparent"
+            className="h-2 bg-transparent [&>div]:bg-gradient-to-r [&>div]:from-[#9b87f5] [&>div]:to-[#e7e7fa]"
           />
         </div>
 

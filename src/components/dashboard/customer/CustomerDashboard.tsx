@@ -12,8 +12,14 @@ import RecommendedServicesSection from './services/RecommendedServicesSection';
 const CustomerDashboard = () => {
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 relative overflow-hidden">
+        {/* Luxury Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-br from-indigo-200/20 to-blue-200/20 rounded-full blur-3xl" />
+        </div>
+        
+        <div className="container mx-auto px-4 py-8 max-w-6xl relative z-10">
           <CustomerDashboardHeader />
           
           {/* Hero Referral Section - Most Important */}
