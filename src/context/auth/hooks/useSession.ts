@@ -39,28 +39,22 @@ export function useSession() {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
-        // Check for role in user metadata and store it
-        const userRole = session?.user?.user_metadata?.role;
-        if (userRole) {
-          localStorage.setItem('emviapp_user_role', userRole);
-        }
+        // REFACTOR: Role is now ONLY stored in auth metadata, not localStorage
+        console.log("New user signed up, role stored in auth metadata:", session?.user?.user_metadata?.role);
         
         navigate('/choose-role');
       }
       
-      // If the user signs in, check for role info
+      // REFACTOR: Removed localStorage role storage - auth metadata is single source of truth
       if (event === 'SIGNED_IN' as AuthChangeEvent) {
-        const userRole = session?.user?.user_metadata?.role;
-        if (userRole) {
-          localStorage.setItem('emviapp_user_role', userRole);
-        }
+        console.log("User signed in, role from metadata:", session?.user?.user_metadata?.role);
       }
 
       // If the user signs out, reset all states
       if (event === 'SIGNED_OUT' as AuthChangeEvent) {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
-        localStorage.removeItem('emviapp_user_role');
+        // REFACTOR: No longer clearing role from localStorage - not stored there anymore
       }
       
       setLoading(false);
@@ -71,10 +65,8 @@ export function useSession() {
       setSession(session);
       setUser(session?.user ?? null);
       
-      // Check for role in user metadata
-      if (session?.user?.user_metadata?.role) {
-        localStorage.setItem('emviapp_user_role', session.user.user_metadata.role);
-      }
+      // REFACTOR: No longer storing role in localStorage - auth metadata is authoritative
+      console.log("Existing session role:", session?.user?.user_metadata?.role);
       
       setLoading(false);
     });

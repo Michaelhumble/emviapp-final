@@ -7,7 +7,8 @@ import { getCachedProfile, clearCacheForUser } from "../utils/profileCache";
 import { fetchFreshProfileData } from "../utils/profileFetcher";
 
 /**
- * Optimized hook to handle user profile management with improved loading and caching
+ * REFACTOR: Simplified hook with auth metadata as single source of truth
+ * Removed all localStorage interactions and complex fallback strategies
  */
 export const useUserProfile = (user: User | null, setLoading: (loading: boolean) => void) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -15,7 +16,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
   const [isError, setIsError] = useState<boolean>(false);
   const [lastRefreshTime, setLastRefreshTime] = useState<number>(0);
 
-  // Optimized function to fetch user profile with progressive loading strategy
+  // Optimized function to fetch user profile with auth metadata as primary source
   const getUserProfile = useCallback(async (userId: string) => {
     try {
       setIsError(false);
@@ -33,10 +34,8 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         
         // If not fresh, trigger background refresh but don't block UI
         if (cacheStatus !== 'fresh') {
-          // Don't show loading spinner for background refresh
           console.log(`Cache is ${cacheStatus}, refreshing in background`);
           
-          // Using setTimeout to ensure this runs after current execution
           setTimeout(() => {
             fetchFreshProfileData(userId).then(result => {
               if (result.profile) {
@@ -46,12 +45,10 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
               }
             }).catch(err => {
               console.warn("Background refresh failed:", err);
-              // Don't set error state for background refresh failures
             });
           }, 100);
         }
         
-        // Always mark as not loading when using cache
         setLoading(false);
         return;
       }
@@ -68,46 +65,31 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       } else if (result.role) {
         // We got a role but no profile
         setUserRole(result.role);
-      } else {
-        // Fallback to localStorage for role if available
-        const cachedRole = localStorage.getItem('emviapp_user_role');
-        if (cachedRole) {
-          setUserRole(normalizeRole(cachedRole as UserRole));
-        }
       }
+      // REFACTOR: Removed localStorage fallback - clean error handling
       
     } catch (error) {
       console.error("Error in getUserProfile:", error);
       setIsError(true);
       
-      // Final fallback - check localStorage
-      const cachedRole = localStorage.getItem('emviapp_user_role');
-      if (cachedRole && !userRole) {
-        const normalizedRole = normalizeRole(cachedRole as UserRole);
-        setUserRole(normalizedRole);
-      } else {
-        setUserRole(null);
-      }
-      
+      // REFACTOR: No localStorage fallback - clean error state
+      setUserRole(null);
       setUserProfile(null);
     } finally {
       setLoading(false);
     }
-  }, [setLoading, userRole]);
+  }, [setLoading]);
   
-  // Force refresh user profile with optimized error handling
+  // Force refresh user profile with simplified error handling
   const refreshUserProfile = useCallback(async () => {
     if (user) {
       console.log("Forcing profile refresh");
-      // Clear existing cache to ensure fresh data
       clearCacheForUser(user.id);
       
       setLoading(true);
       try {
-        // Fetch fresh data
         const result = await fetchFreshProfileData(user.id);
         
-        // Update the state with new data
         if (result.profile) {
           setUserProfile(result.profile);
         }
@@ -130,7 +112,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
     }
   }, [user, setLoading]);
 
-  // Optimized effect to fetch profile data when user changes
+  // Simplified effect to fetch profile data when user changes
   useEffect(() => {
     if (user) {
       console.log("User changed or initialized, fetching profile");
@@ -139,7 +121,6 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       const cachedData = getCachedProfile(user.id);
       
       if (cachedData && cachedData.status === 'fresh' && cachedData.profile) {
-        // Use cached data without fetching again
         console.log("Using cached profile data for user change");
         setUserProfile(cachedData.profile);
         setUserRole(cachedData.role);
@@ -147,15 +128,14 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         return;
       }
       
-      // If no fresh data or after a short delay to not block UI rendering
+      // If no fresh data, fetch with minimal delay
       const timer = setTimeout(() => {
         getUserProfile(user.id);
-      }, 10); // Minimal delay to prioritize UI rendering
+      }, 10);
       
       return () => clearTimeout(timer);
     } else {
       console.log("No user, clearing profile data");
-      // Clear user profile and role when logged out
       setUserProfile(null);
       setUserRole(null);
       setLoading(false);
