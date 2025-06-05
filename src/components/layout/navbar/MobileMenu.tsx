@@ -1,294 +1,213 @@
 
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, X, Copy, Star, Users, MapPin, Heart, User, HelpCircle } from "lucide-react";
-import { useAuth } from "@/context/auth";
-import { LanguageToggle } from "./LanguageToggle";
-import { useTranslation } from "@/hooks/useTranslation";
-import { useReferralSystem } from "@/hooks/useReferralSystem";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
+import { Menu, X, User, Search, Heart, HelpCircle, Users, Gift, TrendingUp } from 'lucide-react';
+import { useAuth } from '@/context/auth';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 
-export const MobileMenu = () => {
-  const { user, userProfile, signOut } = useAuth();
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-  const { referralLink, referralStats, copied, copyReferralLink } = useReferralSystem();
+const CustomerFomoInviteBanner = ({
+  referralLink = "https://emvi.app/invite/your-code",
+  credits = 1200,
+  progress = 65,
+}) => {
+  const [copied, setCopied] = React.useState(false);
 
-  const closeMenu = () => setIsOpen(false);
-
-  const handleSignOut = async () => {
-    await signOut();
-    closeMenu();
-    navigate("/");
-  };
-
-  const canPostJobs = user && (userProfile?.role === "salon" || userProfile?.role === "customer");
-  const isCustomer = userProfile?.role === "customer";
-
-  const handleCopyReferralLink = () => {
-    if (referralLink) {
-      navigator.clipboard.writeText(referralLink);
-      toast.success("Referral link copied! Share with friends to earn credits!");
-    }
+  const handleCopy = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
-        <div className="flex flex-col h-full bg-white">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
-            <Button variant="ghost" size="icon" onClick={closeMenu}>
-              <X className="h-5 w-5" />
-            </Button>
+    <div className="rounded-2xl bg-gradient-to-br from-[#9A7B69] to-[#F6F6F7] p-4 mb-4 shadow-xl flex flex-col gap-2">
+      <div className="font-bold text-lg text-[#1A1A1A] mb-1">
+        Invite Friends & Earn Credits
+      </div>
+      <div className="flex items-center bg-white/70 rounded-lg px-2 py-1 text-xs">
+        <span className="truncate">{referralLink}</span>
+        <button
+          onClick={handleCopy}
+          className="ml-2 px-2 py-1 rounded bg-[#9A7B69] text-white font-semibold text-xs hover:bg-[#7c5e48] transition"
+        >
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      </div>
+      <div className="flex items-center justify-between mt-2">
+        <div className="text-indigo-700 font-bold text-sm">
+          Credits: <span className="font-extrabold text-lg">{credits}</span>
+        </div>
+        <div className="text-xs text-gray-500">
+          {progress}% to next reward
+        </div>
+      </div>
+      <div className="w-full h-2 bg-indigo-100 rounded mt-1 mb-1 overflow-hidden">
+        <div
+          className="h-2 rounded bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-500"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
+      <div className="text-xs font-medium text-rose-600 mt-1">
+        Limited-Time DOUBLE Rewards! Invite now before it's gone.
+      </div>
+    </div>
+  );
+};
+
+const MobileMenu = () => {
+  const { isSignedIn, userRole, signOut } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleEditProfile = () => {
+    setIsOpen(false);
+    navigate('/profile/edit');
+  };
+
+  const closeDrawer = () => setIsOpen(false);
+
+  return (
+    <div className="md:hidden">
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerTrigger asChild>
+          <Button variant="ghost" size="sm" className="p-2">
+            <Menu className="h-5 w-5" />
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent className="px-4 pb-6">
+          <div className="flex justify-between items-center py-4">
+            <h2 className="text-lg font-semibold">Menu</h2>
+            <DrawerClose asChild>
+              <Button variant="ghost" size="sm">
+                <X className="h-4 w-4" />
+              </Button>
+            </DrawerClose>
           </div>
 
-          {/* CUSTOMER FOMO FEATURES - Invite Friends & Earn Credits Banner */}
-          {isCustomer && (
-            <div className="p-4 bg-gradient-to-r from-purple-100 to-pink-100 border-b">
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-purple-200 shadow-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <Star className="h-5 w-5 text-purple-600" />
-                  <h3 className="font-semibold text-gray-900">Invite Friends & Earn Credits</h3>
-                </div>
-                <p className="text-sm text-gray-600 mb-3">Share EmviApp and earn rewards for every friend who joins!</p>
-                
-                {/* Referral Link with Copy Button */}
-                <div className="flex items-center gap-2 mb-3">
-                  <input 
-                    value={referralLink || "Loading..."}
-                    readOnly
-                    className="flex-1 text-xs bg-gray-50 border rounded px-2 py-1 text-gray-700"
-                  />
-                  <Button 
-                    size="sm" 
-                    onClick={handleCopyReferralLink}
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-3"
-                  >
-                    <Copy className="h-3 w-3 mr-1" />
-                    {copied ? "Copied!" : "Copy"}
-                  </Button>
-                </div>
+          <div className="space-y-4">
+            {/* Customer FOMO Banner - only show for customers */}
+            {isSignedIn && userRole === 'customer' && (
+              <CustomerFomoInviteBanner />
+            )}
 
-                {/* FOMO Urgency Messaging */}
-                <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-lg p-2 border border-orange-200">
-                  <p className="text-xs font-medium text-orange-800 text-center">
-                    🔥 Limited-Time Reward Boost! Invite now for DOUBLE credits! 🔥
-                  </p>
-                </div>
+            {/* Customer-specific navigation */}
+            {isSignedIn && userRole === 'customer' && (
+              <div className="space-y-3">
+                <h3 className="font-semibold text-gray-800 mb-3">Discover Beauty</h3>
+                
+                <Link 
+                  to="/explore/artists" 
+                  onClick={closeDrawer}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <Search className="h-5 w-5 text-purple-600" />
+                  <span className="font-medium text-gray-800">Browse Artists</span>
+                  <span className="text-xs text-purple-600 ml-auto">Find your perfect match</span>
+                </Link>
+
+                <Link 
+                  to="/explore/salons" 
+                  onClick={closeDrawer}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <TrendingUp className="h-5 w-5 text-indigo-600" />
+                  <span className="font-medium text-gray-800">Browse Salons</span>
+                  <span className="text-xs text-indigo-600 ml-auto">Trusted directory</span>
+                </Link>
+
+                <Link 
+                  to="/favorites" 
+                  onClick={closeDrawer}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <Heart className="h-5 w-5 text-rose-600" />
+                  <span className="font-medium text-gray-800">Favorites</span>
+                  <span className="text-xs text-rose-600 ml-auto">Your saved picks</span>
+                </Link>
+
+                <button
+                  onClick={handleEditProfile}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors w-full text-left"
+                >
+                  <User className="h-5 w-5 text-gray-600" />
+                  <span className="font-medium text-gray-800">Your Profile</span>
+                  <span className="text-xs text-gray-600 ml-auto">Manage settings</span>
+                </button>
+
+                <Link 
+                  to="/support" 
+                  onClick={closeDrawer}
+                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <HelpCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-gray-800">Support & Feedback</span>
+                  <span className="text-xs text-green-600 ml-auto">We're here to help</span>
+                </Link>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* CUSTOMER REWARDS PROGRESS BAR */}
-          {isCustomer && (
-            <div className="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border-b">
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-indigo-200 shadow-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <Users className="h-5 w-5 text-indigo-600" />
-                  <h3 className="font-semibold text-gray-900">Your Rewards</h3>
-                </div>
-                
-                {/* Emotional Motivational Copy */}
-                <p className="text-sm text-gray-600 mb-3">
-                  You're just a few invites away from VIP perks! 🌟
-                </p>
-                
-                {/* Credits Display */}
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-700">Credits Earned</span>
-                  <span className="text-lg font-bold text-indigo-600">{referralStats?.credits || 0}</span>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                  <div 
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min(((referralStats?.completedReferrals || 0) / 5) * 100, 100)}%` }}
-                  ></div>
-                </div>
-                
-                <p className="text-xs text-gray-500 text-center">
-                  {5 - (referralStats?.completedReferrals || 0)} more referrals to unlock VIP status!
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Navigation Links */}
-          <nav className="flex-1 p-4 space-y-2">
-            {/* Customer-Specific Navigation */}
-            {isCustomer ? (
-              <>
-                {/* Browse Artists - Emotional CTA */}
-                <Link
-                  to="/artists"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                >
-                  <Users className="h-5 w-5 text-purple-600 group-hover:text-purple-700" />
-                  <div>
-                    <span className="font-medium text-gray-900">Browse Artists</span>
-                    <p className="text-xs text-gray-500">Discover amazing talent near you</p>
-                  </div>
+            {/* General navigation for other roles */}
+            {(!isSignedIn || userRole !== 'customer') && (
+              <div className="space-y-3">
+                <Link to="/explore" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
+                  Explore
                 </Link>
-
-                {/* Browse Salons - Trusted Directory */}
-                <Link
-                  to="/salons"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                >
-                  <MapPin className="h-5 w-5 text-indigo-600 group-hover:text-indigo-700" />
-                  <div>
-                    <span className="font-medium text-gray-900">Browse Salons</span>
-                    <p className="text-xs text-gray-500">Trusted beauty destinations</p>
-                  </div>
+                <Link to="/jobs" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
+                  Jobs
                 </Link>
-
-                {/* Favorites */}
-                <Link
-                  to="/favorites"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                >
-                  <Heart className="h-5 w-5 text-pink-600 group-hover:text-pink-700" />
-                  <div>
-                    <span className="font-medium text-gray-900">Favorites</span>
-                    <p className="text-xs text-gray-500">Your saved artists & salons</p>
-                  </div>
-                </Link>
-
-                {/* Your Profile */}
-                <Link
-                  to="/dashboard/customer"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                >
-                  <User className="h-5 w-5 text-gray-600 group-hover:text-gray-700" />
-                  <div>
-                    <span className="font-medium text-gray-900">Your Profile</span>
-                    <p className="text-xs text-gray-500">Manage your account & preferences</p>
-                  </div>
-                </Link>
-
-                {/* Support & Feedback */}
-                <Link
-                  to="/support"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                >
-                  <HelpCircle className="h-5 w-5 text-green-600 group-hover:text-green-700" />
-                  <div>
-                    <span className="font-medium text-gray-900">Support & Feedback</span>
-                    <p className="text-xs text-gray-500">We're here to help you</p>
-                  </div>
-                </Link>
-              </>
-            ) : (
-              <>
-                {/* Non-Customer Navigation (Original Links) */}
-                <Link
-                  to="/artists"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <Users className="h-5 w-5 text-gray-600" />
-                  <span className="font-medium text-gray-900">
-                    {t({ english: "Artists", vietnamese: "Nghệ sĩ" })}
-                  </span>
-                </Link>
-
-                <Link
-                  to="/jobs"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <MapPin className="h-5 w-5 text-gray-600" />
-                  <span className="font-medium text-gray-900">
-                    {t({ english: "Jobs", vietnamese: "Việc làm" })}
-                  </span>
-                </Link>
-
-                <Link
-                  to="/salons"
-                  onClick={closeMenu}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <MapPin className="h-5 w-5 text-gray-600" />
-                  <span className="font-medium text-gray-900">
-                    {t({ english: "Salons", vietnamese: "Salon" })}
-                  </span>
-                </Link>
-
-                {/* Posting Links for Non-Customers */}
-                {canPostJobs && !isCustomer && (
+                {isSignedIn && (
                   <>
-                    <Link
-                      to="/post-job"
-                      onClick={closeMenu}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <span className="font-medium text-gray-900">
-                        {t({ english: "Post a Job", vietnamese: "Đăng việc làm" })}
-                      </span>
+                    <Link to="/dashboard" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
+                      Dashboard
                     </Link>
-
-                    <Link
-                      to="/post-salon"
-                      onClick={closeMenu}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <span className="font-medium text-gray-900">
-                        {t({ english: "Post a Salon", vietnamese: "Đăng salon" })}
-                      </span>
+                    <Link to="/profile/edit" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
+                      Edit Profile
                     </Link>
                   </>
                 )}
-              </>
-            )}
-          </nav>
-
-          {/* Footer */}
-          <div className="p-4 border-t space-y-4">
-            <LanguageToggle />
-            
-            {user ? (
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600">
-                  {t({ english: "Signed in as", vietnamese: "Đã đăng nhập với" })} {user.email}
-                </p>
-                <Button onClick={handleSignOut} variant="outline" className="w-full">
-                  {t({ english: "Sign Out", vietnamese: "Đăng xuất" })}
-                </Button>
               </div>
+            )}
+
+            <div className="border-t pt-4 mt-6">
+              <LanguageToggle minimal />
+            </div>
+
+            {isSignedIn ? (
+              <Button 
+                onClick={handleSignOut} 
+                variant="outline" 
+                className="w-full mt-4"
+              >
+                Sign Out
+              </Button>
             ) : (
               <div className="space-y-2">
-                <Link to="/signin" onClick={closeMenu}>
+                <Link to="/auth/signin" onClick={closeDrawer}>
                   <Button variant="outline" className="w-full">
-                    {t({ english: "Sign In", vietnamese: "Đăng nhập" })}
+                    Sign In
                   </Button>
                 </Link>
-                <Link to="/signup" onClick={closeMenu}>
+                <Link to="/auth/signup" onClick={closeDrawer}>
                   <Button className="w-full">
-                    {t({ english: "Sign Up", vietnamese: "Đăng ký" })}
+                    Sign Up
                   </Button>
                 </Link>
               </div>
             )}
           </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </DrawerContent>
+      </Drawer>
+    </div>
   );
 };
 
