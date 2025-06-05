@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Briefcase, BadgeDollarSign, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -112,6 +113,7 @@ const SalonQuickStats = () => {
         <SalonProfileCompletionCard 
           completionPercentage={stats.profileCompletion.percentage}
           incompleteFields={stats.profileCompletion.incompleteFields}
+          profileFields={[]}
           loading={loading}
         />
       )}
