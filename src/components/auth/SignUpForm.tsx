@@ -1,249 +1,199 @@
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, Sparkles, CheckCircle, ArrowRight } from "lucide-react";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { useRoleSignUp } from "@/hooks/useRoleSignUp";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/context/auth/useAuth";
+import { UserRole } from "@/context/auth/types";
 import RoleSelectionCards from "./RoleSelectionCards";
+import { Eye, EyeOff, Mail, Lock, User, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
 
-interface SignUpFormProps {
-  redirectUrl?: string | null;
-}
-
-const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
+const SignUpForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    selectedRole,
-    setSelectedRole,
-    isSubmitting,
-    error,
-    referrer,
-    handleSubmit
-  } = useRoleSignUp();
 
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-        staggerChildren: 0.1
-      }
+  const { signUp } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
-  };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await signUp(email, password, fullName, selectedRole);
+      toast.success("Account created successfully! Please check your email to verify your account.");
+    } catch (error: any) {
+      console.error("Sign up error:", error);
+      setError(error.message || "Failed to create account");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="signup-form-enhanced min-h-screen flex items-center justify-center p-4">
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
         className="signup-animation-container w-full max-w-md"
       >
-        <Card className="signup-card-luxury p-8 rounded-2xl">
-          {/* Header Section */}
-          <motion.div variants={itemVariants} className="text-center mb-8">
+        <Card className="signup-card-luxury">
+          <CardHeader className="text-center space-y-2">
             <div className="flex items-center justify-center mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
             </div>
-            <h1 className="font-playfair text-3xl font-bold text-gray-900 mb-2">
-              Join EmviApp
-            </h1>
-            <p className="text-gray-600 text-sm">
-              Start your beauty journey with our premium platform
-            </p>
-            {referrer && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-green-50 border border-green-200 rounded-full text-green-700 text-xs font-medium"
-              >
-                <CheckCircle className="w-3 h-3" />
-                Referred by: {referrer}
-              </motion.div>
-            )}
-          </motion.div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Create Your Account
+            </CardTitle>
+            <CardDescription className="text-gray-600">
+              Join the EmviApp community and start your beauty journey
+            </CardDescription>
+          </CardHeader>
 
-          {/* Benefits Section */}
-          <motion.div variants={itemVariants} className="mb-6">
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-100">
-              <h3 className="font-semibold text-gray-900 mb-2 text-sm">Why join EmviApp?</h3>
-              <ul className="space-y-1 text-xs text-gray-600">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
-                  Connect with top beauty professionals
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  Book appointments seamlessly
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
-                  Discover trending styles & techniques
-                </li>
-              </ul>
-            </div>
-          </motion.div>
-
-          {/* Form Section */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
-            <motion.div variants={itemVariants} className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="signup-input-premium h-12 text-base"
-                required
-              />
-            </motion.div>
-
-            {/* Password Field */}
-            <motion.div variants={itemVariants} className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a strong password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="signup-input-premium h-12 text-base pr-12"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Confirm Password Field */}
-            <motion.div variants={itemVariants} className="space-y-2">
-              <Label htmlFor="confirm-password" className="text-sm font-medium text-gray-700">
-                Confirm Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="confirm-password"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="signup-input-premium h-12 text-base pr-12"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Role Selection */}
-            <motion.div variants={itemVariants}>
-              <RoleSelectionCards
-                selectedRole={selectedRole}
-                onChange={setSelectedRole}
-              />
-            </motion.div>
-
-            {/* Error Display */}
-            <AnimatePresence>
+          <CardContent className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="bg-red-50 border border-red-200 rounded-lg p-3"
-                >
-                  <p className="text-red-600 text-sm">{error}</p>
-                </motion.div>
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
-            </AnimatePresence>
 
-            {/* Submit Button */}
-            <motion.div variants={itemVariants}>
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
+                  Full Name
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="signup-input-premium pl-9"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="signup-input-premium pl-9"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="signup-input-premium pl-9 pr-9"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                  Confirm Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="signup-input-premium pl-9 pr-9"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 hover:text-gray-600"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <RoleSelectionCards 
+                selectedRole={selectedRole} 
+                onChange={setSelectedRole} 
+              />
+
               <Button
                 type="submit"
-                disabled={isSubmitting}
-                className="signup-button-gradient w-full h-12 text-base font-semibold text-white shadow-lg"
+                disabled={isLoading}
+                className="signup-button-gradient w-full text-white font-semibold py-2.5"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Creating Account...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    Create Account
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
-                )}
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
-            </motion.div>
+            </form>
 
-            {/* Sign In Link */}
-            <motion.div variants={itemVariants} className="text-center pt-4">
-              <p className="text-sm text-gray-600">
-                Already have an account?{" "}
-                <Link
-                  to="/sign-in"
-                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-                >
-                  Sign in here
-                </Link>
-              </p>
-            </motion.div>
-          </form>
+            <div className="text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <a 
+                href="/sign-in" 
+                className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+              >
+                Sign in here
+              </a>
+            </div>
+          </CardContent>
         </Card>
-
-        {/* Trust Indicators */}
-        <motion.div
-          variants={itemVariants}
-          className="text-center mt-6 text-xs text-gray-500"
-        >
-          <p>🔒 Your data is protected with enterprise-grade security</p>
-        </motion.div>
       </motion.div>
     </div>
   );

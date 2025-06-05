@@ -81,7 +81,7 @@ const RoleSelectionCards = ({ selectedRole, onChange }: RoleSelectionCardsProps)
               variants={cardVariants}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className={`relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${
+              className={`role-card-enhanced relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${
                 isSelected
                   ? 'border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg shadow-indigo-100'
                   : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
