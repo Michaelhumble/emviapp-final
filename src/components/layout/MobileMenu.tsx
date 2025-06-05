@@ -9,20 +9,23 @@ import LanguageToggle from '@/components/layout/LanguageToggle';
 import { cn } from '@/lib/utils';
 import { mainNavigationItems } from '@/components/layout/navbar/config/navigationItems';
 import Logo from '@/components/ui/Logo';
-
 const MobileMenu: React.FC = () => {
-  const { t } = useTranslation();
+  const {
+    t
+  } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isSignedIn, signOut } = useAuth();
+  const {
+    isSignedIn,
+    signOut
+  } = useAuth();
   const [open, setOpen] = React.useState(false);
-  
+
   // Close menu when navigating to a new route
   const handleNavigation = (path: string) => {
     navigate(path);
     setOpen(false);
   };
-
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -31,36 +34,24 @@ const MobileMenu: React.FC = () => {
       console.error('Sign out error:', error);
     }
   };
-  
+
   // Additional navigation items not in the main nav
-  const additionalNavItems = [
-    { 
-      title: 'Dashboard', 
-      path: '/dashboard',
-      icon: User,
-      vietnameseTitle: 'Bảng điều khiển'
-    },
-  ];
-  
+  const additionalNavItems = [{
+    title: 'Dashboard',
+    path: '/dashboard',
+    icon: User,
+    vietnameseTitle: 'Bảng điều khiển'
+  }];
+
   // Combine all nav items, filtering out duplicates
-  const allNavItems = [...additionalNavItems, ...mainNavigationItems]
-    .filter((item, index, self) => 
-      index === self.findIndex((t) => t.path === item.path)
-    );
-    
+  const allNavItems = [...additionalNavItems, ...mainNavigationItems].filter((item, index, self) => index === self.findIndex(t => t.path === item.path));
+
   // Check current route for active state
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
-  
-  return (
-    <div className="relative z-50">
+  return <div className="relative z-50">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="flex md:hidden rounded-full p-2 h-10 w-10"
-            aria-label="Open menu"
-          >
+          <Button variant="ghost" size="icon" className="flex md:hidden rounded-full p-2 h-10 w-10" aria-label="Open menu">
             <Menu className="h-5 w-5" />
             <span className="sr-only">Open menu</span>
           </Button>
@@ -73,12 +64,7 @@ const MobileMenu: React.FC = () => {
               <div onClick={() => handleNavigation('/')} className="cursor-pointer">
                 <Logo size="small" showText={true} />
               </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full h-8 w-8"
-                onClick={() => setOpen(false)}
-              >
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8" onClick={() => setOpen(false)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -87,93 +73,57 @@ const MobileMenu: React.FC = () => {
             <div className="flex-1 overflow-y-auto py-4">
               <nav className="space-y-1 px-2">
                 {/* Authentication buttons - only show if not signed in */}
-                {!isSignedIn && (
-                  <div className="px-2 mb-6 space-y-3">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
-                      onClick={() => handleNavigation('/sign-up')}
-                    >
+                {!isSignedIn && <div className="px-2 mb-6 space-y-3">
+                    <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2" onClick={() => handleNavigation('/sign-up')}>
                       <UserPlus size={18} />
                       {t({
-                        english: 'Sign Up',
-                        vietnamese: 'Đăng ký'
-                      })}
+                    english: 'Sign Up',
+                    vietnamese: 'Đăng ký'
+                  })}
                     </Button>
-                    <Button 
-                      variant="outline"
-                      className="w-full flex gap-2"
-                      onClick={() => handleNavigation('/login')}
-                    >
+                    <Button variant="outline" className="w-full flex gap-2" onClick={() => handleNavigation('/login')}>
                       <LogIn size={18} />
                       {t({
-                        english: 'Sign In',
-                        vietnamese: 'Đăng nhập'
-                      })}
+                    english: 'Sign In',
+                    vietnamese: 'Đăng nhập'
+                  })}
                     </Button>
-                  </div>
-                )}
+                  </div>}
 
                 {/* Post Job button (highlighted) - only for signed in users */}
-                {isSignedIn && (
-                  <div className="px-2 mb-6">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex gap-2"
-                      onClick={() => handleNavigation('/post-job')}
-                    >
-                      <PlusSquare size={18} />
-                      {t({
-                        english: 'Post a Job',
-                        vietnamese: 'Đăng việc làm'
-                      })}
-                    </Button>
-                  </div>
-                )}
+                {isSignedIn && <div className="px-2 mb-6">
+                    
+                  </div>}
                 
                 {/* Navigation Items */}
-                {allNavItems.map((item) => (
-                  <button
-                    key={item.path}
-                    onClick={() => handleNavigation(item.path)}
-                    className={cn(
-                      "flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors",
-                      isActive(item.path) 
-                        ? "bg-purple-100 text-purple-700 font-medium" 
-                        : "text-gray-700 hover:bg-gray-100"
-                    )}
-                  >
+                {allNavItems.map(item => <button key={item.path} onClick={() => handleNavigation(item.path)} className={cn("flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors", isActive(item.path) ? "bg-purple-100 text-purple-700 font-medium" : "text-gray-700 hover:bg-gray-100")}>
                     {item.icon && <item.icon className="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />}
                     {t({
-                      english: item.title,
-                      vietnamese: item.vietnameseTitle || item.title
-                    })}
-                  </button>
-                ))}
+                  english: item.title,
+                  vietnamese: item.vietnameseTitle || item.title
+                })}
+                  </button>)}
               </nav>
             </div>
             
             {/* Footer section */}
             <div className="border-t p-4 space-y-4">
               {/* Sign Out button - only show if signed in */}
-              {isSignedIn && (
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors text-red-600 hover:bg-red-50"
-                >
+              {isSignedIn && <button onClick={handleSignOut} className="flex items-center w-full px-3 py-2.5 text-sm rounded-md transition-colors text-red-600 hover:bg-red-50">
                   <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
                   {t({
-                    english: 'Sign Out',
-                    vietnamese: 'Đăng xuất'
-                  })}
-                </button>
-              )}
+                english: 'Sign Out',
+                vietnamese: 'Đăng xuất'
+              })}
+                </button>}
 
               {/* Language Toggle */}
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-gray-500">
                   {t({
-                    english: 'Language',
-                    vietnamese: 'Ngôn ngữ'
-                  })}
+                  english: 'Language',
+                  vietnamese: 'Ngôn ngữ'
+                })}
                 </h4>
                 <LanguageToggle minimal={true} />
               </div>
@@ -188,8 +138,6 @@ const MobileMenu: React.FC = () => {
           </div>
         </SheetContent>
       </Sheet>
-    </div>
-  );
+    </div>;
 };
-
 export default MobileMenu;
