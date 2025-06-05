@@ -3,177 +3,168 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Share2, Copy, CheckCircle2, Sparkles, Crown, Star, Zap } from "lucide-react";
+import { 
+  Share2, Copy, Instagram, Twitter, Facebook, MessageCircle, 
+  Gift, TrendingUp, Users, Zap, CheckCircle, Fire
+} from "lucide-react";
+import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
 
 const CustomerViralReferralCenter = () => {
   const { userProfile } = useAuth();
   const [copied, setCopied] = useState(false);
-
-  const referralCode = userProfile?.referral_code || userProfile?.id?.substring(0, 8) || "EMVI2024";
+  
+  const referralCode = userProfile?.referral_code || `BEAUTY${Math.floor(1000 + Math.random() * 9000)}`;
   const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
-  const credits = userProfile?.credits ?? 145;
-  const referralCount = userProfile?.referral_count ?? 7;
-
-  const handleCopy = () => {
+  const earnedCredits = 847;
+  const friendsJoined = 23;
+  
+  const socialShares = [
+    { platform: "Instagram", icon: Instagram, color: "from-pink-500 to-purple-500", action: "Story" },
+    { platform: "TikTok", icon: MessageCircle, color: "from-black to-gray-800", action: "Video" },
+    { platform: "Twitter", icon: Twitter, color: "from-blue-400 to-blue-600", action: "Tweet" },
+    { platform: "Facebook", icon: Facebook, color: "from-blue-600 to-blue-800", action: "Post" }
+  ];
+  
+  const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    toast.success("🎉 Link copied! Share it and earn credits!");
-    setTimeout(() => setCopied(false), 3000);
+    toast.success("Referral link copied! Share it and earn credits! 🎉");
+    setTimeout(() => setCopied(false), 2000);
   };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "Join me on EmviApp! 💅✨",
-        text: "I'm loving EmviApp for finding amazing beauty services. Join me and we both get rewards!",
-        url: referralLink,
-      });
-    } else {
-      handleCopy();
-    }
-  };
-
+  
   return (
-    <div className="relative">
-      {/* Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-pink-400/20 to-purple-400/20 rounded-3xl blur-xl" />
-      
-      <Card className="relative border-0 bg-gradient-to-br from-white/95 via-white/90 to-white/85 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden">
-        {/* Premium Badge */}
-        <div className="absolute top-4 right-4">
-          <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-bold px-3 py-1">
-            <Crown className="h-4 w-4 mr-1" />
-            VIP MEMBER
-          </Badge>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="relative"
+    >
+      <Card className="border-0 bg-gradient-to-br from-purple-600 via-pink-600 to-red-500 shadow-2xl rounded-3xl overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full"
+          />
+          <motion.div
+            animate={{ y: [-20, 20, -20] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-10 left-10 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl"
+          />
         </div>
-
-        <CardContent className="p-8">
+        
+        <CardContent className="relative z-10 p-8">
+          {/* Header with FOMO */}
           <div className="text-center mb-8">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4 shadow-lg"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full px-6 py-2 mb-4"
             >
-              <Gift className="h-10 w-10 text-white" />
+              <Fire className="h-5 w-5 text-red-600" />
+              <span className="text-red-900 font-bold text-sm">🔥 VIRAL REWARD PROGRAM</span>
             </motion.div>
             
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-2">
+            <h2 className="text-4xl font-bold text-white mb-3 font-playfair">
               Invite Friends & Earn Big! 🚀
             </h2>
-            
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Share EmviApp with friends and unlock exclusive rewards. The more you share, the more you earn!
+            <p className="text-white/90 text-lg max-w-2xl mx-auto">
+              Share EmviApp and unlock exclusive rewards. The more you share, the more you earn!
             </p>
           </div>
 
-          {/* Stats Row */}
+          {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <motion.div 
-              className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl"
+            <motion.div
               whileHover={{ scale: 1.05 }}
+              className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/20"
             >
-              <div className="flex items-center justify-center mb-2">
-                <Sparkles className="h-6 w-6 text-purple-600 mr-2" />
-                <span className="text-3xl font-bold text-purple-600">{credits}</span>
-              </div>
-              <p className="text-sm font-medium text-purple-700">Credits Earned</p>
+              <div className="text-3xl font-bold text-yellow-300 mb-1">{earnedCredits}</div>
+              <div className="text-white/80 text-sm font-medium">Credits Earned</div>
             </motion.div>
             
-            <motion.div 
-              className="text-center p-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl"
+            <motion.div
               whileHover={{ scale: 1.05 }}
+              className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/20"
             >
-              <div className="flex items-center justify-center mb-2">
-                <Star className="h-6 w-6 text-pink-600 mr-2" />
-                <span className="text-3xl font-bold text-pink-600">{referralCount}</span>
-              </div>
-              <p className="text-sm font-medium text-pink-700">Friends Joined</p>
+              <div className="text-3xl font-bold text-pink-300 mb-1">{friendsJoined}</div>
+              <div className="text-white/80 text-sm font-medium">Friends Joined</div>
             </motion.div>
             
-            <motion.div 
-              className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl"
+            <motion.div
               whileHover={{ scale: 1.05 }}
+              className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/20"
             >
-              <div className="flex items-center justify-center mb-2">
-                <Zap className="h-6 w-6 text-orange-600 mr-2" />
-                <span className="text-3xl font-bold text-orange-600">+25</span>
-              </div>
-              <p className="text-sm font-medium text-orange-700">Per Referral</p>
+              <div className="text-3xl font-bold text-green-300 mb-1">+25</div>
+              <div className="text-white/80 text-sm font-medium">Per Referral</div>
             </motion.div>
           </div>
 
-          {/* Referral Link Section */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 mb-6">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 text-center">
-              🔗 Your Magic Link
-            </h3>
+          {/* Referral Link */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-white/20">
+            <div className="flex items-center gap-2 mb-3">
+              <Gift className="h-5 w-5 text-yellow-300" />
+              <span className="text-white font-semibold">Your Magic Link</span>
+            </div>
             
             <div className="flex items-center gap-3">
-              <div className="flex-1 bg-white rounded-xl border-2 border-gray-200 px-4 py-3 font-mono text-sm text-gray-700 overflow-hidden">
+              <div className="flex-1 bg-white rounded-xl p-3 text-gray-800 font-mono text-sm overflow-hidden">
                 {referralLink}
               </div>
-              
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={handleCopy}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl shadow-lg"
-                >
-                  {copied ? (
-                    <>
-                      <CheckCircle2 className="h-5 w-5 mr-2 text-green-300" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-5 w-5 mr-2" />
-                      Copy Link
-                    </>
-                  )}
-                </Button>
-              </motion.div>
+              <Button
+                onClick={copyToClipboard}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-6"
+              >
+                {copied ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Link
+                  </>
+                )}
+              </Button>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={handleShare}
-                size="lg"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-xl shadow-lg"
+          {/* Social Share Buttons */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {socialShares.map((social, index) => (
+              <motion.div
+                key={social.platform}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Share2 className="h-5 w-5 mr-2" />
-                Share with Friends
-              </Button>
-            </motion.div>
-            
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full border-2 border-gradient-to-r from-pink-300 to-purple-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 py-4 rounded-xl"
-                onClick={() => toast.info("Invite by email coming soon! 📧")}
-              >
-                <Gift className="h-5 w-5 mr-2" />
-                Invite by Email
-              </Button>
-            </motion.div>
+                <Button
+                  className={`w-full bg-gradient-to-r ${social.color} hover:shadow-lg text-white border-0 h-12`}
+                  onClick={() => toast.success(`Opening ${social.platform} share!`)}
+                >
+                  <social.icon className="h-4 w-4 mr-2" />
+                  {social.action}
+                </Button>
+              </motion.div>
+            ))}
           </div>
 
-          {/* FOMO Message */}
-          <div className="mt-6 text-center p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
-            <p className="text-sm font-medium text-orange-800">
-              🔥 <span className="font-bold">Limited Time:</span> Earn 25 credits per friend (usually 10)! 
-              This exclusive rate won't last forever...
-            </p>
-          </div>
+          {/* FOMO Banner */}
+          <motion.div
+            animate={{ scale: [1, 1.02, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-4 text-center"
+          >
+            <div className="flex items-center justify-center gap-2 text-red-900 font-bold">
+              <Zap className="h-5 w-5" />
+              <span>🔥 Limited Time: Earn 25 credits per friend (usually 10)! This exclusive rate won't last forever...</span>
+            </div>
+          </motion.div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 };
 

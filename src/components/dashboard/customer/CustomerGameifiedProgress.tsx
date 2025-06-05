@@ -3,207 +3,186 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Target, Flame, Award, Star, Gift } from "lucide-react";
+import { Trophy, Star, Crown, Gem, Zap, Target } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CustomerGameifiedProgress = () => {
-  const level = 7;
-  const xp = 1240;
-  const nextLevelXp = 1500;
-  const progressPercentage = (xp / nextLevelXp) * 100;
+  const currentLevel = 7;
+  const currentXP = 2840;
+  const nextLevelXP = 3500;
+  const progressPercent = (currentXP / nextLevelXP) * 100;
   
   const achievements = [
     { 
       icon: Star, 
-      title: "Beauty Explorer", 
-      description: "Tried 5 different services",
+      title: "First Booking", 
+      description: "Completed your first beauty session",
       unlocked: true,
-      color: "from-yellow-400 to-orange-500"
+      rarity: "common"
     },
     { 
-      icon: Award, 
-      title: "Review Master", 
-      description: "Left 10 helpful reviews",
+      icon: Crown, 
+      title: "VIP Status", 
+      description: "Reached VIP membership level",
       unlocked: true,
-      color: "from-purple-400 to-pink-500"
+      rarity: "rare"
+    },
+    { 
+      icon: Gem, 
+      title: "Beauty Influencer", 
+      description: "Referred 20+ friends to EmviApp",
+      unlocked: true,
+      rarity: "epic"
     },
     { 
       icon: Trophy, 
-      title: "VIP Member", 
-      description: "Reached level 5",
-      unlocked: true,
-      color: "from-blue-400 to-indigo-500"
-    },
-    { 
-      icon: Flame, 
-      title: "Streak Master", 
-      description: "7-day booking streak",
+      title: "Perfect Reviews", 
+      description: "Received 50 five-star reviews",
       unlocked: false,
-      color: "from-orange-400 to-red-500"
+      rarity: "legendary"
     }
   ];
-
-  const challenges = [
-    { title: "Book 3 services this month", progress: 67, reward: "50 credits", deadline: "8 days left" },
-    { title: "Refer 2 friends", progress: 50, reward: "100 credits", deadline: "15 days left" },
-    { title: "Leave 5 reviews", progress: 80, reward: "25 credits", deadline: "12 days left" }
+  
+  const nextMilestones = [
+    { target: "5 more bookings", reward: "Free premium service", icon: Target },
+    { target: "10 more friends", reward: "500 bonus credits", icon: Star },
+    { target: "Level 10", reward: "Exclusive VIP events access", icon: Crown }
   ];
-
+  
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case "common": return "from-gray-400 to-gray-600";
+      case "rare": return "from-blue-400 to-blue-600";
+      case "epic": return "from-purple-400 to-purple-600";
+      case "legendary": return "from-yellow-400 to-orange-500";
+      default: return "from-gray-400 to-gray-600";
+    }
+  };
+  
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-2">
-          Your Beauty Journey 🎯
-        </h2>
-        <p className="text-purple-200">
-          Level up and unlock exclusive rewards as you explore EmviApp
-        </p>
-      </div>
-
       {/* Level Progress */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <Card className="border-0 bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Trophy className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-800">Level {level}</h3>
-                  <p className="text-sm text-gray-600">Beauty Enthusiast</p>
-                </div>
-              </div>
-              
-              <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-bold px-3 py-1">
-                {xp} XP
-              </Badge>
+      <Card className="border-0 bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <Trophy className="h-6 w-6 text-yellow-500" />
+              Your Beauty Journey 🌟
+            </h3>
+            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-lg px-4 py-2">
+              Level {currentLevel}
+            </Badge>
+          </div>
+          
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-gray-600 font-medium">Progress to Level {currentLevel + 1}</span>
+              <span className="text-gray-800 font-bold">{currentXP} / {nextLevelXP} XP</span>
             </div>
-            
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Progress to Level {level + 1}</span>
-                <span className="font-medium text-gray-800">{xp} / {nextLevelXp} XP</span>
-              </div>
-              <Progress 
-                value={progressPercentage} 
-                className="h-3 bg-gray-200 [&>div]:bg-gradient-to-r [&>div]:from-purple-500 [&>div]:to-pink-500"
+            <Progress value={progressPercent} className="h-3 bg-gray-200">
+              <div 
+                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
               />
-            </div>
-            
-            <p className="text-sm text-center text-gray-600">
-              <span className="font-semibold text-purple-600">{nextLevelXp - xp} XP</span> until next level!
-            </p>
-          </CardContent>
-        </Card>
-      </motion.div>
+            </Progress>
+          </div>
+          
+          {/* XP Sources */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { action: "Book a service", xp: "+50 XP", color: "bg-blue-50 text-blue-700" },
+              { action: "Leave a review", xp: "+25 XP", color: "bg-green-50 text-green-700" },
+              { action: "Refer a friend", xp: "+100 XP", color: "bg-purple-50 text-purple-700" }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.05 }}
+                className={`${item.color} rounded-lg p-3 text-center`}
+              >
+                <div className="font-semibold text-sm">{item.action}</div>
+                <div className="font-bold">{item.xp}</div>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Achievements */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <Card className="border-0 bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <Award className="h-5 w-5 text-purple-600" />
-              Achievements
-            </h3>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {achievements.map((achievement, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  className={`relative p-4 rounded-xl text-center transition-all duration-300 ${
-                    achievement.unlocked 
-                      ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200' 
-                      : 'bg-gray-50 border-2 border-gray-200 opacity-60'
-                  }`}
-                >
-                  {achievement.unlocked && (
-                    <div className="absolute -top-2 -right-2">
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className={`w-12 h-12 mx-auto mb-2 rounded-lg flex items-center justify-center ${
-                    achievement.unlocked 
-                      ? `bg-gradient-to-br ${achievement.color}` 
-                      : 'bg-gray-300'
-                  }`}>
-                    <achievement.icon className={`h-6 w-6 ${achievement.unlocked ? 'text-white' : 'text-gray-500'}`} />
+      <Card className="border-0 bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden">
+        <CardContent className="p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <Gem className="h-5 w-5 text-purple-500" />
+            Achievements Unlocked
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {achievements.map((achievement, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className={`relative p-4 rounded-xl border-2 ${
+                  achievement.unlocked 
+                    ? 'bg-gradient-to-r from-white to-gray-50 border-purple-200' 
+                    : 'bg-gray-100 border-gray-200 opacity-60'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`p-2 rounded-lg bg-gradient-to-r ${getRarityColor(achievement.rarity)}`}>
+                    <achievement.icon className="h-5 w-5 text-white" />
                   </div>
-                  
-                  <h4 className="text-sm font-semibold text-gray-800 mb-1">
-                    {achievement.title}
-                  </h4>
-                  <p className="text-xs text-gray-600">
-                    {achievement.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-gray-800">{achievement.title}</h4>
+                    <p className="text-gray-600 text-sm">{achievement.description}</p>
+                    <Badge className={`mt-2 bg-gradient-to-r ${getRarityColor(achievement.rarity)} text-white border-0 text-xs`}>
+                      {achievement.rarity.toUpperCase()}
+                    </Badge>
+                  </div>
+                </div>
+                
+                {achievement.unlocked && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                  >
+                    <Star className="h-3 w-3 text-white fill-current" />
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Active Challenges */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-      >
-        <Card className="border-0 bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <Target className="h-5 w-5 text-orange-600" />
-              Active Challenges
-            </h3>
-            
-            <div className="space-y-4">
-              {challenges.map((challenge, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.0 + index * 0.1 }}
-                  className="p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border border-orange-200"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-gray-800">{challenge.title}</h4>
-                    <div className="flex items-center gap-2">
-                      <Gift className="h-4 w-4 text-orange-600" />
-                      <span className="text-sm font-medium text-orange-700">{challenge.reward}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Progress 
-                      value={challenge.progress} 
-                      className="h-2 bg-orange-200 [&>div]:bg-gradient-to-r [&>div]:from-orange-400 [&>div]:to-yellow-400"
-                    />
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">{challenge.progress}% complete</span>
-                      <span className="text-orange-600 font-medium">{challenge.deadline}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+      {/* Next Milestones */}
+      <Card className="border-0 bg-gradient-to-r from-purple-50 to-pink-50 shadow-xl rounded-2xl overflow-hidden">
+        <CardContent className="p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <Zap className="h-5 w-5 text-yellow-500" />
+            What's Next? 🎯
+          </h3>
+          
+          <div className="space-y-3">
+            {nextMilestones.map((milestone, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.02, x: 5 }}
+                className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border border-purple-100"
+              >
+                <div className="flex items-center gap-3">
+                  <milestone.icon className="h-5 w-5 text-purple-500" />
+                  <span className="font-medium text-gray-800">{milestone.target}</span>
+                </div>
+                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-orange-900 border-0">
+                  {milestone.reward}
+                </Badge>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
