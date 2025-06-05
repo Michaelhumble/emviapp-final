@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -47,8 +46,8 @@ const CustomerPremiumActions = () => {
       return;
     }
     
-    // Navigate to profile/journey page
-    navigate('/dashboard/customer?tab=journey');
+    // Navigate to customer profile page 
+    navigate('/pages/customer/profile');
     toast.success('Your beauty journey awaits!');
   };
 
@@ -59,7 +58,8 @@ const CustomerPremiumActions = () => {
       return;
     }
     
-    navigate('/profile');
+    // Navigate to profile edit page
+    navigate('/profile/edit');
     toast.success('Make your profile shine!');
   };
 
