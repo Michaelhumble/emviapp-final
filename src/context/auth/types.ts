@@ -19,5 +19,6 @@ export interface UserProfile {
   preferences?: string[];
   preferred_language?: string;
   phone?: string;
+  email?: string;
 }
 
