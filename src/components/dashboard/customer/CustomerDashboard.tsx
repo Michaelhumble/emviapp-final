@@ -2,31 +2,37 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import CustomerDashboardHeader from './CustomerDashboardHeader';
-import CustomerPremiumMetrics from './CustomerPremiumMetrics';
-import CustomerPremiumActions from './CustomerPremiumActions';
-import CustomerReferralTracker from './CustomerReferralTracker';
-import CustomerDashboardWidgets from './CustomerDashboardWidgets';
-import RecommendedServicesSection from './services/RecommendedServicesSection';
+import CustomerViralReferralCenter from './CustomerViralReferralCenter';
+import CustomerExclusivePerks from './CustomerExclusivePerks';
+import CustomerSocialProof from './CustomerSocialProof';
+import CustomerGameifiedProgress from './CustomerGameifiedProgress';
+import CustomerInstantActions from './CustomerInstantActions';
 
 const CustomerDashboard = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 relative overflow-hidden">
-      {/* Luxury Background Elements */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 relative overflow-hidden">
+      {/* Premium Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-br from-indigo-200/30 to-blue-200/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-gradient-to-br from-rose-200/20 to-amber-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-purple-400/20 via-transparent to-transparent" />
+        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-pink-400/20 via-transparent to-transparent" />
+        <div className="absolute bottom-0 left-1/2 w-full h-full bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-blue-400/20 via-transparent to-transparent" />
       </div>
       
-      {/* Premium Grid Pattern Overlay */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="w-full h-full" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(124, 58, 237, 0.3) 1px, transparent 0)`,
-          backgroundSize: '24px 24px'
-        }} />
+      {/* Floating Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div 
+          className="absolute top-20 right-20 w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-400/30 blur-xl"
+          animate={{ y: [-10, 10, -10], rotate: [0, 180, 360] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-40 left-20 w-24 h-24 rounded-full bg-gradient-to-br from-green-400/30 to-emerald-400/30 blur-xl"
+          animate={{ y: [10, -10, 10], rotate: [360, 180, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
       
-      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 py-8 max-w-6xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -35,61 +41,53 @@ const CustomerDashboard = () => {
           <CustomerDashboardHeader />
         </motion.div>
         
-        {/* Hero Referral Section - Most Important */}
+        {/* Main Viral Referral Section - THE MONEY MAKER */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="mb-12"
+          className="mb-8"
         >
-          <CustomerReferralTracker />
+          <CustomerViralReferralCenter />
         </motion.div>
 
-        {/* Premium Metrics Grid */}
+        {/* Exclusive Perks - Make them feel special */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="mb-12"
+          className="mb-8"
         >
-          <CustomerPremiumMetrics />
+          <CustomerExclusivePerks />
         </motion.div>
 
-        {/* Quick Actions - Enhanced Layout */}
+        {/* Social Proof & FOMO */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-          className="mb-12"
+          className="mb-8"
         >
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-['Playfair_Display'] font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-3">
-              Your Beauty Command Center
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Everything you need to discover, book, and enjoy premium beauty services in one elegant place
-            </p>
-          </div>
-          <CustomerPremiumActions />
+          <CustomerSocialProof />
         </motion.div>
 
-        {/* Recommended Services */}
+        {/* Gamified Progress */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-          className="mb-12"
+          className="mb-8"
         >
-          <RecommendedServicesSection />
+          <CustomerGameifiedProgress />
         </motion.div>
 
-        {/* Dashboard Widgets */}
+        {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
         >
-          <CustomerDashboardWidgets />
+          <CustomerInstantActions />
         </motion.div>
       </div>
     </div>
