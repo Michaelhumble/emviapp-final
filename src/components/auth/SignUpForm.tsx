@@ -1,65 +1,59 @@
 
-import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Check, Sparkles } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
-import { UserRole } from "@/context/auth/types";
+import { Card } from "@/components/ui/card";
+import { Check, Sparkles, Users, Building2 } from "lucide-react";
+import { useRoleSignUp } from "@/hooks/useRoleSignUp";
 import RoleSelectionCards from "./RoleSelectionCards";
-import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 interface SignUpFormProps {
   redirectUrl?: string | null;
 }
 
 const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-  const { signUp, loading } = useRoleBasedSignUp();
-  const navigate = useNavigate();
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-
-    const result = await signUp(email, password, selectedRole);
-    
-    if (result) {
-      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-      navigate(decodedRedirect);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    selectedRole,
+    setSelectedRole,
+    isSubmitting,
+    error,
+    handleSubmit
+  } = useRoleSignUp();
 
   const benefits = [
-    "Discover Exclusive Nail Opportunities",
-    "Unlock Premium Salon Access", 
-    "Join a Vibrant Beauty Community"
+    {
+      icon: Sparkles,
+      text: "Discover Exclusive Nail Opportunities",
+      gradient: "from-purple-500 to-pink-500"
+    },
+    {
+      icon: Building2,
+      text: "Unlock Premium Salon Access",
+      gradient: "from-blue-500 to-cyan-500"
+    },
+    {
+      icon: Users,
+      text: "Join a Vibrant Beauty Community",
+      gradient: "from-emerald-500 to-teal-500"
+    }
   ];
 
   const containerVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        duration: 0.6,
+        ease: "easeOut",
         staggerChildren: 0.1
       }
     }
@@ -70,206 +64,239 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }
-    }
-  };
-
-  const benefitVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
       transition: { duration: 0.5, ease: "easeOut" }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 flex items-center justify-center p-4 lg:p-8">
-      <div className="w-full max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          
-          {/* Left Column - Benefits & Branding */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30 flex items-center justify-center p-4 lg:p-8">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-6xl mx-auto"
+      >
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Left Side - Benefits & Motivation */}
           <motion.div 
-            className="order-2 lg:order-1 text-center lg:text-left"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
+            variants={itemVariants}
+            className="hidden lg:block space-y-8"
           >
-            <motion.div variants={itemVariants} className="mb-8">
-              <div className="flex items-center justify-center lg:justify-start mb-4">
-                <Sparkles className="h-8 w-8 text-indigo-600 mr-3" />
-                <h1 className="font-playfair text-4xl lg:text-5xl font-bold text-gray-900">
-                  Welcome to EmviApp
+            <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="relative"
+              >
+                <h1 className="font-playfair text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Welcome to
+                  <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">
+                    EmviApp
+                  </span>
                 </h1>
-              </div>
-              <p className="text-xl text-gray-600 mb-8 max-w-md mx-auto lg:mx-0">
-                Your gateway to the most exclusive beauty opportunities
-              </p>
+                <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" />
+              </motion.div>
+              
+              <motion.p 
+                variants={itemVariants}
+                className="text-xl text-gray-600 font-light leading-relaxed"
+              >
+                Join thousands of beauty professionals transforming their careers with premium opportunities and exclusive connections.
+              </motion.p>
+            </div>
+
+            <motion.div variants={itemVariants} className="space-y-6">
+              {benefits.map((benefit, index) => {
+                const Icon = benefit.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+                    className="flex items-center space-x-4 group"
+                  >
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${benefit.gradient} p-3 shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                      <Icon className="w-full h-full text-white" />
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                      <p className="text-lg font-medium text-gray-800">{benefit.text}</p>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </motion.div>
 
-            <motion.div variants={itemVariants} className="space-y-4 mb-8">
-              {benefits.map((benefit, index) => (
-                <motion.div
-                  key={benefit}
-                  variants={benefitVariants}
-                  custom={index}
-                  className="flex items-center justify-center lg:justify-start group"
-                >
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
-                    <Check className="h-3 w-3 text-white" />
-                  </div>
-                  <span className="text-gray-700 font-medium">{benefit}</span>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            <motion.div 
+            <motion.div
               variants={itemVariants}
-              className="hidden lg:block p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100"
+              className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100"
             >
-              <p className="text-indigo-700 font-medium italic">
-                "Join thousands of beauty professionals who've transformed their careers with EmviApp"
-              </p>
+              <p className="text-sm font-medium text-purple-800 mb-2">✨ Limited Time</p>
+              <p className="text-purple-700">Join now and unlock exclusive access to premium salon partnerships and career opportunities.</p>
             </motion.div>
           </motion.div>
 
-          {/* Right Column - Sign Up Form */}
-          <motion.div 
-            className="order-1 lg:order-2"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-          >
-            <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden max-w-lg w-full mx-auto">
-              <motion.div variants={itemVariants}>
-                <CardHeader className="text-center pb-2 pt-8 px-8">
-                  <CardTitle className="text-3xl font-bold font-playfair text-gray-900 mb-2">
-                    Create Your Account
-                  </CardTitle>
-                  <p className="text-gray-600">Start your beauty journey today</p>
-                </CardHeader>
-              </motion.div>
+          {/* Right Side - Sign Up Form */}
+          <motion.div variants={itemVariants}>
+            <Card className="backdrop-blur-lg bg-white/80 border-0 shadow-2xl rounded-3xl p-8 lg:p-10">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="space-y-8"
+              >
+                {/* Mobile Benefits */}
+                <div className="lg:hidden space-y-4 mb-8">
+                  <h1 className="font-playfair text-3xl font-bold text-gray-900 text-center">
+                    Join <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">EmviApp</span>
+                  </h1>
+                  <div className="grid gap-3">
+                    {benefits.map((benefit, index) => {
+                      const Icon = benefit.icon;
+                      return (
+                        <div key={index} className="flex items-center space-x-3">
+                          <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${benefit.gradient} p-1.5`}>
+                            <Icon className="w-full h-full text-white" />
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Check className="w-4 h-4 text-green-500" />
+                            <p className="text-sm font-medium text-gray-700">{benefit.text}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
-              <form onSubmit={handleSubmit}>
-                <CardContent className="space-y-6 px-8">
-                  <motion.div variants={itemVariants} className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                      Email Address
-                    </Label>
-                    <div className="relative">
+                <div className="text-center space-y-2">
+                  <h2 className="hidden lg:block font-playfair text-3xl font-bold text-gray-900">
+                    Create Your Account
+                  </h2>
+                  <p className="text-gray-600">Start your beauty career journey today</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 bg-red-50 border border-red-200 rounded-2xl"
+                    >
+                      <p className="text-red-700 text-sm font-medium">{error}</p>
+                    </motion.div>
+                  )}
+
+                  <RoleSelectionCards 
+                    selectedRole={selectedRole} 
+                    onChange={setSelectedRole} 
+                  />
+
+                  <div className="space-y-5">
+                    <motion.div
+                      whileFocus={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-2"
+                    >
+                      <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                        Email Address
+                      </Label>
                       <Input
                         id="email"
                         type="email"
-                        required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField(null)}
-                        disabled={loading}
-                        className={`py-3 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                          focusedField === 'email' 
-                            ? 'border-indigo-500 shadow-lg shadow-indigo-100 scale-[1.02]' 
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        className="h-12 rounded-2xl border-2 border-gray-200 focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all duration-300 text-base"
                         placeholder="your@email.com"
+                        required
                       />
-                    </div>
-                  </motion.div>
-                  
-                  <motion.div variants={itemVariants} className="space-y-2">
-                    <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                      Password
-                    </Label>
-                    <div className="relative">
+                    </motion.div>
+
+                    <motion.div
+                      whileFocus={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-2"
+                    >
+                      <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                        Password
+                      </Label>
                       <Input
                         id="password"
                         type="password"
-                        required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField(null)}
-                        disabled={loading}
-                        className={`py-3 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                          focusedField === 'password' 
-                            ? 'border-indigo-500 shadow-lg shadow-indigo-100 scale-[1.02]' 
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        placeholder="••••••••"
+                        className="h-12 rounded-2xl border-2 border-gray-200 focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all duration-300 text-base"
+                        placeholder="Create a strong password"
+                        required
                       />
-                    </div>
-                  </motion.div>
+                    </motion.div>
 
-                  <motion.div variants={itemVariants} className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                      Confirm Password
-                    </Label>
-                    <div className="relative">
+                    <motion.div
+                      whileFocus={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-2"
+                    >
+                      <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">
+                        Confirm Password
+                      </Label>
                       <Input
                         id="confirmPassword"
                         type="password"
-                        required
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        onFocus={() => setFocusedField('confirmPassword')}
-                        onBlur={() => setFocusedField(null)}
-                        disabled={loading}
-                        className={`py-3 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                          focusedField === 'confirmPassword' 
-                            ? 'border-indigo-500 shadow-lg shadow-indigo-100 scale-[1.02]' 
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        placeholder="••••••••"
+                        className="h-12 rounded-2xl border-2 border-gray-200 focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all duration-300 text-base"
+                        placeholder="Confirm your password"
+                        required
                       />
-                    </div>
-                  </motion.div>
+                    </motion.div>
+                  </div>
 
-                  <motion.div variants={itemVariants} className="pt-2">
-                    <RoleSelectionCards
-                      selectedRole={selectedRole}
-                      onChange={setSelectedRole}
-                    />
-                  </motion.div>
-                </CardContent>
-
-                <CardFooter className="flex flex-col space-y-6 pt-2 pb-8 px-8">
-                  <motion.div variants={itemVariants} className="w-full">
-                    <Button 
-                      type="submit" 
-                      className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
-                      disabled={loading}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full h-14 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-70"
                     >
-                      {loading ? (
-                        <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          Creating Your Account...
-                        </>
+                      {isSubmitting ? (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span>Creating Your Account...</span>
+                        </div>
                       ) : (
-                        <>
-                          <Sparkles className="mr-2 h-5 w-5" />
-                          Create Account
-                        </>
+                        "Create Account & Start Growing"
                       )}
                     </Button>
                   </motion.div>
 
-                  <motion.div variants={itemVariants} className="text-center">
-                    <p className="text-gray-600">
+                  <div className="text-center space-y-4">
+                    <p className="text-sm text-gray-600">
                       Already have an account?{" "}
                       <Link 
-                        to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} 
-                        className="font-semibold text-indigo-600 hover:text-indigo-800 transition-colors duration-200 hover:underline"
+                        to="/sign-in" 
+                        className="font-semibold text-purple-600 hover:text-purple-700 transition-colors duration-200"
                       >
-                        Sign in here
+                        Sign In
                       </Link>
                     </p>
-                  </motion.div>
-                </CardFooter>
-              </form>
+                    
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      By creating an account, you agree to our Terms of Service and Privacy Policy. 
+                      Join thousands of beauty professionals already growing with EmviApp.
+                    </p>
+                  </div>
+                </form>
+              </motion.div>
             </Card>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
