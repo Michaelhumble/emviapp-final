@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
 
 interface PostRequestModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ const categories = [
 ];
 
 const PostRequestModal = ({ isOpen, onClose }: PostRequestModalProps) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -55,9 +57,13 @@ const PostRequestModal = ({ isOpen, onClose }: PostRequestModalProps) => {
     setIsSubmitting(true);
 
     try {
+      // Use authenticated user ID or demo user for testing
+      const userId = user?.id || 'demo-user';
+      
       const { data, error } = await supabase
         .from('posts')
         .insert({
+          user_id: userId,
           title: formData.title,
           content: formData.description,
           post_type: 'wanted',
