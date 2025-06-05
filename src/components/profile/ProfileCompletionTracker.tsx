@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
@@ -6,7 +5,7 @@ import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Target } from "lucide-react";
 import { Link } from "react-router-dom";
-import ProfileCompletionCard from "./ProfileCompletionCard";
+import { ProfileCompletionCard } from "./ProfileCompletionCard";
 
 const ProfileCompletionTracker = () => {
   const { userProfile } = useAuth();

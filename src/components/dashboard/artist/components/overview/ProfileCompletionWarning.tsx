@@ -1,6 +1,6 @@
 
 import { useAuth } from "@/context/auth";
-import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
+import { ProfileCompletionCard } from "@/components/profile/ProfileCompletionCard";
 
 const ProfileCompletionWarning = () => {
   const { userProfile } = useAuth();

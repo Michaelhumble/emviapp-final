@@ -15,11 +15,13 @@ interface ProfileField {
 interface SalonProfileCompletionCardProps {
   completionPercentage: number;
   profileFields: ProfileField[];
+  incompleteFields?: string[];
 }
 
 const SalonProfileCompletionCard = ({ 
   completionPercentage, 
-  profileFields 
+  profileFields,
+  incompleteFields = []
 }: SalonProfileCompletionCardProps) => {
   const getProgressColor = () => {
     if (completionPercentage >= 80) return "[&>div]:bg-green-500";
@@ -27,7 +29,7 @@ const SalonProfileCompletionCard = ({
     return "[&>div]:bg-red-500";
   };
 
-  const incompleteFields = profileFields.filter(field => !field.completed && field.required);
+  const incompleteRequiredFields = profileFields.filter(field => !field.completed && field.required);
 
   return (
     <Card className="w-full">
@@ -50,19 +52,19 @@ const SalonProfileCompletionCard = ({
           </p>
         </div>
 
-        {incompleteFields.length > 0 && (
+        {incompleteRequiredFields.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Missing Information:</h4>
             <div className="space-y-1">
-              {incompleteFields.slice(0, 3).map((field, index) => (
+              {incompleteRequiredFields.slice(0, 3).map((field, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">
                   <Circle className="h-3 w-3 text-gray-400" />
                   <span className="text-muted-foreground">{field.name}</span>
                 </div>
               ))}
-              {incompleteFields.length > 3 && (
+              {incompleteRequiredFields.length > 3 && (
                 <p className="text-xs text-muted-foreground pl-5">
-                  +{incompleteFields.length - 3} more items...
+                  +{incompleteRequiredFields.length - 3} more items...
                 </p>
               )}
             </div>
