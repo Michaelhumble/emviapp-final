@@ -25,7 +25,7 @@ const Customer = () => {
   }
 
   return (
-    <Layout>
+    <Layout hideFooter={true}>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
         <CustomerDashboard />
       </div>

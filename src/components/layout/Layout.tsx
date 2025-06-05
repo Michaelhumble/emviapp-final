@@ -9,9 +9,10 @@ import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
 interface LayoutProps {
   children: ReactNode;
   hideNavbar?: boolean;
+  hideFooter?: boolean; // Add option to hide footer
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
+const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFooter = false }) => {
   const isMobile = useIsMobile();
   const location = useLocation();
   
@@ -26,7 +27,8 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) => {
         {children}
       </main>
       
-      <Footer />
+      {/* Only render footer if not explicitly hidden */}
+      {!hideFooter && <Footer />}
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}
