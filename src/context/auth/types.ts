@@ -22,6 +22,7 @@ export interface UserProfile {
   phone?: string;
   email?: string;
   credits?: number;
+  boosted_until?: string;
 }
 
 
