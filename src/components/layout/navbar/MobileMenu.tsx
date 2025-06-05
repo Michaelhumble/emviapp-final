@@ -1,176 +1,166 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { Menu, User, LogOut, Briefcase, Building2, Plus } from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { CustomerProfileHeader } from '@/components/customer/CustomerProfileHeader';
-import { CustomerFomoInviteBanner } from '@/components/customer/CustomerFomoInviteBanner';
-import { CustomerRewardsTracker } from '@/components/customer/CustomerRewardsTracker';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Menu, User, LogOut, Home, Briefcase, Building2, Settings, Edit, Plus, Store } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
-export const MobileMenu = () => {
-  const { user, userProfile, signOut } = useAuth();
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { user, userProfile, userRole, signOut } = useAuth();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const { t } = useTranslation();
 
   const handleNavigation = (path: string) => {
-    setIsOpen(false);
+    onClose();
     navigate(path);
   };
 
-  const handleSignOut = () => {
-    setIsOpen(false);
-    signOut();
+  const handleSignOut = async () => {
+    onClose();
+    await signOut();
+    navigate('/');
   };
 
-  if (!user) return null;
-
-  const userRole = userProfile?.role;
+  const menuItems = [
+    {
+      icon: Home,
+      label: t('Home'),
+      path: '/',
+    },
+    {
+      icon: Briefcase,
+      label: t('Jobs'),
+      path: '/jobs',
+    },
+    {
+      icon: Building2,
+      label: t('Salons'),
+      path: '/salons',
+    },
+    {
+      icon: User,
+      label: t('Artists'),
+      path: '/artists',
+    },
+  ];
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-80 p-0">
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="left" className="w-80 p-0">
         <div className="flex flex-col h-full">
-          {/* Customer Profile Section */}
-          {userRole === 'customer' && (
-            <div className="flex-1 overflow-y-auto">
-              <CustomerProfileHeader />
-              <CustomerRewardsTracker />
-              <CustomerFomoInviteBanner />
-              
-              <div className="p-4 space-y-3">
+          {/* Header */}
+          <div className="p-6 border-b">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <User className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">
+                  {userProfile?.full_name || user?.email || 'User'}
+                </p>
+                <p className="text-sm text-gray-500 capitalize">
+                  {userRole || 'Member'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Items */}
+          <div className="flex-1 p-4 space-y-2">
+            {menuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={onClose}
+                className="flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <item.icon className="h-5 w-5 text-gray-600" />
+                <span className="text-gray-900">{item.label}</span>
+              </Link>
+            ))}
+
+            {/* Salon Owner specific buttons */}
+            {(userRole === 'salon' || userRole === 'owner') && (
+              <div className="pt-4 border-t border-gray-200 space-y-2">
                 <Button
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => handleNavigation('/profile/edit')}
+                  onClick={() => handleNavigation('/post-job')}
+                  className="w-full justify-start space-x-3 bg-purple-600 hover:bg-purple-700 text-white"
                 >
-                  <User className="mr-2 h-4 w-4" />
-                  Edit Profile
+                  <Plus className="h-5 w-5" />
+                  <span>Post a Job</span>
+                </Button>
+                <Button
+                  onClick={() => handleNavigation('/post-salon')}
+                  className="w-full justify-start space-x-3 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Store className="h-5 w-5" />
+                  <span>Post a Salon</span>
                 </Button>
               </div>
+            )}
+
+            {/* User Actions */}
+            <div className="pt-4 border-t border-gray-200 space-y-2">
+              {user && (
+                <>
+                  <Button
+                    onClick={() => handleNavigation('/dashboard')}
+                    variant="ghost"
+                    className="w-full justify-start space-x-3"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>{t('Dashboard')}</span>
+                  </Button>
+                  <Button
+                    onClick={() => handleNavigation('/profile/edit')}
+                    variant="ghost"
+                    className="w-full justify-start space-x-3"
+                  >
+                    <Edit className="h-5 w-5" />
+                    <span>{t('Edit Profile')}</span>
+                  </Button>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="ghost"
+                    className="w-full justify-start space-x-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span>{t('Sign Out')}</span>
+                  </Button>
+                </>
+              )}
+              {!user && (
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => handleNavigation('/auth/signin')}
+                    variant="ghost"
+                    className="w-full justify-start space-x-3"
+                  >
+                    <User className="h-5 w-5" />
+                    <span>{t('Sign In')}</span>
+                  </Button>
+                  <Button
+                    onClick={() => handleNavigation('/auth/signup')}
+                    className="w-full justify-start space-x-3 bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <User className="h-5 w-5" />
+                    <span>{t('Sign Up')}</span>
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Artist Menu */}
-          {userRole === 'artist' && (
-            <div className="flex-1 p-4 space-y-3">
-              <div className="pb-4 border-b">
-                <h3 className="font-semibold text-lg">Artist Dashboard</h3>
-                <p className="text-sm text-gray-600">Welcome back!</p>
-              </div>
-              
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleNavigation('/dashboard/artist')}
-              >
-                Dashboard
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleNavigation('/profile/edit')}
-              >
-                <User className="mr-2 h-4 w-4" />
-                Edit Profile
-              </Button>
-            </div>
-          )}
-
-          {/* Salon Owner Menu */}
-          {(userRole === 'salon_owner' || userRole === 'salon') && (
-            <div className="flex-1 p-4 space-y-3">
-              <div className="pb-4 border-b">
-                <h3 className="font-semibold text-lg">Salon Dashboard</h3>
-                <p className="text-sm text-gray-600">Manage your salon</p>
-              </div>
-              
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleNavigation('/dashboard/salon')}
-              >
-                Dashboard
-              </Button>
-
-              {/* Posting Actions for Salon Owners */}
-              <div className="space-y-2">
-                <Button
-                  variant="default"
-                  className="w-full justify-start bg-purple-600 hover:bg-purple-700"
-                  onClick={() => handleNavigation('/posting/job')}
-                >
-                  <Briefcase className="mr-2 h-4 w-4" />
-                  Post a Job
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50"
-                  onClick={() => handleNavigation('/posting/salon')}
-                >
-                  <Building2 className="mr-2 h-4 w-4" />
-                  Post a Salon
-                </Button>
-              </div>
-              
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleNavigation('/profile/edit')}
-              >
-                <User className="mr-2 h-4 w-4" />
-                Edit Profile
-              </Button>
-            </div>
-          )}
-
-          {/* Other Roles Menu */}
-          {userRole && !['customer', 'artist', 'salon_owner', 'salon'].includes(userRole) && (
-            <div className="flex-1 p-4 space-y-3">
-              <div className="pb-4 border-b">
-                <h3 className="font-semibold text-lg">Dashboard</h3>
-                <p className="text-sm text-gray-600">Welcome back!</p>
-              </div>
-              
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleNavigation('/dashboard')}
-              >
-                Dashboard
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleNavigation('/profile/edit')}
-              >
-                <User className="mr-2 h-4 w-4" />
-                Edit Profile
-              </Button>
-            </div>
-          )}
-
-          {/* Sign Out Button */}
-          <div className="p-4 border-t">
-            <Button
-              variant="outline"
-              className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50"
-              onClick={handleSignOut}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </SheetContent>
     </Sheet>
   );
 };
+
+export default MobileMenu;
