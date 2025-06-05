@@ -1,4 +1,5 @@
 
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -48,7 +49,7 @@ document.getElementsByTagName('head')[0].appendChild(themeColorMeta);
 const appleMobileWebAppCapable = document.createElement('meta');
 appleMobileWebAppCapable.name = 'apple-mobile-web-app-capable';
 appleMobileWebAppCapable.content = 'yes';
-document.getElementsByTagName('head')[0].appendChild(appleMobileWebCapable);
+document.getElementsByTagName('head')[0].appendChild(appleMobileWebAppCapable);
 
 // Set status bar style for iOS
 const appleStatusBarStyle = document.createElement('meta');
@@ -103,3 +104,4 @@ if (!rootElement) {
     `;
   }
 }
+
