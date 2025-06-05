@@ -1,7 +1,55 @@
 
-import { motion } from "framer-motion";
+import { RadioGroup } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { UserRole } from "@/context/auth/types";
-import { Users, Paintbrush, Building2, User } from "lucide-react";
+import { User, Scissors, Building2, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface RoleOption {
+  id: UserRole;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+const roleOptions: RoleOption[] = [
+  {
+    id: "customer",
+    label: "Customer",
+    description: "I'm looking for beauty services",
+    icon: <User className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "owner",
+    label: "Salon Owner",
+    description: "I own a salon or beauty business",
+    icon: <Building2 className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "freelancer",
+    label: "Freelancer",
+    description: "I offer freelance beauty services",
+    icon: <Briefcase className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "artist",
+    label: "Artist",
+    description: "I'm a beauty professional",
+    icon: <Scissors className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "supplier",
+    label: "Vendor/Supplier",
+    description: "I sell beauty products/supplies",
+    icon: <ShoppingBag className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "other",
+    label: "Other",
+    description: "None of the above",
+    icon: <HelpCircle className="h-5 w-5 text-indigo-500" />
+  }
+];
 
 interface RoleSelectionCardsProps {
   selectedRole: UserRole;
@@ -9,129 +57,51 @@ interface RoleSelectionCardsProps {
 }
 
 const RoleSelectionCards = ({ selectedRole, onChange }: RoleSelectionCardsProps) => {
-  const roles = [
-    {
-      key: "customer" as UserRole,
-      title: "Beauty Enthusiast",
-      description: "Book appointments & discover services",
-      icon: User,
-      gradient: "from-pink-500 to-rose-500"
-    },
-    {
-      key: "artist" as UserRole,
-      title: "Nail Artist",
-      description: "Showcase your skills & grow your clientele",
-      icon: Paintbrush,
-      gradient: "from-purple-500 to-indigo-500"
-    },
-    {
-      key: "salon" as UserRole,
-      title: "Salon Owner",
-      description: "Manage your business & hire talent",
-      icon: Building2,
-      gradient: "from-blue-500 to-cyan-500"
-    },
-    {
-      key: "freelancer" as UserRole,
-      title: "Freelancer",
-      description: "Work independently & build your brand",
-      icon: Users,
-      gradient: "from-emerald-500 to-teal-500"
-    }
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.3, ease: "easeOut" }
-    }
-  };
-
   return (
-    <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
-        Choose Your Role
-      </h3>
-      
-      <motion.div 
-        className="grid grid-cols-2 gap-3"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {roles.map((role) => {
-          const Icon = role.icon;
-          const isSelected = selectedRole === role.key;
-          
-          return (
-            <motion.div
-              key={role.key}
-              variants={cardVariants}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className={`role-card-enhanced relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${
-                isSelected
-                  ? 'border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg shadow-indigo-100'
-                  : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
-              }`}
-              onClick={() => onChange(role.key)}
-            >
-              {/* Selection indicator */}
-              {isSelected && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center"
-                >
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </motion.div>
+    <div className="w-full space-y-3">
+      <Label className="text-sm font-medium text-gray-700">
+        I am joining as a:
+      </Label>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {roleOptions.map((option) => (
+          <div 
+            key={option.id}
+            className={cn(
+              "relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none transition-all",
+              selectedRole === option.id 
+                ? "border-indigo-600 bg-indigo-50" 
+                : "border-gray-200 bg-white hover:border-indigo-200"
+            )}
+            onClick={() => onChange(option.id)}
+          >
+            <div className="flex w-full items-center gap-x-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">
+                {option.icon}
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="block text-sm font-medium text-gray-900">
+                  {option.label}
+                </span>
+                <span className="block text-xs text-gray-500">
+                  {option.description}
+                </span>
+              </div>
+            </div>
+            <div 
+              className={cn(
+                "absolute top-3 right-3 h-5 w-5 rounded-full flex items-center justify-center",
+                selectedRole === option.id 
+                  ? "bg-indigo-600" 
+                  : "border border-gray-300"
               )}
-              
-              {/* Icon with gradient background */}
-              <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${role.gradient} p-2 mb-3 mx-auto`}>
-                <Icon className="w-full h-full text-white" />
-              </div>
-              
-              {/* Content */}
-              <div className="text-center">
-                <h4 className={`font-semibold text-sm mb-1 ${
-                  isSelected ? 'text-indigo-900' : 'text-gray-900'
-                }`}>
-                  {role.title}
-                </h4>
-                <p className={`text-xs leading-tight ${
-                  isSelected ? 'text-indigo-700' : 'text-gray-600'
-                }`}>
-                  {role.description}
-                </p>
-              </div>
-              
-              {/* Hover glow effect */}
-              <div className={`absolute inset-0 rounded-xl bg-gradient-to-r ${role.gradient} opacity-0 transition-opacity duration-300 ${
-                !isSelected ? 'group-hover:opacity-5' : ''
-              }`} />
-            </motion.div>
-          );
-        })}
-      </motion.div>
-      
-      <p className="text-xs text-gray-500 text-center mt-4 italic">
-        You can change your role anytime in your profile settings
-      </p>
+            >
+              {selectedRole === option.id && (
+                <div className="h-2 w-2 rounded-full bg-white"></div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

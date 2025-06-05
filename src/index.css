@@ -2,7 +2,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import './styles/critical.css';
 
 @layer base {
   :root {
@@ -137,3 +136,4 @@
     padding-bottom: 5rem !important;
   }
 }
+
