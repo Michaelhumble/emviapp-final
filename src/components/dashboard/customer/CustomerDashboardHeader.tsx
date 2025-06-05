@@ -1,14 +1,33 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Crown, Star, Bell, Settings } from "lucide-react";
+import { Crown, Star, Bell, Settings, User, Camera } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const CustomerDashboardHeader = () => {
   const { userProfile } = useAuth();
+  const navigate = useNavigate();
   const firstName = userProfile?.full_name?.split(' ')[0] || 'Beauty Lover';
+  
+  const handleEditProfile = () => {
+    navigate("/profile/edit");
+  };
+
+  const handleViewProfile = () => {
+    navigate("/profile");
+  };
+
+  const handleNotifications = () => {
+    toast.info("Notifications feature coming soon! 🔔");
+  };
+
+  const handleSettings = () => {
+    toast.info("Settings feature coming soon! ⚙️");
+  };
   
   return (
     <motion.div
@@ -25,7 +44,8 @@ const CustomerDashboardHeader = () => {
           <div className="flex items-center gap-3 mb-2">
             <motion.div
               whileHover={{ rotate: 10, scale: 1.1 }}
-              className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg"
+              className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg cursor-pointer"
+              onClick={handleViewProfile}
             >
               <Crown className="h-6 w-6 text-white" />
             </motion.div>
@@ -55,14 +75,39 @@ const CustomerDashboardHeader = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20 tooltip"
+            onClick={handleEditProfile}
+            title="Edit Profile"
           >
-            <Bell className="h-5 w-5" />
+            <Camera className="h-5 w-5" />
           </Button>
+          
           <Button
             variant="ghost"
             size="icon"
             className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+            onClick={handleViewProfile}
+            title="View Profile"
+          >
+            <User className="h-5 w-5" />
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+            onClick={handleNotifications}
+            title="Notifications"
+          >
+            <Bell className="h-5 w-5" />
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+            onClick={handleSettings}
+            title="Settings"
           >
             <Settings className="h-5 w-5" />
           </Button>
