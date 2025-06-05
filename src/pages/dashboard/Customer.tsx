@@ -1,5 +1,5 @@
 
-import { useAuth } from "@/context/auth";
+import { useAuth } from "@/context/auth/useAuth";
 import Layout from "@/components/layout/Layout";
 import DashboardGreeting from "@/components/dashboard/common/DashboardGreeting";
 import CustomerDashboard from "@/components/dashboard/customer/CustomerDashboard";
