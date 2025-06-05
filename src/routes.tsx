@@ -68,6 +68,8 @@ import SimpleSalonDetailPage from './pages/salons/SimpleSalonDetailPage';
 import SalonDetailPage from './pages/salons/SalonDetailPage';
 import SalonListingForm from './pages/salons/SalonListingForm';
 
+import TestEnhancedSignUp from "@/pages/TestEnhancedSignUp";
+
 const routes = [
   {
     path: '/auth/redirect',
@@ -324,6 +326,11 @@ const routes = [
   {
     path: '/opportunities/:id',
     element: <OpportunityDetailPage />,
+  },
+  {
+    path: '/test-signup',
+    element: <TestEnhancedSignUp />,
+    errorElement: <NotFound />
   },
   {
     path: '*',
