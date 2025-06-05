@@ -22,8 +22,8 @@ export default defineConfig(({ mode }) => ({
   css: {
     postcss: {
       plugins: [
-        require('tailwindcss'),
-        require('autoprefixer'),
+        'tailwindcss',
+        'autoprefixer',
       ],
     },
     // Force CSS compilation refresh
