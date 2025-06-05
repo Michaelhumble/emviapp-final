@@ -1,210 +1,132 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import { AuthContext } from './AuthContext';
-import { fetchUserProfile, createUserProfile, updateUserProfile } from './userProfileService';
-import { UserRole, UserProfile } from './types';
-import { toast } from 'sonner';
-import { normalizeRole } from '@/utils/roles';
 
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
+import React, { useState, useEffect } from "react";
+import { AuthContext } from "./AuthContext";
+import { AuthContextType, UserProfile, UserRole } from "./types";
+import { useSession } from "./hooks/useSession";
+import { useUserProfile } from "./hooks/useUserProfile";
+import { authService } from "./services/authService";
+import { supabase } from "@/integrations/supabase/client";
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>('customer');
-  const [loading, setLoading] = useState(true);
-  const [isNewUser, setIsNewUser] = useState(false);
-  const [isError, setIsError] = useState(false);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { session, user, loading: sessionLoading, isNewUser, clearIsNewUser, setLoading } = useSession();
+  const { userProfile, refreshUserProfile, isError } = useUserProfile(user, setLoading);
+  
+  // REFACTOR: SINGLE SOURCE OF TRUTH - Only use Supabase auth metadata for role
+  // Removed all localStorage, database fallbacks, and complex role normalization
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  
+  const [loading, setLoadingState] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
-  const clearIsNewUser = () => {
-    setIsNewUser(false);
-  };
+  // UNIFIED ROLE DETECTION: Only from Supabase auth metadata
+  useEffect(() => {
+    if (user?.user_metadata?.role) {
+      // Direct assignment from auth metadata - no normalization, no fallbacks
+      const metadataRole = user.user_metadata.role as UserRole;
+      console.log("UNIFIED ROLE: Using auth metadata as single source of truth:", metadataRole);
+      setUserRole(metadataRole);
+    } else {
+      setUserRole(null);
+    }
+  }, [user]);
 
-  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error }> => {
+  // REFACTOR: Removed all role synchronization logic to database/localStorage
+  // Auth metadata is now the only source - simpler and more reliable
+  
+  const isSignedIn = !!user;
+
+  const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        return { success: false, error: new Error(error.message) };
-      }
-      
-      return { success: true };
+      setLoadingState(true);
+      const result = await authService.signIn(email, password);
+      // Role will be set automatically via useEffect when user updates
+      return result;
     } catch (error) {
-      console.error('Error signing in:', error);
-      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
-      return { success: false, error: errorObj };
+      console.error("Sign in error:", error);
+      return { success: false, error: error as Error };
+    } finally {
+      setLoadingState(false);
     }
   };
 
-  const signUp = async (email: string, password: string, userData: Partial<UserProfile> = {}): Promise<{ success: boolean; error?: Error; userId?: string }> => {
+  const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            ...userData
-          }
-        }
-      });
-
-      if (error) {
-        return { success: false, error: new Error(error.message) };
-      }
-      
-      return { success: true, userId: data.user?.id };
+      setLoadingState(true);
+      const result = await authService.signUp(email, password, userData);
+      // Role will be set automatically via useEffect when user updates
+      return result;
     } catch (error) {
-      console.error('Error signing up:', error);
-      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
-      return { success: false, error: errorObj };
-    }
-  };
-
-  const refreshUserProfile = async () => {
-    if (!user) return false;
-    
-    try {
-      const profile = await fetchUserProfile(user.id);
-      if (profile) {
-        setUserProfile(profile);
-        if (profile.role) {
-          const normalizedRole = normalizeRole(profile.role);
-          setUserRole(normalizedRole);
-        }
-      } else {
-        console.log('No profile found, creating one...');
-        const newProfile = await createUserProfile(user);
-        if (newProfile) {
-          setUserProfile(newProfile);
-          if (newProfile.role) {
-            const normalizedRole = normalizeRole(newProfile.role);
-            setUserRole(normalizedRole);
-          }
-          setIsNewUser(true);
-        }
-      }
-      return true;
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      setIsError(true);
-      return false;
-    }
-  };
-
-  const updateUserRole = async (role: UserRole): Promise<void> => {
-    if (!user) return;
-    
-    try {
-      const updatedProfile = await updateUserProfile({ 
-        id: user.id,
-        role: role
-      });
-      
-      if (updatedProfile && updatedProfile.role) {
-        const normalizedRole = normalizeRole(updatedProfile.role);
-        setUserRole(normalizedRole);
-      }
-    } catch (error) {
-      console.error('Error updating user role:', error);
+      console.error("Sign up error:", error);
+      return { success: false, error: error as Error };
+    } finally {
+      setLoadingState(false);
     }
   };
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
-      setUser(null);
-      setUserProfile(null);
-      setUserRole('customer');
-      localStorage.removeItem('emviapp_user_role');
-      localStorage.removeItem('emviapp_new_user');
+      setLoadingState(true);
+      await authService.signOut();
+      // Clear all state
+      setUserRole(null);
     } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Failed to sign out. Please try again.');
+      console.error("Sign out error:", error);
+    } finally {
+      setLoadingState(false);
     }
   };
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user || null);
-      setLoading(false);
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user || null);
-      setLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      refreshUserProfile();
-    } else {
-      setUserProfile(null);
-      setUserRole('customer');
-    }
-  }, [user]);
-
-  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
+  // REFACTOR: Simplified updateUserRole to only update auth metadata
+  // Removed database synchronization and localStorage storage
+  const updateUserRole = async (role: UserRole) => {
     try {
-      if (!user || !userProfile) {
-        return { success: false, error: new Error('User not authenticated') };
-      }
+      console.log("UNIFIED ROLE UPDATE: Updating auth metadata only:", role);
       
-      const updatedProfile = await updateUserProfile({
-        id: userProfile.id,
-        ...data
+      const { error } = await supabase.auth.updateUser({
+        data: { role }
       });
       
-      if (updatedProfile) {
-        setUserProfile(updatedProfile);
-        if (updatedProfile.role && updatedProfile.role !== userRole) {
-          const normalizedRole = normalizeRole(updatedProfile.role);
-          setUserRole(normalizedRole);
-        }
-        return { success: true };
-      }
+      if (error) throw error;
       
-      return { success: false, error: new Error('Failed to update profile') };
+      // Role will be updated automatically via useEffect when user metadata changes
+      console.log("UNIFIED ROLE UPDATE: Successfully updated auth metadata");
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error : new Error('Unknown error occurred') 
-      };
+      console.error("Error updating user role:", error);
+      throw error;
     }
+  };
+
+  const updateProfile = async (data: Partial<UserProfile>) => {
+    try {
+      setProfileLoading(true);
+      return await authService.updateProfile(data);
+    } catch (error) {
+      console.error("Update profile error:", error);
+      return { success: false, error: error as Error };
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const contextValue: AuthContextType = {
+    user,
+    userProfile,
+    userRole, // SINGLE SOURCE: Only from auth metadata
+    loading: sessionLoading || loading || profileLoading,
+    isSignedIn,
+    isError,
+    isNewUser,
+    clearIsNewUser,
+    signIn,
+    signUp,
+    signOut,
+    refreshUserProfile,
+    updateUserRole,
+    updateProfile,
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        userProfile,
-        userRole,
-        loading,
-        isSignedIn: !!user,
-        isError,
-        isNewUser,
-        clearIsNewUser,
-        signIn,
-        signUp,
-        signOut,
-        refreshUserProfile,
-        updateUserRole,
-        updateProfile
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
