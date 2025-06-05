@@ -1,304 +1,294 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { X, User, LogOut, Globe, Briefcase, Building, Copy, Heart, Star, Gift, Trophy } from 'lucide-react';
-import { useAuth } from '@/context/auth';
-import { useTranslation } from '@/hooks/useTranslation';
-import { useReferralStatsDb } from '@/hooks/useReferralStatsDb';
-import { toast } from 'sonner';
-import { useState } from 'react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, X, Copy, Star, Users, MapPin, Heart, User, HelpCircle } from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { LanguageToggle } from "./LanguageToggle";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useReferralSystem } from "@/hooks/useReferralSystem";
+import { toast } from "sonner";
 
-interface MobileMenuProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+export const MobileMenu = () => {
+  const { user, userProfile, signOut } = useAuth();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const { referralLink, referralStats, copied, copyReferralLink } = useReferralSystem();
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { user, signOut, userRole, userProfile } = useAuth();
-  const { isVietnamese, toggleLanguage } = useTranslation();
-  const { creditsEarned, invitedCount } = useReferralStatsDb();
-  const [copied, setCopied] = useState(false);
-
-  if (!isOpen) return null;
+  const closeMenu = () => setIsOpen(false);
 
   const handleSignOut = async () => {
     await signOut();
-    onClose();
+    closeMenu();
+    navigate("/");
   };
 
-  // Check if user should see job posting options
-  const canPostJobs = userRole && ['admin', 'salon', 'owner', 'manager'].includes(userRole);
-  const isCustomer = userRole === 'customer';
-
-  // Generate referral link for customers
-  const referralLink = user && userProfile?.referral_code 
-    ? `https://emviapp.com/join?ref=${userProfile.referral_code}`
-    : 'https://emviapp.com/signup';
+  const canPostJobs = user && (userProfile?.role === "salon" || userProfile?.role === "customer");
+  const isCustomer = userProfile?.role === "customer";
 
   const handleCopyReferralLink = () => {
-    navigator.clipboard.writeText(referralLink);
-    setCopied(true);
-    toast.success('Referral link copied! Share it to earn credits! 🎉');
-    setTimeout(() => setCopied(false), 3000);
+    if (referralLink) {
+      navigator.clipboard.writeText(referralLink);
+      toast.success("Referral link copied! Share with friends to earn credits!");
+    }
   };
 
-  // Calculate progress to next milestone
-  const nextMilestone = invitedCount < 3 ? 3 : invitedCount < 5 ? 5 : invitedCount < 10 ? 10 : 25;
-  const progressPercentage = Math.min((invitedCount / nextMilestone) * 100, 100);
-
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
-        <div className="flex h-full flex-col min-h-0">
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-6 w-6" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
+        <div className="flex flex-col h-full bg-white">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-            <h2 className="text-lg font-semibold">Menu</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+            <Button variant="ghost" size="icon" onClick={closeMenu}>
               <X className="h-5 w-5" />
-            </button>
+            </Button>
           </div>
 
-          {/* Customer-Specific Referral Banner */}
-          {isCustomer && user && (
-            <div className="p-4 border-b flex-shrink-0" style={{ backgroundColor: '#F6F6F7' }}>
-              {/* FOMO Urgency Banner */}
-              <div className="mb-4 p-3 rounded-lg border border-red-200 bg-gradient-to-r from-red-50 to-pink-50">
-                <div className="flex items-center mb-2">
-                  <Trophy className="h-4 w-4 text-red-500 mr-2" />
-                  <span className="text-sm font-bold text-red-700">LIMITED-TIME REWARD BOOST!</span>
-                </div>
-                <p className="text-xs text-red-600">
-                  Invite friends now to earn DOUBLE credits this week! ⚡
-                </p>
-              </div>
-
-              {/* Invite Friends & Earn Credits Banner */}
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 mb-4">
-                <div className="flex items-center mb-2">
-                  <Gift className="h-5 w-5 mr-2" style={{ color: '#9A7B69' }} />
+          {/* CUSTOMER FOMO FEATURES - Invite Friends & Earn Credits Banner */}
+          {isCustomer && (
+            <div className="p-4 bg-gradient-to-r from-purple-100 to-pink-100 border-b">
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-purple-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="h-5 w-5 text-purple-600" />
                   <h3 className="font-semibold text-gray-900">Invite Friends & Earn Credits</h3>
                 </div>
+                <p className="text-sm text-gray-600 mb-3">Share EmviApp and earn rewards for every friend who joins!</p>
                 
-                <p className="text-sm text-gray-600 mb-3">
-                  Share EmviApp and earn credits when friends join! <Heart className="h-3 w-3 inline text-red-500" />
-                </p>
-                
-                {/* Referral Link */}
+                {/* Referral Link with Copy Button */}
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="bg-white border border-gray-200 rounded-md px-3 py-2 text-xs flex-1 truncate">
-                    {referralLink}
-                  </div>
-                  <button 
+                  <input 
+                    value={referralLink || "Loading..."}
+                    readOnly
+                    className="flex-1 text-xs bg-gray-50 border rounded px-2 py-1 text-gray-700"
+                  />
+                  <Button 
+                    size="sm" 
                     onClick={handleCopyReferralLink}
-                    className="px-3 py-2 text-xs font-medium rounded-md transition-colors"
-                    style={{ 
-                      backgroundColor: copied ? '#F6F6F7' : '#9A7B69',
-                      color: copied ? '#9A7B69' : 'white',
-                      border: copied ? '1px solid #9A7B69' : 'none'
-                    }}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-3"
                   >
-                    <Copy className="h-3 w-3 mr-1 inline" />
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
+                    <Copy className="h-3 w-3 mr-1" />
+                    {copied ? "Copied!" : "Copy"}
+                  </Button>
                 </div>
 
-                {/* Credits Display */}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Credits Earned:</span>
-                  <span className="font-bold" style={{ color: '#9A7B69' }}>
-                    {creditsEarned} credits
-                  </span>
+                {/* FOMO Urgency Messaging */}
+                <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-lg p-2 border border-orange-200">
+                  <p className="text-xs font-medium text-orange-800 text-center">
+                    🔥 Limited-Time Reward Boost! Invite now for DOUBLE credits! 🔥
+                  </p>
                 </div>
               </div>
+            </div>
+          )}
 
-              {/* Your Rewards Progress Bar */}
-              <div className="bg-white border border-gray-200 rounded-xl p-4">
-                <div className="flex items-center mb-2">
-                  <Star className="h-4 w-4 mr-2" style={{ color: '#9A7B69' }} />
-                  <h4 className="font-medium text-gray-900">Your Rewards</h4>
+          {/* CUSTOMER REWARDS PROGRESS BAR */}
+          {isCustomer && (
+            <div className="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border-b">
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-indigo-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="h-5 w-5 text-indigo-600" />
+                  <h3 className="font-semibold text-gray-900">Your Rewards</h3>
                 </div>
                 
-                <p className="text-xs text-gray-600 mb-3">
+                {/* Emotional Motivational Copy */}
+                <p className="text-sm text-gray-600 mb-3">
                   You're just a few invites away from VIP perks! 🌟
                 </p>
+                
+                {/* Credits Display */}
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-gray-700">Credits Earned</span>
+                  <span className="text-lg font-bold text-indigo-600">{referralStats?.credits || 0}</span>
+                </div>
                 
                 {/* Progress Bar */}
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                   <div 
-                    className="h-2 rounded-full transition-all duration-300"
-                    style={{ 
-                      backgroundColor: '#9A7B69',
-                      width: `${progressPercentage}%` 
-                    }}
-                  />
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(((referralStats?.completedReferrals || 0) / 5) * 100, 100)}%` }}
+                  ></div>
                 </div>
                 
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>{invitedCount} referrals</span>
-                  <span>Next reward: {nextMilestone}</span>
-                </div>
+                <p className="text-xs text-gray-500 text-center">
+                  {5 - (referralStats?.completedReferrals || 0)} more referrals to unlock VIP status!
+                </p>
               </div>
             </div>
           )}
 
-          {/* Action Buttons - Only show for authorized users */}
-          {canPostJobs && (
-            <div className="p-4 space-y-3 border-b flex-shrink-0">
-              <Link
-                to="/posting/job"
-                onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full bg-purple-600 text-white py-2.5 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md font-medium text-sm"
-              >
-                <Briefcase className="h-4 w-4" />
-                Post a Job
-              </Link>
-              
-              <Link
-                to="/posting/salon"
-                onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full border border-purple-600 text-purple-600 py-2.5 px-4 rounded-lg hover:bg-purple-50 transition-colors shadow-md font-medium text-sm"
-              >
-                <Building className="h-4 w-4" />
-                Post Your Salon
-              </Link>
-            </div>
-          )}
-
           {/* Navigation Links */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 p-4 space-y-2">
+            {/* Customer-Specific Navigation */}
             {isCustomer ? (
               <>
+                {/* Browse Artists - Emotional CTA */}
                 <Link
                   to="/artists"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
                 >
-                  <User className="h-5 w-5" />
-                  Browse Artists
-                  <span className="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full ml-auto">Discover</span>
+                  <Users className="h-5 w-5 text-purple-600 group-hover:text-purple-700" />
+                  <div>
+                    <span className="font-medium text-gray-900">Browse Artists</span>
+                    <p className="text-xs text-gray-500">Discover amazing talent near you</p>
+                  </div>
                 </Link>
+
+                {/* Browse Salons - Trusted Directory */}
                 <Link
                   to="/salons"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
                 >
-                  <Building className="h-5 w-5" />
-                  Browse Salons
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full ml-auto">Trusted</span>
+                  <MapPin className="h-5 w-5 text-indigo-600 group-hover:text-indigo-700" />
+                  <div>
+                    <span className="font-medium text-gray-900">Browse Salons</span>
+                    <p className="text-xs text-gray-500">Trusted beauty destinations</p>
+                  </div>
                 </Link>
+
+                {/* Favorites */}
                 <Link
                   to="/favorites"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
                 >
-                  <Heart className="h-5 w-5" />
-                  Favorites
+                  <Heart className="h-5 w-5 text-pink-600 group-hover:text-pink-700" />
+                  <div>
+                    <span className="font-medium text-gray-900">Favorites</span>
+                    <p className="text-xs text-gray-500">Your saved artists & salons</p>
+                  </div>
                 </Link>
+
+                {/* Your Profile */}
                 <Link
-                  to="/profile"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  to="/dashboard/customer"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
                 >
-                  <User className="h-5 w-5" />
-                  Your Profile
+                  <User className="h-5 w-5 text-gray-600 group-hover:text-gray-700" />
+                  <div>
+                    <span className="font-medium text-gray-900">Your Profile</span>
+                    <p className="text-xs text-gray-500">Manage your account & preferences</p>
+                  </div>
                 </Link>
+
+                {/* Support & Feedback */}
                 <Link
                   to="/support"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
                 >
-                  <Heart className="h-5 w-5" />
-                  Support & Feedback
+                  <HelpCircle className="h-5 w-5 text-green-600 group-hover:text-green-700" />
+                  <div>
+                    <span className="font-medium text-gray-900">Support & Feedback</span>
+                    <p className="text-xs text-gray-500">We're here to help you</p>
+                  </div>
                 </Link>
               </>
             ) : (
               <>
+                {/* Non-Customer Navigation (Original Links) */}
                 <Link
                   to="/artists"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <User className="h-5 w-5" />
-                  Find Artists
+                  <Users className="h-5 w-5 text-gray-600" />
+                  <span className="font-medium text-gray-900">
+                    {t({ english: "Artists", vietnamese: "Nghệ sĩ" })}
+                  </span>
                 </Link>
+
                 <Link
                   to="/jobs"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <Briefcase className="h-5 w-5" />
-                  Browse Jobs
+                  <MapPin className="h-5 w-5 text-gray-600" />
+                  <span className="font-medium text-gray-900">
+                    {t({ english: "Jobs", vietnamese: "Việc làm" })}
+                  </span>
                 </Link>
+
                 <Link
                   to="/salons"
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={closeMenu}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <Building className="h-5 w-5" />
-                  Salons for Sale
+                  <MapPin className="h-5 w-5 text-gray-600" />
+                  <span className="font-medium text-gray-900">
+                    {t({ english: "Salons", vietnamese: "Salon" })}
+                  </span>
                 </Link>
+
+                {/* Posting Links for Non-Customers */}
+                {canPostJobs && !isCustomer && (
+                  <>
+                    <Link
+                      to="/post-job"
+                      onClick={closeMenu}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="font-medium text-gray-900">
+                        {t({ english: "Post a Job", vietnamese: "Đăng việc làm" })}
+                      </span>
+                    </Link>
+
+                    <Link
+                      to="/post-salon"
+                      onClick={closeMenu}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="font-medium text-gray-900">
+                        {t({ english: "Post a Salon", vietnamese: "Đăng salon" })}
+                      </span>
+                    </Link>
+                  </>
+                )}
               </>
             )}
           </nav>
 
-          {/* Bottom Section */}
-          <div className="border-t p-4 space-y-3 flex-shrink-0">
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <Globe className="h-5 w-5 mr-3" />
-              {isVietnamese ? 'English' : 'Tiếng Việt'}
-            </button>
-
+          {/* Footer */}
+          <div className="p-4 border-t space-y-4">
+            <LanguageToggle />
+            
             {user ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  onClick={onClose}
-                  className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <User className="h-5 w-5 mr-3" />
-                  Dashboard
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center w-full px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <LogOut className="h-5 w-5 mr-3" />
-                  Sign Out
-                </button>
-              </>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  {t({ english: "Signed in as", vietnamese: "Đã đăng nhập với" })} {user.email}
+                </p>
+                <Button onClick={handleSignOut} variant="outline" className="w-full">
+                  {t({ english: "Sign Out", vietnamese: "Đăng xuất" })}
+                </Button>
+              </div>
             ) : (
-              <>
-                <Link
-                  to="/signin"
-                  onClick={onClose}
-                  className="block w-full text-center px-4 py-3 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
-                >
-                  Sign In
+              <div className="space-y-2">
+                <Link to="/signin" onClick={closeMenu}>
+                  <Button variant="outline" className="w-full">
+                    {t({ english: "Sign In", vietnamese: "Đăng nhập" })}
+                  </Button>
                 </Link>
-                <Link
-                  to="/signup"
-                  onClick={onClose}
-                  className="block w-full text-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-md"
-                >
-                  Sign Up
+                <Link to="/signup" onClick={closeMenu}>
+                  <Button className="w-full">
+                    {t({ english: "Sign Up", vietnamese: "Đăng ký" })}
+                  </Button>
                 </Link>
-              </>
+              </div>
             )}
-
-            <div className="text-center pt-2 pb-1">
-              <p className="text-xs text-gray-500">Inspired by Sunshine ☀️</p>
-            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
