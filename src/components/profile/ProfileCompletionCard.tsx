@@ -1,98 +1,23 @@
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Progress } from "@/components/ui/progress";
-import { useAuth } from "@/context/auth";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Target } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { calculateProfileCompletion } from "@/utils/supabase-helpers";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ArrowRight, Check, Target } from "lucide-react";
 
-const ProfileCompletionCard = () => {
-  const { userProfile, userRole } = useAuth();
-  const [completionPercentage, setCompletionPercentage] = useState(0);
-  const [incompleteFields, setIncompleteFields] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+export interface ProfileCompletionCardProps {
+  completionPercentage: number;
+  incompleteFields: string[];
+  isComplete: boolean;
+}
 
-  useEffect(() => {
-    if (!userProfile) {
-      setCompletionPercentage(0);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-
-    // Calculate completion percentage using the helper function
-    const percentage = calculateProfileCompletion(userProfile, userRole);
-    setCompletionPercentage(percentage);
-
-    // Determine incomplete fields based on role
-    const getIncompleteFields = () => {
-      const fields: Record<string, string[]> = {
-        'artist': ['full_name', 'email', 'avatar_url', 'bio', 'specialty', 'location', 'instagram', 'portfolio_urls'],
-        'nail technician/artist': ['full_name', 'email', 'avatar_url', 'bio', 'specialty', 'location', 'instagram', 'portfolio_urls'],
-        'salon': ['full_name', 'email', 'salon_name', 'location', 'bio'],
-        'owner': ['full_name', 'email', 'salon_name', 'location', 'phone'],
-        'customer': ['full_name', 'email', 'location', 'avatar_url'],
-        'other': ['full_name', 'email']
-      };
-
-      const fieldsToCheck = fields[userRole] || fields['customer'];
-      
-      const incomplete = fieldsToCheck.filter(field => {
-        if (field === 'portfolio_urls') {
-          return !userProfile.portfolio_urls || userProfile.portfolio_urls.length === 0;
-        }
-        const value = userProfile[field as keyof typeof userProfile];
-        return value === undefined || value === null || value === '';
-      });
-      
-      return incomplete.map(formatFieldName);
-    };
-
-    setIncompleteFields(getIncompleteFields());
-    setLoading(false);
-  }, [userProfile, userRole]);
-
-  const formatFieldName = (field: string): string => {
-    switch (field) {
-      case 'full_name': return 'Full Name';
-      case 'avatar_url': return 'Profile Photo';
-      case 'salon_name': return 'Salon Name';
-      case 'portfolio_urls': return 'Portfolio Images';
-      default:
-        // Convert camelCase to words with spaces and capitalize first letter
-        return field.replace(/([A-Z])/g, ' $1')
-          .replace(/_/g, ' ')
-          .replace(/^\w/, c => c.toUpperCase());
-    }
-  };
-
-  if (loading) {
-    return (
-      <Card className="border-gray-200">
-        <CardHeader className="pb-2">
-          <div className="animate-pulse space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="bg-gray-200 h-5 w-5 rounded-full"></div>
-              <div className="bg-gray-200 h-6 w-40 rounded"></div>
-            </div>
-            <div className="bg-gray-200 h-4 w-full rounded"></div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="animate-pulse space-y-4">
-            <div className="bg-gray-200 h-2 w-full rounded"></div>
-            <div className="bg-gray-200 h-4 w-3/4 rounded"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (completionPercentage >= 100) {
+export const ProfileCompletionCard = ({ 
+  completionPercentage, 
+  incompleteFields, 
+  isComplete 
+}: ProfileCompletionCardProps) => {
+  if (isComplete) {
     return (
       <Card className="border-green-100 bg-gradient-to-r from-green-50 to-emerald-50">
         <CardHeader className="pb-2">
@@ -110,7 +35,7 @@ const ProfileCompletionCard = () => {
               <span>Profile completion</span>
               <span className="font-medium text-green-700">100%</span>
             </div>
-            <Progress value={100} className="h-2 bg-green-100" indicatorClassName="bg-green-500" />
+            <Progress value={100} className="h-2 bg-green-100 [&>div]:bg-green-500" />
           </div>
         </CardContent>
       </Card>
@@ -175,5 +100,3 @@ const ProfileCompletionCard = () => {
     </Card>
   );
 };
-
-export default ProfileCompletionCard;
