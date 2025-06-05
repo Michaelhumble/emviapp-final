@@ -13,6 +13,46 @@
     visibility: visible !important;
     opacity: 1 !important;
   }
+
+  /* Enhanced SignUp Form Styling */
+  .signup-form-enhanced {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+
+  .signup-card-luxury {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  .signup-input-premium {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .signup-input-premium:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: rgba(255, 255, 255, 1);
+  }
+
+  .signup-button-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  }
+
+  .signup-button-gradient:hover {
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .role-card-enhanced {
+    margin: 1rem 0;
+  }
 }
 
 /* Mobile navigation animations */
