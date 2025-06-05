@@ -3,10 +3,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 
-/**
- * REFACTOR: Updated to use auth context instead of deleted useUserRole hook
- * Auth metadata is single source of truth for roles
- */
 export const useRoleSelection = () => {
   const { user, userRole } = useAuth();
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
@@ -21,15 +17,6 @@ export const useRoleSelection = () => {
       }
       
       try {
-        // REFACTOR: Check auth metadata first (single source of truth)
-        if (userRole) {
-          console.log("REFACTOR: Role found in auth context (from metadata):", userRole);
-          setHasSelectedRole(true);
-          setIsLoading(false);
-          return;
-        }
-
-        // Fallback to database check
         const { data, error } = await supabase
           .from('users')
           .select('role')
@@ -44,16 +31,6 @@ export const useRoleSelection = () => {
           setIsRoleModalOpen(true);
         } else {
           setHasSelectedRole(true);
-          
-          // Sync database role to auth metadata for consistency
-          try {
-            await supabase.auth.updateUser({
-              data: { role: data.role }
-            });
-            console.log("REFACTOR: Synced database role to auth metadata:", data.role);
-          } catch (updateErr) {
-            console.warn("Failed to sync role to auth metadata:", updateErr);
-          }
         }
       } catch (error) {
         console.error("Error checking user role:", error);

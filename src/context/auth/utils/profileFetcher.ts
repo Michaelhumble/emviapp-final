@@ -6,8 +6,7 @@ import { normalizeRole } from "@/utils/roles";
 import { cacheProfile } from "./profileCache";
 
 /**
- * REFACTOR: Simplified to use ONLY auth metadata as source of truth for roles
- * Removed all localStorage fallbacks and interactions
+ * Fetch fresh profile data from Supabase with optimized parallel fetching
  */
 export const fetchFreshProfileData = async (userId: string): Promise<{ 
   profile: UserProfile | null; 
@@ -25,7 +24,7 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     // Add a timeout to prevent long-running requests
     const timeoutPromise = new Promise<null>((resolve) => {
       setTimeout(() => {
-        console.log("Profile fetch timeout reached");
+        console.log("Profile fetch timeout reached, using cached data");
         resolve(null);
       }, 5000); // 5-second timeout
     });
@@ -33,15 +32,18 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     // Race between fetch and timeout
     const result = await Promise.race([fetchPromise, timeoutPromise]);
     
-    // If timeout won, return null (no localStorage fallback)
+    // If timeout won, try to use cached data
     if (!result) {
-      console.log("REFACTOR: Timeout reached, no localStorage fallback - auth metadata is single source");
-      return { profile: null, role: null };
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      return { 
+        profile: null, 
+        role: cachedRole ? normalizeRole(cachedRole as UserRole) : null 
+      };
     }
     
     const [authResponse, profileResponse] = result;
     
-    // Process auth user result - SINGLE SOURCE OF TRUTH
+    // Process auth user result
     const authUser = authResponse.data?.user;
     const authError = authResponse.error;
     let role: UserRole | null = null;
@@ -49,7 +51,7 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     if (!authError && authUser?.user_metadata?.role) {
       const rawRole = authUser.user_metadata.role as string;
       role = normalizeRole(rawRole as UserRole);
-      console.log("REFACTOR: Role from auth metadata (single source):", role);
+      localStorage.setItem('emviapp_user_role', role || '');
     }
     
     // Process profile result
@@ -58,7 +60,15 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     
     if (profileError) {
       console.error("User profile fetch error:", profileError);
-      // REFACTOR: No localStorage fallback - return what we have from auth metadata
+      
+      // Try fallback to cached role if available
+      if (!role) {
+        const cachedRole = localStorage.getItem('emviapp_user_role');
+        if (cachedRole) {
+          role = normalizeRole(cachedRole as UserRole);
+        }
+      }
+      
       return { profile: null, role };
     } else {
       console.log("User profile data retrieved successfully");
@@ -67,14 +77,16 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
       if (!role && profile?.role) {
         const dbRole = profile.role as string;
         role = normalizeRole(dbRole as UserRole);
+        localStorage.setItem('emviapp_user_role', role || '');
         
-        // Sync role to auth metadata for consistency (don't wait for this)
+        // Sync role back to auth (don't wait for this)
         if (profile.role) {
+          // Use background task pattern
           Promise.resolve().then(() => {
             supabase.auth.updateUser({
               data: { role: profile.role }
             }).catch(updateErr => {
-              console.warn("Failed to sync role to auth metadata:", updateErr);
+              console.warn("Failed to update auth metadata with role:", updateErr);
             });
           });
         }
@@ -87,7 +99,11 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     }
   } catch (error) {
     console.error("Error fetching profile data:", error);
-    // REFACTOR: No localStorage fallback - return null for clean error state
-    return { profile: null, role: null };
+    // Return minimal profile with cached role as fallback
+    const cachedRole = localStorage.getItem('emviapp_user_role');
+    return { 
+      profile: null, 
+      role: cachedRole ? normalizeRole(cachedRole as UserRole) : null 
+    };
   }
 };

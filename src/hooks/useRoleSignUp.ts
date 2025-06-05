@@ -6,10 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/context/auth/types";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 
-/**
- * REFACTOR: Consolidated single signup hook - auth metadata is single source of truth
- * Removed localStorage role storage and duplicate implementations
- */
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,10 +42,10 @@ export const useRoleSignUp = () => {
     }
     
     setIsSubmitting(true);
-    console.log("REFACTOR: Starting sign-up process with role in auth metadata only");
+    console.log("Starting sign-up process...");
 
     try {
-      // REFACTOR: Store role ONLY in auth metadata (single source of truth)
+      // Create the auth user with metadata
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -77,7 +73,8 @@ export const useRoleSignUp = () => {
         throw new Error("User creation failed - no user returned");
       }
 
-      console.log("REFACTOR: User created with role in auth metadata:", data.user.user_metadata);
+      console.log("User created successfully:", data.user.id);
+      console.log("User metadata:", data.user.user_metadata);
 
       // Process referral if provided
       if (referrer && data.user) {
@@ -100,8 +97,9 @@ export const useRoleSignUp = () => {
         }
       }
 
-      // REFACTOR: No localStorage storage - auth metadata is authoritative
-      console.log("REFACTOR: Sign-up completed successfully, role stored in auth metadata only");
+      // Store role and show success
+      localStorage.setItem('emviapp_user_role', selectedRole);
+      console.log("Sign-up completed successfully");
       
       toast.success("Account created successfully! Redirecting to dashboard...");
       

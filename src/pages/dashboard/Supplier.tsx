@@ -1,60 +1,69 @@
-
-import { useAuth } from "@/context/auth";
+import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-import DashboardGreeting from "@/components/dashboard/common/DashboardGreeting";
-import { hasRoleAccess } from "@/utils/navigation";
+import { motion } from "framer-motion";
+import { 
+  ShoppingBag, 
+  BarChart, 
+  Package, 
+  Globe, 
+  TrendingUp, 
+  Award, 
+  Store,
+  Users
+} from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { useUserRole } from "@/hooks/useUserRole";
+import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
+import DashboardCard from "@/components/dashboard/DashboardCard";
+import InviteBanner from "@/components/dashboard/InviteBanner";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import SupplierDashboardHome from "@/components/dashboard/supplier/SupplierDashboardHome";
 
-const Supplier = () => {
-  // REFACTOR: Now using unified auth context instead of deleted useUserRole hook
-  // Single source of truth: Supabase auth metadata only
-  const { userRole } = useAuth();
+const SupplierDashboard = () => {
+  const { userProfile } = useAuth();
+  const { userRole } = useUserRole(userProfile?.id);
+  const navigate = useNavigate();
   
-  // Check if user has supplier access
-  const hasAccess = hasRoleAccess(userRole, 'supplier');
+  useEffect(() => {
+    document.title = "Supplier Dashboard | EmviApp";
+  }, []);
   
-  if (!hasAccess) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-            <p>You don't have permission to access this page.</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
+  const handleCardClick = (action: string) => {
+    switch (action) {
+      case "post-product":
+        navigate("/product-promotions");
+        break;
+      case "manage-profile":
+        navigate("/profile/supplier/setup");
+        break;
+      case "analytics":
+        toast.info("Analytics feature coming soon!");
+        break;
+      case "discover-salons":
+        navigate("/salons");
+        break;
+      default:
+        toast.info("Feature coming soon!");
+    }
+  };
+  
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <DashboardGreeting />
-        <div className="space-y-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Supplier Dashboard</h1>
-            <p className="text-gray-600">Manage your beauty supply business</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-2">Product Catalog</h3>
-              <p className="text-gray-600">Manage your product listings</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-2">Orders</h3>
-              <p className="text-gray-600">Track customer orders</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-2">Analytics</h3>
-              <p className="text-gray-600">View sales performance</p>
-            </div>
-          </div>
+      <motion.div 
+        className="min-h-screen bg-gradient-to-b from-white to-emerald-50/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="container px-4 mx-auto py-12">
+          <RoleDashboardLayout>
+            <SupplierDashboardHome />
+          </RoleDashboardLayout>
         </div>
-      </div>
+      </motion.div>
     </Layout>
   );
 };
 
-export default Supplier;
+export default SupplierDashboard;

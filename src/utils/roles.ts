@@ -2,8 +2,7 @@
 import { UserRole } from "@/context/auth/types";
 
 /**
- * REFACTOR: Simplified to only normalize role strings to standard UserRole type
- * Removed validation and localStorage interactions - auth metadata is single source of truth
+ * Normalize different role naming conventions to a standard UserRole type
  */
 export const normalizeRole = (role: UserRole | string | null | undefined): UserRole | null => {
   if (!role) return null;
@@ -118,4 +117,14 @@ export const getRoleLabel = (role: UserRole | null): string => {
   }
 };
 
-// REFACTOR: Removed isValidRole function - no longer needed with simplified architecture
+/**
+ * Check if a role is valid
+ */
+export const isValidRole = (role: any): role is UserRole => {
+  const validRoles: UserRole[] = [
+    'customer', 'artist', 'salon', 'owner', 'manager', 'admin', 
+    'freelancer', 'nail technician/artist', 'beauty supplier', 
+    'supplier', 'vendor', 'renter', 'other'
+  ];
+  return validRoles.includes(role);
+};

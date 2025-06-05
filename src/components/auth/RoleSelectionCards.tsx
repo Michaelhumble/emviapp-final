@@ -1,105 +1,107 @@
 
+import { RadioGroup } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { UserRole } from "@/context/auth/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { User, Scissors, Building, Crown, Users, Package, Wrench, UserCheck } from "lucide-react";
+import { User, Scissors, Building2, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface RoleOption {
+  id: UserRole;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+const roleOptions: RoleOption[] = [
+  {
+    id: "customer",
+    label: "Customer",
+    description: "I'm looking for beauty services",
+    icon: <User className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "owner",
+    label: "Salon Owner",
+    description: "I own a salon or beauty business",
+    icon: <Building2 className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "freelancer",
+    label: "Freelancer",
+    description: "I offer freelance beauty services",
+    icon: <Briefcase className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "artist",
+    label: "Artist",
+    description: "I'm a beauty professional",
+    icon: <Scissors className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "supplier",
+    label: "Vendor/Supplier",
+    description: "I sell beauty products/supplies",
+    icon: <ShoppingBag className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "other",
+    label: "Other",
+    description: "None of the above",
+    icon: <HelpCircle className="h-5 w-5 text-indigo-500" />
+  }
+];
 
 interface RoleSelectionCardsProps {
   selectedRole: UserRole;
-  onRoleSelect: (role: UserRole) => void;
+  onChange: (role: UserRole) => void;
 }
 
-const RoleSelectionCards = ({ selectedRole, onRoleSelect }: RoleSelectionCardsProps) => {
-  const roles = [
-    {
-      id: "customer" as UserRole,
-      title: "Customer",
-      description: "Book appointments and discover services",
-      icon: User,
-      color: "bg-blue-50 border-blue-200"
-    },
-    {
-      id: "artist" as UserRole,
-      title: "Nail Artist",
-      description: "Showcase your work and manage bookings",
-      icon: Scissors,
-      color: "bg-pink-50 border-pink-200"
-    },
-    {
-      id: "salon" as UserRole,
-      title: "Salon",
-      description: "Manage your salon and team",
-      icon: Building,
-      color: "bg-purple-50 border-purple-200"
-    },
-    {
-      id: "owner" as UserRole,
-      title: "Salon Owner",
-      description: "Own and operate multiple locations",
-      icon: Crown,
-      color: "bg-yellow-50 border-yellow-200"
-    },
-    {
-      id: "manager" as UserRole,
-      title: "Manager",
-      description: "Manage salon operations and staff",
-      icon: Users,
-      color: "bg-green-50 border-green-200"
-    },
-    {
-      id: "supplier" as UserRole,
-      title: "Supplier",
-      description: "Provide beauty products and supplies",
-      icon: Package,
-      color: "bg-orange-50 border-orange-200"
-    },
-    {
-      id: "freelancer" as UserRole,
-      title: "Freelancer",
-      description: "Independent beauty professional",
-      icon: UserCheck,
-      color: "bg-teal-50 border-teal-200"
-    },
-    {
-      id: "other" as UserRole,
-      title: "Other",
-      description: "Other beauty industry professional",
-      icon: Wrench,
-      color: "bg-gray-50 border-gray-200"
-    }
-  ];
-
+const RoleSelectionCards = ({ selectedRole, onChange }: RoleSelectionCardsProps) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {roles.map((role) => {
-        const Icon = role.icon;
-        const isSelected = selectedRole === role.id;
-        
-        return (
-          <Card
-            key={role.id}
-            className={`cursor-pointer transition-all hover:scale-105 ${
-              isSelected 
-                ? `ring-2 ring-blue-500 ${role.color}` 
-                : `hover:shadow-md ${role.color}`
-            }`}
-            onClick={() => onRoleSelect(role.id)}
+    <div className="w-full space-y-3">
+      <Label className="text-sm font-medium text-gray-700">
+        I am joining as a:
+      </Label>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {roleOptions.map((option) => (
+          <div 
+            key={option.id}
+            className={cn(
+              "relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none transition-all",
+              selectedRole === option.id 
+                ? "border-indigo-600 bg-indigo-50" 
+                : "border-gray-200 bg-white hover:border-indigo-200"
+            )}
+            onClick={() => onChange(option.id)}
           >
-            <CardHeader className="text-center pb-2">
-              <Icon className={`h-8 w-8 mx-auto ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} />
-              <CardTitle className="text-sm font-medium">
-                {role.title}
-                {isSelected && <Badge className="ml-2 text-xs">Selected</Badge>}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <CardDescription className="text-xs text-center">
-                {role.description}
-              </CardDescription>
-            </CardContent>
-          </Card>
-        );
-      })}
+            <div className="flex w-full items-center gap-x-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">
+                {option.icon}
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="block text-sm font-medium text-gray-900">
+                  {option.label}
+                </span>
+                <span className="block text-xs text-gray-500">
+                  {option.description}
+                </span>
+              </div>
+            </div>
+            <div 
+              className={cn(
+                "absolute top-3 right-3 h-5 w-5 rounded-full flex items-center justify-center",
+                selectedRole === option.id 
+                  ? "bg-indigo-600" 
+                  : "border border-gray-300"
+              )}
+            >
+              {selectedRole === option.id && (
+                <div className="h-2 w-2 rounded-full bg-white"></div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

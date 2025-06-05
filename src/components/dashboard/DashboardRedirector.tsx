@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -14,10 +13,6 @@ interface DashboardRedirectorProps {
   setLocalLoading: (loading: boolean) => void;
 }
 
-/**
- * REFACTOR: Simplified to use ONLY auth metadata as source of truth
- * Removed localStorage fallbacks and complex role detection strategies
- */
 const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRedirectorProps) => {
   const { user, userRole, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
@@ -30,25 +25,25 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     }
 
     try {
-      // REFACTOR: Single source of truth - auth metadata
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
       
-      if (!authError && authUser?.user_metadata?.role) {
-        const metadataRole = authUser.user_metadata.role as UserRole | null;
-        const normalizedRole = normalizeRole(metadataRole);
+      if (!authError) {
+        const metadataRole = authUser?.user_metadata?.role as UserRole | null;
         
-        console.log("REFACTOR: Using role from auth metadata (single source):", normalizedRole);
-        
-        if (normalizedRole === 'artist' || normalizedRole === 'nail technician/artist') {
-          navigate('/dashboard/artist');
+        if (metadataRole) {
+          const normalizedRole = normalizeRole(metadataRole);
+          localStorage.setItem('emviapp_user_role', normalizedRole || '');
+          
+          if (normalizedRole === 'artist' || normalizedRole === 'nail technician/artist') {
+            navigate('/dashboard/artist');
+            return;
+          }
+          
+          navigateToRoleDashboard(navigate, normalizedRole);
           return;
         }
-        
-        navigateToRoleDashboard(navigate, normalizedRole);
-        return;
       }
       
-      // If role exists in context (from auth metadata), use it
       if (userRole) {
         if (userRole === 'artist' || userRole === 'nail technician/artist') {
           navigate('/dashboard/artist');
@@ -70,7 +65,33 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      // REFACTOR: Removed localStorage fallback - check database only as last resort
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      if (cachedRole) {
+        const normalizedRole = normalizeRole(cachedRole as UserRole);
+        
+        try {
+          await supabase.auth.updateUser({
+            data: { role: normalizedRole }
+          });
+        } catch (updateErr) {
+          // Silent error - continue anyway
+        }
+        
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('manager_for_salon_id')
+          .eq('id', user.id)
+          .single();
+          
+        if (!userError && userData && userData.manager_for_salon_id) {
+          navigate('/dashboard/manager');
+          return;
+        }
+        
+        navigateToRoleDashboard(navigate, normalizedRole);
+        return;
+      }
+      
       const { data: profile, error } = await supabase
         .from('users')
         .select('role, manager_for_salon_id')
@@ -94,18 +115,17 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      // Sync database role to auth metadata for consistency
       try {
         const normalizedRole = normalizeRole(profile.role as UserRole);
         await supabase.auth.updateUser({
           data: { role: normalizedRole }
         });
-        console.log("REFACTOR: Synced database role to auth metadata:", normalizedRole);
       } catch (updateErr) {
-        console.warn("Failed to sync role to auth metadata:", updateErr);
+        // Silent error - continue anyway
       }
       
       const normalizedRole = normalizeRole(profile.role as UserRole);
+      localStorage.setItem('emviapp_user_role', normalizedRole || '');
       navigateToRoleDashboard(navigate, normalizedRole);
       
     } catch (error) {
