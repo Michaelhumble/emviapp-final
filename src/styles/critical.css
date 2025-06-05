@@ -1,4 +1,5 @@
 
+
 /* Minimal critical styles - cleaned up version */
 @layer components {
   /* Ensure Framer Motion animations work properly */
@@ -16,42 +17,23 @@
 
   /* Enhanced SignUp Form Styling */
   .signup-form-enhanced {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100;
   }
 
   .signup-card-luxury {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    @apply bg-white/90 backdrop-blur-lg border border-indigo-300 shadow-2xl shadow-indigo-400/30 p-8 rounded-2xl;
   }
 
   .signup-input-premium {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid rgba(99, 102, 241, 0.2);
-    transition: all 0.3s ease;
-  }
-
-  .signup-input-premium:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    background: rgba(255, 255, 255, 1);
+    @apply border border-indigo-200 focus:border-indigo-400 transition-shadow duration-300 shadow-sm focus:ring-2 focus:ring-indigo-300;
   }
 
   .signup-button-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-  }
-
-  .signup-button-gradient:hover {
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
-    transform: translateY(-2px);
+    @apply bg-gradient-to-r from-indigo-400 to-purple-500 text-white font-semibold shadow-lg hover:scale-105 transition-transform duration-200;
   }
 
   .role-card-enhanced {
-    margin: 1rem 0;
+    @apply bg-gradient-to-r from-pink-200 to-rose-300 hover:from-pink-300 hover:to-rose-400 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl;
   }
 }
 
@@ -101,3 +83,4 @@
 .nav-bottom-glow {
   box-shadow: 0 -4px 15px rgba(229, 229, 229, 0.25);
 }
+
