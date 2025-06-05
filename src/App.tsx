@@ -1,26 +1,29 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/context/auth';
 import Index from '@/pages/Index';
 import PostJob from '@/pages/PostJob';
-import SalonProfile from '@/pages/SalonProfile';
 import Contact from '@/pages/Contact';
-import PrivacyPolicy from '@/pages/PrivacyPolicy';
-import TermsOfService from '@/pages/TermsOfService';
-import CustomerProfile from '@/pages/customer/CustomerProfile';
-import EditCustomerProfile from '@/pages/customer/EditCustomerProfile';
-import SignIn from '@/pages/SignIn';
-import SignUp from '@/pages/SignUp';
-import Pricing from '@/pages/Pricing';
-import Salons from '@/pages/Salons';
-import Jobs from '@/pages/Jobs';
-import Services from '@/pages/Services';
-import CustomerInvoices from '@/pages/customer/CustomerInvoices';
-import CustomerAppointments from '@/pages/customer/CustomerAppointments';
-import CustomerFavorites from '@/pages/customer/CustomerFavorites';
-import CustomerSettings from '@/pages/customer/CustomerSettings';
 import Search from '@/pages/Search';
+
+// Temporary stubs for missing pages
+const SalonProfile = () => <div className="p-8 text-center">Salon Profile - Coming Soon</div>;
+const PrivacyPolicy = () => <div className="p-8 text-center">Privacy Policy - Coming Soon</div>;
+const TermsOfService = () => <div className="p-8 text-center">Terms of Service - Coming Soon</div>;
+const CustomerProfile = () => <div className="p-8 text-center">Customer Profile - Coming Soon</div>;
+const EditCustomerProfile = () => <div className="p-8 text-center">Edit Customer Profile - Coming Soon</div>;
+const SignIn = () => <div className="p-8 text-center">Sign In - Coming Soon</div>;
+const SignUp = () => <div className="p-8 text-center">Sign Up - Coming Soon</div>;
+const Pricing = () => <div className="p-8 text-center">Pricing - Coming Soon</div>;
+const Salons = () => <div className="p-8 text-center">Salons - Coming Soon</div>;
+const Jobs = () => <div className="p-8 text-center">Jobs - Coming Soon</div>;
+const Services = () => <div className="p-8 text-center">Services - Coming Soon</div>;
+const CustomerInvoices = () => <div className="p-8 text-center">Customer Invoices - Coming Soon</div>;
+const CustomerAppointments = () => <div className="p-8 text-center">Customer Appointments - Coming Soon</div>;
+const CustomerFavorites = () => <div className="p-8 text-center">Customer Favorites - Coming Soon</div>;
+const CustomerSettings = () => <div className="p-8 text-center">Customer Settings - Coming Soon</div>;
 
 const queryClient = new QueryClient();
 
