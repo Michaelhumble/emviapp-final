@@ -1,205 +1,190 @@
 
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import RoleSelectionCards from "./RoleSelectionCards";
 import { UserRole } from "@/context/auth/types";
 
 const SignUpForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    role: "customer" as UserRole,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-
     setIsLoading(true);
-    
+
     try {
-      const queryParams = new URLSearchParams(location.search);
-      const redirectUrl = queryParams.get('redirect');
-      
-      await signUp(email, password, {
-        firstName,
-        lastName,
-        role: selectedRole
-      });
-      
-      toast.success("Account created! Please check your email to verify your account.");
-      
-      // Navigate to redirect URL or dashboard
-      if (redirectUrl) {
-        navigate(redirectUrl);
+      const result = await signUp(
+        formData.email,
+        formData.password,
+        {
+          full_name: formData.fullName,
+          role: formData.role,
+        }
+      );
+
+      if (result.error) {
+        toast.error(result.error.message);
       } else {
-        navigate("/dashboard");
+        toast.success("Account created successfully! Please check your email to verify your account.");
+        navigate("/");
       }
-    } catch (error: any) {
-      console.error("Sign up error:", error);
-      toast.error(error.message || "Failed to create account");
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleRoleChange = (role: UserRole) => {
+    setFormData(prev => ({ ...prev, role }));
+  };
+
   return (
-    <div className="signup-form-enhanced min-h-screen flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        <Card className="signup-card-luxury">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-            <CardDescription>
-              Join thousands of beauty professionals
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+    <motion.div 
+      className="signup-form-enhanced min-h-screen flex items-center justify-center p-4 signup-animation-container"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <div className="w-full max-w-md">
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="signup-card-luxury border-0 shadow-luxury">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Create an Account
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Join EmviApp and connect with the beauty community
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
+                    Full Name *
+                  </Label>
                   <Input
-                    id="firstName"
+                    id="fullName"
                     type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Your full name"
+                    value={formData.fullName}
+                    onChange={handleInputChange("fullName")}
                     required
-                    className="signup-input-premium"
+                    className="signup-input-premium h-12 text-base"
+                    disabled={isLoading}
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    Email *
+                  </Label>
                   <Input
-                    id="lastName"
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={formData.email}
+                    onChange={handleInputChange("email")}
                     required
-                    className="signup-input-premium"
+                    className="signup-input-premium h-12 text-base"
+                    disabled={isLoading}
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="signup-input-premium"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                    Password *
+                  </Label>
                   <Input
                     id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    type="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleInputChange("password")}
                     required
-                    className="signup-input-premium pr-10"
+                    className="signup-input-premium h-12 text-base"
+                    disabled={isLoading}
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    className="signup-input-premium pr-10"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                <div className="space-y-2">
+                  <Label htmlFor="role" className="text-sm font-medium text-gray-700">
+                    I am a *
+                  </Label>
+                  <Select
+                    value={formData.role}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, role: value as UserRole }))}
+                    disabled={isLoading}
                   >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
+                    <SelectTrigger className="signup-input-premium h-12 text-base">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="customer">Customer</SelectItem>
+                      <SelectItem value="artist">Nail Artist</SelectItem>
+                      <SelectItem value="salon">Salon Owner</SelectItem>
+                      <SelectItem value="freelancer">Freelancer</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                <RoleSelectionCards
+                  selectedRole={formData.role}
+                  onChange={handleRoleChange}
+                />
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    type="submit"
+                    className="signup-button-gradient w-full h-12 text-base font-semibold text-white shadow-lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Creating Account..." : "Create Account"}
+                  </Button>
+                </motion.div>
+              </form>
+
+              <div className="text-center text-sm text-gray-600">
+                Already have an account?{" "}
+                <motion.a
+                  href="/auth/signin"
+                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  Sign in
+                </motion.a>
               </div>
-
-              <RoleSelectionCards 
-                selectedRole={selectedRole} 
-                onChange={setSelectedRole} 
-              />
-
-              <Button 
-                type="submit" 
-                className="signup-button-gradient w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Account...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 
