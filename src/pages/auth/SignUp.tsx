@@ -1,22 +1,20 @@
 
-import SignUpForm from "@/components/auth/SignUpForm";
-import { Card } from "@/components/ui/card";
+import EnhancedSignUpForm from "@/components/auth/EnhancedSignUpForm";
 import { useLocation } from "react-router-dom";
 import Logo from "@/components/ui/Logo";
 
 const SignUp = () => {
   const location = useLocation();
-  // Pass redirect URL to SignUpForm
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get('redirect');
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <div className="w-full max-w-md">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-8">
           <Logo size="large" showText={true} />
         </div>
-        <SignUpForm redirectUrl={redirectUrl} />
+        <EnhancedSignUpForm redirectUrl={redirectUrl} />
       </div>
     </div>
   );
