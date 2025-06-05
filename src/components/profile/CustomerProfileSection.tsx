@@ -3,15 +3,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Calendar, Heart, Search, Star, Ticket } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const CustomerProfileSection = () => {
   const { userProfile } = useAuth();
+  const navigate = useNavigate();
   
   // Mock customer data
   const favoriteArtists = 3;
   const favoriteSalons = 2;
   const lastAppointment = "2 weeks ago";
+
+  const handleBookAppointment = () => {
+    navigate('/artists');
+    toast.success("Browse artists to book your appointment!");
+  };
+
+  const handleViewHistory = () => {
+    toast.info("Appointment history feature coming soon!");
+  };
+
+  const handleManageFavorites = () => {
+    toast.info("Favorites management feature coming soon!");
+  };
+
+  const handleViewPerks = () => {
+    toast.info("Loyalty perks feature coming soon!");
+  };
+
+  const handleExploreServices = () => {
+    navigate('/artists');
+    toast.info("Exploring available services...");
+  };
   
   return (
     <div className="space-y-6">
@@ -29,19 +53,19 @@ const CustomerProfileSection = () => {
               <p className="text-sm text-gray-500">Last appointment:</p>
               <p className="font-medium">{lastAppointment}</p>
               <div className="mt-4 flex gap-2">
-                <Button asChild>
-                  <Link to="/appointments/book">Book Next Appointment</Link>
+                <Button onClick={handleBookAppointment}>
+                  Book Next Appointment
                 </Button>
-                <Button variant="outline" asChild>
-                  <Link to="/appointments/history">View History</Link>
+                <Button variant="outline" onClick={handleViewHistory}>
+                  View History
                 </Button>
               </div>
             </div>
           ) : (
             <div className="text-center py-4">
               <p className="text-gray-500 mb-4">No appointments yet. Ready to book your first one?</p>
-              <Button asChild>
-                <Link to="/appointments/book">Find Next Appointment</Link>
+              <Button onClick={handleBookAppointment}>
+                Find Next Appointment
               </Button>
             </div>
           )}
@@ -68,8 +92,8 @@ const CustomerProfileSection = () => {
               </div>
             </div>
             <div className="mt-4">
-              <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link to="/favorites">Manage Favorites</Link>
+              <Button variant="outline" size="sm" className="w-full" onClick={handleManageFavorites}>
+                Manage Favorites
               </Button>
             </div>
           </CardContent>
@@ -87,8 +111,8 @@ const CustomerProfileSection = () => {
               <p className="text-2xl font-bold text-gray-800 mb-1">150</p>
               <p className="text-gray-500 text-sm">Loyalty Points</p>
               <div className="mt-4">
-                <Button variant="outline" size="sm" className="w-full" asChild>
-                  <Link to="/perks">View Available Perks</Link>
+                <Button variant="outline" size="sm" className="w-full" onClick={handleViewPerks}>
+                  View Available Perks
                 </Button>
               </div>
             </div>
@@ -108,7 +132,7 @@ const CustomerProfileSection = () => {
                 Find new salons, artists, and services near you
               </p>
             </div>
-            <Button className="bg-violet-600 hover:bg-violet-700">
+            <Button className="bg-violet-600 hover:bg-violet-700" onClick={handleExploreServices}>
               Explore Services
             </Button>
           </div>

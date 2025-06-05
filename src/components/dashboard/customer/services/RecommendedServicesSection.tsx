@@ -3,6 +3,8 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Image as ImageIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // Mock data for recommended services
 const recommendedServices = [
@@ -49,7 +51,14 @@ const recommendedServices = [
 ];
 
 const RecommendedServicesSection: React.FC = () => {
+  const navigate = useNavigate();
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
+  const handleViewService = (service: typeof recommendedServices[0]) => {
+    // Navigate to artists page to find similar services
+    navigate('/artists');
+    toast.success(`Looking for ${service.title} services...`);
+  };
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -122,6 +131,7 @@ const RecommendedServicesSection: React.FC = () => {
                 variant="outline"
                 size="sm"
                 className="w-full rounded-full border-purple-200 text-purple-700 hover:bg-purple-50"
+                onClick={() => handleViewService(service)}
               >
                 View <ArrowRight className="ml-1 h-4 w-4" />
               </Button>

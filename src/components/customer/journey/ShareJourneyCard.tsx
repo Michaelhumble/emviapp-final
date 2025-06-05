@@ -20,9 +20,11 @@ const ShareJourneyCard: React.FC = () => {
         break;
       case 'facebook':
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+        toast.success("Opening Facebook to share your journey!");
         break;
       case 'twitter':
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`, '_blank');
+        toast.success("Opening Twitter to share your journey!");
         break;
       case 'copy':
         navigator.clipboard.writeText(`${shareText} ${url}`);

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useCustomerDashboard } from "@/hooks/useCustomerDashboard";
 import { ArrowRight, User } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 type BookAgainCardProps = {
   id: string;
@@ -51,6 +52,7 @@ const BookAgainCard: React.FC<BookAgainCardProps> = ({
 
 const BookAgainSection: React.FC = () => {
   const { bookings } = useCustomerDashboard();
+  const navigate = useNavigate();
 
   const completed = Array.isArray(bookings)
     ? bookings
@@ -65,7 +67,9 @@ const BookAgainSection: React.FC = () => {
   if (!completed.length) return null;
 
   const handleBookAgain = (booking: typeof completed[0]) => {
-    toast.info("Booking flow coming soon!");
+    // Navigate to artists page for rebooking
+    navigate('/artists');
+    toast.success(`Looking for ${booking.service?.title} services...`);
   };
 
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
