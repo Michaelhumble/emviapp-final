@@ -1,379 +1,339 @@
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Home, Users, Building2, Heart, User, MessageCircle, Info, Phone, HelpCircle, LogOut, Globe, Copy, Gift, TrendingUp, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  User, 
+  Star, 
+  Gift, 
+  LogOut, 
+  Heart, 
+  Home, 
+  Users, 
+  Scissors, 
+  Store, 
+  Briefcase, 
+  MessageCircle, 
+  HelpCircle,
+  Copy,
+  Check,
+  Globe
+} from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { useIsMobile } from '@/hooks/use-mobile';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import { toast } from 'sonner';
 
-const MobileMenu = () => {
-  const { user, signOut, userProfile } = useAuth();
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+  const { user, userProfile, userRole, signOut } = useAuth();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [isOpen, setIsOpen] = useState(false);
-  const [referralProgress, setReferralProgress] = useState(65);
-  const [credits, setCredits] = useState(250);
-  const [nextReward, setNextReward] = useState(500);
+  const [copied, setCopied] = useState(false);
+  const [language, setLanguage] = useState('en');
 
-  // Don't render on desktop
-  if (!isMobile) return null;
+  if (!isOpen) return null;
 
-  const handleSignOut = async () => {
-    await signOut();
-    setIsOpen(false);
-    navigate('/');
-    toast.success('Signed out successfully');
-  };
-
-  const handleNavigation = (path: string) => {
-    setIsOpen(false);
-    navigate(path);
-  };
-
-  const copyInviteLink = () => {
-    const inviteLink = `https://emviapp.com/invite/${user?.id}`;
+  const handleCopyInviteLink = () => {
+    const inviteLink = `${window.location.origin}/invite/${userProfile?.referralCode || user?.id || 'welcome'}`;
     navigator.clipboard.writeText(inviteLink);
-    toast.success('Invite link copied to clipboard!');
+    setCopied(true);
+    toast.success('Invite link copied! Share with friends to earn rewards 🎉');
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  // Check if user is a customer
-  const isCustomer = userProfile?.role === 'customer' || userProfile?.user_role === 'customer';
+  const handleEditProfile = () => {
+    onClose();
+    navigate('/profile/edit');
+  };
 
-  console.log('MobileMenu - User Role:', userProfile?.role, userProfile?.user_role, 'Is Customer:', isCustomer);
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'vi' : 'en');
+    toast.success(`Language switched to ${language === 'en' ? 'Vietnamese' : 'English'}`);
+  };
 
-  return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
-        </Button>
-      </SheetTrigger>
-      
-      <SheetContent side="right" className="w-full max-w-sm p-0 bg-gradient-to-b from-purple-50 to-white">
-        <div className="flex flex-col h-full">
-          {/* Header with Logo and Close */}
-          <div className="flex items-center justify-between p-4 border-b border-purple-100">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">E</span>
+  // Customer Menu Design
+  if (userRole === 'customer') {
+    const currentCredits = userProfile?.credits || 0;
+    const nextTierCredits = 100;
+    const progressPercent = Math.min(100, (currentCredits % nextTierCredits));
+    const creditsToNext = nextTierCredits - (currentCredits % nextTierCredits);
+
+    return (
+      <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+        
+        <aside className="relative w-[85vw] max-w-[400px] h-full bg-white/95 backdrop-blur-md rounded-l-3xl flex flex-col overflow-hidden shadow-2xl border-l-4 border-purple-200">
+          {/* Sticky Profile Header */}
+          <div className="sticky top-0 bg-gradient-to-br from-purple-50/90 to-pink-50/90 backdrop-blur-md p-6 border-b border-purple-100/50 z-10">
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg ring-4 ring-white/50">
+                {userProfile?.avatar_url ? (
+                  <img src={userProfile.avatar_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <User className="w-8 h-8 text-white" />
+                )}
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Emvi.App
-              </span>
+              
+              <div className="mt-3 text-center">
+                <h3 className="font-bold text-lg text-gray-900">
+                  Hey, {userProfile?.first_name || userProfile?.full_name?.split(' ')[0] || 'Beauty Lover'}! 👋
+                </h3>
+                <p className="text-xs text-gray-600 mt-1">{user?.email}</p>
+                
+                <div className="flex items-center justify-center gap-3 mt-2 px-3 py-1 bg-white/60 rounded-full">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 text-amber-400" />
+                    <span className="font-bold text-purple-600">{currentCredits}</span>
+                    <span className="text-xs text-gray-500">credits</span>
+                  </div>
+                  <div className="w-px h-4 bg-gray-300" />
+                  <div className="flex items-center gap-1">
+                    <Gift className="w-4 h-4 text-purple-500" />
+                    <span className="text-xs font-medium text-gray-700">{userProfile?.tier || 'Bronze'}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsOpen(false)}
-              className="h-8 w-8"
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
-            {/* Customer-specific menu */}
-            {isCustomer ? (
-              <>
-                {/* Sticky Profile Header */}
-                <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-purple-100 p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Avatar className="h-12 w-12 border-2 border-purple-200">
-                      <AvatarImage src={userProfile?.avatar_url} />
-                      <AvatarFallback className="bg-purple-100 text-purple-700">
-                        {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-900">
-                        Hey, {userProfile?.full_name?.split(' ')[0] || 'Beautiful'}! 👋
-                      </p>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Star className="h-3 w-3 text-yellow-500" />
-                        <span className="text-purple-600 font-medium">{credits} Credits</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Quick Invite Link */}
-                  <Button 
-                    onClick={copyInviteLink}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg h-8 text-xs"
-                  >
-                    <Copy className="h-3 w-3 mr-1" />
-                    Copy Invite Link
-                  </Button>
-                </div>
-
-                {/* FOMO Referral Banner */}
-                <div className="p-4 border-b border-purple-100">
-                  <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-orange-600" />
-                      <span className="text-sm font-semibold text-orange-800">
-                        🔥 Limited Time: Double Rewards!
-                      </span>
-                    </div>
-                    <p className="text-xs text-orange-700 mb-3">
-                      Invite friends now and get 2x credits for every signup!
-                    </p>
-                    <Progress value={referralProgress} className="h-2 mb-2" />
-                    <p className="text-xs text-orange-600">
-                      {referralProgress}% to your next reward tier
-                    </p>
-                  </div>
-                </div>
-
-                {/* Tier/Rewards Tracker */}
-                <div className="p-4 border-b border-purple-100">
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-semibold text-purple-800">Beauty VIP Status</span>
-                      <Badge variant="outline" className="text-purple-700 border-purple-300">
-                        Gold Member
-                      </Badge>
-                    </div>
-                    <div className="mb-2">
-                      <div className="flex justify-between text-xs text-purple-600 mb-1">
-                        <span>{credits} credits</span>
-                        <span>{nextReward} credits</span>
-                      </div>
-                      <Progress value={(credits / nextReward) * 100} className="h-2" />
-                    </div>
-                    <p className="text-xs text-purple-600">
-                      {nextReward - credits} credits to Platinum status
-                    </p>
-                  </div>
-                </div>
-
-                {/* Navigation Links */}
-                <div className="px-4 py-2 space-y-1">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/dashboard')}
-                  >
-                    <User className="h-5 w-5 mr-3 text-purple-600" />
-                    Dashboard
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/')}
-                  >
-                    <Home className="h-5 w-5 mr-3 text-purple-600" />
-                    Home
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/artists')}
-                  >
-                    <Users className="h-5 w-5 mr-3 text-purple-600" />
-                    Browse Artists
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/salons')}
-                  >
-                    <Building2 className="h-5 w-5 mr-3 text-purple-600" />
-                    Browse Salons
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/favorites')}
-                  >
-                    <Heart className="h-5 w-5 mr-3 text-purple-600" />
-                    Favorites
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/profile/edit')}
-                  >
-                    <User className="h-5 w-5 mr-3 text-purple-600" />
-                    Your Profile (edit)
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/community')}
-                  >
-                    <MessageCircle className="h-5 w-5 mr-3 text-purple-600" />
-                    Community
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/about')}
-                  >
-                    <Info className="h-5 w-5 mr-3 text-purple-600" />
-                    About
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/contact')}
-                  >
-                    <Phone className="h-5 w-5 mr-3 text-purple-600" />
-                    Contact
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-12 hover:bg-purple-50" 
-                    onClick={() => handleNavigation('/support')}
-                  >
-                    <HelpCircle className="h-5 w-5 mr-3 text-purple-600" />
-                    Support/Feedback
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Non-customer menu (existing logic) */}
-                <div className="px-4 py-6 space-y-2">
-                  {user ? (
+          {/* FOMO Referral Banner */}
+          <div className="mx-4 my-4 relative overflow-hidden">
+            <div className="bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 rounded-2xl p-4 text-white shadow-xl animate-pulse">
+              <div className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-bl-lg font-bold">
+                LIMITED TIME!
+              </div>
+              
+              <div className="text-center">
+                <h4 className="font-bold text-lg mb-1">🎉 2X Rewards Active!</h4>
+                <p className="text-sm text-purple-100 mb-3">
+                  Invite friends now and earn DOUBLE credits! This boost ends soon...
+                </p>
+                
+                <Button
+                  onClick={handleCopyInviteLink}
+                  className="w-full bg-white text-purple-600 hover:bg-purple-50 font-bold py-2.5 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
+                >
+                  {copied ? (
                     <>
-                      <Button 
-                        onClick={() => handleNavigation('/post-job')} 
-                        className="w-full bg-purple-600 text-white hover:bg-purple-700 mb-4"
-                      >
-                        Post a Job
-                      </Button>
-                      
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-start" 
-                        onClick={() => handleNavigation('/dashboard')}
-                      >
-                        <User className="h-5 w-5 mr-3" />
-                        Dashboard
-                      </Button>
+                      <Check className="w-4 h-4 mr-2" />
+                      Copied! Share Now
                     </>
                   ) : (
-                    <Button 
-                      onClick={() => handleNavigation('/sign-in')}
-                      className="w-full bg-purple-600 text-white hover:bg-purple-700 mb-4"
-                    >
-                      Post a Job for Free
-                    </Button>
+                    <>
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy Invite Link
+                    </>
                   )}
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={() => handleNavigation('/')}
-                  >
-                    <Home className="h-5 w-5 mr-3" />
-                    Home
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={() => handleNavigation('/artists')}
-                  >
-                    <Users className="h-5 w-5 mr-3" />
-                    Artists
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={() => handleNavigation('/salons')}
-                  >
-                    <Building2 className="h-5 w-5 mr-3" />
-                    Salons
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={() => handleNavigation('/jobs')}
-                  >
-                    <Building2 className="h-5 w-5 mr-3" />
-                    Jobs
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={() => handleNavigation('/community')}
-                  >
-                    <MessageCircle className="h-5 w-5 mr-3" />
-                    Community
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={() => handleNavigation('/about')}
-                  >
-                    <Info className="h-5 w-5 mr-3" />
-                    About
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={() => handleNavigation('/contact')}
-                  >
-                    <Phone className="h-5 w-5 mr-3" />
-                    Contact
-                  </Button>
-                </div>
-              </>
-            )}
+                </Button>
+              </div>
+            </div>
           </div>
 
-          {/* Footer */}
-          <div className="border-t border-purple-100 p-4 space-y-3">
-            {user && (
-              <Button 
-                variant="ghost" 
-                onClick={handleSignOut}
-                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <LogOut className="h-5 w-5 mr-3" />
-                Sign Out
-              </Button>
-            )}
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Language</span>
-              <Button variant="ghost" size="sm" className="text-sm">
-                <Globe className="h-4 w-4 mr-2" />
-                English
-              </Button>
+          {/* Tier/Rewards Tracker */}
+          <div className="mx-4 mb-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700">Next Reward</span>
+              <span className="text-sm font-bold text-amber-600">{creditsToNext} credits to go</span>
             </div>
             
-            <div className="text-center text-xs text-orange-500 font-medium">
+            <div className="w-full bg-amber-100 rounded-full h-3 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-500 ease-out rounded-full"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            
+            <p className="text-xs text-amber-700 mt-2 text-center">
+              {progressPercent}% complete • Keep earning for exclusive rewards!
+            </p>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-4 space-y-1">
+            <Link 
+              to="/" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <Home className="w-5 h-5" />
+              <span className="font-medium">Home</span>
+            </Link>
+            
+            <Link 
+              to="/artists" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <Users className="w-5 h-5" />
+              <span className="font-medium">Browse Artists</span>
+            </Link>
+            
+            <Link 
+              to="/salons" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <Scissors className="w-5 h-5" />
+              <span className="font-medium">Browse Salons</span>
+            </Link>
+            
+            <Link 
+              to="/favorites" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <Heart className="w-5 h-5" />
+              <span className="font-medium">Favorites</span>
+            </Link>
+            
+            <button
+              onClick={handleEditProfile}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+            >
+              <User className="w-5 h-5" />
+              <span className="font-medium">Your Profile (Edit)</span>
+            </button>
+            
+            <Link 
+              to="/community" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span className="font-medium">Community</span>
+            </Link>
+            
+            <Link 
+              to="/about" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <Star className="w-5 h-5" />
+              <span className="font-medium">About</span>
+            </Link>
+            
+            <Link 
+              to="/contact" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <HelpCircle className="w-5 h-5" />
+              <span className="font-medium">Contact</span>
+            </Link>
+            
+            <Link 
+              to="/support" 
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+              onClick={onClose}
+            >
+              <HelpCircle className="w-5 h-5" />
+              <span className="font-medium">Support/Feedback</span>
+            </Link>
+          </nav>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-gray-100/50 space-y-3">
+            <Button
+              onClick={signOut}
+              variant="destructive"
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl shadow-lg"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+            
+            <button
+              onClick={toggleLanguage}
+              className="w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              <Globe className="w-4 h-4" />
+              Language: {language === 'en' ? 'English' : 'Tiếng Việt'}
+            </button>
+            
+            <div className="text-center text-xs text-purple-400 font-medium opacity-70">
               Inspired by Sunshine ☀️
             </div>
           </div>
+        </aside>
+      </div>
+    );
+  }
+
+  // Default menu for other roles (keeping existing logic)
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      
+      <aside className="relative w-[85vw] max-w-[400px] h-full bg-white rounded-l-3xl flex flex-col overflow-y-auto shadow-2xl">
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+              <User className="w-6 h-6 text-gray-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">
+                {userProfile?.first_name || userProfile?.full_name || 'Welcome'}
+              </h3>
+              <p className="text-sm text-gray-500">{user?.email}</p>
+            </div>
+          </div>
         </div>
-      </SheetContent>
-    </Sheet>
+
+        <nav className="flex-1 p-4 space-y-2">
+          <Link 
+            to="/" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50"
+            onClick={onClose}
+          >
+            <Home className="w-5 h-5" />
+            <span>Home</span>
+          </Link>
+          
+          <Link 
+            to="/dashboard" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50"
+            onClick={onClose}
+          >
+            <User className="w-5 h-5" />
+            <span>Dashboard</span>
+          </Link>
+
+          {(userRole === 'artist' || userRole === 'salon' || userRole === 'owner') && (
+            <Link 
+              to="/post-job" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50"
+              onClick={onClose}
+            >
+              <Briefcase className="w-5 h-5" />
+              <span>Post a Job</span>
+            </Link>
+          )}
+
+          {userRole === 'salon' && (
+            <Link 
+              to="/post-salon" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50"
+              onClick={onClose}
+            >
+              <Store className="w-5 h-5" />
+              <span>Post a Salon</span>
+            </Link>
+          )}
+        </nav>
+
+        <div className="p-4 border-t border-gray-100">
+          <Button
+            onClick={signOut}
+            variant="outline"
+            className="w-full"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+      </aside>
+    </div>
   );
 };
 
