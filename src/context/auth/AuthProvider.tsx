@@ -4,7 +4,6 @@ import { AuthContext } from "./AuthContext";
 import { AuthContextType, UserProfile, UserRole } from "./types";
 import { useSession } from "./hooks/useSession";
 import { useUserProfile } from "./hooks/useUserProfile";
-import { authService } from "./services/authService";
 import { supabase } from "@/integrations/supabase/client";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -38,9 +37,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     try {
       setLoadingState(true);
-      const result = await authService.signIn(email, password);
-      // Role will be set automatically via useEffect when user updates
-      return result;
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      return { success: true, data };
     } catch (error) {
       console.error("Sign in error:", error);
       return { success: false, error: error as Error };
@@ -52,9 +56,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
       setLoadingState(true);
-      const result = await authService.signUp(email, password, userData);
-      // Role will be set automatically via useEffect when user updates
-      return result;
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: userData,
+        },
+      });
+      
+      if (error) throw error;
+      
+      return { success: true, data };
     } catch (error) {
       console.error("Sign up error:", error);
       return { success: false, error: error as Error };
@@ -66,7 +78,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       setLoadingState(true);
-      await authService.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       // Clear all state
       setUserRole(null);
     } catch (error) {
@@ -99,7 +113,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateProfile = async (data: Partial<UserProfile>) => {
     try {
       setProfileLoading(true);
-      return await authService.updateProfile(data);
+      const { error } = await supabase
+        .from('users')
+        .update(data)
+        .eq('id', user?.id);
+      
+      if (error) throw error;
+      
+      return { success: true };
     } catch (error) {
       console.error("Update profile error:", error);
       return { success: false, error: error as Error };
