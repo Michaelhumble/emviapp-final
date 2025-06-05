@@ -19,6 +19,27 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  css: {
+    postcss: {
+      plugins: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+      ],
+    },
+    // Force CSS compilation refresh
+    devSourcemap: true,
+  },
+  build: {
+    // Force rebuild of CSS assets
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'tailwind-styles': ['./src/index.css'],
+        },
+      },
+    },
+  },
   // Define environment variables explicitly for better error handling
   define: {
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || "https://wwhqbjrhbajpabfdwnip.supabase.co"),
