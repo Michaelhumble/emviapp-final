@@ -1,16 +1,23 @@
-
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
-import { Menu, X, User, Search, Heart, HelpCircle, Users, Gift, TrendingUp } from 'lucide-react';
-import { useAuth } from '@/context/auth';
-import LanguageToggle from '@/components/ui/LanguageToggle';
+import * as React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Menu, X, Heart, User, MessageCircle, HelpCircle } from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { toast } from "sonner";
 
 const CustomerFomoInviteBanner = ({
-  referralLink = "https://emvi.app/invite/your-code",
-  credits = 1200,
-  progress = 65,
+  referralLink = "https://emvi.app/invite/your-code", // Replace with your actual referral variable
+  credits = 1200, // Replace with your actual credits variable
+  progress = 65, // Replace with your actual percent to next reward
 }) => {
   const [copied, setCopied] = React.useState(false);
 
@@ -55,159 +62,273 @@ const CustomerFomoInviteBanner = ({
   );
 };
 
-const MobileMenu = () => {
-  const { isSignedIn, userRole, signOut } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+interface MobileMenuProps {
+  onClose?: () => void;
+}
+
+const MobileMenu = ({ onClose }: MobileMenuProps) => {
+  const { user, userRole, signOut } = useAuth();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    if (onClose) onClose();
+  };
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      setIsOpen(false);
+      handleClose();
+      toast.success("Signed out successfully");
     } catch (error) {
-      console.error('Error signing out:', error);
+      toast.error("Error signing out");
     }
   };
 
   const handleEditProfile = () => {
-    setIsOpen(false);
-    navigate('/profile/edit');
+    if (typeof onClose === 'function') onClose();
+    navigate("/profile/edit");
   };
 
-  const closeDrawer = () => setIsOpen(false);
+  const renderCustomerMenu = () => (
+    <div className="space-y-4">
+      {/* CUSTOMER FOMO INVITE BANNER - at the very top */}
+      <CustomerFomoInviteBanner />
+      
+      {/* EMOTIONAL CUSTOMER CTAs */}
+      <div className="space-y-3">
+        <Link 
+          to="/artists" 
+          onClick={handleClose}
+          className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 hover:shadow-md transition"
+        >
+          <Heart className="h-5 w-5 text-purple-600" />
+          <span className="font-semibold text-purple-800">Browse Artists</span>
+          <Badge className="ml-auto bg-purple-100 text-purple-700">Find Your Perfect Match!</Badge>
+        </Link>
+        
+        <Link 
+          to="/salons" 
+          onClick={handleClose}
+          className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 hover:shadow-md transition"
+        >
+          <span className="text-blue-600 font-bold text-lg">💎</span>
+          <span className="font-semibold text-blue-800">Browse Salons</span>
+          <Badge className="ml-auto bg-blue-100 text-blue-700">Premium Beauty!</Badge>
+        </Link>
+        
+        <Link 
+          to="/favorites" 
+          onClick={handleClose}
+          className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-rose-50 to-red-50 border border-rose-200 hover:shadow-md transition"
+        >
+          <Heart className="h-5 w-5 text-rose-600" />
+          <span className="font-semibold text-rose-800">Favorites</span>
+          <Badge className="ml-auto bg-rose-100 text-rose-700">Your Wishlist ❤️</Badge>
+        </Link>
+        
+        <button
+          onClick={handleEditProfile}
+          className="w-full py-2 px-4 mt-2 rounded-xl bg-gradient-to-r from-[#9A7B69] to-[#F6F6F7] text-[#1A1A1A] font-bold shadow-lg hover:scale-105 transition"
+        >
+          Edit Profile
+        </button>
+        
+        <Link 
+          to="/support" 
+          onClick={handleClose}
+          className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 hover:shadow-md transition"
+        >
+          <HelpCircle className="h-5 w-5 text-green-600" />
+          <span className="font-semibold text-green-800">Support & Feedback</span>
+          <Badge className="ml-auto bg-green-100 text-green-700">We're Here for You!</Badge>
+        </Link>
+      </div>
+    </div>
+  );
+
+  const renderArtistMenu = () => (
+    <div className="space-y-4">
+      <Link 
+        to="/dashboard/artist" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>📊</span>
+        <span className="font-medium">Dashboard</span>
+      </Link>
+      <Link 
+        to="/post-job" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>💼</span>
+        <span className="font-medium">Post a Job</span>
+      </Link>
+      <Link 
+        to="/profile/edit" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <User className="h-5 w-5" />
+        <span className="font-medium">Edit Profile</span>
+      </Link>
+      <Link 
+        to="/messages" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <MessageCircle className="h-5 w-5" />
+        <span className="font-medium">Messages</span>
+      </Link>
+    </div>
+  );
+
+  const renderSalonMenu = () => (
+    <div className="space-y-4">
+      <Link 
+        to="/dashboard/salon" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>📊</span>
+        <span className="font-medium">Dashboard</span>
+      </Link>
+      <Link 
+        to="/post-job" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>💼</span>
+        <span className="font-medium">Post a Job</span>
+      </Link>
+      <Link 
+        to="/post-salon" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>🏢</span>
+        <span className="font-medium">Post a Salon</span>
+      </Link>
+      <Link 
+        to="/profile/edit" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <User className="h-5 w-5" />
+        <span className="font-medium">Edit Profile</span>
+      </Link>
+      <Link 
+        to="/messages" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <MessageCircle className="h-5 w-5" />
+        <span className="font-medium">Messages</span>
+      </Link>
+    </div>
+  );
+
+  const renderOtherMenu = () => (
+    <div className="space-y-4">
+      <Link 
+        to="/post-job" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>💼</span>
+        <span className="font-medium">Post a Job</span>
+      </Link>
+      <Link 
+        to="/post-salon" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <span>🏢</span>
+        <span className="font-medium">Post a Salon</span>
+      </Link>
+      <Link 
+        to="/profile/edit" 
+        onClick={handleClose}
+        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition"
+      >
+        <User className="h-5 w-5" />
+        <span className="font-medium">Edit Profile</span>
+      </Link>
+    </div>
+  );
+
+  const renderMenuContent = () => {
+    if (!user) {
+      return (
+        <div className="space-y-4">
+          <Link 
+            to="/auth/signin" 
+            onClick={handleClose}
+            className="block w-full text-center py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+          >
+            Sign In
+          </Link>
+          <Link 
+            to="/auth/signup" 
+            onClick={handleClose}
+            className="block w-full text-center py-3 px-4 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition"
+          >
+            Sign Up
+          </Link>
+        </div>
+      );
+    }
+
+    switch (userRole) {
+      case 'customer':
+        return renderCustomerMenu();
+      case 'artist':
+      case 'nail technician/artist':
+        return renderArtistMenu();
+      case 'salon':
+      case 'owner':
+        return renderSalonMenu();
+      default:
+        return renderOtherMenu();
+    }
+  };
 
   return (
-    <div className="md:hidden">
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerTrigger asChild>
-          <Button variant="ghost" size="sm" className="p-2">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </DrawerTrigger>
-        <DrawerContent className="px-4 pb-6">
-          <div className="flex justify-between items-center py-4">
-            <h2 className="text-lg font-semibold">Menu</h2>
-            <DrawerClose asChild>
-              <Button variant="ghost" size="sm">
-                <X className="h-4 w-4" />
-              </Button>
-            </DrawerClose>
-          </div>
-
-          <div className="space-y-4">
-            {/* Customer FOMO Banner - only show for customers */}
-            {isSignedIn && userRole === 'customer' && (
-              <CustomerFomoInviteBanner />
-            )}
-
-            {/* Customer-specific navigation */}
-            {isSignedIn && userRole === 'customer' && (
-              <div className="space-y-3">
-                <h3 className="font-semibold text-gray-800 mb-3">Discover Beauty</h3>
-                
-                <Link 
-                  to="/explore/artists" 
-                  onClick={closeDrawer}
-                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <Search className="h-5 w-5 text-purple-600" />
-                  <span className="font-medium text-gray-800">Browse Artists</span>
-                  <span className="text-xs text-purple-600 ml-auto">Find your perfect match</span>
-                </Link>
-
-                <Link 
-                  to="/explore/salons" 
-                  onClick={closeDrawer}
-                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <TrendingUp className="h-5 w-5 text-indigo-600" />
-                  <span className="font-medium text-gray-800">Browse Salons</span>
-                  <span className="text-xs text-indigo-600 ml-auto">Trusted directory</span>
-                </Link>
-
-                <Link 
-                  to="/favorites" 
-                  onClick={closeDrawer}
-                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <Heart className="h-5 w-5 text-rose-600" />
-                  <span className="font-medium text-gray-800">Favorites</span>
-                  <span className="text-xs text-rose-600 ml-auto">Your saved picks</span>
-                </Link>
-
-                <button
-                  onClick={handleEditProfile}
-                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors w-full text-left"
-                >
-                  <User className="h-5 w-5 text-gray-600" />
-                  <span className="font-medium text-gray-800">Your Profile</span>
-                  <span className="text-xs text-gray-600 ml-auto">Manage settings</span>
-                </button>
-
-                <Link 
-                  to="/support" 
-                  onClick={closeDrawer}
-                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <HelpCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-medium text-gray-800">Support & Feedback</span>
-                  <span className="text-xs text-green-600 ml-auto">We're here to help</span>
-                </Link>
-              </div>
-            )}
-
-            {/* General navigation for other roles */}
-            {(!isSignedIn || userRole !== 'customer') && (
-              <div className="space-y-3">
-                <Link to="/explore" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
-                  Explore
-                </Link>
-                <Link to="/jobs" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
-                  Jobs
-                </Link>
-                {isSignedIn && (
-                  <>
-                    <Link to="/dashboard" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
-                      Dashboard
-                    </Link>
-                    <Link to="/profile/edit" onClick={closeDrawer} className="block py-2 text-gray-700 hover:text-primary">
-                      Edit Profile
-                    </Link>
-                  </>
-                )}
-              </div>
-            )}
-
-            <div className="border-t pt-4 mt-6">
-              <LanguageToggle minimal />
-            </div>
-
-            {isSignedIn ? (
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-6 w-6" />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent className="px-4 pb-8">
+        <DrawerHeader className="flex items-center justify-between px-0">
+          <DrawerTitle>Menu</DrawerTitle>
+          <DrawerClose asChild>
+            <Button variant="ghost" size="icon" onClick={handleClose}>
+              <X className="h-6 w-6" />
+            </Button>
+          </DrawerClose>
+        </DrawerHeader>
+        
+        <div className="space-y-6">
+          {renderMenuContent()}
+          
+          {user && (
+            <div className="pt-4 border-t border-gray-200">
               <Button 
-                onClick={handleSignOut} 
-                variant="outline" 
-                className="w-full mt-4"
+                variant="ghost" 
+                onClick={handleSignOut}
+                className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 Sign Out
               </Button>
-            ) : (
-              <div className="space-y-2">
-                <Link to="/auth/signin" onClick={closeDrawer}>
-                  <Button variant="outline" className="w-full">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/auth/signup" onClick={closeDrawer}>
-                  <Button className="w-full">
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </DrawerContent>
-      </Drawer>
-    </div>
+            </div>
+          )}
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
