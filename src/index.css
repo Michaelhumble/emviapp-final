@@ -79,17 +79,6 @@
   }
 }
 
-/* Force enhanced styles to load immediately */
-.signup-form-enhanced,
-.signup-card-luxury,
-.signup-input-premium,
-.signup-button-gradient,
-.signup-animation-container,
-.role-card-enhanced {
-  /* Force browser to recognize these classes exist */
-  content: '';
-}
-
 /* Mobile navigation animations */
 .menu-item-enter {
   animation: menuItemSlideIn 0.3s ease-out forwards;

@@ -25,19 +25,6 @@ export default defineConfig(({ mode }) => ({
     postcss: {
       plugins: [tailwindcss, autoprefixer],
     },
-    // Force CSS compilation refresh
-    devSourcemap: true,
-  },
-  build: {
-    // Force rebuild of CSS assets
-    cssCodeSplit: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'tailwind-styles': ['./src/index.css'],
-        },
-      },
-    },
   },
   // Define environment variables explicitly for better error handling
   define: {

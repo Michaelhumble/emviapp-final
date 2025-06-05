@@ -1,57 +1,64 @@
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import RoleSelectionCards from "./RoleSelectionCards";
 import { UserRole } from "@/context/auth/types";
+import RoleSelectionCards from "./RoleSelectionCards";
+import { toast } from "sonner";
 
 const SignUpForm = () => {
+  const { signUp } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "",
     email: "",
     password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
     role: "customer" as UserRole,
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const { signUp } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
 
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setIsLoading(true);
+    
     try {
-      const result = await signUp(
+      await signUp(
         formData.email,
         formData.password,
         {
-          full_name: formData.fullName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           role: formData.role,
         }
       );
-
-      if (result.error) {
-        toast.error(result.error.message);
-      } else {
-        toast.success("Account created successfully! Please check your email to verify your account.");
-        navigate("/");
-      }
-    } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
+      
+      toast.success("Account created successfully! Please check your email to verify your account.");
+    } catch (error: any) {
+      console.error("Sign up error:", error);
+      toast.error(error.message || "Failed to create account");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleRoleChange = (role: UserRole) => {
@@ -59,132 +66,103 @@ const SignUpForm = () => {
   };
 
   return (
-    <motion.div 
-      className="signup-form-enhanced min-h-screen flex items-center justify-center p-4 signup-animation-container"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-    >
-      <div className="w-full max-w-md">
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Card className="signup-card-luxury border-0 shadow-luxury">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Create an Account
-              </CardTitle>
-              <CardDescription className="text-gray-600">
-                Join EmviApp and connect with the beauty community
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-                    Full Name *
-                  </Label>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
+        <Card className="shadow-lg border-0">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              Join EmviApp
+            </CardTitle>
+            <CardDescription className="text-gray-600">
+              Create your account to get started
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
                   <Input
-                    id="fullName"
+                    id="firstName"
                     type="text"
-                    placeholder="Your full name"
-                    value={formData.fullName}
-                    onChange={handleInputChange("fullName")}
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange("firstName", e.target.value)}
                     required
-                    className="signup-input-premium h-12 text-base"
-                    disabled={isLoading}
+                    className="mt-1"
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Email *
-                  </Label>
+                <div>
+                  <Label htmlFor="lastName">Last Name</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={handleInputChange("email")}
+                    id="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
                     required
-                    className="signup-input-premium h-12 text-base"
-                    disabled={isLoading}
+                    className="mt-1"
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Password *
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleInputChange("password")}
-                    required
-                    className="signup-input-premium h-12 text-base"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="role" className="text-sm font-medium text-gray-700">
-                    I am a *
-                  </Label>
-                  <Select
-                    value={formData.role}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, role: value as UserRole }))}
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger className="signup-input-premium h-12 text-base">
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="customer">Customer</SelectItem>
-                      <SelectItem value="artist">Nail Artist</SelectItem>
-                      <SelectItem value="salon">Salon Owner</SelectItem>
-                      <SelectItem value="freelancer">Freelancer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <RoleSelectionCards
-                  selectedRole={formData.role}
-                  onChange={handleRoleChange}
-                />
-
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button
-                    type="submit"
-                    className="signup-button-gradient w-full h-12 text-base font-semibold text-white shadow-lg"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Creating Account..." : "Create Account"}
-                  </Button>
-                </motion.div>
-              </form>
-
-              <div className="text-center text-sm text-gray-600">
-                Already have an account?{" "}
-                <motion.a
-                  href="/auth/signin"
-                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Sign in
-                </motion.a>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    </motion.div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  required
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  required
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                  required
+                  className="mt-1"
+                />
+              </div>
+
+              <RoleSelectionCards
+                selectedRole={formData.role}
+                onChange={handleRoleChange}
+              />
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              >
+                {isLoading ? "Creating Account..." : "Create Account"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
   );
 };
 
