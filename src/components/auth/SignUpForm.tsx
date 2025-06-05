@@ -66,14 +66,14 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
+    <div className="signup-form-enhanced min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-indigo-50/50 to-white">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <Card className="shadow-lg border-0">
+        <div className="signup-card-luxury p-8 rounded-2xl shadow-2xl border-0">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-900">
               Join EmviApp
@@ -94,7 +94,7 @@ const SignUpForm = () => {
                     value={formData.firstName}
                     onChange={(e) => handleInputChange("firstName", e.target.value)}
                     required
-                    className="mt-1"
+                    className="signup-input-premium w-full rounded-xl p-3 border transition-all duration-300 mt-1"
                   />
                 </div>
                 <div>
@@ -105,7 +105,7 @@ const SignUpForm = () => {
                     value={formData.lastName}
                     onChange={(e) => handleInputChange("lastName", e.target.value)}
                     required
-                    className="mt-1"
+                    className="signup-input-premium w-full rounded-xl p-3 border transition-all duration-300 mt-1"
                   />
                 </div>
               </div>
@@ -118,7 +118,7 @@ const SignUpForm = () => {
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   required
-                  className="mt-1"
+                  className="signup-input-premium w-full rounded-xl p-3 border transition-all duration-300 mt-1"
                 />
               </div>
 
@@ -130,7 +130,7 @@ const SignUpForm = () => {
                   value={formData.password}
                   onChange={(e) => handleInputChange("password", e.target.value)}
                   required
-                  className="mt-1"
+                  className="signup-input-premium w-full rounded-xl p-3 border transition-all duration-300 mt-1"
                 />
               </div>
 
@@ -142,25 +142,27 @@ const SignUpForm = () => {
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                   required
-                  className="mt-1"
+                  className="signup-input-premium w-full rounded-xl p-3 border transition-all duration-300 mt-1"
                 />
               </div>
 
-              <RoleSelectionCards
-                selectedRole={formData.role}
-                onChange={handleRoleChange}
-              />
+              <div className="role-card-enhanced">
+                <RoleSelectionCards
+                  selectedRole={formData.role}
+                  onChange={handleRoleChange}
+                />
+              </div>
 
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                className="signup-button-gradient w-full rounded-xl py-3 text-white font-semibold transition-transform duration-200 hover:scale-105 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
           </CardContent>
-        </Card>
+        </div>
       </motion.div>
     </div>
   );
