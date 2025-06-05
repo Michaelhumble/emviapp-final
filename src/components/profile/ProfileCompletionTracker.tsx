@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
@@ -70,7 +71,11 @@ const ProfileCompletionTracker = () => {
   };
 
   return (
-    <ProfileCompletionCard />
+    <ProfileCompletionCard 
+      completionPercentage={completionPercentage}
+      incompleteFields={incompleteFields}
+      isComplete={completionPercentage === 100}
+    />
   );
 };
 

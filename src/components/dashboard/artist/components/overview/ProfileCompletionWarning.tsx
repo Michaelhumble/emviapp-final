@@ -5,15 +5,50 @@ import { ProfileCompletionCard } from "@/components/profile/ProfileCompletionCar
 const ProfileCompletionWarning = () => {
   const { userProfile } = useAuth();
 
-  if (userProfile && (!userProfile.bio || !userProfile.specialty || !userProfile.avatar_url)) {
-    return (
-      <div className="mb-6">
-        <ProfileCompletionCard />
-      </div>
-    );
+  // Calculate profile completion
+  const calculateCompletion = () => {
+    if (!userProfile) return { percentage: 0, incompleteFields: ['Profile Photo', 'Bio', 'Specialty'], isComplete: false };
+    
+    const requiredFields = ['bio', 'specialty', 'avatar_url'];
+    const completedFields = requiredFields.filter(field => {
+      const value = userProfile[field as keyof typeof userProfile];
+      return value && value !== '';
+    });
+    
+    const percentage = Math.floor((completedFields.length / requiredFields.length) * 100);
+    const incompleteFields = requiredFields
+      .filter(field => !userProfile[field as keyof typeof userProfile] || userProfile[field as keyof typeof userProfile] === '')
+      .map(field => {
+        switch(field) {
+          case 'avatar_url': return 'Profile Photo';
+          case 'bio': return 'Bio';
+          case 'specialty': return 'Specialty';
+          default: return field;
+        }
+      });
+    
+    return {
+      percentage,
+      incompleteFields,
+      isComplete: percentage === 100
+    };
+  };
+
+  const completion = calculateCompletion();
+
+  if (completion.isComplete) {
+    return null;
   }
 
-  return null;
+  return (
+    <div className="mb-6">
+      <ProfileCompletionCard 
+        completionPercentage={completion.percentage}
+        incompleteFields={completion.incompleteFields}
+        isComplete={completion.isComplete}
+      />
+    </div>
+  );
 };
 
 export default ProfileCompletionWarning;

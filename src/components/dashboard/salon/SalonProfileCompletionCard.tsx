@@ -16,12 +16,14 @@ interface SalonProfileCompletionCardProps {
   completionPercentage: number;
   profileFields: ProfileField[];
   incompleteFields?: string[];
+  loading?: boolean;
 }
 
 const SalonProfileCompletionCard = ({ 
   completionPercentage, 
   profileFields,
-  incompleteFields = []
+  incompleteFields = [],
+  loading = false
 }: SalonProfileCompletionCardProps) => {
   const getProgressColor = () => {
     if (completionPercentage >= 80) return "[&>div]:bg-green-500";
@@ -37,14 +39,14 @@ const SalonProfileCompletionCard = ({
         <CardTitle className="text-lg flex items-center justify-between">
           <span>Profile Completion</span>
           <span className="text-sm font-normal text-muted-foreground">
-            {completionPercentage}%
+            {loading ? '...' : `${completionPercentage}%`}
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Progress 
-            value={completionPercentage} 
+            value={loading ? 0 : completionPercentage} 
             className={`h-2 ${getProgressColor()}`}
           />
           <p className="text-sm text-muted-foreground">
@@ -71,7 +73,7 @@ const SalonProfileCompletionCard = ({
           </div>
         )}
 
-        <Button asChild className="w-full" size="sm">
+        <Button asChild className="w-full" size="sm" disabled={loading}>
           <Link to="/salon/profile/edit">
             <Edit className="h-4 w-4 mr-2" />
             Complete Profile

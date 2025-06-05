@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
@@ -27,6 +28,30 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   const isSupplier = userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier';
   const isCustomer = userRole === 'customer';
   const isOther = userRole === 'other' || !userRole;
+  
+  // Calculate profile completion for ProfileCompletionCard
+  const calculateProfileCompletion = () => {
+    if (!userProfile) return { percentage: 0, incompleteFields: ['Full Name', 'Email'], isComplete: false };
+    
+    const requiredFields = ['full_name', 'email'];
+    const completedFields = requiredFields.filter(field => {
+      const value = userProfile[field as keyof typeof userProfile];
+      return value && value !== '';
+    });
+    
+    const percentage = Math.floor((completedFields.length / requiredFields.length) * 100);
+    const incompleteFields = requiredFields
+      .filter(field => !userProfile[field as keyof typeof userProfile] || userProfile[field as keyof typeof userProfile] === '')
+      .map(field => field === 'full_name' ? 'Full Name' : 'Email');
+    
+    return {
+      percentage,
+      incompleteFields,
+      isComplete: percentage === 100
+    };
+  };
+
+  const profileCompletion = calculateProfileCompletion();
   
   // Get variant based on user role
   const getVariant = () => {
@@ -69,7 +94,11 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
         
         {/* Profile Completion Card */}
         <motion.div variants={itemVariants} className="mb-6">
-          <ProfileCompletionCard />
+          <ProfileCompletionCard 
+            completionPercentage={profileCompletion.percentage}
+            incompleteFields={profileCompletion.incompleteFields}
+            isComplete={profileCompletion.isComplete}
+          />
         </motion.div>
         
         {/* AI Dashboard Widgets - showing fewer for better focus */}

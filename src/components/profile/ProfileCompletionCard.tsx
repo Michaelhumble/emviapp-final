@@ -10,12 +10,14 @@ export interface ProfileCompletionCardProps {
   completionPercentage: number;
   incompleteFields: string[];
   isComplete: boolean;
+  loading?: boolean;
 }
 
 export const ProfileCompletionCard = ({ 
   completionPercentage, 
   incompleteFields, 
-  isComplete 
+  isComplete,
+  loading = false
 }: ProfileCompletionCardProps) => {
   if (isComplete) {
     return (
