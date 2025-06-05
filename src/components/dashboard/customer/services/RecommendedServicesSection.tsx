@@ -1,145 +1,299 @@
 
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Image as ImageIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Sparkles, 
+  MapPin, 
+  Clock, 
+  Star,
+  Heart,
+  Calendar
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
+import { useQuery } from '@tanstack/react-query';
 
-// Mock data for recommended services
-const recommendedServices = [
-  {
-    id: "1",
-    title: "Premium Gel Manicure",
-    description: "Long-lasting gel color with premium finishes",
-    price: 45,
-    duration: "45 min",
-    artist: { name: "Amy's Nails", avatar: null },
-    trending: true,
-    image: null
-  },
-  {
-    id: "2",
-    title: "Signature Facial",
-    description: "Rejuvenating treatment customized for your skin",
-    price: 85,
-    duration: "60 min",
-    artist: { name: "Glow Studio", avatar: null },
-    trending: false,
-    image: null
-  },
-  {
-    id: "3",
-    title: "Hair Color & Style",
-    description: "Full color treatment with styling",
-    price: 120,
-    duration: "120 min",
-    artist: { name: "Elle Hair", avatar: null },
-    trending: true,
-    image: null
-  },
-  {
-    id: "4",
-    title: "Express Lash Extensions",
-    description: "Quick lash enhancement for natural volume",
-    price: 65,
-    duration: "45 min",
-    artist: { name: "Lash Lab", avatar: null },
-    trending: false,
-    image: null
-  }
-];
+// Local interface for this component only
+interface ServiceWithArtistLocal {
+  id: string;
+  title: string;
+  description?: string;
+  price: number;
+  duration_minutes: number;
+  image_url?: string;
+  artist?: {
+    id?: string;
+    full_name?: string;
+    avatar_url?: string;
+    location?: string;
+    specialty?: string;
+  };
+}
 
-const RecommendedServicesSection: React.FC = () => {
+const RecommendedServicesSection = () => {
   const navigate = useNavigate();
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const { user } = useAuth();
 
-  const handleViewService = (service: typeof recommendedServices[0]) => {
-    // Navigate to artists page to find similar services
-    navigate('/artists');
-    toast.success(`Looking for ${service.title} services...`);
+  const { data: services = [], isLoading } = useQuery({
+    queryKey: ['recommendedServices', user?.id],
+    queryFn: async (): Promise<ServiceWithArtistLocal[]> => {
+      if (!user) return [];
+
+      try {
+        const { data, error } = await supabase
+          .from('services')
+          .select(`
+            id,
+            title,
+            description,
+            price,
+            duration_minutes,
+            image_url,
+            user:user_id (
+              id,
+              full_name,
+              avatar_url,
+              location,
+              specialty
+            )
+          `)
+          .limit(6);
+
+        if (error) {
+          console.error('Error fetching services:', error);
+          return [];
+        }
+
+        // Transform data to match our local interface
+        return (data || []).map(service => ({
+          id: service.id,
+          title: service.title || 'Beauty Service',
+          description: service.description || 'Professional beauty service',
+          price: service.price || 0,
+          duration_minutes: service.duration_minutes || 60,
+          image_url: service.image_url || '',
+          artist: service.user ? {
+            id: service.user.id || '',
+            full_name: service.user.full_name || 'Beauty Professional',
+            avatar_url: service.user.avatar_url || '',
+            location: service.user.location || 'Location not specified',
+            specialty: service.user.specialty || 'Beauty Specialist'
+          } : {
+            id: '',
+            full_name: 'Beauty Professional',
+            avatar_url: '',
+            location: 'Location not specified',
+            specialty: 'Beauty Specialist'
+          }
+        }));
+      } catch (error) {
+        console.error('Error in recommendedServices query:', error);
+        return [];
+      }
+    },
+    enabled: !!user
+  });
+
+  const handleServiceClick = (service: ServiceWithArtistLocal) => {
+    if (service.artist?.id) {
+      navigate(`/artist/${service.artist.id}`);
+      toast.success(`View ${service.artist.full_name}'s profile`);
+    } else {
+      navigate('/search');
+      toast.info('Discover more amazing services!');
+    }
   };
 
+  const handleBookService = (service: ServiceWithArtistLocal) => {
+    if (service.artist?.id) {
+      navigate(`/artist/${service.artist.id}?service=${service.id}`);
+      toast.success('Ready to book your service!');
+    } else {
+      navigate('/search');
+      toast.info('Find the perfect service for you!');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-6 w-6 text-purple-600" />
+            Suggested for You
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin h-8 w-8 border-t-2 border-purple-600 rounded-full"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="mb-5">
-        <h2 className="text-2xl font-serif font-bold mb-2 text-gray-800 flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-purple-500" />
-          Suggested for You
-        </h2>
-        <p className="text-gray-600">
-          Services we think you'll love based on your preferences and history
-        </p>
-      </div>
-      
-      <div className={isMobile 
-        ? "flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x"
-        : "grid grid-cols-1 sm:grid-cols-2 gap-4"}
-      >
-        {recommendedServices.map((service) => (
-          <Card
-            key={service.id}
-            className="group hover:shadow-md transition-shadow border-gray-100 overflow-hidden"
-          >
-            <div className="h-32 bg-gradient-to-r from-purple-100 to-pink-100 flex items-center justify-center relative">
-              {service.image ? (
-                <img 
-                  src={service.image} 
-                  alt={service.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <ImageIcon className="h-12 w-12 text-white/40" />
-              )}
-              
-              {service.trending && (
-                <div className="absolute top-3 right-3">
-                  <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800 border border-purple-200">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Trending
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            <CardContent className="p-4">
-              <div className="mb-3">
-                <h3 className="font-medium text-lg text-gray-800 mb-1 group-hover:text-purple-700 transition-colors">
-                  {service.title}
-                </h3>
-                <p className="text-gray-500 text-sm line-clamp-2">
-                  {service.description}
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-1">
-                  <span className="font-medium text-purple-700">${service.price}</span>
-                  <span className="text-gray-400 text-sm">•</span>
-                  <span className="text-gray-500 text-sm">{service.duration}</span>
-                </div>
-                
-                {service.artist && (
-                  <div className="flex items-center text-xs text-gray-500">
-                    by {service.artist.name}
-                  </div>
-                )}
-              </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full rounded-full border-purple-200 text-purple-700 hover:bg-purple-50"
-                onClick={() => handleViewService(service)}
+    <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-6 w-6 text-purple-600" />
+            Suggested for You
+          </CardTitle>
+          <Badge className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-0">
+            Personalized
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {services.length === 0 ? (
+          <div className="text-center py-8">
+            <Sparkles className="h-12 w-12 text-purple-200 mx-auto mb-4" />
+            <p className="text-gray-600 mb-4">No services available right now</p>
+            <Button 
+              onClick={() => navigate('/search')}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-lg"
+            >
+              Explore Services
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service) => (
+              <motion.div
+                key={service.id}
+                whileHover={{ scale: 1.02 }}
+                className="group"
               >
-                View <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+                <Card className="border border-purple-100 hover:border-purple-300 transition-all duration-300 overflow-hidden">
+                  {/* Service Image */}
+                  <div className="relative h-48 bg-gradient-to-br from-purple-100 to-pink-100">
+                    {service.image_url ? (
+                      <img 
+                        src={service.image_url} 
+                        alt={service.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <Sparkles className="h-12 w-12 text-purple-300" />
+                      </div>
+                    )}
+                    <div className="absolute top-3 right-3">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="bg-white/80 hover:bg-white text-purple-600 rounded-full p-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toast.success('Added to favorites!');
+                        }}
+                      >
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-4">
+                    {/* Artist Info */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                        {service.artist?.avatar_url ? (
+                          <img 
+                            src={service.artist.avatar_url} 
+                            alt={service.artist.full_name}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-white text-sm font-medium">
+                            {service.artist?.full_name?.charAt(0) || 'B'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {service.artist?.full_name}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {service.artist?.specialty}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Service Details */}
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">
+                      {service.title}
+                    </h3>
+                    
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {service.description}
+                    </p>
+
+                    {/* Service Meta */}
+                    <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        <span>{service.duration_minutes}min</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span className="truncate">{service.artist?.location}</span>
+                      </div>
+                    </div>
+
+                    {/* Price and Action */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-lg font-bold text-purple-600">
+                          ${service.price}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleServiceClick(service)}
+                          className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                        >
+                          View
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleBookService(service)}
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-md"
+                        >
+                          <Calendar className="h-3 w-3 mr-1" />
+                          Book
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* View All Button */}
+        {services.length > 0 && (
+          <div className="text-center mt-6">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/search')}
+              className="border-purple-200 text-purple-600 hover:bg-purple-50"
+            >
+              View All Services
+              <Sparkles className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
