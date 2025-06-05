@@ -23,6 +23,7 @@ export interface UserProfile {
   email?: string;
   credits?: number;
   boosted_until?: string;
+  is_premium?: boolean;
 }
 
 
