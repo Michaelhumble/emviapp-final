@@ -2,7 +2,7 @@
 import { RadioGroup } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { UserRole } from "@/context/auth/types";
-import { User, Scissors, Building2, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
+import { User, Scissors, Building2, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RoleOption {
@@ -20,6 +20,12 @@ const roleOptions: RoleOption[] = [
     icon: <User className="h-5 w-5 text-indigo-500" />
   },
   {
+    id: "artist",
+    label: "Artist",
+    description: "I'm a beauty professional",
+    icon: <Scissors className="h-5 w-5 text-indigo-500" />
+  },
+  {
     id: "owner",
     label: "Salon Owner",
     description: "I own a salon or beauty business",
@@ -30,24 +36,6 @@ const roleOptions: RoleOption[] = [
     label: "Freelancer",
     description: "I offer freelance beauty services",
     icon: <Briefcase className="h-5 w-5 text-indigo-500" />
-  },
-  {
-    id: "artist",
-    label: "Artist",
-    description: "I'm a beauty professional",
-    icon: <Scissors className="h-5 w-5 text-indigo-500" />
-  },
-  {
-    id: "supplier",
-    label: "Vendor/Supplier",
-    description: "I sell beauty products/supplies",
-    icon: <ShoppingBag className="h-5 w-5 text-indigo-500" />
-  },
-  {
-    id: "other",
-    label: "Other",
-    description: "None of the above",
-    icon: <HelpCircle className="h-5 w-5 text-indigo-500" />
   }
 ];
 
@@ -60,9 +48,9 @@ const RoleSelectionCards = ({ selectedRole, onChange }: RoleSelectionCardsProps)
   return (
     <div className="w-full space-y-3">
       <Label className="text-sm font-medium text-gray-700">
-        I am joining as a:
+        I am a:
       </Label>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         {roleOptions.map((option) => (
           <div 
             key={option.id}
