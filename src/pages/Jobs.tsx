@@ -32,10 +32,9 @@ const Jobs = () => {
         />
       </Helmet>
       <div className="pb-20 md:pb-0">
-        <Routes>
-          <Route path="/" element={<JobsPage />} />
-          <Route path="/create" element={<CreateJobPosting />} />
-        </Routes>
+        {/* REMOVED: Nested Routes component that was causing router conflicts */}
+        {/* TODO: If sub-routing is needed, implement through main router in App.tsx */}
+        <JobsPage />
       </div>
       <MobileJobsNavBar />
     </Layout>
