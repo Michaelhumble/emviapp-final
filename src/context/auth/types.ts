@@ -1,5 +1,6 @@
 
 
+
 export type UserRole = 'artist' | 'salon' | 'customer' | 'supplier' | 'freelancer' | 'other';
 
 export interface UserProfile {
@@ -20,5 +21,7 @@ export interface UserProfile {
   preferred_language?: string;
   phone?: string;
   email?: string;
+  credits?: number;
 }
+
 
