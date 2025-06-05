@@ -1,47 +1,48 @@
+
 import React from 'react';
-import { X, Home, Calendar, Heart, MessageSquare, Search, Gift, Coins, Users, HelpCircle, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { 
+  Home, 
+  Calendar, 
+  Heart, 
+  MessageCircle, 
+  Search, 
+  Gift, 
+  Coins, 
+  Users, 
+  HelpCircle, 
+  LogOut,
+  User
+} from 'lucide-react';
 import { useAuth } from '@/context/auth';
-import { Button } from '@/components/ui/button';
 import { CustomerProfileHeader } from '@/components/customer/CustomerProfileHeader';
 import { CustomerFomoInviteBanner } from '@/components/customer/CustomerFomoInviteBanner';
 import { CustomerRewardsTracker } from '@/components/customer/CustomerRewardsTracker';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface MobileMenuProps {
   isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
+export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
+  const { userRole, handleSignOut } = useAuth();
   const navigate = useNavigate();
-  const { userRole, signOut } = useAuth();
-
-  const handleSignOut = async () => {
-    await signOut();
-    setIsOpen(false);
-    navigate('/auth/signin');
-  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-      <div className="fixed top-0 right-0 h-full w-80 bg-white shadow-xl">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Menu</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsOpen(false)}
-            className="h-8 w-8 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="fixed inset-0 z-50 bg-black/50">
+      <div className="absolute inset-y-0 right-0 w-full max-w-xs bg-white shadow-xl transition-transform duration-300 ease-in-out">
+        {/* Close Button */}
+        <button
+          onClick={() => setIsOpen(false)}
+          className="absolute top-4 right-4 p-2 text-gray-600 rounded-full hover:bg-gray-100 focus:outline-none z-10"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-        {/* Customer Menu */}
         {userRole === 'customer' && (
           <div className="flex flex-col h-full bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
             {/* Customer Profile Header */}
@@ -60,16 +61,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
                   { name: 'Home', icon: Home, to: '/dashboard', badge: '2' },
                   { name: 'Book Now', icon: Calendar, to: '/explore/artists', badge: 'Hot!' },
                   { name: 'Favorites', icon: Heart, to: '/dashboard/favorites', badge: '5' },
-                  { name: 'Messages', icon: MessageSquare, to: '/messages', badge: '3' },
+                  { name: 'Messages', icon: MessageCircle, to: '/messages', badge: '3' },
                   { name: 'Explore', icon: Search, to: '/explore', badge: 'New' },
                   { name: 'Invite Friends', icon: Gift, to: '/referrals', badge: '2x' },
                 ].map((item) => (
-                  <button
+                  <Link
                     key={item.name}
-                    onClick={() => {
-                      navigate(item.to);
-                      setIsOpen(false);
-                    }}
+                    to={item.to}
+                    onClick={() => setIsOpen(false)}
                     className="w-full flex items-center justify-between p-3 rounded-xl bg-white/60 backdrop-blur-sm border border-white/30 hover:bg-white/80 transition-all group"
                   >
                     <div className="flex items-center gap-3">
@@ -83,8 +82,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
                         {item.badge}
                       </div>
                     )}
-                  </button>
+                  </Link>
                 ))}
+
+                {/* Edit Profile Button */}
+                <Link
+                  to="/profile/edit"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-white/60 backdrop-blur-sm border border-white/30 hover:bg-white/80 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 group-hover:from-purple-200 group-hover:to-pink-200 transition-all">
+                      <User className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <span className="font-medium text-gray-800">Edit Profile</span>
+                  </div>
+                </Link>
               </div>
               
               {/* Credit Wallet */}
@@ -95,7 +108,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-2xl font-bold text-amber-600">125</span>
-                  <button className="text-xs text-amber-600 hover:text-amber-800 font-medium">
+                  <button 
+                    onClick={() => {
+                      navigate('/dashboard/credits');
+                      setIsOpen(false);
+                    }}
+                    className="text-xs text-amber-600 hover:text-amber-800 font-medium"
+                  >
                     View History →
                   </button>
                 </div>
@@ -107,17 +126,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
                   { name: 'Community', icon: Users, to: '/community' },
                   { name: 'Support & Help', icon: HelpCircle, to: '/support' },
                 ].map((item) => (
-                  <button
+                  <Link
                     key={item.name}
-                    onClick={() => {
-                      navigate(item.to);
-                      setIsOpen(false);
-                    }}
+                    to={item.to}
+                    onClick={() => setIsOpen(false)}
                     className="w-full flex items-center gap-3 p-3 text-gray-600 hover:text-purple-600 hover:bg-white/50 rounded-lg transition-all"
                   >
                     <item.icon className="h-5 w-5" />
                     <span className="font-medium">{item.name}</span>
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -134,7 +151,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
               </div>
               
               <button
-                onClick={handleSignOut}
+                onClick={() => {
+                  handleSignOut();
+                  setIsOpen(false);
+                }}
                 className="w-full flex items-center justify-center gap-2 p-3 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
               >
                 <LogOut className="h-5 w-5" />
@@ -144,22 +164,40 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
           </div>
         )}
 
-        {/* Other role menus would go here - keeping existing logic for artist, salon, etc. */}
-        {userRole !== 'customer' && (
-          <div className="p-4">
-            <p className="text-center text-gray-600">Menu for {userRole} role</p>
-            <button
-              onClick={handleSignOut}
-              className="w-full mt-4 flex items-center justify-center gap-2 p-3 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-            >
-              <LogOut className="h-5 w-5" />
-              <span className="font-medium">Sign Out</span>
-            </button>
+        {userRole === 'artist' && (
+          <div className="flex flex-col h-full bg-gray-100">
+            <div className="p-4">
+              <button
+                onClick={() => {
+                  navigate('/artist/profile');
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center gap-3 p-3 text-gray-600 hover:text-purple-600 hover:bg-white/50 rounded-lg transition-all"
+              >
+                <User className="h-5 w-5" />
+                <span className="font-medium">Artist Profile</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {userRole === 'admin' && (
+          <div className="flex flex-col h-full bg-gray-100">
+            <div className="p-4">
+              <button
+                onClick={() => {
+                  navigate('/admin/dashboard');
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center gap-3 p-3 text-gray-600 hover:text-purple-600 hover:bg-white/50 rounded-lg transition-all"
+              >
+                <User className="h-5 w-5" />
+                <span className="font-medium">Admin Dashboard</span>
+              </button>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
 };
-
-export default MobileMenu;
