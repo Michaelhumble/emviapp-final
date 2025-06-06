@@ -26,7 +26,7 @@ export function useArtistBookings() {
 
       if (fetchError) throw fetchError;
 
-      const mapped = (data || []).map((b) => ({
+      const mapped: Booking[] = (data || []).map((b) => ({
         id: b.id,
         sender_id: '',
         recipient_id: user.id,
@@ -37,7 +37,7 @@ export function useArtistBookings() {
         date_requested: b.date_requested,
         time_requested: b.appointment_time,
         service_name: b.service_type,
-        status: b.status,
+        status: b.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
         created_at: new Date().toISOString(),
       }));
 
