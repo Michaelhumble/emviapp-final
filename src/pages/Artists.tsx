@@ -1,23 +1,23 @@
 
 import Layout from "@/components/layout/Layout";
-import HeroSection from "@/components/artists/HeroSection";
-import StatsSection from "@/components/artists/StatsSection";
-import AIFeaturesSection from "@/components/artists/AIFeaturesSection";
-import JobMatchesSection from "@/components/artists/JobMatchesSection";
-import PortfolioSection from "@/components/artists/PortfolioSection";
-import SuccessStoriesSection from "@/components/artists/SuccessStoriesSection";
-import CtaSection from "@/components/artists/CtaSection";
+import ArtistHeroSection from "@/components/artists/ArtistHeroSection";
+import LiveStatsBar from "@/components/artists/LiveStatsBar";
+import EmpathySection from "@/components/artists/EmpathySection";
+import WhyArtistsChooseSection from "@/components/artists/WhyArtistsChooseSection";
+import LeaderboardSection from "@/components/artists/LeaderboardSection";
+import FeaturedSuccessStories from "@/components/artists/FeaturedSuccessStories";
+import FinalCTASection from "@/components/artists/FinalCTASection";
 
 const Artists = () => {
   return (
     <Layout>
-      <HeroSection />
-      <StatsSection />
-      <AIFeaturesSection />
-      <JobMatchesSection />
-      <PortfolioSection />
-      <SuccessStoriesSection />
-      <CtaSection />
+      <ArtistHeroSection />
+      <LiveStatsBar />
+      <EmpathySection />
+      <WhyArtistsChooseSection />
+      <LeaderboardSection />
+      <FeaturedSuccessStories />
+      <FinalCTASection />
     </Layout>
   );
 };
