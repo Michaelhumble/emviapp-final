@@ -1,12 +1,12 @@
 
-import SignUpForm from "@/components/auth/SignUpForm";
+import { EnhancedSignUpForm } from "@/components/auth/EnhancedSignUpForm";
 import { Card } from "@/components/ui/card";
 import { useLocation } from "react-router-dom";
 import Logo from "@/components/ui/Logo";
 
 const SignUp = () => {
   const location = useLocation();
-  // Pass redirect URL to SignUpForm
+  // Pass redirect URL to EnhancedSignUpForm
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get('redirect');
 
@@ -16,7 +16,7 @@ const SignUp = () => {
         <div className="flex justify-center mb-6">
           <Logo size="large" showText={true} />
         </div>
-        <SignUpForm redirectUrl={redirectUrl} />
+        <EnhancedSignUpForm redirectUrl={redirectUrl} />
       </div>
     </div>
   );
