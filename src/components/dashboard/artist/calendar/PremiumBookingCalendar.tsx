@@ -2,57 +2,60 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, DollarSign, TrendingUp, Users, Star, ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useArtistUpcomingBookings } from "@/hooks/useArtistUpcomingBookings";
 import { Badge } from "@/components/ui/badge";
+import { Calendar, ChevronLeft, ChevronRight, Plus, Clock, User, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+import { useArtistUpcomingBookings } from "@/hooks/useArtistUpcomingBookings";
+import { Booking } from "@/types/booking";
+
+interface BookingWithTime extends Booking {
+  appointment_time?: string;
+  appointment_date?: string;
+}
+
+const statusColors = {
+  pending: "bg-amber-100 text-amber-800 border-amber-200",
+  accepted: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  declined: "bg-red-100 text-red-800 border-red-200",
+  completed: "bg-blue-100 text-blue-800 border-blue-200",
+  cancelled: "bg-gray-100 text-gray-800 border-gray-200"
+};
 
 const PremiumBookingCalendar = () => {
   const { bookings, loading } = useArtistUpcomingBookings();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  // Mock premium data for demonstration
-  const premiumStats = {
-    todayEarnings: 450,
-    weeklyGrowth: 23,
-    bookingRate: 89,
-    averageService: 85
-  };
-
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
     const days = [];
-    const current = new Date(startDate);
     
-    for (let i = 0; i < 42; i++) {
-      days.push(new Date(current));
-      current.setDate(current.getDate() + 1);
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+    
+    // Add all days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(new Date(year, month, day));
     }
     
     return days;
   };
 
-  const days = getDaysInMonth(currentDate);
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
-
   const getBookingsForDate = (date: Date) => {
+    const dateString = date.toISOString().split('T')[0];
     return bookings.filter(booking => {
-      const bookingDate = new Date(booking.appointment_date || booking.date_requested);
-      return bookingDate.toDateString() === date.toDateString();
+      const bookingDate = booking.appointment_date || booking.date_requested;
+      if (!bookingDate) return false;
+      return new Date(bookingDate).toISOString().split('T')[0] === dateString;
     });
-  };
-
-  const getEarningsForDate = (date: Date) => {
-    const dayBookings = getBookingsForDate(date);
-    return dayBookings.length * 75; // Mock calculation
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -65,94 +68,164 @@ const PremiumBookingCalendar = () => {
     setCurrentDate(newDate);
   };
 
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const CalendarDay = ({ date, bookings: dayBookings }: { date: Date | null, bookings: BookingWithTime[] }) => {
+    if (!date) {
+      return <div className="h-24 border border-gray-100"></div>;
+    }
+
+    const isToday = date.toDateString() === new Date().toDateString();
+    const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+    const hasBookings = dayBookings.length > 0;
+
+    return (
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        onClick={() => setSelectedDate(date)}
+        className={`h-24 border border-gray-100 cursor-pointer transition-all duration-200 ${
+          isSelected ? 'bg-purple-100 border-purple-300' : 
+          isToday ? 'bg-blue-50 border-blue-200' : 
+          hasBookings ? 'bg-emerald-50 border-emerald-200' : 'hover:bg-gray-50'
+        }`}
+      >
+        <div className="p-2 h-full flex flex-col">
+          <div className={`text-sm font-medium ${
+            isToday ? 'text-blue-600' : 
+            isSelected ? 'text-purple-600' : 
+            'text-gray-900'
+          }`}>
+            {date.getDate()}
+          </div>
+          
+          {dayBookings.length > 0 && (
+            <div className="flex-1 mt-1 space-y-1">
+              {dayBookings.slice(0, 2).map((booking, index) => (
+                <div
+                  key={booking.id}
+                  className={`text-xs px-2 py-1 rounded ${statusColors[booking.status as keyof typeof statusColors] || statusColors.pending} truncate`}
+                >
+                  {booking.client_name || 'Client'}
+                </div>
+              ))}
+              {dayBookings.length > 2 && (
+                <div className="text-xs text-gray-500 font-medium">
+                  +{dayBookings.length - 2} more
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    );
+  };
+
+  const BookingsList = ({ date }: { date: Date }) => {
+    const dayBookings = getBookingsForDate(date);
+    
+    return (
+      <Card className="border-0 bg-gradient-to-br from-white/90 to-purple-50/50 backdrop-blur-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg font-playfair text-gray-900">
+            {formatDate(date)}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {dayBookings.length === 0 ? (
+            <div className="text-center py-8">
+              <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-600">No appointments for this day</p>
+              <Button className="mt-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Appointment
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {dayBookings.map((booking) => (
+                <motion.div
+                  key={booking.id}
+                  whileHover={{ x: 2 }}
+                  className="p-4 bg-white rounded-lg border border-gray-100 shadow-sm"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {booking.client_name?.charAt(0) || 'C'}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">{booking.client_name || 'Client'}</h4>
+                        <p className="text-sm text-gray-600">{booking.service_name || 'Service'}</p>
+                      </div>
+                    </div>
+                    <Badge className={statusColors[booking.status as keyof typeof statusColors] || statusColors.pending}>
+                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 mr-1" />
+                      <span>{booking.appointment_time || booking.time_requested || '--:--'}</span>
+                    </div>
+                  </div>
+                  
+                  {booking.note && (
+                    <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
+                      {booking.note}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
   if (loading) {
     return (
-      <div className="h-96 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      </div>
+      <Card className="border-0 bg-gradient-to-br from-white/90 to-purple-50/50 backdrop-blur-sm">
+        <CardContent className="p-8 text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-purple-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading calendar...</p>
+        </CardContent>
+      </Card>
     );
   }
 
+  const days = getDaysInMonth(currentDate);
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   return (
     <div className="space-y-6">
-      {/* Premium Stats Header */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div 
-          className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 rounded-2xl text-white"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <DollarSign className="h-8 w-8" />
-            <div className="text-right">
-              <div className="text-2xl font-bold">${premiumStats.todayEarnings}</div>
-              <div className="text-sm opacity-90">Today's Revenue</div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          className="bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-2xl text-white"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <TrendingUp className="h-8 w-8" />
-            <div className="text-right">
-              <div className="text-2xl font-bold">+{premiumStats.weeklyGrowth}%</div>
-              <div className="text-sm opacity-90">Weekly Growth</div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 rounded-2xl text-white"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <Users className="h-8 w-8" />
-            <div className="text-right">
-              <div className="text-2xl font-bold">{premiumStats.bookingRate}%</div>
-              <div className="text-sm opacity-90">Booking Rate</div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          className="bg-gradient-to-br from-amber-500 to-amber-600 p-4 rounded-2xl text-white"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="flex items-center justify-between">
-            <Star className="h-8 w-8" />
-            <div className="text-right">
-              <div className="text-2xl font-bold">${premiumStats.averageService}</div>
-              <div className="text-sm opacity-90">Avg Service</div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Premium Calendar */}
-      <Card className="bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 border-0 shadow-2xl">
-        <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-xl">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold flex items-center gap-2">
-              <Calendar className="h-6 w-6" />
-              Premium Booking Calendar
+      {/* Calendar Header */}
+      <Card className="border-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-2xl font-playfair">
+              {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+            <div className="flex space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => navigateMonth('prev')}
                 className="text-white hover:bg-white/20"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-lg font-semibold min-w-[140px] text-center">
-                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-              </span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => navigateMonth('next')}
                 className="text-white hover:bg-white/20"
               >
@@ -161,129 +234,51 @@ const PremiumBookingCalendar = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
-          {/* Calendar Header */}
-          <div className="grid grid-cols-7 gap-2 mb-4">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="text-center font-semibold text-gray-600 py-2">
-                {day}
-              </div>
-            ))}
-          </div>
-
-          {/* Calendar Days */}
-          <div className="grid grid-cols-7 gap-2">
-            {days.map((day, index) => {
-              const dayBookings = getBookingsForDate(day);
-              const dayEarnings = getEarningsForDate(day);
-              const isCurrentMonth = day.getMonth() === currentDate.getMonth();
-              const isToday = day.toDateString() === new Date().toDateString();
-              const isSelected = selectedDate?.toDateString() === day.toDateString();
-
-              return (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedDate(day)}
-                  className={`
-                    relative p-2 rounded-xl cursor-pointer min-h-[80px] transition-all
-                    ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
-                    ${isToday ? 'ring-2 ring-purple-500 bg-purple-50' : ''}
-                    ${isSelected ? 'ring-2 ring-pink-500 bg-pink-50' : ''}
-                    ${dayBookings.length > 0 ? 'shadow-md' : 'hover:shadow-md'}
-                  `}
-                >
-                  <div className={`text-sm font-medium ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}`}>
-                    {day.getDate()}
-                  </div>
-                  
-                  {dayBookings.length > 0 && (
-                    <div className="mt-1 space-y-1">
-                      <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">
-                        {dayBookings.length} booking{dayBookings.length > 1 ? 's' : ''}
-                      </Badge>
-                      {dayEarnings > 0 && (
-                        <div className="text-xs font-bold text-emerald-600">
-                          ${dayEarnings}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-        </CardContent>
       </Card>
 
-      {/* Selected Date Details */}
-      <AnimatePresence>
-        {selectedDate && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-purple-600" />
-                  {selectedDate.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {getBookingsForDate(selectedDate).length > 0 ? (
-                  <div className="space-y-3">
-                    {getBookingsForDate(selectedDate).map((booking, index) => (
-                      <motion.div
-                        key={booking.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="bg-white p-4 rounded-xl shadow-sm border border-purple-100"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-semibold text-gray-900">
-                              {booking.client_name || 'Client'}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              {booking.service_type || 'Service'}
-                            </div>
-                            <div className="text-sm text-purple-600">
-                              {booking.appointment_time || booking.time_requested || 'Time TBD'}
-                            </div>
-                          </div>
-                          <Badge 
-                            variant={booking.status === 'confirmed' ? 'default' : 'secondary'}
-                            className="bg-emerald-100 text-emerald-700"
-                          >
-                            ${Math.floor(Math.random() * 100) + 50}
-                          </Badge>
-                        </div>
-                      </motion.div>
-                    ))}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Calendar Grid */}
+        <div className="lg:col-span-2">
+          <Card className="border-0 bg-gradient-to-br from-white/90 to-purple-50/50 backdrop-blur-sm">
+            <CardContent className="p-0">
+              {/* Week Days Header */}
+              <div className="grid grid-cols-7 border-b border-gray-200">
+                {weekDays.map(day => (
+                  <div key={day} className="p-3 text-center font-medium text-gray-600 bg-gray-50">
+                    {day}
                   </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>No bookings scheduled for this date</p>
-                    <Button className="mt-4 bg-purple-600 hover:bg-purple-700">
-                      Add Booking
-                    </Button>
-                  </div>
-                )}
+                ))}
+              </div>
+              
+              {/* Calendar Days */}
+              <div className="grid grid-cols-7">
+                {days.map((date, index) => (
+                  <CalendarDay
+                    key={index}
+                    date={date}
+                    bookings={date ? getBookingsForDate(date) : []}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Selected Date Details */}
+        <div className="lg:col-span-1">
+          {selectedDate ? (
+            <BookingsList date={selectedDate} />
+          ) : (
+            <Card className="border-0 bg-gradient-to-br from-white/90 to-purple-50/50 backdrop-blur-sm">
+              <CardContent className="p-8 text-center">
+                <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Select a Date</h3>
+                <p className="text-gray-600">Click on a calendar date to view appointments</p>
               </CardContent>
             </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
