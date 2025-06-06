@@ -13,6 +13,9 @@ export interface Booking {
   note?: string;
   created_at: string;
   artist_name?: string; // Added for customer bookings view
+  appointment_time?: string; // For compatibility with existing code
+  service_type?: string; // For compatibility with existing code
+  appointment_date?: string; // For compatibility with existing code
 }
 
 export interface BookingCounts {
