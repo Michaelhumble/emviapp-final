@@ -16,7 +16,7 @@ const SignUp = () => {
         <div className="flex justify-center mb-6">
           <Logo size="large" showText={true} />
         </div>
-        <EnhancedSignUpForm redirectUrl={redirectUrl} />
+        <EnhancedSignUpForm />
       </div>
     </div>
   );
