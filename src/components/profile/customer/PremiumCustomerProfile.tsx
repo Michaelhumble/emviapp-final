@@ -1,184 +1,236 @@
 
 import React from "react";
-import { UserProfile } from "@/context/auth/types";
-import { useNavigate } from "react-router-dom";
-import { Edit, Heart, Calendar, Star, Award, Gift, User, TrendingUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Calendar, Heart, Star, Gift, Crown, Sparkles, TrendingUp, Award, MapPin, Clock } from "lucide-react";
+import { UserProfile } from "@/context/auth/types";
+import CustomerLoyaltyTracker from "@/components/customer/CustomerLoyaltyTracker";
 
 interface PremiumCustomerProfileProps {
   userProfile: UserProfile;
 }
 
-const PremiumCustomerProfile: React.FC<PremiumCustomerProfileProps> = ({ userProfile }) => {
-  const navigate = useNavigate();
-  
+const PremiumCustomerProfile = ({ userProfile }: PremiumCustomerProfileProps) => {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
-      {/* Premium Header */}
-      <div className="h-56 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
-      </div>
-      
-      <div className="container mx-auto px-4 relative">
-        <div className="max-w-6xl mx-auto -mt-20">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50">
+      {/* Premium Header Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600">
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        
+        {/* Floating Elements */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse" />
+        <div className="absolute top-20 right-20 w-32 h-32 bg-pink-300/20 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute bottom-10 left-1/3 w-24 h-24 bg-purple-300/20 rounded-full blur-xl animate-pulse delay-500" />
+        
+        <div className="relative z-10 container mx-auto px-6 py-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/50"
+            transition={{ duration: 0.8 }}
+            className="text-center"
           >
-            {/* Profile Header */}
-            <div className="flex flex-col lg:flex-row p-8 items-center lg:items-start gap-8">
-              <div className="relative -mt-16 flex-shrink-0">
-                {userProfile?.avatar_url ? (
-                  <div className="relative">
-                    <img 
-                      src={userProfile.avatar_url} 
-                      alt={userProfile.full_name} 
-                      className="h-32 w-32 rounded-2xl border-4 border-white shadow-xl object-cover"
-                    />
-                    <div className="absolute -bottom-2 -right-2 bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
-                      VIP
+            {/* Premium Avatar */}
+            <div className="relative inline-block mb-6">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl">
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-3xl font-bold shadow-inner">
+                  {userProfile.first_name?.[0] || userProfile.email?.[0]?.toUpperCase()}
+                </div>
+              </div>
+              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-2 shadow-lg">
+                <Crown className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            
+            {/* Customer Name & Status */}
+            <h1 className="text-4xl font-bold text-white mb-2">
+              {userProfile.first_name} {userProfile.last_name}
+            </h1>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Badge className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 px-4 py-1">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Premium Beauty Enthusiast
+              </Badge>
+              <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 px-4 py-1">
+                <Star className="w-4 h-4 mr-2" />
+                VIP Member
+              </Badge>
+            </div>
+            <p className="text-pink-100 text-lg mb-6">
+              Your beauty journey, elevated to perfection
+            </p>
+            
+            {/* Quick Stats */}
+            <div className="grid grid-cols-3 gap-6 max-w-md mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white mb-1">24</div>
+                <div className="text-pink-200 text-sm">Appointments</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white mb-1">850</div>
+                <div className="text-pink-200 text-sm">Loyalty Points</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white mb-1">5</div>
+                <div className="text-pink-200 text-sm">Favorites</div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="container mx-auto px-6 py-8 -mt-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Beauty Journey Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <Card className="border-0 shadow-2xl bg-white/60 backdrop-blur-xl overflow-hidden">
+                <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-1">
+                  <CardHeader className="bg-white/50 backdrop-blur-sm">
+                    <CardTitle className="flex items-center text-2xl bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                      <TrendingUp className="w-6 h-6 mr-3 text-pink-600" />
+                      Your Beauty Journey
+                    </CardTitle>
+                  </CardHeader>
+                </div>
+                <CardContent className="p-8">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-pink-50 to-rose-50 border border-pink-100">
+                      <Calendar className="w-8 h-8 text-pink-600 mx-auto mb-3" />
+                      <div className="text-2xl font-bold text-gray-800 mb-1">24</div>
+                      <div className="text-sm text-gray-600">Total Visits</div>
+                    </div>
+                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100">
+                      <Heart className="w-8 h-8 text-purple-600 mx-auto mb-3" />
+                      <div className="text-2xl font-bold text-gray-800 mb-1">5</div>
+                      <div className="text-sm text-gray-600">Favorites</div>
+                    </div>
+                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100">
+                      <Star className="w-8 h-8 text-amber-600 mx-auto mb-3" />
+                      <div className="text-2xl font-bold text-gray-800 mb-1">4.9</div>
+                      <div className="text-sm text-gray-600">Avg Rating</div>
+                    </div>
+                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100">
+                      <Gift className="w-8 h-8 text-emerald-600 mx-auto mb-3" />
+                      <div className="text-2xl font-bold text-gray-800 mb-1">12</div>
+                      <div className="text-sm text-gray-600">Rewards</div>
                     </div>
                   </div>
-                ) : (
-                  <div className="h-32 w-32 rounded-2xl bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-4xl font-bold text-white border-4 border-white shadow-xl">
-                    {userProfile?.full_name?.charAt(0) || "V"}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Recent Activity */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <Card className="border-0 shadow-2xl bg-white/60 backdrop-blur-xl">
+                <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+                  <CardTitle className="flex items-center text-xl text-gray-800">
+                    <Clock className="w-5 h-5 mr-3 text-indigo-600" />
+                    Recent Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100">
+                      <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-800">Nail appointment completed</div>
+                        <div className="text-sm text-gray-600">Magic Nails Salon • 2 days ago</div>
+                      </div>
+                      <Badge className="bg-green-100 text-green-800 border-green-200">Completed</Badge>
+                    </div>
+                    <div className="flex items-center p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-4"></div>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-800">Upcoming hair appointment</div>
+                        <div className="text-sm text-gray-600">Elite Beauty Studio • Tomorrow at 2:00 PM</div>
+                      </div>
+                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">Upcoming</Badge>
+                    </div>
                   </div>
-                )}
-              </div>
-              
-              <div className="flex-1 text-center lg:text-left">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{userProfile?.full_name || "Beauty Enthusiast"}</h1>
-                <p className="text-gray-600 mb-3">VIP Beauty Member</p>
-                
-                <div className="flex flex-wrap gap-2 mb-4 justify-center lg:justify-start">
-                  <Badge variant="secondary" className="bg-pink-50 text-pink-700 border-pink-200">
-                    <Star className="h-3 w-3 mr-1" />
-                    Gold Member
-                  </Badge>
-                  <Badge variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">
-                    <Award className="h-3 w-3 mr-1" />
-                    15 Day Streak
-                  </Badge>
-                  <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-200">
-                    <Gift className="h-3 w-3 mr-1" />
-                    2,450 Points
-                  </Badge>
-                </div>
-                
-                <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                  <Button onClick={() => navigate('/profile/edit')} variant="outline" className="border-pink-200 text-pink-700 hover:bg-pink-50">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
-                  <Button className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700">
-                    <Calendar className="h-4 w-4 mr-2" />
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Loyalty Tracker */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <CustomerLoyaltyTracker />
+            </motion.div>
+
+            {/* Premium Benefits */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <Card className="border-0 shadow-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <CardContent className="relative p-6">
+                  <div className="flex items-center mb-4">
+                    <Crown className="w-6 h-6 mr-3" />
+                    <h3 className="text-xl font-bold">VIP Benefits</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <Award className="w-4 h-4 mr-3 opacity-80" />
+                      <span className="text-sm">Priority booking</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Gift className="w-4 h-4 mr-3 opacity-80" />
+                      <span className="text-sm">Exclusive rewards</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Star className="w-4 h-4 mr-3 opacity-80" />
+                      <span className="text-sm">Special discounts</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Quick Actions */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <Card className="border-0 shadow-2xl bg-white/60 backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle className="text-lg text-gray-800">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 shadow-lg">
                     Book Appointment
                   </Button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Beauty Journey Stats */}
-            <div className="px-8 pb-8">
-              <h3 className="text-xl font-semibold mb-6 flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-pink-500" />
-                Your Beauty Journey
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card className="bg-gradient-to-br from-pink-50 to-rose-50 border-pink-100 shadow-md">
-                  <CardContent className="p-6 text-center">
-                    <div className="text-3xl font-bold text-pink-600 mb-2">23</div>
-                    <div className="text-sm text-gray-600">Appointments</div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-100 shadow-md">
-                  <CardContent className="p-6 text-center">
-                    <div className="text-3xl font-bold text-purple-600 mb-2">8</div>
-                    <div className="text-sm text-gray-600">Favorite Artists</div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-to-br from-rose-50 to-pink-50 border-rose-100 shadow-md">
-                  <CardContent className="p-6 text-center">
-                    <div className="text-3xl font-bold text-rose-600 mb-2">$1.2K</div>
-                    <div className="text-sm text-gray-600">Money Saved</div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 shadow-md">
-                  <CardContent className="p-6 text-center">
-                    <div className="text-3xl font-bold text-amber-600 mb-2">4.9</div>
-                    <div className="text-sm text-gray-600">Avg Rating Given</div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </motion.div>
-          
-          {/* Features & Rewards Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8"
-          >
-            <Card className="bg-white/80 backdrop-blur-md border-white/50 shadow-xl">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold mb-4 flex items-center">
-                  <Heart className="h-5 w-5 mr-2 text-pink-500" />
-                  Your Favorites
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-pink-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">Nail Art Studio</p>
-                      <p className="text-sm text-gray-500">Manhattan, NY</p>
-                    </div>
-                    <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">Beauty Lounge</p>
-                      <p className="text-sm text-gray-500">Brooklyn, NY</p>
-                    </div>
-                    <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                  </div>
-                  <Button variant="outline" className="w-full">
-                    View All Favorites
+                  <Button variant="outline" className="w-full border-pink-200 text-pink-700 hover:bg-pink-50">
+                    View Favorites
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white/80 backdrop-blur-md border-white/50 shadow-xl">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold mb-4 flex items-center">
-                  <Gift className="h-5 w-5 mr-2 text-purple-500" />
-                  Rewards & Perks
-                </h3>
-                <div className="space-y-4">
-                  <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
-                    <p className="font-medium text-purple-700">Free Manicure Reward</p>
-                    <p className="text-sm text-purple-600">Available to redeem</p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-100">
-                    <p className="font-medium text-amber-700">20% Off Next Service</p>
-                    <p className="text-sm text-amber-600">Expires in 7 days</p>
-                  </div>
-                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500">
-                    View All Rewards
+                  <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
+                    Redeem Rewards
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
