@@ -1,69 +1,64 @@
 
-import StatsGrid from "../StatsGrid";
-import MainGrid from "../MainGrid";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import ProfileCompletionWarning from "../overview/ProfileCompletionWarning";
-import { demoStats, demoBookings } from "../../utils/demoData";
+import StatsGrid from "../StatsGrid";
+import YourNextGoalCard from "../../sections/YourNextGoalCard";
+import { DashboardStats } from "../../types/ArtistDashboardTypes";
+import { Booking } from "@/types/booking";
+import FeaturePreviewCards from "../FeaturePreviewCards";
+import FeatureVotingSurvey from "../FeatureVotingSurvey";
 
-const OverviewTab = ({ 
-  stats, 
-  isLoadingStats, 
-  bookings, 
-  isLoadingBookings 
-}: { 
-  stats: any;
+interface OverviewTabProps {
+  stats: DashboardStats;
   isLoadingStats: boolean;
-  bookings: any[];
+  bookings: Booking[];
   isLoadingBookings: boolean;
-}) => {
-  const hasError = !stats && !isLoadingStats;
-  const finalStats = stats || demoStats;
-  const finalBookings = bookings || demoBookings;
+}
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4 }
+  }
+};
+
+const OverviewTab = ({ stats, isLoadingStats, bookings, isLoadingBookings }: OverviewTabProps) => {
   return (
-    <div className="space-y-6">
-      <ProfileCompletionWarning />
-      
-      {hasError && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Alert variant="destructive" className="bg-red-50 border-red-100">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Some data couldn't be loaded. Showing preview content instead.
-            </AlertDescription>
-          </Alert>
-        </motion.div>
-      )}
-
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Alert className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
-          <AlertDescription>
-            Welcome! This is your dashboard preview. Customize it to make it yours.
-          </AlertDescription>
-        </Alert>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-8"
+    >
+      <motion.div variants={itemVariants}>
+        <YourNextGoalCard />
       </motion.div>
 
-      <StatsGrid 
-        stats={finalStats}
-        isLoading={isLoadingStats} 
-      />
-      
-      <MainGrid 
-        bookings={finalBookings}
-        isLoadingBookings={isLoadingBookings}
-        stats={finalStats}
-      />
-    </div>
+      <motion.div variants={itemVariants}>
+        <StatsGrid stats={stats} isLoading={isLoadingStats} />
+      </motion.div>
+
+      {/* Feature Preview Cards Section */}
+      <motion.div variants={itemVariants}>
+        <FeaturePreviewCards />
+      </motion.div>
+
+      {/* Feature Voting Survey Section */}
+      <motion.div variants={itemVariants}>
+        <FeatureVotingSurvey />
+      </motion.div>
+    </motion.div>
   );
 };
 
