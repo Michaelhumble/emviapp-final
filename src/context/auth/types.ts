@@ -1,4 +1,3 @@
-
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export type { SupabaseUser as User };
@@ -8,7 +7,7 @@ export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | '
 export interface UserProfile {
   // Required properties
   id: string;
-  email: string;
+  email?: string;
   
   // Core profile fields
   full_name?: string | null;
@@ -28,7 +27,7 @@ export interface UserProfile {
   // Additional database fields
   custom_role?: string | null;
   contact_link?: string | null;
-  badges?: any[] | null;
+  badges?: string[] | null;
   accepts_bookings?: boolean | null;
   completed_profile_tasks?: string[] | null;
   
@@ -49,8 +48,19 @@ export interface UserProfile {
   // Experience and services
   years_experience?: number | null;
   services?: any[] | null;
-  gallery?: any[] | null;
-  preferences?: string[] | null;
+  gallery?: string[] | null;
+  preferences?: any | null;
+  preferred_language?: string | null;
+  referred_by?: string | null;
+  referral_count?: number | null;
+  independent?: boolean | null;
+  skills?: string[] | null;
+  profile_completion?: number | null;
+  
+  // New fields for Open to Offers feature
+  open_to_offers?: boolean | null;
+  offers_data?: any | null;
+  spotlight_until?: string | null;
   
   // Additional fields for compatibility
   [key: string]: any;
