@@ -1,3 +1,4 @@
+
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export type { SupabaseUser as User };
@@ -56,11 +57,6 @@ export interface UserProfile {
   independent?: boolean | null;
   skills?: string[] | null;
   profile_completion?: number | null;
-  
-  // New fields for Open to Offers feature
-  open_to_offers?: boolean | null;
-  offers_data?: any | null;
-  spotlight_until?: string | null;
   
   // Additional fields for compatibility
   [key: string]: any;
