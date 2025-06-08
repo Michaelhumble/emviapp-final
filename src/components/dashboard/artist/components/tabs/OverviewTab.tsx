@@ -8,7 +8,6 @@ import ArtistBookingsPanel from "../../ArtistBookingsPanel";
 import DailyInspiration from "../../DailyInspiration";
 import ArtistQuickStats from "../../sections/ArtistQuickStats";
 import ArtistGrowYourBusinessCard from "../../sections/ArtistGrowYourBusinessCard";
-import ArtistComingSoonFeatures from "../../ArtistComingSoonFeatures";
 import { DashboardStats } from "../../types/ArtistDashboardTypes";
 import { Booking } from "../../types/ArtistDashboardTypes";
 
@@ -74,11 +73,6 @@ const OverviewTab = ({ stats, isLoadingStats, bookings, isLoadingBookings }: Ove
           <NextMilestoneProgress />
           <DailyInspiration />
         </div>
-      </div>
-
-      {/* Coming Soon Features Section */}
-      <div className="mt-12">
-        <ArtistComingSoonFeatures />
       </div>
     </motion.div>
   );

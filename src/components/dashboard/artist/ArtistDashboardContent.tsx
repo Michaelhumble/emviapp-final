@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
 import PremiumArtistDashboard from './PremiumArtistDashboard';
@@ -30,7 +30,7 @@ const ArtistDashboardContent = () => {
 
   useEffect(() => {
     if (query.get("premium_success") === "1") {
-      toast.success("Welcome to EmviApp Premium! 🎉", {
+      toast.success("Welcome to EmviApp Premium!", {
         duration: 5000,
       });
       navigate(location.pathname, { replace: true });
