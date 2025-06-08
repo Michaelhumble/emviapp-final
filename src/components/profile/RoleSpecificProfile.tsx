@@ -2,8 +2,9 @@
 import React from "react";
 import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
-import PremiumArtistProfile from "../artist-profile/PremiumArtistProfile";
-import PremiumSalonProfile from "./salon/PremiumSalonProfile";
+import ArtistProfile from "./ArtistProfile";
+import SalonProfile from "./SalonProfile";
+import FreelancerProfile from "./FreelancerProfile";
 import PremiumCustomerProfile from "./customer/PremiumCustomerProfile";
 import { Loader2 } from "lucide-react";
 
@@ -37,12 +38,14 @@ const RoleSpecificProfile = () => {
     switch (userRole) {
       case 'artist':
       case 'nail technician/artist':
-      case 'freelancer':
-        return <PremiumArtistProfile userProfile={userProfile} />;
+        return <ArtistProfile />;
       
       case 'salon':
       case 'owner':
-        return <PremiumSalonProfile userProfile={userProfile} />;
+        return <SalonProfile />;
+      
+      case 'freelancer':
+        return <FreelancerProfile />;
       
       case 'customer':
       default:
@@ -55,7 +58,6 @@ const RoleSpecificProfile = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50"
     >
       {renderRoleProfile()}
     </motion.div>
