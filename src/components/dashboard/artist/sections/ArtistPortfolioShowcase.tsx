@@ -1,196 +1,195 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Camera, Heart, Eye, Share } from 'lucide-react';
+import { Camera, Plus, Eye, Heart, Share, Upload, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ArtistPortfolioShowcase = () => {
+  const navigate = useNavigate();
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  // Beauty/nail industry relevant portfolio items
   const portfolioItems = [
     {
       id: 1,
-      image: '/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png',
-      title: 'French Ombré Perfection',
-      likes: 342,
-      views: 1247
+      title: "French Gradient Nails",
+      image: "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
+      likes: 156,
+      views: 890,
+      category: "Nail Art"
     },
     {
       id: 2,
-      image: '/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png',
-      title: 'Artistic Floral Design',
-      likes: 289,
-      views: 956
+      title: "Minimalist Line Art",
+      image: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
+      likes: 203,
+      views: 1240,
+      category: "Nail Design"
     },
     {
       id: 3,
-      image: '/lovable-uploads/fc2a8931-d58f-47a3-81f2-6ae43cf431c5.png',
-      title: 'Bold Color Fusion',
-      likes: 425,
-      views: 1834
+      title: "Pink Floral Design",
+      image: "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
+      likes: 178,
+      views: 967,
+      category: "Nail Art"
     },
     {
       id: 4,
-      image: '/lovable-uploads/f9c0a9f2-e45c-4c98-8413-6fd84624a578.png',
-      title: 'Minimalist Elegance',
-      likes: 198,
-      views: 743
+      title: "Gel Manicure",
+      image: "/lovable-uploads/749e5584-caa4-4229-84a2-93589c7455c2.png",
+      likes: 134,
+      views: 743,
+      category: "Manicure"
     }
   ];
+
+  const handleUploadWork = () => {
+    setShowUploadModal(true);
+    // Open upload dialog or navigate to upload page
+  };
+
+  const handleViewFullPortfolio = () => {
+    navigate('/dashboard/artist/portfolio');
+  };
 
   const totalLikes = portfolioItems.reduce((sum, item) => sum + item.likes, 0);
   const totalViews = portfolioItems.reduce((sum, item) => sum + item.views, 0);
 
   return (
-    <div className="mb-8">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-3xl p-8 shadow-xl"
+    >
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">Your Showcase 🎨</h2>
-          <p className="text-lg text-gray-600 font-inter">Your artistry speaks volumes</p>
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl">
+            <Camera className="h-6 w-6 text-purple-600" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Your Showcase</h2>
+            <p className="text-gray-600">展示你的杰作 • Showcase your masterpieces</p>
+          </div>
         </div>
+        
         <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-inter font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
+          onClick={handleUploadWork}
+          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-300 flex items-center gap-2"
         >
-          <Camera className="h-5 w-5" />
-          Add Masterpiece
+          <Upload className="h-5 w-5" />
+          Add Work
         </motion.button>
       </div>
 
-      {/* Stats Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-3 gap-4 mb-6"
-      >
-        <div className="bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-200/50 rounded-xl p-4 text-center shadow-md">
-          <div className="text-2xl font-playfair font-bold text-gray-900">{portfolioItems.length}</div>
-          <div className="text-sm text-gray-600 font-inter">Masterpieces</div>
-        </div>
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200/50 rounded-xl p-4 text-center shadow-md">
-          <div className="text-2xl font-playfair font-bold text-gray-900">{totalLikes.toLocaleString()}</div>
-          <div className="text-sm text-gray-600 font-inter">Total Likes</div>
-        </div>
-        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200/50 rounded-xl p-4 text-center shadow-md">
-          <div className="text-2xl font-playfair font-bold text-gray-900">{totalViews.toLocaleString()}</div>
-          <div className="text-sm text-gray-600 font-inter">Total Views</div>
-        </div>
-      </motion.div>
+      {/* Stats Bar */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+          className="text-center p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100"
+        >
+          <div className="text-2xl font-bold text-blue-600">{portfolioItems.length}</div>
+          <div className="text-sm text-blue-700">Masterpieces</div>
+        </motion.div>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          className="text-center p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-100"
+        >
+          <div className="text-2xl font-bold text-pink-600">{totalLikes}</div>
+          <div className="text-sm text-pink-700">Total Likes</div>
+        </motion.div>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
+          className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100"
+        >
+          <div className="text-2xl font-bold text-green-600">{totalViews}</div>
+          <div className="text-sm text-green-700">Total Views</div>
+        </motion.div>
+      </div>
 
       {/* Portfolio Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {portfolioItems.map((item, index) => (
           <motion.div
             key={item.id}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1, duration: 0.6 }}
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100"
+            transition={{ delay: 0.5 + index * 0.1, duration: 0.4 }}
+            whileHover={{ y: -5, scale: 1.02 }}
+            className="group relative aspect-square rounded-xl overflow-hidden cursor-pointer shadow-lg"
           >
-            <div className="aspect-square relative overflow-hidden">
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              {/* Hover Actions */}
-              <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white"
-                >
-                  <Eye className="h-4 w-4 text-gray-700" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white"
-                >
-                  <Share className="h-4 w-4 text-gray-700" />
-                </motion.button>
-              </div>
-
-              {/* Stats Overlay */}
-              <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="flex items-center gap-4 text-white">
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <h3 className="text-white font-semibold text-sm mb-1">{item.title}</h3>
+                <div className="flex items-center gap-3 text-xs text-white/80">
                   <div className="flex items-center gap-1">
-                    <Heart className="h-4 w-4 text-red-500 fill-red-500" />
-                    <span className="text-sm font-inter font-medium">{item.likes}</span>
+                    <Heart className="h-3 w-3" />
+                    {item.likes}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" />
-                    <span className="text-sm font-inter font-medium">{item.views}</span>
+                    <Eye className="h-3 w-3" />
+                    {item.views}
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="p-4">
-              <h3 className="font-playfair font-semibold text-gray-900 mb-2 line-clamp-1">{item.title}</h3>
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <Heart className="h-4 w-4 text-red-500" />
-                  <span className="font-inter">{item.likes} likes</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  <span className="font-inter">{item.views}</span>
-                </div>
-              </div>
+            {/* Overlay Actions */}
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button className="p-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 hover:bg-white/30 transition-all">
+                <Share className="h-3 w-3 text-white" />
+              </button>
             </div>
-          </motion.div>
-        ))}
-
-        {/* Upload Slots */}
-        {[...Array(2)].map((_, index) => (
-          <motion.div
-            key={`upload-${index}`}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: (portfolioItems.length + index) * 0.1, duration: 0.6 }}
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-300 cursor-pointer group"
-          >
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="p-4 bg-white rounded-full shadow-md group-hover:shadow-lg transition-shadow mb-3"
-            >
-              <Plus className="h-8 w-8 text-gray-400 group-hover:text-purple-500 transition-colors" />
-            </motion.div>
-            <p className="text-sm font-inter text-gray-600 group-hover:text-purple-700 text-center px-4 font-medium">
-              {index === 0 ? "Upload 2 more photos to unlock Pro features!" : "Show your creativity"}
-            </p>
           </motion.div>
         ))}
       </div>
 
-      {/* FOMO Banner */}
+      {/* FOMO Message & CTA */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="mt-8 bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50 border border-yellow-200/50 rounded-2xl p-6 shadow-lg"
+        transition={{ delay: 1, duration: 0.5 }}
+        className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-xl p-4 mb-4"
       >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h3 className="font-playfair font-bold text-gray-900 mb-2 text-lg">🚀 Portfolio Power-Up</h3>
-            <p className="text-gray-700 font-inter">
-              Artists with 10+ portfolio photos get <strong>5x more bookings</strong> and earn 3x more on average!
-            </p>
+        <div className="text-center">
+          <div className="text-purple-700 font-semibold text-sm mb-1">
+            🔥 Artists with portfolios get 5x more bookings!
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-inter font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            Upload More
-          </motion.button>
+          <div className="text-purple-600 text-xs">
+            Don't miss out - upload your best work now! ✨
+          </div>
         </div>
       </motion.div>
-    </div>
+
+      {/* View Full Portfolio Button */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.5 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={handleViewFullPortfolio}
+        className="w-full bg-white hover:bg-gray-50 text-gray-900 py-4 rounded-xl font-semibold border border-gray-200 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm"
+      >
+        View Full Portfolio
+        <ChevronRight className="h-5 w-5" />
+      </motion.button>
+    </motion.div>
   );
 };
 

@@ -16,7 +16,7 @@ const containerVariants = {
   visible: { 
     opacity: 1,
     transition: { 
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
       delayChildren: 0.1,
     } 
   }
@@ -33,7 +33,7 @@ const itemVariants = {
 
 const PremiumArtistDashboard = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-[#FDFDFD] to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -43,7 +43,7 @@ const PremiumArtistDashboard = () => {
         {/* Desktop Layout */}
         <div className="hidden lg:block">
           <div className="max-w-7xl mx-auto px-6 py-8">
-            {/* Hero Section */}
+            {/* Hero Welcome */}
             <motion.div variants={itemVariants} className="mb-8">
               <ArtistWelcomeHero />
             </motion.div>
@@ -73,6 +73,10 @@ const PremiumArtistDashboard = () => {
                 <motion.div variants={itemVariants}>
                   <ArtistFeatureVoting />
                 </motion.div>
+
+                <motion.div variants={itemVariants}>
+                  <ArtistViralShare />
+                </motion.div>
               </div>
 
               {/* Right Column - Sidebar */}
@@ -83,10 +87,6 @@ const PremiumArtistDashboard = () => {
                 
                 <motion.div variants={itemVariants}>
                   <ArtistTestimonialCarousel />
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <ArtistViralShare />
                 </motion.div>
               </div>
             </div>
