@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Plus, ArrowRight } from 'lucide-react';
@@ -35,10 +36,11 @@ const ArtistPortfolioShowcase = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
-              Portfolio Gallery ✨
+              Portfolio Gallery
             </h2>
             <p className="text-lg text-gray-600 font-inter">
               Showcase your masterpieces • Curate your brand
+              <span className="block text-sm text-gray-500 mt-1">Trưng bày những kiệt tác của bạn</span>
             </p>
           </div>
           
@@ -49,7 +51,7 @@ const ArtistPortfolioShowcase = () => {
             className="mt-4 sm:mt-0 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-2xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Plus className="h-5 w-5" />
-            Thêm Ảnh Mới
+            Add New Photo
           </motion.button>
         </div>
 
@@ -101,7 +103,7 @@ const ArtistPortfolioShowcase = () => {
             onClick={handleViewAll}
             className="group bg-white hover:bg-gray-50 text-purple-600 border-2 border-purple-200 hover:border-purple-300 px-8 py-3 rounded-2xl font-inter font-medium flex items-center gap-2 mx-auto shadow-sm hover:shadow-md transition-all duration-300"
           >
-            Xem Toàn Bộ
+            View All Portfolio
             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </motion.button>
         </div>
