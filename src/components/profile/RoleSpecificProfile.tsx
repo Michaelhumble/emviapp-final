@@ -11,10 +11,13 @@ import { Loader2 } from "lucide-react";
 const RoleSpecificProfile = () => {
   const { userProfile, userRole, loading } = useAuth();
   
-  // 🔍 TEMPORARY DEBUGGING - Remove after testing
-  console.log('DEBUG: userRole =', userRole);
-  console.log('DEBUG: userProfile =', userProfile);
-  console.log('DEBUG: loading =', loading);
+  // 🔍 ENHANCED DEBUGGING - Force print to console
+  console.log('🚨 URGENT DEBUG: userRole =', userRole);
+  console.log('🚨 URGENT DEBUG: userProfile =', userProfile);
+  console.log('🚨 URGENT DEBUG: loading =', loading);
+  console.log('🚨 URGENT DEBUG: typeof userRole =', typeof userRole);
+  console.log('🚨 URGENT DEBUG: userRole === null?', userRole === null);
+  console.log('🚨 URGENT DEBUG: userRole === undefined?', userRole === undefined);
   
   // 🔧 TEMPORARY ROLE OVERRIDE FOR TESTING - Uncomment one at a time to test
   // const overrideRole = 'artist';
@@ -26,7 +29,8 @@ const RoleSpecificProfile = () => {
   // const effectiveRole = overrideRole || userRole;
   const effectiveRole = userRole; // Using real role for now
   
-  console.log('DEBUG: effectiveRole =', effectiveRole);
+  console.log('🎯 FINAL EFFECTIVE ROLE =', effectiveRole);
+  console.log('🎯 EFFECTIVE ROLE TYPE =', typeof effectiveRole);
 
   console.log("🔍 ROLE SPECIFIC PROFILE DEBUG:", { userRole: effectiveRole, userProfile, loading });
   console.log("🔍 RoleSpecificProfile Component - About to route to:", effectiveRole);
@@ -55,23 +59,39 @@ const RoleSpecificProfile = () => {
     );
   }
 
-  // Debug banner for RoleSpecificProfile routing
-  const debugRoutingInfo = (
-    <div className="w-full py-3 px-6 mb-4 bg-yellow-100 border-2 border-yellow-400 rounded-lg">
-      <p className="text-center font-bold text-yellow-800">
-        🔍 ROUTING DEBUG: Role = "{effectiveRole}" | Will load: {
-          effectiveRole === 'artist' || effectiveRole === 'nail technician/artist' ? 'ArtistProfile.tsx' :
-          effectiveRole === 'salon' || effectiveRole === 'owner' ? 'SalonProfile.tsx' :
-          effectiveRole === 'freelancer' ? 'FreelancerProfile.tsx' :
-          'PremiumCustomerProfile.tsx (Customer)'
-        }
-      </p>
+  // GIANT debug banner for routing info
+  const giantDebugBanner = (
+    <div className="w-full py-8 px-6 mb-6 bg-yellow-200 border-4 border-yellow-600 rounded-lg shadow-lg">
+      <div className="text-center">
+        <h1 className="text-4xl font-black text-yellow-900 mb-4">🚨 ROUTING DEBUG 🚨</h1>
+        <p className="text-2xl font-bold text-yellow-800 mb-2">
+          Detected Role: "{effectiveRole || 'NULL/UNDEFINED'}"
+        </p>
+        <p className="text-xl font-semibold text-yellow-700 mb-2">
+          Role Type: {typeof effectiveRole}
+        </p>
+        <p className="text-lg font-medium text-yellow-700">
+          Will Route To: {
+            effectiveRole === 'artist' || effectiveRole === 'nail technician/artist' ? 'ArtistProfile.tsx' :
+            effectiveRole === 'salon' || effectiveRole === 'owner' ? 'SalonProfile.tsx' :
+            effectiveRole === 'freelancer' ? 'FreelancerProfile.tsx' :
+            'PremiumCustomerProfile.tsx (Customer Default)'
+          }
+        </p>
+      </div>
     </div>
   );
 
   // Render appropriate profile based on user role
   const renderRoleProfile = () => {
     console.log("🎯 RENDERING PROFILE FOR ROLE:", effectiveRole);
+    console.log("🎯 SWITCH STATEMENT EVALUATION:");
+    console.log("  - effectiveRole === 'artist':", effectiveRole === 'artist');
+    console.log("  - effectiveRole === 'nail technician/artist':", effectiveRole === 'nail technician/artist');
+    console.log("  - effectiveRole === 'salon':", effectiveRole === 'salon');
+    console.log("  - effectiveRole === 'owner':", effectiveRole === 'owner');
+    console.log("  - effectiveRole === 'freelancer':", effectiveRole === 'freelancer');
+    console.log("  - effectiveRole === 'customer':", effectiveRole === 'customer');
     
     switch (effectiveRole) {
       case 'artist':
@@ -79,7 +99,7 @@ const RoleSpecificProfile = () => {
         console.log("✅ ROUTING TO: ArtistProfile component");
         return (
           <>
-            {debugRoutingInfo}
+            {giantDebugBanner}
             <ArtistProfile />
           </>
         );
@@ -89,7 +109,7 @@ const RoleSpecificProfile = () => {
         console.log("✅ ROUTING TO: SalonProfile component");
         return (
           <>
-            {debugRoutingInfo}
+            {giantDebugBanner}
             <SalonProfile />
           </>
         );
@@ -98,7 +118,7 @@ const RoleSpecificProfile = () => {
         console.log("✅ ROUTING TO: FreelancerProfile component");
         return (
           <>
-            {debugRoutingInfo}
+            {giantDebugBanner}
             <FreelancerProfile />
           </>
         );
@@ -106,9 +126,10 @@ const RoleSpecificProfile = () => {
       case 'customer':
       default:
         console.log("✅ ROUTING TO: PremiumCustomerProfile component (Customer)");
+        console.log("🔍 DEFAULT CASE HIT - effectiveRole was:", effectiveRole);
         return (
           <>
-            {debugRoutingInfo}
+            {giantDebugBanner}
             <PremiumCustomerProfile userProfile={userProfile} />
           </>
         );

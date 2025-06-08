@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Camera, Edit, Save, User, Heart, Gift, Star } from "lucide-react";
@@ -13,9 +12,10 @@ interface PremiumCustomerProfileProps {
 }
 
 const PremiumCustomerProfile = ({ userProfile }: PremiumCustomerProfileProps) => {
-  console.log("👑 CUSTOMER PROFILE COMPONENT LOADED");
-  console.log("👑 Component: PremiumCustomerProfile.tsx");
-  
+  // Force log component load
+  console.log('👤 CUSTOMER PROFILE COMPONENT LOADED');
+  console.log('👤 Customer userProfile:', userProfile);
+
   const { userRole } = useAuth();
   console.log("👑 Customer Profile - Detected Role:", userRole);
   console.log("👑 Customer Profile - User Profile:", userProfile);
@@ -24,12 +24,13 @@ const PremiumCustomerProfile = ({ userProfile }: PremiumCustomerProfileProps) =>
   const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">
-      {/* DEBUG BANNER - CUSTOMER */}
-      <div className="w-full py-4 px-6 mb-6 bg-gradient-to-r from-rose-600 to-pink-600 text-white">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold">👑 DEBUG: CUSTOMER PROFILE LOADED</h1>
-          <p className="text-lg">Component: PremiumCustomerProfile.tsx | Detected Role: "{userRole}" | User ID: {userProfile?.id}</p>
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50">
+      {/* GIANT DEBUG BANNER */}
+      <div className="w-full py-12 px-8 mb-8 bg-pink-600 border-4 border-pink-800 rounded-lg shadow-2xl">
+        <div className="text-center">
+          <h1 className="text-6xl font-black text-white mb-4">👤 CUSTOMER PROFILE LOADED 👤</h1>
+          <p className="text-2xl font-bold text-pink-100">This is the PremiumCustomerProfile.tsx component</p>
+          <p className="text-xl font-semibold text-pink-200 mt-2">If you see this, Customer routing worked!</p>
         </div>
       </div>
 
