@@ -45,7 +45,7 @@ const OverviewTab = ({ stats, isLoadingStats, bookings, isLoadingBookings }: Ove
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <ProfileHighlights stats={profileStats} isLoading={isLoadingStats} />
+          <ProfileHighlights stats={profileStats} />
           <ArtistBookingsPanel />
         </div>
         

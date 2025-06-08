@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import useArtistProfileData from "./artist-profile/hooks/useArtistProfileData";
+import { useArtistProfileData } from "./artist-profile/hooks/useArtistProfileData";
 import ArtistProfileContent from "./artist-profile/ArtistProfileContent";
 import ArtistProfileLoading from "./artist-profile/ArtistProfileLoading";
 import ArtistProfileError from "./artist-profile/ArtistProfileError";
