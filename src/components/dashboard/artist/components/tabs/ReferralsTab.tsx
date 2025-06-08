@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import ArtistReferrals from "../ArtistReferrals";
-import ReferralWidget from "../ReferralWidget";
-import ArtistViralSuccessCard from "../ArtistViralSuccessCard";
+import ArtistReferrals from "../../ArtistReferrals";
+import ReferralWidget from "../../ReferralWidget";
+import ArtistViralSuccessCard from "../../ArtistViralSuccessCard";
 
 const ReferralsTab = () => {
   return (
