@@ -45,9 +45,14 @@ const ArtistSocialTicker = () => {
             transition={{ duration: 0.4 }}
             className="absolute inset-0 flex items-center gap-2"
           >
-            <activities[currentIndex].icon 
-              className={`h-4 w-4 ${activities[currentIndex].color} flex-shrink-0`} 
-            />
+            {(() => {
+              const Icon = activities[currentIndex].icon;
+              return (
+                <Icon 
+                  className={`h-4 w-4 ${activities[currentIndex].color} flex-shrink-0`} 
+                />
+              );
+            })()}
             <span className="text-sm text-gray-700 truncate">
               {activities[currentIndex].text}
             </span>
