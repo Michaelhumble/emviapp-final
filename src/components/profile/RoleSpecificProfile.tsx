@@ -10,9 +10,26 @@ import { Loader2 } from "lucide-react";
 
 const RoleSpecificProfile = () => {
   const { userProfile, userRole, loading } = useAuth();
+  
+  // 🔍 TEMPORARY DEBUGGING - Remove after testing
+  console.log('DEBUG: userRole =', userRole);
+  console.log('DEBUG: userProfile =', userProfile);
+  console.log('DEBUG: loading =', loading);
+  
+  // 🔧 TEMPORARY ROLE OVERRIDE FOR TESTING - Uncomment one at a time to test
+  // const overrideRole = 'artist';
+  // const overrideRole = 'salon';
+  // const overrideRole = 'freelancer';
+  // const overrideRole = 'customer';
+  
+  // Use override role if defined, otherwise use real userRole
+  // const effectiveRole = overrideRole || userRole;
+  const effectiveRole = userRole; // Using real role for now
+  
+  console.log('DEBUG: effectiveRole =', effectiveRole);
 
-  console.log("🔍 ROLE SPECIFIC PROFILE DEBUG:", { userRole, userProfile, loading });
-  console.log("🔍 RoleSpecificProfile Component - About to route to:", userRole);
+  console.log("🔍 ROLE SPECIFIC PROFILE DEBUG:", { userRole: effectiveRole, userProfile, loading });
+  console.log("🔍 RoleSpecificProfile Component - About to route to:", effectiveRole);
 
   if (loading) {
     console.log("🔍 LOADING STATE: Still loading auth data");
@@ -42,10 +59,10 @@ const RoleSpecificProfile = () => {
   const debugRoutingInfo = (
     <div className="w-full py-3 px-6 mb-4 bg-yellow-100 border-2 border-yellow-400 rounded-lg">
       <p className="text-center font-bold text-yellow-800">
-        🔍 ROUTING DEBUG: Role = "{userRole}" | Will load: {
-          userRole === 'artist' || userRole === 'nail technician/artist' ? 'ArtistProfile.tsx' :
-          userRole === 'salon' || userRole === 'owner' ? 'SalonProfile.tsx' :
-          userRole === 'freelancer' ? 'FreelancerProfile.tsx' :
+        🔍 ROUTING DEBUG: Role = "{effectiveRole}" | Will load: {
+          effectiveRole === 'artist' || effectiveRole === 'nail technician/artist' ? 'ArtistProfile.tsx' :
+          effectiveRole === 'salon' || effectiveRole === 'owner' ? 'SalonProfile.tsx' :
+          effectiveRole === 'freelancer' ? 'FreelancerProfile.tsx' :
           'PremiumCustomerProfile.tsx (Customer)'
         }
       </p>
@@ -54,9 +71,9 @@ const RoleSpecificProfile = () => {
 
   // Render appropriate profile based on user role
   const renderRoleProfile = () => {
-    console.log("🎯 RENDERING PROFILE FOR ROLE:", userRole);
+    console.log("🎯 RENDERING PROFILE FOR ROLE:", effectiveRole);
     
-    switch (userRole) {
+    switch (effectiveRole) {
       case 'artist':
       case 'nail technician/artist':
         console.log("✅ ROUTING TO: ArtistProfile component");
