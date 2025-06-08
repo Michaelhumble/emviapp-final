@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import ArtistWelcomeHero from './sections/ArtistWelcomeHero';
@@ -91,16 +90,6 @@ const PremiumArtistDashboard = () => {
           <ArtistViralShareCard />
         </motion.div>
 
-        {/* Testimonial Carousel */}
-        <motion.div variants={itemVariants}>
-          <ArtistTestimonialCarousel />
-        </motion.div>
-
-        {/* Live Leaderboard */}
-        <motion.div variants={itemVariants}>
-          <ArtistLiveLeaderboard />
-        </motion.div>
-
         {/* Portfolio Showcase */}
         <motion.div variants={itemVariants}>
           <ArtistPortfolioShowcase />
@@ -109,6 +98,16 @@ const PremiumArtistDashboard = () => {
         {/* Booking Widget */}
         <motion.div variants={itemVariants}>
           <ArtistBookingWidget />
+        </motion.div>
+
+        {/* Testimonial Carousel */}
+        <motion.div variants={itemVariants}>
+          <ArtistTestimonialCarousel />
+        </motion.div>
+
+        {/* Live Leaderboard */}
+        <motion.div variants={itemVariants}>
+          <ArtistLiveLeaderboard />
         </motion.div>
 
         {/* Coming Soon Features */}
