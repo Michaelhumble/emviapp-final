@@ -1,238 +1,222 @@
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Heart, Star, Gift, Crown, Sparkles, TrendingUp, Award, MapPin, Clock } from "lucide-react";
+import { Camera, Edit, Save, User, Heart, Gift, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { UserProfile } from "@/context/auth/types";
-import CustomerLoyaltyTracker from "@/components/customer/CustomerLoyaltyTracker";
+import { useAuth } from "@/context/auth";
 
 interface PremiumCustomerProfileProps {
   userProfile: UserProfile;
 }
 
 const PremiumCustomerProfile = ({ userProfile }: PremiumCustomerProfileProps) => {
+  console.log("👑 CUSTOMER PROFILE COMPONENT LOADED");
+  console.log("👑 Component: PremiumCustomerProfile.tsx");
+  
+  const { userRole } = useAuth();
+  console.log("👑 Customer Profile - Detected Role:", userRole);
+  console.log("👑 Customer Profile - User Profile:", userProfile);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50">
-      {/* Premium Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        
-        {/* Floating Elements */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse" />
-        <div className="absolute top-20 right-20 w-32 h-32 bg-pink-300/20 rounded-full blur-2xl animate-pulse delay-1000" />
-        <div className="absolute bottom-10 left-1/3 w-24 h-24 bg-purple-300/20 rounded-full blur-xl animate-pulse delay-500" />
-        
-        <div className="relative z-10 container mx-auto px-6 py-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            {/* Premium Avatar */}
-            <div className="relative inline-block mb-6">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl">
-                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-3xl font-bold shadow-inner">
-                  {userProfile.first_name?.[0] || userProfile.email?.[0]?.toUpperCase()}
-                </div>
-              </div>
-              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-2 shadow-lg">
-                <Crown className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            
-            {/* Customer Name & Status */}
-            <h1 className="text-4xl font-bold text-white mb-2">
-              {userProfile.first_name} {userProfile.last_name}
-            </h1>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Badge className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 px-4 py-1">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Premium Beauty Enthusiast
-              </Badge>
-              <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 px-4 py-1">
-                <Star className="w-4 h-4 mr-2" />
-                VIP Member
-              </Badge>
-            </div>
-            <p className="text-pink-100 text-lg mb-6">
-              Your beauty journey, elevated to perfection
-            </p>
-            
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-6 max-w-md mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">24</div>
-                <div className="text-pink-200 text-sm">Appointments</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">850</div>
-                <div className="text-pink-200 text-sm">Loyalty Points</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">5</div>
-                <div className="text-pink-200 text-sm">Favorites</div>
-              </div>
-            </div>
-          </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">
+      {/* DEBUG BANNER - CUSTOMER */}
+      <div className="w-full py-4 px-6 mb-6 bg-gradient-to-r from-rose-600 to-pink-600 text-white">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-2xl font-bold">👑 DEBUG: CUSTOMER PROFILE LOADED</h1>
+          <p className="text-lg">Component: PremiumCustomerProfile.tsx | Detected Role: "{userRole}" | User ID: {userProfile?.id}</p>
         </div>
       </div>
 
-      {/* Content Section */}
-      <div className="container mx-auto px-6 py-8 -mt-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Beauty Journey Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className="border-0 shadow-2xl bg-white/60 backdrop-blur-xl overflow-hidden">
-                <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-1">
-                  <CardHeader className="bg-white/50 backdrop-blur-sm">
-                    <CardTitle className="flex items-center text-2xl bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                      <TrendingUp className="w-6 h-6 mr-3 text-pink-600" />
-                      Your Beauty Journey
-                    </CardTitle>
-                  </CardHeader>
+      <div className="max-w-4xl mx-auto p-6">
+        {/* Profile Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-rose-100"
+        >
+          <div className="flex flex-col md:flex-row items-start gap-6">
+            {/* Avatar Section */}
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-rose-400 to-pink-400 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                {userProfile?.avatar_url ? (
+                  <img src={userProfile.avatar_url} alt="Customer Avatar" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <User className="w-16 h-16" />
+                )}
+              </div>
+              <button
+                onClick={() => setShowAvatarModal(true)}
+                className="absolute -bottom-2 -right-2 bg-rose-600 hover:bg-rose-700 text-white p-2 rounded-full shadow-lg transition-colors"
+              >
+                <Camera className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Profile Info */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {userProfile?.full_name || 'Valued Customer'}
+                </h1>
+                <Button
+                  onClick={() => setIsEditing(!isEditing)}
+                  variant={isEditing ? "default" : "outline"}
+                  className="bg-rose-600 hover:bg-rose-700 text-white"
+                >
+                  {isEditing ? <Save className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
+                  {isEditing ? 'Save' : 'Edit Profile'}
+                </Button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Membership</label>
+                  {isEditing ? (
+                    <Input 
+                      defaultValue="Premium Member"
+                      className="mt-1"
+                    />
+                  ) : (
+                    <p className="text-gray-900 font-medium">Premium Member</p>
+                  )}
                 </div>
-                <CardContent className="p-8">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-pink-50 to-rose-50 border border-pink-100">
-                      <Calendar className="w-8 h-8 text-pink-600 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-gray-800 mb-1">24</div>
-                      <div className="text-sm text-gray-600">Total Visits</div>
-                    </div>
-                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100">
-                      <Heart className="w-8 h-8 text-purple-600 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-gray-800 mb-1">5</div>
-                      <div className="text-sm text-gray-600">Favorites</div>
-                    </div>
-                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100">
-                      <Star className="w-8 h-8 text-amber-600 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-gray-800 mb-1">4.9</div>
-                      <div className="text-sm text-gray-600">Avg Rating</div>
-                    </div>
-                    <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100">
-                      <Gift className="w-8 h-8 text-emerald-600 mx-auto mb-3" />
-                      <div className="text-2xl font-bold text-gray-800 mb-1">12</div>
-                      <div className="text-sm text-gray-600">Rewards</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Member Since</label>
+                  {isEditing ? (
+                    <Input 
+                      defaultValue="2023"
+                      className="mt-1"
+                    />
+                  ) : (
+                    <p className="text-gray-900 font-medium">2023</p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Location</label>
+                  {isEditing ? (
+                    <Input 
+                      defaultValue={userProfile?.location || "City, State"}
+                      className="mt-1"
+                    />
+                  ) : (
+                    <p className="text-gray-900 font-medium">{userProfile?.location || "City, State"}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Phone</label>
+                  {isEditing ? (
+                    <Input 
+                      defaultValue={userProfile?.phone || "(555) 123-4567"}
+                      className="mt-1"
+                    />
+                  ) : (
+                    <p className="text-gray-900 font-medium">{userProfile?.phone || "(555) 123-4567"}</p>
+                  )}
+                </div>
+              </div>
 
-            {/* Recent Activity */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <Card className="border-0 shadow-2xl bg-white/60 backdrop-blur-xl">
-                <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
-                  <CardTitle className="flex items-center text-xl text-gray-800">
-                    <Clock className="w-5 h-5 mr-3 text-indigo-600" />
-                    Recent Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100">
-                      <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-800">Nail appointment completed</div>
-                        <div className="text-sm text-gray-600">Magic Nails Salon • 2 days ago</div>
-                      </div>
-                      <Badge className="bg-green-100 text-green-800 border-green-200">Completed</Badge>
-                    </div>
-                    <div className="flex items-center p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-4"></div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-800">Upcoming hair appointment</div>
-                        <div className="text-sm text-gray-600">Elite Beauty Studio • Tomorrow at 2:00 PM</div>
-                      </div>
-                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">Upcoming</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+              <div className="mt-4">
+                <label className="text-sm font-medium text-gray-600">Preferences</label>
+                {isEditing ? (
+                  <Textarea 
+                    defaultValue={userProfile?.bio || "I love trying new nail art designs and enjoy relaxing spa treatments. Looking for talented artists and premium salons."}
+                    className="mt-1"
+                    rows={3}
+                  />
+                ) : (
+                  <p className="text-gray-700 mt-1">{userProfile?.bio || "I love trying new nail art designs and enjoy relaxing spa treatments. Looking for talented artists and premium salons."}</p>
+                )}
+              </div>
+            </div>
           </div>
+        </motion.div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Loyalty Tracker */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <CustomerLoyaltyTracker />
-            </motion.div>
+        {/* Customer Stats */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-3 gap-4 mb-8"
+        >
+          <div className="bg-white rounded-2xl p-6 text-center shadow-lg border border-rose-100">
+            <Heart className="w-8 h-8 text-red-400 mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gray-900">24</div>
+            <div className="text-sm text-gray-600">Favorites</div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 text-center shadow-lg border border-rose-100">
+            <Gift className="w-8 h-8 text-rose-500 mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gray-900">156</div>
+            <div className="text-sm text-gray-600">Rewards Points</div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 text-center shadow-lg border border-rose-100">
+            <Star className="w-8 h-8 text-pink-500 mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gray-900">47</div>
+            <div className="text-sm text-gray-600">Bookings</div>
+          </div>
+        </motion.div>
 
-            {/* Premium Benefits */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              <Card className="border-0 shadow-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                <CardContent className="relative p-6">
-                  <div className="flex items-center mb-4">
-                    <Crown className="w-6 h-6 mr-3" />
-                    <h3 className="text-xl font-bold">VIP Benefits</h3>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <Award className="w-4 h-4 mr-3 opacity-80" />
-                      <span className="text-sm">Priority booking</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Gift className="w-4 h-4 mr-3 opacity-80" />
-                      <span className="text-sm">Exclusive rewards</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 mr-3 opacity-80" />
-                      <span className="text-sm">Special discounts</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+        {/* Beauty Journey Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-3xl shadow-xl p-8 border border-rose-100"
+        >
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Beauty Journey</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              'Recent Manicure at Elite Salon',
+              'Nail Art Session with Top Artist',
+              'Spa Day at Luxury Resort',
+              'Pedicure with Gel Polish',
+              'Custom Design Consultation',
+              'Seasonal Color Update'
+            ].map((activity) => (
+              <div key={activity} className="p-4 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
+                <span className="font-medium text-gray-900">{activity}</span>
+              </div>
+            ))}
+          </div>
+          <Button className="mt-6 bg-rose-600 hover:bg-rose-700 text-white">
+            <Heart className="w-4 h-4 mr-2" />
+            Book New Appointment
+          </Button>
+        </motion.div>
+      </div>
 
-            {/* Quick Actions */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-            >
-              <Card className="border-0 shadow-2xl bg-white/60 backdrop-blur-xl">
-                <CardHeader>
-                  <CardTitle className="text-lg text-gray-800">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 shadow-lg">
-                    Book Appointment
-                  </Button>
-                  <Button variant="outline" className="w-full border-pink-200 text-pink-700 hover:bg-pink-50">
-                    View Favorites
-                  </Button>
-                  <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
-                    Redeem Rewards
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+      {/* Avatar Upload Modal */}
+      {showAvatarModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold mb-4">Upload Profile Photo</h3>
+            <div className="border-2 border-dashed border-rose-300 rounded-xl p-8 text-center">
+              <Camera className="w-12 h-12 text-rose-400 mx-auto mb-2" />
+              <p className="text-gray-600">Click to upload or drag and drop</p>
+            </div>
+            <div className="flex gap-2 mt-6">
+              <Button 
+                onClick={() => setShowAvatarModal(false)}
+                variant="outline" 
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => setShowAvatarModal(false)}
+                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white"
+              >
+                Upload
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

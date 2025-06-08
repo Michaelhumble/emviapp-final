@@ -11,9 +11,11 @@ import { Loader2 } from "lucide-react";
 const RoleSpecificProfile = () => {
   const { userProfile, userRole, loading } = useAuth();
 
-  console.log("🔍 PROFILE DEBUG:", { userRole, userProfile, loading });
+  console.log("🔍 ROLE SPECIFIC PROFILE DEBUG:", { userRole, userProfile, loading });
+  console.log("🔍 RoleSpecificProfile Component - About to route to:", userRole);
 
   if (loading) {
+    console.log("🔍 LOADING STATE: Still loading auth data");
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
@@ -25,6 +27,7 @@ const RoleSpecificProfile = () => {
   }
 
   if (!userProfile) {
+    console.log("🔍 NO USER PROFILE: userProfile is null or undefined");
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
@@ -35,55 +38,60 @@ const RoleSpecificProfile = () => {
     );
   }
 
-  // Debug banner for testing
-  const debugBanner = (
-    <div className="w-full py-4 px-6 mb-6 bg-yellow-100 border-2 border-yellow-400 rounded-lg">
+  // Debug banner for RoleSpecificProfile routing
+  const debugRoutingInfo = (
+    <div className="w-full py-3 px-6 mb-4 bg-yellow-100 border-2 border-yellow-400 rounded-lg">
       <p className="text-center font-bold text-yellow-800">
-        🔍 DEBUG: Current Role = "{userRole}" | Loading Profile Component
+        🔍 ROUTING DEBUG: Role = "{userRole}" | Will load: {
+          userRole === 'artist' || userRole === 'nail technician/artist' ? 'ArtistProfile.tsx' :
+          userRole === 'salon' || userRole === 'owner' ? 'SalonProfile.tsx' :
+          userRole === 'freelancer' ? 'FreelancerProfile.tsx' :
+          'PremiumCustomerProfile.tsx (Customer)'
+        }
       </p>
     </div>
   );
 
   // Render appropriate profile based on user role
   const renderRoleProfile = () => {
-    console.log("🎯 Rendering profile for role:", userRole);
+    console.log("🎯 RENDERING PROFILE FOR ROLE:", userRole);
     
     switch (userRole) {
       case 'artist':
       case 'nail technician/artist':
-        console.log("✅ Loading ArtistProfile component");
+        console.log("✅ ROUTING TO: ArtistProfile component");
         return (
           <>
-            {debugBanner}
+            {debugRoutingInfo}
             <ArtistProfile />
           </>
         );
       
       case 'salon':
       case 'owner':
-        console.log("✅ Loading SalonProfile component");
+        console.log("✅ ROUTING TO: SalonProfile component");
         return (
           <>
-            {debugBanner}
+            {debugRoutingInfo}
             <SalonProfile />
           </>
         );
       
       case 'freelancer':
-        console.log("✅ Loading FreelancerProfile component");
+        console.log("✅ ROUTING TO: FreelancerProfile component");
         return (
           <>
-            {debugBanner}
+            {debugRoutingInfo}
             <FreelancerProfile />
           </>
         );
       
       case 'customer':
       default:
-        console.log("✅ Loading PremiumCustomerProfile component");
+        console.log("✅ ROUTING TO: PremiumCustomerProfile component (Customer)");
         return (
           <>
-            {debugBanner}
+            {debugRoutingInfo}
             <PremiumCustomerProfile userProfile={userProfile} />
           </>
         );
