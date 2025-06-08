@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Heart, Share2 } from 'lucide-react';
 
@@ -10,169 +10,162 @@ const ArtistTestimonialCarousel = () => {
     {
       id: 1,
       name: "Sarah Johnson",
-      avatar: "https://i.pravatar.cc/60?img=1",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b167?w=80",
       rating: 5,
-      text: "Absolutely incredible work! Maria transformed my nails into works of art. The attention to detail is unmatched and the experience was so relaxing. I've received countless compliments!",
-      service: "Premium Manicure + Art",
-      date: "2 days ago"
+      date: "2 days ago",
+      text: "Absolutely amazing work! My nails have never looked better. The attention to detail is incredible and the design lasted weeks without chipping. Sarah is truly an artist!",
+      service: "Gel Manicure + Art"
     },
     {
       id: 2,
-      name: "Emily Chen",
-      avatar: "https://i.pravatar.cc/60?img=2",
+      name: "Jessica Miller",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80",
       rating: 5,
-      text: "I'm obsessed with my new nails! The gel extensions look so natural and the design exceeded my expectations. Maria is truly talented and professional.",
-      service: "Gel Extensions",
-      date: "1 week ago"
+      date: "1 week ago",
+      text: "Professional, friendly, and very talented. I've received so many compliments on my nails. The salon is clean and the experience was relaxing. Highly recommend!",
+      service: "Premium Pedicure"
     },
     {
       id: 3,
-      name: "Jessica Rodriguez",
-      avatar: "https://i.pravatar.cc/60?img=3",
+      name: "Emily Rodriguez",
+      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80",
       rating: 5,
-      text: "Best nail artist in LA! The pedicure was heavenly and my nails have never looked better. Already booked my next appointment!",
-      service: "Pedicure Deluxe",
-      date: "3 days ago"
+      date: "3 days ago",
+      text: "I'm obsessed with my new set! The color matching was perfect and the application was flawless. This is definitely my new go-to nail artist. Worth every penny!",
+      service: "Full Set Acrylics"
     }
   ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const nextTestimonial = () => {
+  const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   };
 
-  const prevTestimonial = () => {
+  const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
-  const currentTestimonial = testimonials[currentIndex];
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-2xl"
-    >
+    <div className="mb-8">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="p-3 bg-gradient-to-r from-rose-500/20 to-pink-500/20 rounded-xl border border-rose-500/30"
-          >
-            <Star className="h-6 w-6 text-rose-400" />
-          </motion.div>
-          <div>
-            <h2 className="text-xl font-bold text-white">Client Love</h2>
-            <p className="text-sm text-gray-400">Recent reviews</p>
-          </div>
+        <div>
+          <h2 className="text-2xl font-playfair font-bold text-gray-900 mb-2">Client Love</h2>
+          <p className="text-gray-600 font-inter">What your clients are saying</p>
         </div>
-
-        <div className="flex items-center gap-2">
+        
+        <div className="hidden lg:flex items-center gap-2">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={prevTestimonial}
-            className="p-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/20 transition-colors"
+            onClick={prevSlide}
+            className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
-            <ChevronLeft className="h-4 w-4 text-white" />
+            <ChevronLeft className="h-5 w-5 text-gray-600" />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={nextTestimonial}
-            className="p-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/20 transition-colors"
+            onClick={nextSlide}
+            className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
-            <ChevronRight className="h-4 w-4 text-white" />
+            <ChevronRight className="h-5 w-5 text-gray-600" />
           </motion.button>
         </div>
       </div>
 
-      <div className="relative h-48 lg:h-56 overflow-hidden">
+      <div className="relative overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, x: 100 }}
+            initial={{ opacity: 0, x: 300 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="absolute inset-0"
+            exit={{ opacity: 0, x: -300 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
           >
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 h-full">
-              <div className="flex items-start gap-4 mb-4">
-                <motion.img
-                  src={currentTestimonial.avatar}
-                  alt={currentTestimonial.name}
-                  className="w-12 h-12 rounded-full border-2 border-white/20"
-                  whileHover={{ scale: 1.1 }}
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-white">{currentTestimonial.name}</h3>
-                    <div className="flex items-center gap-1">
-                      {[...Array(currentTestimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                      ))}
-                    </div>
+            <div className="flex items-start gap-4 mb-4">
+              <img
+                src={testimonials[currentIndex].avatar}
+                alt={testimonials[currentIndex].name}
+                className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
+              />
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-inter font-semibold text-gray-900">
+                    {testimonials[currentIndex].name}
+                  </h3>
+                  <span className="text-sm text-gray-500 font-inter">
+                    {testimonials[currentIndex].date}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < testimonials[currentIndex].rating
+                            ? 'text-yellow-500 fill-yellow-500'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
                   </div>
-                  <p className="text-sm text-gray-400">{currentTestimonial.service}</p>
-                  <p className="text-xs text-gray-500">{currentTestimonial.date}</p>
+                  <span className="text-sm text-gray-600 font-inter">
+                    {testimonials[currentIndex].service}
+                  </span>
                 </div>
               </div>
-              
-              <blockquote className="text-gray-300 text-sm leading-relaxed mb-4">
-                "{currentTestimonial.text}"
-              </blockquote>
-              
+            </div>
+            
+            <p className="text-gray-700 font-inter leading-relaxed mb-4">
+              "{testimonials[currentIndex].text}"
+            </p>
+            
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-pink-500/20 border border-pink-500/30 rounded-lg text-pink-400 text-sm hover:bg-pink-500/30 transition-colors"
+                  className="flex items-center gap-1 px-3 py-1 bg-pink-50 text-pink-600 rounded-lg hover:bg-pink-100 transition-colors border border-pink-100"
                 >
-                  <Heart className="h-3 w-3" />
-                  <span>Thank</span>
+                  <Heart className="h-4 w-4" />
+                  <span className="text-sm font-inter">Thank</span>
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 text-sm hover:bg-blue-500/30 transition-colors"
+                  className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
                 >
-                  <Share2 className="h-3 w-3" />
-                  <span>Share</span>
+                  <Share2 className="h-4 w-4" />
+                  <span className="text-sm font-inter">Share</span>
                 </motion.button>
+              </div>
+              
+              <div className="flex gap-1">
+                {testimonials.map((_, index) => (
+                  <motion.button
+                    key={index}
+                    whileHover={{ scale: 1.2 }}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === currentIndex ? 'bg-purple-500' : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Indicators */}
-      <div className="flex justify-center gap-2 mt-4">
-        {testimonials.map((_, index) => (
-          <motion.button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            animate={{
-              scale: index === currentIndex ? 1.2 : 1,
-              opacity: index === currentIndex ? 1 : 0.5
-            }}
-            transition={{ duration: 0.3 }}
-            className={`w-2 h-2 rounded-full ${
-              index === currentIndex ? 'bg-white' : 'bg-white/40'
-            }`}
-          />
-        ))}
+      {/* Mobile swipe indicators */}
+      <div className="lg:hidden mt-4 flex justify-center">
+        <div className="text-sm text-gray-500 font-inter">
+          Swipe to see more reviews →
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

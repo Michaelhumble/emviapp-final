@@ -10,121 +10,114 @@ const ArtistEmpireStats = () => {
       value: 2840,
       prefix: "$",
       icon: DollarSign,
-      color: "text-emerald-400",
-      bgGradient: "from-emerald-500/20 to-green-500/20",
-      borderColor: "border-emerald-500/30",
       change: "+24%",
-      changeColor: "text-emerald-400"
+      color: "emerald"
     },
     {
       label: "Active Clients",
       value: 127,
       icon: Users,
-      color: "text-blue-400", 
-      bgGradient: "from-blue-500/20 to-cyan-500/20",
-      borderColor: "border-blue-500/30",
       change: "+12",
-      changeColor: "text-blue-400"
+      color: "blue"
     },
     {
       label: "This Month",
       value: 43,
       icon: Calendar,
-      color: "text-purple-400",
-      bgGradient: "from-purple-500/20 to-pink-500/20",
-      borderColor: "border-purple-500/30",
       change: "+8",
-      changeColor: "text-purple-400"
+      color: "purple"
     },
     {
       label: "Average Rating",
       value: 4.9,
       icon: Star,
-      color: "text-yellow-400",
-      bgGradient: "from-yellow-500/20 to-orange-500/20",
-      borderColor: "border-yellow-500/30",
       change: "+0.2",
-      changeColor: "text-yellow-400"
+      color: "yellow"
     },
     {
       label: "Growth Rate",
       value: 189,
       suffix: "%",
       icon: TrendingUp,
-      color: "text-pink-400",
-      bgGradient: "from-pink-500/20 to-rose-500/20",
-      borderColor: "border-pink-500/30",
       change: "+67%",
-      changeColor: "text-pink-400"
+      color: "pink"
     },
     {
       label: "Viral Score",
       value: 8.7,
       suffix: "/10",
       icon: Zap,
-      color: "text-orange-400",
-      bgGradient: "from-orange-500/20 to-red-500/20",
-      borderColor: "border-orange-500/30",
       change: "+1.3",
-      changeColor: "text-orange-400"
+      color: "orange"
     }
   ];
 
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-      {stats.map((stat, index) => (
-        <motion.div
-          key={stat.label}
-          initial={{ opacity: 0, y: 30, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: index * 0.1, duration: 0.6 }}
-          whileHover={{ scale: 1.02, y: -4 }}
-          className={`bg-gradient-to-br ${stat.bgGradient} backdrop-blur-sm border ${stat.borderColor} rounded-2xl p-4 lg:p-6 shadow-xl hover:shadow-2xl transition-all duration-300`}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className={`p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20`}>
-              <stat.icon className={`h-5 w-5 lg:h-6 lg:w-6 ${stat.color}`} />
-            </div>
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5 + index * 0.1, type: "spring", stiffness: 200 }}
-              className={`text-xs font-bold ${stat.changeColor} bg-white/10 px-2 py-1 rounded-full border border-white/20`}
-            >
-              {stat.change}
-            </motion.div>
-          </div>
-          
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
-            className="text-2xl lg:text-3xl font-bold text-white mb-2"
-          >
-            {stat.prefix}
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
-            >
-              {stat.value}
-            </motion.span>
-            {stat.suffix}
-          </motion.div>
-          
-          <div className="text-xs lg:text-sm text-gray-300 font-medium">
-            {stat.label}
-          </div>
+  const getColorClasses = (color: string) => {
+    const colors = {
+      emerald: "from-emerald-50 to-green-50 border-emerald-100 text-emerald-600",
+      blue: "from-blue-50 to-cyan-50 border-blue-100 text-blue-600",
+      purple: "from-purple-50 to-pink-50 border-purple-100 text-purple-600",
+      yellow: "from-yellow-50 to-orange-50 border-yellow-100 text-yellow-600",
+      pink: "from-pink-50 to-rose-50 border-pink-100 text-pink-600",
+      orange: "from-orange-50 to-red-50 border-orange-100 text-orange-600"
+    };
+    return colors[color as keyof typeof colors] || colors.blue;
+  };
 
-          {/* Animated Progress Bar */}
+  return (
+    <div className="mb-8">
+      <div className="mb-6">
+        <h2 className="text-2xl font-playfair font-bold text-gray-900 mb-2">Your Empire Stats</h2>
+        <p className="text-gray-600 font-inter">Track your growth and celebrate your success</p>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+        {stats.map((stat, index) => (
           <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            transition={{ delay: 1 + index * 0.1, duration: 1 }}
-            className="mt-3 h-1 bg-gradient-to-r from-white/20 to-white/40 rounded-full"
-          />
-        </motion.div>
-      ))}
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.5 }}
+            whileHover={{ y: -4, scale: 1.02 }}
+            className={`bg-gradient-to-br ${getColorClasses(stat.color)} border rounded-2xl p-4 lg:p-6 shadow-sm hover:shadow-md transition-all duration-300`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className={`p-3 rounded-xl bg-white/80 border border-white/40`}>
+                <stat.icon className={`h-5 w-5 lg:h-6 lg:w-6 ${stat.color === 'yellow' ? 'text-yellow-600' : stat.color === 'emerald' ? 'text-emerald-600' : stat.color === 'blue' ? 'text-blue-600' : stat.color === 'purple' ? 'text-purple-600' : stat.color === 'pink' ? 'text-pink-600' : 'text-orange-600'}`} />
+              </div>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5 + index * 0.1, type: "spring", stiffness: 200 }}
+                className={`text-xs font-bold px-2 py-1 rounded-full bg-white/80 border border-white/40 ${stat.color === 'yellow' ? 'text-yellow-700' : stat.color === 'emerald' ? 'text-emerald-700' : stat.color === 'blue' ? 'text-blue-700' : stat.color === 'purple' ? 'text-purple-700' : stat.color === 'pink' ? 'text-pink-700' : 'text-orange-700'}`}
+              >
+                {stat.change}
+              </motion.div>
+            </div>
+            
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+              className="text-2xl lg:text-3xl font-playfair font-bold text-gray-900 mb-2"
+            >
+              {stat.prefix}
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
+              >
+                {stat.value}
+              </motion.span>
+              {stat.suffix}
+            </motion.div>
+            
+            <div className="text-xs lg:text-sm text-gray-700 font-inter font-medium">
+              {stat.label}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };
