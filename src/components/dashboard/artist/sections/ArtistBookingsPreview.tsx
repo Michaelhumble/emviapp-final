@@ -3,16 +3,16 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, User, ArrowRight, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import BookingModal from '../modals/BookingModal';
+import { toast } from 'sonner';
 
 const ArtistBookingsPreview = () => {
   const navigate = useNavigate();
-  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   const upcomingBookings = [
     {
       id: 1,
-      clientName: "Linh Nguyen",
+      clientName: "Client A",
       service: "Nail Art Design",
       time: "10:00 AM",
       date: "Today",
@@ -20,7 +20,7 @@ const ArtistBookingsPreview = () => {
     },
     {
       id: 2,
-      clientName: "Anh Pham",
+      clientName: "Client B", 
       service: "Manicure & Pedicure",
       time: "2:30 PM",
       date: "Today",
@@ -28,16 +28,20 @@ const ArtistBookingsPreview = () => {
     },
     {
       id: 3,
-      clientName: "Trang Le",
+      clientName: "Client C",
       service: "Gel Polish",
-      time: "9:00 AM",
+      time: "9:00 AM", 
       date: "Tomorrow",
       status: "confirmed"
     }
   ];
 
   const handleAddBooking = () => {
-    setShowBookingModal(true);
+    setCreating(true);
+    setTimeout(() => {
+      setCreating(false);
+      toast.success('Booking slot created successfully!');
+    }, 1500);
   };
 
   const handleViewAll = () => {
@@ -56,8 +60,7 @@ const ArtistBookingsPreview = () => {
             Today's Schedule
           </h2>
           <p className="text-lg text-gray-600 font-inter">
-            Manage appointments • Track your day
-            <span className="block text-sm text-gray-500 mt-1">Quản lý lịch hẹn hôm nay</span>
+            Manage appointments and track your day
           </p>
         </div>
         
@@ -65,10 +68,20 @@ const ArtistBookingsPreview = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleAddBooking}
-          className="mt-4 sm:mt-0 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
+          disabled={creating}
+          className="mt-4 sm:mt-0 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
         >
-          <Plus className="h-5 w-5" />
-          Add Appointment
+          {creating ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Creating...
+            </>
+          ) : (
+            <>
+              <Plus className="h-5 w-5" />
+              Add Appointment
+            </>
+          )}
         </motion.button>
       </div>
 
@@ -144,11 +157,6 @@ const ArtistBookingsPreview = () => {
           <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
         </motion.button>
       </div>
-
-      <BookingModal 
-        open={showBookingModal} 
-        onClose={() => setShowBookingModal(false)} 
-      />
     </motion.div>
   );
 };

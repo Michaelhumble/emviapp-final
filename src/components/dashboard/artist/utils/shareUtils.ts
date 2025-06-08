@@ -1,4 +1,6 @@
 
+import { toast } from 'sonner';
+
 export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
     await navigator.clipboard.writeText(text);
@@ -21,31 +23,30 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
   }
 };
 
-export const shareToSocial = (platform: 'instagram' | 'facebook' | 'tiktok', profileUrl: string) => {
-  const message = "Check out my nail art portfolio on EmviApp! Book with me today!";
+export const shareToSocial = (platform: 'instagram' | 'facebook' | 'whatsapp', profileUrl: string) => {
+  const message = "Check out my artist profile on EmviApp! Book with me today!";
   
   switch (platform) {
     case 'instagram':
       // Instagram doesn't support direct sharing, so we copy the content and open Instagram
       copyToClipboard(`${message} ${profileUrl}`);
       window.open('https://www.instagram.com/', '_blank');
+      toast.success('Content copied! Paste it in your Instagram story');
       break;
     case 'facebook':
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(profileUrl)}&quote=${encodeURIComponent(message)}`;
       window.open(facebookUrl, '_blank', 'width=600,height=400');
       break;
-    case 'tiktok':
-      // TikTok doesn't have direct web sharing, so we copy the content and open TikTok
-      copyToClipboard(`${message} ${profileUrl}`);
-      window.open('https://www.tiktok.com/', '_blank');
+    case 'whatsapp':
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${message} ${profileUrl}`)}`;
+      window.open(whatsappUrl, '_blank');
       break;
   }
 };
 
-export const getProfileUrl = (): string => {
+export const getProfileUrl = (userId?: string): string => {
   const baseUrl = window.location.origin;
-  const userId = 'your-profile'; // This would be dynamic based on actual user ID
-  return `${baseUrl}/artist/${userId}`;
+  return `${baseUrl}/artist/${userId || 'your-profile'}`;
 };
 
 // Native Web Share API fallback
@@ -54,7 +55,7 @@ export const nativeShare = async (profileUrl: string): Promise<boolean> => {
     try {
       await navigator.share({
         title: 'Check out my EmviApp profile!',
-        text: 'Book your next nail appointment with me on EmviApp',
+        text: 'Book your next appointment with me on EmviApp',
         url: profileUrl
       });
       return true;

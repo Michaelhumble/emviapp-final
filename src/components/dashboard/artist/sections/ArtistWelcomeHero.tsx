@@ -1,143 +1,96 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, Crown, Calendar, Users } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 
 const ArtistWelcomeHero = () => {
   const { userProfile } = useAuth();
-  const userName = userProfile?.full_name || "Artist";
+  const firstName = userProfile?.full_name?.split(' ')[0] || 'Artist';
 
   const handleGetStarted = () => {
-    // Scroll to portfolio section
-    const portfolioSection = document.querySelector('[data-section="portfolio"]');
-    if (portfolioSection) {
-      portfolioSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    document.querySelector('[data-section="portfolio"]')?.scrollIntoView({ 
+      behavior: 'smooth' 
+    });
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-purple-50 via-white to-pink-50 rounded-3xl p-8 lg:p-12 border border-purple-100 shadow-sm"
+      className="bg-gradient-to-br from-purple-900 via-indigo-900 to-pink-900 rounded-3xl p-8 text-white mb-8 overflow-hidden relative"
     >
-      <div className="flex flex-col lg:flex-row items-center justify-between mb-8">
-        {/* Header Section */}
-        <div className="flex items-center gap-4">
-          <Sparkles className="h-8 w-8 text-purple-500" />
-          <div>
-            <h2 className="text-2xl font-playfair font-bold text-gray-900">
-              EmviApp Artist Dashboard
-            </h2>
-            <p className="text-gray-600 font-inter">
-              Welcome to your management center
-              <span className="block text-sm text-gray-500">Chào mừng bạn đến với trang quản lý</span>
-            </p>
-          </div>
-        </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10">
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
+          <div className="flex-1">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex items-center gap-3 mb-4"
+            >
+              <Crown className="h-8 w-8 text-yellow-400" />
+              <span className="text-yellow-400 font-inter font-medium">Premium Artist</span>
+            </motion.div>
 
-        {/* Greeting Section */}
-        <div className="text-right">
-          <h3 className="text-xl font-playfair font-semibold text-purple-700">
-            Good morning, {userName}!
-          </h3>
-          <p className="text-gray-600 font-inter">
-            You have 3 new appointments today
-            <span className="block text-sm text-gray-500">Bạn có 3 lịch hẹn mới hôm nay</span>
-          </p>
-        </div>
-      </div>
+            <motion.h1
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-4xl lg:text-5xl font-playfair font-bold mb-4"
+            >
+              Welcome back, {firstName}
+            </motion.h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-        {/* Left Content */}
-        <div className="space-y-6">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-4">
-              Welcome to your
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">
-                Beauty Empire
-              </span>
-            </h1>
-            <p className="text-xl text-gray-700 font-inter leading-relaxed">
-              Build your brand, grow your business! 
-              <span className="text-purple-600 font-medium block mt-1">You're creating something amazing</span>
-              <span className="text-sm text-gray-500 block mt-2">Bạn đang xây dựng một thương hiệu tuyệt vời!</span>
-            </p>
-          </motion.div>
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-xl text-purple-100 mb-6 font-inter max-w-2xl"
+            >
+              Your creative empire awaits. Manage your bookings, showcase your art, and grow your client base with our premium tools.
+            </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-4"
-          >
-            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-200">
-              <Crown className="h-6 w-6 text-emerald-600" />
-              <span className="text-emerald-800 font-inter font-medium">
-                Top 15% artists in Ho Chi Minh City
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border border-blue-200">
-              <Sparkles className="h-6 w-6 text-blue-600" />
-              <span className="text-blue-800 font-inter font-medium">
-                Premium profile views increased 340% this month
-              </span>
-            </div>
-          </motion.div>
-
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleGetStarted}
-            className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-2xl font-inter font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3"
-          >
-            Get Started
-            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </motion.button>
-        </div>
-
-        {/* Right Content - Stats Preview */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="space-y-6"
-        >
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-            <h3 className="text-lg font-playfair font-bold text-gray-900 mb-4">
-              Your Growth Today
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-emerald-600">+7</div>
-                <div className="text-sm text-gray-600">New views</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">+3</div>
-                <div className="text-sm text-gray-600">Bookings</div>
-              </div>
-            </div>
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleGetStarted}
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-purple-900 px-8 py-4 rounded-2xl font-inter font-bold text-lg flex items-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <Sparkles className="h-6 w-6" />
+              Get Started Today
+            </motion.button>
           </div>
 
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600 mb-2">Trending</div>
-              <p className="text-orange-800 font-inter">
-                Your nail art style is popular in District 1! 
-                <span className="font-bold block mt-1"> 127 artists</span> want to learn from you.
-              </p>
-            </div>
+          <div className="grid grid-cols-2 gap-4 lg:gap-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center"
+            >
+              <Calendar className="h-8 w-8 text-blue-300 mx-auto mb-3" />
+              <div className="text-2xl font-bold">127</div>
+              <div className="text-sm text-purple-200">Total Bookings</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7 }}
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center"
+            >
+              <Users className="h-8 w-8 text-green-300 mx-auto mb-3" />
+              <div className="text-2xl font-bold">47</div>
+              <div className="text-sm text-purple-200">Happy Clients</div>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );
