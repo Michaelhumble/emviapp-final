@@ -1,173 +1,135 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Sparkles, TrendingUp, Users, Calendar, Share2 } from 'lucide-react';
-import { useAuth } from '@/context/auth';
+import { Crown, Sparkles, ArrowRight } from 'lucide-react';
 
 const ArtistWelcomeHero = () => {
-  const { userProfile } = useAuth();
-  const [language, setLanguage] = useState<'en' | 'vi'>('en');
-
-  const messages = {
-    en: {
-      welcome: "Welcome back, Superstar!",
-      subtitle: "Your empire is growing beautifully",
-      trending: "🔥 Trending now! 7 new clients this week!",
-      status: "Top 1% in your city",
-      cta: "Share Your Success"
-    },
-    vi: {
-      welcome: "Chào mừng trở lại, Siêu sao!",
-      subtitle: "Đế chế của bạn đang phát triển tuyệt vời",
-      trending: "🔥 Đang hot! 7 khách hàng mới tuần này!",
-      status: "Top 1% trong thành phố",
-      cta: "Chia sẻ thành công"
+  const handleGetStarted = () => {
+    // Scroll to portfolio section
+    const portfolioSection = document.querySelector('[data-section="portfolio"]');
+    if (portfolioSection) {
+      portfolioSection.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const currentMsg = messages[language];
-  const displayName = userProfile?.full_name || "Superstar Artist";
-
-  const handleShareProfile = () => {
-    navigator.clipboard.writeText(window.location.origin + '/artist/' + (userProfile?.id || 'profile'));
-    // Show toast or modal for sharing
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 p-8 text-white shadow-2xl"
+      className="bg-gradient-to-r from-purple-50 via-white to-pink-50 rounded-3xl p-8 lg:p-12 border border-purple-100 shadow-sm"
     >
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-black/10"></div>
-      <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-      <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
-      
-      {/* Floating Sparkles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            animate={{
-              y: [-20, -40, -20],
-              x: [0, 15, 0],
-              opacity: [0.3, 1, 0.3],
-              scale: [0.8, 1.2, 0.8]
-            }}
-            transition={{
-              duration: 4 + i,
-              repeat: Infinity,
-              delay: i * 0.8,
-              ease: "easeInOut"
-            }}
-            className="absolute"
-            style={{
-              left: `${10 + i * 15}%`,
-              top: `${20 + (i % 3) * 20}%`
-            }}
-          >
-            <Sparkles className="h-4 w-4 text-yellow-300/60" />
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="relative z-10">
-        {/* Language Toggle */}
-        <div className="absolute top-0 right-0">
-          <button
-            onClick={() => setLanguage(language === 'en' ? 'vi' : 'en')}
-            className="px-3 py-1 bg-white/20 rounded-full text-xs font-medium backdrop-blur-sm border border-white/30 hover:bg-white/30 transition-all"
-          >
-            {language === 'en' ? 'EN' : 'VI'}
-          </button>
-        </div>
-
-        {/* Main Content */}
-        <div className="mb-6">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="flex items-center gap-3 mb-4"
-          >
-            <div className="p-3 bg-yellow-400/20 rounded-xl border border-yellow-400/30">
-              <Crown className="h-8 w-8 text-yellow-300" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold mb-1">{currentMsg.welcome.replace('Superstar', displayName)}</h1>
-              <p className="text-purple-100 text-lg">{currentMsg.subtitle}</p>
-            </div>
-          </motion.div>
-
-          {/* Status & Trending */}
-          <div className="space-y-3">
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="flex items-center gap-2 px-4 py-2 bg-white/15 rounded-full backdrop-blur-sm border border-white/20 w-fit"
-            >
-              <TrendingUp className="h-4 w-4 text-green-300" />
-              <span className="text-sm font-medium">{currentMsg.status}</span>
-            </motion.div>
-
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.7, duration: 0.5 }}
-              className="px-4 py-2 bg-orange-400/20 rounded-full backdrop-blur-sm border border-orange-400/30 w-fit"
-            >
-              <span className="text-sm font-medium">{currentMsg.trending}</span>
-            </motion.div>
+      <div className="flex flex-col lg:flex-row items-center justify-between mb-8">
+        {/* Header Section */}
+        <div className="flex items-center gap-4">
+          <Sparkles className="h-8 w-8 text-purple-500" />
+          <div>
+            <h2 className="text-2xl font-playfair font-bold text-gray-900">
+              EmviApp Artist Dashboard
+            </h2>
+            <p className="text-gray-600 font-inter">
+              Chào mừng bạn đến với trang quản lý
+            </p>
           </div>
         </div>
 
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        {/* Greeting Section */}
+        <div className="text-right">
+          <h3 className="text-xl font-playfair font-semibold text-purple-700">
+            Chào buổi sáng, Sarah!
+          </h3>
+          <p className="text-gray-600 font-inter">
+            Bạn có 3 lịch hẹn mới hôm nay
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        {/* Left Content */}
+        <div className="space-y-6">
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.4 }}
-            className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
           >
-            <div className="text-2xl font-bold">$3,240</div>
-            <div className="text-xs text-purple-200">This Month</div>
+            <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-4">
+              Chào mừng đến với
+              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">
+                Empire của bạn ✨
+              </span>
+            </h1>
+            <p className="text-xl text-gray-700 font-inter leading-relaxed">
+              Welcome to your beauty empire! 
+              <span className="text-purple-600 font-medium"> Bạn đang xây dựng một thương hiệu tuyệt vời!</span>
+            </p>
           </motion.div>
+
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.1, duration: 0.4 }}
-            className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            className="space-y-4"
           >
-            <div className="text-2xl font-bold">127</div>
-            <div className="text-xs text-purple-200">Happy Clients</div>
+            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-emerald-200">
+              <Crown className="h-6 w-6 text-emerald-600" />
+              <span className="text-emerald-800 font-inter font-medium">
+                🇻🇳 Top 15% artists in Ho Chi Minh City
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border border-blue-200">
+              <Sparkles className="h-6 w-6 text-blue-600" />
+              <span className="text-blue-800 font-inter font-medium">
+                💎 Premium profile views increased 340% this month
+              </span>
+            </div>
           </motion.div>
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.3, duration: 0.4 }}
-            className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20"
+
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleGetStarted}
+            className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-2xl font-inter font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3"
           >
-            <div className="text-2xl font-bold">4.9★</div>
-            <div className="text-xs text-purple-200">Rating</div>
-          </motion.div>
+            Bắt Đầu Ngay
+            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+          </motion.button>
         </div>
 
-        {/* Action Button */}
-        <motion.button
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.5 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleShareProfile}
-          className="w-full bg-white/20 hover:bg-white/30 text-white py-4 rounded-xl font-semibold backdrop-blur-sm border border-white/30 transition-all duration-300 flex items-center justify-center gap-2"
+        {/* Right Content - Stats Preview */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          className="space-y-6"
         >
-          <Share2 className="h-5 w-5" />
-          {currentMsg.cta}
-        </motion.button>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <h3 className="text-lg font-playfair font-bold text-gray-900 mb-4">
+              📈 Your Growth Today
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-emerald-600">+7</div>
+                <div className="text-sm text-gray-600">New views</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600">+3</div>
+                <div className="text-sm text-gray-600">Bookings</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600 mb-2">🔥 Trending</div>
+              <p className="text-orange-800 font-inter">
+                Your nail art style is viral in District 1! 
+                <span className="font-bold"> 127 artists</span> want to learn from you.
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   );

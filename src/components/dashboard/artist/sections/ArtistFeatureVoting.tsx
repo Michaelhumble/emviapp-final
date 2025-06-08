@@ -1,220 +1,219 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Vote, TrendingUp, Users, Zap, Calendar, MessageSquare, Bell } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Vote, TrendingUp, Users, Lightbulb } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ArtistFeatureVoting = () => {
-  const [votedFeatures, setVotedFeatures] = useState<number[]>([]);
-  const [showResults, setShowResults] = useState(false);
+  const [votes, setVotes] = useState({
+    1: 1247,
+    2: 892,
+    3: 634,
+    4: 445
+  });
 
-  const upcomingFeatures = [
+  const [userVotes, setUserVotes] = useState<Record<number, boolean>>({});
+  const [voting, setVoting] = useState<number | null>(null);
+
+  const features = [
     {
       id: 1,
-      title: "AI Nail Design Generator",
-      description: "Generate unique nail art designs with AI",
-      votes: 1247,
-      trending: true,
-      category: "Design Tools",
-      icon: Zap,
-      estimatedRelease: "Q2 2024"
+      title: "AI Photo Enhancement",
+      description: "Automatically enhance your nail art photos with AI filters",
+      icon: "🤖",
+      category: "Photography"
     },
     {
       id: 2,
-      title: "Video Portfolio",
-      description: "Upload time-lapse videos of your work",
-      votes: 892,
-      trending: false,
-      category: "Portfolio",
-      icon: Calendar,
-      estimatedRelease: "Q1 2024"
+      title: "Virtual Nail Try-On",
+      description: "Let clients preview nail designs on their hands via AR",
+      icon: "📱",
+      category: "AR/VR"
     },
     {
       id: 3,
-      title: "Client Chat System",
-      description: "Real-time messaging with your clients",
-      votes: 734,
-      trending: true,
-      category: "Communication",
-      icon: MessageSquare,
-      estimatedRelease: "Q3 2024"
+      title: "Advanced Booking System",
+      description: "Smart scheduling with automated reminders and rescheduling",
+      icon: "📅",
+      category: "Scheduling"
     },
     {
       id: 4,
-      title: "Push Notifications",
-      description: "Get notified for new bookings instantly",
-      votes: 623,
-      trending: false,
-      category: "Notifications",
-      icon: Bell,
-      estimatedRelease: "Q1 2024"
+      title: "Client Preference Memory",
+      description: "AI remembers each client's favorite styles and colors",
+      icon: "🧠",
+      category: "AI Memory"
     }
   ];
 
-  const handleVote = (featureId: number) => {
-    if (!votedFeatures.includes(featureId)) {
-      setVotedFeatures([...votedFeatures, featureId]);
-      // In real app, this would make an API call
+  const handleVote = async (featureId: number) => {
+    if (userVotes[featureId]) {
+      toast.error("You already voted for this feature!");
+      return;
     }
+
+    setVoting(featureId);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setVotes(prev => ({
+        ...prev,
+        [featureId]: prev[featureId] + 1
+      }));
+      
+      setUserVotes(prev => ({
+        ...prev,
+        [featureId]: true
+      }));
+      
+      setVoting(null);
+      toast.success("Vote submitted! Thanks for helping shape EmviApp 🚀");
+    }, 1000);
   };
 
-  const hasVoted = (featureId: number) => votedFeatures.includes(featureId);
+  const getTotalVotes = () => {
+    return Object.values(votes).reduce((sum, count) => sum + count, 0);
+  };
+
+  const getVotePercentage = (featureId: number) => {
+    const total = getTotalVotes();
+    return total > 0 ? Math.round((votes[featureId] / total) * 100) : 0;
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-3xl p-8 shadow-xl"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl">
-            <Vote className="h-6 w-6 text-indigo-600" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Feature Voting</h2>
-            <p className="text-gray-600">投票新功能 • Vote for new features</p>
-          </div>
-        </div>
-        
-        <button
-          onClick={() => setShowResults(!showResults)}
-          className="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-xl font-medium transition-colors"
-        >
-          {showResults ? 'Hide Results' : 'Show Results'}
-        </button>
-      </div>
-
-      {/* Voting Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-          className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100"
-        >
-          <div className="text-2xl font-bold text-blue-600">12,847</div>
-          <div className="text-sm text-blue-700">Total Votes</div>
-        </motion.div>
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-          className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100"
-        >
-          <div className="text-2xl font-bold text-purple-600">8</div>
-          <div className="text-sm text-purple-700">Features in Queue</div>
-        </motion.div>
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
-          className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100"
-        >
-          <div className="text-2xl font-bold text-green-600">{votedFeatures.length}</div>
-          <div className="text-sm text-green-700">Your Votes</div>
-        </motion.div>
-      </div>
-
-      {/* Features List */}
-      <div className="space-y-4 mb-6">
-        {upcomingFeatures.map((feature, index) => (
-          <motion.div
-            key={feature.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.4 }}
-            className={`p-4 border rounded-xl transition-all duration-300 ${
-              hasVoted(feature.id) 
-                ? 'bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200'
-                : 'bg-white border-gray-200 hover:border-indigo-300'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              {/* Feature Icon */}
-              <div className={`p-3 rounded-xl ${
-                hasVoted(feature.id) 
-                  ? 'bg-indigo-100' 
-                  : 'bg-gray-100'
-              }`}>
-                <feature.icon className={`h-5 w-5 ${
-                  hasVoted(feature.id) 
-                    ? 'text-indigo-600' 
-                    : 'text-gray-600'
-                }`} />
-              </div>
-
-              {/* Feature Details */}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-gray-900">{feature.title}</h3>
-                  {feature.trending && (
-                    <div className="flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-600 rounded-full text-xs font-medium">
-                      <TrendingUp className="h-3 w-3" />
-                      Trending
-                    </div>
-                  )}
-                </div>
-                
-                <p className="text-gray-600 text-sm mb-2">{feature.description}</p>
-                
-                <div className="flex items-center gap-4 text-xs text-gray-500">
-                  <span className="bg-gray-100 px-2 py-1 rounded-full">{feature.category}</span>
-                  <span>Est. {feature.estimatedRelease}</span>
-                </div>
-              </div>
-
-              {/* Voting Section */}
-              <div className="text-right">
-                <AnimatePresence>
-                  {showResults && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="mb-2"
-                    >
-                      <div className="text-lg font-bold text-indigo-600">{feature.votes}</div>
-                      <div className="text-xs text-gray-500">votes</div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleVote(feature.id)}
-                  disabled={hasVoted(feature.id)}
-                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                    hasVoted(feature.id)
-                      ? 'bg-indigo-600 text-white cursor-not-allowed'
-                      : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-700'
-                  }`}
-                >
-                  {hasVoted(feature.id) ? '✓ Voted' : '+ Vote'}
-                </motion.button>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* FOMO Message */}
+    <div className="mb-8">
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7, duration: 0.5 }}
-        className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-xl p-4 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100"
       >
-        <div className="text-purple-700 font-semibold text-sm mb-1">
-          🗳️ Your voice shapes EmviApp's future!
+        <div className="mb-8">
+          <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <Vote className="h-8 w-8 text-purple-600" />
+            Feature Voting 🗳️
+          </h2>
+          <p className="text-lg text-gray-600 font-inter">
+            Help us build the future • Vote for upcoming features • Shape EmviApp
+          </p>
         </div>
-        <div className="text-purple-600 text-xs">
-          Vote now and be the first to try new features ✨
+
+        {/* Voting Stats Banner */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-inter font-bold text-gray-900 mb-1">Community Votes</h3>
+              <p className="text-gray-600">Join {getTotalVotes().toLocaleString()} artists shaping the future</p>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-purple-600">{getTotalVotes().toLocaleString()}</div>
+              <div className="text-sm text-gray-600">Total Votes</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {features.map((feature) => (
+            <motion.div
+              key={feature.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: feature.id * 0.1 }}
+              className={`bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border-2 transition-all duration-300 ${
+                userVotes[feature.id] 
+                  ? 'border-emerald-200 bg-emerald-50' 
+                  : 'border-gray-100 hover:border-purple-200 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="text-3xl">{feature.icon}</div>
+                  <div>
+                    <h3 className="font-inter font-bold text-gray-900">{feature.title}</h3>
+                    <div className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full inline-block">
+                      {feature.category}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-gray-600 mb-6">{feature.description}</p>
+              
+              {/* Vote Progress */}
+              <div className="mb-4">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-600">{votes[feature.id]} votes</span>
+                  <span className="font-medium text-gray-900">{getVotePercentage(feature.id)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${getVotePercentage(feature.id)}%` }}
+                    transition={{ duration: 1, delay: feature.id * 0.2 }}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full"
+                  />
+                </div>
+              </div>
+
+              {/* Vote Button */}
+              <motion.button
+                whileHover={{ scale: userVotes[feature.id] ? 1 : 1.05 }}
+                whileTap={{ scale: userVotes[feature.id] ? 1 : 0.95 }}
+                onClick={() => handleVote(feature.id)}
+                disabled={userVotes[feature.id] || voting === feature.id}
+                className={`w-full py-3 rounded-xl font-inter font-medium transition-all duration-300 ${
+                  userVotes[feature.id]
+                    ? 'bg-emerald-100 text-emerald-700 border-2 border-emerald-200 cursor-not-allowed'
+                    : voting === feature.id
+                    ? 'bg-gray-100 text-gray-600 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl'
+                }`}
+              >
+                {userVotes[feature.id] ? (
+                  <>✅ Voted!</>
+                ) : voting === feature.id ? (
+                  <>⏳ Voting...</>
+                ) : (
+                  <>🗳️ Vote for This!</>
+                )}
+              </motion.button>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Community Insights */}
+        <div className="mt-8 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100">
+          <div className="flex items-center gap-3 mb-4">
+            <TrendingUp className="h-6 w-6 text-blue-600" />
+            <h3 className="font-inter font-bold text-gray-900">Community Insights</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">89%</div>
+              <div className="text-sm text-gray-600">Want AI Features</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-cyan-600">67%</div>
+              <div className="text-sm text-gray-600">Need Better Booking</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-emerald-600">73%</div>
+              <div className="text-sm text-gray-600">Want AR Try-On</div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-4 bg-white rounded-xl border border-blue-200">
+            <div className="flex items-center gap-2 text-blue-700">
+              <Lightbulb className="h-5 w-5" />
+              <span className="font-inter font-medium">
+                💡 <strong>Next update:</strong> The top voted feature will be released in Q2 2024!
+              </span>
+            </div>
+          </div>
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 

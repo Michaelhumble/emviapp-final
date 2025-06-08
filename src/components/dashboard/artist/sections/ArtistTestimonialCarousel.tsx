@@ -1,169 +1,101 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Star, Quote, Heart } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Star, Quote, ArrowRight } from 'lucide-react';
+import TestimonialsModal from '../modals/TestimonialsModal';
 
 const ArtistTestimonialCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
   const testimonials = [
     {
-      id: 1,
-      name: "Linh Nguyen",
-      avatar: "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png",
+      name: "Hương Linh",
       rating: 5,
-      text: "Absolutely stunning work! My nails have never looked this beautiful. The attention to detail is incredible and everyone keeps asking where I got them done!",
-      service: "Gel Manicure & Art",
-      date: "3 days ago"
+      text: "Tay nghề tuyệt vời! Nail art đẹp không tì vết 💖",
+      service: "Nail Art"
     },
     {
-      id: 2,
-      name: "Hương Trần", 
-      avatar: "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png",
+      name: "Phương Anh", 
       rating: 5,
-      text: "Professional, friendly, and incredibly talented! I've been coming here for months and the quality is always exceptional. Highly recommend!",
-      service: "Full Set Acrylics",
-      date: "1 week ago"
-    },
-    {
-      id: 3,
-      name: "Mai Phạm",
-      avatar: "/lovable-uploads/fc2a8931-d58f-47a3-81f2-6ae43cf431c5.png", 
-      rating: 5,
-      text: "Best nail artist in the city! Always exceeds my expectations with creative designs. My nails are works of art that last for weeks!",
-      service: "French Ombré",
-      date: "2 weeks ago"
+      text: "Dịch vụ chuyên nghiệp, rất hài lòng!",
+      service: "Manicure"
     }
   ];
 
-  const nextTestimonial = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  const handleViewMore = () => {
+    setShowModal(true);
   };
 
   return (
-    <div className="mb-8">
-      <div className="mb-6">
-        <h2 className="text-2xl lg:text-3xl font-playfair font-bold text-gray-900 mb-2">Client Love 💕</h2>
-        <p className="text-lg text-gray-600 font-inter">What your amazing clients are saying</p>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden">
-        <div className="relative h-80 lg:h-64">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, x: 100, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -100, scale: 0.95 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="absolute inset-0 p-8"
-            >
-              <div className="flex flex-col h-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <img
-                    src={testimonials[currentIndex].avatar}
-                    alt={testimonials[currentIndex].name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 shadow-md"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-playfair font-semibold text-gray-900 text-lg">
-                      {testimonials[currentIndex].name}
-                    </h3>
-                    <div className="flex items-center gap-3">
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < testimonials[currentIndex].rating
-                                ? 'text-yellow-500 fill-yellow-500'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-500 font-inter">
-                        {testimonials[currentIndex].date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex-1 relative">
-                  <Quote className="absolute -top-2 -left-2 h-8 w-8 text-gray-200 rotate-180" />
-                  <p className="text-gray-700 font-inter leading-relaxed text-lg pl-6 pr-6">
-                    {testimonials[currentIndex].text}
-                  </p>
-                  <Quote className="absolute -bottom-2 -right-2 h-8 w-8 text-gray-200" />
-                </div>
-
-                <div className="flex items-center justify-between mt-6">
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200/50 px-4 py-2 rounded-full">
-                    <span className="text-sm text-purple-700 font-inter font-medium">
-                      Service: {testimonials[currentIndex].service}
-                    </span>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={prevTestimonial}
-                      className="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors shadow-md hover:shadow-lg"
-                    >
-                      <ChevronLeft className="h-5 w-5 text-gray-600" />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={nextTestimonial}
-                      className="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors shadow-md hover:shadow-lg"
-                    >
-                      <ChevronRight className="h-5 w-5 text-gray-600" />
-                    </motion.button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+    <>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100"
+      >
+        <div className="mb-6">
+          <h2 className="text-2xl font-playfair font-bold text-gray-900 mb-2 flex items-center gap-2">
+            <Quote className="h-6 w-6 text-purple-500" />
+            Khách Hàng Nói Gì ⭐
+          </h2>
+          <p className="text-gray-600 font-inter">Recent client reviews</p>
         </div>
 
-        {/* Pagination dots */}
-        <div className="flex justify-center gap-3 p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200/50">
-          {testimonials.map((_, index) => (
-            <motion.button
+        <div className="space-y-4 mb-6">
+          {testimonials.map((testimonial, index) => (
+            <motion.div
               key={index}
-              whileHover={{ scale: 1.3 }}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex 
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg' 
-                  : 'bg-gray-300 hover:bg-gray-400'
-              }`}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2 }}
+              className="bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-100"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="font-medium text-gray-900">{testimonial.name}</div>
+                  <div className="text-sm text-gray-600">{testimonial.service}</div>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+              </div>
+              <p className="text-gray-700 italic">"{testimonial.text}"</p>
+            </motion.div>
           ))}
         </div>
 
-        {/* Share CTA */}
-        <div className="bg-gradient-to-r from-rose-50 to-pink-50 border-t border-rose-200/50 p-6 text-center">
-          <p className="text-gray-700 font-inter mb-3">
-            💖 <strong>Love from your clients!</strong> Share these amazing reviews to attract more bookings.
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-inter font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto"
-          >
-            <Heart className="h-4 w-4" />
-            Share Reviews
-          </motion.button>
+        {/* Stats */}
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-4 border border-yellow-100 mb-6">
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-yellow-600">4.9</div>
+              <div className="text-sm text-gray-600">Average Rating</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-orange-600">247</div>
+              <div className="text-sm text-gray-600">Total Reviews</div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleViewMore}
+          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-2xl font-inter font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          Xem Thêm
+          <ArrowRight className="h-4 w-4" />
+        </motion.button>
+      </motion.div>
+
+      <TestimonialsModal 
+        open={showModal} 
+        onClose={() => setShowModal(false)} 
+      />
+    </>
   );
 };
 
