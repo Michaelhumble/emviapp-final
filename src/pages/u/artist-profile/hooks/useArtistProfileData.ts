@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
@@ -69,14 +68,14 @@ export const useArtistProfileData = (username: string | undefined) => {
         phone: userData.phone,
         profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
         boosted_until: userData.boosted_until,
-        badges: Array.isArray(userData.badges) ? userData.badges : [],
+        badges: Array.isArray(userData.badges) ? userData.badges as string[] : [],
         accepts_bookings: userData.accepts_bookings,
         booking_url: userData.booking_url,
         contact_link: userData.contact_link,
         completed_profile_tasks: Array.isArray(userData.completed_profile_tasks) 
-          ? userData.completed_profile_tasks 
+          ? userData.completed_profile_tasks as string[]
           : [],
-        preferences: Array.isArray(userData.preferences) ? userData.preferences : [],
+        preferences: Array.isArray(userData.preferences) ? userData.preferences as string[] : [],
         preferred_language: userData.preferred_language,
         years_experience: typeof (userData as any).years_experience === 'number' ? (userData as any).years_experience : 0,
         created_at: userData.created_at,
@@ -100,8 +99,7 @@ export const useArtistProfileData = (username: string | undefined) => {
             portfolioData.map(item => ({
               id: item.id,
               url: item.image_url,
-              name: item.title || 'Portfolio Item', // Ensure name is always provided as a string
-              description: item.description || ''
+              name: item.title || ''
             }))
           );
         }
@@ -120,10 +118,10 @@ export const useArtistProfileData = (username: string | undefined) => {
             id: service.id,
             name: service.title || '', // Map title to name for compatibility
             title: service.title || '',
-            description: service.description || 'No description provided', // Ensure description is always a string
+            description: service.description,
             price: service.price,
-            price_type: service.price_type || 'fixed', // Ensure price_type is always provided
-            duration: service.duration || 'N/A', // Ensure duration is always provided
+            price_type: service.price_type,
+            duration: service.duration,
             duration_minutes: service.duration_minutes,
             image_url: service.image_url,
             category: service.category,
@@ -172,5 +170,3 @@ export const useArtistProfileData = (username: string | undefined) => {
     incrementViewCount
   };
 };
-
-export default useArtistProfileData;

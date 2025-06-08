@@ -42,12 +42,12 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       // Additional database fields
       custom_role: data.custom_role || null,
       contact_link: data.contact_link || null,
-      badges: Array.isArray(data.badges) ? data.badges : null,
+      badges: Array.isArray(data.badges) ? data.badges as string[] : null,
       accepts_bookings: data.accepts_bookings || null,
-      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : null,
+      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks as string[] : null,
       
       // Social and professional fields
-      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : null,
+      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls as string[] : null,
       referral_code: data.referral_code || null,
       credits: typeof data.credits === 'number' ? data.credits : null,
       profile_views: typeof (data as any).profile_views === 'number' ? (data as any).profile_views : null,
@@ -63,7 +63,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       // Experience and services - use safe access
       years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : null,
       services: Array.isArray((data as any).services) ? (data as any).services : null,
-      gallery: Array.isArray((data as any).gallery) ? (data as any).gallery : null,
+      gallery: Array.isArray((data as any).gallery) ? (data as any).gallery as string[] : null,
       preferences: Array.isArray(data.preferences) ? data.preferences : null,
     };
     

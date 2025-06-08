@@ -69,14 +69,14 @@ export const useArtistProfileData = (username: string | undefined) => {
         phone: userData.phone,
         profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
         boosted_until: userData.boosted_until,
-        badges: Array.isArray(userData.badges) ? userData.badges : [],
+        badges: Array.isArray(userData.badges) ? userData.badges as string[] : [],
         accepts_bookings: userData.accepts_bookings,
         booking_url: userData.booking_url,
         contact_link: userData.contact_link,
         completed_profile_tasks: Array.isArray(userData.completed_profile_tasks) 
-          ? userData.completed_profile_tasks 
+          ? userData.completed_profile_tasks as string[]
           : [],
-        preferences: Array.isArray(userData.preferences) ? userData.preferences : [],
+        preferences: Array.isArray(userData.preferences) ? userData.preferences as string[] : [],
         preferred_language: userData.preferred_language,
         years_experience: typeof (userData as any).years_experience === 'number' ? (userData as any).years_experience : 0,
         created_at: userData.created_at,
