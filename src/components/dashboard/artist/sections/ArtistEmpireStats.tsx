@@ -7,113 +7,145 @@ const ArtistEmpireStats = () => {
   const stats = [
     {
       label: "Monthly Revenue",
-      value: 2840,
+      value: 3240,
       prefix: "$",
       icon: DollarSign,
-      change: "+24%",
-      color: "emerald"
+      change: "+32%",
+      color: "from-emerald-400 to-green-500",
+      bgColor: "from-emerald-50 to-green-50",
+      borderColor: "border-emerald-200/50"
     },
     {
-      label: "Active Clients",
-      value: 127,
+      label: "Happy Clients", 
+      value: 156,
       icon: Users,
-      change: "+12",
-      color: "blue"
+      change: "+18",
+      color: "from-blue-400 to-cyan-500",
+      bgColor: "from-blue-50 to-cyan-50",
+      borderColor: "border-blue-200/50"
     },
     {
       label: "This Month",
-      value: 43,
+      value: 47,
       icon: Calendar,
-      change: "+8",
-      color: "purple"
+      change: "+12",
+      color: "from-purple-400 to-pink-500",
+      bgColor: "from-purple-50 to-pink-50",
+      borderColor: "border-purple-200/50"
     },
     {
       label: "Average Rating",
       value: 4.9,
       icon: Star,
-      change: "+0.2",
-      color: "yellow"
+      change: "+0.3",
+      color: "from-yellow-400 to-orange-500",
+      bgColor: "from-yellow-50 to-orange-50",
+      borderColor: "border-yellow-200/50"
     },
     {
       label: "Growth Rate",
-      value: 189,
+      value: 247,
       suffix: "%",
       icon: TrendingUp,
-      change: "+67%",
-      color: "pink"
+      change: "+89%",
+      color: "from-rose-400 to-pink-500",
+      bgColor: "from-rose-50 to-pink-50",
+      borderColor: "border-rose-200/50"
     },
     {
       label: "Viral Score",
-      value: 8.7,
+      value: 9.2,
       suffix: "/10",
       icon: Zap,
-      change: "+1.3",
-      color: "orange"
+      change: "+1.8",
+      color: "from-indigo-400 to-purple-500",
+      bgColor: "from-indigo-50 to-purple-50",
+      borderColor: "border-indigo-200/50"
     }
   ];
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      emerald: "from-emerald-50 to-green-50 border-emerald-100 text-emerald-600",
-      blue: "from-blue-50 to-cyan-50 border-blue-100 text-blue-600",
-      purple: "from-purple-50 to-pink-50 border-purple-100 text-purple-600",
-      yellow: "from-yellow-50 to-orange-50 border-yellow-100 text-yellow-600",
-      pink: "from-pink-50 to-rose-50 border-pink-100 text-pink-600",
-      orange: "from-orange-50 to-red-50 border-orange-100 text-orange-600"
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
-
   return (
     <div className="mb-8">
-      <div className="mb-6">
-        <h2 className="text-2xl font-playfair font-bold text-gray-900 mb-2">Your Empire Stats</h2>
-        <p className="text-gray-600 font-inter">Track your growth and celebrate your success</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6"
+      >
+        <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">Your Empire Stats ✨</h2>
+        <p className="text-lg text-gray-600 font-inter">Watch your beauty business thrive</p>
+      </motion.div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            whileHover={{ y: -4, scale: 1.02 }}
-            className={`bg-gradient-to-br ${getColorClasses(stat.color)} border rounded-2xl p-4 lg:p-6 shadow-sm hover:shadow-md transition-all duration-300`}
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            className={`relative overflow-hidden bg-gradient-to-br ${stat.bgColor} border ${stat.borderColor} rounded-2xl p-6 lg:p-8 shadow-xl hover:shadow-2xl transition-all duration-500`}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl bg-white/80 border border-white/40`}>
-                <stat.icon className={`h-5 w-5 lg:h-6 lg:w-6 ${stat.color === 'yellow' ? 'text-yellow-600' : stat.color === 'emerald' ? 'text-emerald-600' : stat.color === 'blue' ? 'text-blue-600' : stat.color === 'purple' ? 'text-purple-600' : stat.color === 'pink' ? 'text-pink-600' : 'text-orange-600'}`} />
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent"></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-6">
+                <motion.div 
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.3 + index * 0.1, type: "spring", stiffness: 200 }}
+                  className={`p-4 rounded-2xl bg-gradient-to-r ${stat.color} shadow-lg`}
+                >
+                  <stat.icon className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+                </motion.div>
+                
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.5 + index * 0.1, type: "spring", stiffness: 300 }}
+                  className={`px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${stat.color} text-white shadow-md`}
+                >
+                  {stat.change}
+                </motion.div>
               </div>
+              
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.5 + index * 0.1, type: "spring", stiffness: 200 }}
-                className={`text-xs font-bold px-2 py-1 rounded-full bg-white/80 border border-white/40 ${stat.color === 'yellow' ? 'text-yellow-700' : stat.color === 'emerald' ? 'text-emerald-700' : stat.color === 'blue' ? 'text-blue-700' : stat.color === 'purple' ? 'text-purple-700' : stat.color === 'pink' ? 'text-pink-700' : 'text-orange-700'}`}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.4 + index * 0.1, duration: 0.8 }}
+                className="mb-4"
               >
-                {stat.change}
+                <div className="text-3xl lg:text-4xl font-playfair font-bold text-gray-900 mb-1">
+                  {stat.prefix}
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 + index * 0.1, duration: 1 }}
+                  >
+                    {stat.value.toLocaleString()}
+                  </motion.span>
+                  {stat.suffix}
+                </div>
+                
+                <div className="text-sm lg:text-base text-gray-700 font-inter font-medium">
+                  {stat.label}
+                </div>
               </motion.div>
-            </div>
-            
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
-              className="text-2xl lg:text-3xl font-playfair font-bold text-gray-900 mb-2"
-            >
-              {stat.prefix}
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
+
+              {/* Progress Bar */}
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ delay: 1 + index * 0.1, duration: 1.5 }}
+                className="h-1 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full overflow-hidden"
               >
-                {stat.value}
-              </motion.span>
-              {stat.suffix}
-            </motion.div>
-            
-            <div className="text-xs lg:text-sm text-gray-700 font-inter font-medium">
-              {stat.label}
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(95, 60 + index * 8)}%` }}
+                  transition={{ delay: 1.2 + index * 0.1, duration: 1.5, ease: "easeOut" }}
+                  className={`h-full bg-gradient-to-r ${stat.color} rounded-full`}
+                />
+              </motion.div>
             </div>
           </motion.div>
         ))}
