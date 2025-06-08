@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Upload, MapPin, Tag, DollarSign, X } from 'lucide-react';
+import { Textarea } from "@/components/ui/textarea";
+import { PenTool, Upload, X, MapPin, DollarSign, Tag, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CreatePostModalProps {
@@ -14,177 +14,262 @@ interface CreatePostModalProps {
 }
 
 const CreatePostModal = ({ open, onClose }: CreatePostModalProps) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [tags, setTags] = useState('');
-  const [location, setLocation] = useState('');
-  const [rate, setRate] = useState('');
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [isPosting, setIsPosting] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    tags: '',
+    location: '',
+    rate: '',
+  });
+  const [images, setImages] = useState<File[]>([]);
+  const [posting, setPosting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length + photos.length > 5) {
-      toast.error('Maximum 5 photos allowed');
-      return;
-    }
-    setPhotos([...photos, ...files]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const removePhoto = (index: number) => {
-    setPhotos(photos.filter((_, i) => i !== index));
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const validFiles = selectedFiles.filter(file => {
+      const isValidType = file.type.startsWith('image/');
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB limit
+      
+      if (!isValidType) {
+        toast.error(`${file.name} is not a valid image file`);
+        return false;
+      }
+      if (!isValidSize) {
+        toast.error(`${file.name} is too large. Maximum size is 5MB`);
+        return false;
+      }
+      return true;
+    });
+    
+    setImages(prev => [...prev, ...validFiles].slice(0, 5)); // Max 5 images
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) {
+    
+    if (!formData.title.trim()) {
       toast.error('Please add a title for your post');
       return;
     }
+    
+    if (!formData.description.trim()) {
+      toast.error('Please add a description for your post');
+      return;
+    }
 
-    setIsPosting(true);
-    // Simulate posting
-    setTimeout(() => {
-      toast.success('Post shared successfully!');
-      setIsPosting(false);
-      setTitle('');
-      setDescription('');
-      setTags('');
-      setLocation('');
-      setRate('');
-      setPhotos([]);
+    setPosting(true);
+    
+    try {
+      // Simulate post creation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('Your post has been created successfully!');
+      
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        tags: '',
+        location: '',
+        rate: '',
+      });
+      setImages([]);
       onClose();
-    }, 2000);
+    } catch (error) {
+      toast.error('Failed to create post. Please try again.');
+    } finally {
+      setPosting(false);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-playfair">Share an Update</DialogTitle>
+          <DialogTitle className="text-2xl font-playfair font-bold flex items-center gap-2">
+            <PenTool className="h-6 w-6 text-emerald-600" />
+            Create a New Post
+          </DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Title */}
           <div>
-            <Label htmlFor="title" className="text-sm font-medium">Post Title *</Label>
+            <Label htmlFor="title" className="text-base font-medium">
+              Post Title *
+            </Label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="What's happening in your studio today?"
-              className="mt-1"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              placeholder="Share what you're working on or offering..."
+              className="mt-2"
               required
+              maxLength={100}
             />
           </div>
 
+          {/* Description */}
           <div>
-            <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+            <Label htmlFor="description" className="text-base font-medium">
+              Description *
+            </Label>
             <Textarea
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Share more details about your work, techniques, or special offers..."
-              className="mt-1 min-h-[100px]"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Tell your followers more about this post..."
+              className="mt-2"
               rows={4}
+              required
+              maxLength={500}
             />
           </div>
 
+          {/* Tags and Location Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="tags" className="text-sm font-medium flex items-center gap-1">
+              <Label htmlFor="tags" className="text-base font-medium flex items-center gap-1">
                 <Tag className="h-4 w-4" />
                 Tags
               </Label>
               <Input
                 id="tags"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="nails, manicure, art"
-                className="mt-1"
+                name="tags"
+                value={formData.tags}
+                onChange={handleInputChange}
+                placeholder="nails, art, manicure..."
+                className="mt-2"
               />
             </div>
 
             <div>
-              <Label htmlFor="rate" className="text-sm font-medium flex items-center gap-1">
-                <DollarSign className="h-4 w-4" />
-                Rate (Optional)
+              <Label htmlFor="location" className="text-base font-medium flex items-center gap-1">
+                <MapPin className="h-4 w-4" />
+                Location
               </Label>
               <Input
-                id="rate"
-                value={rate}
-                onChange={(e) => setRate(e.target.value)}
-                placeholder="$50 - $80"
-                className="mt-1"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="City, State"
+                className="mt-2"
               />
             </div>
           </div>
 
+          {/* Rate */}
           <div>
-            <Label htmlFor="location" className="text-sm font-medium flex items-center gap-1">
-              <MapPin className="h-4 w-4" />
-              Location (Optional)
+            <Label htmlFor="rate" className="text-base font-medium flex items-center gap-1">
+              <DollarSign className="h-4 w-4" />
+              Rate (Optional)
             </Label>
             <Input
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="City, State"
-              className="mt-1"
+              id="rate"
+              name="rate"
+              value={formData.rate}
+              onChange={handleInputChange}
+              placeholder="Starting at $50"
+              className="mt-2"
             />
           </div>
 
+          {/* Image Upload */}
           <div>
-            <Label className="text-sm font-medium">Photos (Max 5)</Label>
-            <div className="mt-2">
+            <Label className="text-base font-medium flex items-center gap-1 mb-3">
+              <ImageIcon className="h-4 w-4" />
+              Add Images (Optional)
+            </Label>
+            
+            <div 
+              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-emerald-400 transition-colors cursor-pointer bg-gray-50"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600">
+                Click to upload images or drag and drop
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Up to 5 images, 5MB each
+              </p>
+              
               <input
+                ref={fileInputRef}
                 type="file"
                 multiple
                 accept="image/*"
-                onChange={handlePhotoUpload}
+                onChange={handleImageSelect}
                 className="hidden"
-                id="photo-upload"
               />
-              <label
-                htmlFor="photo-upload"
-                className="border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-purple-400 transition-colors flex flex-col items-center"
-              >
-                <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                <span className="text-sm text-gray-600">Click to upload photos</span>
-              </label>
-              
-              {photos.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  {photos.map((photo, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Upload ${index + 1}`}
-                        className="w-full h-20 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
+
+            {/* Image Previews */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                {images.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                      <img
+                        src={URL.createObjectURL(image)}
+                        alt={`Upload ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onClose}
+              className="flex-1"
+              disabled={posting}
+            >
               Cancel
             </Button>
             <Button 
-              type="submit" 
-              disabled={isPosting || !title.trim()} 
-              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              type="submit"
+              disabled={posting || !formData.title.trim() || !formData.description.trim()}
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
             >
-              {isPosting ? "Posting..." : "Share Update"}
+              {posting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Creating Post...
+                </>
+              ) : (
+                <>
+                  <PenTool className="h-4 w-4 mr-2" />
+                  Create Post
+                </>
+              )}
             </Button>
           </div>
         </form>

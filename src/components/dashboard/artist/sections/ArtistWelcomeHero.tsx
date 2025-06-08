@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Crown, Calendar, Users, Plus } from 'lucide-react';
+import { Sparkles, Crown, Calendar, Users, Plus, PenTool } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import CreatePostModal from '../modals/CreatePostModal';
 
@@ -77,10 +77,10 @@ const ArtistWelcomeHero = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowCreatePost(true)}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-2xl font-inter font-bold text-lg flex items-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/20"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl font-inter font-bold text-lg flex items-center gap-3 shadow-xl hover:shadow-2xl transition-all duration-300"
                 >
-                  <Plus className="h-6 w-6" />
-                  Share an Update
+                  <PenTool className="h-6 w-6" />
+                  Create a Post
                 </motion.button>
               </div>
             </div>
