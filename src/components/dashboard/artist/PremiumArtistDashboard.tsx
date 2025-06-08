@@ -131,9 +131,6 @@ const PremiumArtistDashboard = () => {
             <motion.div variants={itemVariants}>
               <ArtistViralShare />
             </motion.div>
-
-            {/* Bottom spacing for mobile navigation */}
-            <div className="h-20"></div>
           </div>
         </div>
       </motion.div>
