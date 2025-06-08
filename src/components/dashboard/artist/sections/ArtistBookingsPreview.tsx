@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Plus, Users, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, User, Plus, Eye } from 'lucide-react';
 import BookingModal from '../modals/BookingModal';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,43 +12,33 @@ const ArtistBookingsPreview = () => {
   const upcomingBookings = [
     {
       id: 1,
-      clientName: "Alex Johnson",
-      service: "Classic Manicure",
-      time: "10:00 AM",
+      client: "Alex Johnson",
+      service: "Manicure & Nail Art",
       date: "Today",
+      time: "2:30 PM",
       status: "confirmed"
     },
     {
       id: 2,
-      clientName: "Jordan Smith",
-      service: "Nail Art Design",
-      time: "2:30 PM",
+      client: "Taylor Davis",
+      service: "Pedicure",
       date: "Tomorrow",
+      time: "10:00 AM",
       status: "pending"
     },
     {
       id: 3,
-      clientName: "Taylor Davis",
-      service: "Gel Polish",
-      time: "11:15 AM",
+      client: "Jordan Kim",
+      service: "Full Set",
       date: "Dec 10",
+      time: "1:00 PM",
       status: "confirmed"
     }
   ];
 
   const handleViewAllBookings = () => {
-    navigate('/dashboard/artist/calendar');
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'pending':
-        return 'bg-amber-100 text-amber-700 border-amber-200';
-      default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
-    }
+    // Navigate to full bookings page
+    navigate('/dashboard/artist/bookings');
   };
 
   return (
@@ -61,16 +51,16 @@ const ArtistBookingsPreview = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-playfair font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-indigo-600" />
+              <Calendar className="h-6 w-6 text-blue-600" />
               Upcoming Bookings
             </h2>
-            <p className="text-slate-600 font-inter">Manage your schedule</p>
+            <p className="text-slate-600 font-inter">Manage your appointments</p>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowBookingModal(true)}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Plus className="h-5 w-5" />
             Add Appointment
@@ -81,49 +71,58 @@ const ArtistBookingsPreview = () => {
           {upcomingBookings.map((booking, index) => (
             <motion.div
               key={booking.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-gradient-to-r from-slate-50 to-white rounded-xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+              className="bg-gradient-to-r from-slate-50 to-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full flex items-center justify-center">
-                    <Users className="h-5 w-5 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full flex items-center justify-center">
+                    <User className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <div className="font-medium text-slate-900">{booking.clientName}</div>
-                    <div className="text-sm text-slate-600">{booking.service}</div>
+                    <h3 className="font-semibold text-slate-900">{booking.client}</h3>
+                    <p className="text-slate-600 text-sm">{booking.service}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
-                    <Clock className="h-4 w-4" />
-                    {booking.time}
+                  <div className="flex items-center gap-2 text-slate-700 mb-1">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">{booking.date}</span>
                   </div>
-                  <div className="text-sm text-slate-500">{booking.date}</div>
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Clock className="h-4 w-4" />
+                    <span>{booking.time}</span>
+                  </div>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(booking.status)}`}>
-                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                </div>
+              </div>
+              <div className="mt-4 flex justify-between items-center">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  booking.status === 'confirmed' 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-yellow-100 text-yellow-700'
+                }`}>
+                  {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                </span>
               </div>
             </motion.div>
           ))}
         </div>
 
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 border border-indigo-100 mb-6">
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-4 border border-blue-100 mb-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-indigo-600">12</div>
+              <div className="text-2xl font-bold text-blue-600">8</div>
               <div className="text-sm text-slate-600">This Week</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-purple-600">47</div>
+              <div className="text-2xl font-bold text-cyan-600">24</div>
               <div className="text-sm text-slate-600">This Month</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-rose-600">94%</div>
-              <div className="text-sm text-slate-600">Completion Rate</div>
+              <div className="text-2xl font-bold text-indigo-600">$2,340</div>
+              <div className="text-sm text-slate-600">Revenue</div>
             </div>
           </div>
         </div>
@@ -134,8 +133,8 @@ const ArtistBookingsPreview = () => {
           onClick={handleViewAllBookings}
           className="w-full bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white py-3 rounded-xl font-inter font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
         >
+          <Eye className="h-4 w-4" />
           View Full Calendar
-          <ArrowRight className="h-4 w-4" />
         </motion.button>
       </motion.div>
 

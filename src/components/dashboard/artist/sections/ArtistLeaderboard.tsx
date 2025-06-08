@@ -9,8 +9,8 @@ const ArtistLeaderboard = () => {
 
   const topArtists = [
     { rank: 1, name: "You", points: 2847, icon: Crown, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" },
-    { rank: 2, name: "Top Artist", points: 2634, icon: Medal, color: "text-slate-600", bg: "bg-slate-50", border: "border-slate-200" },
-    { rank: 3, name: "Rising Star", points: 2240, icon: Trophy, color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200" }
+    { rank: 2, name: "Elite Professional", points: 2634, icon: Medal, color: "text-slate-600", bg: "bg-slate-50", border: "border-slate-200" },
+    { rank: 3, name: "Master Artist", points: 2240, icon: Trophy, color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200" }
   ];
 
   return (

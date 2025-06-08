@@ -11,18 +11,18 @@ interface LeaderboardModalProps {
 const LeaderboardModal = ({ open, onClose }: LeaderboardModalProps) => {
   const topArtists = [
     { rank: 1, name: "You", points: 2847, bookings: 156 },
-    { rank: 2, name: "Rising Star", points: 2634, bookings: 142 },
-    { rank: 3, name: "Top Artist", points: 2240, bookings: 127 },
-    { rank: 4, name: "Elite Professional", points: 2156, bookings: 118 },
-    { rank: 5, name: "Master Craftsperson", points: 1998, bookings: 103 }
+    { rank: 2, name: "Elite Professional", points: 2634, bookings: 142 },
+    { rank: 3, name: "Master Artist", points: 2240, bookings: 127 },
+    { rank: 4, name: "Premium Stylist", points: 2156, bookings: 118 },
+    { rank: 5, name: "Top Specialist", points: 1998, bookings: 103 }
   ];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-amber-500" />
+          <DialogTitle className="flex items-center gap-2 text-2xl font-playfair">
+            <Trophy className="h-6 w-6 text-amber-500" />
             Artist Leaderboard
           </DialogTitle>
         </DialogHeader>

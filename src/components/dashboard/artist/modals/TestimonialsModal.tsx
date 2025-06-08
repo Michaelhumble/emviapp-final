@@ -27,6 +27,18 @@ const TestimonialsModal = ({ open, onClose }: TestimonialsModalProps) => {
       rating: 5,
       text: "Outstanding experience from start to finish. The artistry and skill level is truly impressive!",
       service: "Pedicure"
+    },
+    {
+      name: "Taylor Davis",
+      rating: 5,
+      text: "Best nail artist in the city! Always delivers exactly what I envision and more.",
+      service: "Full Set"
+    },
+    {
+      name: "Morgan Roberts",
+      rating: 5,
+      text: "Incredible talent and attention to detail. The studio is spotless and the atmosphere is so relaxing.",
+      service: "Nail Art"
     }
   ];
 
@@ -34,8 +46,8 @@ const TestimonialsModal = ({ open, onClose }: TestimonialsModalProps) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Quote className="h-5 w-5 text-rose-500" />
+          <DialogTitle className="flex items-center gap-2 text-2xl font-playfair">
+            <Quote className="h-6 w-6 text-rose-500" />
             Client Reviews
           </DialogTitle>
         </DialogHeader>

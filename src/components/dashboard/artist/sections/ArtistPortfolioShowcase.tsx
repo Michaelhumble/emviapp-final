@@ -1,23 +1,98 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Camera, Plus, Eye, Share } from 'lucide-react';
+import { Camera, Plus, Eye, Share, Upload } from 'lucide-react';
 import UploadPhotoModal from '../modals/UploadPhotoModal';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
 
 const ArtistPortfolioShowcase = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const { userProfile } = useAuth();
   const navigate = useNavigate();
 
-  const portfolioImages = [
-    "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A long, luxurious nail salon-1.png",
-    "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A long, luxurious nail salon-2.png",
-    "https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/nails/_A long, luxurious nail salon-3.png"
-  ];
+  // Check if user has portfolio images
+  const portfolioImages = userProfile?.portfolio_urls || [];
+  const hasPortfolio = portfolioImages.length > 0;
 
   const handleViewAll = () => {
+    // Navigate to portfolio page or open portfolio modal
     navigate('/dashboard/artist/portfolio');
   };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Check out my portfolio!',
+          text: 'See my latest work on EmviApp',
+          url: window.location.origin + '/artist/' + userProfile?.id
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(window.location.origin + '/artist/' + userProfile?.id);
+      // Toast notification would go here
+    }
+  };
+
+  if (!hasPortfolio) {
+    return (
+      <>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20"
+          data-section="portfolio"
+        >
+          <div className="text-center">
+            <div className="mb-6">
+              <h2 className="text-2xl font-playfair font-bold text-slate-900 mb-2 flex items-center justify-center gap-2">
+                <Camera className="h-6 w-6 text-purple-600" />
+                Your Portfolio
+              </h2>
+              <p className="text-slate-600 font-inter">Showcase your best work to attract clients</p>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-12 mb-6">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Camera className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">Start Building Your Portfolio</h3>
+              <p className="text-slate-600 mb-6 max-w-md mx-auto">
+                Upload photos of your best work to attract clients and showcase your talent. High-quality images get 3x more bookings.
+              </p>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowUploadModal(true)}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 mx-auto"
+              >
+                <Upload className="h-5 w-5" />
+                Upload Your First Photo
+              </motion.button>
+            </div>
+
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
+              <div className="text-center">
+                <div className="text-sm text-slate-600">
+                  Artists with portfolios get <span className="font-bold text-amber-600">5x more bookings</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <UploadPhotoModal 
+          open={showUploadModal} 
+          onClose={() => setShowUploadModal(false)} 
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -47,7 +122,7 @@ const ArtistPortfolioShowcase = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          {portfolioImages.map((image, index) => (
+          {portfolioImages.slice(0, 6).map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -73,7 +148,7 @@ const ArtistPortfolioShowcase = () => {
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100 mb-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-amber-600">24</div>
+              <div className="text-2xl font-bold text-amber-600">{portfolioImages.length}</div>
               <div className="text-sm text-slate-600">Total Works</div>
             </div>
             <div>
@@ -100,6 +175,7 @@ const ArtistPortfolioShowcase = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={handleShare}
             className="px-4 py-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-md"
           >
             <Share className="h-4 w-4 text-slate-600" />
