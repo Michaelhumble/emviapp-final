@@ -1,97 +1,36 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Share2, Copy, Instagram, Facebook, MessageCircle, Zap } from 'lucide-react';
+import { Share2, Copy, Instagram, Facebook } from 'lucide-react';
+import { copyToClipboard, shareToSocial, getProfileUrl } from '../utils/shareUtils';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
 const ArtistViralShare = () => {
-  const { user, userProfile } = useAuth();
-  const [copied, setCopied] = useState(false);
-  const [sharing, setSharing] = useState(false);
-  
-  const profileUrl = `https://emviapp.com/artist/${user?.id}`;
-  
+  const { user } = useAuth();
+  const profileUrl = getProfileUrl(user?.id);
+
   const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(profileUrl);
-      setCopied(true);
+    const success = await copyToClipboard(profileUrl);
+    if (success) {
       toast.success('Profile link copied to clipboard!');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } else {
       toast.error('Failed to copy link');
     }
   };
 
-  const handleShare = async (platform: string) => {
-    setSharing(true);
-    
-    const shareText = `Check out my artist profile on EmviApp! Book with me: ${profileUrl}`;
-    
-    try {
-      if (navigator.share && platform === 'native') {
-        await navigator.share({
-          title: 'My EmviApp Artist Profile',
-          text: shareText,
-          url: profileUrl
-        });
-      } else {
-        let shareUrl = '';
-        switch (platform) {
-          case 'facebook':
-            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(profileUrl)}`;
-            break;
-          case 'instagram':
-            await navigator.clipboard.writeText(shareText);
-            shareUrl = 'https://www.instagram.com/';
-            toast.success('Content copied! Paste it in your Instagram story');
-            break;
-          case 'whatsapp':
-            shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-            break;
-        }
-        
-        if (shareUrl) {
-          window.open(shareUrl, '_blank', 'width=600,height=400');
-        }
-      }
-      
-      toast.success('Shared successfully!');
-    } catch (error) {
-      console.error('Error sharing:', error);
-    } finally {
-      setTimeout(() => setSharing(false), 1000);
-    }
-  };
-
-  const shareOptions = [
-    {
-      name: 'Copy Link',
-      icon: Copy,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      action: handleCopyLink
-    },
+  const shareButtons = [
     {
       name: 'Instagram',
       icon: Instagram,
-      color: 'text-pink-600',
-      bgColor: 'bg-pink-50',
-      action: () => handleShare('instagram')
+      color: 'from-pink-500 to-rose-500',
+      onClick: () => shareToSocial('instagram', profileUrl)
     },
     {
-      name: 'Facebook',
+      name: 'Facebook', 
       icon: Facebook,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      action: () => handleShare('facebook')
-    },
-    {
-      name: 'WhatsApp',
-      icon: MessageCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      action: () => handleShare('whatsapp')
+      color: 'from-blue-600 to-indigo-600',
+      onClick: () => shareToSocial('facebook', profileUrl)
     }
   ];
 
@@ -99,97 +38,57 @@ const ArtistViralShare = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-violet-50 to-pink-50 rounded-3xl p-8 shadow-sm border border-violet-100"
+      className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20"
     >
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-r from-violet-500 to-pink-500 rounded-full">
-          <Share2 className="h-6 w-6 text-white" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-playfair font-bold text-gray-900">
-            Share Your Profile
-          </h2>
-          <p className="text-gray-600 font-inter">
-            Grow your client base by sharing your artist profile
-          </p>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-playfair font-bold text-slate-900 mb-2 flex items-center gap-2">
+          <Share2 className="h-6 w-6 text-emerald-600" />
+          Share Your Profile
+        </h2>
+        <p className="text-slate-600 font-inter">Grow your client base by sharing your work</p>
       </div>
 
-      {/* Artist Preview Card */}
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        className="bg-white rounded-2xl p-6 mb-6 border border-violet-200"
-      >
-        <div className="flex items-center gap-4">
-          {userProfile?.avatar_url ? (
-            <img 
-              src={userProfile.avatar_url} 
-              alt={userProfile.full_name}
-              className="w-16 h-16 rounded-full border-2 border-violet-200"
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-violet-400 to-pink-400 flex items-center justify-center text-white text-xl font-bold">
-              {userProfile?.full_name?.charAt(0) || "A"}
-            </div>
-          )}
-          <div className="flex-1">
-            <div className="text-xl font-semibold text-gray-800">
-              {userProfile?.full_name || "Your Artist Profile"}
-            </div>
-            <div className="text-gray-600">{userProfile?.specialty || "Professional Artist"}</div>
-            <div className="flex items-center gap-2 text-sm text-emerald-600 mt-1">
-              <Zap className="h-4 w-4" />
-              <span>4.9 rating • 127 bookings • Verified</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Share Buttons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {shareOptions.map((option) => (
-          <motion.button
-            key={option.name}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={option.action}
-            disabled={sharing}
-            className={`p-4 ${option.bgColor} rounded-xl flex flex-col items-center gap-2 border border-gray-100 hover:shadow-md transition-all duration-300 disabled:opacity-50`}
-          >
-            <option.icon className={`h-6 w-6 ${option.color}`} />
-            <span className="text-sm font-medium text-gray-700">{option.name}</span>
-          </motion.button>
-        ))}
-      </div>
-
-      {/* Profile URL Display */}
-      <div className="bg-white rounded-xl p-4 border border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="flex-1 text-sm text-gray-600 font-mono truncate">
-            {profileUrl}
+      <div className="bg-gradient-to-r from-emerald-50 to-cyan-50 rounded-2xl p-6 border border-emerald-100 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-1">Your Referral Link</h3>
+            <p className="text-sm text-slate-600 truncate max-w-xs">{profileUrl}</p>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleCopyLink}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-              copied 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-violet-100 text-violet-700 hover:bg-violet-200'
-            }`}
+            className="bg-white hover:bg-slate-50 border border-emerald-200 text-emerald-700 px-4 py-2 rounded-xl font-medium flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-300"
           >
-            {copied ? 'Copied!' : 'Copy'}
+            <Copy className="h-4 w-4" />
+            Copy Link
           </motion.button>
         </div>
       </div>
 
-      {/* Social Proof */}
-      <div className="text-center mt-6 p-4 bg-white/50 rounded-xl">
-        <div className="text-sm font-medium text-gray-800 mb-1">
-          Artists who share their profiles get 3x more bookings
-        </div>
-        <div className="text-xs text-gray-600">
-          Start sharing to grow your client base today
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        {shareButtons.map((button, index) => (
+          <motion.button
+            key={button.name}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={button.onClick}
+            className={`bg-gradient-to-r ${button.color} hover:opacity-90 text-white p-4 rounded-xl font-inter font-medium flex flex-col items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300`}
+          >
+            <button.icon className="h-6 w-6" />
+            <span>Share on {button.name}</span>
+          </motion.button>
+        ))}
+      </div>
+
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-amber-600 mb-1">+127%</div>
+          <div className="text-sm text-slate-600 mb-2">Artists who share get more bookings</div>
+          <div className="text-xs text-slate-500">Share your profile to grow your client base faster</div>
         </div>
       </div>
     </motion.div>

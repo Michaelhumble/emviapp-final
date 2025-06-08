@@ -27,22 +27,22 @@ const BookingModal = ({ open, onClose }: BookingModalProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Thêm Lịch Hẹn Mới
+            Add New Appointment
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Ngày</label>
+              <label className="text-sm font-medium">Date</label>
               <input type="date" className="w-full p-2 border rounded-lg mt-1" />
             </div>
             <div>
-              <label className="text-sm font-medium">Giờ</label>
+              <label className="text-sm font-medium">Time</label>
               <input type="time" className="w-full p-2 border rounded-lg mt-1" />
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium">Dịch vụ</label>
+            <label className="text-sm font-medium">Service</label>
             <select className="w-full p-2 border rounded-lg mt-1">
               <option>Nail Art</option>
               <option>Manicure</option>
@@ -51,10 +51,10 @@ const BookingModal = ({ open, onClose }: BookingModalProps) => {
           </div>
           <div className="flex gap-3">
             <Button variant="outline" onClick={onClose} className="flex-1">
-              Hủy
+              Cancel
             </Button>
             <Button onClick={handleCreate} disabled={creating} className="flex-1">
-              {creating ? "Đang tạo..." : "Tạo lịch hẹn"}
+              {creating ? "Creating..." : "Create Appointment"}
             </Button>
           </div>
         </div>

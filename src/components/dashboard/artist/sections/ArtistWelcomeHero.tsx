@@ -18,9 +18,9 @@ const ArtistWelcomeHero = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-purple-900 via-indigo-900 to-pink-900 rounded-3xl p-8 text-white mb-8 overflow-hidden relative"
+      className="bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 rounded-3xl p-8 text-white mb-8 overflow-hidden relative"
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-amber-600/10 to-rose-600/10 backdrop-blur-sm"></div>
       
       <div className="relative z-10">
         <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
@@ -31,8 +31,8 @@ const ArtistWelcomeHero = () => {
               transition={{ delay: 0.2 }}
               className="flex items-center gap-3 mb-4"
             >
-              <Crown className="h-8 w-8 text-yellow-400" />
-              <span className="text-yellow-400 font-inter font-medium">Premium Artist</span>
+              <Crown className="h-8 w-8 text-amber-400" />
+              <span className="text-amber-400 font-inter font-medium">Premium Artist</span>
             </motion.div>
 
             <motion.h1
@@ -50,17 +50,17 @@ const ArtistWelcomeHero = () => {
               transition={{ delay: 0.4 }}
               className="text-xl text-purple-100 mb-6 font-inter max-w-2xl"
             >
-              Your creative empire awaits. Manage your bookings, showcase your art, and grow your client base with our premium tools.
+              Your creative empire awaits. Manage bookings, showcase your artistry, and grow your client base with premium tools designed for success.
             </motion.p>
 
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
               whileTap={{ scale: 0.95 }}
               onClick={handleGetStarted}
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-purple-900 px-8 py-4 rounded-2xl font-inter font-bold text-lg flex items-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-slate-900 px-8 py-4 rounded-2xl font-inter font-bold text-lg flex items-center gap-3 shadow-xl hover:shadow-2xl transition-all duration-300"
             >
               <Sparkles className="h-6 w-6" />
               Get Started Today
@@ -72,7 +72,7 @@ const ArtistWelcomeHero = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6 }}
-              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center"
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 shadow-lg"
             >
               <Calendar className="h-8 w-8 text-blue-300 mx-auto mb-3" />
               <div className="text-2xl font-bold">127</div>
@@ -83,9 +83,9 @@ const ArtistWelcomeHero = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.7 }}
-              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center"
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 shadow-lg"
             >
-              <Users className="h-8 w-8 text-green-300 mx-auto mb-3" />
+              <Users className="h-8 w-8 text-emerald-300 mx-auto mb-3" />
               <div className="text-2xl font-bold">47</div>
               <div className="text-sm text-purple-200">Happy Clients</div>
             </motion.div>

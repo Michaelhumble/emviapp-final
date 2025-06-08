@@ -1,163 +1,149 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, ArrowRight, Plus } from 'lucide-react';
+import { Calendar, Clock, Plus, Users, ArrowRight } from 'lucide-react';
+import BookingModal from '../modals/BookingModal';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
 const ArtistBookingsPreview = () => {
+  const [showBookingModal, setShowBookingModal] = useState(false);
   const navigate = useNavigate();
-  const [creating, setCreating] = useState(false);
 
   const upcomingBookings = [
     {
       id: 1,
-      clientName: "Client A",
-      service: "Nail Art Design",
+      clientName: "Alex Johnson",
+      service: "Classic Manicure",
       time: "10:00 AM",
       date: "Today",
       status: "confirmed"
     },
     {
       id: 2,
-      clientName: "Client B", 
-      service: "Manicure & Pedicure",
+      clientName: "Jordan Smith",
+      service: "Nail Art Design",
       time: "2:30 PM",
-      date: "Today",
+      date: "Tomorrow",
       status: "pending"
     },
     {
       id: 3,
-      clientName: "Client C",
+      clientName: "Taylor Davis",
       service: "Gel Polish",
-      time: "9:00 AM", 
-      date: "Tomorrow",
+      time: "11:15 AM",
+      date: "Dec 10",
       status: "confirmed"
     }
   ];
 
-  const handleAddBooking = () => {
-    setCreating(true);
-    setTimeout(() => {
-      setCreating(false);
-      toast.success('Booking slot created successfully!');
-    }, 1500);
+  const handleViewAllBookings = () => {
+    navigate('/dashboard/artist/calendar');
   };
 
-  const handleViewAll = () => {
-    navigate('/dashboard/artist/bookings');
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'pending':
+        return 'bg-amber-100 text-amber-700 border-amber-200';
+      default:
+        return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100"
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
-        <div>
-          <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
-            Today's Schedule
-          </h2>
-          <p className="text-lg text-gray-600 font-inter">
-            Manage appointments and track your day
-          </p>
-        </div>
-        
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleAddBooking}
-          disabled={creating}
-          className="mt-4 sm:mt-0 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
-        >
-          {creating ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Creating...
-            </>
-          ) : (
-            <>
-              <Plus className="h-5 w-5" />
-              Add Appointment
-            </>
-          )}
-        </motion.button>
-      </div>
-
-      <div className="space-y-4 mb-8">
-        {upcomingBookings.map((booking, index) => (
-          <motion.div
-            key={booking.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-all duration-300"
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-playfair font-bold text-slate-900 mb-2 flex items-center gap-2">
+              <Calendar className="h-6 w-6 text-indigo-600" />
+              Upcoming Bookings
+            </h2>
+            <p className="text-slate-600 font-inter">Manage your schedule</p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowBookingModal(true)}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-inter font-medium flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
-                  <User className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">{booking.clientName}</h3>
-                  <p className="text-gray-600">{booking.service}</p>
-                </div>
-              </div>
-              
-              <div className="text-right">
-                <div className="flex items-center gap-2 text-gray-700 mb-1">
-                  <Clock className="h-4 w-4" />
-                  <span className="font-medium">{booking.time}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Calendar className="h-4 w-4" />
-                  <span className="text-sm">{booking.date}</span>
-                </div>
-              </div>
-              
-              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                booking.status === 'confirmed' 
-                  ? 'bg-emerald-100 text-emerald-700' 
-                  : 'bg-yellow-100 text-yellow-700'
-              }`}>
-                {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            <Plus className="h-5 w-5" />
+            Add Appointment
+          </motion.button>
+        </div>
 
-      {/* Quick Stats */}
-      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-100 mb-6">
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-bold text-emerald-600">8</div>
-            <div className="text-sm text-gray-600">Today</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-teal-600">127</div>
-            <div className="text-sm text-gray-600">This Month</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-blue-600">96%</div>
-            <div className="text-sm text-gray-600">Show Rate</div>
+        <div className="space-y-4 mb-6">
+          {upcomingBookings.map((booking, index) => (
+            <motion.div
+              key={booking.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-gradient-to-r from-slate-50 to-white rounded-xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full flex items-center justify-center">
+                    <Users className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-slate-900">{booking.clientName}</div>
+                    <div className="text-sm text-slate-600">{booking.service}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                    <Clock className="h-4 w-4" />
+                    {booking.time}
+                  </div>
+                  <div className="text-sm text-slate-500">{booking.date}</div>
+                </div>
+                <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(booking.status)}`}>
+                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 border border-indigo-100 mb-6">
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-indigo-600">12</div>
+              <div className="text-sm text-slate-600">This Week</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-purple-600">47</div>
+              <div className="text-sm text-slate-600">This Month</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-rose-600">94%</div>
+              <div className="text-sm text-slate-600">Completion Rate</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="text-center">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleViewAll}
-          className="group bg-white hover:bg-gray-50 text-emerald-600 border-2 border-emerald-200 hover:border-emerald-300 px-8 py-3 rounded-2xl font-inter font-medium flex items-center gap-2 mx-auto shadow-sm hover:shadow-md transition-all duration-300"
+          onClick={handleViewAllBookings}
+          className="w-full bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white py-3 rounded-xl font-inter font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           View Full Calendar
-          <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="h-4 w-4" />
         </motion.button>
-      </div>
-    </motion.div>
+      </motion.div>
+
+      <BookingModal 
+        open={showBookingModal} 
+        onClose={() => setShowBookingModal(false)} 
+      />
+    </>
   );
 };
 

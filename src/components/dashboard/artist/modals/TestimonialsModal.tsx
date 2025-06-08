@@ -11,21 +11,21 @@ interface TestimonialsModalProps {
 const TestimonialsModal = ({ open, onClose }: TestimonialsModalProps) => {
   const testimonials = [
     {
-      name: "Hương Linh",
+      name: "Alex Parker",
       rating: 5,
-      text: "Tay nghề tuyệt vời! Nail art đẹp không tì vết. Sẽ quay lại nhiều lần nữa! 💖",
+      text: "Absolutely incredible work! The attention to detail is unmatched. Professional service and beautiful results every time.",
       service: "Nail Art"
     },
     {
-      name: "Phương Anh",
+      name: "Jordan Kim",
       rating: 5,
-      text: "Dịch vụ chuyên nghiệp, không gian sạch sẽ. Rất hài lòng với kết quả!",
+      text: "Professional service and amazing results. Clean facility, friendly staff, and exceptional quality work.",
       service: "Manicure"
     },
     {
-      name: "Thu Trang",
+      name: "Casey Mitchell",
       rating: 5,
-      text: "Chị làm rất tỉ mỉ và kiên nhẫn. Nail đẹp y như mong muốn! ⭐",
+      text: "Outstanding experience from start to finish. The artistry and skill level is truly impressive!",
       service: "Pedicure"
     }
   ];
@@ -35,25 +35,25 @@ const TestimonialsModal = ({ open, onClose }: TestimonialsModalProps) => {
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Quote className="h-5 w-5 text-purple-500" />
-            Đánh Giá Từ Khách Hàng
+            <Quote className="h-5 w-5 text-rose-500" />
+            Client Reviews
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-gray-50 p-6 rounded-xl">
+            <div key={index} className="bg-slate-50 p-6 rounded-xl">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="font-medium">{testimonial.name}</div>
-                  <div className="text-sm text-gray-600">{testimonial.service}</div>
+                  <div className="text-sm text-slate-600">{testimonial.service}</div>
                 </div>
                 <div className="flex items-center gap-1">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
               </div>
-              <p className="text-gray-700">{testimonial.text}</p>
+              <p className="text-slate-700">"{testimonial.text}"</p>
             </div>
           ))}
         </div>
