@@ -24,7 +24,7 @@ const ArtistWelcomeHero = () => {
             </motion.div>
             <div>
               <h1 className="text-2xl lg:text-3xl font-playfair font-bold text-gray-900">
-                Good morning, Sarah! 👋
+                Good morning, Artist! 👋
               </h1>
               <p className="text-gray-600 font-inter">You're building something beautiful</p>
             </div>
@@ -47,7 +47,7 @@ const ArtistWelcomeHero = () => {
             >
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-inter font-medium text-emerald-800">Top 5% in LA</span>
+                <span className="text-sm font-inter font-medium text-emerald-800">Rising Star</span>
               </div>
             </motion.div>
           </div>

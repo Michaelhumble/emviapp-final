@@ -7,14 +7,14 @@ const ArtistSocialProofTicker = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const activities = [
-    { icon: Users, text: "Sarah just joined EmviApp in your city! 🎉", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
-    { icon: Heart, text: "Maria got 5 new bookings in the last hour! 💕", color: "text-pink-600", bg: "bg-pink-50", border: "border-pink-100" },
-    { icon: Star, text: "Jessica earned her 50th ⭐⭐⭐⭐⭐ review!", color: "text-yellow-600", bg: "bg-yellow-50", border: "border-yellow-100" },
-    { icon: TrendingUp, text: "Alex reached $5,000 monthly revenue! ⚡", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-100" },
+    { icon: Users, text: "New artist just joined EmviApp in your city! 🎉", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+    { icon: Heart, text: "An artist got 5 new bookings in the last hour! 💕", color: "text-pink-600", bg: "bg-pink-50", border: "border-pink-100" },
+    { icon: Star, text: "Another artist earned their 50th ⭐⭐⭐⭐⭐ review!", color: "text-yellow-600", bg: "bg-yellow-50", border: "border-yellow-100" },
+    { icon: TrendingUp, text: "Local artist reached $5,000 monthly revenue! ⚡", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-100" },
     { icon: Calendar, text: "127 new artists joined EmviApp this week! 🌟", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
-    { icon: Crown, text: "You moved up to #3 in city rankings! 👑", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100" },
+    { icon: Crown, text: "You moved up in city rankings! 👑", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100" },
     { icon: Users, text: "1,247 bookings made citywide today! 🔥", color: "text-red-600", bg: "bg-red-50", border: "border-red-100" },
-    { icon: Heart, text: "Premium artists earn 5x more on average! 💎", color: "text-cyan-600", bg: "bg-cyan-50", border: "border-cyan-100" }
+    { icon: Heart, text: "Pro artists earn 5x more on average! 💎", color: "text-cyan-600", bg: "bg-cyan-50", border: "border-cyan-100" }
   ];
 
   useEffect(() => {
