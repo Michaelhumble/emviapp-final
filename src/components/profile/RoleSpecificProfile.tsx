@@ -11,6 +11,8 @@ import { Loader2 } from "lucide-react";
 const RoleSpecificProfile = () => {
   const { userProfile, userRole, loading } = useAuth();
 
+  console.log("🔍 PROFILE DEBUG:", { userRole, userProfile, loading });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -33,23 +35,58 @@ const RoleSpecificProfile = () => {
     );
   }
 
+  // Debug banner for testing
+  const debugBanner = (
+    <div className="w-full py-4 px-6 mb-6 bg-yellow-100 border-2 border-yellow-400 rounded-lg">
+      <p className="text-center font-bold text-yellow-800">
+        🔍 DEBUG: Current Role = "{userRole}" | Loading Profile Component
+      </p>
+    </div>
+  );
+
   // Render appropriate profile based on user role
   const renderRoleProfile = () => {
+    console.log("🎯 Rendering profile for role:", userRole);
+    
     switch (userRole) {
       case 'artist':
       case 'nail technician/artist':
-        return <ArtistProfile />;
+        console.log("✅ Loading ArtistProfile component");
+        return (
+          <>
+            {debugBanner}
+            <ArtistProfile />
+          </>
+        );
       
       case 'salon':
       case 'owner':
-        return <SalonProfile />;
+        console.log("✅ Loading SalonProfile component");
+        return (
+          <>
+            {debugBanner}
+            <SalonProfile />
+          </>
+        );
       
       case 'freelancer':
-        return <FreelancerProfile />;
+        console.log("✅ Loading FreelancerProfile component");
+        return (
+          <>
+            {debugBanner}
+            <FreelancerProfile />
+          </>
+        );
       
       case 'customer':
       default:
-        return <PremiumCustomerProfile userProfile={userProfile} />;
+        console.log("✅ Loading PremiumCustomerProfile component");
+        return (
+          <>
+            {debugBanner}
+            <PremiumCustomerProfile userProfile={userProfile} />
+          </>
+        );
     }
   };
 
