@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 const RoleSpecificProfile = () => {
   const { userProfile, userRole, loading } = useAuth();
   
-  // 🚨 ENHANCED DEBUGGING - Force print to console
+  // 🔍 ENHANCED DEBUGGING - Force print to console
   console.log('🚨 URGENT DEBUG: userRole =', userRole);
   console.log('🚨 URGENT DEBUG: userProfile =', userProfile);
   console.log('🚨 URGENT DEBUG: loading =', loading);
@@ -31,7 +31,9 @@ const RoleSpecificProfile = () => {
   
   console.log('🎯 FINAL EFFECTIVE ROLE =', effectiveRole);
   console.log('🎯 EFFECTIVE ROLE TYPE =', typeof effectiveRole);
-  console.log('🎯 ABOUT TO RENDER COMPONENT FOR ROLE:', effectiveRole);
+
+  console.log("🔍 ROLE SPECIFIC PROFILE DEBUG:", { userRole: effectiveRole, userProfile, loading });
+  console.log("🔍 RoleSpecificProfile Component - About to route to:", effectiveRole);
 
   if (loading) {
     console.log("🔍 LOADING STATE: Still loading auth data");
