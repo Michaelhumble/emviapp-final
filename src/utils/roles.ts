@@ -1,60 +1,77 @@
-
 import { UserRole } from "@/context/auth/types";
 
 /**
  * Normalize different role naming conventions to a standard UserRole type
  */
 export const normalizeRole = (role: UserRole | string | null | undefined): UserRole | null => {
-  if (!role) return null;
+  console.log('🚨 NORMALIZE ROLE INPUT:', role, typeof role);
+  
+  if (!role) {
+    console.log('🚨 NORMALIZE ROLE: Empty input, returning null');
+    return null;
+  }
   
   // Convert to lowercase for case-insensitive comparison
   const lowercaseRole = typeof role === 'string' ? role.toLowerCase().trim() : '';
+  console.log('🚨 NORMALIZE ROLE: Lowercase role:', lowercaseRole);
+  
+  let normalizedRole: UserRole | null = null;
   
   // Match to known roles with proper casing
   switch (lowercaseRole) {
     case 'customer':
     case 'client':
     case 'user':
-      return 'customer';
+      normalizedRole = 'customer';
+      break;
       
     case 'artist':
     case 'nail artist':
     case 'nail tech':
     case 'nail technician':
     case 'nail technician/artist':
-      return 'artist';
+      normalizedRole = 'artist';
+      break;
       
     case 'salon':
-      return 'salon';
+      normalizedRole = 'salon';
+      break;
       
     case 'owner':
     case 'salon owner':
     case 'business owner':
-      return 'owner';
+      normalizedRole = 'owner';
+      break;
       
     case 'freelancer':
     case 'independent':
     case 'independent artist':
-      return 'freelancer';
+      normalizedRole = 'freelancer';
+      break;
       
     case 'supplier':
     case 'beauty supplier':
-      return 'supplier';
+      normalizedRole = 'supplier';
+      break;
     
     case 'vendor':
-      return 'vendor';
+      normalizedRole = 'vendor';
+      break;
       
     case 'renter':
     case 'booth renter':
     case 'chair renter':
-      return 'renter';
+      normalizedRole = 'renter';
+      break;
 
     case 'manager':
-      return 'manager';
+      normalizedRole = 'manager';
+      break;
 
     case 'admin':
     case 'administrator':
-      return 'admin';
+      normalizedRole = 'admin';
+      break;
       
     default:
       // If it's already a valid UserRole, return it
@@ -71,12 +88,15 @@ export const normalizeRole = (role: UserRole | string | null | undefined): UserR
           role === 'nail technician/artist' || 
           role === 'renter' ||
           role === 'other') {
-        return role as UserRole;
+        normalizedRole = role as UserRole;
+      } else {
+        // Default to null for unrecognized roles
+        normalizedRole = null;
       }
-      
-      // Default to null for unrecognized roles
-      return null;
   }
+  
+  console.log('🚨 NORMALIZE ROLE OUTPUT:', normalizedRole);
+  return normalizedRole;
 };
 
 /**
