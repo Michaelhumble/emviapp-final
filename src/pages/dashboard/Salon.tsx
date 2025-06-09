@@ -3,9 +3,7 @@ import React, { useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { SalonProvider } from "@/context/salon";
 import Layout from "@/components/layout/Layout";
-import SalonDashboardOverview from "@/components/dashboard/salon/SalonDashboardOverview";
-import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
-import SalonSettings from "@/components/dashboard/salon/SalonSettings";
+import SalonOwnerDashboardWidgets from "@/components/dashboard/salon/SalonOwnerDashboardWidgets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileCompletionBar from "@/components/profile/ProfileCompletionBar";
@@ -15,14 +13,15 @@ const SalonDashboardPage = () => {
   const [activeTab, setActiveTab] = React.useState("overview");
   
   useEffect(() => {
-    document.title = "Salon Dashboard | EmviApp";
+    document.title = "Premium Salon Dashboard | EmviApp";
   }, []);
 
   return (
     <Layout>
-      {/* VISUAL BANNER FOR IDENTIFICATION */}
-      <div className="w-full bg-red-600 text-white text-center py-4 text-xl font-bold">
-        🔍 THIS IS src/pages/dashboard/Salon.tsx
+      {/* GIANT PREMIUM DASHBOARD BANNER */}
+      <div className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center py-6 text-3xl font-bold shadow-lg">
+        🏆 PREMIUM SALON OWNER DASHBOARD 🏆
+        <div className="text-lg font-normal mt-2">SalonOwnerDashboardWidgets.tsx is now active</div>
       </div>
       
       <SalonProvider>
@@ -36,54 +35,21 @@ const SalonDashboardPage = () => {
                 <Card className="border-muted shadow-sm">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl font-playfair">
-                      {userProfile?.salon_name || "Your Salon"}
+                      {userProfile?.salon_name || "Your Premium Salon"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground font-inter">
-                      {userProfile?.bio || "Complete your salon profile to showcase your business."}
+                      {userProfile?.bio || "Welcome to your premium salon dashboard with advanced features."}
                     </p>
                   </CardContent>
                 </Card>
               </div>
             </div>
             
-            {/* Main Content */}
+            {/* Main Content - Premium Dashboard */}
             <div className="md:col-span-3">
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-3 mb-8">
-                  <TabsTrigger 
-                    value="overview" 
-                    className="font-inter data-[state=active]:bg-emvi-accent/10 data-[state=active]:text-emvi-accent"
-                  >
-                    Overview
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="calendar" 
-                    className="font-inter data-[state=active]:bg-emvi-accent/10 data-[state=active]:text-emvi-accent"
-                  >
-                    Booking Calendar
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="settings" 
-                    className="font-inter data-[state=active]:bg-emvi-accent/10 data-[state=active]:text-emvi-accent"
-                  >
-                    Settings
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="overview" className="space-y-4">
-                  <SalonDashboardOverview />
-                </TabsContent>
-                
-                <TabsContent value="calendar" className="space-y-4">
-                  <SalonBookingCalendar />
-                </TabsContent>
-                
-                <TabsContent value="settings" className="space-y-4">
-                  <SalonSettings />
-                </TabsContent>
-              </Tabs>
+              <SalonOwnerDashboardWidgets />
             </div>
           </div>
         </div>
