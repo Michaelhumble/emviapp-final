@@ -1,17 +1,33 @@
 
 import { isKnownRoute } from './routeChecker';
-import routes from '../routes';
 
-// Map routes config to paths for validation
-const getRoutePaths = () => {
-  // Add explicit routes that might not be in the routes config
-  const explicitRoutes = ['/salons', '/dashboard/artist/booking-calendar', '/dashboard/artist/inbox'];
-  return [...routes.map(route => route.path), ...explicitRoutes];
-};
+// Available routes for validation
+const availableRoutes = [
+  '/',
+  '/artists',
+  '/salons', 
+  '/jobs',
+  '/community',
+  '/about',
+  '/contact',
+  '/auth/signin',
+  '/auth/signup',
+  '/artist/:id',
+  '/salon/:id',
+  '/job/:id',
+  '/salon-details/:id',
+  '/dashboard',
+  '/dashboard/artist',
+  '/dashboard/customer',
+  '/dashboard/salon',
+  '/dashboard/owner',
+  '/profile',
+  '/profile/edit',
+  '/post-job'
+];
 
 // Validate that a path exists in our routes configuration
 export const validateRoute = (path: string): boolean => {
-  const availableRoutes = getRoutePaths();
   return isKnownRoute(path, availableRoutes);
 };
 
@@ -23,17 +39,17 @@ export const getSafePath = (path: string, fallback: string = '/dashboard'): stri
 // Get a human-readable name for the current route
 export const getCurrentRouteName = (): string => {
   const currentPath = window.location.pathname;
-  const matchingRoute = routes.find(route => {
+  const matchingRoute = availableRoutes.find(route => {
     // Handle dynamic routes with parameters
-    if (route.path.includes(':')) {
-      const regexPath = route.path.replace(/:[^\/]+/g, '[^/]+');
+    if (route.includes(':')) {
+      const regexPath = route.replace(/:[^\/]+/g, '[^/]+');
       const routeRegex = new RegExp(`^${regexPath}$`);
       return routeRegex.test(currentPath);
     }
-    return route.path === currentPath;
+    return route === currentPath;
   });
   
-  return matchingRoute ? matchingRoute.path : 'Unknown Route';
+  return matchingRoute ? matchingRoute : 'Unknown Route';
 };
 
 // Find closest matching route for a 404 fallback suggestion
@@ -42,7 +58,6 @@ export const getClosestMatchingRoute = (path: string): string | null => {
   if (segments.length === 0) return null;
   
   const rootSegment = segments[0];
-  const availableRoutes = getRoutePaths();
   
   // Try to find a route that starts with the same root segment
   const matchingRoute = availableRoutes.find(route => {

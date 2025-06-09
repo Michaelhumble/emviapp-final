@@ -2,28 +2,29 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import Home from '@/pages/Home';
+// import Home from '@/pages/Home';
 import Artists from '@/pages/Artists';
-import Salons from '@/pages/Salons';
+// import Salons from '@/pages/Salons';
 import Jobs from '@/pages/Jobs';
-import Community from '@/pages/Community';
+// import Community from '@/pages/Community';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import SignIn from '@/pages/auth/SignIn';
 import SignUp from '@/pages/auth/SignUp';
-import Dashboard from '@/pages/Dashboard';
+// import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
-import EditProfile from '@/pages/EditProfile';
-import ArtistProfilePage from '@/pages/ArtistProfile';
-import SalonProfilePage from '@/pages/SalonProfile';
+// import EditProfile from '@/pages/EditProfile';
+// import ArtistProfilePage from '@/pages/ArtistProfile';
+// import SalonProfilePage from '@/pages/SalonProfile';
 import PostJob from '@/pages/PostJob';
-import JobDetails from '@/pages/JobDetails';
-import SalonDetails from '@/pages/SalonDetails';
+// import JobDetails from '@/pages/JobDetails';
+// import SalonDetails from '@/pages/SalonDetails';
 import AuthGuard from '@/components/auth/AuthGuard';
 import { useAuth } from '@/context/auth';
 import ArtistDashboard from '@/components/dashboard/artist/ArtistDashboard';
 import CustomerDashboard from '@/components/dashboard/customer/CustomerDashboard';
 import SalonOwnerDashboard from '@/components/dashboard/salon/SalonOwnerDashboard';
+import SalonDashboardPage from '@/pages/dashboard/Salon';
 
 const AppRoutes = () => {
   const { isSignedIn } = useAuth();
@@ -31,11 +32,11 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">Welcome to EmviApp</h1><p className="mt-4">Home page under construction</p></div>} />
       <Route path="/artists" element={<Artists />} />
-      <Route path="/salons" element={<Salons />} />
+      <Route path="/salons" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">Salons</h1><p className="mt-4">Salons page under construction</p></div>} />
       <Route path="/jobs" element={<Jobs />} />
-      <Route path="/community" element={<Community />} />
+      <Route path="/community" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">Community</h1><p className="mt-4">Community page under construction</p></div>} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       
@@ -44,15 +45,15 @@ const AppRoutes = () => {
       <Route path="/auth/signup" element={<SignUp />} />
       
       {/* Profile Routes */}
-      <Route path="/artist/:id" element={<ArtistProfilePage />} />
-      <Route path="/salon/:id" element={<SalonProfilePage />} />
-      <Route path="/job/:id" element={<JobDetails />} />
-      <Route path="/salon-details/:id" element={<SalonDetails />} />
+      <Route path="/artist/:id" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">Artist Profile</h1><p className="mt-4">Artist profile page under construction</p></div>} />
+      <Route path="/salon/:id" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">Salon Profile</h1><p className="mt-4">Salon profile page under construction</p></div>} />
+      <Route path="/job/:id" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">Job Details</h1><p className="mt-4">Job details page under construction</p></div>} />
+      <Route path="/salon-details/:id" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">Salon Details</h1><p className="mt-4">Salon details page under construction</p></div>} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={
         <AuthGuard>
-          <Dashboard />
+          <div className="p-8 text-center"><h1 className="text-4xl font-bold">Dashboard</h1><p className="mt-4">Main dashboard under construction</p></div>
         </AuthGuard>
       } />
       
@@ -75,9 +76,7 @@ const AppRoutes = () => {
       
       <Route path="/dashboard/salon" element={
         <AuthGuard>
-          <Layout>
-            <SalonOwnerDashboard />
-          </Layout>
+          <SalonDashboardPage />
         </AuthGuard>
       } />
       
@@ -97,7 +96,7 @@ const AppRoutes = () => {
       
       <Route path="/profile/edit" element={
         <AuthGuard>
-          <EditProfile />
+          <div className="p-8 text-center"><h1 className="text-4xl font-bold">Edit Profile</h1><p className="mt-4">Edit profile page under construction</p></div>
         </AuthGuard>
       } />
       
