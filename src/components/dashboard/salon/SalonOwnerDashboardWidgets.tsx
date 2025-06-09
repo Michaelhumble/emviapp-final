@@ -79,11 +79,11 @@ const SalonOwnerDashboardWidgets = () => {
   
   return (
     <FallbackBoundary>
-      {/* LIVE TEST BANNER - SALON OWNER DASHBOARD WIDGETS */}
-      <div className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-center py-6 mb-6 rounded-lg shadow-2xl border-4 border-purple-400">
-        <h1 className="text-3xl font-black mb-2">🔴 LIVE TEST BANNER - SALON OWNER DASHBOARD WIDGETS 🔴</h1>
-        <p className="text-lg font-bold">File: src/components/dashboard/salon/SalonOwnerDashboardWidgets.tsx</p>
-        <p className="text-sm mt-2">If you see this, SalonOwnerDashboardWidgets is LIVE and rendering!</p>
+      {/* GIANT TEST MARKER - SALON DASHBOARD WIDGETS ACTIVE */}
+      <div className="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white text-center py-8 mb-8 rounded-lg shadow-2xl border-4 border-red-500">
+        <h1 className="text-4xl font-black mb-3">💡 SALON DASHBOARD WIDGETS ACTIVE – TEST MARKER (JUNE 2025) 💡</h1>
+        <p className="text-xl font-bold">File: src/components/dashboard/salon/SalonOwnerDashboardWidgets.tsx</p>
+        <p className="text-lg mt-2">If you see this marker, SalonOwnerDashboardWidgets is THE ACTIVE COMPONENT!</p>
       </div>
       
       <div className="space-y-6">
