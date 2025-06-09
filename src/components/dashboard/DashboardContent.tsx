@@ -82,6 +82,13 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   
   return (
     <GradientBackground variant={getVariant()} className={`max-w-4xl mx-auto ${className} rounded-xl shadow-sm border border-gray-100`}>
+      {/* LIVE TEST BANNER - DASHBOARD CONTENT */}
+      <div className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-6 mb-6 rounded-lg shadow-2xl border-4 border-red-400">
+        <h1 className="text-3xl font-black mb-2">🔴 LIVE TEST BANNER - DASHBOARD CONTENT 🔴</h1>
+        <p className="text-lg font-bold">File: src/components/dashboard/DashboardContent.tsx</p>
+        <p className="text-sm mt-2">If you see this, DashboardContent is the LIVE component!</p>
+      </div>
+      
       <motion.div
         variants={containerVariants}
         initial="hidden"

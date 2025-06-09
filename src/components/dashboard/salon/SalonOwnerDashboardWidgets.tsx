@@ -79,11 +79,11 @@ const SalonOwnerDashboardWidgets = () => {
   
   return (
     <FallbackBoundary>
-      {/* GIANT UNMISTAKABLE PREMIUM DASHBOARD BANNER */}
-      <div className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white text-center py-8 mb-6 rounded-lg shadow-2xl border-4 border-yellow-400">
-        <h1 className="text-4xl font-black mb-2">🚀 PREMIUM SALON DASHBOARD ACTIVE! 🚀</h1>
-        <p className="text-xl font-bold">SalonOwnerDashboardWidgets.tsx Component Successfully Loaded</p>
-        <p className="text-lg mt-2">If you see this banner, the premium dashboard swap worked!</p>
+      {/* LIVE TEST BANNER - SALON OWNER DASHBOARD WIDGETS */}
+      <div className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-center py-6 mb-6 rounded-lg shadow-2xl border-4 border-purple-400">
+        <h1 className="text-3xl font-black mb-2">🔴 LIVE TEST BANNER - SALON OWNER DASHBOARD WIDGETS 🔴</h1>
+        <p className="text-lg font-bold">File: src/components/dashboard/salon/SalonOwnerDashboardWidgets.tsx</p>
+        <p className="text-sm mt-2">If you see this, SalonOwnerDashboardWidgets is LIVE and rendering!</p>
       </div>
       
       <div className="space-y-6">
