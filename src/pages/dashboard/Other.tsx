@@ -1,33 +1,23 @@
 
-import { useEffect } from "react";
+import React from 'react';
 import Layout from "@/components/layout/Layout";
-import { motion } from "framer-motion";
-import DashboardContent from "@/components/dashboard/DashboardContent";
-import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
-import ProfileCompletionGuard from "@/components/profile/ProfileCompletionGuard";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const OtherDashboard = () => {
-  useEffect(() => {
-    document.title = "Welcome to EmviApp";
-  }, []);
-  
+const OtherDashboardPage = () => {
   return (
     <Layout>
-      <ProfileCompletionGuard>
-        <div className="container px-4 mx-auto py-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <RoleDashboardLayout>
-              <DashboardContent />
-            </RoleDashboardLayout>
-          </motion.div>
-        </div>
-      </ProfileCompletionGuard>
+      <div className="container mx-auto px-4 py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Other Dashboard</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Dashboard content for other role users.</p>
+          </CardContent>
+        </Card>
+      </div>
     </Layout>
   );
 };
 
-export default OtherDashboard;
+export default OtherDashboardPage;

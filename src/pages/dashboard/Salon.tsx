@@ -1,8 +1,13 @@
 
 export default function Salon() {
   return <div style={{
-    background: 'lime', color: 'black', fontSize: 48, textAlign: 'center', padding: 48
+    background: 'red', 
+    color: 'white', 
+    fontSize: 48, 
+    textAlign: 'center', 
+    padding: 48,
+    fontWeight: 'bold'
   }}>
-    <b>THIS IS THE REAL SALON DASHBOARD - JUNE 2025</b>
+    🔥 IF YOU SEE THIS, THE NEW SALON DASHBOARD IS ACTIVE - JUNE 2025 🔥
   </div>
 }
