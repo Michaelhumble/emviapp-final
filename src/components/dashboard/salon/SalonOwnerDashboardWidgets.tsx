@@ -21,8 +21,8 @@ interface SalonDashboardData {
 }
 
 const SalonOwnerDashboardWidgets = () => {
-  // VISUAL BANNER FOR IDENTIFICATION
-  console.log('🔍 RENDERING: src/components/dashboard/salon/SalonOwnerDashboardWidgets.tsx');
+  // MASSIVE VISUAL CONFIRMATION BANNER
+  console.log('🚀 PREMIUM SALON DASHBOARD WIDGETS COMPONENT LOADED! 🚀');
   
   const { userProfile, user } = useAuth();
   
@@ -79,13 +79,17 @@ const SalonOwnerDashboardWidgets = () => {
   
   return (
     <FallbackBoundary>
-      {/* VISUAL BANNER FOR IDENTIFICATION */}
-      <div className="w-full bg-purple-600 text-white text-center py-4 text-xl font-bold">
-        🔍 THIS IS src/components/dashboard/salon/SalonOwnerDashboardWidgets.tsx
+      {/* GIANT UNMISTAKABLE PREMIUM DASHBOARD BANNER */}
+      <div className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white text-center py-8 mb-6 rounded-lg shadow-2xl border-4 border-yellow-400">
+        <h1 className="text-4xl font-black mb-2">🚀 PREMIUM SALON DASHBOARD ACTIVE! 🚀</h1>
+        <p className="text-xl font-bold">SalonOwnerDashboardWidgets.tsx Component Successfully Loaded</p>
+        <p className="text-lg mt-2">If you see this banner, the premium dashboard swap worked!</p>
       </div>
       
       <div className="space-y-6">
-        <h2 className="text-2xl font-serif">Salon Owner Dashboard</h2>
+        <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          Premium Salon Owner Dashboard
+        </h2>
         
         {/* Enhanced Salon Dashboard */}
         <FallbackBoundary>

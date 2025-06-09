@@ -4,17 +4,17 @@ import { useAuth } from "@/context/auth";
 import { SalonProvider } from "@/context/salon";
 import Layout from "@/components/layout/Layout";
 import SalonOwnerDashboardWidgets from "@/components/dashboard/salon/SalonOwnerDashboardWidgets";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileCompletionBar from "@/components/profile/ProfileCompletionBar";
 
 const SalonDashboardPage = () => {
   const { userProfile } = useAuth();
-  const [activeTab, setActiveTab] = React.useState("overview");
   
   useEffect(() => {
     document.title = "Premium Salon Dashboard | EmviApp";
   }, []);
+
+  console.log('🏪 SALON DASHBOARD PAGE LOADED - SHOULD SHOW PREMIUM WIDGETS');
 
   return (
     <Layout>
