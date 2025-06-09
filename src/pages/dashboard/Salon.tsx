@@ -1,3 +1,4 @@
+
 {/* GIANT TEST BANNER TO IDENTIFY ACTIVE DASHBOARD PAGE */}
 <div className="w-full bg-gradient-to-r from-yellow-500 to-green-500 text-black text-center py-8 text-4xl font-black shadow-2xl border-4 border-yellow-400">
   🚨 TEST123 - SALON PAGE COMPONENT 🚨
