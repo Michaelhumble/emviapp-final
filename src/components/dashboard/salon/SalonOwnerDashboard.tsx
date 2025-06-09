@@ -1,530 +1,253 @@
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { useAuth } from '@/context/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
-  Crown, 
-  TrendingUp, 
-  Users, 
   Calendar, 
-  Star, 
+  Users, 
+  TrendingUp, 
   DollarSign, 
-  Heart,
-  Zap,
-  Gift,
-  MessageCircle,
+  Star, 
   Bell,
   Plus,
-  ChevronRight,
+  MessageCircle,
+  BarChart3,
+  Gift,
+  Crown,
   Sparkles,
-  Target,
-  Award,
-  Rocket,
-  Eye,
-  Share2
+  Phone,
+  Mail,
+  MapPin
 } from 'lucide-react';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
-
-interface SalonStats {
-  dailyRevenue: number;
-  weeklyBookings: number;
-  activeStaff: number;
-  customerRetention: number;
-  reviewScore: number;
-  newClients: number;
-  viralScore: number;
-}
-
-interface StaffMember {
-  id: string;
-  name: string;
-  avatar: string;
-  bookings: number;
-  rating: number;
-  earnings: number;
-}
-
-interface ActivityItem {
-  id: string;
-  type: 'booking' | 'review' | 'payment' | 'achievement';
-  message: string;
-  timestamp: Date;
-  icon: React.ReactNode;
-}
 
 const SalonOwnerDashboard = () => {
-  const { userProfile, user } = useAuth();
-  const [stats, setStats] = useState<SalonStats>({
-    dailyRevenue: 2450,
-    weeklyBookings: 84,
-    activeStaff: 6,
-    customerRetention: 89,
-    reviewScore: 4.8,
-    newClients: 12,
-    viralScore: 94
-  });
-
-  const [topStaff] = useState<StaffMember[]>([
-    { id: '1', name: 'Sarah Chen', avatar: '/placeholder-avatar.jpg', bookings: 28, rating: 4.9, earnings: 3200 },
-    { id: '2', name: 'Maria Rodriguez', avatar: '/placeholder-avatar.jpg', bookings: 25, rating: 4.8, earnings: 2890 },
-    { id: '3', name: 'Emily Johnson', avatar: '/placeholder-avatar.jpg', bookings: 22, rating: 4.7, earnings: 2650 }
-  ]);
-
-  const [recentActivity] = useState<ActivityItem[]>([
-    { 
-      id: '1', 
-      type: 'booking', 
-      message: 'New booking: Jessica M. with Sarah Chen', 
-      timestamp: new Date(Date.now() - 300000),
-      icon: <Calendar className="h-4 w-4 text-blue-500" />
-    },
-    { 
-      id: '2', 
-      type: 'review', 
-      message: 'Sarah Chen received a 5-star review!', 
-      timestamp: new Date(Date.now() - 600000),
-      icon: <Star className="h-4 w-4 text-yellow-500" />
-    },
-    { 
-      id: '3', 
-      type: 'payment', 
-      message: 'Payment received: $180 from Maria K.', 
-      timestamp: new Date(Date.now() - 900000),
-      icon: <DollarSign className="h-4 w-4 text-green-500" />
-    }
-  ]);
-
-  const [currentTip, setCurrentTip] = useState(0);
-  const businessTips = [
-    "💡 Offer a loyalty program to increase customer retention by 25%",
-    "🚀 Staff with 4.8+ ratings book 40% more appointments",
-    "✨ Salons with active social media see 60% more new clients",
-    "🎯 Peak booking times: Tuesday-Thursday, 10am-2pm"
-  ];
-
-  useEffect(() => {
-    console.log('🏢 SalonOwnerDashboard rendered for user:', user?.email, userProfile?.role);
-    
-    const tipInterval = setInterval(() => {
-      setCurrentTip((prev) => (prev + 1) % businessTips.length);
-    }, 8000);
-
-    return () => clearInterval(tipInterval);
-  }, [user, userProfile, businessTips.length]);
-
-  const handleQuickAction = (action: string) => {
-    toast.success(`${action} feature opening soon! 🚀`);
-  };
-
-  const handleInviteStaff = () => {
-    toast.success("Staff invitation link copied! Earn $100 per successful invite 💰");
-  };
-
-  const handleUpgrade = () => {
-    toast.success("Premium features coming soon! You're on the VIP early access list ✨");
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
-
-  const formatTimeAgo = (date: Date) => {
-    const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.floor(hours / 24)}d ago`;
-  };
-
-  const salonName = userProfile?.salon_name || userProfile?.full_name || 'Your Salon';
-  const ownerName = userProfile?.full_name || 'Salon Owner';
+  const { user, userProfile, userRole } = useAuth();
+  
+  // GIANT DEBUG BANNER AND CONSOLE LOG
+  console.log('🚨 RENDERING DASHBOARD FOR ROLE:', userRole, '— USING FILE: SalonOwnerDashboard.tsx (src/components/dashboard/salon/SalonOwnerDashboard.tsx)');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
-      {/* Premium Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-blue-600/10 to-emerald-600/10" />
-        <div className="relative px-4 sm:px-6 lg:px-8 py-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 ring-4 ring-purple-200">
-                  <AvatarImage src={userProfile?.avatar_url} />
-                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl font-bold">
-                    {salonName.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    Welcome back, {ownerName}! 👋
-                  </h1>
-                  <p className="text-xl text-gray-600 font-medium">{salonName}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200">
-                      <Crown className="h-3 w-3 mr-1" />
-                      Premium Salon
-                    </Badge>
-                    <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200">
-                      Viral Score: {stats.viralScore}%
-                    </Badge>
-                  </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
+      {/* GIANT DEBUG BANNER */}
+      <div className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-8 px-6 text-center shadow-xl">
+        <h1 className="text-4xl font-black mb-2">🏢 SALON OWNER DASHBOARD LOADED</h1>
+        <p className="text-xl font-bold">FILE: SalonOwnerDashboard.tsx</p>
+        <p className="text-lg">PATH: src/components/dashboard/salon/SalonOwnerDashboard.tsx</p>
+        <p className="text-lg">USER ROLE: {userRole} | USER: {user?.email}</p>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-pink-800 rounded-3xl p-8 text-white shadow-2xl">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+            <Avatar className="w-20 h-20 border-4 border-white/20">
+              <AvatarImage src={userProfile?.avatar_url} />
+              <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
+                {userProfile?.salon_name?.[0] || 'S'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center md:text-left flex-1">
+              <h1 className="text-4xl font-bold mb-2">
+                {userProfile?.salon_name || 'Your Premium Salon'}
+              </h1>
+              <p className="text-xl opacity-90 mb-4">
+                Welcome back! Your business is thriving ✨
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>Los Angeles, CA</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  <span>12 Staff Members</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4" />
+                  <span>4.9 Rating</span>
                 </div>
               </div>
-              
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
-                  onClick={handleUpgrade}
-                >
-                  <Rocket className="h-5 w-5 mr-2" />
-                  Unlock Premium Features
-                </Button>
-              </motion.div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-yellow-300">$12,450</div>
+              <div className="text-sm opacity-80">This Month</div>
+              <Badge className="mt-2 bg-green-500 text-white">
+                <TrendingUp className="w-3 h-3 mr-1" />
+                +23%
+              </Badge>
             </div>
           </div>
         </div>
-      </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        {/* Business Intelligence KPIs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-        >
-          <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-emerald-600 text-sm font-medium">Daily Revenue</p>
-                  <p className="text-2xl lg:text-3xl font-bold text-emerald-700">{formatCurrency(stats.dailyRevenue)}</p>
-                  <div className="flex items-center text-emerald-600 text-xs">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    +12% vs yesterday
-                  </div>
-                </div>
-                <DollarSign className="h-8 w-8 text-emerald-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-600 text-sm font-medium">Weekly Bookings</p>
-                  <p className="text-2xl lg:text-3xl font-bold text-blue-700">{stats.weeklyBookings}</p>
-                  <div className="flex items-center text-blue-600 text-xs">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    +8% vs last week
-                  </div>
-                </div>
-                <Calendar className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-600 text-sm font-medium">Active Staff</p>
-                  <p className="text-2xl lg:text-3xl font-bold text-purple-700">{stats.activeStaff}</p>
-                  <div className="flex items-center text-purple-600 text-xs">
-                    <Users className="h-3 w-3 mr-1" />
-                    All online today
-                  </div>
-                </div>
-                <Users className="h-8 w-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-yellow-600 text-sm font-medium">Review Score</p>
-                  <p className="text-2xl lg:text-3xl font-bold text-yellow-700">{stats.reviewScore}</p>
-                  <div className="flex items-center text-yellow-600 text-xs">
-                    <Star className="h-3 w-3 mr-1" />
-                    148 reviews this month
-                  </div>
-                </div>
-                <Star className="h-8 w-8 text-yellow-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Operations Center */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-2 space-y-6"
-          >
-            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-bold flex items-center gap-2">
-                  <Zap className="h-6 w-6 text-blue-500" />
-                  Operations Center
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[
-                    { name: 'New Booking', icon: Plus, color: 'blue' },
-                    { name: 'Add Staff', icon: Users, color: 'purple' },
-                    { name: 'Calendar', icon: Calendar, color: 'emerald' },
-                    { name: 'Reviews', icon: Star, color: 'yellow' },
-                    { name: 'Payroll', icon: DollarSign, color: 'green' },
-                    { name: 'Messages', icon: MessageCircle, color: 'pink' }
-                  ].map((action) => (
-                    <motion.div
-                      key={action.name}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button
-                        variant="outline"
-                        className="h-20 w-full flex-col gap-2 bg-white/50 hover:bg-white/80 border-2 hover:border-purple-200"
-                        onClick={() => handleQuickAction(action.name)}
-                      >
-                        <action.icon className={`h-6 w-6 text-${action.color}-500`} />
-                        <span className="text-sm font-medium">{action.name}</span>
-                      </Button>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Staff Leaderboard */}
-            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-bold flex items-center gap-2">
-                  <Award className="h-6 w-6 text-purple-500" />
-                  Top Performers This Week
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {topStaff.map((staff, index) => (
-                    <motion.div
-                      key={staff.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <Avatar className="h-12 w-12">
-                            <AvatarImage src={staff.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                              {staff.name.split(' ').map(n => n[0]).join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          {index === 0 && (
-                            <Crown className="absolute -top-2 -right-2 h-5 w-5 text-yellow-500" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{staff.name}</p>
-                          <p className="text-sm text-gray-600">{staff.bookings} bookings • {staff.rating}⭐</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-emerald-600">{formatCurrency(staff.earnings)}</p>
-                        <p className="text-xs text-gray-500">this week</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-                <Button 
-                  className="w-full mt-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  onClick={handleInviteStaff}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Invite New Staff Member
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Right Sidebar */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="space-y-6"
-          >
-            {/* FOMO Growth Engine */}
-            <Card className="bg-gradient-to-br from-purple-500 to-blue-600 text-white border-0 shadow-xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Gift className="h-5 w-5" />
-                  Earn $100 Per Staff Invite!
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-purple-100 text-sm mb-4">
-                  Your referral program is live! Invite talented artists and earn rewards.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span>Progress this month</span>
-                    <span>2/5 invites</span>
-                  </div>
-                  <Progress value={40} className="bg-purple-400/30" />
-                  <p className="text-xs text-purple-200">3 more invites to unlock $500 bonus!</p>
-                </div>
-                <Button 
-                  className="w-full mt-4 bg-white text-purple-600 hover:bg-purple-50"
-                  onClick={handleInviteStaff}
-                >
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share Invite Link
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Live Activity Feed */}
-            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Bell className="h-5 w-5 text-blue-500" />
-                  Live Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentActivity.map((activity) => (
-                    <motion.div
-                      key={activity.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
-                    >
-                      <div className="mt-0.5">{activity.icon}</div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">{activity.message}</p>
-                        <p className="text-xs text-gray-500">{formatTimeAgo(activity.timestamp)}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Daily Inspiration */}
-            <Card className="bg-gradient-to-br from-emerald-50 to-blue-50 border-emerald-200">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-emerald-500" />
-                  Business Insight
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AnimatePresence mode="wait">
-                  <motion.p
-                    key={currentTip}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="text-sm text-gray-700 mb-4"
-                  >
-                    {businessTips[currentTip]}
-                  </motion.p>
-                </AnimatePresence>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full border-emerald-200 hover:bg-emerald-50"
-                  onClick={() => toast.success("Pro tips and insights coming to your inbox! 📈")}
-                >
-                  <Target className="h-4 w-4 mr-2" />
-                  Get More Insights
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Coming Soon Features */}
-            <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Eye className="h-5 w-5 text-orange-500" />
-                  Coming Soon - Vote Now!
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {[
-                    { name: 'SMS Marketing', votes: 247 },
-                    { name: 'POS Integration', votes: 198 },
-                    { name: 'AI Analytics', votes: 156 }
-                  ].map((feature) => (
-                    <div key={feature.name} className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{feature.name}</span>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        className="text-xs border-orange-200 hover:bg-orange-50"
-                        onClick={() => toast.success(`Voted for ${feature.name}! 🗳️`)}
-                      >
-                        Vote ({feature.votes})
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Mobile Sticky Footer */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-2">
-        <div className="flex justify-around">
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: 'Book', icon: Plus, color: 'blue' },
-            { name: 'Staff', icon: Users, color: 'purple' },
-            { name: 'Calendar', icon: Calendar, color: 'emerald' },
-            { name: 'Messages', icon: MessageCircle, color: 'pink' }
-          ].map((action) => (
-            <Button
-              key={action.name}
-              variant="ghost"
-              size="sm"
-              className="flex-col h-auto py-2 px-3"
-              onClick={() => handleQuickAction(action.name)}
-            >
-              <action.icon className={`h-5 w-5 text-${action.color}-500 mb-1`} />
-              <span className="text-xs">{action.name}</span>
-            </Button>
+            { label: 'Today\'s Bookings', value: '24', icon: Calendar, color: 'from-blue-500 to-blue-600', change: '+12%' },
+            { label: 'Active Staff', value: '12', icon: Users, color: 'from-green-500 to-green-600', change: '+2' },
+            { label: 'Monthly Revenue', value: '$12.4K', icon: DollarSign, color: 'from-purple-500 to-purple-600', change: '+23%' },
+            { label: 'Client Reviews', value: '98', icon: Star, color: 'from-yellow-500 to-yellow-600', change: '+15' }
+          ].map((stat, idx) => (
+            <Card key={idx} className="relative overflow-hidden border-0 shadow-xl">
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-10`}></div>
+              <CardContent className="p-6 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <stat.icon className={`w-8 h-8 bg-gradient-to-br ${stat.color} text-white p-1.5 rounded-lg`} />
+                  <Badge variant="secondary" className="text-green-600 bg-green-50">
+                    {stat.change}
+                  </Badge>
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                <div className="text-sm text-gray-600">{stat.label}</div>
+              </CardContent>
+            </Card>
           ))}
         </div>
+
+        {/* Operations Center */}
+        <Card className="shadow-xl border-0">
+          <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <BarChart3 className="w-6 h-6" />
+              Operations Center
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {[
+                { label: 'Add Booking', icon: Plus, color: 'bg-blue-500' },
+                { label: 'Manage Staff', icon: Users, color: 'bg-green-500' },
+                { label: 'Calendar', icon: Calendar, color: 'bg-purple-500' },
+                { label: 'Reviews', icon: Star, color: 'bg-yellow-500' },
+                { label: 'Messages', icon: MessageCircle, color: 'bg-pink-500' },
+                { label: 'Analytics', icon: BarChart3, color: 'bg-indigo-500' }
+              ].map((action, idx) => (
+                <button
+                  key={idx}
+                  className="flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-gray-100 hover:border-purple-200 hover:shadow-lg transition-all duration-300 group"
+                >
+                  <div className={`${action.color} text-white p-3 rounded-full group-hover:scale-110 transition-transform`}>
+                    <action.icon className="w-6 h-6" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 text-center">{action.label}</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* FOMO & Growth Engine */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="relative overflow-hidden border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-orange-500 opacity-10"></div>
+            <CardContent className="p-6 relative">
+              <div className="flex items-center gap-3 mb-4">
+                <Gift className="w-8 h-8 text-yellow-600" />
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Staff Referral Rewards</h3>
+                  <p className="text-sm text-gray-600">Earn $100 for each staff member you onboard!</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Progress to next reward</span>
+                  <span className="text-sm font-semibold">2/3 referrals</span>
+                </div>
+                <Progress value={67} className="h-3" />
+                <button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                  Invite Staff Member
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative overflow-hidden border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-500 opacity-10"></div>
+            <CardContent className="p-6 relative">
+              <div className="flex items-center gap-3 mb-4">
+                <Crown className="w-8 h-8 text-purple-600" />
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">VIP Upgrade Available</h3>
+                  <p className="text-sm text-gray-600">Unlock premium features & analytics</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="text-2xl font-bold text-purple-600">$49/month</div>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Advanced Analytics</li>
+                  <li>• SMS Marketing</li>
+                  <li>• Priority Support</li>
+                </ul>
+                <button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                  Upgrade Now
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Live Activity Feed */}
+        <Card className="shadow-xl border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="w-5 h-5" />
+              Live Activity Feed
+              <Badge className="ml-auto bg-red-500 text-white animate-pulse">
+                Live
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              {[
+                { text: 'New booking: Sarah M. scheduled for tomorrow', time: '2 min ago', color: 'bg-green-100 text-green-800' },
+                { text: 'Staff member Jessica received 5-star review', time: '5 min ago', color: 'bg-yellow-100 text-yellow-800' },
+                { text: 'Payment received: $125 from client booking', time: '12 min ago', color: 'bg-blue-100 text-blue-800' },
+                { text: 'New staff application received', time: '1 hour ago', color: 'bg-purple-100 text-purple-800' }
+              ].map((activity, idx) => (
+                <div key={idx} className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-900">{activity.text}</p>
+                    <p className="text-xs text-gray-500">{activity.time}</p>
+                  </div>
+                  <Badge className={activity.color}>
+                    New
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Coming Soon Features */}
+        <Card className="shadow-xl border-0">
+          <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="w-6 h-6" />
+              Coming Soon - VIP Early Access
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { title: 'AI Analytics', desc: 'Predictive business insights', icon: BarChart3 },
+                { title: 'POS System', desc: 'Integrated point of sale', icon: DollarSign },
+                { title: 'SMS Marketing', desc: 'Automated client campaigns', icon: Phone }
+              ].map((feature, idx) => (
+                <div key={idx} className="p-4 rounded-xl border-2 border-dashed border-gray-300 text-center opacity-75">
+                  <feature.icon className="w-8 h-8 mx-auto mb-2 text-gray-500" />
+                  <h4 className="font-semibold text-gray-700">{feature.title}</h4>
+                  <p className="text-sm text-gray-500 mb-3">{feature.desc}</p>
+                  <Badge variant="outline">Coming Soon</Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
