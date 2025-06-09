@@ -20,6 +20,11 @@ const SalonDashboardPage = () => {
 
   return (
     <Layout>
+      {/* VISUAL BANNER FOR IDENTIFICATION */}
+      <div className="w-full bg-red-600 text-white text-center py-4 text-xl font-bold">
+        🔍 THIS IS src/pages/dashboard/Salon.tsx
+      </div>
+      
       <SalonProvider>
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import SalonBoostBanner from "@/components/salon/SalonBoostBanner";
@@ -20,6 +21,9 @@ interface SalonDashboardData {
 }
 
 const SalonOwnerDashboardWidgets = () => {
+  // VISUAL BANNER FOR IDENTIFICATION
+  console.log('🔍 RENDERING: src/components/dashboard/salon/SalonOwnerDashboardWidgets.tsx');
+  
   const { userProfile, user } = useAuth();
   
   const { data: dashboardData, isLoading } = useSafeQuery<SalonDashboardData>({
@@ -75,6 +79,11 @@ const SalonOwnerDashboardWidgets = () => {
   
   return (
     <FallbackBoundary>
+      {/* VISUAL BANNER FOR IDENTIFICATION */}
+      <div className="w-full bg-purple-600 text-white text-center py-4 text-xl font-bold">
+        🔍 THIS IS src/components/dashboard/salon/SalonOwnerDashboardWidgets.tsx
+      </div>
+      
       <div className="space-y-6">
         <h2 className="text-2xl font-serif">Salon Owner Dashboard</h2>
         
