@@ -16,20 +16,23 @@ import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashb
 export default function SalonDashboard() {
   // Debug logging for verification
   useEffect(() => {
-    console.log('🟪 EMVI.APP SALON DASHBOARD REBUILD LOADED - JUNE 2025:', new Date().toISOString());
-    console.log('🟪 Dashboard components initialized successfully');
+    console.log('🟥 TESTING IF THIS IS THE RIGHT FILE - RED BANNER TEST:', new Date().toISOString());
+    console.log('🟥 If you see this red banner, we found the right file!');
   }, []);
 
   return (
     <Layout>
-      {/* Huge Debug Banner */}
-      <div className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 px-6 mb-6">
+      {/* HUGE RED TEST BANNER */}
+      <div className="w-full bg-red-600 text-white py-8 px-6 mb-6 border-4 border-red-800">
         <div className="container mx-auto text-center">
-          <h1 className="text-2xl md:text-3xl font-bold">
-            🟪 EMVI.APP SALON DASHBOARD REBUILD (JUNE 2025) — TESTING LIVE! 🟪
+          <h1 className="text-4xl md:text-5xl font-bold animate-pulse">
+            🟥 RED BANNER TEST - IS THIS THE RIGHT FILE? 🟥
           </h1>
-          <p className="text-sm mt-2 opacity-90">
-            Timestamp: {new Date().toISOString()} | All Features Active | Mobile Optimized
+          <p className="text-xl mt-4 font-bold">
+            If you see this RED BANNER, we found the correct salon dashboard file!
+          </p>
+          <p className="text-lg mt-2">
+            Timestamp: {new Date().toISOString()}
           </p>
         </div>
       </div>
@@ -66,11 +69,10 @@ export default function SalonDashboard() {
         <SalonFutureFeatures />
 
         {/* Debug Footer */}
-        <Card className="border-purple-200 bg-purple-50">
+        <Card className="border-red-500 bg-red-100">
           <CardContent className="p-4 text-center">
-            <p className="text-sm text-purple-700">
-              🟪 Debug: Salon Dashboard Rebuild Complete | All Sections Loaded | 
-              Components: Header, Stats, Credits, Referrals, Jobs, Bookings, Team, Services, Future Features
+            <p className="text-lg font-bold text-red-800">
+              🟥 RED TEST: If you see this, we're editing the right file! 🟥
             </p>
           </CardContent>
         </Card>
