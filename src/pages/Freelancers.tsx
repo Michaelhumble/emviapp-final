@@ -1,442 +1,474 @@
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { 
-  Star, 
-  Users, 
-  TrendingUp, 
-  Award, 
-  Heart, 
-  Sparkles, 
-  Crown, 
-  Zap,
-  ArrowRight,
-  Timer,
-  Trophy,
-  Camera,
-  DollarSign,
-  MapPin
-} from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import { motion } from 'framer-motion';
+import { MessageSquare, Users, TrendingUp, Star, Heart, ThumbsUp, MessageCircle, Award, Sparkles, Crown, Globe, Clock, UserPlus, ChevronRight, Send, Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 
-const FreelancersPage = () => {
-  const [joinCount, setJoinCount] = useState(8547);
-  const [activeUsers, setActiveUsers] = useState(1243);
-  const [currentActivity, setCurrentActivity] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(72);
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [city, setCity] = useState('');
+const CommunityPage = () => {
+  const [onlineCount, setOnlineCount] = useState(487);
+  const [memberCount, setMemberCount] = useState(12847);
+  const [activeQuestions, setActiveQuestions] = useState(23);
 
-  // Rotating headlines
-  const headlines = [
-    "Where Beauty Pros, Salons & Clients Unite",
-    "The Most Trusted, Inspiring, and Rewarding Beauty Community on Earth",
-    "Your Success Story Starts Here"
-  ];
-  const [currentHeadline, setCurrentHeadline] = useState(0);
-
-  // Live activity feed
-  const activities = [
-    "Ngoc just landed a job at Diamond Nails! 💎",
-    "Beauty Haus Salon upgraded to Pro Membership! 🚀",
-    "Maria earned $2,400 this week! 💰",
-    "Sunset Spa got 5 new bookings today! ⭐",
-    "Kevin completed his 100th service! 🏆",
-    "Luxury Nails is now trending in Houston! 🔥"
-  ];
-
-  // Success stories
-  const successStories = [
-    {
-      name: "Sarah Chen",
-      role: "Nail Artist",
-      story: "Went from $30K to $85K in 6 months",
-      image: "/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png",
-      badge: "Top Earner"
-    },
-    {
-      name: "Diamond Nails",
-      role: "Premium Salon",
-      story: "300% booking increase in 3 months",
-      image: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
-      badge: "Most Popular"
-    },
-    {
-      name: "Mike Rodriguez",
-      role: "Freelancer",
-      story: "Booked solid for next 2 months",
-      image: "/lovable-uploads/4963d98c-613d-4a9a-99a4-7fa4b2e22717.png",
-      badge: "Most Hired"
-    }
-  ];
-
-  // Leaderboard
-  const leaderboard = [
-    { name: "Luna Beauty", earnings: "$12,500", type: "salon" },
-    { name: "Alex Kim", earnings: "$8,900", type: "artist" },
-    { name: "Glamour Studio", earnings: "$7,600", type: "salon" }
-  ];
-
+  // Simulate live updates
   useEffect(() => {
-    // Rotate headlines
-    const headlineInterval = setInterval(() => {
-      setCurrentHeadline((prev) => (prev + 1) % headlines.length);
-    }, 4000);
-
-    // Rotate activities
-    const activityInterval = setInterval(() => {
-      setCurrentActivity((prev) => (prev + 1) % activities.length);
-    }, 3000);
-
-    // Update counters
-    const counterInterval = setInterval(() => {
-      setJoinCount(prev => prev + Math.floor(Math.random() * 3));
-      setActiveUsers(prev => prev + Math.floor(Math.random() * 5) - 2);
-    }, 8000);
-
-    // Countdown timer
-    const timerInterval = setInterval(() => {
-      setTimeLeft(prev => prev > 0 ? prev - 1 : 72);
-    }, 3600000); // Update every hour
-
-    return () => {
-      clearInterval(headlineInterval);
-      clearInterval(activityInterval);
-      clearInterval(counterInterval);
-      clearInterval(timerInterval);
-    };
+    const interval = setInterval(() => {
+      setOnlineCount(prev => prev + Math.floor(Math.random() * 3) - 1);
+      setMemberCount(prev => prev + Math.floor(Math.random() * 2));
+      setActiveQuestions(prev => prev + Math.floor(Math.random() * 2) - 1);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  const handleJoinNow = () => {
-    if (email && name && city) {
-      // Add confetti effect here in real implementation
-      alert(`Welcome to EmviApp Community, ${name}! 🎉`);
+  const hotQuestions = [
+    {
+      id: 1,
+      question: "What's the best way to build client loyalty as a new nail technician?",
+      author: "Sarah M.",
+      role: "Nail Technician",
+      answers: 12,
+      likes: 34,
+      timeAgo: "2 hours ago",
+      trending: true
+    },
+    {
+      id: 2,
+      question: "How do you handle difficult clients professionally?",
+      author: "Mike L.",
+      role: "Salon Owner",
+      answers: 28,
+      likes: 67,
+      timeAgo: "4 hours ago",
+      trending: true
+    },
+    {
+      id: 3,
+      question: "Best marketing strategies for small salons in 2025?",
+      author: "Lisa K.",
+      role: "Business Owner",
+      answers: 19,
+      likes: 45,
+      timeAgo: "6 hours ago",
+      trending: false
     }
-  };
+  ];
+
+  const successStories = [
+    {
+      name: "Jennifer R.",
+      role: "Freelance Artist",
+      story: "EmviApp helped me connect with 5 new salons in my area. My income increased by 40% in 3 months!",
+      verified: true
+    },
+    {
+      name: "Golden Nails Spa",
+      role: "Salon Owner",
+      story: "We found 3 amazing artists through EmviApp. Our booking rate went up 25% this quarter.",
+      verified: true
+    }
+  ];
+
+  const featureRequests = [
+    { id: 1, title: "Mobile App for iOS/Android", votes: 234, trending: true },
+    { id: 2, title: "Advanced Search Filters", votes: 187, trending: false },
+    { id: 3, title: "Video Portfolio Uploads", votes: 156, trending: true },
+    { id: 4, title: "Group Messaging for Teams", votes: 143, trending: false }
+  ];
 
   return (
-    <Layout>
-      {/* Debug Banner */}
-      <div className="bg-red-500 text-white text-center py-3 px-4 font-bold text-lg animate-pulse">
-        🚨 EMVI.APP COMMUNITY PAGE REBUILD (JUNE 2025) — REPLACING FREELANCERS 🚨
-      </div>
-
+    <Layout hideFooter={true}>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
-        {/* Hero/FOMO Section */}
-        <section className="relative overflow-hidden py-20 px-4">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm"></div>
-          
+        {/* Debug Banner */}
+        <div className="bg-red-600 text-white text-center py-2 px-4 font-bold text-sm">
+          🔧 EMVI.APP COMMUNITY PAGE UPGRADE (JUNE 2025) — REAL FOMO & Q&A
+        </div>
+
+        {/* Hero Section */}
+        <section className="relative py-20 px-4 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-pink-600/10"></div>
           <div className="container mx-auto text-center relative z-10">
             <motion.div
-              key={currentHeadline}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mb-8"
+              transition={{ duration: 0.8 }}
             >
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                {headlines[currentHeadline]}
+              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+                Where Beauty Pros, Salons & Clients Unite
               </h1>
-            </motion.div>
-
-            <div className="text-xl md:text-2xl text-gray-700 mb-8 space-y-2">
-              <motion.p
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                Join the fastest-growing network of salons, artists, and clients
-              </motion.p>
-              <p className="text-lg">Thousands of success stories, unlimited opportunity</p>
-            </div>
-
-            {/* Live Counters */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <motion.div
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="bg-white/80 backdrop-blur-md rounded-lg p-4 shadow-lg"
-              >
-                <div className="text-2xl font-bold text-purple-600">{joinCount.toLocaleString()}</div>
-                <div className="text-sm text-gray-600">Members Joined</div>
-              </motion.div>
-              
-              <div className="bg-white/80 backdrop-blur-md rounded-lg p-4 shadow-lg">
-                <div className="text-2xl font-bold text-green-600">{activeUsers}</div>
-                <div className="text-sm text-gray-600">Online Now</div>
+              <div className="text-xl md:text-2xl text-gray-600 mb-8 space-y-2">
+                <motion.p
+                  key={Math.floor(Date.now() / 3000)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  The most trusted, inspiring, and rewarding beauty community
+                </motion.p>
               </div>
               
-              <div className="bg-white/80 backdrop-blur-md rounded-lg p-4 shadow-lg">
-                <div className="text-2xl font-bold text-blue-600">$2.1M+</div>
-                <div className="text-sm text-gray-600">Earned This Month</div>
+              <div className="flex flex-wrap justify-center gap-6 mb-8 text-sm">
+                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>{onlineCount} online now</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2">
+                  <Users className="w-4 h-4 text-purple-600" />
+                  <span>{memberCount.toLocaleString()} members</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2">
+                  <MessageSquare className="w-4 h-4 text-blue-600" />
+                  <span>{activeQuestions} active discussions</span>
+                </div>
               </div>
-              
-              <div className="bg-white/80 backdrop-blur-md rounded-lg p-4 shadow-lg">
-                <div className="text-2xl font-bold text-pink-600">4,892</div>
-                <div className="text-sm text-gray-600">Jobs Filled</div>
-              </div>
-            </div>
 
-            {/* FOMO Scarcity Banner */}
-            <motion.div
-              animate={{ boxShadow: ['0 0 20px rgba(255,215,0,0.5)', '0 0 40px rgba(255,215,0,0.8)', '0 0 20px rgba(255,215,0,0.5)'] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-lg mb-8 inline-block"
-            >
-              <div className="flex items-center gap-2">
-                <Crown className="h-6 w-6" />
-                <span className="font-bold">Founding Member Special!</span>
-                <Timer className="h-5 w-5" />
-                <span>{timeLeft}h left</span>
-              </div>
-              <div className="text-sm mt-1">Only 147 VIP spots remaining this week!</div>
-            </motion.div>
-
-            {/* Main CTA */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-6 text-xl font-bold shadow-2xl animate-pulse"
-                onClick={() => document.getElementById('join-form')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                <Sparkles className="mr-2 h-6 w-6" />
-                Reserve Your Spot Now!
-                <ArrowRight className="ml-2 h-6 w-6" />
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                <UserPlus className="w-5 h-5 mr-2" />
+                Join the Community
               </Button>
             </motion.div>
           </div>
         </section>
 
-        {/* Live Activity Feed */}
-        <section className="py-12 px-4 bg-white/50 backdrop-blur-sm">
+        {/* Community Board / Q&A Section */}
+        <section className="py-16 px-4">
           <div className="container mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">🔥 Live Community Activity</h2>
-              <div className="bg-gradient-to-r from-green-100 to-blue-100 p-4 rounded-lg inline-block">
-                <AnimatePresence mode="wait">
-                  <motion.p
-                    key={currentActivity}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    className="text-lg font-medium"
-                  >
-                    {activities[currentActivity]}
-                  </motion.p>
-                </AnimatePresence>
-              </div>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-4">Community Board</h2>
+              <p className="text-xl text-gray-600">Ask questions, share wisdom, grow together</p>
             </div>
 
-            {/* Trending Now Bar */}
-            <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white p-3 rounded-lg text-center mb-8">
-              <div className="flex items-center justify-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                <span className="font-bold">Trending Now:</span>
-                <span>Nail Art Competitions • Salon Partnerships • VIP Memberships</span>
-              </div>
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              {/* Hot Questions */}
+              <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-red-500" />
+                    Hot Questions
+                    <Badge variant="secondary" className="bg-red-100 text-red-600">
+                      {activeQuestions} active
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {hotQuestions.map((q) => (
+                    <motion.div
+                      key={q.id}
+                      whileHover={{ scale: 1.02 }}
+                      className="p-4 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-all cursor-pointer"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-gray-800 leading-tight">{q.question}</h4>
+                        {q.trending && <Badge className="bg-red-500 text-white text-xs">HOT</Badge>}
+                      </div>
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span>{q.author} • {q.role}</span>
+                        <span>{q.timeAgo}</span>
+                      </div>
+                      <div className="flex items-center gap-4 mt-3 text-sm">
+                        <div className="flex items-center gap-1">
+                          <MessageCircle className="w-4 h-4" />
+                          <span>{q.answers} answers</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <ThumbsUp className="w-4 h-4" />
+                          <span>{q.likes} likes</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Eye className="w-4 h-4" />
+                          <span>Seen by {Math.floor(Math.random() * 50) + 20}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Ask a Question */}
+              <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-blue-500" />
+                    Ask the Community
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Input placeholder="What's your question?" className="border-2 border-gray-200 focus:border-purple-500" />
+                    <Textarea placeholder="Share more details to get better answers..." className="border-2 border-gray-200 focus:border-purple-500 min-h-[100px]" />
+                    <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                      <Send className="w-4 h-4 mr-2" />
+                      Post Question
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
 
-        {/* Success Stories & Featured Section */}
+        {/* Direct Messaging Teaser */}
+        <section className="py-16 px-4 bg-gradient-to-r from-purple-100 to-blue-100">
+          <div className="container mx-auto text-center">
+            <Card className="max-w-2xl mx-auto backdrop-blur-sm bg-white/90 border-0 shadow-xl">
+              <CardContent className="p-8">
+                <div className="mb-6">
+                  <MessageSquare className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+                  <h3 className="text-3xl font-bold text-gray-800 mb-4">1:1 Connections Coming Soon!</h3>
+                  <p className="text-lg text-gray-600 mb-6">
+                    Direct messaging between artists, salons, and clients is in development. 
+                    Join the early access waitlist to be the first to connect!
+                  </p>
+                </div>
+                <div className="flex gap-2 max-w-md mx-auto">
+                  <Input placeholder="Enter your email for early access" className="flex-1" />
+                  <Button className="bg-purple-600 hover:bg-purple-700">
+                    Join Waitlist
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-500 mt-4">
+                  {Math.floor(Math.random() * 500) + 200} people already signed up!
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Feature Voting */}
         <section className="py-16 px-4">
           <div className="container mx-auto">
-            <h2 className="text-4xl font-bold text-center mb-12">✨ Featured Success Stories</h2>
-            
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-4">Help Shape Our Future</h2>
+              <p className="text-xl text-gray-600">Vote for the features you want to see next</p>
+            </div>
+
+            <div className="max-w-4xl mx-auto">
+              <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="w-5 h-5 text-yellow-500" />
+                    Feature Requests
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {featureRequests.map((feature) => (
+                      <motion.div
+                        key={feature.id}
+                        whileHover={{ scale: 1.01 }}
+                        className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-all"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1 hover:bg-purple-50"
+                          >
+                            <ThumbsUp className="w-4 h-4" />
+                            {feature.votes}
+                          </Button>
+                          <span className="font-medium">{feature.title}</span>
+                          {feature.trending && <Badge className="bg-orange-100 text-orange-600">Trending</Badge>}
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                      </motion.div>
+                    ))}
+                  </div>
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold mb-2">Suggest a new feature</h4>
+                    <div className="flex gap-2">
+                      <Input placeholder="What feature would you love to see?" className="flex-1" />
+                      <Button>Submit</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Success Stories */}
+        <section className="py-16 px-4 bg-gradient-to-r from-green-50 to-blue-50">
+          <div className="container mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-4">Real Success Stories</h2>
+              <p className="text-xl text-gray-600">How EmviApp helped our community grow</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
               {successStories.map((story, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.05, rotateY: 5 }}
-                  className="relative"
-                >
-                  <Card className="overflow-hidden bg-white/80 backdrop-blur-md shadow-xl border-0">
-                    <CardContent className="p-6">
-                      <div className="relative mb-4">
-                        <img 
-                          src={story.image} 
-                          alt={story.name} 
-                          className="w-20 h-20 rounded-full mx-auto object-cover"
-                        />
-                        <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500">
-                          {story.badge}
-                        </Badge>
+                <Card key={index} className="backdrop-blur-sm bg-white/90 border-0 shadow-xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h4 className="font-bold text-lg">{story.name}</h4>
+                        <p className="text-gray-600">{story.role}</p>
                       </div>
-                      <h3 className="text-xl font-bold text-center mb-2">{story.name}</h3>
-                      <p className="text-gray-600 text-center mb-3">{story.role}</p>
-                      <p className="text-green-600 font-bold text-center text-lg">{story.story}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      {story.verified && (
+                        <Badge className="bg-green-100 text-green-600">
+                          <Star className="w-3 h-3 mr-1" />
+                          Verified
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">{story.story}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
-            {/* Monthly Leaderboard */}
-            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-8 rounded-2xl">
-              <h3 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2">
-                <Trophy className="h-8 w-8 text-yellow-500" />
-                This Month's Top Earners
-              </h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                {leaderboard.map((leader, index) => (
-                  <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
-                        index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-500'
-                      }`}>
-                        {index + 1}
-                      </div>
-                      <div>
-                        <div className="font-bold">{leader.name}</div>
-                        <div className="text-green-600 font-bold">{leader.earnings}</div>
-                      </div>
+            <Card className="max-w-2xl mx-auto backdrop-blur-sm bg-white/90 border-0 shadow-xl">
+              <CardContent className="p-6 text-center">
+                <h3 className="text-2xl font-bold mb-4">Share Your Story</h3>
+                <p className="text-gray-600 mb-6">
+                  Have EmviApp helped your business or career? We'd love to hear about it!
+                </p>
+                <Button className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600">
+                  Tell Your Story
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Invite & Reward System */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto">
+            <Card className="max-w-4xl mx-auto backdrop-blur-sm bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 shadow-xl">
+              <CardContent className="p-8 text-center">
+                <Crown className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
+                <h2 className="text-4xl font-bold mb-4">Invite Friends & Earn Rewards</h2>
+                <p className="text-xl mb-8 opacity-90">
+                  For every friend who joins EmviApp, you both get credits and special perks!
+                </p>
+                
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6">
+                    <h3 className="text-2xl font-bold mb-2">3 Friends</h3>
+                    <p className="mb-4">Unlock VIP Badge</p>
+                    <div className="w-full bg-white/30 rounded-full h-2">
+                      <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '60%' }}></div>
                     </div>
+                    <p className="text-sm mt-2">2 more to go!</p>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6">
+                    <h3 className="text-2xl font-bold mb-2">5 Friends</h3>
+                    <p className="mb-4">50 Free Credits</p>
+                    <div className="w-full bg-white/30 rounded-full h-2">
+                      <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '20%' }}></div>
+                    </div>
+                    <p className="text-sm mt-2">4 more to go!</p>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6">
+                    <h3 className="text-2xl font-bold mb-2">10 Friends</h3>
+                    <p className="mb-4">Pro Membership Discount</p>
+                    <div className="w-full bg-white/30 rounded-full h-2">
+                      <div className="bg-gray-400 h-2 rounded-full" style={{ width: '0%' }}></div>
+                    </div>
+                    <p className="text-sm mt-2">Not started yet</p>
+                  </div>
+                </div>
+
+                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold">
+                  <UserPlus className="w-5 h-5 mr-2" />
+                  Start Inviting Friends
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
-        {/* Community Engagement */}
-        <section className="py-16 px-4 bg-gradient-to-r from-blue-50 to-purple-50">
+        {/* Final CTA */}
+        <section className="py-20 px-4 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
           <div className="container mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-8">🗳️ You Decide What We Build Next!</h2>
-            
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              <Card className="p-6 bg-white/80 backdrop-blur-md">
-                <h3 className="text-xl font-bold mb-4">📱 Mobile App with AR Try-On</h3>
-                <div className="bg-green-200 h-4 rounded-full mb-2">
-                  <div className="bg-green-500 h-4 rounded-full w-3/4"></div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-5xl font-bold mb-6">Don't Miss Out</h2>
+              <p className="text-xl mb-8 opacity-90">
+                The community is growing fast. Join now and be part of something special.
+              </p>
+              <div className="flex flex-wrap justify-center gap-6 mb-8">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span>Community filling up fast</span>
                 </div>
-                <p className="text-sm text-gray-600">2,847 votes (74%)</p>
-              </Card>
-              
-              <Card className="p-6 bg-white/80 backdrop-blur-md">
-                <h3 className="text-xl font-bold mb-4">🎥 Live Streaming Features</h3>
-                <div className="bg-blue-200 h-4 rounded-full mb-2">
-                  <div className="bg-blue-500 h-4 rounded-full w-1/4"></div>
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4" />
+                  <span>Members from 50+ cities</span>
                 </div>
-                <p className="text-sm text-gray-600">1,023 votes (26%)</p>
-              </Card>
-            </div>
-
-            {/* Monthly Challenge */}
-            <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-8 rounded-2xl mb-8">
-              <h3 className="text-2xl font-bold mb-4">🏆 December Challenge: Nail Art of the Month</h3>
-              <p className="text-lg mb-4">Winner gets $1,000 + Feature on our homepage!</p>
-              <Button className="bg-white text-purple-600 hover:bg-gray-100">
-                Submit Your Entry
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Active 24/7</span>
+                </div>
+              </div>
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-6 rounded-full text-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300">
+                <Sparkles className="w-6 h-6 mr-2" />
+                Join EmviApp Community
               </Button>
-            </div>
-
-            {/* Referral System */}
-            <div className="bg-yellow-100 p-6 rounded-lg">
-              <h3 className="text-xl font-bold mb-4">💰 Invite Friends = Earn Rewards</h3>
-              <p className="mb-4">Get $50 credit for every friend who joins + they get VIP status!</p>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-white">
-                Start Referring Now
-              </Button>
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* Join Form */}
-        <section id="join-form" className="py-16 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-          <div className="container mx-auto max-w-2xl text-center">
-            <h2 className="text-4xl font-bold mb-4">🚀 Ready to Transform Your Career?</h2>
-            <p className="text-xl mb-8">Get early access, grow your career, and never miss an opportunity again.</p>
-            
-            <div className="bg-white/20 backdrop-blur-md p-8 rounded-2xl">
-              <div className="grid md:grid-cols-3 gap-4 mb-6">
-                <Input
-                  placeholder="Your Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="bg-white/90 text-gray-800"
-                />
-                <Input
-                  placeholder="Email Address"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/90 text-gray-800"
-                />
-                <Input
-                  placeholder="Your City"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="bg-white/90 text-gray-800"
-                />
+        {/* Single Footer */}
+        <footer className="bg-gray-50 py-12 px-4">
+          <div className="container mx-auto">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
+              <div>
+                <h3 className="font-bold text-lg mb-4">EmviApp</h3>
+                <p className="text-gray-600 mb-4">
+                  The most trusted beauty community connecting professionals and clients.
+                </p>
+                <p className="text-sm text-gray-500">
+                  Your privacy and future are protected by EmviApp.
+                </p>
               </div>
-              
-              <Button 
-                onClick={handleJoinNow}
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-4 text-lg"
-                disabled={!email || !name || !city}
-              >
-                <Zap className="mr-2 h-6 w-6" />
-                Claim My VIP Membership Now!
-              </Button>
-              
-              <p className="text-sm mt-4 text-white/80">
-                ✅ Your privacy and future are protected by EmviApp
+              <div>
+                <h4 className="font-semibold mb-4">Community</h4>
+                <ul className="space-y-2 text-gray-600">
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Ask Questions</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Success Stories</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Feature Requests</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Guidelines</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">Support</h4>
+                <ul className="space-y-2 text-gray-600">
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Help Center</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Contact Us</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Report Issue</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Privacy Policy</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">Connect</h4>
+                <ul className="space-y-2 text-gray-600">
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Early Access</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Newsletter</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Updates</a></li>
+                  <li><a href="#" className="hover:text-purple-600 transition-colors">Feedback</a></li>
+                </ul>
+              </div>
+            </div>
+            <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
+              <p className="text-gray-600 mb-4 md:mb-0">
+                © 2025 EmviApp. All rights reserved.
+              </p>
+              <p className="text-sm text-gray-500 flex items-center gap-1">
+                Inspired by Sunshine <span className="text-yellow-500">☀️</span>
               </p>
             </div>
           </div>
-        </section>
-
-        {/* Trust & Final FOMO */}
-        <section className="py-12 px-4 bg-gray-900 text-white">
-          <div className="container mx-auto text-center">
-            <div className="grid md:grid-cols-3 gap-8 mb-8">
-              <div className="flex flex-col items-center">
-                <Heart className="h-12 w-12 text-red-500 mb-4" />
-                <h3 className="text-xl font-bold mb-2">Trusted by 8,500+</h3>
-                <p className="text-gray-300">Beauty professionals worldwide</p>
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <Award className="h-12 w-12 text-yellow-500 mb-4" />
-                <h3 className="text-xl font-bold mb-2">Industry Leading</h3>
-                <p className="text-gray-300">Security & privacy protection</p>
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <Star className="h-12 w-12 text-blue-500 mb-4" />
-                <h3 className="text-xl font-bold mb-2">4.9/5 Rating</h3>
-                <p className="text-gray-300">From verified members</p>
-              </div>
-            </div>
-            
-            <motion.div
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-2xl font-bold text-yellow-400 mb-4"
-            >
-              ⚡ Limited Time: First 1,000 members get lifetime VIP perks!
-            </motion.div>
-            
-            <p className="text-gray-400 text-sm mb-8">
-              Join now before we reach capacity. Next enrollment opens in 3 months.
-            </p>
-
-            {/* Sunshine Credit */}
-            <p className="text-gray-500 text-sm">
-              Inspired by Sunshine ☀️
-            </p>
-          </div>
-        </section>
+        </footer>
       </div>
     </Layout>
   );
 };
 
-export default FreelancersPage;
+export default CommunityPage;
