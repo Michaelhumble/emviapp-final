@@ -1,408 +1,575 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Users, TrendingUp, Star, Trophy, MessageCircle, Handshake, Vote, Camera, Palette, Scissors, Sparkles, Crown, Badge, Eye, ArrowUp, ArrowDown, Clock, Fire } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge as UIBadge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import Layout from '@/components/layout/Layout';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Users, 
+  Trophy, 
+  TrendingUp, 
+  MessageCircle, 
+  Star, 
+  Sparkles, 
+  Heart, 
+  Eye, 
+  ThumbsUp, 
+  Share2, 
+  Crown, 
+  Zap,
+  ArrowRight,
+  Clock,
+  MapPin,
+  Award
+} from 'lucide-react';
 
-const CommunityPage = () => {
-  const [selectedBattle, setSelectedBattle] = useState('nail-art');
-  const [trendVotes, setTrendVotes] = useState({
-    'glass-skin': 145,
-    'chrome-nails': 89,
-    'wolf-cut': 234,
-    'soap-brows': 67
+const FreelancersPage = () => {
+  const [selectedPoll, setSelectedPoll] = useState<string | null>(null);
+  const [votes, setVotes] = useState<{[key: string]: number}>({
+    'Holographic Nails': 45,
+    'Minimalist Art': 32,
+    'Chrome Effects': 28,
+    '3D Textures': 25
   });
-  const [userVotes, setUserVotes] = useState<string[]>([]);
-  const [activeOnline] = useState(1247);
 
-  const handleTrendVote = (trend: string) => {
-    if (!userVotes.includes(trend)) {
-      setTrendVotes(prev => ({
-        ...prev,
-        [trend]: prev[trend] + 1
-      }));
-      setUserVotes(prev => [...prev, trend]);
-    }
+  const handleVote = (option: string) => {
+    setSelectedPoll(option);
+    setVotes(prev => ({
+      ...prev,
+      [option]: prev[option] + 1
+    }));
   };
 
-  const battles = {
-    'nail-art': {
-      title: 'Nail Art Battle Royale',
-      entries: [
-        { artist: 'Sarah M.', votes: 234, image: '💅', technique: 'Chrome Marble' },
-        { artist: 'Lisa K.', votes: 189, image: '✨', technique: 'Galaxy Nails' },
-        { artist: 'Emma R.', votes: 156, image: '🌸', technique: 'Floral 3D' }
-      ]
-    },
-    'makeup': {
-      title: 'Makeup Mastery Challenge',
-      entries: [
-        { artist: 'Maya P.', votes: 267, image: '💄', technique: 'Smokey Glam' },
-        { artist: 'Ana L.', votes: 198, image: '🎨', technique: 'Editorial Art' },
-        { artist: 'Zoe T.', votes: 143, image: '✨', technique: 'Natural Glow' }
-      ]
-    }
-  };
-
-  const collaborationPosts = [
+  const battleEntries = [
     {
       id: 1,
-      author: 'Jessica Nails Pro',
-      specialty: 'Nail Technician',
-      post: 'Looking for a makeup artist for a bridal photoshoot collaboration! 💍',
-      responses: 12,
-      time: '2 hours ago'
+      artist: "NailQueen_Sarah",
+      image: "/lovable-uploads/nail-art-battle-1.jpg",
+      votes: 234,
+      specialty: "Nail Art",
+      title: "Galaxy Ombre Design"
     },
     {
       id: 2,
-      author: 'Mike Ink Master',
-      specialty: 'Tattoo Artist',
-      post: 'Anyone interested in nail art + tattoo style collaboration? 🔥',
-      responses: 8,
-      time: '4 hours ago'
+      artist: "InkMaster_Jake",
+      image: "/lovable-uploads/tattoo-battle-1.jpg",
+      votes: 189,
+      specialty: "Tattoo",
+      title: "Geometric Sleeve"
     },
     {
       id: 3,
-      author: 'Beauty Studio LA',
-      specialty: 'Salon Owner',
-      post: 'Seeking freelance lash technician for weekend bookings',
-      responses: 15,
-      time: '6 hours ago'
+      artist: "HairWizard_Alex",
+      image: "/lovable-uploads/hair-battle-1.jpg",
+      votes: 156,
+      specialty: "Hair Styling",
+      title: "Rainbow Balayage"
     }
   ];
 
-  const skillExchanges = [
-    { offer: 'Microblading Technique', want: 'Lash Extension Mastery', user: 'ProBrow_Sarah' },
-    { offer: 'Balayage Coloring', want: 'Nail Art Basics', user: 'HairByAlex' },
-    { offer: 'Massage Therapy', want: 'Eyebrow Shaping', user: 'ZenSpa_Maya' }
+  const collabPosts = [
+    {
+      id: 1,
+      user: "LashLady_Maria",
+      specialty: "Lash Extensions",
+      post: "Looking for a brow artist to collaborate on a bridal package! Beverly Hills area 💄",
+      time: "2 hours ago",
+      responses: 12
+    },
+    {
+      id: 2,
+      user: "TattooTom",
+      specialty: "Tattoo Artist",
+      post: "Need a nail artist for photoshoot collab - dark gothic theme 🖤",
+      time: "4 hours ago",
+      responses: 8
+    },
+    {
+      id: 3,
+      user: "MakeupMaven_Lisa",
+      specialty: "Makeup Artist",
+      post: "Teaching contouring techniques - who wants to trade for microblading lessons?",
+      time: "1 day ago",
+      responses: 23
+    }
   ];
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
         {/* Debug Banner */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 text-center font-bold text-sm">
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center py-3 font-semibold">
           🚀 EMVI.APP COMMUNITY FOMO UPGRADE — JUNE 2025 🚀
         </div>
 
-        {/* Hero Section */}
-        <section className="relative py-20 px-4 text-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-pink-600/10"></div>
+        <div className="container mx-auto px-4 py-8">
+          {/* Hero Section */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative z-10 max-w-4xl mx-auto"
+            className="text-center mb-12"
           >
-            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
-              Where Beauty Pros Unite & Thrive
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-700 mb-8 font-medium">
-              The most exciting, rewarding community in the beauty industry
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Sparkles className="h-8 w-8 text-purple-600" />
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Beauty Community
+              </h1>
+              <Sparkles className="h-8 w-8 text-pink-600" />
+            </div>
+            <p className="text-xl text-gray-600 mb-6">
+              Where Beauty Professionals Connect, Compete & Collaborate
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
-                Join the Revolution
-              </Button>
-              <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span>{activeOnline.toLocaleString()} pros online now</span>
+            <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>2,847 professionals online</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                <span>15,234 active this week</span>
               </div>
             </div>
           </motion.div>
-        </section>
 
-        {/* Live Professional Battles */}
-        <section className="py-16 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
-                <Trophy className="text-yellow-500" />
-                Live Professional Battles
-                <Fire className="text-red-500" />
-              </h2>
-              <p className="text-xl text-gray-600">Vote for your favorites and watch the leaderboard change in real-time!</p>
-            </div>
+          <Tabs defaultValue="battles" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
+              <TabsTrigger value="battles" className="flex items-center gap-2">
+                <Trophy className="h-4 w-4" />
+                Live Battles
+              </TabsTrigger>
+              <TabsTrigger value="networking" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Networking
+              </TabsTrigger>
+              <TabsTrigger value="trends" className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Trends & Polls
+              </TabsTrigger>
+              <TabsTrigger value="coming-soon" className="flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                Coming Soon
+              </TabsTrigger>
+            </TabsList>
 
-            <div className="flex justify-center gap-4 mb-8">
-              <Button
-                variant={selectedBattle === 'nail-art' ? 'default' : 'outline'}
-                onClick={() => setSelectedBattle('nail-art')}
-                className="px-6 py-3"
-              >
-                💅 Nail Art Battle
-              </Button>
-              <Button
-                variant={selectedBattle === 'makeup' ? 'default' : 'outline'}
-                onClick={() => setSelectedBattle('makeup')}
-                className="px-6 py-3"
-              >
-                💄 Makeup Challenge
-              </Button>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {battles[selectedBattle].entries.map((entry, index) => (
-                <motion.div
-                  key={entry.artist}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:border-purple-300">
-                    <CardHeader className="text-center">
-                      <div className="text-6xl mb-4">{entry.image}</div>
-                      <CardTitle className="flex items-center justify-center gap-2">
-                        {index === 0 && <Crown className="text-yellow-500" />}
-                        {entry.artist}
-                      </CardTitle>
-                      <p className="text-gray-600">{entry.technique}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center mb-4">
-                        <div className="text-2xl font-bold text-purple-600">{entry.votes} votes</div>
-                        <Progress value={(entry.votes / 300) * 100} className="mt-2" />
-                      </div>
-                      <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                        <Heart className="mr-2 h-4 w-4" />
-                        Vote Now!
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Cross-Specialty Networking */}
-        <section className="py-16 px-4 bg-white/70 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
-                <Handshake className="text-blue-500" />
-                Cross-Specialty Networking
-              </h2>
-              <p className="text-xl text-gray-600">Connect, collaborate, and grow together across all beauty specialties</p>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-8 mb-12">
-              {/* Collaboration Hub */}
-              <Card className="shadow-lg">
+            {/* Live Professional Battles */}
+            <TabsContent value="battles" className="space-y-6">
+              <Card className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="text-purple-600" />
-                    Collaboration Hub
-                  </CardTitle>
+                  <div className="flex items-center gap-3">
+                    <Crown className="h-6 w-6" />
+                    <CardTitle className="text-2xl">Weekly Beauty Challenge</CardTitle>
+                    <Badge variant="secondary" className="bg-white text-purple-600">
+                      LIVE NOW
+                    </Badge>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {collaborationPosts.map((post) => (
-                      <div key={post.id} className="border-l-4 border-purple-500 pl-4 py-3 bg-purple-50 rounded-r-lg">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <span className="font-semibold text-purple-700">{post.author}</span>
-                            <UIBadge variant="secondary" className="ml-2 text-xs">
-                              {post.specialty}
-                            </UIBadge>
+                  <p className="text-lg mb-4">Vote for the most creative beauty work this week!</p>
+                  <div className="flex items-center gap-4 text-sm opacity-90">
+                    <span>⏰ Ends in 2 days</span>
+                    <span>🏆 Winner gets featured homepage spot</span>
+                    <span>⭐ Special community badge</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                {battleEntries.map((entry) => (
+                  <motion.div
+                    key={entry.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="relative"
+                  >
+                    <Card className="overflow-hidden border-2 hover:border-purple-300 transition-colors">
+                      <div className="aspect-square bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                        <div className="text-center p-6">
+                          <Avatar className="h-16 w-16 mx-auto mb-4">
+                            <AvatarFallback className="bg-purple-500 text-white text-lg">
+                              {entry.artist.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="font-semibold text-lg">{entry.title}</h3>
+                          <p className="text-purple-600 font-medium">@{entry.artist}</p>
+                          <Badge variant="outline" className="mt-2">
+                            {entry.specialty}
+                          </Badge>
+                        </div>
+                      </div>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Heart className="h-4 w-4 text-red-500" />
+                            <span className="font-semibold">{entry.votes} votes</span>
                           </div>
-                          <span className="text-xs text-gray-500">{post.time}</span>
+                          <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                            <ThumbsUp className="h-4 w-4 mr-1" />
+                            Vote
+                          </Button>
                         </div>
-                        <p className="text-gray-700 mb-2">{post.post}</p>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <MessageCircle className="h-4 w-4" />
-                          <span>{post.responses} responses</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <Button className="w-full mt-4 bg-purple-600 hover:bg-purple-700">
-                    Post Your Collaboration Request
-                  </Button>
-                </CardContent>
-              </Card>
+                        <Progress value={(entry.votes / 250) * 100} className="h-2" />
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
 
-              {/* Skill Exchange */}
-              <Card className="shadow-lg">
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <ArrowUp className="text-green-500" />
-                    <ArrowDown className="text-blue-500" />
-                    Skill Exchange
+                    <Award className="h-5 w-5 text-gold-500" />
+                    Community Leaderboard
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {skillExchanges.map((exchange, index) => (
-                      <div key={index} className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-green-700">Offering:</span>
-                          <span className="text-sm text-gray-600">@{exchange.user}</span>
+                  <div className="space-y-3">
+                    {battleEntries.map((entry, index) => (
+                      <div key={entry.id} className="flex items-center gap-4 p-3 rounded-lg bg-gray-50">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold">
+                          {index + 1}
                         </div>
-                        <p className="text-green-800 mb-2">{exchange.offer}</p>
-                        <div className="flex items-center mb-2">
-                          <span className="font-semibold text-blue-700">Wants to learn:</span>
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback>{entry.artist.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <p className="font-semibold">@{entry.artist}</p>
+                          <p className="text-sm text-gray-600">{entry.specialty}</p>
                         </div>
-                        <p className="text-blue-800">{exchange.want}</p>
-                        <Button size="sm" className="mt-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600">
-                          Connect
-                        </Button>
+                        <div className="text-right">
+                          <p className="font-semibold text-purple-600">{entry.votes}</p>
+                          <p className="text-xs text-gray-500">votes</p>
+                        </div>
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full mt-4 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700">
-                    Post Your Skills Exchange
-                  </Button>
                 </CardContent>
               </Card>
-            </div>
-          </div>
-        </section>
+            </TabsContent>
 
-        {/* Interactive Trend Prediction */}
-        <section className="py-16 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
-                <TrendingUp className="text-pink-500" />
-                Trend Prediction Hub
-                <Sparkles className="text-yellow-500" />
-              </h2>
-              <p className="text-xl text-gray-600">Vote on what's next and help shape the future of beauty!</p>
-            </div>
+            {/* Cross-Specialty Networking */}
+            <TabsContent value="networking" className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Collaboration Hub
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {collabPosts.map((post) => (
+                      <div key={post.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex items-start gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback>{post.user.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold">@{post.user}</span>
+                              <Badge variant="outline" className="text-xs">
+                                {post.specialty}
+                              </Badge>
+                            </div>
+                            <p className="text-gray-700 mb-2">{post.post}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {post.time}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MessageCircle className="h-3 w-3" />
+                                {post.responses} responses
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <Button className="w-full" variant="outline">
+                      Post Your Collaboration Request
+                    </Button>
+                  </CardContent>
+                </Card>
 
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* What's the Next Big Trend */}
-              <Card className="shadow-lg">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Share2 className="h-5 w-5" />
+                      Skill Exchange
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
+                        <h4 className="font-semibold text-green-700 mb-2">Teaching Available</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>• Advanced Lash Techniques</span>
+                            <span className="text-green-600">3 slots left</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>• Color Theory for Hair</span>
+                            <span className="text-green-600">5 slots left</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>• Business Management</span>
+                            <span className="text-green-600">2 slots left</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                        <h4 className="font-semibold text-purple-700 mb-2">Learning Requests</h4>
+                        <div className="space-y-2 text-sm">
+                          <div>• Microblading basics (urgent)</div>
+                          <div>• Nail stamping techniques</div>
+                          <div>• Social media marketing</div>
+                        </div>
+                      </div>
+
+                      <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                        Join Skill Exchange
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Vote className="text-pink-500" />
+                    <MapPin className="h-5 w-5" />
+                    Referral Network
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-semibold mb-2">🌟 Premium Referrals</h4>
+                      <p className="text-sm text-gray-600 mb-3">High-end client seeking full beauty team for wedding</p>
+                      <Button size="sm" variant="outline" className="w-full">
+                        View Details
+                      </Button>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-semibold mb-2">📸 Photo Shoot Needs</h4>
+                      <p className="text-sm text-gray-600 mb-3">Fashion photographer needs makeup + hair team</p>
+                      <Button size="sm" variant="outline" className="w-full">
+                        Apply Now
+                      </Button>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <h4 className="font-semibold mb-2">🎉 Event Opportunities</h4>
+                      <p className="text-sm text-gray-600 mb-3">Corporate event needs beauty professionals</p>
+                      <Button size="sm" variant="outline" className="w-full">
+                        Learn More
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Interactive Trend Prediction & Polls */}
+            <TabsContent value="trends" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
                     What's the Next Big Trend?
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {Object.entries(trendVotes).map(([trend, votes]) => (
-                      <div key={trend} className="border rounded-lg p-4 hover:bg-pink-50 transition-colors">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-semibold capitalize">
-                            {trend.replace('-', ' ')}
-                          </span>
-                          <span className="text-sm font-bold text-pink-600">{votes} votes</span>
+                    {Object.entries(votes).map(([option, count]) => (
+                      <div key={option} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{option}</span>
+                          <span className="text-sm text-gray-500">{count} votes</span>
                         </div>
-                        <Progress value={(votes / 300) * 100} className="mb-3" />
-                        <Button
-                          size="sm"
-                          onClick={() => handleTrendVote(trend)}
-                          disabled={userVotes.includes(trend)}
-                          className={`${
-                            userVotes.includes(trend) 
-                              ? 'bg-gray-400 cursor-not-allowed' 
-                              : 'bg-pink-600 hover:bg-pink-700'
-                          }`}
-                        >
-                          {userVotes.includes(trend) ? 'Voted!' : 'Vote'}
-                        </Button>
+                        <div className="flex items-center gap-3">
+                          <Progress value={(count / 150) * 100} className="flex-1" />
+                          <Button
+                            size="sm"
+                            variant={selectedPoll === option ? "default" : "outline"}
+                            onClick={() => handleVote(option)}
+                            disabled={selectedPoll !== null}
+                          >
+                            {selectedPoll === option ? "Voted!" : "Vote"}
+                          </Button>
+                        </div>
                       </div>
                     ))}
+                    <Button variant="outline" className="w-full mt-4">
+                      Suggest New Trend
+                    </Button>
                   </div>
-                  <Button className="w-full mt-4 bg-pink-600 hover:bg-pink-700">
-                    Submit New Trend Idea
-                  </Button>
                 </CardContent>
               </Card>
 
-              {/* Rate This Technique */}
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="text-yellow-500" />
-                    Rate This Technique
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center mb-6">
-                    <div className="text-6xl mb-4">💎</div>
-                    <h3 className="text-xl font-bold mb-2">Diamond Nail Technique</h3>
-                    <p className="text-gray-600">Multi-dimensional crystal effect</p>
-                  </div>
-                  <div className="flex justify-center gap-2 mb-6">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className="h-8 w-8 cursor-pointer hover:text-yellow-500 transition-colors"
-                        fill="currentColor"
-                      />
-                    ))}
-                  </div>
-                  <div className="text-center text-sm text-gray-600 mb-4">
-                    <Eye className="inline h-4 w-4 mr-1" />
-                    2,547 professionals have rated this
-                  </div>
-                  <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
-                    Next Technique
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="h-5 w-5" />
+                      Rate This Technique
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center mb-4">
+                      <div className="text-center">
+                        <Sparkles className="h-12 w-12 text-purple-500 mx-auto mb-2" />
+                        <p className="text-lg font-semibold">Chrome Nail Effect</p>
+                        <p className="text-gray-600">Latest trending technique</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Button
+                          key={star}
+                          variant="ghost"
+                          size="sm"
+                          className="p-1"
+                        >
+                          <Star className="h-6 w-6 text-yellow-400 fill-current" />
+                        </Button>
+                      ))}
+                    </div>
+                    <p className="text-center text-sm text-gray-600 mt-2">
+                      4.8/5 from 2,341 professionals
+                    </p>
+                  </CardContent>
+                </Card>
 
-        {/* Coming Soon Teasers */}
-        <section className="py-16 px-4 bg-gradient-to-r from-purple-50 to-pink-50">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-800 mb-8">Coming Soon to Our Community</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="shadow-lg border-2 border-dashed border-purple-300">
-                <CardContent className="p-8 text-center">
-                  <MessageCircle className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Direct Messaging</h3>
-                  <p className="text-gray-600 mb-4">Connect directly with other professionals</p>
-                  <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
-                    Join Early Access
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card className="shadow-lg border-2 border-dashed border-pink-300">
-                <CardContent className="p-8 text-center">
-                  <Badge className="h-12 w-12 text-pink-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Professional Matching</h3>
-                  <p className="text-gray-600 mb-4">AI-powered partner recommendations</p>
-                  <Button variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50">
-                    Join Waitlist
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Trophy className="h-5 w-5" />
+                      Predict the Winner
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="mb-4">Who will win this week's battle?</p>
+                    <div className="space-y-3">
+                      {battleEntries.slice(0, 3).map((entry) => (
+                        <Button
+                          key={entry.id}
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
+                          <span>@{entry.artist}</span>
+                          <span className="text-purple-600">{Math.floor(Math.random() * 40 + 20)}%</span>
+                        </Button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-4 text-center">
+                      Correct predictions earn community points!
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
-        {/* Final CTA */}
-        <section className="py-20 px-4 text-center bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Don't Miss Out - Community Is Filling Up Fast!
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Join the most exciting and rewarding beauty community on Earth
-            </p>
-            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-12 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
-              Reserve Your Spot Now
-            </Button>
-            <div className="mt-8 flex justify-center items-center gap-8 text-sm opacity-80">
-              <span>✨ 12,547 active members</span>
-              <span>🏆 Weekly challenges</span>
-              <span>🤝 Cross-specialty networking</span>
-            </div>
-          </div>
-        </section>
+            {/* Coming Soon Features */}
+            <TabsContent value="coming-soon" className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card className="border-dashed border-2 border-purple-300">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageCircle className="h-5 w-5" />
+                      Direct Messaging
+                      <Badge variant="secondary">Coming Soon</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-4">
+                      Connect directly with other beauty professionals for private collaborations and advice.
+                    </p>
+                    <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500">
+                      Join Early Access Waitlist
+                    </Button>
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      847 professionals already signed up
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-dashed border-2 border-blue-300">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Professional Matching
+                      <Badge variant="secondary">Next Up</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-4">
+                      AI-powered matching to find your perfect business partners and collaborators.
+                    </p>
+                    <Button variant="outline" className="w-full">
+                      Join the Waitlist
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-dashed border-2 border-green-300">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      Virtual Beauty Districts
+                      <Badge variant="secondary">In Development</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-4">
+                      Create geographic networks with professionals in your area for local collaborations.
+                    </p>
+                    <Button variant="outline" className="w-full">
+                      Get Notified
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-dashed border-2 border-pink-300">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Zap className="h-5 w-5" />
+                      Live Streaming
+                      <Badge variant="secondary">Planning</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-4">
+                      Stream your work live, host tutorials, and build your following within the community.
+                    </p>
+                    <Button variant="outline" className="w-full">
+                      Express Interest
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                <CardContent className="text-center py-8">
+                  <h3 className="text-2xl font-bold mb-4">Shape the Future of Beauty Community</h3>
+                  <p className="text-lg mb-6 opacity-90">
+                    Your feedback drives our development. Tell us what features you want most!
+                  </p>
+                  <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+                    Submit Feature Request
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </Layout>
   );
 };
 
-export default CommunityPage;
+export default FreelancersPage;
