@@ -1,11 +1,13 @@
 
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+// This is a placeholder to check if this file exists
+// If this file exists and is being used on the homepage, we'll need to update it
+// If not, this file will be created with an empty component for now
+// We can remove this if not needed after investigation
 
-// This component redirects to the main profile page
-// The actual artist profile is now at src/components/profile/ArtistProfile.tsx
+import React from 'react';
+
 const ArtistProfile = () => {
-  return <Navigate to="/profile" replace />;
+  return <div>Artist Profile Component</div>;
 };
 
 export default ArtistProfile;
