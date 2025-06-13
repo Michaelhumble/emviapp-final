@@ -65,10 +65,10 @@ export const normalizeRole = (role: UserRole | string | null | undefined): UserR
 
     // Legacy role mappings
     case 'artist':
-      return 'nail-artist'; // Default artist to nail-artist for backward compatibility
+      return 'artist'; // Keep as artist, don't default to nail-artist
       
     case 'salon':
-      return 'salon-owner';
+      return 'salon';
       
     case 'supplier':
     case 'beauty supplier':
@@ -211,4 +211,45 @@ export const getDashboardRoute = (role: UserRole): string => {
     default:
       return '/dashboard/customer';
   }
+};
+
+/**
+ * Get personalized greeting for dashboard
+ */
+export const getPersonalizedGreeting = (role: UserRole | null): string => {
+  switch (role) {
+    case 'nail-artist':
+      return 'Ready to create beautiful nails today?';
+    case 'hair-stylist':
+      return 'Time to make hair magic happen!';
+    case 'lash-tech':
+      return 'Let\'s make those lashes gorgeous!';
+    case 'barber':
+      return 'Ready for another day of sharp cuts?';
+    case 'esthetician':
+      return 'Time to help skin glow!';
+    case 'massage-therapist':
+      return 'Ready to bring relaxation and healing?';
+    case 'salon-owner':
+    case 'salon':
+    case 'owner':
+      return 'How\'s your business growing today?';
+    case 'freelancer':
+      return 'Ready to take on new opportunities?';
+    case 'manager':
+      return 'Let\'s make today productive!';
+    case 'beauty-supplier':
+    case 'supplier':
+      return 'Ready to supply beauty essentials?';
+    default:
+      return 'Welcome back!';
+  }
+};
+
+/**
+ * Check if user has role access
+ */
+export const hasRoleAccess = (userRole: UserRole | null, requiredRoles: UserRole[]): boolean => {
+  if (!userRole) return false;
+  return requiredRoles.includes(userRole);
 };

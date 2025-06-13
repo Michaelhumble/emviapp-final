@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,7 +32,7 @@ export const useAuthProvider = () => {
         const transformedProfile: UserProfile = {
           ...data,
           role: normalizeRole(data.role) || 'customer',
-          badges: Array.isArray(data.badges) ? data.badges : 
+          badges: Array.isArray(data.badges) ? data.badges as string[] : 
                   (typeof data.badges === 'string' ? [data.badges] : [])
         };
         
