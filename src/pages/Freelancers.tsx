@@ -26,7 +26,7 @@ const Freelancers = () => {
         verified: true
       },
       content: 'Just completed my latest bridal transformation! This gorgeous bride wanted a timeless, elegant look that would photograph beautifully. The key was creating a flawless base and enhancing her natural features. What do you think? ✨',
-      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(01).png',
+      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=1926&auto=format&fit=crop',
       likes: 87,
       comments: 19,
       shares: 8,
@@ -42,7 +42,7 @@ const Freelancers = () => {
         verified: true
       },
       content: 'Sharing my latest color correction journey! This client came to me with severely damaged hair from multiple bleaching sessions. It took 3 appointments, but we achieved her dream blonde while maintaining hair health. Patience and technique are everything! 🎨',
-      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(04).png',
+      image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1926&auto=format&fit=crop',
       likes: 64,
       comments: 23,
       shares: 6,
@@ -58,7 +58,7 @@ const Freelancers = () => {
         verified: false
       },
       content: 'Behind-the-scenes of today\'s photoshoot! Working with this amazing model on a bold, editorial look. The theme was "Urban Warrior" - strong, fierce, and unapologetic. Swipe to see the final result! 💪',
-      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(08).png',
+      image: 'https://images.unsplash.com/photo-1516205651411-aef33a44f7c2?q=80&w=1926&auto=format&fit=crop',
       likes: 42,
       comments: 14,
       shares: 4,

@@ -17,7 +17,7 @@ const PremiumHeroSection = () => {
         <div 
           className="w-full h-full bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(01).png')`
+            backgroundImage: `url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?q=80&w=1926&auto=format&fit=crop')`
           }}
         />
       </div>
