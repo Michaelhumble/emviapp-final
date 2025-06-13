@@ -17,7 +17,7 @@ const ContactPage = () => {
           <div className="bg-white border-b border-gray-200">
             <div className="container max-w-4xl mx-auto px-4 py-12">
               <div className="text-center">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                <h1 className="text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text mb-4 leading-tight">
                   🗣️ Your Voice Builds the Future of EmviApp
                 </h1>
                 <p className="text-lg text-gray-600 mb-2">
