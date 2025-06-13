@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,7 @@ import CommunityStories from '@/components/community/CommunityStories';
 import AchievementLeaderboard from '@/components/community/AchievementLeaderboard';
 import SponsorTeasers from '@/components/community/SponsorTeasers';
 import CommunityQA from '@/components/community/CommunityQA';
+import CommunityActionCTAs from '@/components/community/CommunityActionCTAs';
 import SuccessNotifications from '@/components/community/SuccessNotifications';
 
 const Freelancers = () => {
@@ -117,6 +119,9 @@ const Freelancers = () => {
 
         {/* Achievements & Leaderboard */}
         <AchievementLeaderboard />
+
+        {/* Community Action CTAs - NEW ADDITION */}
+        <CommunityActionCTAs />
 
         {/* Sponsor Teasers */}
         <SponsorTeasers />
