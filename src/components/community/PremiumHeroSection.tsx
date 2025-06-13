@@ -1,164 +1,259 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, TrendingUp, Star } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sparkles, Users, Trophy, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useCommunityStories } from '@/hooks/useCommunityStories';
+import { toast } from 'sonner';
 
 const PremiumHeroSection = () => {
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const [joinForm, setJoinForm] = useState({
-    name: '',
-    email: '',
-    role: '',
-    message: ''
-  });
+  const { addStory, isAuthenticated } = useCommunityStories();
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [storyContent, setStoryContent] = useState('');
+  const [storyImage, setStoryImage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const liveStats = [
-    { icon: Users, count: "847", label: "beauty pros online now" },
-    { icon: TrendingUp, count: "23", label: "new members joined today" },
-    { icon: Star, count: "156", label: "success stories shared this week" }
-  ];
-
-  const handleJoinCommunity = () => {
-    setShowJoinModal(true);
-  };
-
-  const handleSubmitJoin = () => {
-    if (!joinForm.name.trim() || !joinForm.email.trim()) {
-      alert('Please fill in your name and email');
+  const handleShareStory = async () => {
+    if (!storyContent.trim()) {
+      toast.error('Please write your story');
       return;
     }
 
-    // Simulate joining the community
-    alert(`Welcome to the community, ${joinForm.name}! We'll be in touch soon.`);
-    setJoinForm({ name: '', email: '', role: '', message: '' });
-    setShowJoinModal(false);
+    if (!isAuthenticated) {
+      toast.error('Please sign in to share your story');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const success = await addStory(storyContent.trim(), storyImage.trim() || undefined);
+      if (success) {
+        setStoryContent('');
+        setStoryImage('');
+        setIsShareModalOpen(false);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleJoinCommunity = () => {
+    if (!isAuthenticated) {
+      toast.error('Please sign in to join our community');
+      return;
+    }
+    toast.success('Welcome to our inspiring community! 🎉');
+    setIsJoinModalOpen(false);
   };
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-20">
-      {/* Hero Background Image */}
-      <div className="absolute inset-0 opacity-20">
-        <div 
-          className="w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?q=80&w=1926&auto=format&fit=crop')`
+    <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700 text-white">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        <motion.div
+          className="absolute top-10 left-10 w-20 h-20 bg-yellow-400 rounded-full opacity-20"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [0, 180, 360]
+          }}
+          transition={{ 
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute top-1/3 right-20 w-16 h-16 bg-pink-400 rounded-full opacity-20"
+          animate={{ 
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-1/4 w-12 h-12 bg-purple-400 rounded-full opacity-20"
+          animate={{ 
+            x: [0, 20, 0],
+            rotate: [0, -180, -360]
+          }}
+          transition={{ 
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
           }}
         />
       </div>
-      
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
-      </div>
-      
-      <div className="relative container mx-auto px-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8"
-        >
-          <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-4">
-            <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-              Beauty Community
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-light mb-6">
-            Where talent meets opportunity. <span className="text-yellow-400 font-semibold">Authentically.</span>
-          </p>
-          
-          <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of beauty professionals sharing their journey, supporting each other, and building genuine connections that last.
-          </p>
-        </motion.div>
 
-        {/* Live Stats Ticker */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-wrap justify-center gap-4 md:gap-8"
-        >
-          {liveStats.map((stat, index) => (
-            <div key={index} className="bg-white/10 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20">
-              <div className="flex items-center gap-2 text-white">
-                <stat.icon className="h-5 w-5 text-yellow-400" />
-                <span className="text-lg font-bold text-yellow-400">{stat.count}</span>
-                <span className="text-sm">{stat.label}</span>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-8"
-        >
-          <button 
-            onClick={handleJoinCommunity}
-            className="bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-500 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-full text-lg shadow-2xl transform hover:scale-105 transition-all duration-300"
+      <div className="relative container mx-auto px-4 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Main Hero Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
           >
-            Join Our Inspiring Community
-          </button>
-        </motion.div>
-      </div>
-
-      {/* Join Community Modal */}
-      <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Join Our Beauty Community</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="Your name"
-              value={joinForm.name}
-              onChange={(e) => setJoinForm(prev => ({ ...prev, name: e.target.value }))}
-            />
-            <Input
-              type="email"
-              placeholder="Your email"
-              value={joinForm.email}
-              onChange={(e) => setJoinForm(prev => ({ ...prev, email: e.target.value }))}
-            />
-            <Input
-              placeholder="Your role (e.g., Makeup Artist, Hair Stylist)"
-              value={joinForm.role}
-              onChange={(e) => setJoinForm(prev => ({ ...prev, role: e.target.value }))}
-            />
-            <Textarea
-              placeholder="Tell us about yourself and why you'd like to join..."
-              value={joinForm.message}
-              onChange={(e) => setJoinForm(prev => ({ ...prev, message: e.target.value }))}
-              rows={3}
-            />
-            <div className="flex gap-2">
-              <Button
-                onClick={handleSubmitJoin}
-                disabled={!joinForm.name.trim() || !joinForm.email.trim()}
-                className="flex-1"
-              >
-                Join Community
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowJoinModal(false)}
-              >
-                Cancel
-              </Button>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Sparkles className="h-8 w-8 text-yellow-400" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
+                Beauty Community
+              </span>
+              <Sparkles className="h-8 w-8 text-yellow-400" />
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+            
+            <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+              Where Beauty 
+              <span className="block bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                Dreams Come True
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-purple-100 mb-8 leading-relaxed">
+              Join thousands of beauty professionals sharing their success stories, 
+              tips, and inspiration in our thriving community.
+            </p>
+          </motion.div>
+
+          {/* Stats Row */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-400/20 rounded-full mb-4">
+                <Users className="h-8 w-8 text-yellow-400" />
+              </div>
+              <div className="text-3xl font-bold text-yellow-400 mb-2">50K+</div>
+              <div className="text-purple-200">Active Members</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-pink-400/20 rounded-full mb-4">
+                <Trophy className="h-8 w-8 text-pink-400" />
+              </div>
+              <div className="text-3xl font-bold text-pink-400 mb-2">1000+</div>
+              <div className="text-purple-200">Success Stories</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-400/20 rounded-full mb-4">
+                <TrendingUp className="h-8 w-8 text-purple-400" />
+              </div>
+              <div className="text-3xl font-bold text-purple-400 mb-2">95%</div>
+              <div className="text-purple-200">Growth Rate</div>
+            </div>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          >
+            <Dialog open={isJoinModalOpen} onOpenChange={setIsJoinModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-500 hover:to-pink-600 text-black font-bold px-8 py-4 rounded-full text-lg shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 transform hover:scale-105"
+                >
+                  <Users className="mr-2 h-5 w-5" />
+                  Join Our Inspiring Community
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-center text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Welcome to Our Community! 🎉
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="text-center py-6">
+                  <div className="text-6xl mb-4">✨</div>
+                  <p className="text-gray-600 mb-6">
+                    You're about to join an amazing community of beauty professionals who support and inspire each other every day!
+                  </p>
+                  <Button
+                    onClick={handleJoinCommunity}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full font-semibold"
+                  >
+                    Join Now
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-white text-white hover:bg-white hover:text-purple-900 font-bold px-8 py-4 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Share Your Story
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Share Your Beauty Journey ✨
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div>
+                    <Label htmlFor="story-content" className="text-base font-medium">Your Story</Label>
+                    <Textarea
+                      id="story-content"
+                      placeholder="Tell us about your beauty journey, a transformation you're proud of, or inspire others with your experience..."
+                      value={storyContent}
+                      onChange={(e) => setStoryContent(e.target.value)}
+                      rows={6}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="story-image" className="text-base font-medium">Image URL (Optional)</Label>
+                    <Input
+                      id="story-image"
+                      placeholder="https://example.com/your-image.jpg"
+                      value={storyImage}
+                      onChange={(e) => setStoryImage(e.target.value)}
+                      className="mt-2"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      onClick={handleShareStory}
+                      disabled={isSubmitting || !storyContent.trim()}
+                      className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold"
+                    >
+                      {isSubmitting ? 'Sharing...' : 'Share Story'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsShareModalOpen(false)}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,236 +1,66 @@
-
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Send, Camera, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Heart, MessageCircle, Clock, User } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-
-interface Comment {
-  id: string;
-  author: string;
-  content: string;
-  timestamp: string;
-  likes: number;
-}
-
-interface Story {
-  id: string;
-  author: string;
-  avatar: string;
-  content: string;
-  image: string;
-  likes: number;
-  comments: Comment[];
-  shares: number;
-  timestamp: string;
-}
+import { useCommunityStories } from '@/hooks/useCommunityStories';
+import { formatDistanceToNow } from 'date-fns';
 
 const CommunityStories = () => {
-  const [stories, setStories] = useState<Story[]>([
-    {
-      id: '1',
-      author: 'Maria Rodriguez',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=150&h=150&fit=crop&crop=face',
-      content: 'Just finished this amazing bridal look! The bride was glowing and so happy with her transformation. This is why I love being a makeup artist - creating confidence and joy! ✨',
-      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=400&fit=crop',
-      likes: 127,
-      comments: [
-        {
-          id: 'c1',
-          author: 'Sarah Kim',
-          content: 'Absolutely stunning work! The highlight is perfect.',
-          timestamp: '2h ago',
-          likes: 12
-        },
-        {
-          id: 'c2',
-          author: 'Jessica Chen',
-          content: 'Love this natural glam look! Tutorial please? 😍',
-          timestamp: '1h ago',
-          likes: 8
-        }
-      ],
-      shares: 23,
-      timestamp: '3 hours ago'
-    },
-    {
-      id: '2',
-      author: 'David Thompson',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      content: 'Color transformation complete! From damaged to vibrant healthy hair. Patience and technique make all the difference. Never rush the process! 🎨',
-      image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=400&h=400&fit=crop',
-      likes: 89,
-      comments: [
-        {
-          id: 'c3',
-          author: 'Emma Wilson',
-          content: 'Amazing transformation! How many sessions did this take?',
-          timestamp: '30m ago',
-          likes: 5
-        }
-      ],
-      shares: 15,
-      timestamp: '5 hours ago'
-    }
-  ]);
+  const { stories, comments, loading, addComment, likeStory, isAuthenticated } = useCommunityStories();
+  const [newComments, setNewComments] = useState<{ [storyId: string]: string }>({});
+  const [showComments, setShowComments] = useState<{ [storyId: string]: boolean }>({});
 
-  const [newComment, setNewComment] = useState<{ [key: string]: string }>({});
-  const [likedStories, setLikedStories] = useState<Set<string>>(new Set());
-  const [showShareStoryModal, setShowShareStoryModal] = useState(false);
-  const [newStory, setNewStory] = useState({ content: '', image: null as File | null });
+  const handleAddComment = async (storyId: string) => {
+    const content = newComments[storyId]?.trim();
+    if (!content) return;
 
-  const handleLike = (storyId: string) => {
-    setStories(prev => prev.map(story => {
-      if (story.id === storyId) {
-        const isLiked = likedStories.has(storyId);
-        const newLikes = isLiked ? story.likes - 1 : story.likes + 1;
-        
-        if (isLiked) {
-          setLikedStories(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(storyId);
-            return newSet;
-          });
-        } else {
-          setLikedStories(prev => new Set(prev).add(storyId));
-        }
-        
-        return { ...story, likes: newLikes };
-      }
-      return story;
-    }));
-  };
-
-  const handleComment = (storyId: string) => {
-    const commentText = newComment[storyId]?.trim();
-    if (!commentText) return;
-
-    const comment: Comment = {
-      id: `c${Date.now()}`,
-      author: 'You',
-      content: commentText,
-      timestamp: 'now',
-      likes: 0
-    };
-
-    setStories(prev => prev.map(story => 
-      story.id === storyId 
-        ? { ...story, comments: [...story.comments, comment] }
-        : story
-    ));
-
-    setNewComment(prev => ({ ...prev, [storyId]: '' }));
-  };
-
-  const handleShare = (storyId: string) => {
-    // Simulate sharing functionality
-    setStories(prev => prev.map(story => 
-      story.id === storyId 
-        ? { ...story, shares: story.shares + 1 }
-        : story
-    ));
-    
-    // Show success message (you could implement a toast here)
-    alert('Story shared successfully!');
-  };
-
-  const handleShareYourStory = () => {
-    setShowShareStoryModal(true);
-  };
-
-  const handleSubmitStory = () => {
-    if (!newStory.content.trim()) return;
-
-    const story: Story = {
-      id: `s${Date.now()}`,
-      author: 'You',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
-      content: newStory.content,
-      image: newStory.image ? URL.createObjectURL(newStory.image) : 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop',
-      likes: 0,
-      comments: [],
-      shares: 0,
-      timestamp: 'now'
-    };
-
-    setStories(prev => [story, ...prev]);
-    setNewStory({ content: '', image: null });
-    setShowShareStoryModal(false);
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      setNewStory(prev => ({ ...prev, image: file }));
+    const success = await addComment(storyId, content);
+    if (success) {
+      setNewComments(prev => ({ ...prev, [storyId]: '' }));
     }
   };
+
+  const handleLike = async (storyId: string) => {
+    await likeStory(storyId);
+  };
+
+  const toggleComments = (storyId: string) => {
+    setShowComments(prev => ({ ...prev, [storyId]: !prev[storyId] }));
+  };
+
+  if (loading) {
+    return (
+      <div className="py-12 px-4">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">Community Stories</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="animate-pulse">
+                <CardContent className="p-6">
+                  <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-32 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <section className="bg-gradient-to-br from-purple-50 to-pink-50 py-16">
-      <div className="container mx-auto px-4">
+    <div className="py-12 px-4 bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
+      <div className="container mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Community Stories
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+            ✨ Community Stories
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Share your journey, inspire others, and celebrate success together
+          <p className="text-gray-600 text-lg">
+            Real stories from our amazing beauty community
           </p>
-          
-          <Dialog open={showShareStoryModal} onOpenChange={setShowShareStoryModal}>
-            <DialogTrigger asChild>
-              <Button 
-                onClick={handleShareYourStory}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full text-lg font-semibold transform hover:scale-105 transition-all duration-300"
-              >
-                Share Your Story
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Share Your Beauty Story</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Textarea
-                  placeholder="Share your inspiring beauty journey..."
-                  value={newStory.content}
-                  onChange={(e) => setNewStory(prev => ({ ...prev, content: e.target.value }))}
-                  rows={4}
-                />
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Camera className="h-5 w-5" />
-                    <span>Add Photo</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                  </label>
-                  {newStory.image && (
-                    <span className="text-sm text-green-600">Photo selected</span>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleSubmitStory}
-                    disabled={!newStory.content.trim()}
-                    className="flex-1"
-                  >
-                    Share Story
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowShareStoryModal(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -239,95 +69,128 @@ const CommunityStories = () => {
               key={story.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.3 }}
             >
-              {/* Story Header */}
-              <div className="p-4 flex items-center gap-3">
-                <img
-                  src={story.avatar}
-                  alt={story.author}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{story.author}</h3>
-                  <p className="text-sm text-gray-500">{story.timestamp}</p>
-                </div>
-              </div>
-
-              {/* Story Content */}
-              <div className="px-4 pb-4">
-                <p className="text-gray-800 mb-4">{story.content}</p>
-                <img
-                  src={story.image}
-                  alt="Story"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-              </div>
-
-              {/* Engagement Actions */}
-              <div className="px-4 py-3 border-t border-gray-100">
-                <div className="flex items-center justify-between mb-3">
-                  <button
-                    onClick={() => handleLike(story.id)}
-                    className={`flex items-center gap-2 transition-colors ${
-                      likedStories.has(story.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
-                    }`}
-                  >
-                    <Heart className={`h-5 w-5 ${likedStories.has(story.id) ? 'fill-current' : ''}`} />
-                    <span className="font-medium">{story.likes}</span>
-                  </button>
-                  
-                  <button className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
-                    <MessageCircle className="h-5 w-5" />
-                    <span className="font-medium">{story.comments.length}</span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleShare(story.id)}
-                    className="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors"
-                  >
-                    <Share2 className="h-5 w-5" />
-                    <span className="font-medium">{story.shares}</span>
-                  </button>
-                </div>
-
-                {/* Comments Section */}
-                <div className="space-y-2">
-                  {story.comments.map((comment) => (
-                    <div key={comment.id} className="bg-gray-50 rounded-lg p-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-sm">{comment.author}</span>
-                        <span className="text-xs text-gray-500">{comment.timestamp}</span>
-                      </div>
-                      <p className="text-sm text-gray-700">{comment.content}</p>
+              <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-0 bg-white/90 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  {/* Story Header */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                      <User className="h-5 w-5 text-white" />
                     </div>
-                  ))}
-                  
-                  {/* Add Comment */}
-                  <div className="flex gap-2 mt-3">
-                    <Input
-                      placeholder="Add a comment..."
-                      value={newComment[story.id] || ''}
-                      onChange={(e) => setNewComment(prev => ({ ...prev, [story.id]: e.target.value }))}
-                      onKeyPress={(e) => e.key === 'Enter' && handleComment(story.id)}
-                      className="flex-1 text-sm"
-                    />
-                    <Button
-                      onClick={() => handleComment(story.id)}
-                      disabled={!newComment[story.id]?.trim()}
-                      size="sm"
-                      className="px-3"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
+                    <div>
+                      <p className="font-semibold text-gray-900">{story.user_name}</p>
+                      <p className="text-sm text-gray-500 flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {formatDistanceToNow(new Date(story.created_at), { addSuffix: true })}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </div>
+
+                  {/* Story Content */}
+                  <p className="text-gray-800 mb-4 leading-relaxed">{story.content}</p>
+
+                  {/* Story Image */}
+                  {story.image_url && (
+                    <div className="mb-4 rounded-xl overflow-hidden">
+                      <img 
+                        src={story.image_url} 
+                        alt="Story image"
+                        className="w-full h-48 object-cover hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Story Actions */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleLike(story.id)}
+                        disabled={!isAuthenticated}
+                        className="text-gray-600 hover:text-red-500 transition-colors"
+                      >
+                        <Heart className="h-4 w-4 mr-1" />
+                        {story.likes}
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleComments(story.id)}
+                        className="text-gray-600 hover:text-blue-500 transition-colors"
+                      >
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        {comments[story.id]?.length || 0}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Comments Section */}
+                  {showComments[story.id] && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      {/* Existing Comments */}
+                      {comments[story.id]?.map((comment) => (
+                        <div key={comment.id} className="mb-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-sm text-gray-900">{comment.user_name}</span>
+                            <span className="text-xs text-gray-500">
+                              {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-800">{comment.content}</p>
+                        </div>
+                      ))}
+
+                      {/* Add Comment */}
+                      {isAuthenticated ? (
+                        <div className="flex gap-2 mt-3">
+                          <Input
+                            placeholder="Add a comment..."
+                            value={newComments[story.id] || ''}
+                            onChange={(e) => setNewComments(prev => ({ 
+                              ...prev, 
+                              [story.id]: e.target.value 
+                            }))}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                handleAddComment(story.id);
+                              }
+                            }}
+                            className="flex-1"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={() => handleAddComment(story.id)}
+                            disabled={!newComments[story.id]?.trim()}
+                          >
+                            Post
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 text-center mt-3">
+                          Please sign in to add comments
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>
+
+        {stories.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">✨</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No stories yet</h3>
+            <p className="text-gray-600">Be the first to share your beauty journey!</p>
+          </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 };
 
