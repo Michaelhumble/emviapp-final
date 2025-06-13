@@ -1,657 +1,445 @@
 
-import FreelancerDashboardLayout from "@/components/dashboard/freelancer/FreelancerDashboardLayout";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Heart, 
-  MessageCircle, 
-  Share2, 
-  Users, 
-  Sparkles, 
-  Star, 
-  Trophy, 
-  Play,
-  ChevronRight,
-  Calendar,
-  Award,
-  BookOpen,
-  Headphones,
-  Camera,
-  MessageSquare
+  Heart, MessageCircle, Share2, TrendingUp, Users, Award,
+  Play, Search, Filter, ChevronRight, Star, MapPin,
+  Calendar, Clock, BookOpen, Mic, Video, Camera,
+  Target, Trophy, Gift, Zap, ThumbsUp, Eye, Bell
 } from "lucide-react";
-import { useState } from "react";
+import Layout from "@/components/layout/Layout";
 
-// Fixed TypeScript interface for posts
-interface CommunityPost {
-  id: number;
-  author: string;
-  role: string;
-  content: string;
-  image?: string;
-  likes: number;
-  comments: number;
-  timeAgo: string;
-  trending?: boolean;
-  pinned?: boolean;
-  unanswered?: boolean;
-}
+export default function FreelancersCommunity() {
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [newPost, setNewPost] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-export default function FreelancerDashboard() {
-  const [activeCategory, setActiveCategory] = useState("All Posts");
-  const [postContent, setPostContent] = useState("");
-  const [onlineCount] = useState(2847);
-
-  // Sample community posts with fixed TypeScript structure
-  const communityPosts: CommunityPost[] = [
+  // Mock data for posts
+  const posts = [
     {
       id: 1,
-      author: "Sarah Chen",
-      role: "Nail Artist",
-      content: "Just finished this gorgeous set! Loving the new chrome technique I learned. Any tips for making it last longer? 💅✨",
-      image: "/lovable-uploads/nail-art-example.jpg",
-      likes: 124,
-      comments: 18,
-      timeAgo: "2 hours ago",
-      trending: true,
-      pinned: true
+      author: "Sarah M.",
+      avatar: "/lovable-uploads/avatar1.jpg",
+      time: "2 hours ago",
+      content: "Just completed my first bridal makeup! The bride was absolutely glowing. Any tips for wedding day timeline management?",
+      image: "/lovable-uploads/bridal-makeup.jpg",
+      likes: 24,
+      comments: 8,
+      category: "advice"
     },
     {
       id: 2,
-      author: "Marcus Rodriguez",
-      role: "Hair Stylist",
-      content: "Looking for a color specialist to collaborate with in Miami area. I have a client wanting a complex rainbow ombre. Will split the fee 50/50!",
+      author: "Mike Chen",
+      avatar: "/lovable-uploads/avatar2.jpg",
+      time: "4 hours ago",
+      content: "Opened my second salon location today! Dreams do come true with hard work and this amazing community's support 💪",
       likes: 89,
-      comments: 24,
-      timeAgo: "4 hours ago",
-      unanswered: true
+      comments: 23,
+      category: "wins"
     },
     {
       id: 3,
-      author: "Elena Vasquez",
-      role: "Lash Technician",
-      content: "CELEBRATION TIME! 🎉 Just hit my first $10K month! Thank you to this amazing community for all the support and advice. You all made this possible!",
-      likes: 256,
-      comments: 67,
-      timeAgo: "6 hours ago",
-      trending: true
-    },
-    {
-      id: 4,
-      author: "David Kim",
-      role: "Barber",
-      content: "Question for the experienced barbers: What's your go-to technique for blending on thick, coarse hair? Client coming in tomorrow and I want to nail it!",
-      likes: 45,
-      comments: 31,
-      timeAgo: "8 hours ago",
-      unanswered: true
+      author: "Luna Rodriguez",
+      avatar: "/lovable-uploads/avatar3.jpg",
+      time: "6 hours ago",
+      content: "Looking for a nail artist to collaborate on a photoshoot next week in downtown LA. Split the portfolio benefits!",
+      likes: 15,
+      comments: 12,
+      category: "collaboration"
     }
   ];
 
   const categories = [
-    "All Posts", "Advice", "Find Work", "Promote Yourself", 
-    "Local Meetups", "Wins & Success", "Collaborations"
+    { id: 'all', name: 'All Posts', count: 156 },
+    { id: 'advice', name: 'Advice', count: 42 },
+    { id: 'wins', name: 'Wins & Success', count: 28 },
+    { id: 'collaboration', name: 'Collaborations', count: 19 },
+    { id: 'local', name: 'Local Meetups', count: 8 },
+    { id: 'promote', name: 'Promote Yourself', count: 34 }
   ];
 
-  const trendingHashtags = [
-    "#NailArt", "#HairColor", "#LashExtensions", "#BeautyTips", 
-    "#ClientWins", "#TechniqueShare", "#ProductReview"
+  const trendingTopics = [
+    "#BridalSeason2024", "#ColorCorrection", "#NailArt", "#SalonOwnerTips",
+    "#BeautyTrends", "#ClientRetention", "#InstagramMarketing"
   ];
 
-  // User Spotlights Data
-  const userSpotlights = [
-    {
-      name: "Maria Santos",
-      role: "Master Esthetician",
-      achievement: "Built 6-figure skincare practice",
-      image: "/lovable-uploads/spotlight-1.jpg",
-      story: "From working part-time to owning 3 locations"
-    },
-    {
-      name: "James Thompson",
-      role: "Celebrity Colorist",
-      achievement: "Featured in Vogue Magazine",
-      image: "/lovable-uploads/spotlight-2.jpg", 
-      story: "Self-taught artist now styling A-list celebrities"
-    },
-    {
-      name: "Aisha Patel",
-      role: "Nail Entrepreneur", 
-      achievement: "Launched successful nail line",
-      image: "/lovable-uploads/spotlight-3.jpg",
-      story: "Turned Instagram hobby into million-dollar brand"
-    }
+  const achievements = [
+    { icon: Trophy, name: "Top Contributor", color: "text-yellow-500" },
+    { icon: Star, name: "5-Star Reviews", color: "text-blue-500" },
+    { icon: Users, name: "Community Leader", color: "text-purple-500" },
+    { icon: Target, name: "Goal Crusher", color: "text-green-500" }
   ];
 
-  // Weekly Challenges
-  const weeklyChallenge = {
-    title: "Holiday Glam Challenge",
-    description: "Show us your most festive holiday look!",
-    submissions: 156,
-    timeLeft: "3 days left",
-    prize: "$500 + Feature"
-  };
-
-  // Success Feed Data
-  const successFeed = [
-    "💰 Jessica M. just earned $1,200 this week!",
-    "🎉 Carlos got hired at premium salon!",
-    "⭐ Rachel reached 1000 Instagram followers!",
-    "💎 Michael completed advanced certification!",
-    "🏆 Sophia won local beauty competition!"
+  const successTicker = [
+    "Sarah from NY just booked $500 client!",
+    "Mike opened his 2nd salon location!",
+    "Luna got featured in Beauty Magazine!",
+    "Jessica hit $10K monthly revenue!",
+    "Alex completed advanced color certification!"
   ];
 
-  // FAQ Data
-  const faqs = [
-    {
-      question: "How do I get my first clients as a new artist?",
-      answer: "Start by offering discounted services to friends and family, build a portfolio on social media, partner with local salons, and always ask satisfied clients for referrals."
-    },
-    {
-      question: "What's the best way to price my services?",
-      answer: "Research local market rates, factor in your experience level, costs, and desired profit margin. Start competitive and increase prices as you build clientele and expertise."
-    },
-    {
-      question: "How can I handle difficult clients?",
-      answer: "Stay professional, listen actively, set clear boundaries, document everything, and don't hesitate to refer them elsewhere if needed. Your mental health matters."
-    },
-    {
-      question: "Should I work at a salon or go independent?",
-      answer: "Salons offer stability and learning opportunities but take commission. Independence offers higher earnings but requires business skills. Consider your experience level and goals."
-    },
-    {
-      question: "How do I build my social media presence?",
-      answer: "Post consistently, use relevant hashtags, engage with other artists, share behind-the-scenes content, and always showcase your best work with good lighting."
-    }
-  ];
+  const [currentTicker, setCurrentTicker] = useState(0);
 
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [currentSuccessIndex, setCurrentSuccessIndex] = useState(0);
-
-  // Auto-rotate success feed
-  useState(() => {
+  React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSuccessIndex((prev) => (prev + 1) % successFeed.length);
+      setCurrentTicker((prev) => (prev + 1) % successTicker.length);
     }, 3000);
     return () => clearInterval(interval);
-  });
+  }, []);
+
+  const handlePostSubmit = () => {
+    if (newPost.trim()) {
+      // In real app, this would create a new post
+      setNewPost('');
+      // Show success feedback
+    }
+  };
 
   return (
-    <FreelancerDashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 text-white py-16">
-          <div className="max-w-6xl mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
-              Welcome to Your Beauty Community
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90">
-              Connect, Inspire, Learn, and Grow Together
-            </p>
-            <div className="flex items-center justify-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 w-fit mx-auto">
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="font-semibold">{onlineCount.toLocaleString()} beauty pros online now</span>
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+        {/* Fixed Header */}
+        <div className="sticky top-16 z-40 bg-white/95 backdrop-blur-md border-b border-purple-100 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold font-serif bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Beauty Community
+                </h1>
+                <p className="text-gray-600 text-sm md:text-base">Connect, inspire, learn, and grow together</p>
+              </div>
+              
+              {/* Search Bar */}
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search posts, topics, or members..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-white/80 border-purple-200 focus:border-purple-400 transition-colors"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
-          {/* Start a Post Section */}
-          <Card className="mb-8 shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                    You
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <Input
-                    placeholder="What's on your mind? Share your story or ask a question!"
-                    value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}
-                    className="mb-4 text-lg border-2 border-purple-200 focus:border-purple-500"
-                  />
-                  <div className="flex gap-2 justify-between">
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex items-center gap-2">
-                        <Camera className="h-4 w-4" />
-                        Photo
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Poll
-                      </Button>
-                    </div>
-                    <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                      Post to Community
-                    </Button>
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            {/* Sidebar */}
+            <div className="lg:col-span-1 space-y-4">
+              {/* Online Members Counter */}
+              <Card className="border-purple-200 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-gray-600">Online now</span>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="text-2xl font-bold text-purple-600">2,847</div>
+                  <div className="text-sm text-gray-500">Active members</div>
+                </CardContent>
+              </Card>
 
-          <div className="grid lg:grid-cols-4 gap-8">
-            {/* Main Feed */}
-            <div className="lg:col-span-3 space-y-8">
-              {/* User Spotlights Carousel */}
-              <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+              {/* Categories */}
+              <Card className="border-purple-200 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Categories</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setActiveFilter(category.id)}
+                      className={`w-full flex items-center justify-between p-3 hover:bg-purple-50 transition-colors ${
+                        activeFilter === category.id ? 'bg-purple-100 border-r-2 border-purple-500' : ''
+                      }`}
+                    >
+                      <span className={`text-sm ${activeFilter === category.id ? 'font-medium text-purple-700' : 'text-gray-600'}`}>
+                        {category.name}
+                      </span>
+                      <Badge variant="secondary" className="text-xs">
+                        {category.count}
+                      </Badge>
+                    </button>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Trending Topics */}
+              <Card className="border-purple-200 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Trending</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {trendingTopics.map((topic, index) => (
+                    <button
+                      key={index}
+                      className="block w-full text-left p-2 text-sm text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+                    >
+                      {topic}
+                    </button>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Achievement Badges */}
+              <Card className="border-purple-200 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Your Achievements</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-2">
+                  {achievements.map((achievement, index) => (
+                    <div key={index} className="flex flex-col items-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <achievement.icon className={`h-6 w-6 ${achievement.color} mb-1`} />
+                      <span className="text-xs text-center text-gray-600">{achievement.name}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Main Content */}
+            <div className="lg:col-span-3 space-y-6">
+              
+              {/* Success Ticker */}
+              <Card className="border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    <div className="text-green-700 font-medium animate-pulse">
+                      🎉 {successTicker[currentTicker]}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Create Post */}
+              <Card className="border-purple-200 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-4">
+                  <div className="flex gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src="/lovable-uploads/default-avatar.jpg" />
+                      <AvatarFallback>You</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-3">
+                      <Textarea
+                        placeholder="What's on your mind? Share your story or ask a question!"
+                        value={newPost}
+                        onChange={(e) => setNewPost(e.target.value)}
+                        className="resize-none border-purple-200 focus:border-purple-400"
+                        rows={3}
+                      />
+                      <div className="flex items-center justify-between">
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="sm" className="text-purple-600 hover:bg-purple-100">
+                            <Camera className="h-4 w-4 mr-1" />
+                            Photo
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-purple-600 hover:bg-purple-100">
+                            <Video className="h-4 w-4 mr-1" />
+                            Video
+                          </Button>
+                        </div>
+                        <Button 
+                          onClick={handlePostSubmit}
+                          disabled={!newPost.trim()}
+                          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-200"
+                        >
+                          Share
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Filter Tabs */}
+              <Tabs defaultValue="hot" className="w-full">
+                <TabsList className="grid w-full grid-cols-3 bg-white/80 border border-purple-200">
+                  <TabsTrigger value="hot" className="data-[state=active]:bg-purple-100">🔥 Hot Now</TabsTrigger>
+                  <TabsTrigger value="new" className="data-[state=active]:bg-purple-100">⭐ New</TabsTrigger>
+                  <TabsTrigger value="unanswered" className="data-[state=active]:bg-purple-100">❓ Unanswered</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="hot" className="space-y-4 mt-4">
+                  {posts.map((post) => (
+                    <Card key={post.id} className="border-purple-200 bg-white/80 backdrop-blur-sm hover:shadow-md transition-all duration-200">
+                      <CardContent className="p-4">
+                        <div className="flex gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={post.avatar} />
+                            <AvatarFallback>{post.author[0]}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-medium text-gray-900">{post.author}</span>
+                              <span className="text-sm text-gray-500">{post.time}</span>
+                              <Badge variant="outline" className="text-xs">
+                                {post.category}
+                              </Badge>
+                            </div>
+                            <p className="text-gray-700 mb-3">{post.content}</p>
+                            {post.image && (
+                              <div className="mb-3">
+                                <img 
+                                  src={post.image} 
+                                  alt="Post content" 
+                                  className="w-full max-w-md rounded-lg object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="flex items-center gap-4">
+                              <button className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors group">
+                                <Heart className="h-4 w-4 group-hover:fill-current" />
+                                <span className="text-sm">{post.likes}</span>
+                              </button>
+                              <button className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+                                <MessageCircle className="h-4 w-4" />
+                                <span className="text-sm">{post.comments}</span>
+                              </button>
+                              <button className="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors">
+                                <Share2 className="h-4 w-4" />
+                                <span className="text-sm">Share</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="new" className="space-y-4 mt-4">
+                  <div className="text-center py-8 text-gray-500">
+                    <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>New posts will appear here</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="unanswered" className="space-y-4 mt-4">
+                  <div className="text-center py-8 text-gray-500">
+                    <MessageCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>Questions waiting for answers will appear here</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              {/* User Spotlights */}
+              <Card className="border-purple-200 bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-amber-500" />
+                    <Star className="h-5 w-5 text-yellow-500" />
                     Community Spotlights
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid md:grid-cols-3 gap-4">
-                    {userSpotlights.map((spotlight, index) => (
-                      <div key={index} className="text-center p-4 bg-white/60 rounded-lg">
-                        <Avatar className="h-16 w-16 mx-auto mb-3">
-                          <AvatarFallback className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                            {spotlight.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <h3 className="font-semibold">{spotlight.name}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{spotlight.role}</p>
-                        <Badge variant="outline" className="mb-2">{spotlight.achievement}</Badge>
-                        <p className="text-xs text-gray-500">{spotlight.story}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src="/lovable-uploads/spotlight1.jpg" />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">Jessica D.</div>
+                        <div className="text-sm text-gray-600">Master Colorist</div>
+                        <div className="text-xs text-purple-600">Featured for innovation</div>
                       </div>
-                    ))}
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src="/lovable-uploads/spotlight2.jpg" />
+                        <AvatarFallback>RM</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">Roberto M.</div>
+                        <div className="text-sm text-gray-600">Salon Owner</div>
+                        <div className="text-xs text-blue-600">Community Helper</div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Weekly Challenge */}
-              <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
+              <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-emerald-500" />
-                    Weekly Challenge
+                    <Target className="h-5 w-5 text-orange-500" />
+                    This Week's Challenge
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-emerald-700">{weeklyChallenge.title}</h3>
-                      <p className="text-gray-600">{weeklyChallenge.description}</p>
-                    </div>
-                    <Badge className="bg-emerald-500">{weeklyChallenge.prize}</Badge>
-                  </div>
-                  <div className="flex gap-4 text-sm text-gray-600 mb-4">
-                    <span>📸 {weeklyChallenge.submissions} submissions</span>
-                    <span>⏰ {weeklyChallenge.timeLeft}</span>
-                  </div>
-                  <Button className="bg-emerald-500 hover:bg-emerald-600">
-                    Submit Entry
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Live Success Feed */}
-              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="font-semibold text-green-700">Live Success Feed</span>
-                  </div>
-                  <p className="text-lg font-medium animate-fade-in">
-                    {successFeed[currentSuccessIndex]}
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Community Feed Filters */}
-              <Card>
-                <CardHeader>
-                  <div className="flex flex-wrap gap-2">
-                    {categories.map((category) => (
-                      <Button
-                        key={category}
-                        variant={activeCategory === category ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setActiveCategory(category)}
-                        className={activeCategory === category ? "bg-purple-500" : ""}
-                      >
-                        {category}
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-orange-900">"Natural Glow Transformation"</h3>
+                    <p className="text-sm text-orange-700">
+                      Share your best natural makeup look that enhances client's natural beauty. 
+                      Vote for your favorites and win exclusive prizes!
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-orange-600">47 entries so far</div>
+                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+                        Join Challenge
                       </Button>
-                    ))}
-                  </div>
-                </CardHeader>
-              </Card>
-
-              {/* Community Posts */}
-              <div className="space-y-6">
-                {communityPosts.map((post) => (
-                  <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                            {post.author.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-semibold">{post.author}</span>
-                            <Badge variant="outline" className="text-xs">{post.role}</Badge>
-                            {post.pinned && <Badge className="bg-yellow-500">📌 Pinned</Badge>}
-                            {post.trending && <Badge className="bg-red-500">🔥 Trending</Badge>}
-                            {post.unanswered && <Badge variant="outline" className="text-orange-600 border-orange-600">❓ Needs Answer</Badge>}
-                            <span className="text-sm text-gray-500 ml-auto">{post.timeAgo}</span>
-                          </div>
-                          <p className="mb-4">{post.content}</p>
-                          {post.image && (
-                            <div className="mb-4 rounded-lg overflow-hidden">
-                              <div className="w-full h-48 bg-gradient-to-r from-purple-200 to-pink-200 flex items-center justify-center text-gray-600">
-                                📸 Image Preview
-                              </div>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-6">
-                            <button className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors">
-                              <Heart className="h-4 w-4" />
-                              <span>{post.likes}</span>
-                            </button>
-                            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
-                              <MessageCircle className="h-4 w-4" />
-                              <span>{post.comments}</span>
-                            </button>
-                            <button className="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors">
-                              <Share2 className="h-4 w-4" />
-                              Share
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Interactive Tutorials Section */}
-              <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-blue-500" />
-                    Quick Learning Hub
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-white/60 rounded-lg cursor-pointer hover:bg-white/80 transition-colors">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Play className="h-8 w-8 text-blue-500" />
-                        <div>
-                          <h3 className="font-semibold">Perfect Winged Eyeliner</h3>
-                          <p className="text-sm text-gray-600">5 min tutorial</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-4 bg-white/60 rounded-lg cursor-pointer hover:bg-white/80 transition-colors">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Play className="h-8 w-8 text-blue-500" />
-                        <div>
-                          <h3 className="font-semibold">Client Consultation Tips</h3>
-                          <p className="text-sm text-gray-600">8 min tutorial</p>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Experience Sharing Module */}
-              <Card className="bg-gradient-to-r from-rose-50 to-pink-50 border-rose-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-rose-500" />
-                    Share Your Journey
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    This is a safe space for all beauty professionals to share stories, lessons learned, and personal journeys. 
-                    Your experience could inspire someone else's breakthrough! ✨
-                  </p>
-                  <Button className="bg-rose-500 hover:bg-rose-600">
-                    Share Your Story
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Embedded Podcast Section */}
-              <Card className="bg-gradient-to-r from-violet-50 to-purple-50 border-violet-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Headphones className="h-5 w-5 text-violet-500" />
-                    Beauty Industry Podcast
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <h3 className="font-semibold mb-2">Latest Episode: "Building Your Beauty Empire"</h3>
-                    <p className="text-sm text-gray-600 mb-4">Featuring successful salon owner Maria Rodriguez sharing her journey from solo artist to multi-location success.</p>
-                    <div className="flex items-center gap-4">
-                      <Button size="sm" className="bg-violet-500 hover:bg-violet-600">
-                        <Play className="h-4 w-4 mr-2" />
-                        Play Episode
-                      </Button>
-                      <span className="text-sm text-gray-500">42 min</span>
+              {/* Coming Soon Features */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className="border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <MessageCircle className="h-5 w-5 text-indigo-500" />
+                      <span className="font-medium text-indigo-900">Direct Messaging</span>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Q&A Starter Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Frequently Asked Questions - New Member Guide</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {faqs.slice(0, 5).map((faq, index) => (
-                      <div key={index} className="border rounded-lg">
-                        <button
-                          className="w-full p-4 text-left hover:bg-gray-50 flex justify-between items-center"
-                          onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                        >
-                          <span className="font-medium">{faq.question}</span>
-                          <ChevronRight className={`h-4 w-4 transition-transform ${expandedFaq === index ? 'rotate-90' : ''}`} />
-                        </button>
-                        {expandedFaq === index && (
-                          <div className="p-4 pt-0 text-gray-600">
-                            {faq.answer}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Coming Soon Sections */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card className="bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5 text-yellow-600" />
-                      Live Q&A Sessions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">Join weekly live sessions with industry experts!</p>
-                    <Badge className="bg-yellow-500 mb-3">Coming Soon</Badge>
-                    <br />
-                    <Button variant="outline" className="border-yellow-500 text-yellow-700">
+                    <p className="text-sm text-indigo-700 mb-3">
+                      Private conversations with community members coming soon!
+                    </p>
+                    <Button size="sm" variant="outline" className="border-indigo-300 text-indigo-600 hover:bg-indigo-100">
                       Join Waitlist
                     </Button>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-r from-cyan-50 to-blue-50 border-cyan-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-cyan-600" />
-                      Group Chats & Private Discussions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 mb-4">Connect in specialized groups and private conversations!</p>
-                    <Badge className="bg-cyan-500 mb-3">Coming Soon</Badge>
-                    <br />
-                    <Button variant="outline" className="border-cyan-500 text-cyan-700">
-                      Early Access
+                <Card className="border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Users className="h-5 w-5 text-emerald-500" />
+                      <span className="font-medium text-emerald-900">Group Chats</span>
+                    </div>
+                    <p className="text-sm text-emerald-700 mb-3">
+                      Join specialized groups for focused discussions and networking.
+                    </p>
+                    <Button size="sm" variant="outline" className="border-emerald-300 text-emerald-600 hover:bg-emerald-100">
+                      Get Early Access
                     </Button>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Sponsored Partners Section */}
+              {/* Sponsored Partners */}
               <Card className="border-2 border-dashed border-gray-300 bg-gray-50/50">
-                <CardHeader>
-                  <CardTitle className="text-center text-gray-600">
-                    💎 Sponsored Partners
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center text-gray-500">
-                    <p className="mb-4">Premium placement for beauty industry partners</p>
-                    <Button variant="outline" className="border-gray-400">
-                      Become a Partner
-                    </Button>
+                <CardContent className="p-6 text-center">
+                  <div className="text-sm text-gray-500 mb-2">Sponsored Partners</div>
+                  <div className="text-gray-400">
+                    Premium placement for beauty industry partners
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Trending Profiles */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-500" />
-                    Trending Profiles
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                          U{i}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="font-medium">User {i}</p>
-                        <p className="text-sm text-gray-500">Nail Artist</p>
-                      </div>
-                      <Button size="sm" variant="outline">Follow</Button>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Trending Hashtags */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Trending Topics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {trendingHashtags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="cursor-pointer hover:bg-purple-50">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Reward System */}
-              <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-amber-500" />
-                    Your Achievements
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-amber-500">🏆</Badge>
-                      <span className="text-sm">Community Helper</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-blue-500">💎</Badge>
-                      <span className="text-sm">Early Adopter</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-green-500">⭐</Badge>  
-                      <span className="text-sm">Active Member</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Polls & Trend Voting */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>What's the Next Big Trend?</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {["Glass Skin Makeup", "Sustainable Beauty", "Virtual Consultations", "DIY Beauty Kits"].map((option, index) => (
-                      <button key={index} className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-                        <div className="flex justify-between">
-                          <span>{option}</span>
-                          <span className="text-sm text-gray-500">{Math.floor(Math.random() * 30 + 10)}%</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                  <Button className="w-full mt-4" variant="outline">
-                    Suggest New Trend
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Live Chat Teaser */}
-              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5 text-green-500" />
-                    Join the Chat!
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Real-time conversations with beauty professionals worldwide.
-                  </p>
-                  <Badge className="bg-green-500 mb-3">Coming Soon</Badge>
-                  <br />
-                  <Button variant="outline" className="border-green-500 text-green-700" size="sm">
-                    Get Notified
+                  <Button variant="ghost" size="sm" className="mt-2 text-gray-500">
+                    Learn More
                   </Button>
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </div>
-
-        {/* Motivational Banner */}
-        <div className="mt-16 bg-gradient-to-r from-rose-500 to-pink-500 text-white py-8">
-          <div className="max-w-4xl mx-auto text-center px-4">
-            <p className="text-lg md:text-xl font-medium mb-2">
-              "Every expert was once a beginner. Every pro was once an amateur. ✨"
-            </p>
-            <p className="text-sm opacity-80">Inspired by Sunshine ☀️</p>
           </div>
         </div>
       </div>
-    </FreelancerDashboardLayout>
+    </Layout>
   );
 }
