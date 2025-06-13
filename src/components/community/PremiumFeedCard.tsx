@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Share2, TrendingUp, Crown, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import CommentsSection from './CommentsSection';
 
 interface PremiumFeedCardProps {
   post: {
@@ -26,6 +27,7 @@ interface PremiumFeedCardProps {
 const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
+  const [showComments, setShowComments] = useState(false);
 
   const levelColors = {
     Bronze: 'from-orange-400 to-orange-600',
@@ -46,6 +48,10 @@ const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
   };
 
   return (
@@ -115,7 +121,10 @@ const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
               <span className="font-medium">{likeCount}</span>
             </motion.button>
             
-            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+            <button 
+              onClick={toggleComments}
+              className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors"
+            >
               <MessageCircle className="h-5 w-5" />
               <span className="font-medium">{post.comments}</span>
             </button>
@@ -133,6 +142,13 @@ const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
             </div>
           )}
         </div>
+
+        {/* Comments Section */}
+        {showComments && (
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <CommentsSection storyId={post.id} />
+          </div>
+        )}
       </div>
     </motion.div>
   );

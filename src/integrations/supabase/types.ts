@@ -663,6 +663,41 @@ export type Database = {
         }
         Relationships: []
       }
+      cta_interactions: {
+        Row: {
+          created_at: string
+          cta_type: string
+          id: string
+          metadata: Json | null
+          story_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cta_type: string
+          id?: string
+          metadata?: Json | null
+          story_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cta_type?: string
+          id?: string
+          metadata?: Json | null
+          story_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cta_interactions_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "community_stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_credits: {
         Row: {
           action_type: string
