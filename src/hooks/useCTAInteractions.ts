@@ -3,10 +3,18 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
+import { useVoting } from './useVoting';
+import { useContests } from './useContests';
+import { useApplications } from './useApplications';
+import { useWaitlist } from './useWaitlist';
 
 export const useCTAInteractions = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
+  const { submitVote } = useVoting();
+  const { enterContest } = useContests();
+  const { submitApplication } = useApplications();
+  const { joinWaitlist } = useWaitlist();
 
   const handleCTAClick = async (
     ctaType: string, 
@@ -21,6 +29,7 @@ export const useCTAInteractions = () => {
     setIsLoading(true);
     
     try {
+      // Record the interaction first
       const { error } = await supabase
         .from('cta_interactions')
         .insert({
@@ -32,28 +41,47 @@ export const useCTAInteractions = () => {
 
       if (error) throw error;
 
-      // Show appropriate success message based on CTA type
+      // Handle specific CTA actions
+      let actionResult = true;
+      
       switch (ctaType) {
         case 'vote_now':
-          toast.success('Vote recorded successfully!');
+          if (storyId) {
+            actionResult = await submitVote(storyId, 'community_story');
+          }
           break;
+          
         case 'enter_contest':
-          toast.success('Contest entry submitted!');
+          // Use the first active contest for demo purposes
+          const contestId = metadata?.contestId || 'demo-contest';
+          actionResult = await enterContest(contestId, metadata);
           break;
+          
         case 'apply_now':
-          toast.success('Application submitted!');
+          actionResult = await submitApplication(
+            metadata?.applicationType || 'general_application',
+            storyId,
+            metadata
+          );
           break;
+          
         case 'join_waitlist':
-          toast.success('Added to waitlist!');
+          actionResult = await joinWaitlist(
+            metadata?.waitlistType || 'premium_features',
+            metadata
+          );
           break;
+          
         case 'upgrade_premium':
-          toast.success('Upgrade request noted!');
+          // For now, just show success message - Stripe integration would go here
+          toast.success('Premium upgrade request noted! Our team will contact you soon.');
           break;
+          
         default:
           toast.success('Action completed!');
       }
 
-      return true;
+      return actionResult;
     } catch (error) {
       console.error('Error recording CTA interaction:', error);
       toast.error('Failed to complete action. Please try again.');

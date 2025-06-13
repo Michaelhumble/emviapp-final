@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Camera, Send, AlertTriangle } from 'lucide-react';
+import { Camera, Send, AlertTriangle, Upload, X } from 'lucide-react';
 import { useCommunityStories } from '@/hooks/useCommunityStories';
 import { useAuth } from '@/context/auth';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -12,8 +11,9 @@ const CommunityStoryForm = () => {
   const { addStory, isLoading } = useCommunityStories();
   const { user } = useAuth();
   const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showWarning, setShowWarning] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleContentChange = (value: string) => {
     setContent(value);
@@ -27,6 +27,37 @@ const CommunityStoryForm = () => {
     setShowWarning(hasBusinessContent);
   };
 
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file');
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+
+      setSelectedFile(file);
+      
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -34,10 +65,14 @@ const CommunityStoryForm = () => {
       return;
     }
 
-    const success = await addStory(content, imageUrl || undefined);
+    const success = await addStory(content, selectedFile || undefined);
     if (success) {
       setContent('');
-      setImageUrl('');
+      setSelectedFile(null);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
       setShowWarning(false);
     }
   };
@@ -80,13 +115,41 @@ const CommunityStoryForm = () => {
           maxLength={1000}
         />
 
-        <Input
-          type="url"
-          placeholder="Add an image URL (optional)"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="border-gray-200 focus:border-purple-300"
-        />
+        {/* File Upload Section */}
+        <div className="space-y-3">
+          <input
+            type="file"
+            id="image-upload"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          
+          {previewUrl ? (
+            <div className="relative inline-block">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded-lg border"
+              />
+              <button
+                type="button"
+                onClick={removeSelectedFile}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ) : (
+            <label
+              htmlFor="image-upload"
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-purple-600 cursor-pointer border-2 border-dashed border-gray-300 hover:border-purple-300 rounded-lg p-4 transition-colors"
+            >
+              <Upload className="h-4 w-4" />
+              <span>Upload a photo to showcase your work</span>
+            </label>
+          )}
+        </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-gray-500">

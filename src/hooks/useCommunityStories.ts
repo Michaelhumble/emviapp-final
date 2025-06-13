@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
+import { useImageUpload } from './useImageUpload';
 
 interface CommunityStory {
   id: string;
@@ -22,6 +23,7 @@ export const useCommunityStories = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [newStory, setNewStory] = useState('');
   const { user } = useAuth();
+  const { uploadImage, isUploading } = useImageUpload();
 
   // Fetch community stories only
   const fetchStories = async () => {
@@ -44,8 +46,8 @@ export const useCommunityStories = () => {
     }
   };
 
-  // Add a new community story with strict validation
-  const addStory = async (content: string, imageUrl?: string) => {
+  // Add a new community story with file upload support
+  const addStory = async (content: string, imageFile?: File) => {
     if (!user) {
       toast.error('Please sign in to share your story');
       return false;
@@ -68,6 +70,18 @@ export const useCommunityStories = () => {
     setIsLoading(true);
     
     try {
+      let imageUrl = null;
+      
+      // Upload image if provided
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+        if (!imageUrl) {
+          // Upload failed, but we already showed an error message
+          setIsLoading(false);
+          return false;
+        }
+      }
+
       const { error } = await supabase
         .from('community_stories')
         .insert({
@@ -88,6 +102,7 @@ export const useCommunityStories = () => {
 
       setNewStory('');
       toast.success('Story shared successfully!');
+      await fetchStories(); // Refresh stories
       return true;
     } catch (error) {
       console.error('Error adding story:', error);
@@ -124,7 +139,7 @@ export const useCommunityStories = () => {
 
   return {
     stories,
-    isLoading,
+    isLoading: isLoading || isUploading,
     newStory,
     setNewStory,
     addStory

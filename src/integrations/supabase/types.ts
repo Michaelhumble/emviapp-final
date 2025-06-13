@@ -36,6 +36,36 @@ export type Database = {
         }
         Relationships: []
       }
+      applications: {
+        Row: {
+          application_data: Json | null
+          application_type: string
+          id: string
+          status: string
+          submitted_at: string
+          target_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          application_data?: Json | null
+          application_type: string
+          id?: string
+          status?: string
+          submitted_at?: string
+          target_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          application_data?: Json | null
+          application_type?: string
+          id?: string
+          status?: string
+          submitted_at?: string
+          target_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           artist_id: string
@@ -591,6 +621,71 @@ export type Database = {
           name?: string
           status?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      contest_entries: {
+        Row: {
+          contest_id: string | null
+          entry_data: Json | null
+          id: string
+          submitted_at: string
+          user_id: string | null
+        }
+        Insert: {
+          contest_id?: string | null
+          entry_data?: Json | null
+          id?: string
+          submitted_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          contest_id?: string | null
+          entry_data?: Json | null
+          id?: string
+          submitted_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contest_entries_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "contests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contests: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string
+          id: string
+          max_entries: number | null
+          start_date: string
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date: string
+          id?: string
+          max_entries?: number | null
+          start_date?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          max_entries?: number | null
+          start_date?: string
+          status?: string
+          title?: string
         }
         Relationships: []
       }
@@ -2500,6 +2595,33 @@ export type Database = {
           },
         ]
       }
+      votes: {
+        Row: {
+          created_at: string
+          id: string
+          target_id: string
+          target_type: string
+          user_id: string | null
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          target_id: string
+          target_type: string
+          user_id?: string | null
+          vote_type?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          target_id?: string
+          target_type?: string
+          user_id?: string | null
+          vote_type?: string
+        }
+        Relationships: []
+      }
       waitlist_requests: {
         Row: {
           created_at: string
@@ -2530,6 +2652,33 @@ export type Database = {
           status?: string | null
           updated_at?: string
           user_type?: string
+        }
+        Relationships: []
+      }
+      waitlists: {
+        Row: {
+          id: string
+          joined_at: string
+          metadata: Json | null
+          status: string
+          user_id: string | null
+          waitlist_type: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          metadata?: Json | null
+          status?: string
+          user_id?: string | null
+          waitlist_type: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          metadata?: Json | null
+          status?: string
+          user_id?: string | null
+          waitlist_type?: string
         }
         Relationships: []
       }

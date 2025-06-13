@@ -10,6 +10,7 @@ interface CTAButtonProps {
   className?: string;
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive';
   size?: 'default' | 'sm' | 'lg' | 'icon';
+  metadata?: Record<string, any>;
 }
 
 const CTAButton: React.FC<CTAButtonProps> = ({ 
@@ -18,12 +19,13 @@ const CTAButton: React.FC<CTAButtonProps> = ({
   storyId, 
   className,
   variant = 'default',
-  size = 'default'
+  size = 'default',
+  metadata
 }) => {
   const { handleCTAClick, isLoading } = useCTAInteractions();
 
   const handleClick = async () => {
-    await handleCTAClick(type, storyId);
+    await handleCTAClick(type, storyId, metadata);
   };
 
   return (
