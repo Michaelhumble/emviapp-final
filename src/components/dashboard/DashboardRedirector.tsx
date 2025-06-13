@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 import { useAuth } from "@/context/auth";
+import { normalizeRole } from "@/utils/roles";
+import { UserRole } from "@/context/auth/types";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 
 interface DashboardRedirectorProps {
@@ -70,7 +72,13 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      navigateToRoleDashboard(navigate, profile.role);
+      // Normalize the role before using it
+      const normalizedRole = normalizeRole(profile.role);
+      if (normalizedRole) {
+        navigateToRoleDashboard(navigate, normalizedRole);
+      } else {
+        setShowRoleModal(true);
+      }
       
     } catch (error) {
       setRedirectError("Unable to determine your user role. Please try again or select a role.");

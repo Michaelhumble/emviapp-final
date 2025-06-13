@@ -56,6 +56,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Refresh user profile function
+  const refreshUserProfile = async (): Promise<boolean> => {
+    if (user?.id) {
+      try {
+        await fetchUserProfile(user.id);
+        return true;
+      } catch (error) {
+        console.error('Error refreshing user profile:', error);
+        return false;
+      }
+    }
+    return false;
+  };
+
   // Initialize auth state
   useEffect(() => {
     // Check for existing new user status
@@ -163,11 +177,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isNewUser,
     clearIsNewUser,
     setLoading: setLoadingState,
-    refreshUserProfile: () => {
-      if (user?.id) {
-        fetchUserProfile(user.id);
-      }
-    }
+    refreshUserProfile
   };
 
   return (
