@@ -1,0 +1,74 @@
+
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles, Users, TrendingUp, Star } from 'lucide-react';
+
+const PremiumHeroSection = () => {
+  const liveStats = [
+    { icon: Users, count: "3,254", label: "beauty pros online now" },
+    { icon: TrendingUp, count: "892", label: "active conversations" },
+    { icon: Star, count: "1,847", label: "achievements unlocked today" }
+  ];
+
+  return (
+    <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-16">
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
+      
+      <div className="relative container mx-auto px-4 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-8"
+        >
+          <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-4">
+            <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+              Beauty Community
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 font-light">
+            Exclusive. Inspiring. <span className="text-yellow-400 font-semibold">Unforgettable.</span>
+          </p>
+        </motion.div>
+
+        {/* Live Stats Ticker */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-wrap justify-center gap-4 md:gap-8"
+        >
+          {liveStats.map((stat, index) => (
+            <div key={index} className="bg-white/10 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20">
+              <div className="flex items-center gap-2 text-white">
+                <stat.icon className="h-5 w-5 text-yellow-400" />
+                <span className="text-lg font-bold text-yellow-400">{stat.count}</span>
+                <span className="text-sm">{stat.label}</span>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* CTA Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-8"
+        >
+          <button className="bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-500 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-full text-lg shadow-2xl transform hover:scale-105 transition-all duration-300">
+            <Sparkles className="inline-block h-5 w-5 mr-2" />
+            Join the Elite Community
+          </button>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default PremiumHeroSection;
