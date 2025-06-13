@@ -4,204 +4,106 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
-export interface CommunityStory {
+interface CommunityStory {
   id: string;
-  user_id: string;
   content: string;
   image_url?: string;
   likes: number;
   created_at: string;
-  user_name?: string;
-}
-
-export interface CommunityComment {
-  id: string;
-  story_id: string;
   user_id: string;
-  content: string;
-  created_at: string;
-  user_name?: string;
+  user?: {
+    full_name?: string;
+    avatar_url?: string;
+  };
 }
 
 export const useCommunityStories = () => {
   const [stories, setStories] = useState<CommunityStory[]>([]);
-  const [comments, setComments] = useState<{ [storyId: string]: CommunityComment[] }>({});
-  const [loading, setLoading] = useState(true);
-  const { user, userProfile } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [newStory, setNewStory] = useState('');
+  const { user } = useAuth();
 
-  // Fetch stories from database
+  // Fetch community stories only
   const fetchStories = async () => {
     try {
       const { data, error } = await supabase
         .from('community_stories')
         .select(`
-          id,
-          user_id,
-          content,
-          image_url,
-          likes,
-          created_at
+          *,
+          users:user_id (
+            full_name,
+            avatar_url
+          )
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
-      // Get user names for stories
-      const storiesWithNames = await Promise.all(
-        (data || []).map(async (story) => {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('full_name')
-            .eq('id', story.user_id)
-            .single();
-          
-          return {
-            ...story,
-            user_name: userData?.full_name || 'Anonymous User'
-          };
-        })
-      );
-
-      setStories(storiesWithNames);
+      setStories(data || []);
     } catch (error) {
-      console.error('Error fetching stories:', error);
-      toast.error('Failed to load community stories');
-    } finally {
-      setLoading(false);
+      console.error('Error fetching community stories:', error);
     }
   };
 
-  // Fetch comments for all stories
-  const fetchComments = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('community_comments')
-        .select(`
-          id,
-          story_id,
-          user_id,
-          content,
-          created_at
-        `)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-
-      // Get user names for comments
-      const commentsWithNames = await Promise.all(
-        (data || []).map(async (comment) => {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('full_name')
-            .eq('id', comment.user_id)
-            .single();
-          
-          return {
-            ...comment,
-            user_name: userData?.full_name || 'Anonymous User'
-          };
-        })
-      );
-
-      // Group comments by story_id
-      const groupedComments = commentsWithNames.reduce((acc, comment) => {
-        if (!acc[comment.story_id]) {
-          acc[comment.story_id] = [];
-        }
-        acc[comment.story_id].push(comment);
-        return acc;
-      }, {} as { [storyId: string]: CommunityComment[] });
-
-      setComments(groupedComments);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    }
-  };
-
-  // Add new story
+  // Add a new community story with strict validation
   const addStory = async (content: string, imageUrl?: string) => {
     if (!user) {
       toast.error('Please sign in to share your story');
       return false;
     }
 
+    if (!content.trim()) {
+      toast.error('Story content cannot be empty');
+      return false;
+    }
+
+    // Client-side validation to ensure community-appropriate content
+    if (content.toLowerCase().includes('hiring') || 
+        content.toLowerCase().includes('job opening') ||
+        content.toLowerCase().includes('salon for sale') ||
+        content.toLowerCase().includes('apply now')) {
+      toast.error('This community is designed for sharing inspiring stories only. To post jobs or list salons, please visit the Jobs or Salons page.');
+      return false;
+    }
+
+    setIsLoading(true);
+    
     try {
       const { error } = await supabase
         .from('community_stories')
         .insert({
           user_id: user.id,
-          content,
-          image_url: imageUrl,
+          content: content.trim(),
+          image_url: imageUrl
         });
 
-      if (error) throw error;
+      if (error) {
+        // Handle specific RLS policy violations
+        if (error.message.includes('row-level security')) {
+          toast.error('This community is designed for sharing inspiring stories only. To post jobs or list salons, please visit the Jobs or Salons page.');
+        } else {
+          throw error;
+        }
+        return false;
+      }
 
-      toast.success('Your story has been shared!');
+      setNewStory('');
+      toast.success('Story shared successfully!');
       return true;
     } catch (error) {
       console.error('Error adding story:', error);
-      toast.error('Failed to share your story');
+      toast.error('Failed to share story. Please try again.');
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Add comment to story
-  const addComment = async (storyId: string, content: string) => {
-    if (!user) {
-      toast.error('Please sign in to comment');
-      return false;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('community_comments')
-        .insert({
-          story_id: storyId,
-          user_id: user.id,
-          content,
-        });
-
-      if (error) throw error;
-
-      return true;
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      toast.error('Failed to add comment');
-      return false;
-    }
-  };
-
-  // Like a story
-  const likeStory = async (storyId: string) => {
-    if (!user) {
-      toast.error('Please sign in to like stories');
-      return;
-    }
-
-    try {
-      const story = stories.find(s => s.id === storyId);
-      if (!story) return;
-
-      const { error } = await supabase
-        .from('community_stories')
-        .update({ likes: story.likes + 1 })
-        .eq('id', storyId);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error liking story:', error);
-      toast.error('Failed to like story');
-    }
-  };
-
-  // Set up real-time subscriptions
+  // Set up real-time subscription for stories
   useEffect(() => {
     fetchStories();
-    fetchComments();
 
-    // Real-time subscription for stories
-    const storiesSubscription = supabase
-      .channel('community_stories_changes')
+    const channel = supabase
+      .channel('community-stories-changes')
       .on(
         'postgres_changes',
         {
@@ -215,35 +117,16 @@ export const useCommunityStories = () => {
       )
       .subscribe();
 
-    // Real-time subscription for comments
-    const commentsSubscription = supabase
-      .channel('community_comments_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'community_comments'
-        },
-        () => {
-          fetchComments();
-        }
-      )
-      .subscribe();
-
     return () => {
-      supabase.removeChannel(storiesSubscription);
-      supabase.removeChannel(commentsSubscription);
+      supabase.removeChannel(channel);
     };
   }, []);
 
   return {
     stories,
-    comments,
-    loading,
-    addStory,
-    addComment,
-    likeStory,
-    isAuthenticated: !!user
+    isLoading,
+    newStory,
+    setNewStory,
+    addStory
   };
 };
