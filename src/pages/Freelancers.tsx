@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
@@ -68,7 +67,7 @@ const Freelancers = () => {
   ];
 
   return (
-    <Layout>
+    <Layout hideFooter={true}>
       {/* Premium Hero Section */}
       <PremiumHeroSection />
 
