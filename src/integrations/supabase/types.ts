@@ -514,6 +514,48 @@ export type Database = {
           },
         ]
       }
+      community_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          answered_by: string | null
+          category: string | null
+          created_at: string
+          id: string
+          question: string
+          status: string
+          updated_at: string
+          upvotes: number | null
+          user_id: string | null
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          answered_by?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          question: string
+          status?: string
+          updated_at?: string
+          upvotes?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          answered_by?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          question?: string
+          status?: string
+          updated_at?: string
+          upvotes?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       community_stories: {
         Row: {
           content: string

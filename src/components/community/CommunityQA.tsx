@@ -3,6 +3,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { HelpCircle, Users, Lightbulb, MessageSquare } from 'lucide-react';
 import CTAButton from './CTAButton';
+import QuestionModal from './QuestionModal';
+import QABrowserModal from './QABrowserModal';
 
 const CommunityQA = () => {
   const qaItems = [
@@ -85,6 +87,7 @@ const CommunityQA = () => {
                       variant="outline"
                       size="sm"
                       className="text-xs"
+                      metadata={{ waitlistType: 'qa_discussion', questionId: index.toString() }}
                     >
                       Join Discussion
                     </CTAButton>
@@ -111,21 +114,27 @@ const CommunityQA = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <CTAButton
-              type="join_waitlist"
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-full font-semibold"
-            >
-              <MessageSquare className="mr-2 h-5 w-5" />
-              Ask a Question
-            </CTAButton>
+            <QuestionModal>
+              <CTAButton
+                type="apply_now"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-full font-semibold"
+                metadata={{ applicationType: 'community_question' }}
+              >
+                <MessageSquare className="mr-2 h-5 w-5" />
+                Ask a Question
+              </CTAButton>
+            </QuestionModal>
             
-            <CTAButton
-              type="apply_now"
-              variant="outline"
-              className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-full font-semibold"
-            >
-              Browse All Q&As
-            </CTAButton>
+            <QABrowserModal>
+              <CTAButton
+                type="apply_now"
+                variant="outline"
+                className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-full font-semibold"
+                metadata={{ applicationType: 'browse_qa' }}
+              >
+                Browse All Q&As
+              </CTAButton>
+            </QABrowserModal>
           </div>
         </motion.div>
       </div>

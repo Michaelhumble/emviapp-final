@@ -7,6 +7,7 @@ import { useVoting } from './useVoting';
 import { useContests } from './useContests';
 import { useApplications } from './useApplications';
 import { useWaitlist } from './useWaitlist';
+import { useQuestions } from './useQuestions';
 
 export const useCTAInteractions = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +16,7 @@ export const useCTAInteractions = () => {
   const { enterContest } = useContests();
   const { submitApplication } = useApplications();
   const { joinWaitlist } = useWaitlist();
+  const { askQuestion } = useQuestions();
 
   const handleCTAClick = async (
     ctaType: string, 
@@ -48,6 +50,8 @@ export const useCTAInteractions = () => {
         case 'vote_now':
           if (storyId) {
             actionResult = await submitVote(storyId, 'community_story');
+          } else if (metadata?.targetId && metadata?.targetType) {
+            actionResult = await submitVote(metadata.targetId, metadata.targetType);
           }
           break;
           
@@ -58,11 +62,20 @@ export const useCTAInteractions = () => {
           break;
           
         case 'apply_now':
-          actionResult = await submitApplication(
-            metadata?.applicationType || 'general_application',
-            storyId,
-            metadata
-          );
+          // Handle different application types
+          if (metadata?.applicationType === 'community_question') {
+            // This will be handled by the QuestionModal component
+            actionResult = true;
+          } else if (metadata?.applicationType === 'browse_qa') {
+            // This will be handled by the QABrowserModal component
+            actionResult = true;
+          } else {
+            actionResult = await submitApplication(
+              metadata?.applicationType || 'general_application',
+              storyId,
+              metadata
+            );
+          }
           break;
           
         case 'join_waitlist':

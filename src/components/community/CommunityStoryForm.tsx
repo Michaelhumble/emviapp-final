@@ -2,178 +2,80 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Camera, Send, AlertTriangle, Upload, X } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Camera, Send } from 'lucide-react';
 import { useCommunityStories } from '@/hooks/useCommunityStories';
-import { useAuth } from '@/context/auth';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import PhotoUploader from '@/components/posting/PhotoUploader';
 
 const CommunityStoryForm = () => {
-  const { addStory, isLoading } = useCommunityStories();
-  const { user } = useAuth();
-  const [content, setContent] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showWarning, setShowWarning] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  const handleContentChange = (value: string) => {
-    setContent(value);
-    
-    // Check for business-related keywords and show warning
-    const businessKeywords = ['hiring', 'job opening', 'salon for sale', 'apply now', 'position available', 'now hiring'];
-    const hasBusinessContent = businessKeywords.some(keyword => 
-      value.toLowerCase().includes(keyword)
-    );
-    
-    setShowWarning(hasBusinessContent);
-  };
-
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
-        return;
-      }
-      
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
-        return;
-      }
-
-      setSelectedFile(file);
-      
-      // Create preview URL
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
-  };
-
-  const removeSelectedFile = () => {
-    setSelectedFile(null);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-  };
+  const { newStory, setNewStory, addStory, isLoading } = useCommunityStories();
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      return;
-    }
+    if (!newStory.trim()) return;
 
-    const success = await addStory(content, selectedFile || undefined);
+    const imageFile = imageFiles.length > 0 ? imageFiles[0] : undefined;
+    const success = await addStory(newStory, imageFile);
+    
     if (success) {
-      setContent('');
-      setSelectedFile(null);
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-        setPreviewUrl(null);
-      }
-      setShowWarning(false);
+      setImageFiles([]);
     }
   };
 
-  if (!user) {
-    return (
-      <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-6">
-        <p className="text-center text-gray-600">Please sign in to share your beauty story</p>
-      </div>
-    );
-  }
+  const handleImageChange = (files: File[]) => {
+    setImageFiles(files);
+  };
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-medium">
-            {user?.user_metadata?.full_name?.charAt(0) || '?'}
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">Share Your Beauty Story</h3>
-            <p className="text-sm text-gray-500">Inspire others with your transformation or experience</p>
-          </div>
-        </div>
-
-        {showWarning && (
-          <Alert className="border-amber-200 bg-amber-50">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-800">
-              <strong>Note:</strong> This community is for inspiring stories only. For job postings or salon listings, please use the dedicated sections.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <Textarea
-          placeholder="Share your beauty journey, transformation story, or inspiring moment..."
-          value={content}
-          onChange={(e) => handleContentChange(e.target.value)}
-          className="min-h-[120px] resize-none border-gray-200 focus:border-purple-300"
-          maxLength={1000}
-        />
-
-        {/* File Upload Section */}
-        <div className="space-y-3">
-          <input
-            type="file"
-            id="image-upload"
-            accept="image/*"
-            onChange={handleFileSelect}
-            className="hidden"
+    <Card className="mb-6">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Textarea
+            placeholder="Share your beauty journey, transformation story, or inspiring moment..."
+            value={newStory}
+            onChange={(e) => setNewStory(e.target.value)}
+            className="min-h-[100px] resize-none border-gray-300 focus:border-purple-500"
+            disabled={isLoading}
           />
           
-          {previewUrl ? (
-            <div className="relative inline-block">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="w-32 h-32 object-cover rounded-lg border"
-              />
-              <button
-                type="button"
-                onClick={removeSelectedFile}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-              >
-                <X className="h-3 w-3" />
-              </button>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Camera className="h-4 w-4" />
+              <span>Add photos to your story (optional)</span>
             </div>
-          ) : (
-            <label
-              htmlFor="image-upload"
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-purple-600 cursor-pointer border-2 border-dashed border-gray-300 hover:border-purple-300 rounded-lg p-4 transition-colors"
-            >
-              <Upload className="h-4 w-4" />
-              <span>Upload a photo to showcase your work</span>
-            </label>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Camera className="h-4 w-4" />
-            <span>Share your transformation photos</span>
+            
+            <PhotoUploader
+              files={imageFiles}
+              onChange={handleImageChange}
+              maxFiles={1}
+              accept="image/*"
+              className="border-dashed border-2 border-gray-300 rounded-lg p-4"
+            />
           </div>
-          
-          <Button 
-            type="submit" 
-            disabled={isLoading || !content.trim() || showWarning}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-          >
-            {isLoading ? (
-              'Sharing...'
-            ) : (
-              <>
-                <Send className="h-4 w-4 mr-2" />
-                Share Story
-              </>
-            )}
-          </Button>
-        </div>
-      </form>
-    </div>
+
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500">
+              Share inspiring stories only. For jobs or salon listings, use the appropriate sections.
+            </p>
+            <Button 
+              type="submit" 
+              disabled={isLoading || !newStory.trim()}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+            >
+              {isLoading ? (
+                <>Processing...</>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Share Story
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 
