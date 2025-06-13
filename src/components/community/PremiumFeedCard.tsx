@@ -35,6 +35,14 @@ const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
     Diamond: 'from-blue-400 to-cyan-400'
   };
 
+  const levelIcons = {
+    Bronze: '🥉',
+    Silver: '🥈', 
+    Gold: '🥇',
+    Platinum: '💎',
+    Diamond: '⭐'
+  };
+
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
@@ -59,17 +67,11 @@ const PremiumFeedCard = ({ post }: PremiumFeedCardProps) => {
       )}
 
       <div className="p-6">
-        {/* Author Section */}
+        {/* Author Section - No headshot, just icon */}
         <div className="flex items-center gap-3 mb-4">
           <div className="relative">
-            <div className={`absolute inset-0 bg-gradient-to-r ${levelColors[post.author.level]} rounded-full p-0.5 animate-pulse`}>
-              <div className="bg-white rounded-full p-0.5">
-                <img 
-                  src={post.author.avatar} 
-                  alt={post.author.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-              </div>
+            <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${levelColors[post.author.level]} flex items-center justify-center text-2xl shadow-lg`}>
+              {levelIcons[post.author.level]}
             </div>
             {post.author.verified && (
               <Crown className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500" />
