@@ -1,11 +1,9 @@
+
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { UserRole } from "@/context/auth/types";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 import { useAuth } from "@/context/auth";
-import { normalizeRole } from "@/utils/roles";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 
 interface DashboardRedirectorProps {
@@ -25,31 +23,14 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     }
 
     try {
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-      
-      if (!authError) {
-        const metadataRole = authUser?.user_metadata?.role as UserRole | null;
-        
-        if (metadataRole) {
-          const normalizedRole = normalizeRole(metadataRole);
-          localStorage.setItem('emviapp_user_role', normalizedRole || '');
-          
-          if (normalizedRole === 'artist' || normalizedRole === 'nail technician/artist') {
-            navigate('/dashboard/artist');
-            return;
-          }
-          
-          navigateToRoleDashboard(navigate, normalizedRole);
-          return;
-        }
-      }
-      
+      // If we have a role from centralized auth state, use it
       if (userRole) {
         if (userRole === 'artist' || userRole === 'nail technician/artist') {
           navigate('/dashboard/artist');
           return;
         }
 
+        // Check for salon manager status
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('manager_for_salon_id')
@@ -65,33 +46,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      const cachedRole = localStorage.getItem('emviapp_user_role');
-      if (cachedRole) {
-        const normalizedRole = normalizeRole(cachedRole as UserRole);
-        
-        try {
-          await supabase.auth.updateUser({
-            data: { role: normalizedRole }
-          });
-        } catch (updateErr) {
-          // Silent error - continue anyway
-        }
-        
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('manager_for_salon_id')
-          .eq('id', user.id)
-          .single();
-          
-        if (!userError && userData && userData.manager_for_salon_id) {
-          navigate('/dashboard/manager');
-          return;
-        }
-        
-        navigateToRoleDashboard(navigate, normalizedRole);
-        return;
-      }
-      
+      // If no role in auth state, check database
       const { data: profile, error } = await supabase
         .from('users')
         .select('role, manager_for_salon_id')
@@ -115,18 +70,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      try {
-        const normalizedRole = normalizeRole(profile.role as UserRole);
-        await supabase.auth.updateUser({
-          data: { role: normalizedRole }
-        });
-      } catch (updateErr) {
-        // Silent error - continue anyway
-      }
-      
-      const normalizedRole = normalizeRole(profile.role as UserRole);
-      localStorage.setItem('emviapp_user_role', normalizedRole || '');
-      navigateToRoleDashboard(navigate, normalizedRole);
+      navigateToRoleDashboard(navigate, profile.role);
       
     } catch (error) {
       setRedirectError("Unable to determine your user role. Please try again or select a role.");

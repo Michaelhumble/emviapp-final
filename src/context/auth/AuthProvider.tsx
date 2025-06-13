@@ -1,145 +1,149 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import { AuthContext } from './AuthContext';
-import { fetchUserProfile, createUserProfile, updateUserProfile } from './userProfileService';
-import { UserRole, UserProfile } from './types';
-import { toast } from 'sonner';
-import { normalizeRole } from '@/utils/roles';
+
+import React, { createContext, useEffect, useState, ReactNode } from "react";
+import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import { UserRole } from "./types";
+import { normalizeRole } from "@/utils/roles";
+import { AuthContextType } from "./types";
+import { AuthContext } from "./AuthContext";
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>('customer');
+  const [session, setSession] = useState<Session | null>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
-  const [isError, setIsError] = useState(false);
 
+  // Clear new user status
   const clearIsNewUser = () => {
     setIsNewUser(false);
+    localStorage.removeItem('emviapp_new_user');
   };
 
-  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error }> => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  // Set loading state
+  const setLoadingState = (loadingState: boolean) => {
+    setLoading(loadingState);
+  };
 
-      if (error) {
-        return { success: false, error: new Error(error.message) };
-      }
+  // Fetch user profile data
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
       
-      return { success: true };
-    } catch (error) {
-      console.error('Error signing in:', error);
-      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
-      return { success: false, error: errorObj };
-    }
-  };
-
-  const signUp = async (email: string, password: string, userData: Partial<UserProfile> = {}): Promise<{ success: boolean; error?: Error; userId?: string }> => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            ...userData
-          }
-        }
-      });
-
-      if (error) {
-        return { success: false, error: new Error(error.message) };
-      }
-      
-      return { success: true, userId: data.user?.id };
-    } catch (error) {
-      console.error('Error signing up:', error);
-      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
-      return { success: false, error: errorObj };
-    }
-  };
-
-  const refreshUserProfile = async () => {
-    if (!user) return false;
-    
-    try {
-      const profile = await fetchUserProfile(user.id);
-      if (profile) {
+      if (!error && profile) {
         setUserProfile(profile);
+        
+        // Set role from profile with normalization
         if (profile.role) {
-          const normalizedRole = normalizeRole(profile.role);
+          const normalizedRole = normalizeRole(profile.role as UserRole);
           setUserRole(normalizedRole);
-        }
-      } else {
-        console.log('No profile found, creating one...');
-        const newProfile = await createUserProfile(user);
-        if (newProfile) {
-          setUserProfile(newProfile);
-          if (newProfile.role) {
-            const normalizedRole = normalizeRole(newProfile.role);
-            setUserRole(normalizedRole);
+          if (normalizedRole) {
+            localStorage.setItem('emviapp_user_role', normalizedRole);
           }
-          setIsNewUser(true);
         }
       }
-      return true;
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      setIsError(true);
-      return false;
     }
   };
 
-  const updateUserRole = async (role: UserRole): Promise<void> => {
-    if (!user) return;
-    
-    try {
-      const updatedProfile = await updateUserProfile({ 
-        id: user.id,
-        role: role
-      });
-      
-      if (updatedProfile && updatedProfile.role) {
-        const normalizedRole = normalizeRole(updatedProfile.role);
-        setUserRole(normalizedRole);
-      }
-    } catch (error) {
-      console.error('Error updating user role:', error);
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-      setUserProfile(null);
-      setUserRole('customer');
-      localStorage.removeItem('emviapp_user_role');
-      localStorage.removeItem('emviapp_new_user');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Failed to sign out. Please try again.');
-    }
-  };
-
+  // Initialize auth state
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Check for existing new user status
+    const storedNewUserStatus = localStorage.getItem('emviapp_new_user') === 'true';
+    if (storedNewUserStatus) {
+      setIsNewUser(true);
+    }
+
+    // Set up auth state listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change:', event, session?.user?.id);
+      
       setSession(session);
-      setUser(session?.user || null);
+      setUser(session?.user ?? null);
+      
+      if (event === 'SIGNED_UP' as AuthChangeEvent) {
+        setIsNewUser(true);
+        localStorage.setItem('emviapp_new_user', 'true');
+        
+        // Store role from metadata if available
+        const userRole = session?.user?.user_metadata?.role;
+        if (userRole) {
+          const normalizedRole = normalizeRole(userRole as UserRole);
+          setUserRole(normalizedRole);
+          if (normalizedRole) {
+            localStorage.setItem('emviapp_user_role', normalizedRole);
+          }
+        }
+      }
+      
+      if (event === 'SIGNED_IN' as AuthChangeEvent) {
+        // Store role from metadata if available
+        const userRole = session?.user?.user_metadata?.role;
+        if (userRole) {
+          const normalizedRole = normalizeRole(userRole as UserRole);
+          setUserRole(normalizedRole);
+          if (normalizedRole) {
+            localStorage.setItem('emviapp_user_role', normalizedRole);
+          }
+        }
+        
+        // Fetch full profile data after sign in
+        if (session?.user?.id) {
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
+        }
+      }
+
+      if (event === 'SIGNED_OUT' as AuthChangeEvent) {
+        setIsNewUser(false);
+        setUserRole(null);
+        setUserProfile(null);
+        localStorage.removeItem('emviapp_new_user');
+        localStorage.removeItem('emviapp_user_role');
+      }
+      
       setLoading(false);
     });
 
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user || null);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Check for role in metadata first
+        const userRole = session.user.user_metadata?.role;
+        if (userRole) {
+          const normalizedRole = normalizeRole(userRole as UserRole);
+          setUserRole(normalizedRole);
+          if (normalizedRole) {
+            localStorage.setItem('emviapp_user_role', normalizedRole);
+          }
+        }
+        
+        // Fetch full profile
+        fetchUserProfile(session.user.id);
+      } else {
+        // Check localStorage for cached role
+        const cachedRole = localStorage.getItem('emviapp_user_role');
+        if (cachedRole) {
+          setUserRole(normalizeRole(cachedRole as UserRole));
+        }
+      }
+      
       setLoading(false);
     });
 
@@ -148,64 +152,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      refreshUserProfile();
-    } else {
-      setUserProfile(null);
-      setUserRole('customer');
-    }
-  }, [user]);
-
-  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
-    try {
-      if (!user || !userProfile) {
-        return { success: false, error: new Error('User not authenticated') };
+  // Context value
+  const value: AuthContextType = {
+    user,
+    session,
+    userRole,
+    userProfile,
+    loading,
+    isSignedIn: !!user,
+    isNewUser,
+    clearIsNewUser,
+    setLoading: setLoadingState,
+    refreshUserProfile: () => {
+      if (user?.id) {
+        fetchUserProfile(user.id);
       }
-      
-      const updatedProfile = await updateUserProfile({
-        id: userProfile.id,
-        ...data
-      });
-      
-      if (updatedProfile) {
-        setUserProfile(updatedProfile);
-        if (updatedProfile.role && updatedProfile.role !== userRole) {
-          const normalizedRole = normalizeRole(updatedProfile.role);
-          setUserRole(normalizedRole);
-        }
-        return { success: true };
-      }
-      
-      return { success: false, error: new Error('Failed to update profile') };
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error : new Error('Unknown error occurred') 
-      };
     }
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        userProfile,
-        userRole,
-        loading,
-        isSignedIn: !!user,
-        isError,
-        isNewUser,
-        clearIsNewUser,
-        signIn,
-        signUp,
-        signOut,
-        refreshUserProfile,
-        updateUserRole,
-        updateProfile
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

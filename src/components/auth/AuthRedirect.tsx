@@ -2,16 +2,14 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
-import { useUserRole } from '@/hooks/useUserRole';
 import { toast } from 'sonner';
 
 export const AuthRedirect = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
-  const { userRole, loading: roleLoading } = useUserRole(user?.id);
+  const { user, userRole, loading } = useAuth();
 
   useEffect(() => {
-    if (loading || roleLoading) return;
+    if (loading) return;
 
     if (!user) {
       navigate('/auth/signin');
@@ -24,7 +22,7 @@ export const AuthRedirect = () => {
       return;
     }
 
-    // Handle role-based redirects
+    // Handle role-based redirects using centralized auth state
     switch (userRole) {
       case 'artist':
       case 'nail technician/artist':
@@ -47,9 +45,9 @@ export const AuthRedirect = () => {
       default:
         navigate('/dashboard/other');
     }
-  }, [user, userRole, loading, roleLoading, navigate]);
+  }, [user, userRole, loading, navigate]);
 
-  if (loading || roleLoading) {
+  if (loading) {
     return <div className="flex justify-center items-center min-h-screen">
       <div className="animate-spin h-8 w-8 border-t-2 border-primary rounded-full"></div>
     </div>;
