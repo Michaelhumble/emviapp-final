@@ -1,13 +1,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Users, TrendingUp, Star } from 'lucide-react';
+import { Users, TrendingUp, Star } from 'lucide-react';
 
 const PremiumHeroSection = () => {
   const liveStats = [
-    { icon: Users, count: "2,847", label: "beauty pros online now" },
-    { icon: TrendingUp, count: "127", label: "new members joined today" },
-    { icon: Star, count: "892", label: "success stories shared this week" }
+    { icon: Users, count: "847", label: "beauty pros online now" },
+    { icon: TrendingUp, count: "23", label: "new members joined today" },
+    { icon: Star, count: "156", label: "success stories shared this week" }
   ];
 
   return (
@@ -17,7 +17,7 @@ const PremiumHeroSection = () => {
         <div 
           className="w-full h-full bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png')`
+            backgroundImage: `url('https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(01).png')`
           }}
         />
       </div>
@@ -37,18 +37,17 @@ const PremiumHeroSection = () => {
           className="mb-8"
         >
           <h1 className="text-4xl md:text-6xl font-playfair font-bold mb-4">
-            <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+            <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
               Beauty Community
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-light">
-            Exclusive. Inspiring. <span className="text-yellow-400 font-semibold">Unforgettable.</span>
+          <p className="text-xl md:text-2xl text-white/90 font-light mb-6">
+            Where talent meets opportunity. <span className="text-yellow-400 font-semibold">Authentically.</span>
           </p>
           
-          {/* FOMO Trigger */}
-          <div className="mt-4 text-sm text-yellow-300 animate-pulse">
-            🔥 Live Activity: <span className="font-bold">Sarah from NY just booked a $500 client!</span>
-          </div>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed">
+            Join thousands of beauty professionals sharing their journey, supporting each other, and building genuine connections that last.
+          </p>
         </motion.div>
 
         {/* Live Stats Ticker */}
@@ -77,8 +76,7 @@ const PremiumHeroSection = () => {
           className="mt-8"
         >
           <button className="bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-500 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-full text-lg shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <Sparkles className="inline-block h-5 w-5 mr-2" />
-            Join the Elite Community
+            Join Our Inspiring Community
           </button>
         </motion.div>
       </div>

@@ -1,209 +1,211 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Trophy, Medal, Award, Star, Crown, Zap } from 'lucide-react';
+import React from 'react';
 import { motion } from 'framer-motion';
-
-interface LeaderboardUser {
-  id: string;
-  name: string;
-  avatar: string;
-  points: number;
-  rank: number;
-  badges: string[];
-  specialty: string;
-}
-
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  progress: number;
-  maxProgress: number;
-}
+import { Trophy, Star, Award, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const AchievementLeaderboard = () => {
-  const [activeTab, setActiveTab] = useState<'weekly' | 'monthly' | 'all-time'>('weekly');
-  
-  const leaderboardData: LeaderboardUser[] = [
+  const achievements = [
     {
-      id: '1',
-      name: 'Emma Chen',
-      avatar: '/api/placeholder/40/40',
-      points: 2847,
+      icon: <Trophy className="h-6 w-6 text-yellow-500" />,
+      title: "Community Champion",
+      description: "Help 5 fellow professionals",
+      progress: 3,
+      total: 5,
+      reward: "Special Badge + Recognition"
+    },
+    {
+      icon: <Star className="h-6 w-6 text-purple-500" />,
+      title: "Story Teller",
+      description: "Share 3 inspiring stories",
+      progress: 1,
+      total: 3,
+      reward: "Featured Story Highlight"
+    },
+    {
+      icon: <Award className="h-6 w-6 text-blue-500" />,
+      title: "Mentor",
+      description: "Guide newcomers to success",
+      progress: 0,
+      total: 1,
+      reward: "Mentor Badge + Credits"
+    }
+  ];
+
+  const leaderboard = [
+    {
       rank: 1,
-      badges: ['mentor', 'influencer', 'expert'],
-      specialty: 'Nail Art'
+      name: "Isabella Martinez",
+      level: "Diamond Professional",
+      points: 2,847,
+      badge: "🏆",
+      achievement: "Top Community Supporter"
     },
     {
-      id: '2',
-      name: 'David Kim',
-      avatar: '/api/placeholder/40/40',
-      points: 2156,
       rank: 2,
-      badges: ['helper', 'consistent'],
-      specialty: 'Hair Styling'
+      name: "James Thompson",
+      level: "Platinum Artist",
+      points: 2,156,
+      badge: "🥈",
+      achievement: "Master Storyteller"
     },
     {
-      id: '3',
-      name: 'Sophie Johnson',
-      avatar: '/api/placeholder/40/40',
-      points: 1923,
       rank: 3,
-      badges: ['storyteller', 'inspiring'],
-      specialty: 'Makeup'
-    }
-  ];
-
-  const achievements: Achievement[] = [
-    {
-      id: '1',
-      name: 'Community Helper',
-      description: 'Help 50 community members',
-      icon: <Star className="h-5 w-5" />,
-      rarity: 'common',
-      progress: 32,
-      maxProgress: 50
+      name: "Sarah Kim",
+      level: "Gold Expert",
+      points: 1,923,
+      badge: "🥉",
+      achievement: "Rising Star Mentor"
     },
     {
-      id: '2',
-      name: 'Story Master',
-      description: 'Share 10 inspiring stories',
-      icon: <Award className="h-5 w-5" />,
-      rarity: 'rare',
-      progress: 7,
-      maxProgress: 10
+      rank: 4,
+      name: "Michael Rivera",
+      level: "Silver Pro",
+      points: 1,678,
+      badge: "⭐",
+      achievement: "Community Helper"
     },
     {
-      id: '3',
-      name: 'Mentor Legend',
-      description: 'Successfully mentor 5 professionals',
-      icon: <Crown className="h-5 w-5" />,
-      rarity: 'legendary',
-      progress: 2,
-      maxProgress: 5
+      rank: 5,
+      name: "Emily Chen",
+      level: "Bronze Rising",
+      points: 1,445,
+      badge: "💫",
+      achievement: "Inspiring Newcomer"
     }
   ];
-
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1: return <Crown className="h-5 w-5 text-yellow-500" />;
-      case 2: return <Medal className="h-5 w-5 text-gray-400" />;
-      case 3: return <Award className="h-5 w-5 text-amber-600" />;
-      default: return <Trophy className="h-4 w-4 text-gray-300" />;
-    }
-  };
-
-  const getRarityColor = (rarity: string) => {
-    switch (rarity) {
-      case 'common': return 'bg-gray-100 text-gray-700';
-      case 'rare': return 'bg-blue-100 text-blue-700';
-      case 'epic': return 'bg-purple-100 text-purple-700';
-      case 'legendary': return 'bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
-  };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Leaderboard */}
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              Community Leaderboard
-            </CardTitle>
-            <div className="flex gap-2 mt-2">
-              {(['weekly', 'monthly', 'all-time'] as const).map((tab) => (
-                <Button
-                  key={tab}
-                  variant={activeTab === tab ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setActiveTab(tab)}
-                  className="capitalize"
-                >
-                  {tab.replace('-', ' ')}
-                </Button>
-              ))}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {leaderboardData.map((user, index) => (
-                <motion.div
-                  key={user.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`flex items-center gap-3 p-3 rounded-lg ${
-                    user.rank <= 3 ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200' : 'bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {getRankIcon(user.rank)}
-                    <span className="font-bold text-lg">#{user.rank}</span>
-                  </div>
-                  <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full" />
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{user.name}</h4>
-                    <p className="text-sm text-gray-500">{user.specialty}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-purple-600">{user.points.toLocaleString()}</p>
-                    <p className="text-xs text-gray-500">points</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+    <section className="py-16 bg-gradient-to-br from-gray-50 to-purple-50">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Your Journey & Community Leaders
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Celebrate progress, inspire others, and see how the community grows together.
+          </p>
+        </motion.div>
 
-        {/* Achievements */}
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-purple-500" />
-              Your Achievements
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {achievements.map((achievement) => (
-                <div key={achievement.id} className="border rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${getRarityColor(achievement.rarity)}`}>
-                      {achievement.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{achievement.name}</h4>
-                      <p className="text-sm text-gray-600 mb-2">{achievement.description}</p>
-                      
-                      {/* Progress bar */}
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>{achievement.progress}/{achievement.maxProgress}</span>
-                          <span className="capitalize">{achievement.rarity}</span>
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Your Achievements */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="border-purple-200">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-6 w-6 text-purple-500" />
+                  Your Achievements
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  {achievements.map((achievement, index) => (
+                    <div key={index} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0 p-2 bg-white rounded-lg shadow-sm">
+                          {achievement.icon}
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${(achievement.progress / achievement.maxProgress) * 100}%` }}
-                          />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-800">{achievement.title}</h4>
+                            <span className="text-sm text-purple-600 font-medium">
+                              {achievement.progress}/{achievement.total}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {achievement.description}
+                          </p>
+                          <div className="mb-2">
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${(achievement.progress / achievement.total) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="text-xs bg-green-50 text-green-600 border-green-200">
+                            Reward: {achievement.reward}
+                          </Badge>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Community Leaderboard */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="border-purple-200">
+              <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50">
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-6 w-6 text-yellow-500" />
+                  Community Leaders
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {leaderboard.map((member, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${
+                        index < 3 ? 'bg-gradient-to-r from-yellow-50 to-orange-50' : 'bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{member.badge}</span>
+                        <div className="text-center">
+                          <div className="text-sm font-bold text-gray-600">#{member.rank}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="font-semibold text-gray-800">{member.name}</h4>
+                          <span className="text-sm font-bold text-purple-600">
+                            {member.points.toLocaleString()} pts
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600 border-purple-200">
+                            {member.level}
+                          </Badge>
+                          <span className="text-xs text-gray-500">{member.achievement}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg text-center">
+                  <p className="text-sm text-gray-600 mb-2">
+                    <strong>Your Current Rank:</strong> #47 out of 1,247 active members
+                  </p>
+                  <p className="text-xs text-purple-600">
+                    Keep sharing, supporting, and growing with the community! 🌟
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

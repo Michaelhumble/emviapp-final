@@ -6,14 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Search, Bell, Filter } from 'lucide-react';
 import PremiumHeroSection from '@/components/community/PremiumHeroSection';
 import PremiumFeedCard from '@/components/community/PremiumFeedCard';
-import InteractiveStorytelling from '@/components/community/InteractiveStorytelling';
+import CommunityStories from '@/components/community/CommunityStories';
 import AchievementLeaderboard from '@/components/community/AchievementLeaderboard';
-import CuratedLearningHub from '@/components/community/CuratedLearningHub';
-import ExpertLiveQA from '@/components/community/ExpertLiveQA';
-import ExclusiveLiveEvents from '@/components/community/ExclusiveLiveEvents';
-import PremiumChallenges from '@/components/community/PremiumChallenges';
-import PremiumAnalytics from '@/components/community/PremiumAnalytics';
-import SponsoredSpotlight from '@/components/community/SponsoredSpotlight';
+import SponsorTeasers from '@/components/community/SponsorTeasers';
+import CommunityQA from '@/components/community/CommunityQA';
 import SuccessNotifications from '@/components/community/SuccessNotifications';
 
 const Freelancers = () => {
@@ -30,7 +26,7 @@ const Freelancers = () => {
         verified: true
       },
       content: 'Just completed my latest bridal transformation! This gorgeous bride wanted a timeless, elegant look that would photograph beautifully. The key was creating a flawless base and enhancing her natural features. What do you think? ✨',
-      image: '/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png',
+      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(01).png',
       likes: 87,
       comments: 19,
       shares: 8,
@@ -46,7 +42,7 @@ const Freelancers = () => {
         verified: true
       },
       content: 'Sharing my latest color correction journey! This client came to me with severely damaged hair from multiple bleaching sessions. It took 3 appointments, but we achieved her dream blonde while maintaining hair health. Patience and technique are everything! 🎨',
-      image: '/lovable-uploads/323c0530-2a0b-45ee-9065-646dee476f89.png',
+      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(04).png',
       likes: 64,
       comments: 23,
       shares: 6,
@@ -62,6 +58,7 @@ const Freelancers = () => {
         verified: false
       },
       content: 'Behind-the-scenes of today\'s photoshoot! Working with this amazing model on a bold, editorial look. The theme was "Urban Warrior" - strong, fierce, and unapologetic. Swipe to see the final result! 💪',
+      image: 'https://wwhqbjrhbajpabfdwnip.supabase.co/storage/v1/object/public/photos/generated(08).png',
       likes: 42,
       comments: 14,
       shares: 4,
@@ -98,23 +95,17 @@ const Freelancers = () => {
         </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Sidebar - Interactive Features */}
-          <div className="lg:col-span-1 space-y-6">
-            <InteractiveStorytelling />
-            <AchievementLeaderboard />
-          </div>
+      {/* Main Content */}
+      <div className="space-y-0">
+        {/* Community Stories Section */}
+        <CommunityStories />
 
-          {/* Main Feed */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Premium Feed Cards */}
-            <div className="space-y-6">
-              {feedPosts.map((post) => (
-                <PremiumFeedCard key={post.id} post={post} />
-              ))}
-            </div>
+        {/* Main Feed */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto space-y-6">
+            {feedPosts.map((post) => (
+              <PremiumFeedCard key={post.id} post={post} />
+            ))}
 
             {/* Load More Button */}
             <div className="text-center py-6">
@@ -125,15 +116,14 @@ const Freelancers = () => {
           </div>
         </div>
 
-        {/* Full-width Premium Sections */}
-        <div className="space-y-12 mt-12">
-          <CuratedLearningHub />
-          <ExpertLiveQA />
-          <ExclusiveLiveEvents />
-          <PremiumChallenges />
-          <SponsoredSpotlight />
-          <PremiumAnalytics />
-        </div>
+        {/* Achievements & Leaderboard */}
+        <AchievementLeaderboard />
+
+        {/* Sponsor Teasers */}
+        <SponsorTeasers />
+
+        {/* Community Q&A */}
+        <CommunityQA />
       </div>
 
       {/* Success Notifications */}
