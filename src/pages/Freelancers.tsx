@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,7 @@ import InteractiveStorytelling from '@/components/community/InteractiveStorytell
 import AchievementLeaderboard from '@/components/community/AchievementLeaderboard';
 import CuratedLearningHub from '@/components/community/CuratedLearningHub';
 import ExpertLiveQA from '@/components/community/ExpertLiveQA';
-import ExclusiveLiveEvents from '@/components/community/ExclusiveLive Events';
+import ExclusiveLiveEvents from '@/components/community/ExclusiveLiveEvents';
 import PremiumChallenges from '@/components/community/PremiumChallenges';
 import PremiumAnalytics from '@/components/community/PremiumAnalytics';
 import SponsoredSpotlight from '@/components/community/SponsoredSpotlight';
