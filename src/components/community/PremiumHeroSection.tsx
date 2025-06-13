@@ -5,13 +5,23 @@ import { Sparkles, Users, TrendingUp, Star } from 'lucide-react';
 
 const PremiumHeroSection = () => {
   const liveStats = [
-    { icon: Users, count: "3,254", label: "beauty pros online now" },
-    { icon: TrendingUp, count: "892", label: "active conversations" },
-    { icon: Star, count: "1,847", label: "achievements unlocked today" }
+    { icon: Users, count: "2,847", label: "beauty pros online now" },
+    { icon: TrendingUp, count: "127", label: "new members joined today" },
+    { icon: Star, count: "892", label: "success stories shared this week" }
   ];
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-16">
+    <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-20">
+      {/* Hero Background Image */}
+      <div className="absolute inset-0 opacity-20">
+        <div 
+          className="w-full h-full bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png')`
+          }}
+        />
+      </div>
+      
       {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -34,6 +44,11 @@ const PremiumHeroSection = () => {
           <p className="text-xl md:text-2xl text-white/90 font-light">
             Exclusive. Inspiring. <span className="text-yellow-400 font-semibold">Unforgettable.</span>
           </p>
+          
+          {/* FOMO Trigger */}
+          <div className="mt-4 text-sm text-yellow-300 animate-pulse">
+            🔥 Live Activity: <span className="font-bold">Sarah from NY just booked a $500 client!</span>
+          </div>
         </motion.div>
 
         {/* Live Stats Ticker */}

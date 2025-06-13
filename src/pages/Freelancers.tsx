@@ -10,7 +10,7 @@ import InteractiveStorytelling from '@/components/community/InteractiveStorytell
 import AchievementLeaderboard from '@/components/community/AchievementLeaderboard';
 import CuratedLearningHub from '@/components/community/CuratedLearningHub';
 import ExpertLiveQA from '@/components/community/ExpertLiveQA';
-import ExclusiveLiveEvents from '@/components/community/ExclusiveLiveEvents';
+import ExclusiveLiveEvents from '@/components/community/ExclusiveLive Events';
 import PremiumChallenges from '@/components/community/PremiumChallenges';
 import PremiumAnalytics from '@/components/community/PremiumAnalytics';
 import SponsoredSpotlight from '@/components/community/SponsoredSpotlight';
@@ -18,7 +18,7 @@ import SponsoredSpotlight from '@/components/community/SponsoredSpotlight';
 const Freelancers = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Sample premium feed data
+  // Sample premium feed data with realistic numbers
   const feedPosts = [
     {
       id: '1',
@@ -30,9 +30,9 @@ const Freelancers = () => {
       },
       content: 'Just completed my latest bridal transformation! This gorgeous bride wanted a timeless, elegant look that would photograph beautifully. The key was creating a flawless base and enhancing her natural features. What do you think? ✨',
       image: '/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png',
-      likes: 2847,
-      comments: 156,
-      shares: 89,
+      likes: 127,
+      comments: 23,
+      shares: 12,
       isTrending: true,
       timeAgo: '2 hours ago'
     },
@@ -46,9 +46,9 @@ const Freelancers = () => {
       },
       content: 'Sharing my latest color correction journey! This client came to me with severely damaged hair from multiple bleaching sessions. It took 3 appointments, but we achieved her dream blonde while maintaining hair health. Patience and technique are everything! 🎨',
       image: '/lovable-uploads/323c0530-2a0b-45ee-9065-646dee476f89.png',
-      likes: 1923,
-      comments: 234,
-      shares: 67,
+      likes: 89,
+      comments: 31,
+      shares: 8,
       isTrending: true,
       timeAgo: '4 hours ago'
     },
@@ -61,9 +61,9 @@ const Freelancers = () => {
         verified: false
       },
       content: 'Behind-the-scenes of today\'s photoshoot! Working with this amazing model on a bold, editorial look. The theme was "Urban Warrior" - strong, fierce, and unapologetic. Swipe to see the final result! 💪',
-      likes: 856,
-      comments: 92,
-      shares: 34,
+      likes: 54,
+      comments: 18,
+      shares: 6,
       isTrending: false,
       timeAgo: '6 hours ago'
     }
@@ -114,10 +114,17 @@ const Freelancers = () => {
                 <PremiumFeedCard key={post.id} post={post} />
               ))}
             </div>
+
+            {/* Load More Button */}
+            <div className="text-center py-6">
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full">
+                Load More Stories
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Full-width sections */}
+        {/* Full-width Premium Sections */}
         <div className="space-y-12 mt-12">
           <CuratedLearningHub />
           <ExpertLiveQA />

@@ -1,66 +1,59 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Star, Clock, Users, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Star, ExternalLink, Heart, MessageCircle, Sparkles } from 'lucide-react';
 
 const SponsoredSpotlight = () => {
   const sponsoredContent = [
     {
       id: 1,
-      brand: "Luxury Beauty Co.",
-      product: "Professional Hair Color System",
-      image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
-      description: "Transform your salon with our premium color collection trusted by celebrity stylists worldwide.",
-      testimonial: {
-        author: "Sarah Johnson",
-        role: "Master Colorist",
-        avatar: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
-        text: "This system has revolutionized my color work. My clients love the results!",
-        rating: 5
-      },
-      offer: "20% OFF for Community Members",
-      originalPrice: "$299",
-      discountPrice: "$239",
-      likes: 234,
-      comments: 67
+      title: "Professional Gel Kit Masterclass",
+      brand: "ProNails Academy",
+      image: "/lovable-uploads/323c0530-2a0b-45ee-9065-646dee476f89.png",
+      description: "Transform your nail game with our exclusive professional gel kit. Used by 500+ certified nail artists worldwide.",
+      originalPrice: "$149",
+      salePrice: "$89",
+      discount: "40% OFF",
+      testimonial: "This kit completely changed my business! I've increased my bookings by 60%.",
+      author: "Maria S., Certified Nail Artist",
+      rating: 4.9,
+      reviews: 127,
+      timeLeft: "23h 45m",
+      featured: true
     },
     {
       id: 2,
-      brand: "Elite Nail Studio",
-      product: "Professional Gel Kit Bundle",
-      image: "/lovable-uploads/3016e425-432a-49f0-b106-be927292873e.png",
-      description: "Everything you need for salon-quality gel manicures. Loved by professionals worldwide.",
-      testimonial: {
-        author: "Maria Rodriguez",
-        role: "Nail Artist",
-        avatar: "/lovable-uploads/323c0530-2a0b-45ee-9065-646dee476f89.png",
-        text: "The best investment I've made for my nail business. Quality is unmatched!",
-        rating: 5
-      },
-      offer: "FREE Shipping + Bonus Tools",
-      originalPrice: "$199",
-      discountPrice: "$149",
-      likes: 189,
-      comments: 43
+      title: "Hair Color Chemistry Course",
+      brand: "ColorCraft Institute",
+      image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+      description: "Master advanced color theory and techniques with our comprehensive course. Perfect for stylists ready to level up.",
+      originalPrice: "$299",
+      salePrice: "$199",
+      discount: "33% OFF",
+      testimonial: "The knowledge I gained helped me charge premium prices. Worth every penny!",
+      author: "Jake M., Master Colorist",
+      rating: 4.8,
+      reviews: 89,
+      timeLeft: "5d 12h",
+      featured: false
     }
   ];
 
   return (
-    <div className="py-12 bg-gradient-to-br from-gray-50 to-purple-50">
+    <div className="bg-gradient-to-br from-amber-50 to-orange-50 py-16">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4">
+            <Sparkles className="inline-block h-8 w-8 text-amber-500 mr-2" />
             Sponsored Spotlight
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Discover premium products and exclusive offers from our trusted beauty partners
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Exclusive deals and premium resources from our trusted industry partners
           </p>
         </motion.div>
 
@@ -71,95 +64,112 @@ const SponsoredSpotlight = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.2 }}
+              className={`relative bg-white rounded-3xl shadow-xl overflow-hidden ${
+                item.featured ? 'ring-2 ring-amber-400 ring-opacity-50' : ''
+              }`}
             >
-              <Card className="overflow-hidden bg-white shadow-xl border-4 border-gradient-to-r from-purple-200 to-pink-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                {/* Sponsored Badge */}
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 text-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 animate-pulse"></div>
-                  <Badge className="bg-white text-purple-600 font-bold relative z-10">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    SPONSORED SPOTLIGHT
+              {/* Featured Badge */}
+              {item.featured && (
+                <div className="absolute top-4 left-4 z-10">
+                  <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                    ⭐ Featured Deal
+                  </Badge>
+                </div>
+              )}
+
+              {/* Sponsored Label */}
+              <div className="absolute top-4 right-4 z-10">
+                <Badge variant="outline" className="bg-white/90 text-gray-700 border-gray-300">
+                  Sponsored
+                </Badge>
+              </div>
+
+              {/* Time Left Badge */}
+              <div className="absolute bottom-4 left-4 z-10">
+                <Badge className="bg-red-500 text-white animate-pulse">
+                  <Clock className="h-3 w-3 mr-1" />
+                  {item.timeLeft} left
+                </Badge>
+              </div>
+
+              <div className="aspect-video relative overflow-hidden">
+                <img 
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              </div>
+
+              <div className="p-6">
+                <div className="mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">{item.title}</h3>
+                  <p className="text-sm text-amber-600 font-medium">{item.brand}</p>
+                </div>
+
+                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                  {item.description}
+                </p>
+
+                {/* Pricing */}
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-2xl font-bold text-green-600">{item.salePrice}</span>
+                  <span className="text-lg text-gray-400 line-through">{item.originalPrice}</span>
+                  <Badge className="bg-red-100 text-red-700 font-bold">
+                    {item.discount}
                   </Badge>
                 </div>
 
-                <CardContent className="p-0">
-                  {/* Product Image */}
-                  <div className="relative overflow-hidden h-64">
-                    <img 
-                      src={item.image} 
-                      alt={item.product}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-red-500 text-white font-bold animate-pulse">
-                        {item.offer}
-                      </Badge>
-                    </div>
+                {/* Rating and Reviews */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center">
+                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                    <span className="text-sm font-medium ml-1">{item.rating}</span>
                   </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">{item.product}</h3>
-                      <p className="text-purple-600 font-semibold">{item.brand}</p>
-                    </div>
-
-                    <p className="text-gray-600 mb-4">{item.description}</p>
-
-                    {/* Testimonial */}
-                    <div className="bg-purple-50 rounded-2xl p-4 mb-4 border-l-4 border-l-purple-400">
-                      <div className="flex items-start gap-3">
-                        <img 
-                          src={item.testimonial.avatar} 
-                          alt={item.testimonial.author}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-purple-200"
-                        />
-                        <div className="flex-1">
-                          <p className="text-gray-800 italic mb-2">"{item.testimonial.text}"</p>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-semibold text-gray-900">{item.testimonial.author}</p>
-                              <p className="text-sm text-purple-600">{item.testimonial.role}</p>
-                            </div>
-                            <div className="flex">
-                              {[...Array(item.testimonial.rating)].map((_, i) => (
-                                <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Pricing */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <span className="text-2xl font-bold text-green-600">{item.discountPrice}</span>
-                        <span className="text-lg text-gray-500 line-through ml-2">{item.originalPrice}</span>
-                      </div>
-                      <div className="flex items-center gap-4 text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
-                          <span className="text-sm">{item.likes}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MessageCircle className="h-4 w-4" />
-                          <span className="text-sm">{item.comments}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* CTA Button */}
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 rounded-full text-lg shadow-lg transform hover:scale-105 transition-all">
-                      <ExternalLink className="h-5 w-5 mr-2" />
-                      Get Exclusive Deal
-                    </Button>
+                  <span className="text-gray-400">•</span>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Users className="h-4 w-4 mr-1" />
+                    {item.reviews} reviews
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+
+                {/* Testimonial */}
+                <div className="bg-gray-50 rounded-2xl p-4 mb-4">
+                  <p className="text-sm text-gray-700 italic mb-2">"{item.testimonial}"</p>
+                  <p className="text-xs text-gray-500 font-medium">- {item.author}</p>
+                </div>
+
+                {/* CTA Button */}
+                <button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-300 shadow-lg">
+                  Claim This Deal Now
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
+
+        {/* Trust Indicators */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-center mt-12"
+        >
+          <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Verified Partners Only</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>30-Day Money Back Guarantee</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Used by 10,000+ Professionals</span>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
