@@ -1,210 +1,257 @@
 
-import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+// Make sure the file uses proper TypeScript with proper data access
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile, UserRole } from '../types';
+import { UserProfile, UserRole, AuthContextType } from '../types';
+import { fetchUserProfile, createUserProfile, updateUserProfile } from '../userProfileService';
+import { toast } from 'sonner';
 import { normalizeRole } from '@/utils/roles';
 
-export const useAuthProvider = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+export const useAuthProvider = (): AuthContextType => {
+  const [session, setSession] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [isError, setIsError] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
-
-  const convertDatabaseProfileToUserProfile = (dbProfile: any): UserProfile => {
-    return {
-      ...dbProfile,
-      role: normalizeRole(dbProfile.role) as UserRole,
-      badges: Array.isArray(dbProfile.badges) ? dbProfile.badges : 
-              (typeof dbProfile.badges === 'string' ? [dbProfile.badges] : 
-               dbProfile.badges ? [] : null)
-    };
-  };
-
-  const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (error) throw error;
-      
-      return data ? convertDatabaseProfileToUserProfile(data) : null;
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
-    }
-  };
+  const [isError, setIsError] = useState(false);
 
   const clearIsNewUser = () => {
     setIsNewUser(false);
   };
 
-  const refreshUserProfile = async (): Promise<boolean> => {
-    if (!user) return false;
-    
-    try {
-      const profile = await fetchUserProfile(user.id);
-      if (profile) {
-        setUserProfile(profile);
-        setUserRole(profile.role || null);
-        return true;
+  // Check for session on mount
+  useEffect(() => {
+    const getInitialSession = async () => {
+      try {
+        setLoading(true);
+        
+        // Get current session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          throw sessionError;
+        }
+        
+        const currentSession = sessionData?.session;
+        setSession(currentSession || null);
+        
+        if (currentSession?.user) {
+          setUser(currentSession.user);
+          
+          // Fetch user profile data
+          const profile = await fetchUserProfile(currentSession.user.id);
+          setUserProfile(profile);
+          if (profile?.role) {
+            const normalizedRole = normalizeRole(profile.role as UserRole);
+            setUserRole(normalizedRole);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching initial session:', error);
+        setIsError(true);
+      } finally {
+        setLoading(false);
       }
-      return false;
-    } catch (error) {
-      console.error('Error refreshing user profile:', error);
-      return false;
-    }
-  };
-
-  const signIn = async (email: string, password: string) => {
+    };
+    
+    getInitialSession();
+    
+    // Set up auth state change listener
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        setSession(newSession);
+        
+        if (newSession?.user) {
+          setUser(newSession.user);
+          
+          if (event === 'SIGNED_IN') {
+            // Check if this user exists in our profiles table
+            const profile = await fetchUserProfile(newSession.user.id);
+            
+            if (!profile) {
+              // New user, need to create profile
+              setIsNewUser(true);
+              const newProfile = await createUserProfile(newSession.user);
+              setUserProfile(newProfile);
+              if (newProfile?.role) {
+                const normalizedRole = normalizeRole(newProfile.role as UserRole);
+                setUserRole(normalizedRole);
+              }
+            } else {
+              setUserProfile(profile);
+              if (profile.role) {
+                const normalizedRole = normalizeRole(profile.role as UserRole);
+                setUserRole(normalizedRole);
+              }
+            }
+          }
+        } else {
+          setUser(null);
+          setUserProfile(null);
+          setUserRole(null);
+        }
+      }
+    );
+    
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+  
+  // Sign in with email/password
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error }> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       });
       
-      if (error) return { success: false, error };
+      if (error) {
+        return { success: false, error: new Error(error.message) };
+      }
+      
       return { success: true };
-    } catch (error) {
-      return { success: false, error: error as Error };
+    } catch (error: any) {
+      toast.error(error.message || 'Error signing in');
+      return { success: false, error: new Error(error.message || 'Error signing in') };
     }
   };
-
-  const signOut = async () => {
+  
+  // Sign up with email/password
+  const signUp = async (email: string, password: string, userData?: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
     try {
-      await supabase.auth.signOut();
-      setUser(null);
-      setSession(null);
-      setUserProfile(null);
-      setUserRole(null);
-      setIsSignedIn(false);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
-
-  const signUp = async (email: string, password: string, userData?: any) => {
-    try {
+      // Register new user with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: userData,
-          emailRedirectTo: `${window.location.origin}/`
+          data: userData
         }
       });
       
-      if (error) return { success: false, error };
-      return { success: true, userId: data.user?.id };
-    } catch (error) {
-      return { success: false, error: error as Error };
-    }
-  };
-
-  const updateProfile = async (data: Partial<UserProfile>) => {
-    if (!user) return { success: false, error: new Error('No user found') };
-    
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update(data)
-        .eq('id', user.id);
-      
-      if (error) return { success: false, error };
-      
-      await refreshUserProfile();
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error as Error };
-    }
-  };
-
-  const updateUserRole = async (role: UserRole) => {
-    if (!user) return;
-    
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({ role })
-        .eq('id', user.id);
-      
-      if (error) throw error;
-      
-      setUserRole(role);
-      await refreshUserProfile();
-    } catch (error) {
-      console.error('Error updating user role:', error);
-    }
-  };
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsSignedIn(!!session?.user);
-        
-        if (event === 'SIGNED_IN' && session?.user) {
-          setTimeout(async () => {
-            const profile = await fetchUserProfile(session.user.id);
-            if (profile) {
-              setUserProfile(profile);
-              setUserRole(profile.role || null);
-            }
-          }, 0);
-        } else if (event === 'SIGNED_OUT') {
-          setUserProfile(null);
-          setUserRole(null);
-        }
-        
-        setLoading(false);
+      if (error) {
+        return { success: false, error: new Error(error.message) };
       }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsSignedIn(!!session?.user);
       
-      if (session?.user) {
-        fetchUserProfile(session.user.id).then(profile => {
-          if (profile) {
-            setUserProfile(profile);
-            setUserRole(profile.role || null);
+      // Create user profile record
+      if (data?.user) {
+        const newProfile = await createUserProfile({
+          ...data.user,
+          user_metadata: {
+            ...data.user.user_metadata,
+            ...userData
           }
-          setLoading(false);
         });
-      } else {
-        setLoading(false);
+        
+        setIsNewUser(true);
+        return { success: true };
       }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
+      
+      return { success: true };
+    } catch (error: any) {
+      toast.error(error.message || 'Error signing up');
+      return { success: false, error: new Error(error.message || 'Error signing up') };
+    }
+  };
+  
+  // Sign out
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || 'Error signing out');
+      throw error;
+    }
+  };
+  
+  // Update user profile
+  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
+    if (!user?.id) {
+      toast.error('You must be logged in to update your profile');
+      return { success: false, error: new Error('You must be logged in to update your profile') };
+    }
+    
+    try {
+      const updatedProfile = await updateUserProfile({
+        id: userProfile?.id || user.id,
+        ...data
+      });
+      
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+        if (updatedProfile.role) {
+          const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
+          setUserRole(normalizedRole);
+        }
+      }
+      
+      return { success: true };
+    } catch (error: any) {
+      toast.error(error.message || 'Error updating profile');
+      return { success: false, error: new Error(error.message || 'Error updating profile') };
+    }
+  };
+  
+  // Refresh user profile
+  const refreshUserProfile = async () => {
+    if (!user?.id) return false;
+    
+    try {
+      setIsError(false);
+      const profile = await fetchUserProfile(user.id);
+      if (profile) {
+        setUserProfile(profile);
+        if (profile.role) {
+          const normalizedRole = normalizeRole(profile.role as UserRole);
+          setUserRole(normalizedRole);
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('Error refreshing user profile:', error);
+      setIsError(true);
+      return false;
+    }
+  };
+  
+  // Set user role
+  const updateUserRole = async (role: UserRole) => {
+    if (!userProfile?.id) return;
+    
+    try {
+      const updatedProfile = await updateUserProfile({
+        id: userProfile.id,
+        role
+      });
+      
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+        if (updatedProfile.role) {
+          const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
+          setUserRole(normalizedRole);
+        }
+      }
+    } catch (error) {
+      console.error('Error setting user role:', error);
+    }
+  };
+  
   return {
-    user,
-    session,
-    userProfile,
-    userRole,
     loading,
-    isSignedIn,
+    isSignedIn: !!user,
+    user,
+    userRole,
+    userProfile,
     isError,
     isNewUser,
     clearIsNewUser,
-    setLoading,
-    refreshUserProfile,
     signIn,
     signOut,
     signUp,
-    updateProfile,
     updateUserRole,
+    updateProfile,
+    refreshUserProfile
   };
 };
