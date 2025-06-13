@@ -69,8 +69,14 @@ export interface AuthContextType {
   userRole: UserRole | null;
   loading: boolean;
   isSignedIn: boolean;
+  isError: boolean;
   isNewUser: boolean;
   clearIsNewUser: () => void;
   setLoading: (loading: boolean) => void;
   refreshUserProfile: () => Promise<boolean>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error }>;
+  signOut: () => Promise<void>;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
+  updateUserRole: (role: UserRole) => Promise<void>;
 }
