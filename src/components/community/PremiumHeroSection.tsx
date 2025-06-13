@@ -1,14 +1,42 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, TrendingUp, Star } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const PremiumHeroSection = () => {
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinForm, setJoinForm] = useState({
+    name: '',
+    email: '',
+    role: '',
+    message: ''
+  });
+
   const liveStats = [
     { icon: Users, count: "847", label: "beauty pros online now" },
     { icon: TrendingUp, count: "23", label: "new members joined today" },
     { icon: Star, count: "156", label: "success stories shared this week" }
   ];
+
+  const handleJoinCommunity = () => {
+    setShowJoinModal(true);
+  };
+
+  const handleSubmitJoin = () => {
+    if (!joinForm.name.trim() || !joinForm.email.trim()) {
+      alert('Please fill in your name and email');
+      return;
+    }
+
+    // Simulate joining the community
+    alert(`Welcome to the community, ${joinForm.name}! We'll be in touch soon.`);
+    setJoinForm({ name: '', email: '', role: '', message: '' });
+    setShowJoinModal(false);
+  };
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-20">
@@ -75,11 +103,62 @@ const PremiumHeroSection = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="mt-8"
         >
-          <button className="bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-500 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-full text-lg shadow-2xl transform hover:scale-105 transition-all duration-300">
+          <button 
+            onClick={handleJoinCommunity}
+            className="bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-500 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-full text-lg shadow-2xl transform hover:scale-105 transition-all duration-300"
+          >
             Join Our Inspiring Community
           </button>
         </motion.div>
       </div>
+
+      {/* Join Community Modal */}
+      <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Join Our Beauty Community</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              placeholder="Your name"
+              value={joinForm.name}
+              onChange={(e) => setJoinForm(prev => ({ ...prev, name: e.target.value }))}
+            />
+            <Input
+              type="email"
+              placeholder="Your email"
+              value={joinForm.email}
+              onChange={(e) => setJoinForm(prev => ({ ...prev, email: e.target.value }))}
+            />
+            <Input
+              placeholder="Your role (e.g., Makeup Artist, Hair Stylist)"
+              value={joinForm.role}
+              onChange={(e) => setJoinForm(prev => ({ ...prev, role: e.target.value }))}
+            />
+            <Textarea
+              placeholder="Tell us about yourself and why you'd like to join..."
+              value={joinForm.message}
+              onChange={(e) => setJoinForm(prev => ({ ...prev, message: e.target.value }))}
+              rows={3}
+            />
+            <div className="flex gap-2">
+              <Button
+                onClick={handleSubmitJoin}
+                disabled={!joinForm.name.trim() || !joinForm.email.trim()}
+                className="flex-1"
+              >
+                Join Community
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowJoinModal(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

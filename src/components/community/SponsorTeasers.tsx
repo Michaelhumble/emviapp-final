@@ -1,167 +1,239 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Smartphone, CreditCard, Calendar, BarChart3, Users, Zap } from 'lucide-react';
+import { Zap, MessageSquare, CreditCard, Calendar, TrendingUp, Vote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+
+interface Feature {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  benefits: string[];
+  votes: number;
+}
 
 const SponsorTeasers = () => {
-  const features = [
+  const [showVotingModal, setShowVotingModal] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState('');
+  const [hasVoted, setHasVoted] = useState(false);
+  const [features, setFeatures] = useState<Feature[]>([
     {
-      id: 1,
-      title: "AI-Powered POS Integration",
-      description: "Seamlessly connect your existing point-of-sale system with EmviApp for automated booking management and client tracking.",
+      id: 'pos-integration',
+      title: 'POS Integration',
+      description: 'Seamless integration with popular point-of-sale systems for salons',
       icon: CreditCard,
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1000&auto=format&fit=crop",
-      votes: 342,
-      category: "Business Tools"
+      benefits: [
+        'Automatic payment processing',
+        'Real-time inventory tracking',
+        'Streamlined checkout experience',
+        'Detailed sales analytics'
+      ],
+      votes: 127
     },
     {
-      id: 2,
-      title: "Smart SMS Marketing Suite",
-      description: "Automated client reminders, promotional campaigns, and follow-up messages that increase retention by 40%.",
-      icon: Smartphone,
-      image: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=1000&auto=format&fit=crop",
-      votes: 298,
-      category: "Marketing"
+      id: 'sms-marketing',
+      title: 'SMS Marketing Suite',
+      description: 'Automated SMS campaigns and customer engagement tools',
+      icon: MessageSquare,
+      benefits: [
+        'Automated appointment reminders',
+        'Promotional campaign management',
+        'Customer retention tools',
+        'Personalized messaging'
+      ],
+      votes: 89
     },
     {
-      id: 3,
-      title: "Advanced Analytics Dashboard",
-      description: "Deep insights into client behavior, peak booking times, and revenue optimization opportunities.",
-      icon: BarChart3,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
-      votes: 267,
-      category: "Analytics"
-    },
-    {
-      id: 4,
-      title: "Team Collaboration Hub",
-      description: "Internal communication tools, staff scheduling, and performance tracking for multi-artist salons.",
-      icon: Users,
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop",
-      votes: 234,
-      category: "Team Management"
-    },
-    {
-      id: 5,
-      title: "Smart Appointment Optimization",
-      description: "AI-driven scheduling that maximizes your booking efficiency and reduces no-shows by 60%.",
+      id: 'advanced-scheduling',
+      title: 'Advanced Scheduling',
+      description: 'AI-powered scheduling optimization and resource management',
       icon: Calendar,
-      image: "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?q=80&w=1000&auto=format&fit=crop",
-      votes: 189,
-      category: "Scheduling"
+      benefits: [
+        'Smart appointment scheduling',
+        'Resource optimization',
+        'Wait-list management',
+        'Multi-location coordination'
+      ],
+      votes: 156
     },
     {
-      id: 6,
-      title: "Instant Payment Processing",
-      description: "Lightning-fast payments with multiple options including digital wallets, split payments, and tips.",
-      icon: Zap,
-      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=1000&auto=format&fit=crop",
-      votes: 156,
-      category: "Payments"
+      id: 'analytics-dashboard',
+      title: 'Business Analytics',
+      description: 'Comprehensive business intelligence and reporting dashboard',
+      icon: TrendingUp,
+      benefits: [
+        'Revenue tracking and forecasting',
+        'Customer behavior insights',
+        'Performance benchmarking',
+        'Custom report generation'
+      ],
+      votes: 203
     }
-  ];
+  ]);
+
+  const handleVoteNow = () => {
+    setShowVotingModal(true);
+  };
+
+  const handleSubmitVote = () => {
+    if (!selectedFeature) {
+      alert('Please select a feature to vote for');
+      return;
+    }
+
+    // Update vote count
+    setFeatures(prev => prev.map(feature => 
+      feature.id === selectedFeature 
+        ? { ...feature, votes: feature.votes + 1 }
+        : feature
+    ));
+
+    setHasVoted(true);
+    alert('Thank you for voting! Your voice helps shape EmviApp\'s future.');
+    setShowVotingModal(false);
+    setSelectedFeature('');
+  };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 py-16">
+    <section className="bg-gradient-to-br from-indigo-50 to-purple-50 py-16">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-10">
-          <Badge className="bg-orange-100 text-orange-800 mb-4 px-4 py-2">
-            🔮 Coming Soon
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Vote for Future Features
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Help shape the future of EmviApp! Vote for the features you want most. The top-voted features will be developed first with our sponsor partners.
-          </p>
+        <div className="text-center mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Future Features Preview
+            </h2>
+            <p className="text-lg text-gray-600 mb-6">
+              Help us prioritize what matters most to you
+            </p>
+            <div className="inline-block bg-yellow-100 border border-yellow-300 rounded-full px-4 py-2 mb-6">
+              <span className="text-yellow-800 font-semibold text-sm">🚀 Coming Soon</span>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {features.map((feature, index) => (
             <motion.div
               key={feature.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100"
             >
-              {/* Feature Image */}
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={feature.image} 
-                  alt={feature.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute top-3 right-3">
-                  <Badge className="bg-white/90 text-gray-800">
-                    {feature.category}
-                  </Badge>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <feature.icon className="h-6 w-6 text-white" />
                 </div>
-                <div className="absolute bottom-3 left-3">
-                  <feature.icon className="h-8 w-8 text-white" />
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900">{feature.title}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Vote className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">{feature.votes} votes</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Feature Content */}
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                  {feature.description}
-                </p>
+              <p className="text-gray-600 mb-4">{feature.description}</p>
 
-                {/* Voting Section */}
+              <div className="space-y-2 mb-6">
+                <h4 className="font-semibold text-gray-900 text-sm">Key Benefits:</h4>
+                <ul className="space-y-1">
+                  {feature.benefits.map((benefit, idx) => (
+                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <Zap className="h-3 w-3 text-green-500" />
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">
-                      {feature.votes} votes
-                    </span>
-                    <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                        style={{ width: `${Math.min((feature.votes / 350) * 100, 100)}%` }}
-                      />
-                    </div>
+                  <span className="text-sm font-medium text-indigo-700">
+                    Business Impact: High ROI Expected
+                  </span>
+                  <div className="w-16 h-2 bg-indigo-200 rounded-full overflow-hidden">
+                    <div className="w-full h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                  >
-                    Vote
-                  </Button>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Call to Action */}
-        <div className="text-center bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Interested in Sponsoring?
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Partner with EmviApp to bring cutting-edge features to the beauty industry. 
-            Your sponsorship helps us build the tools that salons and artists need most.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-              Sponsor Partnership Info
+        <div className="text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Button
+              onClick={handleVoteNow}
+              disabled={hasVoted}
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-8 py-3 rounded-full text-lg font-semibold transform hover:scale-105 transition-all duration-300"
+            >
+              {hasVoted ? 'Thank You for Voting!' : 'Vote Now'}
             </Button>
-            <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50">
-              View All Features
-            </Button>
-          </div>
+            <p className="text-sm text-gray-500 mt-2">
+              Your vote helps us prioritize development
+            </p>
+          </motion.div>
         </div>
       </div>
-    </div>
+
+      {/* Voting Modal */}
+      <Dialog open={showVotingModal} onOpenChange={setShowVotingModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Vote for Your Priority Feature</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              Which feature would benefit your business the most?
+            </p>
+            <RadioGroup value={selectedFeature} onValueChange={setSelectedFeature}>
+              {features.map((feature) => (
+                <div key={feature.id} className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50">
+                  <RadioGroupItem value={feature.id} id={feature.id} />
+                  <Label htmlFor={feature.id} className="flex-1 cursor-pointer">
+                    <div className="font-medium">{feature.title}</div>
+                    <div className="text-sm text-gray-500">{feature.votes} votes</div>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleSubmitVote}
+                disabled={!selectedFeature}
+                className="flex-1"
+              >
+                Submit Vote
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+
+setShowVotingModal(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </section>
   );
 };
 
