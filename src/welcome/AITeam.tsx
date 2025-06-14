@@ -1,104 +1,179 @@
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
+import { Search, Users, Shield, TrendingUp, Sun } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Megaphone, Shield, Bot } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { UserRole } from "@/context/auth/types"; // Import UserRole type
 
-interface AIFeature {
+// AI agent interface
+interface AIAgent {
   id: string;
-  title: string;
-  description: string;
+  name: string;
   icon: React.ElementType;
-  color: string;
+  description: string;
+  action?: string;
+  iconColor: string;
+  bgColor: string;
 }
 
-const aiFeatures: AIFeature[] = [
-  {
-    id: "rank",
-    title: "EmviRank AI",
-    description: "Gets your job posts ranked on Google & social media.",
-    icon: Globe,
-    color: "text-emerald-500 bg-emerald-100"
-  },
-  {
-    id: "boost",
-    title: "EmviBoost AI",
-    description: "Automatically promotes your listings to the right people.",
-    icon: Megaphone,
-    color: "text-indigo-500 bg-indigo-100"
-  },
-  {
-    id: "guard",
-    title: "EmviGuard AI",
-    description: "Stops spam, fake accounts, and keeps your info safe.",
-    icon: Shield,
-    color: "text-rose-500 bg-rose-100"
-  },
-  {
-    id: "support",
-    title: "EmviSupport AI",
-    description: "A smart assistant that helps you post faster and better.",
-    icon: Bot,
-    color: "text-amber-500 bg-amber-100"
-  }
-];
+interface AITeamProps {
+  userRole?: UserRole; // Use the UserRole type from AuthContext
+}
 
-const AITeam = () => {
+const AITeam = ({ userRole = 'customer' }: AITeamProps) => {
+  // Define the AI agents
+  const aiAgents: AIAgent[] = [
+    {
+      id: "emviscout",
+      name: "EmviScout",
+      icon: Search,
+      description: "Extends your reach with SEO optimization across the web and social media.",
+      action: "Maximize Reach",
+      iconColor: "text-blue-500",
+      bgColor: "bg-blue-50",
+    },
+    {
+      id: "emvimatch",
+      name: "EmviMatch",
+      icon: Users,
+      description: "Connects you with ideal matches based on skills, location, and preferences.",
+      action: "Find Matches",
+      iconColor: "text-purple-500",
+      bgColor: "bg-purple-50",
+    },
+    {
+      id: "emviguard",
+      name: "EmviGuard",
+      icon: Shield,
+      description: "Blocks spam and verifies legitimate profiles to keep the platform safe.",
+      action: "View Protection",
+      iconColor: "text-green-500",
+      bgColor: "bg-green-50",
+    },
+    {
+      id: "emviboost",
+      name: "EmviBoost",
+      icon: TrendingUp,
+      description: "Provides intelligent suggestions to grow your business and income.",
+      action: "Ask EmviBoost",
+      iconColor: "text-amber-500",
+      bgColor: "bg-amber-50",
+    },
+    {
+      id: "sunshine",
+      name: "Sunshine",
+      icon: Sun,
+      description: "Your friendly support agent, available 24/7 to help with any questions.",
+      action: "Get Help",
+      iconColor: "text-orange-500",
+      bgColor: "bg-orange-50",
+    },
+  ];
+
+  // Customize descriptions based on user role
+  const getCustomizedAgents = () => {
+    const customized = [...aiAgents];
+    
+    switch(userRole) {
+      case 'artist':
+      case 'nail technician/artist':
+        customized[0].description = "Optimizes your profile for discovery by salon owners and clients looking for your skills.";
+        customized[1].description = "Matches you with job opportunities and clients that perfectly fit your expertise.";
+        customized[3].description = "Suggests ways to increase your income and build a stronger client base.";
+        break;
+      case 'owner':
+      case 'salon':
+        customized[0].description = "Increases your salon's visibility to potential clients and talented beauty professionals.";
+        customized[1].description = "Connects you with qualified professionals who match your salon's style and needs.";
+        customized[3].description = "Recommends strategies to boost salon revenue and retain talented staff.";
+        break;
+      case 'supplier':
+      case 'beauty supplier':
+        customized[0].description = "Enhances discovery of your products by salons and beauty professionals.";
+        customized[1].description = "Connects your products with salons and professionals most likely to purchase them.";
+        customized[3].description = "Suggests pricing strategies and promotions to increase your product sales.";
+        break;
+      default:
+        // Keep default descriptions for customers and others
+        break;
+    }
+    
+    return customized;
+  };
+  
+  const customizedAgents = getCustomizedAgents();
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
   return (
-    <section className="py-24 bg-gradient-to-b from-[#FFFFFF] to-[#FAF5FF] relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-50 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-50 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+    <div className="py-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
+          Meet Your AI Team
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          These intelligent agents work behind the scenes to enhance your EmviApp experience.
+        </p>
+      </motion.div>
       
-      <div className="container mx-auto px-4 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="text-center mb-16 max-w-4xl mx-auto"
-        >
-          <Badge variant="outline" className="mb-6 bg-white px-4 py-1.5 text-sm font-medium rounded-full border-primary/30 text-primary shadow-sm">
-            AI Powerhouse
-          </Badge>
-          
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-serif tracking-tight">
-            🔥 Meet the AI Behind EmviApp
-          </h2>
-          <p className="text-xl font-medium text-gray-700 mb-4">
-            This isn't just tech—it's your personal beauty business team.
-          </p>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            From boosting your job post to ranking you on Google, our AI agents do the work for you. 
-            Whether you're hiring, applying, or selling your salon—EmviApp's built-in AI makes sure you get seen, hired, and supported.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {aiFeatures.map((feature, index) => (
-            <motion.div
-              key={feature.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm overflow-hidden group">
-                <CardContent className="p-8 relative">
-                  <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-primary/5 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
-                  
-                  <div className={`w-16 h-16 rounded-xl ${feature.color.split(' ')[1]} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
-                    <feature.icon className={`h-8 w-8 ${feature.color.split(' ')[0]}`} />
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {customizedAgents.map((agent) => (
+          <motion.div
+            key={agent.id}
+            variants={itemVariants}
+            className="h-full"
+          >
+            <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className={`p-3 rounded-full ${agent.bgColor} shrink-0`}>
+                    <agent.icon className={`h-6 w-6 ${agent.iconColor}`} />
                   </div>
-                  
-                  <h3 className="text-xl font-bold font-serif mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold font-serif mb-1">{agent.name}</h3>
+                    <p className="text-gray-600 mb-4">{agent.description}</p>
+                    {agent.action && (
+                      <Button variant="outline" size="sm" className="text-xs">
+                        {agent.action}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
   );
 };
 

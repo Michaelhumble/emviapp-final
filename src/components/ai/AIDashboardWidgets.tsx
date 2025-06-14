@@ -15,19 +15,13 @@ const AIDashboardWidgets = ({ className = "" }: AIDashboardWidgetsProps) => {
   if (!user) return null;
   
   // Determine which components to show based on user role
-  const showPostPerformance = userRole === 'nail-artist' || 
-                             userRole === 'hair-stylist' ||
-                             userRole === 'lash-tech' ||
-                             userRole === 'barber' ||
-                             userRole === 'esthetician' ||
-                             userRole === 'massage-therapist' ||
+  const showPostPerformance = userRole === 'artist' || 
                              userRole === 'salon' || 
-                             userRole === 'salon-owner' ||
                              userRole === 'freelancer' || 
                              userRole === 'vendor' ||
                              userRole === 'owner' ||
                              userRole === 'supplier' ||
-                             userRole === 'beauty-supplier';
+                             userRole === 'beauty supplier';
   
   return (
     <div className={`space-y-6 ${className}`}>

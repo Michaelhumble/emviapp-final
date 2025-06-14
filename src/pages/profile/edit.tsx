@@ -24,22 +24,17 @@ const ProfileEdit = () => {
       let title = 'Edit Your Profile';
       
       switch (userRole) {
-        case 'nail-artist':
-        case 'hair-stylist':
-        case 'lash-tech':
-        case 'barber':
-        case 'esthetician':
-        case 'massage-therapist':
+        case 'artist':
+        case 'nail technician/artist':
           title = 'Edit Artist Profile';
           break;
         case 'salon':
-        case 'salon-owner':
         case 'owner':
           title = 'Edit Salon Profile';
           break;
-        case 'beauty-supplier':
-        case 'supplier':
         case 'vendor':
+        case 'supplier':
+        case 'beauty supplier':
           title = 'Edit Vendor Profile';
           break;
         case 'freelancer':
@@ -59,6 +54,7 @@ const ProfileEdit = () => {
     if (!refreshUserProfile) return;
     
     try {
+      // Adapt the boolean return to void to satisfy TypeScript
       const success = await refreshUserProfile();
       if (!success) {
         toast.error("Could not load your profile. Please try again later.");
@@ -100,29 +96,24 @@ const ProfileEdit = () => {
       return editorCache.get(cacheKey);
     }
     
-    // Select appropriate editor based on role - update role checks
+    // Select appropriate editor based on role
     let editorComponent: JSX.Element;
     
     switch (userRole) {
-      case 'nail-artist':
-      case 'hair-stylist':
-      case 'lash-tech':
-      case 'barber':
-      case 'esthetician':
-      case 'massage-therapist':
+      case 'artist':
+      case 'nail technician/artist':
         editorComponent = <ArtistProfileEditor />;
         break;
       case 'salon':
-      case 'salon-owner':
       case 'owner':
         editorComponent = <SalonProfileEditor />;
         break;
       case 'customer':
         editorComponent = <CustomerProfileEditor />;
         break;
-      case 'beauty-supplier':
-      case 'supplier':
       case 'vendor':
+      case 'supplier':
+      case 'beauty supplier':
         editorComponent = <SalonProfileEditor />; // Reuse salon editor for now
         break;
       case 'freelancer':

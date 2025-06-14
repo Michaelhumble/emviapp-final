@@ -48,18 +48,13 @@ export const useRoleBasedSignUp = () => {
         console.log("User metadata:", data.user.user_metadata);
         toast.success('Account created successfully! Redirecting...');
         
-        // Role-based redirect - update role checks
+        // Role-based redirect
         switch (role) {
-          case 'nail-artist':
-          case 'hair-stylist':
-          case 'lash-tech':
-          case 'barber':
-          case 'esthetician':
-          case 'massage-therapist':
+          case 'artist':
+          case 'nail technician/artist':
             navigate('/dashboard/artist');
             break;
           case 'salon':
-          case 'salon-owner':
           case 'owner':
             navigate('/dashboard/salon');
             break;

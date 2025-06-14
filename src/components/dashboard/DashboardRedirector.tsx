@@ -27,9 +27,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     try {
       // If we have a role from centralized auth state, use it
       if (userRole) {
-        if (userRole === 'nail-artist' || userRole === 'hair-stylist' || 
-            userRole === 'lash-tech' || userRole === 'barber' || 
-            userRole === 'esthetician' || userRole === 'massage-therapist') {
+        if (userRole === 'artist' || userRole === 'nail technician/artist') {
           navigate('/dashboard/artist');
           return;
         }

@@ -22,16 +22,10 @@ interface DashboardContentProps {
 const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   const { userRole, userProfile } = useAuth();
 
-  const isArtistOrTechnician = userRole === 'nail-artist' || 
-                              userRole === 'hair-stylist' || 
-                              userRole === 'lash-tech' || 
-                              userRole === 'barber' || 
-                              userRole === 'esthetician' || 
-                              userRole === 'massage-therapist' || 
-                              userRole === 'renter';
+  const isArtistOrTechnician = userRole === 'artist' || userRole === 'nail technician/artist' || userRole === 'renter';
   const isFreelancer = userRole === 'freelancer';
-  const isSalon = userRole === 'salon' || userRole === 'salon-owner' || userRole === 'owner';
-  const isSupplier = userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty-supplier';
+  const isSalon = userRole === 'salon' || userRole === 'owner';
+  const isSupplier = userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier';
   const isCustomer = userRole === 'customer';
   const isOther = userRole === 'other' || !userRole;
   

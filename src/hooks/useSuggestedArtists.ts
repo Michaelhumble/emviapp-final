@@ -15,14 +15,8 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
       try {
         setIsLoading(true);
         
-        // Skip suggestions if the viewer is an artist - update role check
-        if (userRole === 'nail-artist' || 
-            userRole === 'hair-stylist' || 
-            userRole === 'lash-tech' || 
-            userRole === 'barber' || 
-            userRole === 'esthetician' || 
-            userRole === 'massage-therapist' || 
-            userRole === 'freelancer') {
+        // Skip suggestions if the viewer is an artist (for now)
+        if (userRole === 'artist' || userRole === 'freelancer' || userRole === 'nail technician/artist') {
           setSuggestedArtists([]);
           setIsLoading(false);
           return;
@@ -34,11 +28,11 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
           // For authenticated users with a location, prioritize matching by location
           console.log("Fetching artists based on location:", userProfile.location);
           
-          // Get artists with the same location - update role values
+          // Get artists with the same location
           query = supabase
             .from('users')
             .select('*')
-            .in('role', ['nail-artist', 'hair-stylist', 'lash-tech', 'barber', 'esthetician', 'massage-therapist', 'freelancer'])
+            .in('role', ['artist', 'freelancer', 'nail technician/artist'])
             .neq('avatar_url', '')
             .ilike('location', `%${userProfile.location.split(',')[0]}%`)
             .order('boosted_until', { ascending: false });
@@ -81,7 +75,7 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
     let query = supabase
       .from('users')
       .select('*')
-      .in('role', ['nail-artist', 'hair-stylist', 'lash-tech', 'barber', 'esthetician', 'massage-therapist', 'freelancer'])
+      .in('role', ['artist', 'freelancer', 'nail technician/artist'])
       .neq('full_name', '')
       .neq('avatar_url', '');
       

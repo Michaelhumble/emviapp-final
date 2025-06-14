@@ -1,62 +1,120 @@
 
-import { NavigateFunction } from 'react-router-dom';
 import { UserRole } from '@/context/auth/types';
-import { getDashboardRoute } from './roles';
 
-export const navigateToRoleDashboard = (navigate: NavigateFunction, role: UserRole) => {
-  const route = getDashboardRoute(role);
-  navigate(route);
-};
+/**
+ * Navigate to the appropriate dashboard based on user role
+ */
+export const navigateToRoleDashboard = (navigate: (path: string) => void, role: UserRole | null) => {
+  if (!role) {
+    console.warn('No role provided for dashboard navigation');
+    navigate('/dashboard');
+    return;
+  }
 
-export const hasRoleAccess = (userRole: UserRole | null, requiredRole: string): boolean => {
-  if (!userRole) return false;
-  
-  // Map required roles to UserRole enum values
-  const roleMapping: Record<string, UserRole[]> = {
-    'customer': ['customer'],
-    'artist': ['nail-artist', 'hair-stylist', 'lash-tech', 'barber', 'esthetician', 'massage-therapist', 'freelancer'],
-    'salon': ['salon', 'salon-owner', 'owner'],
-    'supplier': ['beauty-supplier', 'supplier', 'vendor'],
-    'admin': ['admin', 'manager']
-  };
-  
-  const allowedRoles = roleMapping[requiredRole] || [];
-  return allowedRoles.includes(userRole);
-};
+  console.log('Navigating to dashboard for role:', role);
 
-export const getPersonalizedGreeting = (userRole: UserRole | null, name: string = "there") => {
-  const firstName = name.split(' ')[0] || name;
-  
-  switch(userRole) {
-    case 'nail-artist':
-      return `Welcome back, ${firstName}!`;
-    case 'hair-stylist':
-      return `Hey ${firstName}, let's create beautiful styles today!`;
-    case 'lash-tech':
-      return `Hi ${firstName}, ready to enhance those lashes?`;
-    case 'barber':
-      return `What's up, ${firstName}! Ready for another great day?`;
-    case 'esthetician':
-      return `Hello ${firstName}, let's help clients glow today!`;
-    case 'massage-therapist':
-      return `Welcome ${firstName}, ready to help clients relax?`;
-    case 'salon-owner':
-      return `Good to see you, ${firstName}! How's business today?`;
-    case 'freelancer':
-      return `Hey ${firstName}, ready to take on new projects?`;
+  switch (role) {
+    case 'artist':
+    case 'nail technician/artist':
+      navigate('/dashboard/artist');
+      break;
+    case 'salon':
+    case 'owner':
+      navigate('/dashboard/salon');
+      break;
     case 'customer':
-      return `Welcome back, ${firstName}!`;
-    case 'beauty-supplier':
-      return `Hello ${firstName}, ready to connect with more salons?`;
+      navigate('/dashboard/customer');
+      break;
+    case 'freelancer':
+      navigate('/dashboard/freelancer');
+      break;
+    case 'supplier':
+    case 'beauty supplier':
     case 'vendor':
-      return `Hi ${firstName}, let's grow your business today!`;
+      navigate('/dashboard/supplier');
+      break;
     case 'manager':
-      return `Welcome back, Manager ${firstName}!`;
+      navigate('/dashboard/manager');
+      break;
     case 'admin':
-      return `Hello Admin ${firstName}!`;
+      navigate('/dashboard/admin');
+      break;
     case 'renter':
-      return `Hey ${firstName}, make the most of your space today!`;
+      navigate('/dashboard/renter');
+      break;
+    case 'other':
+      navigate('/dashboard/other');
+      break;
     default:
-      return `Welcome back, ${firstName}!`;
+      console.warn('Unknown role for navigation:', role);
+      navigate('/dashboard');
+  }
+};
+
+/**
+ * Get the dashboard path for a given role without navigating
+ */
+export const getRoleDashboardPath = (role: UserRole | null): string => {
+  if (!role) return '/dashboard';
+
+  switch (role) {
+    case 'artist':
+    case 'nail technician/artist':
+      return '/dashboard/artist';
+    case 'salon':
+    case 'owner':
+      return '/dashboard/salon';
+    case 'customer':
+      return '/dashboard/customer';
+    case 'freelancer':
+      return '/dashboard/freelancer';
+    case 'supplier':
+    case 'beauty supplier':
+    case 'vendor':
+      return '/dashboard/supplier';
+    case 'manager':
+      return '/dashboard/manager';
+    case 'admin':
+      return '/dashboard/admin';
+    case 'renter':
+      return '/dashboard/renter';
+    case 'other':
+      return '/dashboard/other';
+    default:
+      return '/dashboard';
+  }
+};
+
+/**
+ * Check if user has access to a specific role
+ */
+export const hasRoleAccess = (userRole: UserRole | null, requiredRole: UserRole): boolean => {
+  return userRole === requiredRole;
+};
+
+/**
+ * Get personalized greeting based on user role and time
+ */
+export const getPersonalizedGreeting = (role: UserRole | null, name?: string): string => {
+  const hour = new Date().getHours();
+  let timeGreeting = 'Good day';
+  
+  if (hour < 12) timeGreeting = 'Good morning';
+  else if (hour < 18) timeGreeting = 'Good afternoon';
+  else timeGreeting = 'Good evening';
+  
+  const displayName = name || 'there';
+  
+  switch (role) {
+    case 'artist':
+    case 'nail technician/artist':
+      return `${timeGreeting}, ${displayName}! Ready to create beautiful nails?`;
+    case 'salon':
+    case 'owner':
+      return `${timeGreeting}, ${displayName}! How's your salon doing today?`;
+    case 'customer':
+      return `${timeGreeting}, ${displayName}! Looking for your next nail appointment?`;
+    default:
+      return `${timeGreeting}, ${displayName}!`;
   }
 };
