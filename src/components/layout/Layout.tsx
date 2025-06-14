@@ -1,7 +1,6 @@
 
 import React, { ReactNode } from 'react';
 import Navbar from './Navbar';
-import Footer from './Footer';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
@@ -26,8 +25,6 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
         {children}
       </main>
-      
-      <Footer />
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}
