@@ -1,14 +1,22 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, User, Mail, Lock, Briefcase, CheckCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+
+const ROLE_OPTIONS = [
+  { value: 'customer', label: 'Customer' },
+  { value: 'salon-owner', label: 'Salon Owner' },
+  { value: 'nail-technician', label: 'Nail Technician' },
+  { value: 'hair-stylist', label: 'Hair Stylist' },
+  { value: 'lash-tech', label: 'Lash Technician' },
+  { value: 'barber', label: 'Barber' },
+  { value: 'esthetician', label: 'Esthetician' }
+];
 
 interface FormData {
   fullName: string;
@@ -24,20 +32,10 @@ interface FormErrors {
   password?: string;
   confirmPassword?: string;
   role?: string;
-  general?: string;
+  submit?: string;
 }
 
-const roleOptions = [
-  { value: 'customer', label: 'Customer', description: 'Book beauty services' },
-  { value: 'nail-artist', label: 'Nail Artist', description: 'Offer nail services' },
-  { value: 'salon-owner', label: 'Salon Owner', description: 'Manage salon business' },
-  { value: 'hair-stylist', label: 'Hair Stylist', description: 'Provide hair services' },
-  { value: 'lash-tech', label: 'Lash Technician', description: 'Specialize in lashes' },
-  { value: 'barber', label: 'Barber', description: 'Men\'s grooming services' },
-  { value: 'esthetician', label: 'Esthetician', description: 'Skincare specialist' },
-];
-
-const NewSignUpForm = () => {
+const NewSignUpForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',
@@ -45,11 +43,11 @@ const NewSignUpForm = () => {
     confirmPassword: '',
     role: ''
   });
-  
+
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const validateEmail = (email: string): boolean => {
@@ -77,8 +75,10 @@ const NewSignUpForm = () => {
     // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
     }
 
     // Confirm password validation
@@ -99,21 +99,11 @@ const NewSignUpForm = () => {
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      fullName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      role: ''
-    });
-    setErrors({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,49 +117,43 @@ const NewSignUpForm = () => {
     setErrors({});
 
     try {
-      // Sign up the user with Supabase
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
           data: {
             full_name: formData.fullName,
             role: formData.role
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
 
       if (error) {
-        throw error;
+        if (error.message.includes('User already registered')) {
+          setErrors({ submit: 'An account with this email already exists. Please try signing in instead.' });
+        } else if (error.message.includes('Password should be at least')) {
+          setErrors({ password: error.message });
+        } else {
+          setErrors({ submit: error.message });
+        }
+        return;
       }
 
       if (data.user) {
         setIsSuccess(true);
-        toast.success('Account created successfully! Please check your email to verify your account.');
-        resetForm();
-        
-        // Redirect after a short delay
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 2000);
+        // Reset form
+        setFormData({
+          fullName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          role: ''
+        });
       }
-
-    } catch (error: any) {
-      console.error('Sign up error:', error);
-      
-      let errorMessage = 'Failed to create account. Please try again.';
-      
-      if (error.message?.includes('User already registered')) {
-        errorMessage = 'An account with this email already exists. Please sign in instead.';
-      } else if (error.message?.includes('Invalid email')) {
-        errorMessage = 'Please enter a valid email address.';
-      } else if (error.message?.includes('Password')) {
-        errorMessage = 'Password must be at least 6 characters long.';
-      }
-      
-      setErrors({ general: errorMessage });
-      toast.error(errorMessage);
+    } catch (err) {
+      console.error('Signup error:', err);
+      setErrors({ submit: 'An unexpected error occurred. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -177,22 +161,22 @@ const NewSignUpForm = () => {
 
   if (isSuccess) {
     return (
-      <div className="max-w-md mx-auto">
-        <Card className="border-green-200 shadow-lg">
-          <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Account Created!</h3>
-                <p className="text-gray-600">
-                  We've sent a verification email to <strong>{formData.email}</strong>. 
-                  Please check your inbox and click the verification link to complete your registration.
-                </p>
-              </div>
-              <p className="text-sm text-gray-500">Redirecting you to dashboard...</p>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-0 shadow-2xl">
+          <CardContent className="p-8 text-center">
+            <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to EmviApp!</h2>
+            <p className="text-gray-600 mb-6">
+              Your account has been created successfully. Please check your email to verify your account and complete the setup.
+            </p>
+            <Button 
+              onClick={() => setIsSuccess(false)}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            >
+              Create Another Account
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -200,172 +184,145 @@ const NewSignUpForm = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto">
-      <Card className="shadow-lg border-0 bg-white">
-        <CardHeader className="space-y-1 pb-6">
-          <CardTitle className="text-2xl font-bold text-center text-gray-900">
-            Create Account
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md border-0 shadow-2xl">
+        <CardHeader className="text-center pb-2">
+          <div className="h-12 w-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-white font-bold text-xl">E</span>
+          </div>
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Join EmviApp
           </CardTitle>
-          <p className="text-center text-gray-600">
-            Join EmviApp and start your beauty journey
-          </p>
+          <CardDescription className="text-gray-600">
+            Create your account and start your beauty journey
+          </CardDescription>
         </CardHeader>
-        
-        <CardContent className="space-y-4">
+
+        <CardContent className="p-6 pt-2">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* General Error */}
-            {errors.general && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertDescription className="text-red-700">
-                  {errors.general}
-                </AlertDescription>
-              </Alert>
+            {errors.submit && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-red-700">{errors.submit}</p>
+              </div>
             )}
 
-            {/* Full Name */}
             <div className="space-y-2">
               <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
                 Full Name
               </Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className={`pl-10 ${errors.fullName ? 'border-red-300 focus:border-red-500' : ''}`}
-                  disabled={isLoading}
-                />
-              </div>
+              <Input
+                id="fullName"
+                type="text"
+                value={formData.fullName}
+                onChange={(e) => handleInputChange('fullName', e.target.value)}
+                className={`${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                placeholder="Enter your full name"
+              />
               {errors.fullName && (
-                <p className="text-sm text-red-600">{errors.fullName}</p>
+                <p className="text-xs text-red-600">{errors.fullName}</p>
               )}
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Email Address
               </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`pl-10 ${errors.email ? 'border-red-300 focus:border-red-500' : ''}`}
-                  disabled={isLoading}
-                />
-              </div>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className={`${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                placeholder="Enter your email"
+              />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email}</p>
+                <p className="text-xs text-red-600">{errors.email}</p>
               )}
             </div>
 
-            {/* Role Selection */}
             <div className="space-y-2">
               <Label htmlFor="role" className="text-sm font-medium text-gray-700">
                 I am a...
               </Label>
-              <div className="relative">
-                <Briefcase className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
-                <Select 
-                  value={formData.role} 
-                  onValueChange={(value) => handleInputChange('role', value)}
-                  disabled={isLoading}
-                >
-                  <SelectTrigger className={`pl-10 ${errors.role ? 'border-red-300 focus:border-red-500' : ''}`}>
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roleOptions.map((role) => (
-                      <SelectItem key={role.value} value={role.value}>
-                        <div>
-                          <div className="font-medium">{role.label}</div>
-                          <div className="text-sm text-gray-500">{role.description}</div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
+                <SelectTrigger className={`${errors.role ? 'border-red-500' : 'border-gray-300'} rounded-lg`}>
+                  <SelectValue placeholder="Select your role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {errors.role && (
-                <p className="text-sm text-red-600">{errors.role}</p>
+                <p className="text-xs text-red-600">{errors.role}</p>
               )}
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Create a password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className={`pl-10 pr-10 ${errors.password ? 'border-red-300 focus:border-red-500' : ''}`}
-                  disabled={isLoading}
+                  className={`${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg pr-10`}
+                  placeholder="Create a strong password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-sm text-red-600">{errors.password}</p>
+                <p className="text-xs text-red-600">{errors.password}</p>
               )}
             </div>
 
-            {/* Confirm Password */}
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
                 Confirm Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  className={`pl-10 pr-10 ${errors.confirmPassword ? 'border-red-300 focus:border-red-500' : ''}`}
-                  disabled={isLoading}
+                  className={`${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg pr-10`}
+                  placeholder="Confirm your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-sm text-red-600">{errors.confirmPassword}</p>
+                <p className="text-xs text-red-600">{errors.confirmPassword}</p>
               )}
             </div>
 
-            {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-2.5 transition-all duration-200 shadow-lg hover:shadow-xl"
               disabled={isLoading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium py-2.5 rounded-lg transition-all duration-200 mt-6"
             >
               {isLoading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Creating Account...</span>
+                <div className="flex items-center justify-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Creating Account...
                 </div>
               ) : (
                 'Create Account'
@@ -373,11 +330,10 @@ const NewSignUpForm = () => {
             </Button>
           </form>
 
-          {/* Sign In Link */}
-          <div className="text-center pt-4 border-t border-gray-100">
+          <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
-              <a href="/auth" className="font-medium text-purple-600 hover:text-purple-500 transition-colors">
+              <a href="/sign-in" className="font-medium text-purple-600 hover:text-purple-500">
                 Sign in
               </a>
             </p>
