@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -16,11 +17,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
   const locationString = getLocationString(profile.location);
 
   const getProfileTitle = () => {
-    if (profile.role === 'artist' || profile.role === 'nail technician/artist') {
+    if (profile.role === 'nail-artist' || profile.role === 'hair-stylist' || 
+        profile.role === 'lash-tech' || profile.role === 'barber' || 
+        profile.role === 'esthetician' || profile.role === 'massage-therapist') {
       return profile.specialty || 'Beauty Artist';
-    } else if (profile.role === 'salon' || profile.role === 'owner') {
+    } else if (profile.role === 'salon' || profile.role === 'salon-owner' || profile.role === 'owner') {
       return profile.salon_name || profile.salonName || 'Salon Owner';
-    } else if (profile.role === 'vendor' || profile.role === 'supplier' || profile.role === 'beauty supplier') {
+    } else if (profile.role === 'vendor' || profile.role === 'supplier' || profile.role === 'beauty-supplier') {
       return profile.company_name || 'Beauty Supplier';
     } else if (profile.role === 'freelancer') {
       return profile.specialty || 'Freelancer';
@@ -30,15 +33,25 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
   
   const getProfileType = () => {
     switch (profile.role) {
-      case 'artist':
-      case 'nail technician/artist':
-        return 'Artist';
+      case 'nail-artist':
+        return 'Nail Artist';
+      case 'hair-stylist':
+        return 'Hair Stylist';
+      case 'lash-tech':
+        return 'Lash Technician';
+      case 'barber':
+        return 'Barber';
+      case 'esthetician':
+        return 'Esthetician';
+      case 'massage-therapist':
+        return 'Massage Therapist';
       case 'salon':
+      case 'salon-owner':
       case 'owner':
         return 'Salon';
       case 'vendor':
       case 'supplier':
-      case 'beauty supplier':
+      case 'beauty-supplier':
         return 'Supplier';
       case 'freelancer':
         return 'Freelancer';

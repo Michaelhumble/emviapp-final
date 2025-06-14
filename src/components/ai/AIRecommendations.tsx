@@ -10,18 +10,24 @@ const AIRecommendations = () => {
   // Role-specific recommendation title
   const getTitle = () => {
     switch(userRole) {
-      case 'artist':
+      case 'nail-artist':
+      case 'hair-stylist':
+      case 'lash-tech':
+      case 'barber':
+      case 'esthetician':
+      case 'massage-therapist':
         return "Jobs For You";
       case 'salon':
+      case 'salon-owner':
       case 'owner':
         return "Top Artist Matches";
       case 'customer':
         return "For Your Next Appointment";
       case 'freelancer':
         return "Gig Opportunities";
-      case 'supplier':
+      case 'beauty-supplier':
       case 'vendor':
-      case 'beauty supplier':
+      case 'supplier':
         return "Business Leads";
       default:
         return "Personalized Recommendations";

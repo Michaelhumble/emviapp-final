@@ -23,7 +23,12 @@ const AIWelcomeAssistant = ({ className = "" }: AIWelcomeAssistantProps) => {
     const randomNum = Math.floor(Math.random() * 3); // For variety in messages
     
     switch(userRole) {
-      case 'artist':
+      case 'nail-artist':
+      case 'hair-stylist':
+      case 'lash-tech':
+      case 'barber':
+      case 'esthetician':
+      case 'massage-therapist':
         setWelcomeMessage(`Hi ${firstName}, `);
         
         if (randomNum === 0) {
@@ -42,6 +47,7 @@ const AIWelcomeAssistant = ({ className = "" }: AIWelcomeAssistantProps) => {
         break;
         
       case 'salon':
+      case 'salon-owner':
         setWelcomeMessage(`Hi ${firstName}, `);
         
         if (randomNum === 0) {
@@ -95,9 +101,9 @@ const AIWelcomeAssistant = ({ className = "" }: AIWelcomeAssistantProps) => {
         }
         break;
         
-      case 'supplier':
+      case 'beauty-supplier':
       case 'vendor':
-      case 'beauty supplier':
+      case 'supplier':
         setWelcomeMessage(`Hi ${firstName}, `);
         
         if (randomNum === 0) {

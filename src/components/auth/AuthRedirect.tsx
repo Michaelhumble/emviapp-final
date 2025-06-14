@@ -24,11 +24,16 @@ export const AuthRedirect = () => {
 
     // Handle role-based redirects using centralized auth state
     switch (userRole) {
-      case 'artist':
-      case 'nail technician/artist':
+      case 'nail-artist':
+      case 'hair-stylist':
+      case 'lash-tech':
+      case 'barber':
+      case 'esthetician':
+      case 'massage-therapist':
         navigate('/dashboard/artist');
         break;
       case 'salon':
+      case 'salon-owner':
       case 'owner':
         navigate('/dashboard/salon');
         break;
@@ -38,8 +43,9 @@ export const AuthRedirect = () => {
       case 'customer':
         navigate('/dashboard/customer');
         break;
+      case 'beauty-supplier':
       case 'supplier':
-      case 'beauty supplier':
+      case 'vendor':
         navigate('/dashboard/supplier');
         break;
       default:

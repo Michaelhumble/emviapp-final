@@ -8,8 +8,14 @@ interface ProfileContentProps {
 }
 
 const ProfileContent: React.FC<ProfileContentProps> = ({ profile }) => {
-  const isArtist = profile.role === 'artist' || profile.role === 'freelancer' || profile.role === 'nail technician/artist';
-  const isSalon = profile.role === 'salon' || profile.role === 'owner';
+  const isArtist = profile.role === 'nail-artist' || 
+                   profile.role === 'hair-stylist' || 
+                   profile.role === 'lash-tech' || 
+                   profile.role === 'barber' || 
+                   profile.role === 'esthetician' || 
+                   profile.role === 'massage-therapist' || 
+                   profile.role === 'freelancer';
+  const isSalon = profile.role === 'salon' || profile.role === 'salon-owner' || profile.role === 'owner';
   
   return (
     <>
