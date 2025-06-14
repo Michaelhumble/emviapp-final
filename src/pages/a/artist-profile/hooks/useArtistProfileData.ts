@@ -37,7 +37,7 @@ export const useArtistProfileData = (profileId: string) => {
           const transformedProfile: UserProfile = {
             ...data,
             role: normalizedRole,
-            badges: Array.isArray(data.badges) ? data.badges : []
+            badges: Array.isArray(data.badges) ? data.badges.map(badge => String(badge)) : []
           };
           
           setProfile(transformedProfile);

@@ -9,6 +9,15 @@ export const useArtistProfileData = (profileId: string) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [services, setServices] = useState<any[]>([]);
+  const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
+  const [viewCount, setViewCount] = useState(0);
+  const [isSalonOwner] = useState(false);
+
+  const incrementViewCount = async () => {
+    // Placeholder for view count increment
+    setViewCount(prev => prev + 1);
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -37,7 +46,7 @@ export const useArtistProfileData = (profileId: string) => {
           const transformedProfile: UserProfile = {
             ...data,
             role: normalizedRole,
-            badges: Array.isArray(data.badges) ? data.badges : []
+            badges: Array.isArray(data.badges) ? data.badges.map(badge => String(badge)) : []
           };
           
           setProfile(transformedProfile);
@@ -55,5 +64,14 @@ export const useArtistProfileData = (profileId: string) => {
     }
   }, [profileId]);
 
-  return { profile, loading, error };
+  return { 
+    profile, 
+    loading, 
+    error, 
+    services, 
+    portfolioImages, 
+    viewCount, 
+    isSalonOwner, 
+    incrementViewCount 
+  };
 };
