@@ -8,6 +8,22 @@ export const navigateToRoleDashboard = (navigate: NavigateFunction, role: UserRo
   navigate(route);
 };
 
+export const hasRoleAccess = (userRole: UserRole | null, requiredRole: string): boolean => {
+  if (!userRole) return false;
+  
+  // Map required roles to UserRole enum values
+  const roleMapping: Record<string, UserRole[]> = {
+    'customer': ['customer'],
+    'artist': ['nail-artist', 'hair-stylist', 'lash-tech', 'barber', 'esthetician', 'massage-therapist', 'freelancer'],
+    'salon': ['salon', 'salon-owner', 'owner'],
+    'supplier': ['beauty-supplier', 'supplier', 'vendor'],
+    'admin': ['admin', 'manager']
+  };
+  
+  const allowedRoles = roleMapping[requiredRole] || [];
+  return allowedRoles.includes(userRole);
+};
+
 export const getPersonalizedGreeting = (userRole: UserRole | null, name: string = "there") => {
   const firstName = name.split(' ')[0] || name;
   

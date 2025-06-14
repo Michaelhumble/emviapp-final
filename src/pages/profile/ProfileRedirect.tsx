@@ -20,14 +20,19 @@ const ProfileRedirect = () => {
       return;
     }
     
-    // Redirect based on user role
+    // Redirect based on user role - update role checks
     if (userRole) {
       switch (userRole) {
-        case 'artist':
-        case 'nail technician/artist':
+        case 'nail-artist':
+        case 'hair-stylist':
+        case 'lash-tech':
+        case 'barber':
+        case 'esthetician':
+        case 'massage-therapist':
           navigate('/profile/artist/setup');
           break;
         case 'salon':
+        case 'salon-owner':
         case 'owner':
           navigate('/profile/salon/setup');
           break;
@@ -37,7 +42,9 @@ const ProfileRedirect = () => {
         case 'renter':
           navigate('/profile/renter/setup');
           break;
+        case 'beauty-supplier':
         case 'supplier':
+        case 'vendor':
           navigate('/profile/supplier/setup');
           break;
         case 'customer':

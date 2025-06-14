@@ -1,75 +1,80 @@
+import React, { useEffect } from "react";
+import { useAuth } from "@/context/auth";
+import { useNavigate } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
+import { getWelcomeImage, getWelcomeMessage, getRoleDisplayName } from "@/components/welcome/utils/roleUtils";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-
-const Welcome = () => {
+const Welcome: React.FC = () => {
+  const { user, userRole, loading } = useAuth();
   const navigate = useNavigate();
-  const { userProfile, userRole } = useAuth();
-  
-  const handleGetStarted = () => {
-    navigate('/dashboard');
-  };
-  
+
+  useEffect(() => {
+    if (!loading && user && userRole) {
+      // Redirect authenticated users with roles to their dashboard
+      navigate('/dashboard');
+    }
+  }, [user, userRole, loading, navigate]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin h-8 w-8 border-t-2 border-primary rounded-full"></div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Check if user is artist - update role check
+  const isArtist = userRole === 'nail-artist' || 
+                  userRole === 'hair-stylist' || 
+                  userRole === 'lash-tech' || 
+                  userRole === 'barber' || 
+                  userRole === 'esthetician' || 
+                  userRole === 'massage-therapist' || 
+                  userRole === 'freelancer';
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-purple-50/30 p-4">
-      <Card className="max-w-md w-full shadow-lg">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to EmviApp!</CardTitle>
-          <CardDescription>
-            We're excited to have you join our community
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent className="space-y-4">
-          <div className="text-center">
-            <div className="h-20 w-20 rounded-full bg-primary/10 mx-auto flex items-center justify-center mb-4">
-              <span className="text-3xl text-primary">✨</span>
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 flex items-center justify-center py-12">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden md:flex"
+          >
+            <div className="md:flex-shrink-0">
+              <img
+                className="h-48 w-full object-cover md:w-48"
+                src={getWelcomeImage(userRole)}
+                alt="Welcome Image"
+              />
             </div>
-            
-            <h3 className="text-lg font-medium mb-2">
-              Hi, {userProfile?.full_name || 'there'}!
-            </h3>
-            
-            <p className="text-muted-foreground">
-              {userRole === 'artist' || userRole === 'nail technician/artist' ? (
-                "You're now part of our artist community. Let's set up your profile and start attracting clients."
-              ) : userRole === 'salon' || userRole === 'owner' ? (
-                "You're now part of our salon community. Let's set up your salon and start connecting with artists."
-              ) : (
-                "You're now part of our community. Let's explore what EmviApp has to offer."
-              )}
-            </p>
-          </div>
-          
-          <div className="bg-primary/5 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">What's next:</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-center">
-                <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mr-2 text-xs">1</span>
-                <span>Complete your profile</span>
-              </li>
-              <li className="flex items-center">
-                <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mr-2 text-xs">2</span>
-                <span>{userRole === 'artist' ? 'Add your portfolio' : 'Explore the platform'}</span>
-              </li>
-              <li className="flex items-center">
-                <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mr-2 text-xs">3</span>
-                <span>{userRole === 'artist' ? 'Set up your services' : 'Connect with others'}</span>
-              </li>
-            </ul>
-          </div>
-        </CardContent>
-        
-        <CardFooter>
-          <Button className="w-full" onClick={handleGetStarted}>
-            Get Started
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+            <div className="p-8">
+              <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
+                Welcome, {user?.email}
+              </div>
+              <h2 className="block mt-1 text-lg leading-tight font-medium text-black">
+                {getRoleDisplayName(userRole)}
+              </h2>
+              <p className="mt-2 text-gray-500">
+                {getWelcomeMessage(userRole)}
+              </p>
+              <div className="mt-4">
+                <Button onClick={() => navigate('/profile/edit')}>
+                  Complete Profile <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 

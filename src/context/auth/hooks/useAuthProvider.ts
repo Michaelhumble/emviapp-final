@@ -54,8 +54,8 @@ export const useAuthProvider = () => {
         setUser(session?.user ?? null);
         setIsSignedIn(!!session?.user);
 
-        // Check for new user signup
-        if (event === 'SIGNED_UP') {
+        // Check for new user signup - fix the comparison
+        if (event === 'SIGNED_UP' as AuthChangeEvent) {
           setIsNewUser(true);
         }
 
