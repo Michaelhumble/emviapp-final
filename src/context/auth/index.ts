@@ -1,4 +1,4 @@
 
 export * from './AuthProvider';
+export * from './useAuth';
 export * from './types';
-// Remove duplicate useAuth export - it's already exported from AuthProvider

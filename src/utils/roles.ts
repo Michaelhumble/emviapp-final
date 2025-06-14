@@ -22,7 +22,7 @@ export const normalizeRole = (role: UserRole | string | null | undefined): UserR
     case 'nail tech':
     case 'nail technician':
     case 'nail technician/artist':
-      return 'nail technician/artist'; // Keep exact wording as specified
+      return 'artist';
       
     case 'salon':
       return 'salon';
@@ -39,7 +39,7 @@ export const normalizeRole = (role: UserRole | string | null | undefined): UserR
       
     case 'supplier':
     case 'beauty supplier':
-      return 'beauty supplier';
+      return 'supplier';
     
     case 'vendor':
       return 'vendor';
@@ -103,7 +103,7 @@ export const getRoleLabel = (role: UserRole | null): string => {
     case 'beauty supplier':
       return 'Beauty Supplier';
     case 'nail technician/artist':
-      return 'Nail Technician/Artist';
+      return 'Nail Technician';
     case 'renter':
       return 'Booth Renter';
     case 'manager':
