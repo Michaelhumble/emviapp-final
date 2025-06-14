@@ -1,96 +1,78 @@
 
 import React from 'react';
-import { Heart, Instagram, Twitter, Facebook, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import Logo from "@/components/ui/Logo";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#FDFDFD] border-t border-[#F6F6F7] mt-auto">
-      {/* Emotional Bar */}
-      <div className="bg-gradient-to-r from-[#FAF3F0] to-[#F6F6F7] py-3">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center">
-            <div className="bg-white/70 backdrop-blur-sm rounded-full px-6 py-2 shadow-sm">
-              <p className="text-[#9A7B69] font-playfair text-sm italic">
-                Inspired by Sunshine ☀️
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Logo & Brand */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#E38D6B] to-[#9A7B69] rounded-lg flex items-center justify-center">
-                <Heart className="h-4 w-4 text-white fill-white" />
-              </div>
-              <span className="text-xl font-playfair font-semibold text-[#1A1A1A]">EmviApp</span>
-            </div>
-            <p className="text-sm text-[#9A7B69] mb-4 font-inter">
-              Connecting beauty professionals with their perfect opportunities.
+    <footer className="bg-gray-50 border-t border-gray-100 pt-12 pb-8">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div className="md:col-span-1">
+            <Logo size="large" showText={true} />
+            <p className="text-gray-600 mt-4">
+              The first platform purpose-built for the beauty industry with embedded AI intelligence.
             </p>
           </div>
-
-          {/* Explore */}
+          
           <div>
-            <h3 className="text-[#1A1A1A] font-playfair font-semibold text-lg mb-4">Explore</h3>
-            <ul className="space-y-3">
-              <li><a href="/artists" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Find Artists</a></li>
-              <li><a href="/salons" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Browse Salons</a></li>
-              <li><a href="/jobs" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Job Listings</a></li>
-              <li><a href="/community" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Community</a></li>
+            <h3 className="font-semibold text-lg mb-4">Explore</h3>
+            <ul className="space-y-2">
+              <li><Link to="/artists" className="text-gray-600 hover:text-primary">Find Artists</Link></li>
+              <li><Link to="/salons" className="text-gray-600 hover:text-primary">Browse Salons</Link></li>
+              <li><Link to="/jobs" className="text-gray-600 hover:text-primary">Job Openings</Link></li>
+              <li><Link to="/freelancers" className="text-gray-600 hover:text-primary">Freelancers</Link></li>
             </ul>
           </div>
-
-          {/* Company */}
+          
           <div>
-            <h3 className="text-[#1A1A1A] font-playfair font-semibold text-lg mb-4">Company</h3>
-            <ul className="space-y-3">
-              <li><a href="/about" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">About Us</a></li>
-              <li><a href="/pricing" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Pricing</a></li>
-              <li><a href="/contact" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Contact</a></li>
-              <li><a href="/support" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Support</a></li>
+            <h3 className="font-semibold text-lg mb-4">Company</h3>
+            <ul className="space-y-2">
+              <li><Link to="/about" className="text-gray-600 hover:text-primary">About Us</Link></li>
+              <li><Link to="/contact" className="text-gray-600 hover:text-primary">Contact</Link></li>
+              <li><Link to="/pricing" className="text-gray-600 hover:text-primary">Pricing</Link></li>
+              <li><Link to="/early-access" className="text-gray-600 hover:text-primary">Early Access</Link></li>
             </ul>
           </div>
-
-          {/* Legal & Social */}
+          
           <div>
-            <h3 className="text-[#1A1A1A] font-playfair font-semibold text-lg mb-4">Legal</h3>
-            <ul className="space-y-3 mb-6">
-              <li><a href="/terms" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Terms of Service</a></li>
-              <li><a href="/privacy" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Privacy Policy</a></li>
-              <li><a href="/refund" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Refund Policy</a></li>
-              <li><a href="/cookies" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Cookie Policy</a></li>
+            <h3 className="font-semibold text-lg mb-4">Legal</h3>
+            <ul className="space-y-2">
+              <li><Link to="/terms" className="text-gray-600 hover:text-primary">Terms of Service</Link></li>
+              <li><Link to="/privacy" className="text-gray-600 hover:text-primary">Privacy Policy</Link></li>
+              <li><Link to="/cookies" className="text-gray-600 hover:text-primary">Cookie Policy</Link></li>
             </ul>
-
-            {/* Social Icons */}
-            <div className="flex space-x-4">
-              <a href="#" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">
-                <Linkedin className="h-5 w-5" />
-              </a>
-            </div>
           </div>
         </div>
-
-        {/* Bottom Copyright */}
-        <div className="border-t border-[#F6F6F7] mt-8 pt-8">
-          <div className="text-center">
-            <p className="text-[#9A7B69] text-sm font-inter">
-              © 2024 EmviApp. All rights reserved.
-            </p>
+        
+        <div className="border-t border-gray-200 pt-6 mt-6 text-center">
+          {/* Enhanced "Inspired by Sunshine" credit with gradient text */}
+          <p className="mb-4">
+            <span className="text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-400 bg-clip-text text-transparent">
+              Inspired by Sunshine ☀️
+            </span>
+          </p>
+          
+          {/* New legal links row - UPDATED with Privacy and Cookie links */}
+          <div className="flex flex-wrap justify-center gap-6 mb-4">
+            <Link to="/terms" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">📄</span> Terms of Service
+            </Link>
+            <Link to="/refund" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">💸</span> Refund Policy
+            </Link>
+            <Link to="/privacy" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">🔐</span> Privacy Policy
+            </Link>
+            <Link to="/cookies" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">🍪</span> Cookie Policy
+            </Link>
+            <Link to="/contact" className="text-gray-600 hover:text-primary hover:underline text-sm flex items-center">
+              <span className="mr-1">📬</span> Contact Us
+            </Link>
           </div>
+          
+          <p className="text-gray-500 text-sm">© {new Date().getFullYear()} EmviApp. All rights reserved.</p>
         </div>
       </div>
     </footer>
