@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile } from '@/types/profile';
+import { UserProfile, UserRole } from '../types';
 import { normalizeRole } from '@/utils/roles';
 
 export const useAuthProvider = () => {
@@ -13,7 +14,7 @@ export const useAuthProvider = () => {
   const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('*')
         .eq('id', userId)
         .single();
@@ -25,11 +26,11 @@ export const useAuthProvider = () => {
 
       if (data) {
         // Normalize role and badges fields for type safety
-        const normalizedProfile = {
+        const normalizedProfile: UserProfile = {
           ...data,
           role: normalizeRole(data.role) || 'customer',
           badges: Array.isArray(data.badges) ? data.badges : []
-        } as UserProfile;
+        };
         
         setUserProfile(normalizedProfile);
       }

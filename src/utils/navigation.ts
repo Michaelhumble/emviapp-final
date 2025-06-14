@@ -1,18 +1,7 @@
 
-import { UserRole } from '@/context/auth/types';
+import { UserRole } from "@/context/auth/types";
 
-/**
- * Navigate to the appropriate dashboard based on user role
- */
-export const navigateToRoleDashboard = (navigate: (path: string) => void, role: UserRole | null) => {
-  if (!role) {
-    console.warn('No role provided for dashboard navigation');
-    navigate('/dashboard');
-    return;
-  }
-
-  console.log('Navigating to dashboard for role:', role);
-
+export const navigateToRoleDashboard = (navigate: any, role: UserRole) => {
   switch (role) {
     case 'artist':
     case 'nail technician/artist':
@@ -22,16 +11,21 @@ export const navigateToRoleDashboard = (navigate: (path: string) => void, role: 
     case 'owner':
       navigate('/dashboard/salon');
       break;
-    case 'customer':
-      navigate('/dashboard/customer');
-      break;
     case 'freelancer':
       navigate('/dashboard/freelancer');
       break;
+    case 'customer':
+      navigate('/dashboard/customer');
+      break;
     case 'supplier':
     case 'beauty supplier':
-    case 'vendor':
       navigate('/dashboard/supplier');
+      break;
+    case 'vendor':
+      navigate('/dashboard/vendor');
+      break;
+    case 'renter':
+      navigate('/dashboard/renter');
       break;
     case 'manager':
       navigate('/dashboard/manager');
@@ -39,82 +33,35 @@ export const navigateToRoleDashboard = (navigate: (path: string) => void, role: 
     case 'admin':
       navigate('/dashboard/admin');
       break;
-    case 'renter':
-      navigate('/dashboard/renter');
-      break;
-    case 'other':
-      navigate('/dashboard/other');
-      break;
     default:
-      console.warn('Unknown role for navigation:', role);
-      navigate('/dashboard');
+      navigate('/dashboard/other');
   }
 };
 
-/**
- * Get the dashboard path for a given role without navigating
- */
-export const getRoleDashboardPath = (role: UserRole | null): string => {
-  if (!role) return '/dashboard';
-
-  switch (role) {
+export const getPersonalizedGreeting = (userRole: UserRole | null, name: string) => {
+  if (!userRole) return `Hello, ${name}!`;
+  
+  switch (userRole) {
     case 'artist':
     case 'nail technician/artist':
-      return '/dashboard/artist';
+      return `Welcome back, ${name}! 💅`;
     case 'salon':
     case 'owner':
-      return '/dashboard/salon';
+      return `Good to see you, ${name}! 🏢`;
     case 'customer':
-      return '/dashboard/customer';
+      return `Hey there, ${name}! ✨`;
     case 'freelancer':
-      return '/dashboard/freelancer';
+      return `Hello ${name}, ready to create? 🎨`;
     case 'supplier':
     case 'beauty supplier':
+      return `Welcome ${name}! 📦`;
     case 'vendor':
-      return '/dashboard/supplier';
+      return `Hello ${name}! 🛍️`;
     case 'manager':
-      return '/dashboard/manager';
+      return `Good day, ${name}! 👔`;
     case 'admin':
-      return '/dashboard/admin';
-    case 'renter':
-      return '/dashboard/renter';
-    case 'other':
-      return '/dashboard/other';
+      return `Welcome back, ${name}! ⚙️`;
     default:
-      return '/dashboard';
-  }
-};
-
-/**
- * Check if user has access to a specific role
- */
-export const hasRoleAccess = (userRole: UserRole | null, requiredRole: UserRole): boolean => {
-  return userRole === requiredRole;
-};
-
-/**
- * Get personalized greeting based on user role and time
- */
-export const getPersonalizedGreeting = (role: UserRole | null, name?: string): string => {
-  const hour = new Date().getHours();
-  let timeGreeting = 'Good day';
-  
-  if (hour < 12) timeGreeting = 'Good morning';
-  else if (hour < 18) timeGreeting = 'Good afternoon';
-  else timeGreeting = 'Good evening';
-  
-  const displayName = name || 'there';
-  
-  switch (role) {
-    case 'artist':
-    case 'nail technician/artist':
-      return `${timeGreeting}, ${displayName}! Ready to create beautiful nails?`;
-    case 'salon':
-    case 'owner':
-      return `${timeGreeting}, ${displayName}! How's your salon doing today?`;
-    case 'customer':
-      return `${timeGreeting}, ${displayName}! Looking for your next nail appointment?`;
-    default:
-      return `${timeGreeting}, ${displayName}!`;
+      return `Hello, ${name}!`;
   }
 };
