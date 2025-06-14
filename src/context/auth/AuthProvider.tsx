@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const normalizedProfile: UserProfile = {
         ...profile,
         role: normalizeRole(profile.role) || 'customer',
-        badges: Array.isArray(profile.badges) ? profile.badges : []
+        badges: Array.isArray(profile.badges) ? profile.badges.filter((badge): badge is string => typeof badge === 'string') : []
       };
       setUserProfile(normalizedProfile);
     } else {
@@ -41,19 +41,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Wrapper functions to match AuthContextType interface
+  const wrappedSignIn = async (email: string, password: string) => {
+    const result = await signIn(email, password);
+    return {
+      success: !result.error,
+      error: result.error ? new Error(result.error.message) : undefined
+    };
+  };
+
+  const wrappedSignOut = async () => {
+    await signOut();
+  };
+
+  const wrappedSignUp = async (email: string, password: string, userData?: any) => {
+    const result = await signUp(email, password, userData);
+    return {
+      success: !result.error,
+      error: result.error ? new Error(result.error.message) : undefined,
+      userId: result.data?.user?.id
+    };
+  };
+
+  const wrappedUpdateProfile = async (data: Partial<UserProfile>) => {
+    const result = await updateProfile(data);
+    return {
+      success: !result.error,
+      error: result.error ? new Error(result.error.message) : undefined
+    };
+  };
+
   const value: AuthContextType = {
     user,
     session,
     userProfile,
-    setUser,
-    setSession,
-    setUserProfile: setNormalizedUserProfile,
+    userRole: userProfile?.role || null,
     loading,
-    signIn,
-    signOut,
-    signUp,
-    updateProfile,
-    refreshProfile
+    isSignedIn: !!user,
+    isError: false,
+    isNewUser: false,
+    clearIsNewUser: () => {},
+    setLoading: () => {},
+    refreshUserProfile: async () => {
+      await refreshProfile();
+      return true;
+    },
+    signIn: wrappedSignIn,
+    signOut: wrappedSignOut,
+    signUp: wrappedSignUp,
+    updateProfile: wrappedUpdateProfile,
+    updateUserRole: async (role) => {
+      await updateProfile({ role });
+    }
   };
 
   return (

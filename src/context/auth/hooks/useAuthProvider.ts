@@ -29,7 +29,7 @@ export const useAuthProvider = () => {
         const normalizedProfile: UserProfile = {
           ...data,
           role: normalizeRole(data.role) || 'customer',
-          badges: Array.isArray(data.badges) ? data.badges : []
+          badges: Array.isArray(data.badges) ? data.badges.filter((badge): badge is string => typeof badge === 'string') : []
         };
         setUserProfile(normalizedProfile);
       }
@@ -114,7 +114,7 @@ export const useAuthProvider = () => {
         const normalizedProfile: UserProfile = {
           ...data,
           role: normalizeRole(data.role) || 'customer',
-          badges: Array.isArray(data.badges) ? data.badges : []
+          badges: Array.isArray(data.badges) ? data.badges.filter((badge): badge is string => typeof badge === 'string') : []
         };
         setUserProfile(normalizedProfile);
       }
