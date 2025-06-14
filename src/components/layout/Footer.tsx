@@ -50,9 +50,9 @@ const Footer = () => {
             <h3 className="text-[#1A1A1A] font-playfair font-semibold text-lg mb-4">Company</h3>
             <ul className="space-y-3">
               <li><a href="/about" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">About Us</a></li>
-              <li><a href="/careers" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Careers</a></li>
+              <li><a href="/pricing" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Pricing</a></li>
               <li><a href="/contact" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Contact</a></li>
-              <li><a href="/blog" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Blog</a></li>
+              <li><a href="/support" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Support</a></li>
             </ul>
           </div>
 
@@ -62,6 +62,7 @@ const Footer = () => {
             <ul className="space-y-3 mb-6">
               <li><a href="/terms" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Terms of Service</a></li>
               <li><a href="/privacy" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Privacy Policy</a></li>
+              <li><a href="/refund" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Refund Policy</a></li>
               <li><a href="/cookies" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors font-inter text-sm">Cookie Policy</a></li>
             </ul>
 
@@ -83,15 +84,9 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Policy Row with Emojis */}
+        {/* Bottom Copyright */}
         <div className="border-t border-[#F6F6F7] mt-8 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex flex-wrap items-center space-x-6 text-sm font-inter">
-              <a href="/refund" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">💰 Refund Policy</a>
-              <a href="/shipping" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">🚚 Shipping Info</a>
-              <a href="/support" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">💬 Support</a>
-              <a href="/accessibility" className="text-[#9A7B69] hover:text-[#E38D6B] transition-colors">♿ Accessibility</a>
-            </div>
+          <div className="text-center">
             <p className="text-[#9A7B69] text-sm font-inter">
               © 2024 EmviApp. All rights reserved.
             </p>
