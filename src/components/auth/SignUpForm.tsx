@@ -39,7 +39,6 @@ const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
     const result = await signUp(email, password, selectedRole);
     
     if (result) {
-      // Decode the redirect URL if it exists
       const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
       navigate(decodedRedirect);
     }

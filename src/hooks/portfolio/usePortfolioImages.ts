@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +15,7 @@ export const usePortfolioImages = () => {
       try {
         setLoading(true);
         
-        // Check if user is artist - update role check
+        // Check if user is artist using the normalized role check
         const isArtist = userRole === 'nail-artist' || 
                         userRole === 'hair-stylist' || 
                         userRole === 'lash-tech' || 
@@ -28,17 +29,9 @@ export const usePortfolioImages = () => {
           return;
         }
 
-        const { data, error } = await supabase
-          .from('portfolio_images')
-          .select('image_url')
-          .eq('user_id', user.id);
-
-        if (error) throw error;
-
-        if (data) {
-          const imageUrls = data.map(item => item.image_url);
-          setImages(imageUrls);
-        }
+        // For now, return empty array since portfolio_images table doesn't exist
+        // This will be implemented when the table is created
+        setImages([]);
       } catch (error) {
         console.error('Error fetching portfolio images:', error);
       } finally {
@@ -54,13 +47,7 @@ export const usePortfolioImages = () => {
 
     try {
       setLoading(true);
-
-      const { error } = await supabase
-        .from('portfolio_images')
-        .insert([{ user_id: user.id, image_url: imageUrl }]);
-
-      if (error) throw error;
-
+      // Placeholder - will be implemented when portfolio_images table exists
       setImages(prevImages => [...prevImages, imageUrl]);
     } catch (error) {
       console.error('Error adding portfolio image:', error);
@@ -74,15 +61,7 @@ export const usePortfolioImages = () => {
 
     try {
       setLoading(true);
-
-      const { error } = await supabase
-        .from('portfolio_images')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('image_url', imageUrl);
-
-      if (error) throw error;
-
+      // Placeholder - will be implemented when portfolio_images table exists
       setImages(prevImages => prevImages.filter(img => img !== imageUrl));
     } catch (error) {
       console.error('Error deleting portfolio image:', error);

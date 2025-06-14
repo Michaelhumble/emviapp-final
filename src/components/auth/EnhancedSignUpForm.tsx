@@ -1,567 +1,456 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
+import { Loader2, User, Mail, Lock, Phone, MapPin, Building, Award, Users, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useRoleBasedSignUp } from '@/hooks/useRoleBasedSignUp';
 import { UserRole } from '@/context/auth/types';
+import { toast } from 'sonner';
 
-interface SignUpFormData {
+interface RoleFormData {
+  // Common fields
   email: string;
   password: string;
   confirmPassword: string;
   fullName: string;
-  phone: string;
-  role: UserRole | '';
+  phone?: string;
+  location: string;
   
-  // Artist/Tech fields
-  specialties?: string[];
-  experienceYears?: number;
-  licenseNumber?: string;
-  portfolioFile?: File;
-  preferredWorkTypes?: string[];
-  
-  // Salon Owner fields
+  // Role-specific fields
   businessName?: string;
-  salonType?: string;
-  location?: string;
-  servicesOffered?: string[];
-  seatCount?: number;
   businessLicense?: string;
-  logoFile?: File;
+  yearsExperience?: number;
+  specialties?: string[];
+  companyName?: string;
+  website?: string;
+  bio?: string;
+  referralCode?: string;
   
-  // Freelancer fields
-  citiesWillingToWork?: string[];
-  rateRangeMin?: number;
-  rateRangeMax?: number;
-  skills?: string[];
-  availability?: string;
-  
-  // Customer fields
-  referralSource?: string;
+  // Marketing preferences
+  wantsMarketing?: boolean;
+  wantsReferrals?: boolean;
 }
 
-const BEAUTY_ROLES: { value: UserRole; label: string }[] = [
-  { value: 'nail-artist', label: 'Nail Artist' },
-  { value: 'hair-stylist', label: 'Hair Stylist' },
-  { value: 'lash-tech', label: 'Lash Technician' },
-  { value: 'barber', label: 'Barber' },
-  { value: 'esthetician', label: 'Esthetician' },
-  { value: 'massage-therapist', label: 'Massage Therapist' },
-  { value: 'salon-owner', label: 'Salon Owner' },
-  { value: 'freelancer', label: 'Freelancer' },
-  { value: 'customer', label: 'Customer' }
+const ROLE_OPTIONS = [
+  { value: 'customer' as UserRole, label: 'Customer', description: 'Book beauty services', icon: User },
+  { value: 'nail-artist' as UserRole, label: 'Nail Artist', description: 'Professional nail services', icon: Award },
+  { value: 'hair-stylist' as UserRole, label: 'Hair Stylist', description: 'Hair cutting & styling', icon: Award },
+  { value: 'barber' as UserRole, label: 'Barber', description: 'Men\'s grooming expert', icon: Award },
+  { value: 'lash-tech' as UserRole, label: 'Lash Technician', description: 'Eyelash extensions & beauty', icon: Award },
+  { value: 'esthetician' as UserRole, label: 'Esthetician', description: 'Skincare & facial treatments', icon: Award },
+  { value: 'massage-therapist' as UserRole, label: 'Massage Therapist', description: 'Therapeutic massage services', icon: Award },
+  { value: 'salon-owner' as UserRole, label: 'Salon Owner', description: 'Own a beauty business', icon: Building },
+  { value: 'freelancer' as UserRole, label: 'Freelancer', description: 'Independent beauty professional', icon: User },
+  { value: 'beauty-supplier' as UserRole, label: 'Beauty Supplier', description: 'Supply beauty products', icon: Users },
 ];
 
-const SPECIALTIES = [
-  'Nail Art', 'Gel Manicures', 'Acrylics', 'Color', 'Cuts', 'Styling',
-  'Extensions', 'Classic Lashes', 'Volume Lashes', 'Brow Shaping',
-  'Facials', 'Chemical Peels', 'Microdermabrasion', 'Deep Tissue',
-  'Relaxation', 'Hot Stone'
-];
+const SPECIALTY_OPTIONS = {
+  'nail-artist': ['Gel Manicures', 'Nail Art', 'Acrylic Extensions', 'Dip Powder', 'Pedicures'],
+  'hair-stylist': ['Cutting', 'Coloring', 'Styling', 'Extensions', 'Treatments'],
+  'barber': ['Haircuts', 'Beard Trimming', 'Hot Towel Shaves', 'Styling'],
+  'lash-tech': ['Classic Lashes', 'Volume Lashes', 'Lash Lifts', 'Brow Services'],
+  'esthetician': ['Facials', 'Chemical Peels', 'Microdermabrasion', 'Anti-Aging'],
+  'massage-therapist': ['Swedish', 'Deep Tissue', 'Hot Stone', 'Therapeutic']
+};
 
-const WORK_TYPES = [
-  'Full-time Employment', 'Part-time Employment', 'Booth Rental', 
-  'Commission-based', 'Contract Work', 'Freelance'
-];
-
-const SALON_TYPES = [
-  'Full Service Salon', 'Nail Salon', 'Hair Salon', 'Day Spa',
-  'Barbershop', 'Beauty Bar', 'Medical Spa'
-];
-
-const SERVICES = [
-  'Hair Services', 'Nail Services', 'Skincare', 'Massage',
-  'Lash & Brow', 'Makeup', 'Waxing', 'Permanent Makeup'
-];
-
-export const EnhancedSignUpForm: React.FC = () => {
-  const navigate = useNavigate();
-  const { signUp } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<SignUpFormData>({
+export const EnhancedSignUpForm = () => {
+  const [selectedRole, setSelectedRole] = useState<UserRole>('customer');
+  const [formData, setFormData] = useState<RoleFormData>({
     email: '',
     password: '',
     confirmPassword: '',
     fullName: '',
-    phone: '',
-    role: ''
+    location: '',
+    specialties: [],
+    wantsMarketing: true,
+    wantsReferrals: true
   });
+  const [step, setStep] = useState(1);
+  const { signUp, loading } = useRoleBasedSignUp();
 
-  const handleInputChange = (field: keyof SignUpFormData, value: any) => {
+  const handleInputChange = (field: keyof RoleFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleArrayChange = (field: keyof SignUpFormData, value: string, checked: boolean) => {
-    setFormData(prev => {
-      const currentArray = (prev[field] as string[]) || [];
-      if (checked) {
-        return { ...prev, [field]: [...currentArray, value] };
-      } else {
-        return { ...prev, [field]: currentArray.filter(item => item !== value) };
-      }
-    });
+  const handleSpecialtyToggle = (specialty: string) => {
+    const current = formData.specialties || [];
+    const updated = current.includes(specialty) 
+      ? current.filter(s => s !== specialty)
+      : [...current, specialty];
+    handleInputChange('specialties', updated);
   };
 
-  const handleFileChange = (field: keyof SignUpFormData, file: File | null) => {
-    setFormData(prev => ({ ...prev, [field]: file }));
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.email || !formData.password || !formData.fullName || !formData.role) {
+  const validateStep1 = () => {
+    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.fullName) {
       toast.error('Please fill in all required fields');
       return false;
     }
-
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return false;
     }
-
     if (formData.password.length < 6) {
       toast.error('Password must be at least 6 characters');
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
-
-    setLoading(true);
-    try {
-      const userData = {
-        full_name: formData.fullName,
-        phone: formData.phone,
-        role: formData.role,
-        // Add role-specific data
-        ...(isArtistRole(formData.role as UserRole) && {
-          specialties: formData.specialties,
-          experience_years: formData.experienceYears,
-          license_number: formData.licenseNumber,
-          preferred_work_types: formData.preferredWorkTypes
-        }),
-        ...(formData.role === 'salon-owner' && {
-          business_name: formData.businessName,
-          salon_type: formData.salonType,
-          location: formData.location,
-          services_offered: formData.servicesOffered,
-          seat_count: formData.seatCount,
-          business_license: formData.businessLicense
-        }),
-        ...(formData.role === 'freelancer' && {
-          cities_willing_to_work: formData.citiesWillingToWork,
-          rate_range_min: formData.rateRangeMin,
-          rate_range_max: formData.rateRangeMax,
-          skills: formData.skills,
-          availability: formData.availability
-        }),
-        ...(formData.role === 'customer' && {
-          referral_source: formData.referralSource
-        })
-      };
-
-      const result = await signUp(formData.email, formData.password, userData);
-      
-      if (result.success) {
-        toast.success('Account created successfully!');
-        navigate('/dashboard');
-      } else {
-        toast.error(result.error?.message || 'Failed to create account');
+    if (step === 1) {
+      if (validateStep1()) {
+        setStep(2);
       }
-    } catch (error) {
-      console.error('Sign up error:', error);
-      toast.error('An unexpected error occurred');
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
 
-  const isArtistRole = (role: UserRole): boolean => {
-    return ['nail-artist', 'hair-stylist', 'lash-tech', 'barber', 'esthetician', 'massage-therapist'].includes(role);
+    // Final submission
+    const success = await signUp(formData.email, formData.password, selectedRole);
+    if (success) {
+      toast.success('Welcome to EmviApp! 🎉');
+    }
   };
 
   const renderRoleSpecificFields = () => {
-    if (!formData.role) return null;
+    const isArtist = ['nail-artist', 'hair-stylist', 'barber', 'lash-tech', 'esthetician', 'massage-therapist'].includes(selectedRole);
+    const isSalonOwner = selectedRole === 'salon-owner';
+    const isSupplier = selectedRole === 'beauty-supplier';
 
-    const role = formData.role as UserRole;
-
-    if (isArtistRole(role)) {
-      return (
-        <div className="space-y-4">
-          <div>
-            <Label>Specialties</Label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {SPECIALTIES.map(specialty => (
-                <div key={specialty} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={specialty}
-                    checked={(formData.specialties || []).includes(specialty)}
-                    onCheckedChange={(checked) => 
-                      handleArrayChange('specialties', specialty, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={specialty} className="text-sm">{specialty}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="experienceYears">Years of Experience</Label>
-            <Input
-              id="experienceYears"
-              type="number"
-              value={formData.experienceYears || ''}
-              onChange={(e) => handleInputChange('experienceYears', parseInt(e.target.value))}
-              placeholder="0"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="licenseNumber">License Number (Optional)</Label>
-            <Input
-              id="licenseNumber"
-              value={formData.licenseNumber || ''}
-              onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
-              placeholder="Enter license number"
-            />
-          </div>
-
-          <div>
-            <Label>Preferred Work Types</Label>
-            <div className="grid grid-cols-1 gap-2 mt-2">
-              {WORK_TYPES.map(workType => (
-                <div key={workType} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={workType}
-                    checked={(formData.preferredWorkTypes || []).includes(workType)}
-                    onCheckedChange={(checked) => 
-                      handleArrayChange('preferredWorkTypes', workType, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={workType} className="text-sm">{workType}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="portfolioFile">Portfolio Image (Optional)</Label>
-            <Input
-              id="portfolioFile"
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange('portfolioFile', e.target.files?.[0] || null)}
-            />
-          </div>
+    return (
+      <div className="space-y-4">
+        {/* Common location field */}
+        <div className="space-y-2">
+          <Label htmlFor="location" className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Location *
+          </Label>
+          <Input
+            id="location"
+            value={formData.location}
+            onChange={(e) => handleInputChange('location', e.target.value)}
+            placeholder="City, State"
+            required
+          />
         </div>
-      );
-    }
 
-    if (role === 'salon-owner') {
-      return (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="businessName">Business Name *</Label>
-            <Input
-              id="businessName"
-              value={formData.businessName || ''}
-              onChange={(e) => handleInputChange('businessName', e.target.value)}
-              placeholder="Enter business name"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="salonType">Salon Type</Label>
-            <Select onValueChange={(value) => handleInputChange('salonType', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select salon type" />
-              </SelectTrigger>
-              <SelectContent>
-                {SALON_TYPES.map(type => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="location">Location *</Label>
-            <Input
-              id="location"
-              value={formData.location || ''}
-              onChange={(e) => handleInputChange('location', e.target.value)}
-              placeholder="City, State"
-              required
-            />
-          </div>
-
-          <div>
-            <Label>Services Offered</Label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {SERVICES.map(service => (
-                <div key={service} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={service}
-                    checked={(formData.servicesOffered || []).includes(service)}
-                    onCheckedChange={(checked) => 
-                      handleArrayChange('servicesOffered', service, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={service} className="text-sm">{service}</Label>
-                </div>
-              ))}
+        {/* Artist-specific fields */}
+        {isArtist && (
+          <>
+            <div className="space-y-2">
+              <Label>Years of Experience</Label>
+              <Select onValueChange={(value) => handleInputChange('yearsExperience', parseInt(value))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select experience level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">Just starting out</SelectItem>
+                  <SelectItem value="1">1-2 years</SelectItem>
+                  <SelectItem value="3">3-5 years</SelectItem>
+                  <SelectItem value="6">6-10 years</SelectItem>
+                  <SelectItem value="11">10+ years</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
 
-          <div>
-            <Label htmlFor="seatCount">Number of Seats/Stations</Label>
-            <Input
-              id="seatCount"
-              type="number"
-              value={formData.seatCount || ''}
-              onChange={(e) => handleInputChange('seatCount', parseInt(e.target.value))}
-              placeholder="0"
-            />
-          </div>
+            {SPECIALTY_OPTIONS[selectedRole as keyof typeof SPECIALTY_OPTIONS] && (
+              <div className="space-y-2">
+                <Label>Specialties (select all that apply)</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {SPECIALTY_OPTIONS[selectedRole as keyof typeof SPECIALTY_OPTIONS].map((specialty) => (
+                    <div key={specialty} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={specialty}
+                        checked={formData.specialties?.includes(specialty)}
+                        onCheckedChange={() => handleSpecialtyToggle(specialty)}
+                      />
+                      <Label htmlFor={specialty} className="text-sm">{specialty}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          <div>
-            <Label htmlFor="businessLicense">Business License Number (Optional)</Label>
-            <Input
-              id="businessLicense"
-              value={formData.businessLicense || ''}
-              onChange={(e) => handleInputChange('businessLicense', e.target.value)}
-              placeholder="Enter license number"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="logoFile">Business Logo (Optional)</Label>
-            <Input
-              id="logoFile"
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange('logoFile', e.target.files?.[0] || null)}
-            />
-          </div>
-        </div>
-      );
-    }
-
-    if (role === 'freelancer') {
-      return (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="citiesWillingToWork">Cities Willing to Work In</Label>
-            <Textarea
-              id="citiesWillingToWork"
-              value={(formData.citiesWillingToWork || []).join(', ')}
-              onChange={(e) => handleInputChange('citiesWillingToWork', e.target.value.split(',').map(s => s.trim()))}
-              placeholder="Enter cities separated by commas"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="rateRangeMin">Minimum Rate ($/hour)</Label>
-              <Input
-                id="rateRangeMin"
-                type="number"
-                value={formData.rateRangeMin || ''}
-                onChange={(e) => handleInputChange('rateRangeMin', parseInt(e.target.value))}
-                placeholder="0"
+            <div className="space-y-2">
+              <Label htmlFor="bio">Tell us about yourself</Label>
+              <Textarea
+                id="bio"
+                value={formData.bio || ''}
+                onChange={(e) => handleInputChange('bio', e.target.value)}
+                placeholder="Brief description of your services and experience..."
+                rows={3}
               />
             </div>
-            <div>
-              <Label htmlFor="rateRangeMax">Maximum Rate ($/hour)</Label>
+          </>
+        )}
+
+        {/* Salon Owner fields */}
+        {isSalonOwner && (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="businessName" className="flex items-center gap-2">
+                <Building className="h-4 w-4" />
+                Business Name *
+              </Label>
               <Input
-                id="rateRangeMax"
-                type="number"
-                value={formData.rateRangeMax || ''}
-                onChange={(e) => handleInputChange('rateRangeMax', parseInt(e.target.value))}
-                placeholder="0"
+                id="businessName"
+                value={formData.businessName || ''}
+                onChange={(e) => handleInputChange('businessName', e.target.value)}
+                placeholder="Your salon name"
+                required
               />
             </div>
-          </div>
 
-          <div>
-            <Label>Skills</Label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {SPECIALTIES.map(skill => (
-                <div key={skill} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`skill-${skill}`}
-                    checked={(formData.skills || []).includes(skill)}
-                    onCheckedChange={(checked) => 
-                      handleArrayChange('skills', skill, checked as boolean)
-                    }
-                  />
-                  <Label htmlFor={`skill-${skill}`} className="text-sm">{skill}</Label>
-                </div>
-              ))}
+            <div className="space-y-2">
+              <Label htmlFor="website">Website (optional)</Label>
+              <Input
+                id="website"
+                type="url"
+                value={formData.website || ''}
+                onChange={(e) => handleInputChange('website', e.target.value)}
+                placeholder="https://yoursalon.com"
+              />
             </div>
-          </div>
+          </>
+        )}
 
-          <div>
-            <Label htmlFor="availability">Availability</Label>
-            <Textarea
-              id="availability"
-              value={formData.availability || ''}
-              onChange={(e) => handleInputChange('availability', e.target.value)}
-              placeholder="Describe your availability (e.g., weekends, evenings, etc.)"
-            />
-          </div>
+        {/* Supplier fields */}
+        {isSupplier && (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="companyName" className="flex items-center gap-2">
+                <Building className="h-4 w-4" />
+                Company Name *
+              </Label>
+              <Input
+                id="companyName"
+                value={formData.companyName || ''}
+                onChange={(e) => handleInputChange('companyName', e.target.value)}
+                placeholder="Your company name"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="website">Company Website</Label>
+              <Input
+                id="website"
+                type="url"
+                value={formData.website || ''}
+                onChange={(e) => handleInputChange('website', e.target.value)}
+                placeholder="https://yourcompany.com"
+              />
+            </div>
+          </>
+        )}
+
+        {/* Optional phone for all */}
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="flex items-center gap-2">
+            <Phone className="h-4 w-4" />
+            Phone (optional)
+          </Label>
+          <Input
+            id="phone"
+            type="tel"
+            value={formData.phone || ''}
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+            placeholder="+1 (555) 123-4567"
+          />
         </div>
-      );
-    }
 
-    if (role === 'customer') {
-      return (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="referralSource">How did you hear about us? (Optional)</Label>
-            <Select onValueChange={(value) => handleInputChange('referralSource', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select referral source" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="social-media">Social Media</SelectItem>
-                <SelectItem value="friend-referral">Friend Referral</SelectItem>
-                <SelectItem value="search-engine">Search Engine</SelectItem>
-                <SelectItem value="advertisement">Advertisement</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Referral code */}
+        <div className="space-y-2">
+          <Label htmlFor="referralCode" className="flex items-center gap-2">
+            <Star className="h-4 w-4" />
+            Referral Code (optional)
+          </Label>
+          <Input
+            id="referralCode"
+            value={formData.referralCode || ''}
+            onChange={(e) => handleInputChange('referralCode', e.target.value)}
+            placeholder="Enter referral code for bonuses"
+          />
         </div>
-      );
-    }
-
-    return null;
+      </div>
+    );
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">Join EmviApp</CardTitle>
-          <CardDescription className="text-center">
-            Create your account and connect with the beauty industry
-          </CardDescription>
-        </CardHeader>
-        
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-6">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Basic Information</h3>
-              
-              <div>
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  placeholder="Enter your full name"
-                  required
-                />
+    <Card className="w-full max-w-lg mx-auto border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden">
+      <CardHeader className="space-y-1 pb-6">
+        <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
+          Join EmviApp
+        </CardTitle>
+        <p className="text-center text-gray-600">
+          {step === 1 ? 'Create your account' : 'Complete your profile'}
+        </p>
+        <div className="flex justify-center space-x-2 mt-4">
+          <div className={`w-4 h-1 rounded-full ${step >= 1 ? 'bg-indigo-600' : 'bg-gray-200'}`} />
+          <div className={`w-4 h-1 rounded-full ${step >= 2 ? 'bg-indigo-600' : 'bg-gray-200'}`} />
+        </div>
+      </CardHeader>
+
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-5">
+          {step === 1 && (
+            <>
+              {/* Role Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-700">I am a:</Label>
+                <div className="grid gap-2">
+                  {ROLE_OPTIONS.map((option) => {
+                    const Icon = option.icon;
+                    return (
+                      <div
+                        key={option.value}
+                        className={`flex items-center space-x-3 rounded-lg border p-3 cursor-pointer transition-all ${
+                          selectedRole === option.value
+                            ? 'border-indigo-600 bg-indigo-50'
+                            : 'border-gray-200 hover:border-indigo-200'
+                        }`}
+                        onClick={() => setSelectedRole(option.value)}
+                      >
+                        <Icon className="h-5 w-5 text-indigo-500" />
+                        <div className="flex-1">
+                          <div className="font-medium text-sm">{option.label}</div>
+                          <div className="text-xs text-gray-500">{option.description}</div>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          selectedRole === option.value
+                            ? 'border-indigo-600 bg-indigo-600'
+                            : 'border-gray-300'
+                        }`}>
+                          {selectedRole === option.value && (
+                            <div className="w-full h-full rounded-full bg-white scale-50" />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
+              {/* Basic Info */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Full Name *
+                  </Label>
+                  <Input
+                    id="fullName"
+                    value={formData.fullName}
+                    onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    placeholder="Your full name"
+                    required
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="Enter your phone number"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email Address *
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="password">Password *</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Create a password"
-                  required
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                    Password *
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  placeholder="Confirm your password"
-                  required
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                    Confirm Password *
+                  </Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
               </div>
+            </>
+          )}
 
-              <div>
-                <Label htmlFor="role">I am a... *</Label>
-                <Select onValueChange={(value) => handleInputChange('role', value as UserRole)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BEAUTY_ROLES.map(role => (
-                      <SelectItem key={role.value} value={role.value}>
-                        {role.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          {step === 2 && renderRoleSpecificFields()}
+        </CardContent>
+
+        <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
+          {step === 2 && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setStep(1)}
+              className="w-full"
+            >
+              Back
+            </Button>
+          )}
+          
+          <Button
+            type="submit"
+            className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating Account...
+              </>
+            ) : step === 1 ? (
+              'Continue'
+            ) : (
+              'Create Account'
+            )}
+          </Button>
+
+          <div className="text-sm text-center text-gray-500">
+            Already have an account?{' '}
+            <Link to="/auth/signin" className="text-indigo-600 hover:text-indigo-800 font-medium">
+              Sign in
+            </Link>
+          </div>
+
+          {step === 2 && (
+            <div className="text-center">
+              <div className="flex items-center justify-center space-x-1 text-xs text-green-600 mb-2">
+                <Star className="h-3 w-3" />
+                <span>Trusted by 1,000+ beauty professionals</span>
               </div>
             </div>
-
-            {/* Role-specific fields */}
-            {formData.role && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Additional Information</h3>
-                {renderRoleSpecificFields()}
-              </div>
-            )}
-          </CardContent>
-
-          <CardFooter>
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={loading}
-            >
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+          )}
+        </CardFooter>
+      </form>
+    </Card>
   );
 };
