@@ -1,7 +1,6 @@
 
 import React, { ReactNode } from 'react';
 import Navbar from './Navbar';
-import Footer from './Footer';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from 'react-router-dom';
 import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
@@ -9,7 +8,7 @@ import MobileBottomNavBar from '@/components/layout/MobileBottomNavBar';
 interface LayoutProps {
   children: ReactNode;
   hideNavbar?: boolean;
-  hideFooter?: boolean; // Add option to hide footer
+  hideFooter?: boolean; // Keep this prop for backward compatibility but it won't do anything
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFooter = false }) => {
@@ -26,9 +25,6 @@ const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false, hideFoote
       <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''} ${showMobileNav ? 'pb-16' : ''}`}>
         {children}
       </main>
-      
-      {/* Only render footer if not explicitly hidden */}
-      {!hideFooter && <Footer />}
       
       {/* Show the bottom navbar on all pages */}
       {showMobileNav && <MobileBottomNavBar />}
