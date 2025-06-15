@@ -1,271 +1,208 @@
-import { useState, useEffect } from "react";
-import { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, UserRole } from "../types";
-import { normalizeRole } from "@/utils/roles";
-import { fetchFreshProfileData } from "../utils/profileFetcher";
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Profile } from '@/types/profile';
+import { User } from '@supabase/supabase-js';
 
-export const useAuthProvider = () => {
+interface AuthContextType {
+  user: User | null;
+  userProfile: Profile | null;
+  userRole: string | null;
+  loading: boolean;
+  error: Error | null;
+  signUp: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  updateProfile: (profileData: Partial<Profile>) => Promise<void>;
+  fetchProfile: () => Promise<void>;
+}
+
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const useAuthProvider = (): AuthContextType => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [isNewUser, setIsNewUser] = useState(false);
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
+  const navigate = useNavigate();
+  
+  const cleanupAuthState = useCallback(() => {
+    setUser(null);
+    setUserProfile(null);
+    setUserRole(null);
+    setLoading(false);
+    setError(null);
+  }, []);
 
-  const clearIsNewUser = () => {
-    setIsNewUser(false);
+  const signUp = async (email: string, password: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            email: email,
+          }
+        }
+      });
+      if (error) {
+        throw error;
+      }
+      setUser(data.user);
+      navigate('/auth/verify-email');
+    } catch (err: any) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
+    setError(null);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: email,
+        password: password,
       });
-
       if (error) {
-        console.error("Sign in error:", error);
-        setIsError(true);
-        return { success: false, error };
+        throw error;
       }
-
       setUser(data.user);
-      setSession(data.session);
-      setIsSignedIn(true);
-      setIsError(false);
-      return { success: true };
-    } catch (error: any) {
-      console.error("Unexpected sign-in error:", error);
-      setIsError(true);
-      return { success: false, error };
+      await fetchProfile();
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err);
     } finally {
       setLoading(false);
     }
   };
-
-  const signOut = async () => {
+  
+  const fetchProfile = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Sign out error:", error);
+      if (!user) {
+        console.warn("No user found, can't fetch profile.");
+        return;
       }
-      setUser(null);
-      setSession(null);
-      setUserProfile(null);
-      setUserRole(null);
-      setIsSignedIn(false);
-      localStorage.removeItem('emviapp_user_role');
-      return;
-    } catch (error) {
-      console.error("Unexpected sign-out error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signUp = async (email: string, password: string, userData: any) => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: userData,
-        },
-      });
-
-      if (error) {
-        console.error("Sign up error:", error);
-        setIsError(true);
-        return { success: false, error };
-      }
-
-      setUser(data.user);
-      setSession(data.session);
-      setIsNewUser(true);
-      setIsSignedIn(true);
-      setIsError(false);
-      return { success: true, userId: data.user?.id };
-    } catch (error: any) {
-      console.error("Unexpected sign-up error:", error);
-      setIsError(true);
-      return { success: false, error };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateProfile = async (data: Partial<UserProfile>) => {
-    if (!user?.id) {
-      console.error("User ID is missing, cannot update profile.");
-      return { success: false, error: new Error("User ID is missing") };
-    }
-
-    setLoading(true);
-    try {
-      const { data: profileData, error: profileError } = await supabase
-        .from('users')
-        .update(data)
-        .eq('id', user.id)
+      
+      let { data: profile, error: profileError } = await supabase
+        .from('profiles')
         .select('*')
+        .eq('id', user.id)
         .single();
-
+        
       if (profileError) {
-        console.error("Profile update error:", profileError);
-        setIsError(true);
-        return { success: false, error: profileError };
+        throw profileError;
       }
-
-      // Optimistically update local state
-      setUserProfile(profileData as UserProfile);
-      setIsError(false);
-      return { success: true };
-    } catch (error: any) {
-      console.error("Unexpected profile update error:", error);
-      setIsError(true);
-      return { success: false, error };
+      
+      setUserProfile(profile as Profile);
+      setUserRole(profile?.role || null);
+      
+    } catch (err: any) {
+      setError(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const updateUserRole = async (role: UserRole) => {
-    if (!user?.id) {
-      console.warn("No user ID found, cannot update role.");
-      return;
-    }
-
+  const updateProfile = async (profileData: Partial<Profile>) => {
+    setLoading(true);
+    setError(null);
     try {
-      // Optimistically update local storage
-      localStorage.setItem('emviapp_user_role', role);
-
-      // Sync role to auth.data (don't wait for this)
-      supabase.auth.updateUser({
-        data: { role }
-      }).then(() => {
-        console.log("User role updated in auth.data:", role);
-      }).catch(err => {
-        console.warn("Failed to update auth metadata with role:", err);
-      });
-
-      // Sync role to database (don't wait for this)
-      supabase
-        .from('users')
-        .update({ role })
-        .eq('id', user.id)
-        .then(() => {
-          console.log("User role updated in database:", role);
-        })
-        .catch(err => {
-          console.warn("Failed to update database with role:", err);
-        });
-
-      // Update local state
-      setUserRole(role);
-      if (userProfile) {
-        setUserProfile({ ...userProfile, role });
+      if (!user) {
+        throw new Error("No user found, can't update profile.");
       }
-    } catch (error) {
-      console.error("Error updating user role:", error);
-    }
-  };
-
-  const refreshUserProfile = async (): Promise<boolean> => {
-    if (!user?.id) return false;
-    
-    try {
-      const { profile, role } = await fetchFreshProfileData(user.id);
-      if (profile) {
-        // Type cast the profile data to match UserProfile interface
-        const typedProfile: UserProfile = {
-          ...profile,
-          role: profile.role as UserRole,
-          badges: Array.isArray(profile.badges) ? profile.badges as string[] : null
-        };
-        setUserProfile(typedProfile);
-        setUserRole(role);
-        return true;
+      
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', user.id);
+        
+      if (updateError) {
+        throw updateError;
       }
-      return false;
-    } catch (error) {
-      console.error("Error refreshing profile:", error);
-      return false;
+      
+      // Optimistically update local profile
+      setUserProfile(prevProfile => ({
+        ...prevProfile,
+        ...profileData,
+      } as Profile));
+      
+    } catch (err: any) {
+      setError(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    let mounted = true;
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null) => {
-        if (!mounted) return;
-
-        console.log("Auth state changed:", event, session?.user?.id);
+    const { data: { subscription: authListener } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setLoading(true);
+        setUser(session?.user || null);
         
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsSignedIn(!!session?.user);
-
-        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-          if (session?.user) {
-            setTimeout(() => {
-              if (mounted) refreshUserProfile();
-            }, 0);
+        if (session?.user) {
+          await fetchProfile();
+          navigate('/dashboard');
+        } else {
+          cleanupAuthState();
+          if (event !== 'INITIAL_SESSION') {
+            navigate('/auth');
           }
-        } else if (event === "SIGNED_OUT") {
-          setUserProfile(null);
-          setUserRole(null);
-          setIsNewUser(false);
-          localStorage.removeItem('emviapp_user_role');
         }
-
         setLoading(false);
       }
     );
-
-    // Initial load
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsSignedIn(!!session?.user);
+    
+    // Initial load if there's a session
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
         if (session?.user) {
-          refreshUserProfile();
+          setUser(session.user);
+          fetchProfile();
+          navigate('/dashboard');
+        } else {
+          cleanupAuthState();
+          navigate('/auth');
         }
-        setLoading(false);
-      }
-    }).catch(err => {
-      console.error("Error getting initial session:", err);
-      setLoading(false);
-    });
+      })
+      .catch(error => {
+        console.error("Authentication check failed:", error);
+        setError(new Error("Failed to check authentication status."));
+        cleanupAuthState();
+        navigate('/auth');
+      })
+      .finally(() => setLoading(false));
 
     return () => {
-      mounted = false;
-      subscription.unsubscribe();
+      authListener?.unsubscribe();
     };
-  }, []);
+  }, [navigate, cleanupAuthState, fetchProfile]);
+  
+  const signOut = async () => {
+        setLoading(true);
+        setError(null);
+    
+        try {
+          // Clean up auth state and sign out
+          cleanupAuthState();
+          await supabase.auth.signOut({ scope: 'global' });
+          
+          // Force page reload for a clean state
+          window.location.href = '/auth';
+        } catch (error) {
+          console.error('Error during sign out:', error);
+          // Force redirect even if signOut fails
+          window.location.href = '/auth';
+        }
+      };
 
-  return {
-    user,
-    session,
-    userProfile,
-    userRole,
-    loading,
-    isSignedIn,
-    isError,
-    isNewUser,
-    clearIsNewUser,
-    setLoading,
-    signIn,
-    signOut,
-    signUp,
-    updateProfile,
-    updateUserRole,
-    refreshUserProfile,
-  };
+  return { user, userProfile, userRole, loading, error, signUp, signIn, signOut, updateProfile, fetchProfile };
 };
