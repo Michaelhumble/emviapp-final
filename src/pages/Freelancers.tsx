@@ -1,30 +1,50 @@
 
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import PremiumCommunityHero from '@/components/community/PremiumCommunityHero';
-import CommunityStories from '@/components/community/CommunityStories';
-import CommunityQA from '@/components/community/CommunityQA';
-import SpotlightStories from '@/components/community/SpotlightStories';
-import TrustSignals from '@/components/community/TrustSignals';
+import CommunitiesHero from '@/components/communities/CommunitiesHero';
+import CreateDiscoverSection from '@/components/communities/CreateDiscoverSection';
+import FeaturedCommunities from '@/components/communities/FeaturedCommunities';
+import LiveActivityBar from '@/components/communities/LiveActivityBar';
+import CommunityLeaderboard from '@/components/communities/CommunityLeaderboard';
+import SpotlightStories from '@/components/communities/SpotlightStories';
+import EventsPolls from '@/components/communities/EventsPolls';
+import SponsorOpportunities from '@/components/communities/SponsorOpportunities';
+import GlobalSearch from '@/components/communities/GlobalSearch';
+import CommunitiesQA from '@/components/communities/CommunitiesQA';
 
 const Freelancers = () => {
   return (
     <Layout hideFooter={true}>
-      <div className="min-h-screen bg-white">
-        {/* Premium Hero with Emotional Hook */}
-        <PremiumCommunityHero />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        {/* Hero Section */}
+        <CommunitiesHero />
 
-        {/* Trust & Social Proof */}
-        <TrustSignals />
+        {/* Live Activity Bar */}
+        <LiveActivityBar />
 
-        {/* Interactive Story Sharing */}
-        <CommunityStories />
+        {/* Create & Discover Section */}
+        <CreateDiscoverSection />
 
-        {/* Educational Q&A Platform */}
-        <CommunityQA />
+        {/* Featured Communities Grid */}
+        <FeaturedCommunities />
 
-        {/* Member Success Spotlights */}
+        {/* Spotlight Stories */}
         <SpotlightStories />
+
+        {/* Community Leaderboard */}
+        <CommunityLeaderboard />
+
+        {/* Events & Polls */}
+        <EventsPolls />
+
+        {/* Sponsor Opportunities */}
+        <SponsorOpportunities />
+
+        {/* Global Search */}
+        <GlobalSearch />
+
+        {/* Q&A Section */}
+        <CommunitiesQA />
       </div>
     </Layout>
   );
