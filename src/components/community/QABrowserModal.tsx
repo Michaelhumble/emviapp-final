@@ -1,13 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Search, ThumbsUp, MessageSquare, Clock } from 'lucide-react';
 import { useQuestions } from '@/hooks/useQuestions';
-import { Search, ThumbsUp, Clock } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 
 interface QABrowserModalProps {
   children: React.ReactNode;
@@ -15,17 +12,25 @@ interface QABrowserModalProps {
 
 const QABrowserModal: React.FC<QABrowserModalProps> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const { questions, upvoteQuestion } = useQuestions();
 
   const filteredQuestions = questions.filter(q => 
-    q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    q.answer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    q.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    q.answer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    q.category?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleUpvote = async (questionId: string) => {
-    await upvoteQuestion(questionId);
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays === 0) return 'Today';
+    if (diffInDays === 1) return 'Yesterday';
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+    return `${Math.floor(diffInDays / 30)} months ago`;
   };
 
   return (
@@ -33,82 +38,78 @@ const QABrowserModal: React.FC<QABrowserModalProps> = ({ children }) => {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[80vh]">
+      <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5 text-purple-500" />
-            Browse Community Q&As
+            <MessageSquare className="h-5 w-5 text-blue-500" />
+            Community Q&A
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+          {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search questions and answers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
 
-          <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-4">
-              {filteredQuestions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  {searchQuery ? 'No questions found matching your search.' : 'No answered questions yet. Be the first to ask!'}
-                </div>
-              ) : (
-                filteredQuestions.map((question) => (
-                  <div key={question.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-2">
-                          {question.question}
-                        </h3>
-                        {question.category && (
-                          <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full mb-2">
-                            {question.category}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleUpvote(question.id)}
-                          className="flex items-center gap-1 text-gray-500 hover:text-blue-500"
-                        >
-                          <ThumbsUp className="h-4 w-4" />
-                          {question.upvotes}
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {question.answer && (
-                      <div className="bg-green-50 border-l-4 border-green-400 p-3 rounded">
+          {/* Results */}
+          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+            {filteredQuestions.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>No questions found matching your search.</p>
+              </div>
+            ) : (
+              filteredQuestions.map((question) => (
+                <div key={question.id} className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      {question.category && (
+                        <Badge variant="outline" className="mb-2">
+                          {question.category}
+                        </Badge>
+                      )}
+                      <h4 className="font-semibold text-gray-900 mb-2">
+                        {question.question}
+                      </h4>
+                      {question.answer && (
                         <p className="text-gray-700 text-sm leading-relaxed">
                           {question.answer}
                         </p>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center text-xs text-gray-500 gap-2">
-                      <Clock className="h-3 w-3" />
-                      <span>
-                        Asked {formatDistanceToNow(new Date(question.created_at), { addSuffix: true })}
-                      </span>
-                      {question.answered_at && (
-                        <span>
-                          • Answered {formatDistanceToNow(new Date(question.answered_at), { addSuffix: true })}
-                        </span>
                       )}
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-          </ScrollArea>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => upvoteQuestion(question.id)}
+                        className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+                      >
+                        <ThumbsUp className="h-3 w-3" />
+                        {question.upvotes}
+                      </button>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {formatTimeAgo(question.created_at)}
+                      </div>
+                    </div>
+                    {question.status === 'answered' && (
+                      <Badge className="bg-green-100 text-green-800">
+                        Answered
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

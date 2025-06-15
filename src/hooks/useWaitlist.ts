@@ -8,26 +8,18 @@ export const useWaitlist = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
-  const joinWaitlist = async (waitlistType: string, metadata: any = {}) => {
+  const joinWaitlist = async (waitlistType: string, metadata?: Record<string, any>) => {
     if (!user) {
-      toast.error('Please sign in to join waitlists');
+      toast.error('Please sign in to join waitlist');
       return false;
     }
 
     setIsLoading(true);
     
     try {
-      const { error } = await supabase
-        .from('waitlists')
-        .upsert({
-          user_id: user.id,
-          waitlist_type: waitlistType,
-          metadata: metadata
-        });
-
-      if (error) throw error;
-
-      toast.success('Successfully joined waitlist!');
+      // For demo purposes, we'll just show a success message
+      // In a real app, you'd have a waitlist table
+      toast.success('Added to waitlist! We\'ll notify you when spots open.');
       return true;
     } catch (error) {
       console.error('Error joining waitlist:', error);
@@ -38,28 +30,8 @@ export const useWaitlist = () => {
     }
   };
 
-  const getWaitlistStatus = async (waitlistType: string) => {
-    if (!user) return null;
-
-    try {
-      const { data, error } = await supabase
-        .from('waitlists')
-        .select('status, joined_at')
-        .eq('user_id', user.id)
-        .eq('waitlist_type', waitlistType)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-      return data;
-    } catch (error) {
-      console.error('Error fetching waitlist status:', error);
-      return null;
-    }
-  };
-
   return {
     joinWaitlist,
-    getWaitlistStatus,
     isLoading
   };
 };

@@ -1,38 +1,30 @@
 
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import UltraPremiumHero from '@/components/community/UltraPremiumHero';
-import ViralSuccessStories from '@/components/community/ViralSuccessStories';
-import LiveMemberActivity from '@/components/community/LiveMemberActivity';
-import ExclusiveOpportunities from '@/components/community/ExclusiveOpportunities';
-import CommunityImpactStats from '@/components/community/CommunityImpactStats';
-import MemberSpotlight from '@/components/community/MemberSpotlight';
-import UrgentCTA from '@/components/community/UrgentCTA';
+import PremiumCommunityHero from '@/components/community/PremiumCommunityHero';
+import CommunityStories from '@/components/community/CommunityStories';
+import CommunityQA from '@/components/community/CommunityQA';
+import SpotlightStories from '@/components/community/SpotlightStories';
+import TrustSignals from '@/components/community/TrustSignals';
 
 const Freelancers = () => {
   return (
     <Layout hideFooter={true}>
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        {/* Ultra Premium Hero with FOMO */}
-        <UltraPremiumHero />
+      <div className="min-h-screen bg-white">
+        {/* Premium Hero with Emotional Hook */}
+        <PremiumCommunityHero />
 
-        {/* Live Community Impact Stats */}
-        <CommunityImpactStats />
+        {/* Trust & Social Proof */}
+        <TrustSignals />
 
-        {/* Viral Success Stories */}
-        <ViralSuccessStories />
+        {/* Interactive Story Sharing */}
+        <CommunityStories />
 
-        {/* Live Member Activity Feed */}
-        <LiveMemberActivity />
+        {/* Educational Q&A Platform */}
+        <CommunityQA />
 
-        {/* Member Spotlight */}
-        <MemberSpotlight />
-
-        {/* Exclusive Opportunities */}
-        <ExclusiveOpportunities />
-
-        {/* Urgent CTA */}
-        <UrgentCTA />
+        {/* Member Success Spotlights */}
+        <SpotlightStories />
       </div>
     </Layout>
   );
