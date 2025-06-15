@@ -1,19 +1,20 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Profile } from '@/types/profile';
+import { UserProfile } from '@/types/profile';
 import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
-  userProfile: Profile | null;
+  userProfile: UserProfile | null;
   userRole: string | null;
   loading: boolean;
   error: Error | null;
   signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (profileData: Partial<Profile>) => Promise<void>;
+  updateProfile: (profileData: Partial<UserProfile>) => Promise<void>;
   fetchProfile: () => Promise<void>;
 }
 
@@ -23,7 +24,7 @@ interface AuthProviderProps {
 
 export const useAuthProvider = (): AuthContextType => {
   const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<Profile | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
@@ -93,7 +94,7 @@ export const useAuthProvider = (): AuthContextType => {
       }
       
       let { data: profile, error: profileError } = await supabase
-        .from('profiles')
+        .from('users')
         .select('*')
         .eq('id', user.id)
         .single();
@@ -102,7 +103,7 @@ export const useAuthProvider = (): AuthContextType => {
         throw profileError;
       }
       
-      setUserProfile(profile as Profile);
+      setUserProfile(profile as UserProfile);
       setUserRole(profile?.role || null);
       
     } catch (err: any) {
@@ -112,7 +113,7 @@ export const useAuthProvider = (): AuthContextType => {
     }
   };
 
-  const updateProfile = async (profileData: Partial<Profile>) => {
+  const updateProfile = async (profileData: Partial<UserProfile>) => {
     setLoading(true);
     setError(null);
     try {
@@ -121,7 +122,7 @@ export const useAuthProvider = (): AuthContextType => {
       }
       
       const { error: updateError } = await supabase
-        .from('profiles')
+        .from('users')
         .update(profileData)
         .eq('id', user.id);
         
@@ -133,7 +134,7 @@ export const useAuthProvider = (): AuthContextType => {
       setUserProfile(prevProfile => ({
         ...prevProfile,
         ...profileData,
-      } as Profile));
+      } as UserProfile));
       
     } catch (err: any) {
       setError(err);
@@ -162,29 +163,33 @@ export const useAuthProvider = (): AuthContextType => {
     );
     
     // Initial load if there's a session
-    supabase.auth.getSession()
-      .then(({ data: { session } }) => {
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           setUser(session.user);
-          fetchProfile();
+          await fetchProfile();
           navigate('/dashboard');
         } else {
           cleanupAuthState();
           navigate('/auth');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error("Authentication check failed:", error);
         setError(new Error("Failed to check authentication status."));
         cleanupAuthState();
         navigate('/auth');
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     return () => {
       authListener?.unsubscribe();
     };
-  }, [navigate, cleanupAuthState, fetchProfile]);
+  }, [navigate, cleanupAuthState]);
   
   const signOut = async () => {
         setLoading(true);
