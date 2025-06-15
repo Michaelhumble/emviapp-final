@@ -1,29 +1,39 @@
 
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import PremiumCommunityHero from '@/components/community/PremiumCommunityHero';
-import SpotlightStories from '@/components/community/SpotlightStories';
-import LiveSuccessFeed from '@/components/community/LiveSuccessFeed';
-import WhyJoinSection from '@/components/community/WhyJoinSection';
-import PowerfulCTA from '@/components/community/PowerfulCTA';
+import UltraPremiumHero from '@/components/community/UltraPremiumHero';
+import ViralSuccessStories from '@/components/community/ViralSuccessStories';
+import LiveMemberActivity from '@/components/community/LiveMemberActivity';
+import ExclusiveOpportunities from '@/components/community/ExclusiveOpportunities';
+import CommunityImpactStats from '@/components/community/CommunityImpactStats';
+import MemberSpotlight from '@/components/community/MemberSpotlight';
+import UrgentCTA from '@/components/community/UrgentCTA';
 
 const Freelancers = () => {
   return (
     <Layout hideFooter={true}>
-      {/* Premium Hero Section */}
-      <PremiumCommunityHero />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        {/* Ultra Premium Hero with FOMO */}
+        <UltraPremiumHero />
 
-      {/* Spotlight Stories Section */}
-      <SpotlightStories />
+        {/* Live Community Impact Stats */}
+        <CommunityImpactStats />
 
-      {/* Live Success Feed */}
-      <LiveSuccessFeed />
+        {/* Viral Success Stories */}
+        <ViralSuccessStories />
 
-      {/* Why Join EmviApp Section */}
-      <WhyJoinSection />
+        {/* Live Member Activity Feed */}
+        <LiveMemberActivity />
 
-      {/* Powerful CTA Section */}
-      <PowerfulCTA />
+        {/* Member Spotlight */}
+        <MemberSpotlight />
+
+        {/* Exclusive Opportunities */}
+        <ExclusiveOpportunities />
+
+        {/* Urgent CTA */}
+        <UrgentCTA />
+      </div>
     </Layout>
   );
 };
