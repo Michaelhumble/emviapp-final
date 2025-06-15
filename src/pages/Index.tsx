@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -27,6 +28,9 @@ import BarberListingsSection from "@/components/home/BarberListingsSection";
 import SkincareListingsSection from "@/components/home/SkincareListingsSection";
 import MakeupListingsSection from "@/components/home/MakeupListingsSection";
 import TattooListingsSection from "@/components/home/TattooListingsSection";
+
+// Q&A Section
+import QandASection from "@/components/home/QandASection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -76,7 +80,10 @@ const Index = () => {
       {/* 8. Founder Message */}
       <FounderMessage />
       
-      {/* 9. Final CTA */}
+      {/* 9. Q&A Section - NEW */}
+      <QandASection />
+      
+      {/* 10. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
