@@ -1,50 +1,38 @@
 
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import CommunitiesHero from '@/components/communities/CommunitiesHero';
-import CreateDiscoverSection from '@/components/communities/CreateDiscoverSection';
-import FeaturedCommunities from '@/components/communities/FeaturedCommunities';
-import LiveActivityBar from '@/components/communities/LiveActivityBar';
-import CommunityLeaderboard from '@/components/communities/CommunityLeaderboard';
-import SpotlightStories from '@/components/communities/SpotlightStories';
-import EventsPolls from '@/components/communities/EventsPolls';
-import SponsorOpportunities from '@/components/communities/SponsorOpportunities';
-import GlobalSearch from '@/components/communities/GlobalSearch';
-import CommunitiesQA from '@/components/communities/CommunitiesQA';
+import UltraPremiumHero from '@/components/community/UltraPremiumHero';
+import ViralSuccessStories from '@/components/community/ViralSuccessStories';
+import LiveMemberActivity from '@/components/community/LiveMemberActivity';
+import ExclusiveOpportunities from '@/components/community/ExclusiveOpportunities';
+import CommunityImpactStats from '@/components/community/CommunityImpactStats';
+import MemberSpotlight from '@/components/community/MemberSpotlight';
+import UrgentCTA from '@/components/community/UrgentCTA';
 
 const Freelancers = () => {
   return (
     <Layout hideFooter={true}>
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        {/* Hero Section */}
-        <CommunitiesHero />
+        {/* Ultra Premium Hero with FOMO */}
+        <UltraPremiumHero />
 
-        {/* Live Activity Bar */}
-        <LiveActivityBar />
+        {/* Live Community Impact Stats */}
+        <CommunityImpactStats />
 
-        {/* Create & Discover Section */}
-        <CreateDiscoverSection />
+        {/* Viral Success Stories */}
+        <ViralSuccessStories />
 
-        {/* Featured Communities Grid */}
-        <FeaturedCommunities />
+        {/* Live Member Activity Feed */}
+        <LiveMemberActivity />
 
-        {/* Spotlight Stories */}
-        <SpotlightStories />
+        {/* Member Spotlight */}
+        <MemberSpotlight />
 
-        {/* Community Leaderboard */}
-        <CommunityLeaderboard />
+        {/* Exclusive Opportunities */}
+        <ExclusiveOpportunities />
 
-        {/* Events & Polls */}
-        <EventsPolls />
-
-        {/* Sponsor Opportunities */}
-        <SponsorOpportunities />
-
-        {/* Global Search */}
-        <GlobalSearch />
-
-        {/* Q&A Section */}
-        <CommunitiesQA />
+        {/* Urgent CTA */}
+        <UrgentCTA />
       </div>
     </Layout>
   );

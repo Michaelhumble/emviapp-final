@@ -4,31 +4,30 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
-interface Question {
+interface CommunityQuestion {
   id: string;
   question: string;
   answer?: string;
+  status: string;
   category?: string;
   upvotes: number;
-  status: string;
   created_at: string;
   updated_at: string;
-  user_id?: string;
-  answered_by?: string;
   answered_at?: string;
+  user_id: string;
 }
 
 export const useQuestions = () => {
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<CommunityQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
-  // Fetch questions
   const fetchQuestions = async () => {
     try {
       const { data, error } = await supabase
         .from('community_questions')
         .select('*')
+        .eq('status', 'answered')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -38,8 +37,7 @@ export const useQuestions = () => {
     }
   };
 
-  // Add a new question
-  const addQuestion = async (question: string, category?: string) => {
+  const askQuestion = async (question: string, category?: string) => {
     if (!user) {
       toast.error('Please sign in to ask questions');
       return false;
@@ -58,16 +56,15 @@ export const useQuestions = () => {
         .insert({
           user_id: user.id,
           question: question.trim(),
-          category: category || 'General'
+          category: category || 'general'
         });
 
       if (error) throw error;
 
-      toast.success('Question submitted successfully!');
-      await fetchQuestions(); // Refresh questions
+      toast.success('Question submitted successfully! Our experts will answer it soon.');
       return true;
     } catch (error) {
-      console.error('Error adding question:', error);
+      console.error('Error submitting question:', error);
       toast.error('Failed to submit question. Please try again.');
       return false;
     } finally {
@@ -75,67 +72,39 @@ export const useQuestions = () => {
     }
   };
 
-  // Upvote a question
   const upvoteQuestion = async (questionId: string) => {
     if (!user) {
       toast.error('Please sign in to vote');
-      return;
+      return false;
     }
 
     try {
       const { error } = await supabase
         .from('community_questions')
-        .update({ 
-          upvotes: questions.find(q => q.id === questionId)?.upvotes + 1 || 1 
-        })
+        .update({ upvotes: questions.find(q => q.id === questionId)?.upvotes + 1 || 1 })
         .eq('id', questionId);
 
       if (error) throw error;
 
-      // Update local state
-      setQuestions(prev => 
-        prev.map(q => 
-          q.id === questionId 
-            ? { ...q, upvotes: q.upvotes + 1 }
-            : q
-        )
-      );
-
+      await fetchQuestions(); // Refresh questions
       toast.success('Vote recorded!');
+      return true;
     } catch (error) {
       console.error('Error upvoting question:', error);
       toast.error('Failed to record vote. Please try again.');
+      return false;
     }
   };
 
-  // Set up real-time subscription
   useEffect(() => {
     fetchQuestions();
-
-    const channel = supabase
-      .channel('questions-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'community_questions'
-        },
-        () => {
-          fetchQuestions();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   return {
     questions,
     isLoading,
-    addQuestion,
-    upvoteQuestion
+    askQuestion,
+    upvoteQuestion,
+    fetchQuestions
   };
 };

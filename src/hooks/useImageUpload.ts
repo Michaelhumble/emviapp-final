@@ -1,57 +1,67 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
 export const useImageUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const { user } = useAuth();
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    if (!file) return null;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+    if (!user) {
+      toast.error('Please sign in to upload images');
       return null;
     }
 
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select a valid image file');
+      return null;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error('Image size must be less than 5MB');
       return null;
     }
 
     setIsUploading(true);
+    setUploadProgress(0);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `community-images/${fileName}`;
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(filePath, file);
+      const { data, error } = await supabase.storage
+        .from('community-images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (error) throw error;
 
-      const { data } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage
+        .from('community-images')
+        .getPublicUrl(data.path);
 
-      return data.publicUrl;
+      setUploadProgress(100);
+      toast.success('Image uploaded successfully!');
+      return publicUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.error('Failed to upload image. Please try again.');
       return null;
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
   return {
     uploadImage,
-    isUploading
+    isUploading,
+    uploadProgress
   };
 };

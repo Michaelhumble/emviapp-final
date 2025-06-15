@@ -1,32 +1,35 @@
 
 import React from 'react';
-import { AlertTriangle, Info } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { AlertCircle, Users, Briefcase, Store } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const CommunityPostingRestriction = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 mb-6"
-    >
-      <div className="flex items-start gap-3">
-        <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-        <div>
-          <h4 className="font-semibold text-blue-900 mb-2 font-playfair">
-            Community Guidelines
-          </h4>
-          <p className="text-blue-800 text-sm mb-3">
-            This space is dedicated to sharing inspiring beauty stories, transformations, 
-            and personal journeys. Help us maintain a supportive environment for all members.
-          </p>
-          <div className="flex items-center gap-2 text-xs text-blue-700">
-            <AlertTriangle className="h-3 w-3" />
-            <span>For job postings or salon listings, please use the dedicated Jobs or Salons sections.</span>
+    <div className="mb-6">
+      <Alert className="border-purple-200 bg-purple-50">
+        <Users className="h-4 w-4 text-purple-600" />
+        <AlertDescription className="text-purple-800">
+          <strong>Community Guidelines:</strong> This space is exclusively for sharing inspiring beauty stories, transformations, and connecting with fellow professionals. 
+          
+          <div className="flex flex-col sm:flex-row gap-2 mt-3">
+            <Button asChild variant="outline" size="sm" className="border-blue-300 text-blue-700 hover:bg-blue-50">
+              <Link to="/post-job" className="flex items-center gap-1">
+                <Briefcase className="h-3 w-3" />
+                Post Jobs Here
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm" className="border-green-300 text-green-700 hover:bg-green-50">
+              <Link to="/sell-salon" className="flex items-center gap-1">
+                <Store className="h-3 w-3" />
+                List Salons Here
+              </Link>
+            </Button>
           </div>
-        </div>
-      </div>
-    </motion.div>
+        </AlertDescription>
+      </Alert>
+    </div>
   );
 };
 

@@ -11,7 +11,7 @@ export const useApplications = () => {
   const submitApplication = async (
     applicationType: string, 
     targetId?: string, 
-    metadata?: Record<string, any>
+    applicationData: any = {}
   ) => {
     if (!user) {
       toast.error('Please sign in to submit applications');
@@ -21,8 +21,17 @@ export const useApplications = () => {
     setIsLoading(true);
     
     try {
-      // For demo purposes, we'll just show a success message
-      // In a real app, you'd have an applications table
+      const { error } = await supabase
+        .from('applications')
+        .insert({
+          user_id: user.id,
+          application_type: applicationType,
+          target_id: targetId,
+          application_data: applicationData
+        });
+
+      if (error) throw error;
+
       toast.success('Application submitted successfully!');
       return true;
     } catch (error) {
@@ -34,8 +43,33 @@ export const useApplications = () => {
     }
   };
 
+  const getApplicationStatus = async (applicationType: string, targetId?: string) => {
+    if (!user) return null;
+
+    try {
+      const query = supabase
+        .from('applications')
+        .select('status, submitted_at')
+        .eq('user_id', user.id)
+        .eq('application_type', applicationType);
+
+      if (targetId) {
+        query.eq('target_id', targetId);
+      }
+
+      const { data, error } = await query.single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching application status:', error);
+      return null;
+    }
+  };
+
   return {
     submitApplication,
+    getApplicationStatus,
     isLoading
   };
 };
