@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
@@ -21,22 +20,22 @@ export const useAuthProvider = () => {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data: profile, error } = await supabase
+      const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
-        .maybeSingle();
+        .single();
+
+      if (error) throw error;
       
-      if (!error && profile) {
-        setUserProfile(profile);
-        
-        if (profile.role) {
-          const normalizedRole = normalizeRole(profile.role as UserRole);
-          setUserRole(normalizedRole);
-          if (normalizedRole) {
-            localStorage.setItem('emviapp_user_role', normalizedRole);
-          }
-        }
+      if (data) {
+        // Type-safe role assignment
+        const profileData = {
+          ...data,
+          role: data.role as UserRole || 'customer' as UserRole
+        };
+        setUserProfile(profileData);
+        setUserRole(profileData.role);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -190,7 +189,7 @@ export const useAuthProvider = () => {
         }
       }
       
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' && session?.user) {
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
           const normalizedRole = normalizeRole(userRole as UserRole);
