@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -22,7 +21,6 @@ import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
-import QASection from "@/components/home/QASection";
 
 // Listing section components
 import BarberListingsSection from "@/components/home/BarberListingsSection";
@@ -78,10 +76,7 @@ const Index = () => {
       {/* 8. Founder Message */}
       <FounderMessage />
       
-      {/* 9. Q&A Section */}
-      <QASection />
-      
-      {/* 10. Final CTA */}
+      {/* 9. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
