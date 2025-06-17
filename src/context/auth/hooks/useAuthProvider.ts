@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
@@ -28,7 +27,12 @@ export const useAuthProvider = () => {
         .maybeSingle();
       
       if (!error && profile) {
-        setUserProfile(profile);
+        const profileData = profile as UserProfile;
+        const normalizedProfile = {
+          ...profileData,
+          role: normalizeRole(profileData.role as string) || 'customer'
+        } as UserProfile;
+        setUserProfile(normalizedProfile);
         
         if (profile.role) {
           const normalizedRole = normalizeRole(profile.role as UserRole);
@@ -166,57 +170,48 @@ export const useAuthProvider = () => {
     }
   };
 
+  const handleAuthStateChange = (event: AuthChangeEvent, session: Session | null) => {
+    console.log("Auth state change:", event, session?.user?.id);
+    
+    if (event === 'SIGNED_IN' && session?.user) {
+      setSession(session);
+      setUser(session.user);
+      
+      if (session.user.user_metadata?.role) {
+        const normalizedRole = normalizeRole(session.user.user_metadata.role as UserRole);
+        setUserRole(normalizedRole);
+        if (normalizedRole) {
+          localStorage.setItem('emviapp_user_role', normalizedRole);
+        }
+      }
+      
+      if (session.user.id) {
+        setTimeout(() => {
+          fetchUserProfile(session.user.id);
+        }, 0);
+      }
+    } else if (event === 'SIGNED_OUT') {
+      setIsNewUser(false);
+      setUserRole(null);
+      setUserProfile(null);
+      localStorage.removeItem('emviapp_new_user');
+      localStorage.removeItem('emviapp_user_role');
+    }
+    
+    // Handle token refresh
+    if (event === 'TOKEN_REFRESHED' && session) {
+      setSession(session);
+      setUser(session.user);
+    }
+  };
+
   useEffect(() => {
     const storedNewUserStatus = localStorage.getItem('emviapp_new_user') === 'true';
     if (storedNewUserStatus) {
       setIsNewUser(true);
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (event === 'SIGNED_UP') {
-        setIsNewUser(true);
-        localStorage.setItem('emviapp_new_user', 'true');
-        
-        const userRole = session?.user?.user_metadata?.role;
-        if (userRole) {
-          const normalizedRole = normalizeRole(userRole as UserRole);
-          setUserRole(normalizedRole);
-          if (normalizedRole) {
-            localStorage.setItem('emviapp_user_role', normalizedRole);
-          }
-        }
-      }
-      
-      if (event === 'SIGNED_IN') {
-        const userRole = session?.user?.user_metadata?.role;
-        if (userRole) {
-          const normalizedRole = normalizeRole(userRole as UserRole);
-          setUserRole(normalizedRole);
-          if (normalizedRole) {
-            localStorage.setItem('emviapp_user_role', normalizedRole);
-          }
-        }
-        
-        if (session?.user?.id) {
-          setTimeout(() => {
-            fetchUserProfile(session.user.id);
-          }, 0);
-        }
-      }
-
-      if (event === 'SIGNED_OUT') {
-        setIsNewUser(false);
-        setUserRole(null);
-        setUserProfile(null);
-        localStorage.removeItem('emviapp_new_user');
-        localStorage.removeItem('emviapp_user_role');
-      }
-      
-      setLoading(false);
-    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);

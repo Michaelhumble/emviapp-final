@@ -1,4 +1,3 @@
-
 import React, { createContext, useEffect, useState, ReactNode } from "react";
 import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,18 +34,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Fetch user profile data
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data: profile, error } = await supabase
+      const { data: profileData, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
       
-      if (!error && profile) {
-        setUserProfile(profile);
+      if (!error && profileData) {
+        const normalizedProfile = {
+          ...profileData,
+          role: normalizeRole(profileData.role as string) || 'customer'
+        } as UserProfile;
+        setUserProfile(normalizedProfile);
         
         // Set role from profile with normalization
-        if (profile.role) {
-          const normalizedRole = normalizeRole(profile.role as UserRole);
+        if (profileData.role) {
+          const normalizedRole = normalizeRole(profileData.role as UserRole);
           setUserRole(normalizedRole);
           if (normalizedRole) {
             localStorage.setItem('emviapp_user_role', normalizedRole);
