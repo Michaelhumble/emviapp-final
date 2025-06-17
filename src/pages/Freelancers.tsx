@@ -1,22 +1,31 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Bell, Filter } from 'lucide-react';
+
+// Existing components - DO NOT MODIFY
 import PremiumHeroSection from '@/components/community/PremiumHeroSection';
 import PremiumFeedCard from '@/components/community/PremiumFeedCard';
 import CommunityStories from '@/components/community/CommunityStories';
-import AchievementLeaderboard from '@/components/community/AchievementLeaderboard';
-import SponsorTeasers from '@/components/community/SponsorTeasers';
 import CommunityQA from '@/components/community/CommunityQA';
 import SuccessNotifications from '@/components/community/SuccessNotifications';
+
+// Enhanced components with premium features
+import AchievementLeaderboard from '@/components/community/AchievementLeaderboard';
+import SponsorTeasers from '@/components/community/SponsorTeasers';
 import AIFeaturesVoting from '@/components/community/AIFeaturesVoting';
+
+// New premium components
+import FOMOBanner from '@/components/community/FOMOBanner';
+import ViralGrowthButtons from '@/components/community/ViralGrowthButtons';
+import InteractivePolls from '@/components/community/InteractivePolls';
+import FeatureSuggestionCard from '@/components/community/FeatureSuggestionCard';
 
 const Freelancers = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Sample premium feed data with realistic, believable numbers
+  // Sample premium feed data with realistic, believable numbers - DO NOT MODIFY
   const feedPosts = [
     {
       id: '1',
@@ -70,10 +79,13 @@ const Freelancers = () => {
 
   return (
     <Layout hideFooter={true}>
-      {/* Premium Hero Section */}
+      {/* COMMUNITY PAGE UPDATE - FOMO Banner at top */}
+      <FOMOBanner />
+
+      {/* Premium Hero Section - DO NOT MODIFY */}
       <PremiumHeroSection />
 
-      {/* Sticky Search Header */}
+      {/* Sticky Search Header - DO NOT MODIFY */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
@@ -98,17 +110,22 @@ const Freelancers = () => {
 
       {/* Main Content */}
       <div className="space-y-0">
-        {/* Community Stories Section */}
+        {/* Community Stories Section - DO NOT MODIFY */}
         <CommunityStories />
 
-        {/* Main Feed */}
+        {/* COMMUNITY PAGE UPDATE - Viral Growth Buttons */}
+        <div className="container mx-auto px-4 py-8">
+          <ViralGrowthButtons />
+        </div>
+
+        {/* Main Feed - DO NOT MODIFY */}
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto space-y-6">
             {feedPosts.map((post) => (
               <PremiumFeedCard key={post.id} post={post} />
             ))}
 
-            {/* Load More Button */}
+            {/* Load More Button - DO NOT MODIFY */}
             <div className="text-center py-6">
               <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full">
                 Load More Stories
@@ -117,20 +134,26 @@ const Freelancers = () => {
           </div>
         </div>
 
-        {/* NEW: AI Features Voting Section */}
+        {/* COMMUNITY PAGE UPDATE - Interactive Features */}
+        <div className="container mx-auto px-4">
+          <InteractivePolls />
+          <FeatureSuggestionCard />
+        </div>
+
+        {/* AI Features Voting Section - DO NOT MODIFY */}
         <AIFeaturesVoting />
 
-        {/* Achievements & Leaderboard */}
+        {/* Enhanced Achievements & Leaderboard */}
         <AchievementLeaderboard />
 
-        {/* Sponsor Teasers */}
+        {/* Enhanced Sponsor Teasers */}
         <SponsorTeasers />
 
-        {/* Community Q&A */}
+        {/* Community Q&A - DO NOT MODIFY */}
         <CommunityQA />
       </div>
 
-      {/* Success Notifications */}
+      {/* Success Notifications - DO NOT MODIFY */}
       <SuccessNotifications />
     </Layout>
   );
