@@ -28,6 +28,7 @@ export const useCommunityStories = () => {
   // Fetch community stories only
   const fetchStories = async () => {
     try {
+      console.log('Fetching community stories...');
       const { data, error } = await supabase
         .from('community_stories')
         .select(`
@@ -39,21 +40,31 @@ export const useCommunityStories = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching stories:', error);
+        throw error;
+      }
+      
+      console.log('Fetched stories:', data);
       setStories(data || []);
     } catch (error) {
       console.error('Error fetching community stories:', error);
+      toast.error('Failed to load community stories');
     }
   };
 
   // Add a new community story with file upload support
   const addStory = async (content: string, imageFile?: File) => {
+    console.log('addStory called with:', { content, imageFile, user: user?.id });
+    
     if (!user) {
+      console.error('No user found when trying to add story');
       toast.error('Please sign in to share your story');
       return false;
     }
 
     if (!content.trim()) {
+      console.error('Empty content provided');
       toast.error('Story content cannot be empty');
       return false;
     }
@@ -74,32 +85,39 @@ export const useCommunityStories = () => {
       
       // Upload image if provided
       if (imageFile) {
+        console.log('Uploading image:', imageFile.name);
         imageUrl = await uploadImage(imageFile);
         if (!imageUrl) {
-          // Upload failed, but we already showed an error message
+          console.error('Image upload failed');
           setIsLoading(false);
           return false;
         }
+        console.log('Image uploaded successfully:', imageUrl);
       }
 
-      const { error } = await supabase
+      console.log('Inserting story into database...');
+      const { data, error } = await supabase
         .from('community_stories')
         .insert({
           user_id: user.id,
           content: content.trim(),
           image_url: imageUrl
-        });
+        })
+        .select()
+        .single();
 
       if (error) {
+        console.error('Database error:', error);
         // Handle specific RLS policy violations
         if (error.message.includes('row-level security')) {
           toast.error('This community is designed for sharing inspiring stories only. To post jobs or list salons, please visit the Jobs or Salons page.');
         } else {
-          throw error;
+          toast.error(`Failed to share story: ${error.message}`);
         }
         return false;
       }
 
+      console.log('Story inserted successfully:', data);
       setNewStory('');
       toast.success('Story shared successfully!');
       await fetchStories(); // Refresh stories
@@ -126,7 +144,8 @@ export const useCommunityStories = () => {
           schema: 'public',
           table: 'community_stories'
         },
-        () => {
+        (payload) => {
+          console.log('Real-time update received:', payload);
           fetchStories();
         }
       )

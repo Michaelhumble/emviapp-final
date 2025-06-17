@@ -5,21 +5,49 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Camera, Send } from 'lucide-react';
 import { useCommunityStories } from '@/hooks/useCommunityStories';
+import { useAuth } from '@/context/auth';
 import PhotoUploader from '@/components/posting/PhotoUploader';
+import { toast } from 'sonner';
 
 const CommunityStoryForm = () => {
   const { newStory, setNewStory, addStory, isLoading } = useCommunityStories();
+  const { user } = useAuth();
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newStory.trim()) return;
-
-    const imageFile = imageFiles.length > 0 ? imageFiles[0] : undefined;
-    const success = await addStory(newStory, imageFile);
     
-    if (success) {
-      setImageFiles([]);
+    // Check if user is logged in
+    if (!user) {
+      toast.error('Please sign in to share your story');
+      return;
+    }
+
+    // Check if story has content
+    if (!newStory.trim()) {
+      toast.error('Please write your story before sharing');
+      return;
+    }
+
+    console.log('Attempting to submit story:', newStory);
+    console.log('Image files:', imageFiles);
+    console.log('User:', user?.id);
+
+    try {
+      const imageFile = imageFiles.length > 0 ? imageFiles[0] : undefined;
+      const success = await addStory(newStory, imageFile);
+      
+      if (success) {
+        console.log('Story posted successfully');
+        setImageFiles([]);
+        toast.success('Your story has been shared!');
+      } else {
+        console.error('Failed to post story');
+        toast.error('Failed to share your story. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error posting story:', error);
+      toast.error('An error occurred while sharing your story');
     }
   };
 
