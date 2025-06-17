@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import AchievementLeaderboard from '@/components/community/AchievementLeaderboar
 import SponsorTeasers from '@/components/community/SponsorTeasers';
 import CommunityQA from '@/components/community/CommunityQA';
 import SuccessNotifications from '@/components/community/SuccessNotifications';
+import AIFeaturesVoting from '@/components/community/AIFeaturesVoting';
 
 const Freelancers = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,6 +116,9 @@ const Freelancers = () => {
             </div>
           </div>
         </div>
+
+        {/* NEW: AI Features Voting Section */}
+        <AIFeaturesVoting />
 
         {/* Achievements & Leaderboard */}
         <AchievementLeaderboard />
