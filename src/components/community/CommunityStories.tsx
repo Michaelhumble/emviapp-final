@@ -1,171 +1,135 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Share2 } from 'lucide-react';
-import CommunityPostingRestriction from './CommunityPostingRestriction';
-import CommunityStoryForm from './CommunityStoryForm';
+import { Card, CardContent } from '@/components/ui/card';
+import { Heart, MessageCircle, Share2, User } from 'lucide-react';
 import { useCommunityStories } from '@/hooks/useCommunityStories';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
+// All Community Stories and images from now on must be authentic, real-user content to maximize trust and engagement.
+
 const CommunityStories = () => {
   const { stories, isLoading } = useCommunityStories();
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks}w ago`;
-  };
-
-  const EmptyState = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="text-center py-16 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border-2 border-dashed border-purple-200"
-    >
-      <div className="mb-6">
-        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <MessageCircle className="w-8 h-8 text-purple-600" />
-        </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">
-          No Stories Yet
-        </h3>
-        <p className="text-gray-600 max-w-md mx-auto">
-          Be the first to share your beauty journey and inspire others in our community!
-        </p>
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+              <div className="space-y-2 mb-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+              <Skeleton className="h-48 w-full rounded-lg" />
+            </CardContent>
+          </Card>
+        ))}
       </div>
-      <Button 
-        onClick={() => document.getElementById('story-form')?.scrollIntoView({ behavior: 'smooth' })}
-        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-      >
-        Share Your Story First! ✨
-      </Button>
-    </motion.div>
-  );
+    );
+  }
 
-  const StoryLoadingSkeleton = () => (
-    <div className="space-y-6">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <div className="flex items-center gap-3 mb-4">
-            <Skeleton className="w-10 h-10 rounded-full" />
-            <div>
-              <Skeleton className="h-4 w-24 mb-1" />
-              <Skeleton className="h-3 w-16" />
+  if (!stories || stories.length === 0) {
+    return (
+      <Card className="text-center py-12">
+        <CardContent>
+          <div className="space-y-4">
+            <div className="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center">
+              <MessageCircle className="h-8 w-8 text-purple-600" />
             </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Be the first to share your story!
+              </h3>
+              <p className="text-gray-600 max-w-md mx-auto">
+                Share your beauty journey, transformation, or inspiring moment with the community.
+              </p>
+            </div>
+            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
+              Share Your Story
+            </Button>
           </div>
-          <Skeleton className="h-20 w-full mb-4" />
-          <div className="flex items-center gap-6">
-            <Skeleton className="h-4 w-12" />
-            <Skeleton className="h-4 w-12" />
-            <Skeleton className="h-4 w-12" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="bg-gradient-to-b from-purple-50 to-white py-16">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Community Stories
-          </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Share your beauty journey and connect with fellow professionals through inspiring stories
-          </p>
-          {/* 
-            ALL COMMUNITY STORIES AND IMAGES FROM NOW ON MUST BE AUTHENTIC, REAL-USER CONTENT
-            TO MAXIMIZE TRUST AND ENGAGEMENT. NO MORE HARDCODED DEMO CONTENT.
-          */}
-        </motion.div>
+    <div className="space-y-6">
+      {stories.map((story) => (
+        <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
+            {/* User Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                {story.users?.avatar_url ? (
+                  <img 
+                    src={story.users.avatar_url} 
+                    alt="User avatar" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="h-5 w-5 text-white" />
+                )}
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">
+                  {story.users?.full_name || 'Community Member'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {new Date(story.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
 
-        <div className="max-w-2xl mx-auto">
-          {/* Community Guidelines */}
-          <CommunityPostingRestriction />
-          
-          {/* Story Form */}
-          <div id="story-form">
-            <CommunityStoryForm />
-          </div>
+            {/* Story Content */}
+            <div className="mb-4">
+              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                {story.content}
+              </p>
+            </div>
 
-          {/* Stories Feed - Only Real User Content */}
-          <div className="space-y-6">
-            {isLoading ? (
-              <StoryLoadingSkeleton />
-            ) : stories.length === 0 ? (
-              <EmptyState />
-            ) : (
-              stories.map((story, index) => (
-                <motion.div
-                  key={story.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-lg font-bold">
-                      {story.user?.full_name ? story.user.full_name.charAt(0) : '👤'}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">
-                        {story.user?.full_name || 'Beauty Professional'}
-                      </h4>
-                      <p className="text-sm text-gray-500">
-                        {formatTimeAgo(story.created_at)}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-800 mb-4 leading-relaxed whitespace-pre-wrap">
-                    {story.content}
-                  </p>
-                  
-                  {story.image_url && (
-                    <div className="mb-4">
-                      <img 
-                        src={story.image_url} 
-                        alt="Community story"
-                        className="w-full rounded-lg shadow-sm max-h-96 object-cover"
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center gap-6 text-sm text-gray-500">
-                    <button className="flex items-center gap-1 hover:text-red-500 transition-colors">
-                      <Heart className="w-4 h-4" />
-                      {story.likes}
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                      <MessageCircle className="w-4 h-4" />
-                      0
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-green-500 transition-colors">
-                      <Share2 className="w-4 h-4" />
-                      Share
-                    </button>
-                  </div>
-                </motion.div>
-              ))
+            {/* Story Image */}
+            {story.image_url && (
+              <div className="mb-4">
+                <img
+                  src={story.image_url}
+                  alt="Story image"
+                  className="w-full h-64 object-cover rounded-lg"
+                  onError={(e) => {
+                    console.error('Failed to load image:', story.image_url);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
             )}
-          </div>
-        </div>
-      </div>
+
+            {/* Engagement Actions */}
+            <div className="flex items-center gap-6 pt-4 border-t border-gray-100">
+              <button className="flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors">
+                <Heart className="h-4 w-4" />
+                <span className="text-sm">{story.likes || 0}</span>
+              </button>
+              <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                <MessageCircle className="h-4 w-4" />
+                <span className="text-sm">Comment</span>
+              </button>
+              <button className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors">
+                <Share2 className="h-4 w-4" />
+                <span className="text-sm">Share</span>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };

@@ -11,38 +11,53 @@ import { toast } from 'sonner';
 
 const CommunityStoryForm = () => {
   const { newStory, setNewStory, addStory, isLoading } = useCommunityStories();
-  const { user } = useAuth();
+  const { user, isSignedIn } = useAuth();
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Share Story button clicked', { 
+      user: user?.id, 
+      isSignedIn, 
+      storyLength: newStory.length,
+      imageCount: imageFiles.length 
+    });
+    
     // Check if user is logged in
-    if (!user) {
+    if (!isSignedIn || !user) {
+      console.error('User not signed in');
       toast.error('Please sign in to share your story');
       return;
     }
 
     // Check if story has content
     if (!newStory.trim()) {
+      console.error('Empty story content');
       toast.error('Please write your story before sharing');
       return;
     }
 
-    console.log('Attempting to submit story:', newStory);
-    console.log('Image files:', imageFiles);
-    console.log('User:', user?.id);
+    console.log('Attempting to submit story:', {
+      content: newStory,
+      imageFiles: imageFiles.length,
+      userId: user.id
+    });
 
     try {
       const imageFile = imageFiles.length > 0 ? imageFiles[0] : undefined;
+      console.log('Calling addStory with:', { story: newStory, imageFile: !!imageFile });
+      
       const success = await addStory(newStory, imageFile);
+      
+      console.log('addStory result:', success);
       
       if (success) {
         console.log('Story posted successfully');
         setImageFiles([]);
         toast.success('Your story has been shared!');
       } else {
-        console.error('Failed to post story');
+        console.error('Failed to post story - addStory returned false');
         toast.error('Failed to share your story. Please try again.');
       }
     } catch (error) {
@@ -52,6 +67,7 @@ const CommunityStoryForm = () => {
   };
 
   const handleImageChange = (files: File[]) => {
+    console.log('Image files changed:', files.length);
     setImageFiles(files);
   };
 
@@ -88,7 +104,7 @@ const CommunityStoryForm = () => {
             </p>
             <Button 
               type="submit" 
-              disabled={isLoading || !newStory.trim()}
+              disabled={isLoading || !newStory.trim() || !isSignedIn}
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
             >
               {isLoading ? (
@@ -101,6 +117,12 @@ const CommunityStoryForm = () => {
               )}
             </Button>
           </div>
+
+          {!isSignedIn && (
+            <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800">Please sign in to share your story</p>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>
