@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { useImageUpload } from './useImageUpload';
+import { toast } from 'sonner';
 
 interface CommunityStory {
   id: string;
@@ -11,7 +12,7 @@ interface CommunityStory {
   likes: number;
   created_at: string;
   user_id: string;
-  author?: {
+  user?: {
     full_name?: string;
     avatar_url?: string;
   };
@@ -19,27 +20,29 @@ interface CommunityStory {
 
 export const useCommunityStories = () => {
   const [stories, setStories] = useState<CommunityStory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [newStory, setNewStory] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [editingStory, setEditingStory] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
   const { user } = useAuth();
   const { uploadImage } = useImageUpload();
 
+  // Fetch stories from Supabase
   const fetchStories = async () => {
     try {
       console.log('Fetching community stories...');
       
-      // First get all stories
-      const { data: storiesData, error: storiesError } = await supabase
+      const { data: storiesData, error } = await supabase
         .from('community_stories')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (storiesError) {
-        console.error('Error fetching stories:', storiesError);
+      if (error) {
+        console.error('Error fetching stories:', error);
         return;
       }
 
-      if (!storiesData || storiesData.length === 0) {
+      if (!storiesData) {
         console.log('No stories found');
         setStories([]);
         return;
@@ -48,68 +51,78 @@ export const useCommunityStories = () => {
       // Get unique user IDs
       const userIds = [...new Set(storiesData.map(story => story.user_id))];
       
-      // Fetch user data for all unique user IDs
-      let usersData: any[] = [];
-      if (userIds.length > 0) {
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('id, full_name, avatar_url')
-          .in('id', userIds);
+      // Fetch user data
+      const { data: usersData, error: usersError } = await supabase
+        .from('users')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds);
 
-        if (userError) {
-          console.error('Error fetching user data:', userError);
-        } else {
-          usersData = userData || [];
-        }
+      if (usersError) {
+        console.error('Error fetching user data:', usersError);
+      }
+
+      // Create user lookup map
+      const userMap = new Map();
+      if (usersData) {
+        usersData.forEach(user => {
+          userMap.set(user.id, user);
+        });
       }
 
       // Merge stories with user data
       const storiesWithUsers = storiesData.map(story => ({
         ...story,
-        author: usersData.find(user => user.id === story.user_id) || {
-          full_name: 'Anonymous User',
-          avatar_url: null
-        }
+        user: userMap.get(story.user_id) || null
       }));
 
-      console.log('Stories fetched successfully:', storiesWithUsers.length);
+      console.log('Stories with users loaded:', storiesWithUsers.length);
       setStories(storiesWithUsers);
     } catch (error) {
-      console.error('Unexpected error fetching stories:', error);
-    } finally {
-      setIsLoading(false);
+      console.error('Error in fetchStories:', error);
     }
   };
 
+  // Add new story
   const addStory = async (content: string, imageFile?: File): Promise<boolean> => {
-    if (!user || !content.trim()) {
-      console.error('Cannot add story: missing user or content');
+    if (!user) {
+      console.error('User not authenticated');
+      toast.error('Please sign in to share your story');
       return false;
     }
 
-    try {
-      console.log('Adding new story...');
-      let imageUrl: string | null = null;
+    if (!content.trim()) {
+      console.error('Story content is empty');
+      toast.error('Please write your story before sharing');
+      return false;
+    }
 
+    setIsLoading(true);
+    
+    try {
+      console.log('Adding new story:', { content: content.substring(0, 50), hasImage: !!imageFile });
+      
+      let imageUrl = null;
+      
       // Upload image if provided
       if (imageFile) {
         console.log('Uploading image...');
         imageUrl = await uploadImage(imageFile);
         if (!imageUrl) {
-          console.error('Failed to upload image');
+          toast.error('Failed to upload image. Please try again.');
+          setIsLoading(false);
           return false;
         }
         console.log('Image uploaded successfully:', imageUrl);
       }
 
-      // Insert the story
+      // Insert story into database
       const { data, error } = await supabase
         .from('community_stories')
         .insert([
           {
-            user_id: user.id,
             content: content.trim(),
             image_url: imageUrl,
+            user_id: user.id,
             likes: 0
           }
         ])
@@ -118,6 +131,7 @@ export const useCommunityStories = () => {
 
       if (error) {
         console.error('Error inserting story:', error);
+        toast.error('Failed to share your story. Please try again.');
         return false;
       }
 
@@ -129,16 +143,26 @@ export const useCommunityStories = () => {
       // Refresh stories to show the new one
       await fetchStories();
       
+      toast.success('Your story has been shared!');
       return true;
     } catch (error) {
-      console.error('Unexpected error adding story:', error);
+      console.error('Error in addStory:', error);
+      toast.error('An error occurred while sharing your story');
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Update story
   const updateStory = async (storyId: string, newContent: string): Promise<boolean> => {
-    if (!user || !newContent.trim()) {
-      console.error('Cannot update story: missing user or content');
+    if (!user) {
+      toast.error('Please sign in to edit stories');
+      return false;
+    }
+
+    if (!newContent.trim()) {
+      toast.error('Story content cannot be empty');
       return false;
     }
 
@@ -149,28 +173,34 @@ export const useCommunityStories = () => {
         .from('community_stories')
         .update({ content: newContent.trim() })
         .eq('id', storyId)
-        .eq('user_id', user.id); // Ensure only the owner can update
+        .eq('user_id', user.id); // Ensure user can only edit their own stories
 
       if (error) {
         console.error('Error updating story:', error);
+        toast.error('Failed to update story');
         return false;
       }
 
-      console.log('Story updated successfully');
-      
-      // Refresh stories to show the updated content
+      // Refresh stories
       await fetchStories();
       
+      // Clear editing state
+      setEditingStory(null);
+      setEditContent('');
+      
+      toast.success('Story updated successfully!');
       return true;
     } catch (error) {
-      console.error('Unexpected error updating story:', error);
+      console.error('Error in updateStory:', error);
+      toast.error('An error occurred while updating your story');
       return false;
     }
   };
 
+  // Delete story
   const deleteStory = async (storyId: string): Promise<boolean> => {
     if (!user) {
-      console.error('Cannot delete story: no user');
+      toast.error('Please sign in to delete stories');
       return false;
     }
 
@@ -181,34 +211,42 @@ export const useCommunityStories = () => {
         .from('community_stories')
         .delete()
         .eq('id', storyId)
-        .eq('user_id', user.id); // Ensure only the owner can delete
+        .eq('user_id', user.id); // Ensure user can only delete their own stories
 
       if (error) {
         console.error('Error deleting story:', error);
+        toast.error('Failed to delete story');
         return false;
       }
 
-      console.log('Story deleted successfully');
-      
-      // Refresh stories to remove the deleted one
+      // Refresh stories
       await fetchStories();
       
+      toast.success('Story deleted successfully!');
       return true;
     } catch (error) {
-      console.error('Unexpected error deleting story:', error);
+      console.error('Error in deleteStory:', error);
+      toast.error('An error occurred while deleting your story');
       return false;
     }
   };
 
-  // Initial fetch
-  useEffect(() => {
-    fetchStories();
-  }, []);
+  // Start editing
+  const startEditing = (storyId: string, currentContent: string) => {
+    setEditingStory(storyId);
+    setEditContent(currentContent);
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingStory(null);
+    setEditContent('');
+  };
 
   // Set up real-time subscription
   useEffect(() => {
-    console.log('Setting up real-time subscription for community stories');
-    
+    fetchStories();
+
     const channel = supabase
       .channel('community_stories_changes')
       .on(
@@ -220,26 +258,28 @@ export const useCommunityStories = () => {
         },
         (payload) => {
           console.log('Real-time update received:', payload);
-          // Refresh stories when there are changes
-          fetchStories();
+          fetchStories(); // Refresh stories when changes occur
         }
       )
       .subscribe();
 
     return () => {
-      console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
   }, []);
 
   return {
     stories,
-    isLoading,
     newStory,
     setNewStory,
     addStory,
     updateStory,
     deleteStory,
-    refreshStories: fetchStories
+    isLoading,
+    editingStory,
+    editContent,
+    setEditContent,
+    startEditing,
+    cancelEditing
   };
 };

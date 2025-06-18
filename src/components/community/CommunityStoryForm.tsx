@@ -39,14 +39,14 @@ const CommunityStoryForm = () => {
     }
 
     console.log('Attempting to submit story:', {
-      content: newStory,
+      content: newStory.substring(0, 50) + '...',
       imageFiles: imageFiles.length,
       userId: user.id
     });
 
     try {
       const imageFile = imageFiles.length > 0 ? imageFiles[0] : undefined;
-      console.log('Calling addStory with:', { story: newStory, imageFile: !!imageFile });
+      console.log('Calling addStory with:', { story: newStory.length, imageFile: !!imageFile });
       
       const success = await addStory(newStory, imageFile);
       
@@ -55,10 +55,9 @@ const CommunityStoryForm = () => {
       if (success) {
         console.log('Story posted successfully');
         setImageFiles([]);
-        toast.success('Your story has been shared!');
+        // Note: newStory is cleared in the addStory function
       } else {
         console.error('Failed to post story - addStory returned false');
-        toast.error('Failed to share your story. Please try again.');
       }
     } catch (error) {
       console.error('Error posting story:', error);
