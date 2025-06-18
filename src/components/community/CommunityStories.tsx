@@ -2,227 +2,220 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Heart, MessageCircle, Share2, User, Edit, Trash2, Save, X } from 'lucide-react';
+import { Heart, MessageCircle, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { useCommunityStories } from '@/hooks/useCommunityStories';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth';
-
-// All Community Stories and images from now on must be authentic, real-user content to maximize trust and engagement.
+import CommunityStoryForm from './CommunityStoryForm';
+import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 const CommunityStories = () => {
-  const { stories, isLoading, updateStory, deleteStory } = useCommunityStories();
-  const { user } = useAuth();
-  const [editingStoryId, setEditingStoryId] = useState<string | null>(null);
+  const { stories, isLoading, deleteStory, updateStory } = useCommunityStories();
+  const { user, isSignedIn } = useAuth();
+  const [editingStory, setEditingStory] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const handleEditStart = (storyId: string, currentContent: string) => {
-    setEditingStoryId(storyId);
-    setEditContent(currentContent);
-  };
-
-  const handleEditSave = async (storyId: string) => {
-    if (editContent.trim()) {
-      const success = await updateStory(storyId, editContent);
+  const handleDelete = async (storyId: string) => {
+    if (window.confirm('Are you sure you want to delete this story?')) {
+      const success = await deleteStory(storyId);
       if (success) {
-        setEditingStoryId(null);
-        setEditContent('');
+        toast.success('Story deleted successfully');
+      } else {
+        toast.error('Failed to delete story');
       }
     }
   };
 
-  const handleEditCancel = () => {
-    setEditingStoryId(null);
-    setEditContent('');
+  const handleEdit = (story: any) => {
+    setEditingStory(story.id);
+    setEditContent(story.content);
+    setIsEditDialogOpen(true);
   };
 
-  const handleDelete = async (storyId: string) => {
-    if (window.confirm('Are you sure you want to delete this story? This action cannot be undone.')) {
-      await deleteStory(storyId);
+  const handleSaveEdit = async () => {
+    if (!editingStory || !editContent.trim()) return;
+    
+    const success = await updateStory(editingStory, editContent.trim());
+    if (success) {
+      toast.success('Story updated successfully');
+      setIsEditDialogOpen(false);
+      setEditingStory(null);
+      setEditContent('');
+    } else {
+      toast.error('Failed to update story');
     }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    return date.toLocaleDateString();
   };
 
   if (isLoading) {
     return (
       <div className="space-y-6">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Skeleton className="h-10 w-10 rounded-full" />
-                <div className="space-y-1">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
-              </div>
-              <div className="space-y-2 mb-4">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-              <Skeleton className="h-48 w-full rounded-lg" />
-            </CardContent>
-          </Card>
-        ))}
+        {/* Always show the form at the top for authenticated users */}
+        {isSignedIn && <CommunityStoryForm />}
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        </div>
       </div>
-    );
-  }
-
-  if (!stories || stories.length === 0) {
-    return (
-      <Card className="text-center py-12">
-        <CardContent>
-          <div className="space-y-4">
-            <div className="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center">
-              <MessageCircle className="h-8 w-8 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Be the first to share your story!
-              </h3>
-              <p className="text-gray-600 max-w-md mx-auto">
-                Share your beauty journey, transformation, or inspiring moment with the community.
-              </p>
-            </div>
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-              Share Your Story
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      {stories.map((story) => {
-        const isOwnStory = user?.id === story.user_id;
-        const isEditing = editingStoryId === story.id;
-
-        return (
-          <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              {/* User Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                    {story.users?.avatar_url ? (
-                      <img 
-                        src={story.users.avatar_url} 
-                        alt="User avatar" 
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-5 w-5 text-white" />
+      {/* Always show the posting form for signed-in users */}
+      {isSignedIn && <CommunityStoryForm />}
+      
+      {/* Stories feed */}
+      <div className="space-y-4">
+        {stories && stories.length > 0 ? (
+          stories.map((story) => {
+            const isOwner = user && story.user_id === user.id;
+            
+            return (
+              <Card key={story.id} className="w-full">
+                <CardContent className="p-6">
+                  {/* Story header with user info and actions */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
+                        {story.author?.full_name ? story.author.full_name.charAt(0).toUpperCase() : '?'}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">
+                          {story.author?.full_name || 'Anonymous User'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {formatTimeAgo(story.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Show edit/delete options for story owner */}
+                    {isOwner && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEdit(story)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit Story
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDelete(story.id)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Story
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )}
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {story.users?.full_name || 'Community Member'}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(story.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
 
-                {/* Edit/Delete buttons for own stories */}
-                {isOwnStory && !isEditing && (
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEditStart(story.id, story.content)}
-                      className="text-gray-500 hover:text-blue-600"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(story.id)}
-                      className="text-gray-500 hover:text-red-600"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  {/* Story content */}
+                  <div className="mb-4">
+                    <p className="text-gray-800 leading-relaxed">{story.content}</p>
                   </div>
-                )}
 
-                {/* Save/Cancel buttons when editing */}
-                {isOwnStory && isEditing && (
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEditSave(story.id)}
-                      className="text-gray-500 hover:text-green-600"
-                    >
-                      <Save className="h-4 w-4" />
+                  {/* Story image if present */}
+                  {story.image_url && (
+                    <div className="mb-4">
+                      <img 
+                        src={story.image_url} 
+                        alt="Story image" 
+                        className="w-full max-h-96 object-cover rounded-lg border"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Story actions */}
+                  <div className="flex items-center space-x-4 pt-2 border-t">
+                    <Button variant="ghost" size="sm" className="text-gray-600 hover:text-red-500">
+                      <Heart className="h-4 w-4 mr-1" />
+                      <span>{story.likes || 0}</span>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleEditCancel}
-                      className="text-gray-500 hover:text-red-600"
-                    >
-                      <X className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-500">
+                      <MessageCircle className="h-4 w-4 mr-1" />
+                      <span>Comment</span>
                     </Button>
                   </div>
-                )}
-              </div>
-
-              {/* Story Content */}
-              <div className="mb-4">
-                {isEditing ? (
-                  <Textarea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    className="min-h-[100px] resize-none border-gray-300 focus:border-purple-500"
-                    placeholder="Edit your story..."
-                  />
-                ) : (
-                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                    {story.content}
-                  </p>
-                )}
-              </div>
-
-              {/* Story Image */}
-              {story.image_url && (
-                <div className="mb-4">
-                  <img
-                    src={story.image_url}
-                    alt="Story image"
-                    className="w-full h-64 object-cover rounded-lg"
-                    onError={(e) => {
-                      console.error('Failed to load image:', story.image_url);
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Engagement Actions */}
-              {!isEditing && (
-                <div className="flex items-center gap-6 pt-4 border-t border-gray-100">
-                  <button className="flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors">
-                    <Heart className="h-4 w-4" />
-                    <span className="text-sm">{story.likes || 0}</span>
-                  </button>
-                  <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                    <MessageCircle className="h-4 w-4" />
-                    <span className="text-sm">Comment</span>
-                  </button>
-                  <button className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors">
-                    <Share2 className="h-4 w-4" />
-                    <span className="text-sm">Share</span>
-                  </button>
-                </div>
+                </CardContent>
+              </Card>
+            );
+          })
+        ) : (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-500 mb-4">No stories yet. Be the first to share your beauty journey!</p>
+              {!isSignedIn && (
+                <p className="text-sm text-gray-400">Sign in to share your story</p>
               )}
             </CardContent>
           </Card>
-        );
-      })}
+        )}
+      </div>
+
+      {/* Edit Story Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Story</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              placeholder="Share your beauty journey..."
+              className="min-h-[100px] resize-none"
+            />
+            <div className="flex justify-end space-x-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveEdit}
+                disabled={!editContent.trim()}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

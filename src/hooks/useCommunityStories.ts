@@ -1,8 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { useImageUpload } from './useImageUpload';
-import { toast } from 'sonner';
 
 interface CommunityStory {
   id: string;
@@ -11,7 +11,7 @@ interface CommunityStory {
   likes: number;
   created_at: string;
   user_id: string;
-  users?: {
+  author?: {
     full_name?: string;
     avatar_url?: string;
   };
@@ -19,8 +19,8 @@ interface CommunityStory {
 
 export const useCommunityStories = () => {
   const [stories, setStories] = useState<CommunityStory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [newStory, setNewStory] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const { uploadImage } = useImageUpload();
 
@@ -28,266 +28,218 @@ export const useCommunityStories = () => {
     try {
       console.log('Fetching community stories...');
       
-      // First try to get stories with user data using a left join approach
-      const { data, error } = await supabase
+      // First get all stories
+      const { data: storiesData, error: storiesError } = await supabase
         .from('community_stories')
-        .select(`
-          id,
-          content,
-          image_url,
-          likes,
-          created_at,
-          user_id
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching stories:', error);
-        throw error;
+      if (storiesError) {
+        console.error('Error fetching stories:', storiesError);
+        return;
       }
+
+      if (!storiesData || storiesData.length === 0) {
+        console.log('No stories found');
+        setStories([]);
+        return;
+      }
+
+      // Get unique user IDs
+      const userIds = [...new Set(storiesData.map(story => story.user_id))];
       
-      // If we have stories, fetch user data separately
-      if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(story => story.user_id))];
-        
+      // Fetch user data for all unique user IDs
+      let usersData: any[] = [];
+      if (userIds.length > 0) {
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('id, full_name, avatar_url')
           .in('id', userIds);
-          
+
         if (userError) {
-          console.warn('Could not fetch user data:', userError);
-          // Continue without user data
-          setStories(data.map(story => ({ ...story, users: undefined })));
+          console.error('Error fetching user data:', userError);
         } else {
-          // Merge user data with stories
-          const storiesWithUsers = data.map(story => {
-            const userInfo = userData?.find(u => u.id === story.user_id);
-            return {
-              ...story,
-              users: userInfo ? {
-                full_name: userInfo.full_name,
-                avatar_url: userInfo.avatar_url
-              } : undefined
-            };
-          });
-          setStories(storiesWithUsers);
+          usersData = userData || [];
         }
-      } else {
-        setStories([]);
       }
-      
-      console.log('Fetched stories:', data?.length || 0);
+
+      // Merge stories with user data
+      const storiesWithUsers = storiesData.map(story => ({
+        ...story,
+        author: usersData.find(user => user.id === story.user_id) || {
+          full_name: 'Anonymous User',
+          avatar_url: null
+        }
+      }));
+
+      console.log('Stories fetched successfully:', storiesWithUsers.length);
+      setStories(storiesWithUsers);
     } catch (error) {
-      console.error('Error fetching community stories:', error);
-      toast.error('Failed to load community stories');
-      setStories([]); // Set empty array on error so UI doesn't break
+      console.error('Unexpected error fetching stories:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchStories();
-
-    // Set up real-time subscription for new stories
-    const channel = supabase
-      .channel('community_stories_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'community_stories'
-        },
-        () => {
-          console.log('New story added, refetching...');
-          fetchStories();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'community_stories'
-        },
-        () => {
-          console.log('Story updated, refetching...');
-          fetchStories();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'community_stories'
-        },
-        () => {
-          console.log('Story deleted, refetching...');
-          fetchStories();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
   const addStory = async (content: string, imageFile?: File): Promise<boolean> => {
-    if (!user) {
-      console.error('User not authenticated');
-      toast.error('Please sign in to share your story');
+    if (!user || !content.trim()) {
+      console.error('Cannot add story: missing user or content');
       return false;
     }
 
-    setIsLoading(true);
-    
     try {
+      console.log('Adding new story...');
       let imageUrl: string | null = null;
-      
+
       // Upload image if provided
       if (imageFile) {
         console.log('Uploading image...');
         imageUrl = await uploadImage(imageFile);
         if (!imageUrl) {
-          toast.error('Failed to upload image. Please try again.');
-          setIsLoading(false);
+          console.error('Failed to upload image');
           return false;
         }
         console.log('Image uploaded successfully:', imageUrl);
       }
 
-      console.log('Inserting story into database...');
+      // Insert the story
       const { data, error } = await supabase
         .from('community_stories')
         .insert([
           {
+            user_id: user.id,
             content: content.trim(),
             image_url: imageUrl,
-            user_id: user.id,
             likes: 0
           }
         ])
-        .select(`
-          id,
-          content,
-          image_url,
-          likes,
-          created_at,
-          user_id
-        `)
+        .select()
         .single();
 
       if (error) {
         console.error('Error inserting story:', error);
-        toast.error('Failed to share your story. Please try again.');
-        setIsLoading(false);
         return false;
       }
 
-      console.log('Story inserted successfully:', data);
+      console.log('Story added successfully:', data);
       
-      // Add the new story to the beginning of the stories array for immediate display
-      // Include user data from current user
-      if (data) {
-        const newStoryWithUser = {
-          ...data,
-          users: {
-            full_name: user.user_metadata?.full_name || user.email || 'Community Member',
-            avatar_url: user.user_metadata?.avatar_url || null
-          }
-        };
-        setStories(prev => [newStoryWithUser, ...prev]);
-      }
-      
+      // Clear the form
       setNewStory('');
-      toast.success('Your story has been shared!');
-      setIsLoading(false);
+      
+      // Refresh stories to show the new one
+      await fetchStories();
+      
       return true;
     } catch (error) {
-      console.error('Error in addStory:', error);
-      toast.error('An unexpected error occurred. Please try again.');
-      setIsLoading(false);
+      console.error('Unexpected error adding story:', error);
       return false;
     }
   };
 
-  const updateStory = async (storyId: string, content: string): Promise<boolean> => {
-    if (!user) {
-      toast.error('Please sign in to edit stories');
+  const updateStory = async (storyId: string, newContent: string): Promise<boolean> => {
+    if (!user || !newContent.trim()) {
+      console.error('Cannot update story: missing user or content');
       return false;
     }
 
     try {
       console.log('Updating story:', storyId);
+      
       const { error } = await supabase
         .from('community_stories')
-        .update({ content: content.trim() })
+        .update({ content: newContent.trim() })
         .eq('id', storyId)
-        .eq('user_id', user.id); // Ensure user can only edit their own stories
+        .eq('user_id', user.id); // Ensure only the owner can update
 
       if (error) {
         console.error('Error updating story:', error);
-        toast.error('Failed to update your story. Please try again.');
         return false;
       }
 
-      // Update local state
-      setStories(prev => prev.map(story => 
-        story.id === storyId 
-          ? { ...story, content: content.trim() }
-          : story
-      ));
-
-      toast.success('Story updated successfully!');
+      console.log('Story updated successfully');
+      
+      // Refresh stories to show the updated content
+      await fetchStories();
+      
       return true;
     } catch (error) {
-      console.error('Error in updateStory:', error);
-      toast.error('An unexpected error occurred. Please try again.');
+      console.error('Unexpected error updating story:', error);
       return false;
     }
   };
 
   const deleteStory = async (storyId: string): Promise<boolean> => {
     if (!user) {
-      toast.error('Please sign in to delete stories');
+      console.error('Cannot delete story: no user');
       return false;
     }
 
     try {
       console.log('Deleting story:', storyId);
+      
       const { error } = await supabase
         .from('community_stories')
         .delete()
         .eq('id', storyId)
-        .eq('user_id', user.id); // Ensure user can only delete their own stories
+        .eq('user_id', user.id); // Ensure only the owner can delete
 
       if (error) {
         console.error('Error deleting story:', error);
-        toast.error('Failed to delete your story. Please try again.');
         return false;
       }
 
-      // Remove from local state
-      setStories(prev => prev.filter(story => story.id !== storyId));
-
-      toast.success('Story deleted successfully!');
+      console.log('Story deleted successfully');
+      
+      // Refresh stories to remove the deleted one
+      await fetchStories();
+      
       return true;
     } catch (error) {
-      console.error('Error in deleteStory:', error);
-      toast.error('An unexpected error occurred. Please try again.');
+      console.error('Unexpected error deleting story:', error);
       return false;
     }
   };
 
+  // Initial fetch
+  useEffect(() => {
+    fetchStories();
+  }, []);
+
+  // Set up real-time subscription
+  useEffect(() => {
+    console.log('Setting up real-time subscription for community stories');
+    
+    const channel = supabase
+      .channel('community_stories_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'community_stories'
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          // Refresh stories when there are changes
+          fetchStories();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('Cleaning up real-time subscription');
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   return {
     stories,
+    isLoading,
     newStory,
     setNewStory,
     addStory,
     updateStory,
     deleteStory,
-    isLoading
+    refreshStories: fetchStories
   };
 };

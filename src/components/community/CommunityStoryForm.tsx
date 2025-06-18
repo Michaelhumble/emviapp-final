@@ -71,17 +71,29 @@ const CommunityStoryForm = () => {
     setImageFiles(files);
   };
 
+  // Don't render anything if user is not signed in
+  if (!isSignedIn) {
+    return null;
+  }
+
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 border-2 border-purple-100">
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Textarea
-            placeholder="Share your beauty journey, transformation story, or inspiring moment..."
-            value={newStory}
-            onChange={(e) => setNewStory(e.target.value)}
-            className="min-h-[100px] resize-none border-gray-300 focus:border-purple-500"
-            disabled={isLoading}
-          />
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
+              {user?.user_metadata?.full_name ? user.user_metadata.full_name.charAt(0).toUpperCase() : '?'}
+            </div>
+            <div className="flex-1">
+              <Textarea
+                placeholder="Share your beauty journey, transformation story, or inspiring moment..."
+                value={newStory}
+                onChange={(e) => setNewStory(e.target.value)}
+                className="min-h-[100px] resize-none border-gray-300 focus:border-purple-500 text-base"
+                disabled={isLoading}
+              />
+            </div>
+          </div>
           
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -104,8 +116,8 @@ const CommunityStoryForm = () => {
             </p>
             <Button 
               type="submit" 
-              disabled={isLoading || !newStory.trim() || !isSignedIn}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+              disabled={isLoading || !newStory.trim()}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-2"
             >
               {isLoading ? (
                 <>Processing...</>
@@ -117,12 +129,6 @@ const CommunityStoryForm = () => {
               )}
             </Button>
           </div>
-
-          {!isSignedIn && (
-            <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-yellow-800">Please sign in to share your story</p>
-            </div>
-          )}
         </form>
       </CardContent>
     </Card>
