@@ -32,8 +32,13 @@ export const useCommunityStories = () => {
       const { data, error } = await supabase
         .from('community_stories')
         .select(`
-          *,
-          users:user_id (
+          id,
+          content,
+          image_url,
+          likes,
+          created_at,
+          user_id,
+          users!user_id (
             full_name,
             avatar_url
           )
@@ -79,7 +84,7 @@ export const useCommunityStories = () => {
         content.toLowerCase().includes('job opening') ||
         content.toLowerCase().includes('salon for sale') ||
         content.toLowerCase().includes('apply now')) {
-      toast.error('This community is designed for sharing inspiring stories only. To post jobs or list salons, please visit the Jobs or Salons page.');
+      toast.error('This community is designed for sharing inspiring stories only. To post jobs or list salons, please visit the appropriate sections.');
       return false;
     }
 
@@ -110,8 +115,13 @@ export const useCommunityStories = () => {
           image_url: imageUrl
         })
         .select(`
-          *,
-          users:user_id (
+          id,
+          content,
+          image_url,
+          likes,
+          created_at,
+          user_id,
+          users!user_id (
             full_name,
             avatar_url
           )
