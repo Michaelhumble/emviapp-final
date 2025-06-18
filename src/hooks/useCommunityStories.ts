@@ -29,6 +29,8 @@ export const useCommunityStories = () => {
   const fetchStories = async () => {
     try {
       console.log('Fetching community stories...');
+      
+      // First try to get stories with user data using a left join approach
       const { data, error } = await supabase
         .from('community_stories')
         .select(`
@@ -37,11 +39,7 @@ export const useCommunityStories = () => {
           image_url,
           likes,
           created_at,
-          user_id,
-          users!user_id (
-            full_name,
-            avatar_url
-          )
+          user_id
         `)
         .order('created_at', { ascending: false });
 
@@ -50,11 +48,42 @@ export const useCommunityStories = () => {
         throw error;
       }
       
+      // If we have stories, fetch user data separately
+      if (data && data.length > 0) {
+        const userIds = [...new Set(data.map(story => story.user_id))];
+        
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id, full_name, avatar_url')
+          .in('id', userIds);
+          
+        if (userError) {
+          console.warn('Could not fetch user data:', userError);
+          // Continue without user data
+          setStories(data.map(story => ({ ...story, users: undefined })));
+        } else {
+          // Merge user data with stories
+          const storiesWithUsers = data.map(story => {
+            const userInfo = userData?.find(u => u.id === story.user_id);
+            return {
+              ...story,
+              users: userInfo ? {
+                full_name: userInfo.full_name,
+                avatar_url: userInfo.avatar_url
+              } : undefined
+            };
+          });
+          setStories(storiesWithUsers);
+        }
+      } else {
+        setStories([]);
+      }
+      
       console.log('Fetched stories:', data?.length || 0);
-      setStories(data || []);
     } catch (error) {
       console.error('Error fetching community stories:', error);
       toast.error('Failed to load community stories');
+      setStories([]); // Set empty array on error so UI doesn't break
     }
   };
 
@@ -120,11 +149,7 @@ export const useCommunityStories = () => {
           image_url,
           likes,
           created_at,
-          user_id,
-          users!user_id (
-            full_name,
-            avatar_url
-          )
+          user_id
         `)
         .single();
 
@@ -137,8 +162,16 @@ export const useCommunityStories = () => {
       console.log('Story inserted successfully:', data);
       
       // Add the new story to the beginning of the stories array for immediate display
+      // Include user data from current user
       if (data) {
-        setStories(prev => [data, ...prev]);
+        const newStoryWithUser = {
+          ...data,
+          users: {
+            full_name: user.user_metadata?.full_name || user.email || 'Community Member',
+            avatar_url: user.user_metadata?.avatar_url || null
+          }
+        };
+        setStories(prev => [newStoryWithUser, ...prev]);
       }
       
       setNewStory('');
