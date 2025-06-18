@@ -17,46 +17,50 @@ const CommunityStoryForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submitted:', { 
+    console.log('Share Story button clicked', { 
+      user: user?.id, 
       isSignedIn, 
-      userId: user?.id, 
       storyLength: newStory.length,
       imageCount: imageFiles.length 
     });
     
-    // Validation checks
+    // Check if user is logged in
     if (!isSignedIn || !user) {
       console.error('User not signed in');
       toast.error('Please sign in to share your story');
       return;
     }
 
+    // Check if story has content
     if (!newStory.trim()) {
       console.error('Empty story content');
       toast.error('Please write your story before sharing');
       return;
     }
 
+    console.log('Attempting to submit story:', {
+      content: newStory.substring(0, 50) + '...',
+      imageFiles: imageFiles.length,
+      userId: user.id
+    });
+
     try {
       const imageFile = imageFiles.length > 0 ? imageFiles[0] : undefined;
-      console.log('Calling addStory with:', { 
-        storyLength: newStory.length, 
-        hasImage: !!imageFile 
-      });
+      console.log('Calling addStory with:', { story: newStory.length, imageFile: !!imageFile });
       
       const success = await addStory(newStory, imageFile);
       
       console.log('addStory result:', success);
       
       if (success) {
-        console.log('Story posted successfully - clearing form');
+        console.log('Story posted successfully');
         setImageFiles([]);
-        // newStory is cleared in the addStory function
+        // Note: newStory is cleared in the addStory function
       } else {
         console.error('Failed to post story - addStory returned false');
       }
     } catch (error) {
-      console.error('Error in form submission:', error);
+      console.error('Error posting story:', error);
       toast.error('An error occurred while sharing your story');
     }
   };
@@ -66,7 +70,7 @@ const CommunityStoryForm = () => {
     setImageFiles(files);
   };
 
-  // Don't render if user is not signed in
+  // Don't render anything if user is not signed in
   if (!isSignedIn) {
     return null;
   }
@@ -86,7 +90,6 @@ const CommunityStoryForm = () => {
                 onChange={(e) => setNewStory(e.target.value)}
                 className="min-h-[100px] resize-none border-gray-300 focus:border-purple-500 text-base"
                 disabled={isLoading}
-                required
               />
             </div>
           </div>
