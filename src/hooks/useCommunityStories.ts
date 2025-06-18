@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
 import { useImageUpload } from './useImageUpload';
+import { toast } from 'sonner';
 
 interface CommunityStory {
   id: string;
@@ -20,12 +19,11 @@ interface CommunityStory {
 
 export const useCommunityStories = () => {
   const [stories, setStories] = useState<CommunityStory[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [newStory, setNewStory] = useState('');
-  const { user, isSignedIn } = useAuth();
-  const { uploadImage, isUploading } = useImageUpload();
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+  const { uploadImage } = useImageUpload();
 
-  // Fetch community stories only
   const fetchStories = async () => {
     try {
       console.log('Fetching community stories...');
@@ -87,48 +85,73 @@ export const useCommunityStories = () => {
     }
   };
 
-  // Add a new community story with file upload support
+  useEffect(() => {
+    fetchStories();
+
+    // Set up real-time subscription for new stories
+    const channel = supabase
+      .channel('community_stories_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'community_stories'
+        },
+        () => {
+          console.log('New story added, refetching...');
+          fetchStories();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'community_stories'
+        },
+        () => {
+          console.log('Story updated, refetching...');
+          fetchStories();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'community_stories'
+        },
+        () => {
+          console.log('Story deleted, refetching...');
+          fetchStories();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const addStory = async (content: string, imageFile?: File): Promise<boolean> => {
-    console.log('addStory called with:', { 
-      content: content.substring(0, 50) + '...', 
-      imageFile: !!imageFile, 
-      userId: user?.id,
-      isSignedIn 
-    });
-    
-    if (!isSignedIn || !user) {
+    if (!user) {
       console.error('User not authenticated');
       toast.error('Please sign in to share your story');
-      return false;
-    }
-
-    if (!content.trim()) {
-      console.error('Empty content provided');
-      toast.error('Story content cannot be empty');
-      return false;
-    }
-
-    // Client-side validation to ensure community-appropriate content
-    if (content.toLowerCase().includes('hiring') || 
-        content.toLowerCase().includes('job opening') ||
-        content.toLowerCase().includes('salon for sale') ||
-        content.toLowerCase().includes('apply now')) {
-      toast.error('This community is designed for sharing inspiring stories only. To post jobs or list salons, please visit the appropriate sections.');
       return false;
     }
 
     setIsLoading(true);
     
     try {
-      let imageUrl = null;
+      let imageUrl: string | null = null;
       
       // Upload image if provided
       if (imageFile) {
-        console.log('Uploading image:', imageFile.name);
+        console.log('Uploading image...');
         imageUrl = await uploadImage(imageFile);
         if (!imageUrl) {
-          console.error('Image upload failed');
-          toast.error('Failed to upload image');
+          toast.error('Failed to upload image. Please try again.');
           setIsLoading(false);
           return false;
         }
@@ -138,11 +161,14 @@ export const useCommunityStories = () => {
       console.log('Inserting story into database...');
       const { data, error } = await supabase
         .from('community_stories')
-        .insert({
-          user_id: user.id,
-          content: content.trim(),
-          image_url: imageUrl
-        })
+        .insert([
+          {
+            content: content.trim(),
+            image_url: imageUrl,
+            user_id: user.id,
+            likes: 0
+          }
+        ])
         .select(`
           id,
           content,
@@ -154,8 +180,9 @@ export const useCommunityStories = () => {
         .single();
 
       if (error) {
-        console.error('Database error:', error);
-        toast.error(`Failed to share story: ${error.message}`);
+        console.error('Error inserting story:', error);
+        toast.error('Failed to share your story. Please try again.');
+        setIsLoading(false);
         return false;
       }
 
@@ -175,53 +202,92 @@ export const useCommunityStories = () => {
       }
       
       setNewStory('');
-      toast.success('Story shared successfully!');
-      
-      // Refresh stories to ensure consistency
-      setTimeout(() => {
-        fetchStories();
-      }, 1000);
-      
+      toast.success('Your story has been shared!');
+      setIsLoading(false);
       return true;
     } catch (error) {
-      console.error('Error adding story:', error);
-      toast.error('Failed to share story. Please try again.');
-      return false;
-    } finally {
+      console.error('Error in addStory:', error);
+      toast.error('An unexpected error occurred. Please try again.');
       setIsLoading(false);
+      return false;
     }
   };
 
-  // Set up real-time subscription for stories
-  useEffect(() => {
-    fetchStories();
+  const updateStory = async (storyId: string, content: string): Promise<boolean> => {
+    if (!user) {
+      toast.error('Please sign in to edit stories');
+      return false;
+    }
 
-    const channel = supabase
-      .channel('community-stories-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'community_stories'
-        },
-        (payload) => {
-          console.log('Real-time update received:', payload);
-          fetchStories();
-        }
-      )
-      .subscribe();
+    try {
+      console.log('Updating story:', storyId);
+      const { error } = await supabase
+        .from('community_stories')
+        .update({ content: content.trim() })
+        .eq('id', storyId)
+        .eq('user_id', user.id); // Ensure user can only edit their own stories
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      if (error) {
+        console.error('Error updating story:', error);
+        toast.error('Failed to update your story. Please try again.');
+        return false;
+      }
+
+      // Update local state
+      setStories(prev => prev.map(story => 
+        story.id === storyId 
+          ? { ...story, content: content.trim() }
+          : story
+      ));
+
+      toast.success('Story updated successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error in updateStory:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+      return false;
+    }
+  };
+
+  const deleteStory = async (storyId: string): Promise<boolean> => {
+    if (!user) {
+      toast.error('Please sign in to delete stories');
+      return false;
+    }
+
+    try {
+      console.log('Deleting story:', storyId);
+      const { error } = await supabase
+        .from('community_stories')
+        .delete()
+        .eq('id', storyId)
+        .eq('user_id', user.id); // Ensure user can only delete their own stories
+
+      if (error) {
+        console.error('Error deleting story:', error);
+        toast.error('Failed to delete your story. Please try again.');
+        return false;
+      }
+
+      // Remove from local state
+      setStories(prev => prev.filter(story => story.id !== storyId));
+
+      toast.success('Story deleted successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error in deleteStory:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+      return false;
+    }
+  };
 
   return {
     stories,
-    isLoading: isLoading || isUploading,
     newStory,
     setNewStory,
-    addStory
+    addStory,
+    updateStory,
+    deleteStory,
+    isLoading
   };
 };
