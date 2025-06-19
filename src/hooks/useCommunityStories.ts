@@ -32,7 +32,7 @@ export const useCommunityStories = () => {
         .from('community_stories')
         .select(`
           *,
-          profiles:user_id (
+          profiles(
             full_name,
             avatar_url
           )
