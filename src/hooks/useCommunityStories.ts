@@ -12,6 +12,10 @@ interface CommunityStory {
   likes: number;
   created_at: string;
   user_id: string;
+  profiles?: {
+    full_name?: string;
+    avatar_url?: string;
+  };
 }
 
 export const useCommunityStories = () => {
@@ -26,7 +30,13 @@ export const useCommunityStories = () => {
     try {
       const { data, error } = await supabase
         .from('community_stories')
-        .select('*')
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            avatar_url
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
