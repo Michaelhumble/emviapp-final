@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/context/auth';
@@ -29,25 +30,18 @@ function App() {
             <Router>
               <div className="min-h-screen bg-background">
                 <Routes>
-                  {/* Public Routes - commented out missing pages */}
-                  {/* <Route path="/" element={<Home />} /> */}
+                  {/* Public Routes */}
                   <Route path="/jobs" element={<Jobs />} />
-                  {/* <Route path="/salons" element={<Salons />} /> */}
                   <Route path="/artists" element={<Artists />} />
                   <Route path="/community" element={<Community />} />
                   
                   {/* Profile Routes */}
                   <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                   
-                  {/* Dashboard Routes - only keep working ones */}
+                  {/* Dashboard Routes - directly to RoleDashboardLayout */}
                   <Route path="/dashboard/owner" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} />
                   
-                  {/* Commented out missing dashboard routes */}
-                  {/* <Route path="/dashboard/supplier" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} /> */}
-                  {/* <Route path="/dashboard/customer" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} /> */}
-                  {/* <Route path="/dashboard/other" element={<AuthGuard><RoleDashboardLayout /></AuthGuard>} /> */}
-                  
-                  {/* Catch-all route - redirect to jobs for now */}
+                  {/* Catch-all route - redirect to jobs */}
                   <Route path="*" element={<Jobs />} />
                 </Routes>
               </div>
