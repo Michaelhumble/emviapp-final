@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@/context/auth';
+import { ThemeProvider } from '@/components/theme-provider';
 import { NotificationProvider } from '@/context/notification/NotificationProvider';
+import { AuthProvider } from '@/context/auth/AuthProvider';
 import Layout from '@/components/layout/Layout';
 import Home from '@/pages/Home';
 import Artists from '@/pages/Artists';
@@ -30,50 +31,54 @@ import { Toaster } from '@/components/ui/sonner';
 
 function App() {
   return (
-    <NotificationProvider>
-      <div className="App">
-        <Routes>
-          {/* Auth routes */}
-          <Route path="/auth/signin" element={<AuthRedirect><SignIn /></AuthRedirect>} />
-          <Route path="/auth/signup" element={<AuthRedirect><SignUp /></AuthRedirect>} />
-          <Route path="/onboarding" element={<AuthGuard><Onboarding /></AuthGuard>} />
+    <ThemeProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <div className="App">
+            <Routes>
+              {/* Auth routes */}
+              <Route path="/auth/signin" element={<AuthRedirect><SignIn /></AuthRedirect>} />
+              <Route path="/auth/signup" element={<AuthRedirect><SignUp /></AuthRedirect>} />
+              <Route path="/onboarding" element={<AuthGuard><Onboarding /></AuthGuard>} />
 
-          {/* Public routes */}
-          <Route path="/" element={<Layout><Home /></Layout>} />
-          <Route path="/artists" element={<Layout><Artists /></Layout>} />
-          <Route path="/artist/:id" element={<Layout><ArtistProfile /></Layout>} />
-          <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
-          <Route path="/job/:id" element={<Layout><JobListing /></Layout>} />
-          <Route path="/salons" element={<Layout><Salons /></Layout>} />
-          <Route path="/salon/:id" element={<Layout><SalonProfile /></Layout>} />
-          <Route path="/community" element={<Layout><Community /></Layout>} />
-          <Route path="/supplier/:id" element={<Layout><SupplierProfile /></Layout>} />
+              {/* Public routes */}
+              <Route path="/" element={<Layout><Home /></Layout>} />
+              <Route path="/artists" element={<Layout><Artists /></Layout>} />
+              <Route path="/artist/:id" element={<Layout><ArtistProfile /></Layout>} />
+              <Route path="/jobs" element={<Layout><Jobs /></Layout>} />
+              <Route path="/job/:id" element={<Layout><JobListing /></Layout>} />
+              <Route path="/salons" element={<Layout><Salons /></Layout>} />
+              <Route path="/salon/:id" element={<Layout><SalonProfile /></Layout>} />
+              <Route path="/community" element={<Layout><Community /></Layout>} />
+              <Route path="/supplier/:id" element={<Layout><SupplierProfile /></Layout>} />
 
-          {/* Protected routes */}
-          <Route path="/analytics" element={<AuthGuard><Layout><Analytics /></Layout></AuthGuard>} />
-          <Route path="/profile" element={<AuthGuard><Layout><UserProfile /></Layout></AuthGuard>} />
-          <Route path="/profile/:id" element={<Layout><UserProfile /></Layout>} />
-          <Route path="/profile-not-found" element={<Layout><ProfileNotFound /></Layout>} />
-          <Route path="/profile/edit" element={<AuthGuard><Layout><ProfileEditor /></Layout></AuthGuard>} />
-          <Route path="/profile/form" element={<AuthGuard><Layout><ProfileForm /></Layout></AuthGuard>} />
+              {/* Protected routes */}
+              <Route path="/analytics" element={<AuthGuard><Layout><Analytics /></Layout></AuthGuard>} />
+              <Route path="/profile" element={<AuthGuard><Layout><UserProfile /></Layout></AuthGuard>} />
+              <Route path="/profile/:id" element={<Layout><UserProfile /></Layout>} />
+              <Route path="/profile-not-found" element={<Layout><ProfileNotFound /></Layout>} />
+              <Route path="/profile/edit" element={<AuthGuard><Layout><ProfileEditor /></Layout></AuthGuard>} />
+              <Route path="/profile/form" element={<AuthGuard><Layout><ProfileForm /></Layout></AuthGuard>} />
 
-          {/* Dashboard routes */}
-          <Route path="/dashboard" element={<AuthGuard><DashboardRedirector /></AuthGuard>} />
-          <Route path="/dashboard/artist" element={<AuthGuard><RoleDashboardLayout role="artist"><div /></RoleDashboardLayout></AuthGuard>} />
-          <Route path="/dashboard/salon" element={<AuthGuard><RoleDashboardLayout role="salon"><div /></RoleDashboardLayout></AuthGuard>} />
-          <Route path="/dashboard/owner" element={<AuthGuard><RoleDashboardLayout role="salon"><div /></RoleDashboardLayout></AuthGuard>} />
-          <Route path="/dashboard/customer" element={<AuthGuard><RoleDashboardLayout role="customer"><div /></RoleDashboardLayout></AuthGuard>} />
-          <Route path="/dashboard/freelancer" element={<AuthGuard><RoleDashboardLayout role="freelancer"><div /></RoleDashboardLayout></AuthGuard>} />
-          <Route path="/dashboard/supplier" element={<AuthGuard><RoleDashboardLayout role="supplier"><div /></RoleDashboardLayout></AuthGuard>} />
-          <Route path="/dashboard/manager" element={<AuthGuard><RoleDashboardLayout role="manager"><div /></RoleDashboardLayout></AuthGuard>} />
+              {/* Dashboard routes */}
+              <Route path="/dashboard" element={<AuthGuard><DashboardRedirector /></AuthGuard>} />
+              <Route path="/dashboard/artist" element={<AuthGuard><RoleDashboardLayout role="artist"><div /></RoleDashboardLayout></AuthGuard>} />
+              <Route path="/dashboard/salon" element={<AuthGuard><RoleDashboardLayout role="salon"><div /></RoleDashboardLayout></AuthGuard>} />
+              <Route path="/dashboard/owner" element={<AuthGuard><RoleDashboardLayout role="salon"><div /></RoleDashboardLayout></AuthGuard>} />
+              <Route path="/dashboard/customer" element={<AuthGuard><RoleDashboardLayout role="customer"><div /></RoleDashboardLayout></AuthGuard>} />
+              <Route path="/dashboard/freelancer" element={<AuthGuard><RoleDashboardLayout role="freelancer"><div /></RoleDashboardLayout></AuthGuard>} />
+              <Route path="/dashboard/supplier" element={<AuthGuard><RoleDashboardLayout role="supplier"><div /></RoleDashboardLayout></AuthGuard>} />
+              <Route path="/dashboard/manager" element={<AuthGuard><RoleDashboardLayout role="manager"><div /></RoleDashboardLayout></AuthGuard>} />
 
-          {/* Fallback routes */}
-          <Route path="/404" element={<Layout><NotFound /></Layout>} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
-        <Toaster />
-      </div>
-    </NotificationProvider>
+              {/* Fallback routes */}
+              <Route path="/404" element={<Layout><NotFound /></Layout>} />
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+            <Toaster />
+          </div>
+        </NotificationProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
